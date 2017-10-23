@@ -13,54 +13,131 @@ def fun(x):
     return x + 1
 
 class PipelineTest(unittest.TestCase):
-    def test(self):
-        target = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'target')
-        dir_in = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'target/in')
-        dir_out = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'target/out')
-        if os.path.exists(target):
-            shutil.rmtree(target)
-        os.makedirs(dir_in)
-        os.makedirs(dir_out)
-        
-        pipeline = Pipeline(dir_in)
-        self.assertEqual(len(pipeline.queue), 0)
-        pipeline.start()
+    target = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'target')
+    dir_in = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'target/in')
+    dir_out = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'target/out')
+    pipeline = None
+    
+    def setUp(self):
+        print("TEST: setUp")
+        if os.path.exists(self.target):
+            shutil.rmtree(self.target)
+        os.makedirs(self.dir_in)
+        os.makedirs(self.dir_out)
+        self.pipeline = Pipeline(self.dir_in)
+    
+    def tearDown(self):
+        print("TEST: tearDown")
+        time.sleep(2)
+        self.pipeline.stop()
         time.sleep(1)
-        
-        Path(os.path.join(dir_in, 'foo.epub')).touch()
+    
+    def test_file(self):
+        print("TEST: test_file")
+        self.pipeline.start(inactivity_timeout=3600)
         time.sleep(1)
-        self.assertEqual(len(pipeline.queue), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'foo.epub']), 1)
+        self.assertEqual(len(self.pipeline.queue), 0)
         
-        with open(os.path.join(dir_in, 'foo.epub'), "a") as f:
+        Path(os.path.join(self.dir_in, 'foo.epub')).touch()
+        time.sleep(1)
+        self.assertEqual(len(self.pipeline.queue), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'foo.epub']), 1)
+        
+        with open(os.path.join(self.dir_in, 'foo.epub'), "a") as f:
             f.write("bar")
         time.sleep(1)
-        self.assertEqual(len(pipeline.queue), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'foo.epub']), 1)
+        self.assertEqual(len(self.pipeline.queue), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'foo.epub']), 1)
         
-        shutil.move(os.path.join(dir_in, 'foo.epub'), os.path.join(dir_in, 'bar.epub'))
+        shutil.move(os.path.join(self.dir_in, 'foo.epub'), os.path.join(self.dir_in, 'bar.epub'))
         time.sleep(1)
-        self.assertEqual(len(pipeline.queue), 2)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'foo.epub']), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'bar.epub']), 1)
+        self.assertEqual(len(self.pipeline.queue), 2)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'foo.epub']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'bar.epub']), 1)
         
-        with open(os.path.join(dir_in, 'baz.epub'), "a") as f:
+        with open(os.path.join(self.dir_in, 'baz.epub'), "a") as f:
             f.write("baz")
         time.sleep(1)
-        self.assertEqual(len(pipeline.queue), 3)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'foo.epub']), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'bar.epub']), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'baz.epub']), 1)
+        self.assertEqual(len(self.pipeline.queue), 3)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'foo.epub']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'bar.epub']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'baz.epub']), 1)
         
-        os.remove(os.path.join(dir_in, 'bar.epub'))
+        os.remove(os.path.join(self.dir_in, 'bar.epub'))
         time.sleep(1)
-        self.assertEqual(len(pipeline.queue), 3)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'foo.epub']), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'bar.epub']), 1)
-        self.assertEqual(len([b['book'] for b in pipeline.queue if b['book'] == 'baz.epub']), 1)
+        self.assertEqual(len(self.pipeline.queue), 3)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'foo.epub']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'bar.epub']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'baz.epub']), 1)
+    
+    def test_folder(self):
+        print("TEST: test_folder")
+        # create three books before starting the pipeline
+        os.makedirs(os.path.join(self.dir_in, 'book1'))
+        Path(os.path.join(self.dir_in, 'book1/ncc.html')).touch()
+        os.makedirs(os.path.join(self.dir_in, 'book2'))
+        Path(os.path.join(self.dir_in, 'book2/ncc.html')).touch()
+        Path(os.path.join(self.dir_in, 'book2/image.png')).touch()
+        os.makedirs(os.path.join(self.dir_in, 'book3'))
+        Path(os.path.join(self.dir_in, 'book3/ncc.html')).touch()
+        time.sleep(1)
         
-        time.sleep(2)
-        pipeline.stop()
+        # start the pipeline
+        self.pipeline.start(inactivity_timeout=3600)
+        time.sleep(1)
+        
+        # there should be no books in the pipeline, even though there is a folder in the input directory
+        self.assertEqual(len(self.pipeline.queue), 0)
+        
+        # modify the book
+        Path(os.path.join(self.dir_in, 'book1/audio1.mp3')).touch()
+        Path(os.path.join(self.dir_in, 'book1/audio2.mp3')).touch()
+        Path(os.path.join(self.dir_in, 'book1/content.html')).touch()
+        Path(os.path.join(self.dir_in, 'book1/image.png')).touch()
+        time.sleep(1)
+        
+        # now there should be a book in the pipeline
+        self.assertEqual(len(self.pipeline.queue), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book1']), 1)
+        
+        # move a file from book2 to book3
+        shutil.move(os.path.join(self.dir_in, 'book2/image.png'), os.path.join(self.dir_in, 'book3/image.png'))
+        time.sleep(1)
+        
+        # now there should be 3 book in the pipeline
+        self.assertEqual(len(self.pipeline.queue), 3)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book1']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book2']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book3']), 1)
+    
+    def test_queue_handler(self):
+        print("TEST: test_queue_handler")
+        
+        # start the pipeline
+        self.pipeline.start(inactivity_timeout=10)
+        time.sleep(1)
+        
+        # Create a book
+        Path(os.path.join(self.dir_in, 'book1')).touch()
+        time.sleep(3)
+        self.assertEqual(len(self.pipeline.queue), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book1']), 1)
+        
+        # Create another book
+        Path(os.path.join(self.dir_in, 'book2')).touch()
+        time.sleep(3)
+        self.assertEqual(len(self.pipeline.queue), 2)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book1']), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book2']), 1)
+        
+        # wait until 12 seconds after book1 was created
+        time.sleep(6)
+        self.assertEqual(len(self.pipeline.queue), 1)
+        self.assertEqual(len([b['book'] for b in self.pipeline.queue if b['book'] == 'book2']), 1)
+        
+        # wait until 12 seconds after book2 was created
+        time.sleep(3)
+        self.assertEqual(len(self.pipeline.queue), 0)
 
 if __name__ == '__main__':
     unittest.main()

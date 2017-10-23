@@ -6,28 +6,49 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 from pathlib import Path
+from threading import Thread, RLock
 
 if sys.version_info[0] != 3:
     print("# This script requires Python version 3.x")
     sys.exit(1)
 
 class Pipeline(PatternMatchingEventHandler):
-    observer = Observer()
-    base = None
-    queue = []
+    lock = RLock()
+    
+    # constants (set during instantiation)
     inactivity_timeout = 10
+    observer = None
+    base = None
+    bookHandlerThread = None
+    bookHandlerThreadShouldRun = False
+    
+    # dynamic (reset on stop(), changes over time)
+    queue = []
+    
+    # other
     
     def __init__(self, base):
-        super(Pipeline, self).__init__()
+        self.queue = [] # discards pre-existing files
         self.base = base
+        super(Pipeline, self).__init__()
     
-    def start(self):
+    def start(self, inactivity_timeout=10):
+        self.inactivity_timeout = inactivity_timeout
+        self.observer = Observer()
         self.observer.schedule(self, path=self.base, recursive=True)
         self.observer.start()
+        self.bookHandlerThreadShouldRun = True
+        self.bookHandlerThread = Thread(target=self.handle_book_events_thread)
+        self.bookHandlerThread.setDaemon(True)
+        self.bookHandlerThread.start()
     
     def stop(self):
-        self.observer.stop()
-        self.observer.join()
+        if self.bookHandlerThread:
+            self.bookHandlerThreadShouldRun = False
+        if self.observer:
+            self.observer.stop()
+            self.observer.join()
+            self.observer = None
     
     def process(self, event):
         source_path = Path(event.src_path).relative_to(self.base)
@@ -63,44 +84,30 @@ class Pipeline(PatternMatchingEventHandler):
             'event_type': str(event.event_type),
             'is_directory': event.is_directory
         }
-        # TODO: replace with functions (addBookEvent) to avoid code duplication
-        book_in_queue = False
-        for queue_item in self.queue:
-            if queue_item['book'] == book_event['book']:
-                book_in_queue = True
-                event_in_queue = False
-                for queue_event in queue_item['events']:
-                    if queue_event == book_event:
-                        event_in_queue = True
-                if not event_in_queue:
-                    queue_item['events'].append(book_event)
-                queue_item['last_event'] = int(time.time())
-                break
-        if not book_in_queue:
-            self.queue.append({
-                 'book': book_event['book'],
-                 'events': [ book_event ],
-                 'last_event': int(time.time())
-            })
-        
+        self.addBookEvent(book_event)
         if book_event['event_type'] == 'moved':
             book_event['book'] = dest_path.parts[0]
+            self.addBookEvent(book_event)
+    
+    def addBookEvent(self, event):
+        with self.lock:
             book_in_queue = False
-            for queue_item in self.queue:
-                if queue_item['book'] == book_event['book']:
+            for item in self.queue:
+                if item['book'] == event['book']:
                     book_in_queue = True
                     event_in_queue = False
-                    for queue_event in queue_item['events']:
-                        if queue_event == book_event:
+                    for queue_event in item['events']:
+                        if queue_event == event:
                             event_in_queue = True
+                            break
                     if not event_in_queue:
-                        queue_item['events'].append(book_event)
-                    queue_item['last_event'] = int(time.time())
+                        item['events'].append(event)
+                    item['last_event'] = int(time.time())
                     break
             if not book_in_queue:
                 self.queue.append({
-                     'book': book_event['book'],
-                     'events': [ book_event ],
+                     'book': event['book'],
+                     'events': [ event ],
                      'last_event': int(time.time())
                 })
     
@@ -116,18 +123,30 @@ class Pipeline(PatternMatchingEventHandler):
     def on_deleted(self, event):
         self.process(event)
     
+    def handle_book_events_thread(self):
+        while self.bookHandlerThreadShouldRun:
+            try:
+                self.handle_book_events()
+                time.sleep(1)
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+    
     def handle_book_events(self):
-        x = [b['book'] + ": " + str(int(time.time()) - b['last_event']) for b in self.queue]
+        book = None
         
-        books = [b for b in self.queue if int(time.time()) - b['last_event'] > self.inactivity_timeout]
-        if not len(books):
-            return
-        book = books[0]
+        with self.lock:
+            x = [b['book'] + ": " + str(int(time.time()) - b['last_event']) for b in self.queue]
+            
+            books = [b for b in self.queue if int(time.time()) - b['last_event'] > self.inactivity_timeout]
+            if not len(books):
+                return
+            book = books[0]
+            
+            new_queue = [b for b in self.queue if b is not book]
+            self.queue = new_queue
         
-        new_queue = [b for b in self.queue if b is not book]
-        self.queue = new_queue
         print("processing book: "+book['book'])
-        
+
 
 if __name__ == '__main__':
     args = sys.argv[1:]
@@ -136,7 +155,6 @@ if __name__ == '__main__':
     try:
         while True:
             time.sleep(1)
-            pipeline.handle_book_events()
     except KeyboardInterrupt:
         pass
     pipeline.stop()
