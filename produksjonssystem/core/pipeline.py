@@ -9,6 +9,11 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 from pathlib import Path
 from threading import Thread, RLock
+from dotmap import DotMap
+
+from core.utils.epub import Epub
+from core.utils.filesystem import Filesystem
+from core.utils.report import Report
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -32,7 +37,11 @@ class Pipeline(PatternMatchingEventHandler):
     # dynamic (reset on stop(), changes over time)
     _queue = []
     
-    # other
+    # utility classes; reconfigured every time a book is processed to simplify function signatures
+    utils = DotMap()
+    utils.report = None
+    utils.epub = None
+    utils.filesystem = None
     
     def __init__(self, base):
         self._queue = [] # discards pre-existing files
@@ -172,6 +181,11 @@ class Pipeline(PatternMatchingEventHandler):
                         self._queue = new_queue
                 
                 if book:
+                    # configure utils before processing book
+                    self.utils.report = Report(book)
+                    self.utils.epub = Epub(book, self.utils.report)
+                    self.utils.filesystem = Filesystem(book, self.utils.report)
+                    
                     paths_all = []
                     paths_created = []
                     paths_modified = []
