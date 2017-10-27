@@ -12,6 +12,10 @@ from pathlib import Path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from produksjonssystem.core.pipeline import Pipeline
 
+if sys.version_info[0] != 3 or sys.version_info[1] < 5:
+    print("# This script requires Python version 3.5+")
+    sys.exit(1)
+
 class PipelineTest(unittest.TestCase):
     target = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target')
     dir_in = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target/in')
