@@ -43,6 +43,9 @@ class Pipeline(PatternMatchingEventHandler):
     utils.epub = None
     utils.filesystem = None
     
+    # should be overridden when extending this class
+    title = None
+    
     def __init__(self, base):
         self._queue = [] # discards pre-existing files
         self._base = str(os.path.normpath(base))
