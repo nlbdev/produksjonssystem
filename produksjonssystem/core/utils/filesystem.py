@@ -3,6 +3,7 @@
 import os
 import shutil
 import subprocess
+import zipfile
 
 class Filesystem():
     """Operations on files and directories"""
@@ -14,7 +15,7 @@ class Filesystem():
         self.book = book
         self.report = report
     
-    def copy(source, destination):
+    def copy(self, source, destination):
         """Copy the `source` file or directory to the `destination`"""
         try:
             shutil.copytree(source, destination)
@@ -24,7 +25,7 @@ class Filesystem():
             else:
                 raise
     
-    def storeBook(archive_dir, source, book_id):
+    def storeBook(self, archive_dir, source, book_id):
         """Store `book_id` from `source` into `archive_dir`"""
         self.report.info("Storing " + book_id + " in " + archive_dir + "...")
         assert book_id
@@ -38,8 +39,10 @@ class Filesystem():
             shutil.rmtree(target)
         self.copy(source, target)
     
-    def run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=None, timeout=600, check=True):
+    def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=None, timeout=600, check=True):
         """Convenience method for subprocess.run, with our own defaults"""
         if not cwd:
             cwd = self.book["base"]
+        print("running: "+(" ".join(args) if isinstance(args, list) else args))
         return subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
+        

@@ -17,13 +17,37 @@ class Report():
         else:
             self.report_dir = report_dir
     
+    def debug(self, message):
+        # TODO
+        if isinstance(message, list):
+            for line in message:
+                print("Report [DEBUG]: ".rstrip())
+        else:
+            print("Report [DEBUG]: "+message.rstrip())
+    
     def info(self, message):
         # TODO
-        print("Report: "+message)
+        if isinstance(message, list):
+            for line in message:
+                print("Report: ".rstrip())
+        else:
+            print("Report: "+message.rstrip())
     
     def warn(self, message):
         # TODO
-        print("Report [WARN]: "+message)
+        if isinstance(message, list):
+            for line in message:
+                print("Report [WARN]: ".rstrip())
+        else:
+            print("Report [WARN]: "+message.rstrip())
+    
+    def error(self, message):
+        # TODO
+        if isinstance(message, list):
+            for line in message:
+                print("Report [ERROR]: ".rstrip())
+        else:
+            print("Report [ERROR]: "+message.rstrip())
     
     def email(self, message):
         # TODO

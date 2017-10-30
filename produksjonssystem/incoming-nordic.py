@@ -7,6 +7,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 import subprocess
+import shutil
 
 from core.pipeline import Pipeline
 
@@ -44,7 +45,7 @@ class IncomingNordic(Pipeline):
         
         dp2_home = "/opt/daisy-pipeline2"
         dp2_cli = dp2_home + "/cli/dp2"
-        saxon_cli = "java -jar " + dp2_home + "/system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar"
+        saxon_cli = "java -jar " + os.path.join(dp2_home, "/system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
         
         # temp while testing
         dp2_home = "echo"
@@ -57,37 +58,38 @@ class IncomingNordic(Pipeline):
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
-        invalid_dir = self.invalid_out + "/" + uid + "/"
+        invalid_dir = os.path.join(self.invalid_out, uid)
+        os.makedirs(invalid_dir)
         
-        book_id = book["name"]
-        book_dir = workspace_dir + book_id + "/"
-        source = os.path.join(book["base"], book["name"])
+        book_id = None
+        book_dir = None
         
         # unzip EPUB hvis den er zippet
-        if os.path.isfile(source) and book["name"].endswith(".epub"):
+        if os.path.isfile(book["source"]) and book["name"].endswith(".epub"):
             book_id = book["name"].replace(".epub","")
-            book_dir = workspace_dir + book_id + "/"
+            book_dir = os.path.join(workspace_dir, book_id)
             self.utils.report.info("pakker ut " + book["name"])
             os.makedirs(book_dir)
-            self.utils.epub.unzip(None, None)
-            self.utils.epub.unzip(source, book_dir)
-        return
+            self.utils.epub.unzip(book["source"], book_dir)
             
-#        # eller bare kopier filesettet hvis den ikke er zippet
-#        elif os.path.isdir(book["source"]):
-#            self.utils.filesystem.copy(book["source"], book_dir)
-#            
-#        # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt
-#        else:
-#            self.utils.report.info(book_id + " er hverken en \".epub\"-fil eller en mappe.")
-#            shutil.move(book["source"], invalid_dir)
-#            return
+        # eller bare kopier filesettet hvis den ikke er zippet
+        elif os.path.isdir(book["source"]):
+            book_id = book["name"]
+            book_dir = os.path.join(workspace_dir, book_id)
+            os.makedirs(book_dir)
+            self.utils.filesystem.copy(book["source"], book_dir)
+            
+        # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt
+        else:
+            self.utils.report.info(book_id + " er hverken en \".epub\"-fil eller en mappe.")
+            shutil.move(book["source"], invalid_dir)
+            return
         
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
-        if not os.path.isfile(book_dir + "EPUB/package.opf"):
-            self.utils.report.info(book_id + "EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
+        if not os.path.isfile(os.path.join(book_dir, "EPUB/package.opf")):
+            self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
             shutil.move(book["source"], invalid_dir)
-            report.email(book_id + ": ERROR")
+            self.utils.report.email(book_id + ": ERROR")
             return
         
         # sørg for at filrettighetene stemmer
@@ -98,7 +100,7 @@ class IncomingNordic(Pipeline):
             for f in files:
                 os.chmod(os.path.join(root, f), 0o666)
         
-        book_file = book_dir + ".epub"
+        book_file = os.path.join(workspace_dir, book_id + ".epub")
         
         # lag en zippet versjon av EPUBen også
         self.utils.report.info("Pakker sammen " + book_id + "...")
@@ -106,43 +108,45 @@ class IncomingNordic(Pipeline):
         
         # -- Kommer vi hit så er vi ganske sikre på at vi har med et EPUB-filsett å gjøre. --
         
-        job_dir  = workspace_dir + "nordic-epub3-validate/"
+        job_dir  = os.path.join(workspace_dir, "nordic-epub3-validate/")
         os.makedirs(job_dir)
 
-        result_log = job_dir + "log.txt"
-        result_report = job_dir + "report.html"
-        result_dir = job_dir + "result/"
+        result_log = os.path.join(job_dir, "log.txt")
+        result_report = os.path.join(job_dir, "report.html")
+        result_dir = os.path.join(job_dir, "result/")
         
         job_id = None
         result_status = None
         
         try:
             # run validator
-            process = self.utils.filesystem.run([dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"], book["source"])
+            process = self.utils.filesystem.run([dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"])
             
             # get dp2 job id
-            process = self.utils.filesystem.run("cat " + job_dir + "stdout.txt | grep Job | grep sent | head -n 1 | sed 's/^Job \\(.*\\) sent.*$/\\1/'", book["source"])
+            process = self.utils.filesystem.run("cat " + os.path.join(job_dir, "stdout.txt") + " | grep Job | grep sent | head -n 1 | sed 's/^Job \\(.*\\) sent.*$/\\1/'")
             job_id = process.stdout.decode("utf-8").strip()
             
             # get validation log
-            process = self.utils.filesystem.run([dp2_cli, "log", "--output", result_log, job_id], book["source"])
+            process = self.utils.filesystem.run([dp2_cli, "log", "--output", result_log, job_id])
             
             # get validation status
             process = self.utils.filesystem.run(dp2_cli + " status " + job_id + " | grep Status | sed 's/.*Status: //'")
             result_status = process.stdout.decode("utf-8").strip()
             
             # get validation report
-            process = self.utils.filesystem.run("find " + result_dir + "html-report/ -type f | head -n 1")
+            process = self.utils.filesystem.run("find " + os.path.join(result_dir, "html-report/") + " -type f | head -n 1")
             result_report_temp = process.stdout.decode("utf-8").strip()
+            assert result_report_temp, "missing report temporary path"
+            assert result_report, "missing report path"
             shutil.move(result_report_temp, result_report)
             
-            with open(job_dir + "status.txt", "a") as f:
+            with open(os.path.join(job_dir, "status.txt"), "a") as f:
                 f.write("status: "+str(result_status))
             self.utils.report.info("status: " + result_status)
             self.utils.report.info("report: " + result_report)
             self.utils.report.info("log: " + result_log)
             
-            process = self.utils.filesystem.run([dp2_cli, "delete", job_id], book["source"])
+            process = self.utils.filesystem.run([dp2_cli, "delete", job_id])
             
         except subprocess.TimeoutExpired as e:
             self.utils.report.info("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
@@ -165,7 +169,6 @@ class IncomingNordic(Pipeline):
         self.utils.filesystem.moveBook(self.valid_out, book_dir, book_id)
         self.utils.report.info("$BOOK_ID ble lagt til i master-arkivet.")
         report.email(book_id + ": DONE")
-        return
         
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB
@@ -196,4 +199,4 @@ if __name__ == "__main__":
     
     pipeline = IncomingNordic(epub_in, valid_out, invalid_out, report_out)
     
-    pipeline.run()
+    pipeline.run(1)
