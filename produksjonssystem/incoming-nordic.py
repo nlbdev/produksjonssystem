@@ -8,6 +8,8 @@ import time
 from datetime import datetime, timezone
 import subprocess
 import shutil
+import re
+from email.headerregistry import Address
 
 from core.pipeline import Pipeline
 
@@ -28,7 +30,7 @@ class IncomingNordic(Pipeline):
         self.epub_in = epub_in
         self.valid_out = valid_out
         self.invalid_out = invalid_out
-        self.report_out = report_out
+        self.utils.report_out = report_out
         super().__init__(epub_in)
     
     def on_book_moved(self, book):
@@ -45,12 +47,7 @@ class IncomingNordic(Pipeline):
         
         dp2_home = "/opt/daisy-pipeline2"
         dp2_cli = dp2_home + "/cli/dp2"
-        saxon_cli = "java -jar " + os.path.join(dp2_home, "/system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
-        
-        # temp while testing
-        dp2_home = "echo"
-        dp2_cli = "echo"
-        saxon_cli = "echo"
+        saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
         
         # Unik identifikator for denne jobben
         uid = datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
@@ -58,11 +55,9 @@ class IncomingNordic(Pipeline):
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
-        invalid_dir = os.path.join(self.invalid_out, uid)
-        os.makedirs(invalid_dir)
         
-        book_id = None
-        book_dir = None
+        book_id = book["name"]
+        book_dir = os.path.join(workspace_dir, book_id)
         
         # unzip EPUB hvis den er zippet
         if os.path.isfile(book["source"]) and book["name"].endswith(".epub"):
@@ -74,22 +69,20 @@ class IncomingNordic(Pipeline):
             
         # eller bare kopier filesettet hvis den ikke er zippet
         elif os.path.isdir(book["source"]):
-            book_id = book["name"]
-            book_dir = os.path.join(workspace_dir, book_id)
             os.makedirs(book_dir)
             self.utils.filesystem.copy(book["source"], book_dir)
             
         # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt
         else:
             self.utils.report.info(book_id + " er hverken en \".epub\"-fil eller en mappe.")
-            shutil.move(book["source"], invalid_dir)
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book["name"] + uid, move=True)
             return
         
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if not os.path.isfile(os.path.join(book_dir, "EPUB/package.opf")):
             self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
-            shutil.move(book["source"], invalid_dir)
-            self.utils.report.email(book_id + ": ERROR")
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
+            self.utils.report.email(book_id + ": ERROR", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
             return
         
         # sørg for at filrettighetene stemmer
@@ -111,8 +104,6 @@ class IncomingNordic(Pipeline):
         job_dir  = os.path.join(workspace_dir, "nordic-epub3-validate/")
         os.makedirs(job_dir)
 
-        result_log = os.path.join(job_dir, "log.txt")
-        result_report = os.path.join(job_dir, "report.html")
         result_dir = os.path.join(job_dir, "result/")
         
         job_id = None
@@ -123,52 +114,62 @@ class IncomingNordic(Pipeline):
             process = self.utils.filesystem.run([dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"])
             
             # get dp2 job id
-            process = self.utils.filesystem.run("cat " + os.path.join(job_dir, "stdout.txt") + " | grep Job | grep sent | head -n 1 | sed 's/^Job \\(.*\\) sent.*$/\\1/'")
-            job_id = process.stdout.decode("utf-8").strip()
+            job_id = None
+            for line in process.stdout.decode("utf-8").split("\n"):
+                # look for: Job {id} sent to the server
+                m = re.match("^Job (.*) sent to the server$", line)
+                if m:
+                    job_id = m.group(1)
+                    break
+            assert job_id, "Could not find the job ID for the validation job"
             
-            # get validation log
-            process = self.utils.filesystem.run([dp2_cli, "log", "--output", result_log, job_id])
+            # get validation log (the run method will log stdout/stderr as debug output)
+            process = self.utils.filesystem.run([dp2_cli, "log", job_id])
             
             # get validation status
-            process = self.utils.filesystem.run(dp2_cli + " status " + job_id + " | grep Status | sed 's/.*Status: //'")
-            result_status = process.stdout.decode("utf-8").strip()
+            process = self.utils.filesystem.run([dp2_cli, "status", job_id])
+            result_status = None
+            for line in process.stdout.decode("utf-8").split("\n"):
+                # look for: Job {id} sent to the server
+                m = re.match("^Status: (.*)$", line)
+                if m:
+                    result_status = m.group(1)
+                    break
+            assert result_status, "Could not find the job status for the validation job"
+            self.utils.report.info("status: " + result_status)
             
             # get validation report
-            process = self.utils.filesystem.run("find " + os.path.join(result_dir, "html-report/") + " -type f | head -n 1")
-            result_report_temp = process.stdout.decode("utf-8").strip()
-            assert result_report_temp, "missing report temporary path"
-            assert result_report, "missing report path"
-            shutil.move(result_report_temp, result_report)
-            
-            with open(os.path.join(job_dir, "status.txt"), "a") as f:
-                f.write("status: "+str(result_status))
-            self.utils.report.info("status: " + result_status)
-            self.utils.report.info("report: " + result_report)
-            self.utils.report.info("log: " + result_log)
-            
-            process = self.utils.filesystem.run([dp2_cli, "delete", job_id])
+            with open(os.path.join(result_dir, "html-report/report.xhtml"), 'r') as result_report:
+                self.utils.report.infoHtml(result_report.readlines())
             
         except subprocess.TimeoutExpired as e:
             self.utils.report.info("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
-            shutil.move(book["source"], invalid_dir)
-            report.email(book_id + ": ERROR")
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
+            self.utils.report.email(book_id + ": ERROR", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
             return
-        
-        self.utils.report.info(Report.fromHtml(result_report))
+            
+        finally:
+            if job_id:
+                try:
+                    process = self.utils.filesystem.run([dp2_cli, "delete", job_id])
+                except subprocess.TimeoutExpired as e:
+                    self.utils.report.warn("Could not delete job with ID " + job_id)
+                    pass
         
         if result_status != "DONE":
             self.utils.report.info("Klarte ikke å validere boken")
-            shutil.move(book["source"], invalid_dir)
-            report.email(book_id + ": ERROR")
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
+            self.utils.report.email(book_id + ": ERROR", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
             return
         
         self.utils.report.info("Boken er valid")
         
-        self.utils.report.info("########## Kopierer til master-arkiv ##########")
+        self.utils.report.info("**Kopierer til master-arkiv**")
         
-        self.utils.filesystem.moveBook(self.valid_out, book_dir, book_id)
-        self.utils.report.info("$BOOK_ID ble lagt til i master-arkivet.")
-        report.email(book_id + ": DONE")
+        self.utils.filesystem.storeBook(self.valid_out, book_dir, book_id)
+        self.utils.filesystem.deleteSource()
+        self.utils.report.info(book_id+" ble lagt til i master-arkivet.")
+        self.utils.report.email(book_id + ": DONE", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
         
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB
