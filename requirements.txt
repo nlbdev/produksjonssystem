@@ -1,1 +1,4 @@
+Markdown==2.6.9
+dotmap==1.2.20
 watchdog==0.8.3
+Pygments==2.2.0

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pipreqs . --force
+
