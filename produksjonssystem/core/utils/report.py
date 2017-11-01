@@ -2,6 +2,15 @@
 
 import tempfile
 import re
+import markdown
+import pygments # for markdown code highlighting
+import os
+import smtplib
+
+from email.message import EmailMessage
+from email.headerregistry import Address
+from email.utils import make_msgid
+
 
 class Report():
     """Logging and reporting"""
@@ -52,15 +61,63 @@ class Report():
     def error(self, message, add_empty_line=True):
         self._add_message('ERROR', message, add_empty_line)
     
-    def email(self, message):
-        # TODO
-        # markdown to html?
-        # def html-to-text(): combine on one line | remove head | remove inline tags | replace all other tags with a newline
-        print("E-mail: "+message)
+    def email(self, subject, recipients=[]):
+        assert subject
+        
+        # 1. join lines with severity INFO/WARN/ERROR
+        markdown_text = []
+        for m in self._messages:
+            if m['severity'] != 'DEBUG':
+                markdown_text.append(m['text'])
+        markdown_text = "\n".join(markdown_text)
+        
+        # 2. parse string as Markdown and render as HTML
+        markdown_html = markdown.markdown(markdown_text, extensions=['fenced_code', 'codehilite'])
+        markdown_html = '''<!DOCTYPE html>
+<html>
+<head>
+<meta charset=\"utf-8\"/>
+<title>"+subject+"</title>
+</head>
+<body>
+''' + markdown_html + '''
+</body>
+</html>
+'''
+        
+        # 3. build e-mail
+        msg = EmailMessage()
+        msg['Subject'] = subject
+        msg['From'] = Address("NLB", "noreply@nlb.no")
+        msg['To'] = tuple(recipients)
+        msg.set_content(markdown_text)
+        msg.add_alternative(markdown_html, subtype="html")
+        
+        # 4. send e-mail
+        with smtplib.SMTP('smtp.gmail.com:587') as s:
+            s.ehlo()
+            s.starttls()
+            s.login(os.environ["GMAIL_USERNAME"], os.environ["GMAIL_PASSWORD"])
+            s.send_message(msg)
+        
+        with open('/tmp/email.md', "w") as f:
+            f.write(markdown_text)
+            print("email markdown: /tmp/email.md")
+        with open('/tmp/email.html', "w") as f:
+            f.write(markdown_html)
+            print("email html: /tmp/email.html")
     
     def slack(self, message):
         print("TODO: send message to Slack")
     
-    def fromHtml(html):
-        # TODO
-        print("Convert from HTML to Markdown: "+html)
+    def infoHtml(self, html):
+        """ wash the HTML before reporting it """
+        
+        if isinstance(html, list):
+            html = "\n".join(html)
+        html = re.sub("^.*<body[^>]*>", "", html, flags=re.DOTALL)
+        html = re.sub("</body.*$", "", html, flags=re.DOTALL)
+        html = re.sub("<script[^>]*(/>|>.*?</script>)", "", html, flags=re.DOTALL)
+        html = "\n".join([line.strip() for line in html.split("\n")])
+        self.info(html)
+    
