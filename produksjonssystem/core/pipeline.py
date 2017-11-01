@@ -132,7 +132,6 @@ class Pipeline(PatternMatchingEventHandler):
             if source_path_relative.parts[0] != dest_path_relative.parts[0]:
                 nicetext += ' book '+dest_path_relative.parts[0]
         nicetext = " ".join(nicetext.split())
-        print("filesystem event: "+nicetext)
         
         book_event = {
             'name':            name,
@@ -163,6 +162,7 @@ class Pipeline(PatternMatchingEventHandler):
                             break
                     if not event_in_queue:
                         item['events'].append(event)
+                        print("filesystem event: "+event['nicetext'])
                     item['last_event'] = int(time.time())
                     break
             if not book_in_queue:
@@ -173,6 +173,7 @@ class Pipeline(PatternMatchingEventHandler):
                      'events': [ event ],
                      'last_event': int(time.time())
                 })
+                print("filesystem event: "+event['nicetext'])
     
     # Private method; DO NOT OVERRIDE
     def on_created(self, event):
