@@ -39,10 +39,32 @@ class Filesystem():
             shutil.rmtree(target)
         self.copy(source, target)
     
-    def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=None, timeout=600, check=True):
+    def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True):
         """Convenience method for subprocess.run, with our own defaults"""
         if not cwd:
             cwd = self.book["base"]
-        print("running: "+(" ".join(args) if isinstance(args, list) else args))
-        return subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
+        
+        self.report.debug("running: "+(" ".join(args) if isinstance(args, list) else args))
+        
+        completedProcess = None
+        try:
+            completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
+            
+            self.report.debug("---- stdout: ----")
+            self.report.debug(completedProcess.stdout.decode("utf-8").strip())
+            self.report.debug("-----------------")
+            self.report.debug("---- stderr: ----")
+            self.report.debug(completedProcess.stderr.decode("utf-8").strip())
+            self.report.debug("-----------------")
+            
+        except subprocess.CalledProcessError as e:
+            self.report.debug("---- stdout: ----")
+            self.report.debug(e.stdout.decode("utf-8").strip())
+            self.report.debug("-----------------")
+            self.report.debug("---- stderr: ----")
+            self.report.debug(e.stderr.decode("utf-8").strip())
+            self.report.debug("-----------------")
+            raise
+        
+        return completedProcess
         
