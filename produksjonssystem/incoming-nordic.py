@@ -143,7 +143,7 @@ class IncomingNordic(Pipeline):
             
             # get validation report
             with open(os.path.join(result_dir, "html-report/report.xhtml"), 'r') as result_report:
-                self.utils.report.infoHtml(result_report.readlines())
+                self.utils.report.attachReport(result_report.readlines(), "report.xhtml", "INFO" if result_status == "DONE" else "ERROR")
             
         except subprocess.TimeoutExpired as e:
             self.utils.report.info("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")

@@ -19,7 +19,7 @@ class Report():
     book = None
     report_dir = None
     _report_dir_object = None # store this in the instance so it's not garbage collected before the instance
-    _messages = []
+    _messages = {}
     
     def __init__(self, book, report_dir=None):
         self.book = book
@@ -29,19 +29,22 @@ class Report():
         else:
             self.report_dir = report_dir
     
-    def _add_message(self, severity, message, add_empty_line):
+    def _add_message(self, severity, message, message_type, add_empty_line):
         lines = None
         if isinstance(message, list):
             lines = message
         else:
             lines = [ message ]
         
+        if message_type not in self._messages:
+            self._messages[message_type] = []
+        
         lines = [l for line in lines for l in line.split("\n")]
         if add_empty_line:
             lines.append("")
         
         for line in lines:
-            self._messages.append({ 'severity': severity, 'text': line })
+            self._messages[message_type].append({ 'severity': severity, 'text': line })
             
             if (self.stdout_verbosity == 'DEBUG' or
                 self.stdout_verbosity == 'INFO' and severity in [ 'INFO', 'WARN', 'ERROR' ] or
@@ -49,26 +52,44 @@ class Report():
                 severity == 'ERROR'):
                 print("["+severity+"] "+line)
     
-    def debug(self, message, add_empty_line=True):
-        self._add_message('DEBUG', message, add_empty_line)
+    def debug(self, message, message_type="message", add_empty_line=True):
+        self._add_message('DEBUG', message, message_type, add_empty_line)
     
-    def info(self, message, add_empty_line=True):
-        self._add_message('INFO', message, add_empty_line)
+    def info(self, message, message_type="message", add_empty_line=True):
+        self._add_message('INFO', message, message_type, add_empty_line)
     
-    def warn(self, message, add_empty_line=True):
-        self._add_message('WARN', message, add_empty_line)
+    def warn(self, message, message_type="message", add_empty_line=True):
+        self._add_message('WARN', message, message_type, add_empty_line)
     
-    def error(self, message, add_empty_line=True):
-        self._add_message('ERROR', message, add_empty_line)
+    def error(self, message, message_type="message", add_empty_line=True):
+        self._add_message('ERROR', message, message_type, add_empty_line)
     
     def email(self, subject, recipients=[]):
         assert subject
+        assert recipients
         
         # 1. join lines with severity INFO/WARN/ERROR
         markdown_text = []
-        for m in self._messages:
-            if m['severity'] != 'DEBUG':
-                markdown_text.append(m['text'])
+        for message_type in [ "message", "report", "log" ]:
+            if markdown_text:
+                markdown_text.append("\n----\n")
+            if message_type == "report":
+                markdown_text.append("\n# Rapporter\n")
+                if message_type in self._messages:
+                    markdown_text.append("\n<ul>")
+            if message_type == "log":
+                markdown_text.append("\n# Logg\n")
+            if message_type in self._messages:
+                for m in self._messages[message_type]:
+                    if message_type == "report": # TODO: icon+color based on severity INFO/WARN/ERROR
+                        unc = "\\\\"+os.getenv("SERVER_NAME", "example")+m["text"].replace("/","\\")
+                        markdown_text.append("<li><a href=\""+unc+"\">"+unc+"</a> <sup><a href=\"file:///"+os.getenv("SERVER_NAME", "example")+m["text"]+"\">🐧</a></sup></li>")
+                    elif m['severity'] != 'DEBUG' or message_type == "log":
+                        markdown_text.append(m['text'])
+            else:
+                markdown_text.append("*(ingen)*")
+            if message_type == "report" and message_type in self._messages:
+                markdown_text.append("</ul>\n")
         markdown_text = "\n".join(markdown_text)
         
         # 2. parse string as Markdown and render as HTML
@@ -89,7 +110,7 @@ class Report():
         msg = EmailMessage()
         msg['Subject'] = subject
         msg['From'] = Address("NLB", "noreply@nlb.no")
-        msg['To'] = tuple(recipients)
+        msg['To'] = recipients if isinstance(recipients, Address) else tuple(recipients)
         msg.set_content(markdown_text)
         msg.add_alternative(markdown_html, subtype="html")
         
@@ -104,13 +125,13 @@ class Report():
             f.write(markdown_text)
             print("email markdown: /tmp/email.md")
         with open('/tmp/email.html', "w") as f:
-            f.write(markdown_html)
+            f.write(markdown_html)  
             print("email html: /tmp/email.html")
     
     def slack(self, message):
         print("TODO: send message to Slack")
     
-    def infoHtml(self, html):
+    def infoHtml(self, html, message_type="message"):
         """ wash the HTML before reporting it """
         
         if isinstance(html, list):
@@ -120,4 +141,14 @@ class Report():
         html = re.sub("<script[^>]*(/>|>.*?</script>)", "", html, flags=re.DOTALL)
         html = "\n".join([line.strip() for line in html.split("\n")])
         self.info(html)
+    
+    def attachReport(self, content, filename, severity):
+        assert filename
+        # TODO
+        if severity == "INFO":
+            self.info(os.path.join("/tmp/TODO", filename), message_type="report")
+        elif severity == "WARN":
+            self.warn(os.path.join("/tmp/TODO", filename), message_type="report")
+        else: # "ERROR"
+            self.error(os.path.join("/tmp/TODO", filename), message_type="report")
     
