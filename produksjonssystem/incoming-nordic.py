@@ -18,12 +18,14 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class IncomingNordic(Pipeline):
-    title = "Automatisk validering av Nordic EPUB 3 ved mottak"
+    title = "Validering av Nordisk EPUB 3"
     
     epub_in = None
     valid_out = None
     invalid_out = None
     report_out = None
+    
+    email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
     def __init__(self, epub_in, valid_out, invalid_out, report_out):
         self.queue = [] # discards pre-existing files
@@ -63,7 +65,7 @@ class IncomingNordic(Pipeline):
         if os.path.isfile(book["source"]) and book["name"].endswith(".epub"):
             book_id = book["name"].replace(".epub","")
             book_dir = os.path.join(workspace_dir, book_id)
-            self.utils.report.info("pakker ut " + book["name"])
+            self.utils.report.info("Pakker ut " + book["name"])
             os.makedirs(book_dir)
             self.utils.epub.unzip(book["source"], book_dir)
             
@@ -76,13 +78,14 @@ class IncomingNordic(Pipeline):
         else:
             self.utils.report.info(book_id + " er hverken en \".epub\"-fil eller en mappe.")
             self.utils.filesystem.storeBook(self.invalid_out, book["source"], book["name"] + uid, move=True)
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
             return
         
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if not os.path.isfile(os.path.join(book_dir, "EPUB/package.opf")):
             self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
             self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
-            self.utils.report.email(book_id + ": ERROR", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
             return
         
         # sørg for at filrettighetene stemmer
@@ -135,7 +138,7 @@ class IncomingNordic(Pipeline):
                 if m:
                     result_status = m.group(1)
                     break
-            assert result_status, "Could not find the job status for the validation job"
+            assert result_status, "Klarte ikke å finne jobb-status for validerings-jobben"
             self.utils.report.info("status: " + result_status)
             
             # get validation report
@@ -145,7 +148,7 @@ class IncomingNordic(Pipeline):
         except subprocess.TimeoutExpired as e:
             self.utils.report.info("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
             self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
-            self.utils.report.email(book_id + ": ERROR", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
             return
             
         finally:
@@ -153,23 +156,21 @@ class IncomingNordic(Pipeline):
                 try:
                     process = self.utils.filesystem.run([dp2_cli, "delete", job_id])
                 except subprocess.TimeoutExpired as e:
-                    self.utils.report.warn("Could not delete job with ID " + job_id)
+                    self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
                     pass
         
         if result_status != "DONE":
             self.utils.report.info("Klarte ikke å validere boken")
             self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
-            self.utils.report.email(book_id + ": ERROR", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
             return
         
-        self.utils.report.info("Boken er valid")
-        
-        self.utils.report.info("**Kopierer til master-arkiv**")
+        self.utils.report.info("Boken er valid. Kopierer til master-arkiv.")
         
         self.utils.filesystem.storeBook(self.valid_out, book_dir, book_id)
         self.utils.filesystem.deleteSource()
         self.utils.report.info(book_id+" ble lagt til i master-arkivet.")
-        self.utils.report.email(book_id + ": DONE", Address("Jostein Austvik Jacobsen", "jostein@nlb.no"))
+        self.utils.report.email(self.title + ": " + book_id + " er valid 👍😄", self.email_recipients)
         
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB
@@ -193,10 +194,10 @@ if __name__ == "__main__":
     invalid_out = os.environ.get("DIR_OUT_INVALID")
     report_out = os.environ.get("DIR_OUT_REPORT")
     
-    assert epub_in != None and len(epub_in) > 0, "The DIR_IN environment variable must be specified and the target must exist."
-    assert valid_out != None and len(valid_out) > 0 and os.path.exists(valid_out), "The DIR_OUT_VALID environment variable must be specified and the target must exist."
-    assert invalid_out != None and len(invalid_out) > 0 and os.path.exists(invalid_out), "The DIR_OUT_INVALID environment variable must be specified and the target must exist."
-    assert report_out != None and len(report_out) > 0 and os.path.exists(report_out), "The DIR_OUT_REPORT environment variable must be specified and the target must exist."
+    assert epub_in != None and len(epub_in) > 0, "Miljøvariabelen DIR_IN må være spesifisert, og må peke på en mappe."
+    assert valid_out != None and len(valid_out) > 0 and os.path.exists(valid_out), "Miljøvariabelen DIR_OUT_VALID må være spesifisert, og må peke på en mappe som finnes."
+    assert invalid_out != None and len(invalid_out) > 0 and os.path.exists(invalid_out), "Miljøvariabelen DIR_OUT_INVALID må være spesifisert, og må peke på en mappe som finnes."
+    assert report_out != None and len(report_out) > 0 and os.path.exists(report_out), "Miljøvariabelen DIR_OUT_REPORT må være spesifisert, og må peke på en mappe som finnes."
     
     pipeline = IncomingNordic(epub_in, valid_out, invalid_out, report_out)
     
