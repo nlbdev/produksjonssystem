@@ -75,4 +75,21 @@ class Filesystem():
             raise
         
         return completedProcess
+    
+    @staticmethod
+    def ismount(path):
+        path = os.path.normpath(path)
         
+        with open('/proc/mounts','r') as f:
+            for line in f.readlines():
+                l = line.split()
+                if l[0].startswith("/") and l[1] == path:
+                    return True
+        
+        x_dir = os.getenv("XDG_RUNTIME_DIR")
+        if x_dir:
+            for mount in [os.path.join(x_dir, m) for m in os.listdir(os.path.join(x_dir, "gvfs"))]:
+                if mount == path:
+                    return True
+        
+        return False

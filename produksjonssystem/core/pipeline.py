@@ -74,6 +74,12 @@ class Pipeline(PatternMatchingEventHandler):
     
     def start(self, inactivity_timeout=10):
         print("Pipeline starting...")
+        if Filesystem.ismount(self._base):
+            print(self._base + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+            return
+        if not os.path.isdir(self._base):
+            print(self._base + " is not available. Will not start watching.")
+            return
         self._inactivity_timeout = inactivity_timeout
         self._observer = Observer()
         self._observer.schedule(self, path=self._base, recursive=True)
@@ -88,9 +94,14 @@ class Pipeline(PatternMatchingEventHandler):
         if self._bookHandlerThread:
             self._bookHandlerThreadShouldRun = False
         if self._observer:
-            self._observer.stop()
-            self._observer.join()
-            self._observer = None
+            try:
+                self._observer.stop()
+                self._observer.join()
+            except Exception:
+                pass
+            finally:
+                self._observer = None
+        self._queue = []
         print("Pipeline stopped")
     
     def run(self, inactivity_timeout=10):
@@ -100,7 +111,20 @@ class Pipeline(PatternMatchingEventHandler):
         self.start(inactivity_timeout)
         try:
             while True:
+                if not os.path.isdir(self._base):
+                    if self._bookHandlerThreadShouldRun:
+                        print(self._base + " is not available. Stop watching...")
+                        self.stop()
+                        
+                    else:
+                        print(self._base + " is still not available...")
+                        
+                if not self._bookHandlerThreadShouldRun and os.path.isdir(self._base):
+                    print(self._base + " is available again. Start watching...")
+                    self.start(self._inactivity_timeout)
+                
                 time.sleep(1)
+                
         except KeyboardInterrupt:
             pass
         self.stop()
@@ -193,6 +217,12 @@ class Pipeline(PatternMatchingEventHandler):
     
     def _handle_book_events_thread(self):
         while self._bookHandlerThreadShouldRun:
+            if not os.path.isdir(self._base):
+                # when base dir is not available we should stop watching the directory,
+                # this just catches a potential race condition
+                time.sleep(1)
+                continue
+            
             try:
                 book = None
                 
@@ -255,12 +285,14 @@ class Pipeline(PatternMatchingEventHandler):
                         else:
                             self.on_book_modified(book)
                         
-                    except Exception as e:
+                    except Exception:
                         traceback.print_exc()
                 
-                time.sleep(1)
-            except:
+            except Exception:
                 print("Unexpected error:", sys.exc_info()[0])
+                
+            finally:
+                time.sleep(1)
     
     def on_book_created(self, book):
         print("Book created (unhandled book event): "+book['name'])
@@ -278,10 +310,4 @@ class Pipeline(PatternMatchingEventHandler):
 if __name__ == '__main__':
     args = sys.argv[1:]
     pipeline = Pipeline(args[0])
-    pipeline.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-    pipeline.stop()
+    pipeline.run()

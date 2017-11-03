@@ -193,7 +193,7 @@ if __name__ == "__main__":
     invalid_out = os.environ.get("DIR_OUT_INVALID")
     report_out = os.environ.get("DIR_OUT_REPORT")
     
-    assert epub_in != None and len(epub_in) > 0 and os.path.exists(epub_in), "The DIR_IN environment variable must be specified and the target must exist."
+    assert epub_in != None and len(epub_in) > 0, "The DIR_IN environment variable must be specified and the target must exist."
     assert valid_out != None and len(valid_out) > 0 and os.path.exists(valid_out), "The DIR_OUT_VALID environment variable must be specified and the target must exist."
     assert invalid_out != None and len(invalid_out) > 0 and os.path.exists(invalid_out), "The DIR_OUT_INVALID environment variable must be specified and the target must exist."
     assert report_out != None and len(report_out) > 0 and os.path.exists(report_out), "The DIR_OUT_REPORT environment variable must be specified and the target must exist."
