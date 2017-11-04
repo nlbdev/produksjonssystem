@@ -3,6 +3,8 @@
 import os
 import shutil
 import subprocess
+import socket
+import re
 
 class Filesystem():
     """Operations on files and directories"""
@@ -86,21 +88,56 @@ class Filesystem():
     
     @staticmethod
     def ismount(path):
+        return True if Filesystem.getdevice(path) else False
+    
+    @staticmethod
+    def getdevice(path):
         path = os.path.normpath(path)
         
         with open('/proc/mounts','r') as f:
             for line in f.readlines():
                 l = line.split()
                 if l[0].startswith("/") and l[1] == path:
-                    return True
+                    #l[0] = "//x.x.x.x/sharename/optionalsubpath"
+                    #l[1] = "/mount/point"
+                    return re.sub("^//", "smb://", l[0])
         
         x_dir = os.getenv("XDG_RUNTIME_DIR")
         if x_dir:
             for mount in [os.path.join(x_dir, m) for m in os.listdir(os.path.join(x_dir, "gvfs"))]:
                 if mount == path:
-                    return True
+                    # path == "$XDG_RUNTIME_DIR/gvfs/smb-share:server=x.x.x.x,share=sharename"
+                    return re.sub(",share=", "/", re.sub("^smb-share:server=", "smb://", os.path.basename(path)))
         
-        return False
+        return None
+    
+    @staticmethod
+    def networkpath(path):
+        path = os.path.normpath(path)
+        if path == ".":
+            path = ""
+        
+        levels = path.split(os.path.sep)
+        possible_mount_points = ["/".join(levels[:i+1]) for i in range(len(levels))][1:]
+        possible_mount_points.reverse()
+        
+        smb = None
+        for possible_mount_point in possible_mount_points:
+            smb = Filesystem.getdevice(possible_mount_point)
+            if smb:
+                smb = smb + path[len(possible_mount_point):]
+                break
+        
+        if not smb:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            localhost = s.getsockname()[0]
+            s.close()
+            smb = "smb://" + localhost + path
+        
+        file = re.sub("^smb:", "file:", smb)
+        unc = re.sub("/", r"\\", re.sub("^smb:", "", smb))
+        return smb, file, unc
     
     # in case you want to override something
     def translate(self, english_text, translated_text):
