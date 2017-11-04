@@ -19,6 +19,11 @@ class Report():
     book = None
     _messages = {}
     
+    _i18n = {
+        "Links": "Lenker",
+        "none": "ingen"
+    }
+    
     def __init__(self, book):
         self.book = book
     
@@ -148,4 +153,8 @@ class Report():
             self.warn(os.path.join("/tmp/TODO", filename), message_type="report")
         else: # "ERROR"
             self.error(os.path.join("/tmp/TODO", filename), message_type="report")
+    
+    # in case you want to override something
+    def translate(self, english_text, translated_text):
+        self._i18n[english_text] = translated_text
     

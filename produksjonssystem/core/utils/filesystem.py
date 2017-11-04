@@ -10,6 +10,14 @@ class Filesystem():
     book = None
     report = None
     
+    _i18n = {
+        "Storing": "Lagrer",
+        "in": "i",
+        "exists in": "finnes i",
+        "already; existing copy will be deleted": "fra før; eksisterende kopi blir slettet",
+        "Running": "Kjører"
+    }
+    
     def __init__(self, book, report):
         self.book = book
         self.report = report
@@ -26,7 +34,7 @@ class Filesystem():
     
     def storeBook(self, archive_dir, source, book_id, move=False):
         """Store `book_id` from `source` into `archive_dir`"""
-        self.report.info("Storing " + book_id + " in " + archive_dir + "...")
+        self.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + archive_dir + "...")
         assert book_id
         assert book_id.strip()
         assert book_id != "."
@@ -34,7 +42,7 @@ class Filesystem():
         assert not "/" in book_id
         target = os.path.join(archive_dir, book_id)
         if os.path.exists(target):
-            self.report.warn(book_id + " finnes i " + archive_dir + " fra før; eksisterende kopi blir slettet")
+            self.report.warn(book_id + " " + self._i18n["exists in"] + " " + archive_dir + " " + self._i18n["already; existing copy will be deleted"])
             shutil.rmtree(target)
         if move:
             shutil.move(source, target)
@@ -52,7 +60,7 @@ class Filesystem():
         if not cwd:
             cwd = self.book["base"]
         
-        self.report.debug("running: "+(" ".join(args) if isinstance(args, list) else args))
+        self.report.debug(self._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
         
         completedProcess = None
         try:
@@ -93,3 +101,8 @@ class Filesystem():
                     return True
         
         return False
+    
+    # in case you want to override something
+    def translate(self, english_text, translated_text):
+        self._i18n[english_text] = translated_text
+    
