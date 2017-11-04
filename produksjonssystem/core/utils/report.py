@@ -40,7 +40,8 @@ class Report():
             self._messages[message_type].append({ 'severity': severity, 'text': line })
             
             if (self.stdout_verbosity == 'DEBUG' or
-                self.stdout_verbosity == 'INFO' and severity in [ 'INFO', 'WARN', 'ERROR' ] or
+                self.stdout_verbosity == 'INFO' and severity in [ 'INFO', 'SUCCESS', 'WARN', 'ERROR' ] or
+                self.stdout_verbosity == 'SUCCESS' and severity in [ 'SUCCESS', 'WARN', 'ERROR' ] or
                 self.stdout_verbosity == 'WARN' and severity in [ 'WARN', 'ERROR' ] or
                 severity == 'ERROR'):
                 print("["+severity+"] "+line)
@@ -50,6 +51,9 @@ class Report():
     
     def info(self, message, message_type="message", add_empty_line=True):
         self._add_message('INFO', message, message_type, add_empty_line)
+    
+    def success(self, message, message_type="message", add_empty_line=True):
+        self._add_message('SUCCESS', message, message_type, add_empty_line)
     
     def warn(self, message, message_type="message", add_empty_line=True):
         self._add_message('WARN', message, message_type, add_empty_line)
