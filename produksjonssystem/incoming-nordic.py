@@ -56,10 +56,14 @@ class IncomingNordic(Pipeline):
         pass # do nothing
     
     def on_book_modified(self, book):
-        self.on_book_created(book)
+        self.utils.report.info("Endret bok i mappa: "+book['name'])
+        self.on_book(book)
     
     def on_book_created(self, book):
-        print("Book created: "+book['name'])
+        self.utils.report.info("Ny bok i mappa: "+book['name'])
+        self.on_book(book)
+    
+    def on_book(self, book):
         if self.first_job:
             try:
                 # start engine if it's not started already
