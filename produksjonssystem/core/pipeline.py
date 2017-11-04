@@ -53,7 +53,9 @@ class Pipeline(PatternMatchingEventHandler):
     _observer = None
     _base = None
     _bookHandlerThread = None
-    _bookHandlerThreadShouldRun = False
+    _shouldHandleBooks = False
+    _shouldRun = True
+    _stopAfterFirstJob = False
     
     # dynamic (reset on stop(), changes over time)
     _queue = []
@@ -67,9 +69,10 @@ class Pipeline(PatternMatchingEventHandler):
     # should be overridden when extending this class
     title = None
     
-    def __init__(self, base):
+    def __init__(self, base, stop_after_first_job=False):
         self._queue = [] # discards pre-existing files
         self._base = str(os.path.normpath(base)) + '/'
+        self._stopAfterFirstJob = stop_after_first_job
         super().__init__()
     
     def start(self, inactivity_timeout=10):
@@ -84,7 +87,7 @@ class Pipeline(PatternMatchingEventHandler):
         self._observer = Observer()
         self._observer.schedule(self, path=self._base, recursive=True)
         self._observer.start()
-        self._bookHandlerThreadShouldRun = True
+        self._shouldHandleBooks = True
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread)
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
@@ -92,7 +95,7 @@ class Pipeline(PatternMatchingEventHandler):
     
     def stop(self):
         if self._bookHandlerThread:
-            self._bookHandlerThreadShouldRun = False
+            self._shouldHandleBooks = False
         if self._observer:
             try:
                 self._observer.stop()
@@ -110,16 +113,16 @@ class Pipeline(PatternMatchingEventHandler):
         """
         self.start(inactivity_timeout)
         try:
-            while True:
+            while self._shouldRun:
                 if not os.path.isdir(self._base):
-                    if self._bookHandlerThreadShouldRun:
+                    if self._shouldHandleBooks:
                         print(self._base + " is not available. Stop watching...")
                         self.stop()
                         
                     else:
                         print(self._base + " is still not available...")
                         
-                if not self._bookHandlerThreadShouldRun and os.path.isdir(self._base):
+                if not self._shouldHandleBooks and os.path.isdir(self._base):
                     print(self._base + " is available again. Start watching...")
                     self.start(self._inactivity_timeout)
                 
@@ -216,7 +219,7 @@ class Pipeline(PatternMatchingEventHandler):
         self._process(event)
     
     def _handle_book_events_thread(self):
-        while self._bookHandlerThreadShouldRun:
+        while self._shouldHandleBooks and self._shouldRun:
             if not os.path.isdir(self._base):
                 # when base dir is not available we should stop watching the directory,
                 # this just catches a potential race condition
@@ -287,6 +290,10 @@ class Pipeline(PatternMatchingEventHandler):
                         
                     except Exception:
                         traceback.print_exc()
+                    
+                    finally:
+                        if self._stopAfterFirstJob:
+                            self._shouldRun = False
                 
             except Exception:
                 print("Unexpected error:", sys.exc_info()[0])
