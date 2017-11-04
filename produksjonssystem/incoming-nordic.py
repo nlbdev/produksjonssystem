@@ -27,13 +27,13 @@ class IncomingNordic(Pipeline):
     
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
-    def __init__(self, epub_in, valid_out, invalid_out, report_out):
+    def __init__(self, epub_in, valid_out, invalid_out, report_out, stop_after_first_job=False):
         self.queue = [] # discards pre-existing files
         self.epub_in = epub_in
         self.valid_out = valid_out
         self.invalid_out = invalid_out
         self.utils.report_out = report_out
-        super().__init__(epub_in)
+        super().__init__(epub_in, stop_after_first_job=stop_after_first_job)
     
     def on_book_moved(self, book):
         pass # do nothing
@@ -199,6 +199,10 @@ if __name__ == "__main__":
     assert invalid_out != None and len(invalid_out) > 0 and os.path.exists(invalid_out), "Miljøvariabelen DIR_OUT_INVALID må være spesifisert, og må peke på en mappe som finnes."
     assert report_out != None and len(report_out) > 0 and os.path.exists(report_out), "Miljøvariabelen DIR_OUT_REPORT må være spesifisert, og må peke på en mappe som finnes."
     
-    pipeline = IncomingNordic(epub_in, valid_out, invalid_out, report_out)
+    stop_after_first_job = False
+    if os.environ.get("STOP_AFTER_FIRST_JOB"):
+        stop_after_first_job = True
+    
+    pipeline = IncomingNordic(epub_in, valid_out, invalid_out, report_out, stop_after_first_job=stop_after_first_job)
     
     pipeline.run(1)
