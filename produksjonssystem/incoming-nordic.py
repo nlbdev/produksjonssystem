@@ -60,7 +60,11 @@ class IncomingNordic(Pipeline):
         saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
         
         # Unik identifikator for denne jobben
-        uid = datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
+        uid = book["name"] + "-" + datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
+        
+        # Bruk unik identifikator for rapport-mappen
+        report_dir = os.path.join(self.report_out, uid)
+        os.makedirs(report_dir)
         
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
@@ -89,7 +93,8 @@ class IncomingNordic(Pipeline):
             self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
                                     self.email_sender,
                                     self.email_recipients,
-                                    self.email_smtp)
+                                    self.email_smtp,
+                                    os.path.join(report_dir, "log.txt"))
             return
         
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
@@ -99,7 +104,8 @@ class IncomingNordic(Pipeline):
             self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
                                     self.email_sender,
                                     self.email_recipients,
-                                    self.email_smtp)
+                                    self.email_smtp,
+                                    os.path.join(report_dir, "log.txt"))
             return
         
         # sørg for at filrettighetene stemmer
@@ -165,7 +171,8 @@ class IncomingNordic(Pipeline):
             self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
                                     self.email_sender,
                                     self.email_recipients,
-                                    self.email_smtp)
+                                    self.email_smtp,
+                                    os.path.join(report_dir, "log.txt"))
             return
             
         finally:
@@ -182,7 +189,8 @@ class IncomingNordic(Pipeline):
             self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
                                     self.email_sender,
                                     self.email_recipients,
-                                    self.email_smtp)
+                                    self.email_smtp,
+                                    os.path.join(report_dir, "log.txt"))
             return
         
         self.utils.report.info("Boken er valid. Kopierer til master-arkiv.")
@@ -193,7 +201,8 @@ class IncomingNordic(Pipeline):
         self.utils.report.email(self.title + ": " + book_id + " er valid 👍😄",
                                 self.email_sender,
                                 self.email_recipients,
-                                self.email_smtp)
+                                self.email_smtp,
+                                os.path.join(report_dir, "log.txt"))
         
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB

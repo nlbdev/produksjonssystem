@@ -11,6 +11,7 @@ from email.message import EmailMessage
 from email.headerregistry import Address
 from email.utils import make_msgid
 
+from core.utils.filesystem import Filesystem
 
 class Report():
     """Logging and reporting"""
@@ -72,28 +73,65 @@ class Report():
         assert recipients
         assert smtp
         
-        # 1. join lines with severity INFO/WARN/ERROR
+        # 0. Create attachment with complete log (including DEBUG statements)
+        self.attachment([m["text"] for m in self._messages["message"]], logpath, "DEBUG")
+        
+        # Determine overall status
+        status = "INFO"
+        for message_type in self._messages:
+            for m in self._messages[message_type]:
+
+                if m["severity"] == "SUCCESS" and status in [ "INFO" ]:
+                    status = "SUCCESS"
+                elif m["severity"] == "WARN" and status in [ "INFO", "SUCCESS" ]:
+                    status = "WARN"
+                elif m["severity"] == "ERROR":
+                    status = "ERROR"
+        
+        
+        # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
         markdown_text = []
-        for message_type in [ "message", "report", "log" ]:
-            if markdown_text:
-                markdown_text.append("\n----\n")
-            if message_type == "report":
-                markdown_text.append("\n# Rapporter\n")
-                if message_type in self._messages:
-                    markdown_text.append("\n<ul>")
-            if message_type == "log":
-                markdown_text.append("\n# Logg\n")
-            if message_type in self._messages:
-                for m in self._messages[message_type]:
-                    if message_type == "report": # TODO: icon+color based on severity INFO/WARN/ERROR
-                        unc = "\\\\"+os.getenv("SERVER_NAME", "example")+m["text"].replace("/","\\")
-                        markdown_text.append("<li><a href=\""+unc+"\">"+unc+"</a> <sup><a href=\"file:///"+os.getenv("SERVER_NAME", "example")+m["text"]+"\">🐧</a></sup></li>")
-                    elif m['severity'] != 'DEBUG' or message_type == "log":
-                        markdown_text.append(m['text'])
-            else:
-                markdown_text.append("*(ingen)*")
-            if message_type == "report" and message_type in self._messages:
-                markdown_text.append("</ul>\n")
+        for m in self._messages["message"]:
+            if m['severity'] != 'DEBUG':
+                markdown_text.append(m['text'])
+        markdown_text.append("\n----\n")
+        markdown_text.append("\n# "+self._i18n["Links"]+"\n")
+        markdown_text.append("\n<ul style=\"list-style: none;\">")
+        
+        # Pick icon and style for INFO-attachments
+        attachment_styles = {
+            "DEBUG": {
+                "icon": "🗎",
+                "style": ""
+            },
+            "INFO": {
+                "icon": "🛈",
+                "style": ""
+            },
+            "SUCCESS": {
+                "icon": "😄",
+                "style": "background-color: #bfffbf;"
+            },
+            "WARN": {
+                "icon": "😟",
+                "style": "background-color: #ffffbf;"
+            },
+            "ERROR": {
+                "icon": "😭",
+                "style": "background-color: #ffbfbf;"
+            }
+        }
+            
+        for m in self._messages["attachment"]:
+            smb, file, unc = Filesystem.networkpath(m["text"])
+            li = "<li>"
+            li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[m["severity"]]["icon"] + "</span> "
+            li += "<span style=\"vertical-align: middle; " + attachment_styles[m["severity"]]["style"] + "\">"
+            li += "<a href=\"" + file + "\">" + os.path.basename(file) + "</a> <sup><a href=\"" + smb + "\">🐧</a></sup>"
+            li += "</span>"
+            li += "</li>"
+            markdown_text.append(li)
+        markdown_text.append("</ul>\n")
         markdown_text = "\n".join(markdown_text)
         
         # 2. parse string as Markdown and render as HTML
