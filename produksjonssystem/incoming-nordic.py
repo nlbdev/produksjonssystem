@@ -178,7 +178,7 @@ class IncomingNordic(Pipeline):
                     result_status = m.group(1)
                     break
             assert result_status, "Klarte ikke å finne jobb-status for validerings-jobben"
-            self.utils.report.info("status: " + result_status)
+            self.utils.report.debug("Pipeline 2 status: " + result_status)
             
             # get validation report
             with open(os.path.join(result_dir, "html-report/report.xhtml"), 'r') as result_report:
