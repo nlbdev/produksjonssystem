@@ -34,6 +34,8 @@ class IncomingNordic(Pipeline):
     email_sender = Address("NLB", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
+    
+    first_job = True # Will be set to false after first job is triggered
     def __init__(self, epub_in, valid_out, invalid_out, report_out, stop_after_first_job=False):
         self.queue = [] # discards pre-existing files
         self.epub_in = epub_in
@@ -58,6 +60,19 @@ class IncomingNordic(Pipeline):
         dp2_home = "/opt/daisy-pipeline2"
         dp2_cli = dp2_home + "/cli/dp2"
         saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
+        if self.first_job:
+            try:
+                # start engine if it's not started already
+                process = self.utils.filesystem.run([self.dp2_cli, "help"], shell=True)
+                
+            except subprocess.TimeoutExpired as e:
+                self.utils.report.info("Oppstart av Pipeline 2 tok for lang tid og ble derfor stoppet.")
+                
+            except subprocess.CalledProcessError as e:
+                self.utils.report.debug("En feil oppstod når Pipeline 2 startet. Vi venter noen sekunder og håper det går bra alikevel...")
+                time.sleep(5)
+            
+            self.first_job = False
         
         # Unik identifikator for denne jobben
         uid = book["name"] + "-" + datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
