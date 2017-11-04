@@ -32,7 +32,8 @@ class IncomingNordic(Pipeline):
         self.epub_in = epub_in
         self.valid_out = valid_out
         self.invalid_out = invalid_out
-        self.utils.report_out = report_out
+        self.report_out = report_out
+        
         super().__init__(epub_in, stop_after_first_job=stop_after_first_job)
     
     def on_book_moved(self, book):

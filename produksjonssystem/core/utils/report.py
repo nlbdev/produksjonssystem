@@ -17,17 +17,10 @@ class Report():
     
     stdout_verbosity = 'INFO'
     book = None
-    report_dir = None
-    _report_dir_object = None # store this in the instance so it's not garbage collected before the instance
     _messages = {}
     
-    def __init__(self, book, report_dir=None):
+    def __init__(self, book):
         self.book = book
-        if not report_dir:
-            self._report_dir_object = tempfile.TemporaryDirectory()
-            self.report_dir = self._report_dir_object.name
-        else:
-            self.report_dir = report_dir
     
     def _add_message(self, severity, message, message_type, add_empty_line):
         lines = None
