@@ -146,15 +146,22 @@ class Report():
         html = "\n".join([line.strip() for line in html.split("\n")])
         self.info(html)
     
-    def attachReport(self, content, filename, severity):
-        assert filename
-        # TODO
+    def attachment(self, content, path, severity):
+        assert path and os.path.isabs(path), "Links must have an absolute path."
+        assert not content or isinstance(content, list) or isinstance(content, str), "Attachment content must be a string or list when given."
+        if content:
+            if isinstance(content, list):
+                content = "\n".join(content)
+            with open(path, "x") as f:
+                f.write(content)
         if severity == "INFO":
-            self.info(os.path.join("/tmp/TODO", filename), message_type="report")
+            self.info(path, message_type="attachment", add_empty_line=False)
+        elif severity == "SUCCESS":
+            self.success(path, message_type="attachment", add_empty_line=False)
         elif severity == "WARN":
-            self.warn(os.path.join("/tmp/TODO", filename), message_type="report")
+            self.warn(path, message_type="attachment", add_empty_line=False)
         else: # "ERROR"
-            self.error(os.path.join("/tmp/TODO", filename), message_type="report")
+            self.error(path, message_type="attachment", add_empty_line=False)
     
     # in case you want to override something
     def translate(self, english_text, translated_text):
