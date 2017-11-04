@@ -34,8 +34,12 @@ class IncomingNordic(Pipeline):
     email_sender = Address("NLB", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
+    dp2_home = "/home/jostein/Skrivebord/daisy-pipeline" # "/opt/daisy-pipeline2"
+    dp2_cli = dp2_home + "/cli/dp2"
+    saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
     
     first_job = True # Will be set to false after first job is triggered
+    
     def __init__(self, epub_in, valid_out, invalid_out, report_out, stop_after_first_job=False):
         self.queue = [] # discards pre-existing files
         self.epub_in = epub_in
@@ -56,10 +60,6 @@ class IncomingNordic(Pipeline):
     
     def on_book_created(self, book):
         print("Book created: "+book['name'])
-        
-        dp2_home = "/opt/daisy-pipeline2"
-        dp2_cli = dp2_home + "/cli/dp2"
-        saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
         if self.first_job:
             try:
                 # start engine if it's not started already
@@ -149,7 +149,7 @@ class IncomingNordic(Pipeline):
         
         try:
             # run validator
-            process = self.utils.filesystem.run([dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"])
+            process = self.utils.filesystem.run([self.dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"])
             
             # get dp2 job id
             job_id = None
@@ -162,10 +162,10 @@ class IncomingNordic(Pipeline):
             assert job_id, "Could not find the job ID for the validation job"
             
             # get validation log (the run method will log stdout/stderr as debug output)
-            process = self.utils.filesystem.run([dp2_cli, "log", job_id])
+            process = self.utils.filesystem.run([self.dp2_cli, "log", job_id])
             
             # get validation status
-            process = self.utils.filesystem.run([dp2_cli, "status", job_id])
+            process = self.utils.filesystem.run([self.dp2_cli, "status", job_id])
             result_status = None
             for line in process.stdout.decode("utf-8").split("\n"):
                 # look for: Job {id} sent to the server
@@ -193,7 +193,7 @@ class IncomingNordic(Pipeline):
         finally:
             if job_id:
                 try:
-                    process = self.utils.filesystem.run([dp2_cli, "delete", job_id])
+                    process = self.utils.filesystem.run([self.dp2_cli, "delete", job_id])
                 except subprocess.TimeoutExpired as e:
                     self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
                     pass
