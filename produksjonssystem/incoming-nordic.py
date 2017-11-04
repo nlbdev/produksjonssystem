@@ -25,6 +25,13 @@ class IncomingNordic(Pipeline):
     invalid_out = None
     report_out = None
     
+    email_smtp = {
+        "host": "smtp.gmail.com",
+        "port": "587",
+        "user": os.environ["GMAIL_USERNAME"],
+        "pass": os.environ["GMAIL_PASSWORD"]
+    }
+    email_sender = Address("NLB", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
     def __init__(self, epub_in, valid_out, invalid_out, report_out, stop_after_first_job=False):
@@ -78,15 +85,21 @@ class IncomingNordic(Pipeline):
         # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt
         else:
             self.utils.report.info(book_id + " er hverken en \".epub\"-fil eller en mappe.")
-            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book["name"] + uid, move=True)
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], uid, move=True)
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
+                                    self.email_sender,
+                                    self.email_recipients,
+                                    self.email_smtp)
             return
         
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if not os.path.isfile(os.path.join(book_dir, "EPUB/package.opf")):
             self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
-            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], uid, move=True)
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
+                                    self.email_sender,
+                                    self.email_recipients,
+                                    self.email_smtp)
             return
         
         # sørg for at filrettighetene stemmer
@@ -148,8 +161,11 @@ class IncomingNordic(Pipeline):
             
         except subprocess.TimeoutExpired as e:
             self.utils.report.info("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
-            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], uid, move=True)
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
+                                    self.email_sender,
+                                    self.email_recipients,
+                                    self.email_smtp)
             return
             
         finally:
@@ -162,8 +178,11 @@ class IncomingNordic(Pipeline):
         
         if result_status != "DONE":
             self.utils.report.info("Klarte ikke å validere boken")
-            self.utils.filesystem.storeBook(self.invalid_out, book["source"], book_id + "-" + uid, move=True)
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎", self.email_recipients)
+            self.utils.filesystem.storeBook(self.invalid_out, book["source"], uid, move=True)
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
+                                    self.email_sender,
+                                    self.email_recipients,
+                                    self.email_smtp)
             return
         
         self.utils.report.info("Boken er valid. Kopierer til master-arkiv.")
@@ -171,7 +190,10 @@ class IncomingNordic(Pipeline):
         self.utils.filesystem.storeBook(self.valid_out, book_dir, book_id)
         self.utils.filesystem.deleteSource()
         self.utils.report.info(book_id+" ble lagt til i master-arkivet.")
-        self.utils.report.email(self.title + ": " + book_id + " er valid 👍😄", self.email_recipients)
+        self.utils.report.email(self.title + ": " + book_id + " er valid 👍😄",
+                                self.email_sender,
+                                self.email_recipients,
+                                self.email_smtp)
         
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB

@@ -66,9 +66,11 @@ class Report():
     def error(self, message, message_type="message", add_empty_line=True):
         self._add_message('ERROR', message, message_type, add_empty_line)
     
-    def email(self, subject, recipients=[]):
+    def email(self, subject, sender, recipients, smtp, logpath):
         assert subject
+        assert sender
         assert recipients
+        assert smtp
         
         # 1. join lines with severity INFO/WARN/ERROR
         markdown_text = []
@@ -111,16 +113,16 @@ class Report():
         # 3. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
-        msg['From'] = Address("NLB", "noreply@nlb.no")
+        msg['From'] = sender
         msg['To'] = recipients if isinstance(recipients, Address) else tuple(recipients)
         msg.set_content(markdown_text)
         msg.add_alternative(markdown_html, subtype="html")
         
         # 4. send e-mail
-        with smtplib.SMTP('smtp.gmail.com:587') as s:
+        with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
             s.ehlo()
             s.starttls()
-            s.login(os.environ["GMAIL_USERNAME"], os.environ["GMAIL_PASSWORD"])
+            s.login(smtp["user"], smtp["pass"])
             s.send_message(msg)
         
         with open('/tmp/email.md', "w") as f:
