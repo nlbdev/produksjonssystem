@@ -36,10 +36,12 @@ class EpubToDtbook(Pipeline):
     first_job = True # Will be set to false after first job is triggered
     
     def on_book_moved(self):
-        pass # do nothing
+        self.utils.report.info("Flyttet bok i mappa: " + self.book['name'])
+        self.on_book()
     
     def on_book_deleted(self):
-        pass # do nothing
+        self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
+        self.on_book()
     
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
