@@ -152,7 +152,7 @@ class IncomingNordic(Pipeline):
         result_status = None
         
         try:
-            # run validator
+            self.utils.report.info("Validerer EPUB...")
             process = self.utils.filesystem.run([self.dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"])
             
             # get dp2 job id
@@ -212,7 +212,7 @@ class IncomingNordic(Pipeline):
                                     os.path.join(report_dir, "log.txt"))
             return
         
-        self.utils.report.info("Boken er valid. Kopierer til master-arkiv.")
+        self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(self.valid_out, book_dir, book_id)
         self.utils.report.attachment(None, archived_path, "DEBUG")
