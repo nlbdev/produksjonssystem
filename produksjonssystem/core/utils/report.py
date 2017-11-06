@@ -21,7 +21,7 @@ class Report():
     stdout_verbosity = 'INFO'
     pipeline = None
     _report_dir = None
-    _messages = {}
+    _messages = None
     
     _i18n = {
         "Links": "Lenker",
@@ -29,6 +29,7 @@ class Report():
     }
     
     def __init__(self, pipeline):
+        self._messages = {}
         self.pipeline = pipeline
     
     def reportDir(self):

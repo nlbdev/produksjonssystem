@@ -65,18 +65,20 @@ class Pipeline(PatternMatchingEventHandler):
     _stopAfterFirstJob = False
     
     # dynamic (reset on stop(), changes over time)
-    _queue = []
+    _queue = None
     
     # utility classes; reconfigured every time a book is processed to simplify function signatures
-    utils = DotMap()
-    utils.report = None
-    utils.epub = None
-    utils.filesystem = None
+    utils = None
     
     # should be overridden when extending this class
     title = None
     
     def __init__(self):
+        self.utils = DotMap()
+        self.utils.report = None
+        self.utils.epub = None
+        self.utils.filesystem = None
+        self._queue = []
         super().__init__()
     
     def start(self, inactivity_timeout=10):
