@@ -157,7 +157,7 @@ class Report():
             li = "<li>"
             li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[m["severity"]]["icon"] + "</span> "
             li += "<span style=\"vertical-align: middle; " + attachment_styles[m["severity"]]["style"] + "\">"
-            li += "<a href=\"" + unc + "\">" + os.path.basename(file) + ("/" if os.path.isdir(["text"]) else "") + "</a></sup>"
+            li += "<a href=\"" + unc + "\">" + os.path.basename(file) + ("/" if os.path.isdir(m["text"]) else "") + "</a></sup>"
             li += "</span>"
             li += "</li>"
             markdown_text.append(li)
