@@ -10,12 +10,12 @@ rm $TEMPDIR
 mkdir $TEMPDIR
 
 export DIR_IN="$TEMPDIR/in"
-export DIR_OUT_VALID="$TEMPDIR/out-valid"
-export DIR_OUT_INVALID="$TEMPDIR/out-invalid"
-export DIR_OUT_REPORT="$TEMPDIR/out-report"
-mkdir -p "$DIR_IN" "$DIR_OUT_VALID" "$DIR_OUT_INVALID" "$DIR_OUT_REPORT"
+export DIR_OUT="$TEMPDIR/out"
+export DIR_REPORTS="$TEMPDIR/reports"
+mkdir -p "$DIR_IN" "$DIR_OUT" "$DIR_REPORTS"
 
-trap 'kill $(jobs -p)' EXIT
+trap 'kill $(jobs -p) >/dev/null 2>/dev/null' EXIT
+
 
 function copy_test_book() {
     sleep 3
@@ -32,4 +32,3 @@ for job in `jobs -p` ; do
 done
 
 rm "$TEMPDIR" -rf
-
