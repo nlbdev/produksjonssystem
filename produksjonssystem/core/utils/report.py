@@ -199,7 +199,9 @@ class Report():
                 content = "\n".join(content)
             with open(path, "x") as f:
                 f.write(content)
-        if severity == "INFO":
+        if severity == "DEBUG":
+            self.info(path, message_type="attachment", add_empty_line=False)
+        elif severity == "INFO":
             self.info(path, message_type="attachment", add_empty_line=False)
         elif severity == "SUCCESS":
             self.success(path, message_type="attachment", add_empty_line=False)
