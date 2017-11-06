@@ -48,10 +48,17 @@ class Pipeline(PatternMatchingEventHandler):
     
     _lock = RLock()
     
+    # The current book
+    book = None
+    
+    # Directories
+    dir_in = None
+    dir_out = None
+    dir_reports = None
+    
     # constants (set during instantiation)
     _inactivity_timeout = 10
     _observer = None
-    _base = None
     _bookHandlerThread = None
     _shouldHandleBooks = False
     _shouldRun = True
@@ -69,29 +76,45 @@ class Pipeline(PatternMatchingEventHandler):
     # should be overridden when extending this class
     title = None
     
-    def __init__(self, base, stop_after_first_job=False):
-        self._queue = [] # discards pre-existing files
-        self._base = str(os.path.normpath(base)) + '/'
-        self._stopAfterFirstJob = stop_after_first_job
+    def __init__(self):
         super().__init__()
     
     def start(self, inactivity_timeout=10):
-        print("Pipeline starting...")
-        if Filesystem.ismount(self._base):
-            print(self._base + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+        print("Pipeline \"" + str(self.title) + "\" starting...")
+        
+        dir_in = os.environ.get("DIR_IN")
+        dir_out = os.environ.get("DIR_OUT")
+        dir_reports = os.environ.get("DIR_REPORTS")
+        stop_after_first_job = os.environ.get("STOP_AFTER_FIRST_JOB")
+        
+        assert dir_in != None and len(dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
+        assert dir_out != None and len(dir_out) > 0 and os.path.exists(dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
+        assert dir_reports != None and len(dir_reports) > 0 and os.path.exists(dir_reports), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
+        assert not stop_after_first_job or stop_after_first_job in [ "1", "true", "0", "false" ], "The environment variable STOP_AFTER_FIRST_JOB, if defined, must be \"true\"/\"false\" (or \"1\"/\"0\")."
+        
+        self._stopAfterFirstJob = False
+        if stop_after_first_job in [ "true", "1" ]:
+            self._stopAfterFirstJob = True
+        
+        self.dir_in = str(os.path.normpath(dir_in)) + '/'
+        self.dir_out = str(os.path.normpath(dir_out)) + '/'
+        self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
+        
+        if Filesystem.ismount(self.dir_in):
+            print(self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
             return
-        if not os.path.isdir(self._base):
-            print(self._base + " is not available. Will not start watching.")
+        if not os.path.isdir(self.dir_in):
+            print(self.dir_in + " is not available. Will not start watching.")
             return
         self._inactivity_timeout = inactivity_timeout
         self._observer = Observer()
-        self._observer.schedule(self, path=self._base, recursive=True)
+        self._observer.schedule(self, path=self.dir_in, recursive=True)
         self._observer.start()
         self._shouldHandleBooks = True
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread)
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
-        print("Pipeline started")
+        print("Pipeline \"" + str(self.title) + "\" started")
     
     def stop(self):
         if self._bookHandlerThread:
@@ -100,30 +123,31 @@ class Pipeline(PatternMatchingEventHandler):
             try:
                 self._observer.stop()
                 self._observer.join()
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
+                traceback.print_tb(e.__traceback__)
             finally:
                 self._observer = None
         self._queue = []
-        print("Pipeline stopped")
+        print("Pipeline \"" + str(self.title) + "\" stopped")
     
-    def run(self, inactivity_timeout=10):
+    def run(self, inactivity_timeout=1):
         """
         Run in a blocking manner (useful from command line)
         """
         self.start(inactivity_timeout)
         try:
             while self._shouldRun:
-                if not os.path.isdir(self._base):
+                if not os.path.isdir(self.dir_in):
                     if self._shouldHandleBooks:
-                        print(self._base + " is not available. Stop watching...")
+                        print(self.dir_in + " is not available. Stop watching...")
                         self.stop()
                         
                     else:
-                        print(self._base + " is still not available...")
+                        print(self.dir_in + " is still not available...")
                         
-                if not self._shouldHandleBooks and os.path.isdir(self._base):
-                    print(self._base + " is available again. Start watching...")
+                if not self._shouldHandleBooks and os.path.isdir(self.dir_in):
+                    print(self.dir_in + " is available again. Start watching...")
                     self.start(self._inactivity_timeout)
                 
                 time.sleep(1)
@@ -134,12 +158,12 @@ class Pipeline(PatternMatchingEventHandler):
     
     def _process(self, event):
         source_path = Path(event.src_path)
-        source_path_relative = source_path.relative_to(self._base)
+        source_path_relative = source_path.relative_to(self.dir_in)
         dest_path = None
         dest_path_relative = None
         if hasattr(event, 'dest_path'):
             dest_path = Path(event.dest_path)
-            dest_path_relative = dest_path.relative_to(self._base)
+            dest_path_relative = dest_path.relative_to(self.dir_in)
         
         if str(source_path_relative) == ".":
             return # ignore
@@ -162,7 +186,7 @@ class Pipeline(PatternMatchingEventHandler):
         
         book_event = {
             'name':            name,
-            'base':            str(self._base),
+            'base':            str(self.dir_in),
             'source':          str(source_path)          + ("/" if event.is_directory else ""),
             'dest':            str(dest_path)            + ("/" if event.is_directory else ""),
             'source_relative': str(source_path_relative) + ("/" if event.is_directory else ""),
@@ -220,14 +244,14 @@ class Pipeline(PatternMatchingEventHandler):
     
     def _handle_book_events_thread(self):
         while self._shouldHandleBooks and self._shouldRun:
-            if not os.path.isdir(self._base):
+            if not os.path.isdir(self.dir_in):
                 # when base dir is not available we should stop watching the directory,
                 # this just catches a potential race condition
                 time.sleep(1)
                 continue
             
             try:
-                book = None
+                self.book = None
                 
                 with self._lock:
                     x = [b['name'] + ": " + str(int(time.time()) - b['last_event']) for b in self._queue]
@@ -235,18 +259,18 @@ class Pipeline(PatternMatchingEventHandler):
                     books = [b for b in self._queue if int(time.time()) - b['last_event'] > self._inactivity_timeout]
                     books = sorted(books, key=lambda b: b['last_event'])
                     if not len(books):
-                        book = None
+                        self.book = None
                     else:
-                        book = books[0]
+                        self.book = books[0]
                         
-                        new_queue = [b for b in self._queue if b is not book]
+                        new_queue = [b for b in self._queue if b is not self.book]
                         self._queue = new_queue
                 
-                if book:
+                if self.book:
                     # configure utils before processing book
-                    self.utils.report = Report(book)
-                    self.utils.epub = Epub(book, self.utils.report)
-                    self.utils.filesystem = Filesystem(book, self.utils.report)
+                    self.utils.report = Report(self)
+                    self.utils.epub = Epub(self)
+                    self.utils.filesystem = Filesystem(self)
                     
                     paths_all = []
                     paths_created = []
@@ -254,14 +278,14 @@ class Pipeline(PatternMatchingEventHandler):
                     paths_moved = []
                     paths_deleted = []
                     
-                    paths_all.append(book['source'])
-                    for (dirpath, dirnames, filenames) in os.walk(book['source']):
+                    paths_all.append(self.book['source'])
+                    for (dirpath, dirnames, filenames) in os.walk(self.book['source']):
                         for d in dirnames:
                             paths_all.append(dirpath+"/"+d+"/")
                         for f in filenames:
                             paths_all.append(dirpath+"/"+f)
                     
-                    for event in book['events']:
+                    for event in self.book['events']:
                         if event['event_type'] == "created" and event['source'] not in paths_created:
                             paths_created.append(event['source'])
                         if event['event_type'] == "modified" and event['source'] not in paths_modified:
@@ -274,44 +298,46 @@ class Pipeline(PatternMatchingEventHandler):
                     try:
                         # created all files in book ⇒ created
                         if set(paths_all) == set(paths_created):
-                            self.on_book_created(book)
+                            self.on_book_created()
                         
                         # moved all files in book ⇒ moved
                         elif set(paths_all) == set(paths_moved):
-                            self.on_book_moved(book)
+                            self.on_book_moved()
                         
                         # deleted all files in book ⇒ deleted
                         elif set(paths_all) == set(paths_deleted):
-                            self.on_book_deleted(book)
+                            self.on_book_deleted()
                         
                         # created, modified, moved and/or deleted some files in book ⇒ modified
                         else:
-                            self.on_book_modified(book)
+                            self.on_book_modified()
                         
-                    except Exception:
-                        traceback.print_exc()
+                    except Exception as e:
+                        print(e)
+                        traceback.print_tb(e.__traceback__)
                     
                     finally:
                         if self._stopAfterFirstJob:
                             self._shouldRun = False
                 
-            except Exception:
-                print("Unexpected error:", sys.exc_info()[0])
+            except Exception as e:
+                print(e)
+                traceback.print_tb(e.__traceback__)
                 
             finally:
                 time.sleep(1)
     
-    def on_book_created(self, book):
-        print("Book created (unhandled book event): "+book['name'])
+    def on_book_created(self):
+        print("Book created (unhandled book event): "+self.book['name'])
     
-    def on_book_modified(self, book):
-        print("Book modified (unhandled book event): "+book['name'])
+    def on_book_modified(self):
+        print("Book modified (unhandled book event): "+self.book['name'])
     
-    def on_book_moved(self, book):
-        print("Book moved (unhandled book event): "+book['name'])
+    def on_book_moved(self):
+        print("Book moved (unhandled book event): "+self.book['name'])
     
-    def on_book_deleted(self, book):
-        print("Book deleted (unhandled book event): "+book['name'])
+    def on_book_deleted(self):
+        print("Book deleted (unhandled book event): "+self.book['name'])
 
 
 if __name__ == '__main__':

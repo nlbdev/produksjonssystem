@@ -15,7 +15,7 @@ export DIR_OUT_INVALID="$TEMPDIR/out-invalid"
 export DIR_OUT_REPORT="$TEMPDIR/out-report"
 mkdir -p "$DIR_IN" "$DIR_OUT_VALID" "$DIR_OUT_INVALID" "$DIR_OUT_REPORT"
 
-
+trap 'kill $(jobs -p)' EXIT
 
 function copy_test_book() {
     sleep 3

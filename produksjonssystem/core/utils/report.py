@@ -6,6 +6,8 @@ import markdown
 import pygments # for markdown code highlighting
 import os
 import smtplib
+import time
+from datetime import datetime, timezone
 
 from email.message import EmailMessage
 from email.headerregistry import Address
@@ -17,7 +19,8 @@ class Report():
     """Logging and reporting"""
     
     stdout_verbosity = 'INFO'
-    book = None
+    pipeline = None
+    _report_dir = None
     _messages = {}
     
     _i18n = {
@@ -25,8 +28,20 @@ class Report():
         "none": "ingen"
     }
     
-    def __init__(self, book):
-        self.book = book
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
+    
+    def reportDir(self):
+        # Lag rapport-mappe
+        if not self._report_dir:
+            report_dir = self.pipeline.book["name"]
+            report_dir += "-"
+            report_dir += datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
+            report_dir += "-"
+            report_dir += re.sub("[^a-zA-Z0-9-]", "", self.pipeline.title.lower().replace(" ","-"))
+            report_dir = os.path.join(self.pipeline.dir_reports, report_dir)
+            os.makedirs(report_dir)
+        return report_dir
     
     def _add_message(self, severity, message, message_type, add_empty_line):
         lines = None
@@ -67,13 +82,21 @@ class Report():
     def error(self, message, message_type="message", add_empty_line=True):
         self._add_message('ERROR', message, message_type, add_empty_line)
     
-    def email(self, subject, sender, recipients, smtp, logpath):
+    def email(self, subject, sender=None, recipients=None, smtp=None):
         assert subject
-        assert sender
-        assert recipients
-        assert smtp
+        assert sender or self.pipeline.email_sender
+        assert recipients or self.pipeline.email_recipients
+        assert smtp or self.pipeline.email_smtp
+        
+        if not sender:
+            sender = self.pipeline.email_sender
+        if not recipients:
+            recipients = self.pipeline.email_recipients
+        if not smtp:
+            smtp = self.pipeline.email_smtp
         
         # 0. Create attachment with complete log (including DEBUG statements)
+        logpath = os.path.join(self.reportDir(), "log.txt")
         self.attachment([m["text"] for m in self._messages["message"]], logpath, "DEBUG")
         
         # Determine overall status
@@ -134,7 +157,7 @@ class Report():
             li = "<li>"
             li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[m["severity"]]["icon"] + "</span> "
             li += "<span style=\"vertical-align: middle; " + attachment_styles[m["severity"]]["style"] + "\">"
-            li += "<a href=\"" + unc + "\">" + os.path.basename(file) + "</a></sup>"
+            li += "<a href=\"" + unc + "\">" + os.path.basename(file) + ("/" if os.path.isdir(["text"]) else "") + "</a></sup>"
             li += "</span>"
             li += "</li>"
             markdown_text.append(li)

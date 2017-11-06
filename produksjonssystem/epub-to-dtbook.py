@@ -17,12 +17,8 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
-class IncomingNordic(Pipeline):
+class EpubToDtbook(Pipeline):
     title = "EPUB til DTBook"
-    
-    epub_in = None
-    valid_out = None
-    report_out = None
     
     email_smtp = {
         "host": "smtp.gmail.com",
@@ -39,29 +35,21 @@ class IncomingNordic(Pipeline):
     
     first_job = True # Will be set to false after first job is triggered
     
-    def __init__(self, epub_in, valid_out, report_out, stop_after_first_job=False):
-        self.queue = [] # discards pre-existing files
-        self.epub_in = epub_in
-        self.valid_out = valid_out
-        self.report_out = report_out
-        
-        super().__init__(epub_in, stop_after_first_job=stop_after_first_job)
-    
-    def on_book_moved(self, book):
+    def on_book_moved(self):
         pass # do nothing
     
-    def on_book_deleted(self, book):
+    def on_book_deleted(self):
         pass # do nothing
     
-    def on_book_modified(self, book):
-        self.utils.report.info("Endret bok i mappa: " + book['name'])
-        self.on_book(book)
+    def on_book_modified(self):
+        self.utils.report.info("Endret bok i mappa: " + self.book['name'])
+        self.on_book()
     
-    def on_book_created(self, book):
-        self.utils.report.info("Ny bok i mappa: " + book['name'])
-        self.on_book(book)
+    def on_book_created(self):
+        self.utils.report.info("Ny bok i mappa: " + self.book['name'])
+        self.on_book()
     
-    def on_book(self, book):
+    def on_book(self):
         if self.first_job:
             try:
                 # start engine if it's not started already
@@ -76,40 +64,25 @@ class IncomingNordic(Pipeline):
             
             self.first_job = False
         
-        # Unik identifikator for denne jobben
-        uid = book["name"] + "-" + datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
-        
-        # Bruk unik identifikator for rapport-mappen
-        report_dir = os.path.join(self.report_out, uid)
-        os.makedirs(report_dir)
-        
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
         
-        book_id = book["name"]
+        book_id = self.book["name"]
         
-        if not os.path.isdir(book["source"]):
+        if not os.path.isdir(self.book["source"]):
             self.utils.report.info(book_id + " er ikke en mappe.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
-                                    self.email_sender,
-                                    self.email_recipients,
-                                    self.email_smtp,
-                                    os.path.join(report_dir, "log.txt"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
             return
         
-        if not os.path.isfile(os.path.join(book["source"], "EPUB/package.opf")):
+        if not os.path.isfile(os.path.join(self.book["source"], "EPUB/package.opf")):
             self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
-                                    self.email_sender,
-                                    self.email_recipients,
-                                    self.email_smtp,
-                                    os.path.join(report_dir, "log.txt"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
             return
         
         # kopier boka til en midlertidig mappe
         book_dir = os.path.join(workspace_dir, book_id)
-        self.utils.filesystem.copy(book["source"], book_dir)
+        self.utils.filesystem.copy(self.book["source"], book_dir)
         
         # lag en zippet versjon av EPUBen også
         book_file = os.path.join(workspace_dir, book_id + ".epub")
@@ -156,19 +129,13 @@ class IncomingNordic(Pipeline):
             
             # get conversion report
             with open(os.path.join(result_dir, "html-report/report.xhtml"), 'r') as result_report:
-                self.utils.report.attachment(result_report.readlines(), os.path.join(report_dir, "report.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
+                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
             
             dtbook_dir = os.path.join(result_dir, "output-dir", book_id)
             
-            
-            
         except subprocess.TimeoutExpired as e:
             self.utils.report.info("Konvertering av " + book_id + " fra EPUB til DTBook tok for lang tid og ble derfor stoppet.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
-                                    self.email_sender,
-                                    self.email_recipients,
-                                    self.email_smtp,
-                                    os.path.join(report_dir, "log.txt"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
             return
             
         finally:
@@ -181,46 +148,21 @@ class IncomingNordic(Pipeline):
         
         if result_status != "DONE":
             self.utils.report.info("Klarte ikke å konvertere boken")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
-                                    self.email_sender,
-                                    self.email_recipients,
-                                    self.email_smtp,
-                                    os.path.join(report_dir, "log.txt"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
             return
         
         if not os.path.isdir(dtbook_dir):
             self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎",
-                                    self.email_sender,
-                                    self.email_recipients,
-                                    self.email_smtp,
-                                    os.path.join(report_dir, "log.txt"))
+            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
             return
         
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
         
-        archived_path = self.utils.filesystem.storeBook(self.valid_out, dtbook_dir, book_id)
+        archived_path = self.utils.filesystem.storeBook(dtbook_dir, book_id)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(book_id + " ble lagt til i DTBook-arkivet.")
-        self.utils.report.email(self.title + ": " + book_id + " ble konvertert 👍😄",
-                                self.email_sender,
-                                self.email_recipients,
-                                self.email_smtp,
-                                os.path.join(report_dir, "log.txt"))
+        self.utils.report.email(self.title + ": " + book_id + " ble konvertert 👍😄")
+
 
 if __name__ == "__main__":
-    epub_in = os.environ.get("DIR_IN")
-    valid_out = os.environ.get("DIR_OUT_VALID")
-    report_out = os.environ.get("DIR_OUT_REPORT")
-    
-    assert epub_in != None and len(epub_in) > 0, "Miljøvariabelen DIR_IN må være spesifisert, og må peke på en mappe."
-    assert valid_out != None and len(valid_out) > 0 and os.path.exists(valid_out), "Miljøvariabelen DIR_OUT_VALID må være spesifisert, og må peke på en mappe som finnes."
-    assert report_out != None and len(report_out) > 0 and os.path.exists(report_out), "Miljøvariabelen DIR_OUT_REPORT må være spesifisert, og må peke på en mappe som finnes."
-    
-    stop_after_first_job = False
-    if os.environ.get("STOP_AFTER_FIRST_JOB"):
-        stop_after_first_job = True
-    
-    pipeline = IncomingNordic(epub_in, valid_out, report_out, stop_after_first_job=stop_after_first_job)
-    
-    pipeline.run(1)
+    EpubToDtbook().run()

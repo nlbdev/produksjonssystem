@@ -7,12 +7,10 @@ import pathlib
 class Epub():
     """Methods for working with EPUB files/filesets"""
     
-    book = None
-    report = None
+    pipeline = None
     
-    def __init__(self, book, report):
-        self.book = book
-        self.report = report
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
     
     def zip(self, directory, file):
         """Zip the contents of `dir`, with mediatype file first, as `file`"""
@@ -28,10 +26,10 @@ class Epub():
                 with open(str(mimetype), "w") as f:
                     print("creating mimetype file")
                     f.write("application/epub+zip")
-            self.report.debug("zipping: mimetype")
+            self.pipeline.utils.report.debug("zipping: mimetype")
             archive.write(str(mimetype), 'mimetype', compress_type=zipfile.ZIP_STORED)
             for f in dirpath.rglob('*.*'):
-                self.report.debug("zipping: "+str(f.relative_to(dirpath)))
+                self.pipeline.utils.report.debug("zipping: "+str(f.relative_to(dirpath)))
                 archive.write(str(f), str(f.relative_to(dirpath)), compress_type=zipfile.ZIP_DEFLATED)
     
     def unzip(self, file, directory):

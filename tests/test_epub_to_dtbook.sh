@@ -14,6 +14,8 @@ export DIR_OUT_VALID="$TEMPDIR/out-valid"
 export DIR_OUT_REPORT="$TEMPDIR/out-report"
 mkdir -p "$DIR_IN" "$DIR_OUT_VALID" "$DIR_OUT_REPORT"
 
+trap 'kill $(jobs -p)' EXIT
+
 function copy_test_book() {
     sleep 3
     unzip "$DIR/tests/C00000.epub" -d "$DIR_IN/C00000"

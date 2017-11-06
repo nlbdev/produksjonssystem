@@ -10,8 +10,7 @@ import urllib.request
 class Filesystem():
     """Operations on files and directories"""
     
-    book = None
-    report = None
+    pipeline = None
     
     _i18n = {
         "Storing": "Lagrer",
@@ -21,9 +20,8 @@ class Filesystem():
         "Running": "Kjører"
     }
     
-    def __init__(self, book, report):
-        self.book = book
-        self.report = report
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
     
     def copy(self, source, destination):
         """Copy the `source` file or directory to the `destination`"""
@@ -44,23 +42,23 @@ class Filesystem():
                 warnings = list(set(warnings)) # distinct warnings
                 for warning in warnings:
                     if warning is not None:
-                        self.report.warn(warning)
+                        self.pipeline.utils.report.warn(warning)
                 if None in warnings:
                     raise
         else:
             shutil.copy(source, destination)
     
-    def storeBook(self, archive_dir, source, book_id, move=False):
-        """Store `book_id` from `source` into `archive_dir`"""
-        self.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + archive_dir + "...")
+    def storeBook(self, source, book_id, move=False):
+        """Store `book_id` from `source` into `pipeline.dir_out`"""
+        self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
         assert book_id
         assert book_id.strip()
         assert book_id != "."
         assert not ".." in book_id
         assert not "/" in book_id
-        target = os.path.join(archive_dir, book_id)
+        target = os.path.join(self.pipeline.dir_out, book_id)
         if os.path.exists(target):
-            self.report.warn(book_id + " " + self._i18n["exists in"] + " " + archive_dir + " " + self._i18n["already; existing copy will be deleted"])
+            self.pipeline.utils.report.warn(book_id + " " + self._i18n["exists in"] + " " + self.pipeline.dir_out + " " + self._i18n["already; existing copy will be deleted"])
             shutil.rmtree(target)
         if move:
             shutil.move(source, target)
@@ -69,36 +67,36 @@ class Filesystem():
         return target
     
     def deleteSource(self):
-        if os.path.isdir(self.book["source"]):
-            shutil.rmtree(self.book["source"])
-        elif os.path.isfile(self.book["source"]):
-            os.remove(self.book["source"])
+        if os.path.isdir(self.pipeline.book["source"]):
+            shutil.rmtree(self.pipeline.book["source"])
+        elif os.path.isfile(self.pipeline.book["source"]):
+            os.remove(self.pipeline.book["source"])
     
     def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True):
         """Convenience method for subprocess.run, with our own defaults"""
         if not cwd:
-            cwd = self.book["base"]
+            cwd = self.pipeline.book["base"]
         
-        self.report.debug(self._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
+        self.pipeline.utils.report.debug(self._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
         
         completedProcess = None
         try:
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
             
-            self.report.debug("---- stdout: ----")
-            self.report.debug(completedProcess.stdout.decode("utf-8").strip())
-            self.report.debug("-----------------")
-            self.report.debug("---- stderr: ----")
-            self.report.debug(completedProcess.stderr.decode("utf-8").strip())
-            self.report.debug("-----------------")
+            self.pipeline.utils.report.debug("---- stdout: ----")
+            self.pipeline.utils.report.debug(completedProcess.stdout.decode("utf-8").strip())
+            self.pipeline.utils.report.debug("-----------------")
+            self.pipeline.utils.report.debug("---- stderr: ----")
+            self.pipeline.utils.report.debug(completedProcess.stderr.decode("utf-8").strip())
+            self.pipeline.utils.report.debug("-----------------")
             
         except subprocess.CalledProcessError as e:
-            self.report.debug("---- stdout: ----")
-            self.report.debug(e.stdout.decode("utf-8").strip())
-            self.report.debug("-----------------")
-            self.report.debug("---- stderr: ----")
-            self.report.debug(e.stderr.decode("utf-8").strip())
-            self.report.debug("-----------------")
+            self.pipeline.utils.report.debug("---- stdout: ----")
+            self.pipeline.utils.report.debug(e.stdout.decode("utf-8").strip())
+            self.pipeline.utils.report.debug("-----------------")
+            self.pipeline.utils.report.debug("---- stderr: ----")
+            self.pipeline.utils.report.debug(e.stderr.decode("utf-8").strip())
+            self.pipeline.utils.report.debug("-----------------")
             raise
         
         return completedProcess
