@@ -25,7 +25,7 @@ class IncomingNordic(Pipeline):
         "user": os.environ["GMAIL_USERNAME"],
         "pass": os.environ["GMAIL_PASSWORD"]
     }
-    email_sender = Address("NLB", "noreply@nlb.no")
+    email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
     dp2_home = "/home/jostein/Skrivebord/daisy-pipeline" # "/opt/daisy-pipeline2"
