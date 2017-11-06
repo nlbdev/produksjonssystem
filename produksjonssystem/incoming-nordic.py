@@ -214,7 +214,8 @@ class IncomingNordic(Pipeline):
         
         self.utils.report.info("Boken er valid. Kopierer til master-arkiv.")
         
-        self.utils.filesystem.storeBook(self.valid_out, book_dir, book_id)
+        archived_path = self.utils.filesystem.storeBook(self.valid_out, book_dir, book_id)
+        self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.filesystem.deleteSource()
         self.utils.report.info(book_id+" ble lagt til i master-arkivet.")
         self.utils.report.email(self.title + ": " + book_id + " er valid 👍😄",

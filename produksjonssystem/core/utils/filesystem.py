@@ -66,6 +66,7 @@ class Filesystem():
             shutil.move(source, target)
         else:
             self.copy(source, target)
+        return target
     
     def deleteSource(self):
         if os.path.isdir(self.book["source"]):
