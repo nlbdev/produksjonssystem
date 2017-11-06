@@ -19,6 +19,7 @@ trap 'kill $(jobs -p)' EXIT
 export DIR_REPORTS="$PRODSYS_REPORTS" # same for all
 DIR_IN="$PRODSYS_NORDIC" DIR_OUT="$PRODSYS_MASTER" ./produksjonssystem/incoming-nordic.py &
 DIR_IN="$PRODSYS_MASTER" DIR_OUT="$PRODSYS_DTBOOK" ./produksjonssystem/epub-to-dtbook.py &
+DIR_IN="$PRODSYS_MASTER" DIR_OUT="$PRODSYS_HTML" ./produksjonssystem/epub-to-html.py &
 
 # wait for all forks to complete
 for job in `jobs -p` ; do
