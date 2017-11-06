@@ -124,10 +124,17 @@ class Report():
             
         for m in self._messages["attachment"]:
             smb, file, unc = Filesystem.networkpath(m["text"])
+            # UNC links seems to be preserved when viewed in Outlook.
+            # file: and smb: URIs are disallowed or removed.
+            # So these links will only work in Windows.
+            # If we need this to work cross-platform, we would have
+            # to map the network share paths to a web server so that
+            # the transfers go through http:. This could maybe be mapped
+            # using environment variables.
             li = "<li>"
             li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[m["severity"]]["icon"] + "</span> "
             li += "<span style=\"vertical-align: middle; " + attachment_styles[m["severity"]]["style"] + "\">"
-            li += "<a href=\"" + file + "\">" + os.path.basename(file) + "</a> <sup><a href=\"" + smb + "\">🐧</a></sup>"
+            li += "<a href=\"" + unc + "\">" + os.path.basename(file) + "</a></sup>"
             li += "</span>"
             li += "</li>"
             markdown_text.append(li)

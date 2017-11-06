@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import socket
 import re
+import urllib.request
 
 class Filesystem():
     """Operations on files and directories"""
@@ -26,13 +27,28 @@ class Filesystem():
     
     def copy(self, source, destination):
         """Copy the `source` file or directory to the `destination`"""
-        try:
-            shutil.copytree(source, destination)
-        except OSError as e:
-            if e.errno == errno.ENOTDIR:
-                shutil.copy(source, destination)
-            else:
-                raise
+        assert source, "Filesystem.copy(): source must be specified"
+        assert destination, "Filesystem.copy(): destination must be specified"
+        assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory"
+        if os.path.isdir(source):
+            try:
+                shutil.copytree(source, destination)
+            except shutil.Error as errors:
+                warnings = []
+                for arg in errors.args[0]:
+                    src, dst, e = arg
+                    if e.startswith("[Errno 95]") and "/gvfs/" in dst:
+                        warnings.append("WARN: Unable to set permissions on manually mounted samba shares")
+                    else:
+                        warnings.append(None)
+                warnings = list(set(warnings)) # distinct warnings
+                for warning in warnings:
+                    if warning is not None:
+                        self.report.warn(warning)
+                if None in warnings:
+                    raise
+        else:
+            shutil.copy(source, destination)
     
     def storeBook(self, archive_dir, source, book_id, move=False):
         """Store `book_id` from `source` into `archive_dir`"""
@@ -104,7 +120,7 @@ class Filesystem():
         
         x_dir = os.getenv("XDG_RUNTIME_DIR")
         if x_dir:
-            for mount in [os.path.join(x_dir, m) for m in os.listdir(os.path.join(x_dir, "gvfs"))]:
+            for mount in [os.path.join(x_dir, "gvfs", m) for m in os.listdir(os.path.join(x_dir, "gvfs"))]:
                 if mount == path:
                     # path == "$XDG_RUNTIME_DIR/gvfs/smb-share:server=x.x.x.x,share=sharename"
                     return re.sub(",share=", "/", re.sub("^smb-share:server=", "smb://", os.path.basename(path)))
@@ -134,6 +150,8 @@ class Filesystem():
             localhost = s.getsockname()[0]
             s.close()
             smb = "smb://" + localhost + path
+        
+        smb = re.sub("^(smb:/+[^/]+).*", "\\1", smb) + urllib.request.pathname2url(re.sub("^smb:/+[^/]+/*(/.*)$", "\\1", smb))
         
         file = re.sub("^smb:", "file:", smb)
         unc = re.sub("/", r"\\", re.sub("^smb:", "", smb))
