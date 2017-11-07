@@ -28,7 +28,7 @@ class IncomingNordic(Pipeline):
     email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
     
-    dp2_home = "/home/jostein/Skrivebord/daisy-pipeline" # "/opt/daisy-pipeline2"
+    dp2_home = "/opt/daisy-pipeline2" # "/home/jostein/Skrivebord/daisy-pipeline"
     dp2_cli = dp2_home + "/cli/dp2"
     saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
     
