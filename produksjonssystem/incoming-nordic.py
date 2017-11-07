@@ -20,10 +20,10 @@ class IncomingNordic(Pipeline):
     title = "Validering av Nordisk EPUB 3"
     
     email_smtp = {
-        "host": "smtp.gmail.com",
-        "port": "587",
-        "user": os.environ["GMAIL_USERNAME"],
-        "pass": os.environ["GMAIL_PASSWORD"]
+        "host": os.environ["MAIL_SERVER"],
+        "port": os.environ["MAIL_PORT"],
+        "user": os.environ["MAIL_USERNAME"],
+        "pass": os.environ["MAIL_PASSWORD"]
     }
     email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
