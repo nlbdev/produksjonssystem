@@ -81,12 +81,15 @@ class Pipeline(PatternMatchingEventHandler):
         self._queue = []
         super().__init__()
     
-    def start(self, inactivity_timeout=10):
+    def start(self, inactivity_timeout=1, dir_in=None, dir_out=None, dir_reports=None):
         print("Pipeline \"" + str(self.title) + "\" starting...")
         
-        dir_in = os.environ.get("DIR_IN")
-        dir_out = os.environ.get("DIR_OUT")
-        dir_reports = os.environ.get("DIR_REPORTS")
+        if not dir_in:
+            dir_in = os.environ.get("DIR_IN")
+        if not dir_out:
+            dir_out = os.environ.get("DIR_OUT")
+        if not dir_reports:
+            dir_reports = os.environ.get("DIR_REPORTS")
         stop_after_first_job = os.environ.get("STOP_AFTER_FIRST_JOB")
         
         assert dir_in != None and len(dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
@@ -118,9 +121,11 @@ class Pipeline(PatternMatchingEventHandler):
         self._bookHandlerThread.start()
         print("Pipeline \"" + str(self.title) + "\" started")
     
-    def stop(self):
+    def stop(self, exit=False):
         if self._bookHandlerThread:
             self._shouldHandleBooks = False
+        if exit:
+            self._shouldRun = False
         if self._observer:
             try:
                 self._observer.stop()
@@ -133,11 +138,11 @@ class Pipeline(PatternMatchingEventHandler):
         self._queue = []
         print("Pipeline \"" + str(self.title) + "\" stopped")
     
-    def run(self, inactivity_timeout=1):
+    def run(self, inactivity_timeout=1, dir_in=None, dir_out=None, dir_reports=None):
         """
         Run in a blocking manner (useful from command line)
         """
-        self.start(inactivity_timeout)
+        self.start(inactivity_timeout, dir_in, dir_out, dir_reports)
         try:
             while self._shouldRun:
                 if not os.path.isdir(self.dir_in):
@@ -150,7 +155,7 @@ class Pipeline(PatternMatchingEventHandler):
                         
                 if not self._shouldHandleBooks and os.path.isdir(self.dir_in):
                     print(self.dir_in + " is available again. Start watching...")
-                    self.start(self._inactivity_timeout)
+                    self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports)
                 
                 time.sleep(1)
                 
@@ -215,7 +220,7 @@ class Pipeline(PatternMatchingEventHandler):
                             break
                     if not event_in_queue:
                         item['events'].append(event)
-                        print("filesystem event: "+event['nicetext'])
+                        print("filesystem event: "+event['nicetext']) # TODO: this should probably be commented out in production
                     item['last_event'] = int(time.time())
                     break
             if not book_in_queue:
