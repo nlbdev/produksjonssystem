@@ -119,7 +119,7 @@ class Pipeline(PatternMatchingEventHandler):
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread)
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
-        print("Pipeline \"" + str(self.title) + "\" started")
+        print("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
     
     def stop(self, exit=False):
         if self._bookHandlerThread:
