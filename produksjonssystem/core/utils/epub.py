@@ -24,7 +24,7 @@ class Epub():
             mimetype = dirpath / 'mimetype'
             if not os.path.isfile(str(mimetype)):
                 with open(str(mimetype), "w") as f:
-                    print("creating mimetype file")
+                    self.pipeline.utils.report.debug("creating mimetype file")
                     f.write("application/epub+zip")
             self.pipeline.utils.report.debug("zipping: mimetype")
             archive.write(str(mimetype), 'mimetype', compress_type=zipfile.ZIP_STORED)
@@ -44,4 +44,4 @@ class Epub():
     def meta(self, file, property, default=None):
         """Read OPF metadata"""
         # file: either .epub or .opf
-        print("TODO: Epub.meta(file, property, default=None)")
+        self.pipeline.utils.report.warn("TODO: Epub.meta(file, property, default=None)")

@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import traceback
+import sys
 import time
+import logging
 from threading import Thread
 from core.pipeline import Pipeline
 
@@ -70,6 +71,10 @@ for pipeline in pipelines:
     thread.start()
     threads.append(thread)
 
+if os.environ.get("DEBUG", "1") == "1":
+    time.sleep(1)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 try:
     running = True
     while running:
@@ -78,10 +83,6 @@ try:
             if not thread.isAlive():
                 running = False
                 break
-        
-except Exception as e:
-    print(e)
-    traceback.print_tb(e.__traceback__)
     
 except KeyboardInterrupt:
     pass

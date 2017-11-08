@@ -5,6 +5,8 @@ import sys
 import traceback
 import time
 import os
+import sys
+import logging
 
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
@@ -63,6 +65,7 @@ class Pipeline(PatternMatchingEventHandler):
     _shouldHandleBooks = False
     _shouldRun = True
     _stopAfterFirstJob = False
+    _loglevel = None
     
     # dynamic (reset on stop(), changes over time)
     _queue = None
@@ -73,16 +76,18 @@ class Pipeline(PatternMatchingEventHandler):
     # should be overridden when extending this class
     title = None
     
-    def __init__(self):
+    def __init__(self, loglevel=None):
         self.utils = DotMap()
         self.utils.report = None
         self.utils.epub = None
         self.utils.filesystem = None
         self._queue = []
+        self._loglevel = logging.INFO if not None else loglevel
+        logging.basicConfig(stream=sys.stdout, level=self._loglevel)
         super().__init__()
     
     def start(self, inactivity_timeout=1, dir_in=None, dir_out=None, dir_reports=None):
-        print("Pipeline \"" + str(self.title) + "\" starting...")
+        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
         
         if not dir_in:
             dir_in = os.environ.get("DIR_IN")
@@ -106,10 +111,10 @@ class Pipeline(PatternMatchingEventHandler):
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
         
         if Filesystem.ismount(self.dir_in):
-            print(self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+            logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
             return
         if not os.path.isdir(self.dir_in):
-            print(self.dir_in + " is not available. Will not start watching.")
+            logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Will not start watching.")
             return
         self._inactivity_timeout = inactivity_timeout
         self._observer = Observer()
@@ -119,7 +124,7 @@ class Pipeline(PatternMatchingEventHandler):
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread)
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
-        print("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
+        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
     
     def stop(self, exit=False):
         if self._bookHandlerThread:
@@ -130,13 +135,12 @@ class Pipeline(PatternMatchingEventHandler):
             try:
                 self._observer.stop()
                 self._observer.join()
-            except Exception as e:
-                print(e)
-                traceback.print_tb(e.__traceback__)
+            except Exception:
+                logging.exception("[" + Report.thread_name() + "] Failed to start watching \"" + self.dir_in + "\"")
             finally:
                 self._observer = None
         self._queue = []
-        print("Pipeline \"" + str(self.title) + "\" stopped")
+        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
     def run(self, inactivity_timeout=1, dir_in=None, dir_out=None, dir_reports=None):
         """
@@ -147,14 +151,14 @@ class Pipeline(PatternMatchingEventHandler):
             while self._shouldRun:
                 if not os.path.isdir(self.dir_in):
                     if self._shouldHandleBooks:
-                        print(self.dir_in + " is not available. Stop watching...")
+                        logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Stop watching...")
                         self.stop()
                         
                     else:
-                        print(self.dir_in + " is still not available...")
+                        logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is still not available...")
                         
                 if not self._shouldHandleBooks and os.path.isdir(self.dir_in):
-                    print(self.dir_in + " is available again. Start watching...")
+                    logging.info("[" + Report.thread_name() + "] " + self.dir_in + " is available again. Start watching...")
                     self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports)
                 
                 time.sleep(1)
@@ -220,7 +224,7 @@ class Pipeline(PatternMatchingEventHandler):
                             break
                     if not event_in_queue:
                         item['events'].append(event)
-                        print("filesystem event: "+event['nicetext']) # TODO: this should probably be commented out in production
+                        logging.debug("[" + Report.thread_name() + "] filesystem event: "+event['nicetext'])
                     item['last_event'] = int(time.time())
                     break
             if not book_in_queue:
@@ -231,7 +235,7 @@ class Pipeline(PatternMatchingEventHandler):
                      'events': [ event ],
                      'last_event': int(time.time())
                 })
-                print("filesystem event: "+event['nicetext'])
+                logging.debug("[" + Report.thread_name() + "] filesystem event: "+event['nicetext'])
     
     # Private method; DO NOT OVERRIDE
     def on_created(self, event):
@@ -319,32 +323,30 @@ class Pipeline(PatternMatchingEventHandler):
                         else:
                             self.on_book_modified()
                         
-                    except Exception as e:
-                        print(e)
-                        traceback.print_tb(e.__traceback__)
+                    except Exception:
+                        logging.exception("[" + Report.thread_name() + "] An error occured while handling the book event")
                     
                     finally:
                         if self._stopAfterFirstJob:
                             self._shouldRun = False
                 
-            except Exception as e:
-                print(e)
-                traceback.print_tb(e.__traceback__)
+            except Exception:
+                logging.exception("[" + Report.thread_name() + "] An error occured while checking for book events")
                 
             finally:
                 time.sleep(1)
     
     def on_book_created(self):
-        print("Book created (unhandled book event): "+self.book['name'])
+        logging.info("[" + Report.thread_name() + "] Book created (unhandled book event): "+self.book['name'])
     
     def on_book_modified(self):
-        print("Book modified (unhandled book event): "+self.book['name'])
+        logging.info("[" + Report.thread_name() + "] Book modified (unhandled book event): "+self.book['name'])
     
     def on_book_moved(self):
-        print("Book moved (unhandled book event): "+self.book['name'])
+        logging.info("[" + Report.thread_name() + "] Book moved (unhandled book event): "+self.book['name'])
     
     def on_book_deleted(self):
-        print("Book deleted (unhandled book event): "+self.book['name'])
+        logging.info("[" + Report.thread_name() + "] Book deleted (unhandled book event): "+self.book['name'])
 
 
 if __name__ == '__main__':

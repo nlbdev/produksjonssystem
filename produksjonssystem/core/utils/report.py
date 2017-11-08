@@ -5,8 +5,11 @@ import re
 import markdown
 import pygments # for markdown code highlighting
 import os
+import sys
 import smtplib
 import time
+import logging
+import threading
 from datetime import datetime, timezone
 
 from email.message import EmailMessage
@@ -31,6 +34,7 @@ class Report():
     def __init__(self, pipeline):
         self._messages = {}
         self.pipeline = pipeline
+        logging.basicConfig(stream=sys.stdout, level=pipeline._loglevel)
     
     def reportDir(self):
         # Lag rapport-mappe
@@ -60,28 +64,34 @@ class Report():
         
         for line in lines:
             self._messages[message_type].append({ 'severity': severity, 'text': line })
-            
-            if (self.stdout_verbosity == 'DEBUG' or
-                self.stdout_verbosity == 'INFO' and severity in [ 'INFO', 'SUCCESS', 'WARN', 'ERROR' ] or
-                self.stdout_verbosity == 'SUCCESS' and severity in [ 'SUCCESS', 'WARN', 'ERROR' ] or
-                self.stdout_verbosity == 'WARN' and severity in [ 'WARN', 'ERROR' ] or
-                severity == 'ERROR'):
-                print("["+severity+"] "+line)
+    
+    @staticmethod
+    def thread_name(pipeline=None):
+        if pipeline and pipeline.title:
+            return pipeline.title
+        if threading.get_ident() == threading.main_thread():
+            return "Main thread"
+        return str(threading.get_ident())
     
     def debug(self, message, message_type="message", add_empty_line=True):
         self._add_message('DEBUG', message, message_type, add_empty_line)
+        logging.debug("[" + Report.thread_name(self.pipeline) + "] " + message)
     
     def info(self, message, message_type="message", add_empty_line=True):
         self._add_message('INFO', message, message_type, add_empty_line)
+        logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
     
     def success(self, message, message_type="message", add_empty_line=True):
         self._add_message('SUCCESS', message, message_type, add_empty_line)
+        logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
     
     def warn(self, message, message_type="message", add_empty_line=True):
         self._add_message('WARN', message, message_type, add_empty_line)
+        logging.warn("[" + Report.thread_name(self.pipeline) + "] " + message)
     
     def error(self, message, message_type="message", add_empty_line=True):
         self._add_message('ERROR', message, message_type, add_empty_line)
+        logging.error("[" + Report.thread_name(self.pipeline) + "] " + message)
     
     def email(self, subject, sender=None, recipients=None, smtp=None):
         assert subject
@@ -196,13 +206,13 @@ class Report():
         
         with open('/tmp/email.md', "w") as f:
             f.write(markdown_text)
-            print("email markdown: /tmp/email.md")
+            logging.debug("[" + Report.thread_name(self.pipeline) + "] email markdown: /tmp/email.md")
         with open('/tmp/email.html', "w") as f:
             f.write(markdown_html)  
-            print("email html: /tmp/email.html")
+            logging.debug("[" + Report.thread_name(self.pipeline) + "] email html: /tmp/email.html")
     
     def slack(self, message):
-        print("TODO: send message to Slack")
+        logging.warn("[" + Report.thread_name(self.pipeline) + "] TODO: send message to Slack")
     
     def infoHtml(self, html, message_type="message"):
         """ wash the HTML before reporting it """
