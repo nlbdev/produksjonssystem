@@ -23,7 +23,7 @@ function copy_test_book() {
 }
 
 copy_test_book &
-STOP_AFTER_FIRST_JOB=1 timeout 30 ./produksjonssystem/incoming-nordic.py
+STOP_AFTER_FIRST_JOB=1 timeout 30 ./produksjonssystem/incoming_nordic.py
 
 
 # wait for all forks to complete

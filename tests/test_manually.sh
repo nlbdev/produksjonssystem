@@ -17,9 +17,9 @@ mkdir -p "$PRODSYS_DTBOOK" "$PRODSYS_HTML" "$PRODSYS_HTML_NARRATION" "$PRODSYS_N
 trap 'kill $(jobs -p)' EXIT
 
 export DIR_REPORTS="$PRODSYS_REPORTS" # same for all
-DIR_IN="$PRODSYS_NORDIC" DIR_OUT="$PRODSYS_MASTER" ./produksjonssystem/incoming-nordic.py &
-DIR_IN="$PRODSYS_MASTER" DIR_OUT="$PRODSYS_DTBOOK" ./produksjonssystem/epub-to-dtbook.py &
-DIR_IN="$PRODSYS_MASTER" DIR_OUT="$PRODSYS_HTML" ./produksjonssystem/epub-to-html.py &
+DIR_IN="$PRODSYS_NORDIC" DIR_OUT="$PRODSYS_MASTER" ./produksjonssystem/incoming_nordic.py &
+DIR_IN="$PRODSYS_MASTER" DIR_OUT="$PRODSYS_DTBOOK" ./produksjonssystem/epub_to_dtbook.py &
+DIR_IN="$PRODSYS_MASTER" DIR_OUT="$PRODSYS_HTML" ./produksjonssystem/epub_to_html.py &
 
 # wait for all forks to complete
 for job in `jobs -p` ; do

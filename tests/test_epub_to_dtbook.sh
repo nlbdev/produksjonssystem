@@ -25,7 +25,7 @@ function copy_test_book() {
 
 }
 copy_test_book &
-STOP_AFTER_FIRST_JOB=1 timeout 30 ./produksjonssystem/epub-to-dtbook.py
+STOP_AFTER_FIRST_JOB=1 timeout 30 ./produksjonssystem/epub_to_dtbook.py
 
 
 # wait for all forks to complete
