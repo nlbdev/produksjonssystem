@@ -30,6 +30,9 @@ class Filesystem():
         assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory"
         if os.path.isdir(source):
             try:
+                if os.path.exists(target):
+                    self.pipeline.utils.report.warn(os.path.basename(target) + " " + self._i18n["exists in"] + " " + os.path.dirname(target) + " " + self._i18n["already; existing copy will be deleted"])
+                    shutil.rmtree(target)
                 shutil.copytree(source, destination)
             except shutil.Error as errors:
                 warnings = []
