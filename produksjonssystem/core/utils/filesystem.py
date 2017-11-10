@@ -78,7 +78,7 @@ class Filesystem():
     def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True):
         """Convenience method for subprocess.run, with our own defaults"""
         if not cwd:
-            cwd = self.pipeline.book["base"]
+            cwd = self.pipeline.dir_in
         
         self.pipeline.utils.report.debug(self._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
         

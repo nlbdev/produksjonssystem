@@ -34,9 +34,6 @@ class IncomingNordic(Pipeline):
     
     first_job = True # Will be set to false after first job is triggered
     
-    def on_book_moved(self):
-        pass # do nothing
-    
     def on_book_deleted(self):
         pass # do nothing
     

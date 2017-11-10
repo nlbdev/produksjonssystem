@@ -66,7 +66,7 @@ for d in dirs:
 
 threads = []
 for pipeline in pipelines:
-    thread = Thread(target=pipeline[0].run, args=(1, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]]))
+    thread = Thread(target=pipeline[0].run, args=(10, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]]))
     thread.setDaemon(True)
     thread.start()
     threads.append(thread)

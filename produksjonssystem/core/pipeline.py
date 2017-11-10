@@ -7,9 +7,8 @@ import time
 import os
 import sys
 import logging
+import hashlib
 
-from watchdog.observers import Observer
-from watchdog.events import PatternMatchingEventHandler
 from pathlib import Path
 from threading import Thread, RLock
 from dotmap import DotMap
@@ -41,11 +40,14 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 #     with a previously calculated MD5 checksum to see if something has changed.
 #     checksums doesn't have to be stored between each run since the pipeline should
 #     also be able to be triggered manually from slack if needed.
+# 
+# UPDATE: it seems that inotify doesn't report changes when the change happens on a remote filesystem,
+#         so a custom mechanism has to be implemented.
 
-class Pipeline(PatternMatchingEventHandler):
+class Pipeline():
     """
     Base class for creating pipelines.
-    Do not override methods or variables starting with underscore (_), or methods marked with "DO NOT OVERRIDE".
+    Do not override methods or variables starting with underscore (_).
     """
     
     _lock = RLock()
@@ -69,6 +71,7 @@ class Pipeline(PatternMatchingEventHandler):
     
     # dynamic (reset on stop(), changes over time)
     _queue = None
+    _md5 = None
     
     # utility classes; reconfigured every time a book is processed to simplify function signatures
     utils = None
@@ -86,7 +89,7 @@ class Pipeline(PatternMatchingEventHandler):
         logging.basicConfig(stream=sys.stdout, level=self._loglevel)
         super().__init__()
     
-    def start(self, inactivity_timeout=1, dir_in=None, dir_out=None, dir_reports=None):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None):
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
         
         if not dir_in:
@@ -117,13 +120,21 @@ class Pipeline(PatternMatchingEventHandler):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Will not start watching.")
             return
         self._inactivity_timeout = inactivity_timeout
-        self._observer = Observer()
-        self._observer.schedule(self, path=self.dir_in, recursive=True)
-        self._observer.start()
+        
         self._shouldHandleBooks = True
+        
+        self._md5 = {}
+        for f in os.listdir(self.dir_in):
+            self._update_md5(f)
+        
+        self._bookMonitorThread = Thread(target=self._monitor_book_events_thread)
+        self._bookMonitorThread.setDaemon(True)
+        self._bookMonitorThread.start()
+        
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread)
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
+        
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
     
     def stop(self, exit=False):
@@ -142,7 +153,7 @@ class Pipeline(PatternMatchingEventHandler):
         self._queue = []
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
-    def run(self, inactivity_timeout=1, dir_in=None, dir_out=None, dir_reports=None):
+    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None):
         """
         Run in a blocking manner (useful from command line)
         """
@@ -167,91 +178,125 @@ class Pipeline(PatternMatchingEventHandler):
             pass
         self.stop()
     
-    def _process(self, event):
-        source_path = Path(event.src_path)
-        source_path_relative = source_path.relative_to(self.dir_in)
-        dest_path = None
-        dest_path_relative = None
-        if hasattr(event, 'dest_path'):
-            dest_path = Path(event.dest_path)
-            dest_path_relative = dest_path.relative_to(self.dir_in)
-        
-        if str(source_path_relative) == ".":
-            return # ignore
-        
-        name = source_path_relative.parts[0]
-        
-        nicetext = event.event_type + " " + name
-        if len(source_path_relative.parts) > 1 or dest_path_relative:
-            nicetext += ':'
-        if len(source_path_relative.parts) > 1:
-            nicetext += ' directory ' if event.is_directory else ' file '
-            nicetext += '/'.join(source_path_relative.parts[1:])
-        if dest_path_relative:
-            nicetext += ' to '
-            if len(dest_path_relative.parts) > 1:
-                nicetext += '/'.join(dest_path_relative.parts[1:]) + ' in '
-            if source_path_relative.parts[0] != dest_path_relative.parts[0]:
-                nicetext += ' book '+dest_path_relative.parts[0]
-        nicetext = " ".join(nicetext.split())
-        
-        book_event = {
-            'name':            name,
-            'base':            str(self.dir_in),
-            'source':          str(source_path)          + ("/" if event.is_directory else ""),
-            'dest':            str(dest_path)            + ("/" if event.is_directory else ""),
-            'source_relative': str(source_path_relative) + ("/" if event.is_directory else ""),
-            'dest_relative':   str(dest_path_relative)   + ("/" if event.is_directory else ""),
-            'nicetext':        nicetext,
-            'event_type':      str(event.event_type),
-            'is_directory':    event.is_directory
-        }
-        self._addBookEvent(book_event)
-        if book_event['event_type'] == 'moved':
-            book_event['name'] = dest_path_relative.parts[0]
-            self._addBookEvent(book_event)
-    
-    def _addBookEvent(self, event):
+    def _add_book_to_queue(self, name, event_type):
         with self._lock:
             book_in_queue = False
             for item in self._queue:
-                if item['name'] == event['name']:
+                if item['name'] == name:
                     book_in_queue = True
-                    event_in_queue = False
-                    for queue_event in item['events']:
-                        if queue_event == event:
-                            event_in_queue = True
-                            break
-                    if not event_in_queue:
-                        item['events'].append(event)
-                        logging.debug("[" + Report.thread_name() + "] filesystem event: "+event['nicetext'])
                     item['last_event'] = int(time.time())
+                    if event_type not in item['events']:
+                        item['events'].append(event_type)
                     break
             if not book_in_queue:
                 self._queue.append({
-                     'name': event['name'],
-                     'base': event['base'],
-                     'source': os.path.join(event['base'], event['name']),
-                     'events': [ event ],
+                     'name': name,
+                     'source': os.path.join(self.dir_in, name),
+                     'events': [ event_type ],
                      'last_event': int(time.time())
                 })
-                logging.debug("[" + Report.thread_name() + "] filesystem event: "+event['nicetext'])
+                logging.debug("[" + Report.thread_name() + "] added book to queue: " + name)
     
-    # Private method; DO NOT OVERRIDE
-    def on_created(self, event):
-        self._process(event)
+    @staticmethod
+    def path_md5(path, shallow):
+        attributes = []
+
+        # In addition to the path, we use these stat attributes:
+        # st_mode: File mode: file type and file mode bits (permissions).
+        # st_size: Size of the file in bytes, if it is a regular file or a symbolic link. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
+        # st_mtime: Time of most recent content modification expressed in seconds.
+        
+        stat = os.stat(path)
+        attributes.extend([path, stat.st_mtime, stat.st_size, stat.st_mode])
+        modified = stat.st_mtime
+
+        if not shallow:
+            for dirPath, subdirList, fileList in os.walk(path):
+                fileList.sort()
+                subdirList.sort()
+                for f in fileList:
+                    filePath = os.path.join(dirPath, f)
+                    stat = os.stat(filePath)
+                    attributes.extend([filePath, stat.st_mtime, stat.st_size, stat.st_mode])
+                    modified = max(modified, stat.st_mtime)
+                for sd in subdirList:
+                    subdirPath = os.path.join(dirPath, sd)
+                    stat = os.stat(subdirPath)
+                    attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
+                    modified = max(modified, stat.st_mtime)
+
+        md5 = hashlib.md5(str(attributes).encode()).hexdigest(), modified
+        return md5
     
-    # Private method; DO NOT OVERRIDE
-    def on_modified(self, event):
-        self._process(event)
+    def _update_md5(self, name):
+        path = os.path.join(self.dir_in, name)
+        
+        assert not "/" in name
+        assert os.path.exists(path)
+        
+        shallow_md5, _ = Pipeline.path_md5(path=path, shallow=True)
+        deep_md5, modified = Pipeline.path_md5(path=path, shallow=False)
+        modified = max(modified, self._md5[name]["modified"] if name in self._md5 else 0)
+        self._md5[name] = {
+            "shallow": shallow_md5,
+            "shallow_checked": int(time.time()),
+            "deep": deep_md5,
+            "deep_checked": int(time.time()),
+            "modified": modified,
+        }
     
-    # Private method; DO NOT OVERRIDE
-    def on_moved(self, event):
-        self._process(event)
-    
-    # Private method; DO NOT OVERRIDE
-    def on_deleted(self, event):
-        self._process(event)
+    def _monitor_book_events_thread(self):
+        while self._shouldHandleBooks and self._shouldRun:
+            # books that are recently changed (check often in case of new file changes)
+            recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
+            if recently_changed:
+                for f in recently_changed:
+                    deep_md5, _ = Pipeline.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                    self._md5[f]["deep_checked"] = int(time.time())
+                    if deep_md5 != self._md5[f]["deep"]:
+                        self._md5[f]["modified"] = int(time.time())
+                        self._update_md5(f)
+                        self._add_book_to_queue(f, "modified")
+                        logging.debug("[" + Report.thread_name() + "] book modified (and was recently modified, might be in the middle of a copy operation): " + f)
+                continue
+            
+            time.sleep(1) # unless anything has recently changed, give the system time to breathe between each iteration
+            
+            # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
+            dirlist = os.listdir(self.dir_in)
+            for f in dirlist:
+                if not f in self._md5:
+                    self._update_md5(f)
+                    self._add_book_to_queue(f, "created")
+                    logging.debug("[" + Report.thread_name() + "] book created: " + f)
+                    continue
+                
+                shallow_md5, _ = Pipeline.path_md5(path=os.path.join(self.dir_in, f), shallow=True)
+                if shallow_md5 != self._md5[f]["shallow"]:
+                    self._update_md5(f)
+                    self._add_book_to_queue(f, "modified")
+                    logging.debug("[" + Report.thread_name() + "] book modified (top-level dir/file modified): " + f)
+                    continue
+            
+            deleted = [f for f in self._md5 if f not in dirlist]
+            for f in deleted:
+                self._add_book_to_queue(f, "deleted")
+                logging.debug("[" + Report.thread_name() + "] book deleted: " + f)
+                del self._md5[f]
+            if deleted:
+                continue
+            
+            # do a deep check (size/time etc. of files in subdirectories) of up to 10 books that haven't been checked in a while
+            long_time_since_checked = sorted([{ "name": f, "md5": self._md5[f]} for f in self._md5 if time.time() - self._md5[f]["modified"] > self._inactivity_timeout], key=lambda f: f["md5"]["deep_checked"])
+            for b in long_time_since_checked[:10]:
+                f = b["name"]
+                deep_md5, _ = Pipeline.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                self._md5[f]["deep_checked"] = int(time.time())
+                if deep_md5 != self._md5[f]["deep"]:
+                    self._md5[f]["modified"] = int(time.time())
+                    self._update_md5(f)
+                    self._add_book_to_queue(f, "modified")
+                    logging.debug("[" + Report.thread_name() + "] book modified: " + f)
     
     def _handle_book_events_thread(self):
         while self._shouldHandleBooks and self._shouldRun:
@@ -265,17 +310,19 @@ class Pipeline(PatternMatchingEventHandler):
                 self.book = None
                 
                 with self._lock:
-                    x = [b['name'] + ": " + str(int(time.time()) - b['last_event']) for b in self._queue]
+                    books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
+                    books = sorted(books, key=lambda b: b["last_event"])
                     
-                    books = [b for b in self._queue if int(time.time()) - b['last_event'] > self._inactivity_timeout]
-                    books = sorted(books, key=lambda b: b['last_event'])
-                    if not len(books):
-                        self.book = None
-                    else:
+                    self.book = None
+                    if len(books):
                         self.book = books[0]
                         
                         new_queue = [b for b in self._queue if b is not self.book]
                         self._queue = new_queue
+                
+                # If the book was both created and deleted within a short time interval; then ignore it
+                if self.book and "created" in self.book["events"] and "deleted" in self.book["events"]:
+                    self.book = None
                 
                 if self.book:
                     # configure utils before processing book
@@ -283,43 +330,13 @@ class Pipeline(PatternMatchingEventHandler):
                     self.utils.epub = Epub(self)
                     self.utils.filesystem = Filesystem(self)
                     
-                    paths_all = []
-                    paths_created = []
-                    paths_modified = []
-                    paths_moved = []
-                    paths_deleted = []
-                    
-                    paths_all.append(self.book['source'])
-                    for (dirpath, dirnames, filenames) in os.walk(self.book['source']):
-                        for d in dirnames:
-                            paths_all.append(dirpath+"/"+d+"/")
-                        for f in filenames:
-                            paths_all.append(dirpath+"/"+f)
-                    
-                    for event in self.book['events']:
-                        if event['event_type'] == "created" and event['source'] not in paths_created:
-                            paths_created.append(event['source'])
-                        if event['event_type'] == "modified" and event['source'] not in paths_modified:
-                            paths_modified.append(event['source'])
-                        if event['event_type'] == "moved" and event['source'] not in paths_moved:
-                            paths_moved.append(event['source'])
-                        if event['event_type'] == "deleted" and event['source'] not in paths_deleted:
-                            paths_deleted.append(event['source'])
-                    
                     try:
-                        # created all files in book ⇒ created
-                        if set(paths_all) == set(paths_created):
+                        if "created" in self.book["events"]:
                             self.on_book_created()
                         
-                        # moved all files in book ⇒ moved
-                        elif set(paths_all) == set(paths_moved):
-                            self.on_book_moved()
-                        
-                        # deleted all files in book ⇒ deleted
-                        elif set(paths_all) == set(paths_deleted):
+                        elif "deleted" in self.book["events"]:
                             self.on_book_deleted()
                         
-                        # created, modified, moved and/or deleted some files in book ⇒ modified
                         else:
                             self.on_book_modified()
                         
@@ -336,15 +353,15 @@ class Pipeline(PatternMatchingEventHandler):
             finally:
                 time.sleep(1)
     
+    # This should be overridden
     def on_book_created(self):
         logging.info("[" + Report.thread_name() + "] Book created (unhandled book event): "+self.book['name'])
     
+    # This should be overridden
     def on_book_modified(self):
         logging.info("[" + Report.thread_name() + "] Book modified (unhandled book event): "+self.book['name'])
     
-    def on_book_moved(self):
-        logging.info("[" + Report.thread_name() + "] Book moved (unhandled book event): "+self.book['name'])
-    
+    # This should be overridden
     def on_book_deleted(self):
         logging.info("[" + Report.thread_name() + "] Book deleted (unhandled book event): "+self.book['name'])
 
