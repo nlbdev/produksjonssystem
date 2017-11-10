@@ -77,7 +77,6 @@ class IncomingNordic(Pipeline):
             
         # eller bare kopier filesettet hvis den ikke er zippet
         elif os.path.isdir(self.book["source"]):
-            os.makedirs(book_dir)
             self.utils.filesystem.copy(self.book["source"], book_dir)
             
         # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt

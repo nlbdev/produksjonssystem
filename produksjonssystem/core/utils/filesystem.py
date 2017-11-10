@@ -31,7 +31,8 @@ class Filesystem():
         if os.path.isdir(source):
             try:
                 if os.path.exists(destination):
-                    self.pipeline.utils.report.warn(os.path.basename(destination) + " " + self._i18n["exists in"] + " " + os.path.dirname(destination) + " " + self._i18n["already; existing copy will be deleted"])
+                    if os.listdir(destination):
+                        self.pipeline.utils.report.warn(os.path.basename(destination) + " " + self._i18n["exists in"] + " " + os.path.dirname(destination) + " " + self._i18n["already; existing copy will be deleted"])
                     shutil.rmtree(destination)
                 shutil.copytree(source, destination)
             except shutil.Error as errors:
