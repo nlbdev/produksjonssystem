@@ -6,6 +6,7 @@ import subprocess
 import socket
 import re
 import urllib.request
+from pathlib import Path
 
 class Filesystem():
     """Operations on files and directories"""
@@ -68,6 +69,12 @@ class Filesystem():
             shutil.move(source, target)
         else:
             self.copy(source, target)
+        
+        # update modification time for directory
+        f = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=target).name
+        Path(f).touch()
+        os.remove(f)
+        
         return target
     
     def deleteSource(self):
