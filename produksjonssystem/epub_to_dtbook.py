@@ -27,7 +27,12 @@ class EpubToDtbook(Pipeline):
         "pass": os.environ["MAIL_PASSWORD"]
     }
     email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
-    email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no") ]
+    email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no"),
+                         Address("Olav Indergaard", "Olav.Indergaard@nlb.no"),
+                         Address("Ammar Usama", "Ammar.Usama@nlb.no"),
+                         Address("Thomas Tsigaridas", "Thomas.Tsigaridas@nlb.no"),
+                         Address("Sobia Awan", "Sobia.Awan@nlb.no"),
+                         Address("Mari Myksvoll", "Mari.Myksvoll@nlb.no") ]
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
     dp2_cli = dp2_home + "/cli/dp2"
