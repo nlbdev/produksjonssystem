@@ -137,8 +137,9 @@ class EpubToPef(Pipeline):
                 self.utils.report.debug("Pipeline 2 status: " + result_status)
                 
                 # get conversion report
-                self.utils.filesystem.copy(os.path.join(result_dir, "preview-output-dir"), os.path.join(self.utils.report.reportDir(), "preview-" + braille_version))
-                self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + book_id + ".pef.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
+                if os.path.isdir(os.path.join(result_dir, "preview-output-dir")):
+                    self.utils.filesystem.copy(os.path.join(result_dir, "preview-output-dir"), os.path.join(self.utils.report.reportDir(), "preview-" + braille_version))
+                    self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + book_id + ".pef.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
                 
                 pef_dir = os.path.join(result_dir, "pef-output-dir")
                 
