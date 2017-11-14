@@ -107,8 +107,7 @@ class Report():
             smtp = self.pipeline.email_smtp
         
         # 0. Create attachment with complete log (including DEBUG statements)
-        logpath = os.path.join(self.reportDir(), "log.txt")
-        self.attachment([m["text"] for m in self._messages["message"]], logpath, "DEBUG")
+        self.attachLog()
         
         # Determine overall status
         status = "INFO"
@@ -219,6 +218,11 @@ class Report():
     
     def slack(self, message):
         logging.warn("[" + Report.thread_name(self.pipeline) + "] TODO: send message to Slack")
+    
+    def attachLog(self):
+        logpath = os.path.join(self.reportDir(), "log.txt")
+        self.attachment([m["text"] for m in self._messages["message"]], logpath, "DEBUG")
+        return logpath
     
     def infoHtml(self, html, message_type="message"):
         """ wash the HTML before reporting it """

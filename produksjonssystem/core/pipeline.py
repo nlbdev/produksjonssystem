@@ -342,6 +342,8 @@ class Pipeline():
                         
                     except Exception:
                         logging.exception("[" + Report.thread_name() + "] An error occured while handling the book event")
+                        logpath = self.utils.report.attachLog()
+                        logging.exception("[" + Report.thread_name() + "] Logfile: " + logpath)
                     
                     finally:
                         if self._stopAfterFirstJob:
