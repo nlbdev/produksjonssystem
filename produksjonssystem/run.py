@@ -12,6 +12,7 @@ from core.pipeline import Pipeline
 from incoming_nordic import IncomingNordic
 from epub_to_html import EpubToHtml
 from epub_to_dtbook import EpubToDtbook
+from epub_to_pef import EpubToPef
 
 # Check that archive dir is defined
 assert os.environ.get("BOOK_ARCHIVE_DIR")
@@ -25,14 +26,16 @@ dirs = {
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "html_narration": os.path.join(book_archive_dir, "distribusjonsformater/HTML-til-innlesing"),
-    "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC")
+    "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
+    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
 }
 
 # Define pipelines and input/output dirs
 pipelines = [
     [ IncomingNordic(),  "incoming", "master", "reports" ],
     [ EpubToHtml(),      "master",   "html",   "reports" ],
-    [ EpubToDtbook(),    "master",   "dtbook", "reports" ]
+    [ EpubToDtbook(),    "master",   "dtbook", "reports" ],
+    [ EpubToPef(),       "master",   "pef",    "reports" ]
 ]
 
 
