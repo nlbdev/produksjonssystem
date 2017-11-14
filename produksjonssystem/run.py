@@ -20,7 +20,7 @@ book_archive_dir = str(os.path.normpath(os.environ.get("BOOK_ARCHIVE_DIR")))
 # Define directories
 dirs = {
     "reports": os.path.join(book_archive_dir, "rapporter"),
-    "nordic": os.path.join(book_archive_dir, "innkommende"),
+    "incoming": os.path.join(book_archive_dir, "innkommende"),
     "master": os.path.join(book_archive_dir, "master/EPUB"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
@@ -30,9 +30,9 @@ dirs = {
 
 # Define pipelines and input/output dirs
 pipelines = [
-    [ IncomingNordic(),  "nordic", "master", "reports" ],
-    [ EpubToHtml(),      "master", "html",   "reports" ],
-    [ EpubToDtbook(),    "master", "dtbook", "reports" ]
+    [ IncomingNordic(),  "incoming", "master", "reports" ],
+    [ EpubToHtml(),      "master",   "html",   "reports" ],
+    [ EpubToDtbook(),    "master",   "dtbook", "reports" ]
 ]
 
 
