@@ -29,7 +29,7 @@ class Filesystem():
         """Copy the `source` file or directory to the `destination`"""
         assert source, "Filesystem.copy(): source must be specified"
         assert destination, "Filesystem.copy(): destination must be specified"
-        assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory"
+        assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory: " + str(source)
         if os.path.isdir(source):
             try:
                 if os.path.exists(destination):
@@ -54,7 +54,7 @@ class Filesystem():
         else:
             shutil.copy(source, destination)
     
-    def storeBook(self, source, book_id, move=False):
+    def storeBook(self, source, book_id, move=False, subdir=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
         assert book_id
@@ -62,9 +62,14 @@ class Filesystem():
         assert book_id != "."
         assert not ".." in book_id
         assert not "/" in book_id
-        target = os.path.join(self.pipeline.dir_out, book_id)
+        assert not subdir or not ".." in subdir
+        assert not subdir or not "/" in subdir
+        dir_out = self.pipeline.dir_out
+        if subdir:
+            dir_out = os.path.join(dir_out, subdir)
+        target = os.path.join(dir_out, book_id)
         if os.path.exists(target):
-            self.pipeline.utils.report.warn(book_id + " " + self._i18n["exists in"] + " " + self.pipeline.dir_out + " " + self._i18n["already; existing copy will be deleted"])
+            self.pipeline.utils.report.warn(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
             shutil.rmtree(target)
         if move:
             shutil.move(source, target)
