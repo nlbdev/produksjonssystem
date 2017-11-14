@@ -21,10 +21,10 @@ class EpubToDtbook(Pipeline):
     title = "EPUB til DTBook"
     
     email_smtp = {
-        "host": os.environ["MAIL_SERVER"],
-        "port": os.environ["MAIL_PORT"],
-        "user": os.environ["MAIL_USERNAME"],
-        "pass": os.environ["MAIL_PASSWORD"]
+        "host": os.getenv("MAIL_SERVER"),
+        "port": os.getenv("MAIL_PORT"),
+        "user": os.getenv("MAIL_USERNAME"),
+        "pass": os.getenv("MAIL_PASSWORD")
     }
     email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
     email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no"),

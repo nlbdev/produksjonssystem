@@ -198,11 +198,17 @@ class Report():
         msg.add_alternative(markdown_html, subtype="html")
         
         # 4. send e-mail
-        with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
-            s.ehlo()
-            s.starttls()
-            s.login(smtp["user"], smtp["pass"])
-            s.send_message(msg)
+        if smtp["host"] and smtp["port"]:
+            with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
+                s.ehlo()
+                s.starttls()
+                if smtp["user"] and smtp["pass"]:
+                    s.login(smtp["user"], smtp["pass"])
+                else:
+                    logging.debug("[" + Report.thread_name(self.pipeline) + "] email user/pass not configured")
+                s.send_message(msg)
+        else:
+            logging.warn("[" + Report.thread_name(self.pipeline) + "] email host/port not configured")
         
         with open('/tmp/email.md', "w") as f:
             f.write(markdown_text)
