@@ -7,7 +7,6 @@ import time
 import os
 import sys
 import logging
-import hashlib
 
 from pathlib import Path
 from threading import Thread, RLock
@@ -197,46 +196,15 @@ class Pipeline():
                 })
                 logging.debug("[" + Report.thread_name() + "] added book to queue: " + name)
     
-    @staticmethod
-    def path_md5(path, shallow):
-        attributes = []
-
-        # In addition to the path, we use these stat attributes:
-        # st_mode: File mode: file type and file mode bits (permissions).
-        # st_size: Size of the file in bytes, if it is a regular file or a symbolic link. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
-        # st_mtime: Time of most recent content modification expressed in seconds.
-        
-        stat = os.stat(path)
-        attributes.extend([path, stat.st_mtime, stat.st_size, stat.st_mode])
-        modified = stat.st_mtime
-
-        if not shallow:
-            for dirPath, subdirList, fileList in os.walk(path):
-                fileList.sort()
-                subdirList.sort()
-                for f in fileList:
-                    filePath = os.path.join(dirPath, f)
-                    stat = os.stat(filePath)
-                    attributes.extend([filePath, stat.st_mtime, stat.st_size, stat.st_mode])
-                    modified = max(modified, stat.st_mtime)
-                for sd in subdirList:
-                    subdirPath = os.path.join(dirPath, sd)
-                    stat = os.stat(subdirPath)
-                    attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
-                    modified = max(modified, stat.st_mtime)
-
-        md5 = hashlib.md5(str(attributes).encode()).hexdigest(), modified
-        return md5
-    
     def _update_md5(self, name):
         path = os.path.join(self.dir_in, name)
         
         assert not "/" in name
         assert os.path.exists(path)
         
-        shallow_md5, _ = Pipeline.path_md5(path=path, shallow=True)
-        deep_md5, modified = Pipeline.path_md5(path=path, shallow=False)
-        modified = max(modified, self._md5[name]["modified"] if name in self._md5 else 0)
+        shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True)
+        deep_md5, modified = Filesystem.path_md5(path=path, shallow=False)
+        modified = max(modified if modified else 0, self._md5[name]["modified"] if name in self._md5 else 0)
         self._md5[name] = {
             "shallow": shallow_md5,
             "shallow_checked": int(time.time()),
@@ -251,7 +219,7 @@ class Pipeline():
             recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
             if recently_changed:
                 for f in recently_changed:
-                    deep_md5, _ = Pipeline.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                    deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
                     self._md5[f]["deep_checked"] = int(time.time())
                     if deep_md5 != self._md5[f]["deep"]:
                         self._md5[f]["modified"] = int(time.time())
@@ -271,7 +239,7 @@ class Pipeline():
                     logging.debug("[" + Report.thread_name() + "] book created: " + f)
                     continue
                 
-                shallow_md5, _ = Pipeline.path_md5(path=os.path.join(self.dir_in, f), shallow=True)
+                shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=True)
                 if shallow_md5 != self._md5[f]["shallow"]:
                     self._update_md5(f)
                     self._add_book_to_queue(f, "modified")
@@ -290,7 +258,7 @@ class Pipeline():
             long_time_since_checked = sorted([{ "name": f, "md5": self._md5[f]} for f in self._md5 if time.time() - self._md5[f]["modified"] > self._inactivity_timeout], key=lambda f: f["md5"]["deep_checked"])
             for b in long_time_since_checked[:10]:
                 f = b["name"]
-                deep_md5, _ = Pipeline.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
                 self._md5[f]["deep_checked"] = int(time.time())
                 if deep_md5 != self._md5[f]["deep"]:
                     self._md5[f]["modified"] = int(time.time())

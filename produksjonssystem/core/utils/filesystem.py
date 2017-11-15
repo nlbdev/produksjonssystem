@@ -7,6 +7,7 @@ import socket
 import re
 import urllib.request
 import tempfile
+import hashlib
 from pathlib import Path
 
 class Filesystem():
@@ -24,6 +25,40 @@ class Filesystem():
     
     def __init__(self, pipeline):
         self.pipeline = pipeline
+    
+    @staticmethod
+    def path_md5(path, shallow):
+        attributes = []
+
+        # In addition to the path, we use these stat attributes:
+        # st_mode: File mode: file type and file mode bits (permissions).
+        # st_size: Size of the file in bytes, if it is a regular file or a symbolic link. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
+        # st_mtime: Time of most recent content modification expressed in seconds.
+        
+        if not os.path.exists(path):
+            return "d41d8cd98f00b204e9800998ecf8427e", 0 if not shallow else None # MD5 of an empty string
+        
+        stat = os.stat(path)
+        attributes.extend([path, stat.st_mtime, stat.st_size, stat.st_mode])
+        modified = stat.st_mtime
+
+        if not shallow:
+            for dirPath, subdirList, fileList in os.walk(path):
+                fileList.sort()
+                subdirList.sort()
+                for f in fileList:
+                    filePath = os.path.join(dirPath, f)
+                    stat = os.stat(filePath)
+                    attributes.extend([filePath, stat.st_mtime, stat.st_size, stat.st_mode])
+                    modified = max(modified, stat.st_mtime)
+                for sd in subdirList:
+                    subdirPath = os.path.join(dirPath, sd)
+                    stat = os.stat(subdirPath)
+                    attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
+                    modified = max(modified, stat.st_mtime)
+
+        md5 = hashlib.md5(str(attributes).encode()).hexdigest(), modified
+        return md5, None
     
     def copy(self, source, destination):
         """Copy the `source` file or directory to the `destination`"""
