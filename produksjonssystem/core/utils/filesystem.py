@@ -20,8 +20,15 @@ class Filesystem():
         "in": "i",
         "exists in": "finnes i",
         "already; existing copy will be deleted": "fra før; eksisterende kopi blir slettet",
-        "Running": "Kjører"
+        "Running": "Kjører",
+        "Unable to replace file with newer version": "Klarte ikke å erstatte filen med nyere versjon",
+        "Unable to remove": "Klarte ikke å fjerne",
+        "directory": "mappe",
+        "file": "fil",
+        "that should no longer exist": "som ikke skal eksistere lenger"
     }
+    
+    shutil_ignore_patterns = shutil.ignore_patterns("Thumbs.db") # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
     
     def __init__(self, pipeline):
         self.pipeline = pipeline
@@ -60,18 +67,64 @@ class Filesystem():
         md5 = hashlib.md5(str(attributes).encode()).hexdigest(), modified
         return md5, None
     
+    def copytree(self, src, dst):
+        assert os.path.isdir(src)
+        
+        if not os.path.exists(dst):
+            return shutil.copytree(src, dst, ignore=Filesystem.shutil_ignore_patterns)
+        
+        src_list = os.listdir(src)
+        dst_list = os.listdir(dst)
+        src_list.sort()
+        dst_list.sort()
+        ignore = Filesystem.shutil_ignore_patterns(src, src_list)
+        
+        for item in src_list:
+            src_subpath = os.path.join(src, item)
+            dst_subpath = os.path.join(dst, item)
+            if item not in ignore:
+                if os.path.isdir(src_subpath):
+                    if item not in dst_list:
+                        shutil.copytree(src_subpath, dst_subpath, ignore=Filesystem.shutil_ignore_patterns)
+                    else:
+                        self.copytree(src_subpath, dst_subpath)
+                else:
+                    # Report files that have changed but where the target could not be overwritten
+                    if os.path.exists(dst_subpath):
+                        src_md5 = Filesystem.path_md5(src_subpath, shallow=False)
+                        dst_md5 = Filesystem.path_md5(dst_subpath, shallow=False)
+                        if src_md5 != dst_md5:
+                            self.pipeline.utils.report.error(Filesystem._i18n["Unable to replace file with newer version"] + ": " + dst_subpath)
+                    else:
+                        shutil.copy(src_subpath, dst_subpath)
+        
+        # Report files and folders that could not be removed and were not supposed to be replaced
+        for item in dst_list:
+            dst_subpath = os.path.join(dst, item)
+            if item not in src_list:
+                message = Filesystem._i18n["Unable to remove"] + " "
+                if os.path.isdir(dst_subpath):
+                    message += Filesystem._i18n["directory"]
+                else:
+                    message += Filesystem._i18n["file"]
+                message += " " + Filesystem._i18n["that should no longer exist"] + ": " + dst_subpath
+                self.pipeline.utils.report.error(message)
+        
+        return dst
+    
     def copy(self, source, destination):
         """Copy the `source` file or directory to the `destination`"""
         assert source, "Filesystem.copy(): source must be specified"
         assert destination, "Filesystem.copy(): destination must be specified"
         assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory: " + str(source)
+        self.pipeline.utils.report.debug("Copying from '" + source + "' to '" + destination + "'")
         if os.path.isdir(source):
             try:
                 if os.path.exists(destination):
                     if os.listdir(destination):
-                        self.pipeline.utils.report.warn(os.path.basename(destination) + " " + self._i18n["exists in"] + " " + os.path.dirname(destination) + " " + self._i18n["already; existing copy will be deleted"])
-                    shutil.rmtree(destination)
-                shutil.copytree(source, destination)
+                        self.pipeline.utils.report.info(os.path.basename(destination) + " " + self._i18n["exists in"] + " " + os.path.dirname(destination) + " " + self._i18n["already; existing copy will be deleted"])
+                    shutil.rmtree(destination, ignore_errors=True)
+                self.copytree(source, destination)
             except shutil.Error as errors:
                 warnings = []
                 for arg in errors.args[0]:
@@ -104,7 +157,7 @@ class Filesystem():
             dir_out = os.path.join(dir_out, subdir)
         target = os.path.join(dir_out, book_id)
         if os.path.exists(target):
-            self.pipeline.utils.report.warn(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
+            self.pipeline.utils.report.info(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
             shutil.rmtree(target)
         if move:
             shutil.move(source, target)
