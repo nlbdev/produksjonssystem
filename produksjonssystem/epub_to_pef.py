@@ -60,12 +60,12 @@ class EpubToPef(Pipeline):
         
         if not os.path.isdir(self.book["source"]):
             self.utils.report.info(book_id + " er ikke en mappe.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
         
         if not os.path.isfile(os.path.join(self.book["source"], "EPUB/package.opf")):
             self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
         
         # kopier boka til en midlertidig mappe
@@ -133,7 +133,7 @@ class EpubToPef(Pipeline):
                 
             except subprocess.TimeoutExpired as e:
                 self.utils.report.info("Konvertering av " + book_id + " fra EPUB til PEF tok for lang tid og ble derfor stoppet.")
-                self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+                self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
                 return
                 
             finally:
@@ -146,12 +146,12 @@ class EpubToPef(Pipeline):
             
             if result_status != "DONE":
                 self.utils.report.info("Klarte ikke å konvertere boken")
-                self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+                self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
                 return
             
             if not os.path.isdir(pef_dir):
                 self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-                self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+                self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
                 return
             
             self.utils.report.info("Boken ble konvertert. Kopierer til PEF-arkiv.")
@@ -160,7 +160,7 @@ class EpubToPef(Pipeline):
             self.utils.report.attachment(None, archived_path, "DEBUG")
             self.utils.report.info(book_id + " ble lagt til i arkivet under PEF/" + braille_version + ".")
         
-        self.utils.report.email(self.title + ": " + book_id + " ble konvertert 👍😄")
+        self.utils.report.title = self.title + ": " + book_id + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":

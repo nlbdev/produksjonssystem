@@ -319,13 +319,22 @@ class Pipeline():
                             self.on_book_modified()
                         
                     except Exception:
-                        logging.exception("[" + Report.thread_name() + "] An error occured while handling the book event")
-                        logpath = self.utils.report.attachLog()
-                        logging.exception("[" + Report.thread_name() + "] Logfile: " + logpath)
+                        self.utils.report.error("An error occured while handling the book")
+                        self.utils.report.error(traceback.format_exc())
+                        logging.exception("[" + Report.thread_name() + "] An error occured while handling the book")
                     
                     finally:
                         if self._stopAfterFirstJob:
                             self._shouldRun = False
+                        logging.exception("[" + Report.thread_name() + "] Sending email")
+                        try:
+                            self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                        except Exception:
+                            logging.exception("[" + Report.thread_name() + "] An error occured while sending email")
+                        finally:
+                            logpath = self.utils.report.attachLog()
+                            logging.exception("[" + Report.thread_name() + "] Logfile: " + logpath)
+                            
                 
             except Exception:
                 logging.exception("[" + Report.thread_name() + "] An error occured while checking for book events")

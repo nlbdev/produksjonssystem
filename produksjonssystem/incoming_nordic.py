@@ -71,14 +71,14 @@ class IncomingNordic(Pipeline):
             
         # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt
         else:
-            self.utils.report.info(book_id + " er hverken en \".epub\"-fil eller en mappe.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+            self.utils.report.error(book_id + " er hverken en \".epub\"-fil eller en mappe.")
+            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
         
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if not os.path.isfile(os.path.join(book_dir, "EPUB/package.opf")):
-            self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+            self.utils.report.error(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
+            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
         
         # sørg for at filrettighetene stemmer
@@ -139,8 +139,8 @@ class IncomingNordic(Pipeline):
                 self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
             
         except subprocess.TimeoutExpired as e:
-            self.utils.report.info("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+            self.utils.report.error("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
+            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
             
         finally:
@@ -151,8 +151,8 @@ class IncomingNordic(Pipeline):
                     self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
         
         if result_status != "DONE":
-            self.utils.report.info("Klarte ikke å validere boken")
-            self.utils.report.email(self.title + ": " + book_id + " feilet 😭👎")
+            self.utils.report.error("Klarte ikke å validere boken")
+            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
         
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
@@ -160,8 +160,8 @@ class IncomingNordic(Pipeline):
         archived_path = self.utils.filesystem.storeBook(book_dir, book_id)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.filesystem.deleteSource()
-        self.utils.report.info(book_id+" ble lagt til i master-arkivet.")
-        self.utils.report.email(self.title + ": " + book_id + " er valid 👍😄")
+        self.utils.report.success(book_id+" ble lagt til i master-arkivet.")
+        self.utils.report.title = self.title + ": " + book_id + " er valid 👍😄"
         
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB

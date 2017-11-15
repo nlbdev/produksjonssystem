@@ -23,6 +23,7 @@ class Report():
     
     stdout_verbosity = 'INFO'
     pipeline = None
+    title = None
     _report_dir = None
     _messages = None
     
@@ -32,7 +33,10 @@ class Report():
     }
     
     def __init__(self, pipeline):
-        self._messages = {}
+        self._messages = {
+            "message": [],
+            "attachment": []
+        }
         self.pipeline = pipeline
         logging.basicConfig(stream=sys.stdout, level=pipeline._loglevel)
     
