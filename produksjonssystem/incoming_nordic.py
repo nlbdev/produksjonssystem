@@ -8,7 +8,6 @@ import time
 import subprocess
 import shutil
 import re
-from email.headerregistry import Address
 
 from core.pipeline import Pipeline
 
@@ -18,20 +17,6 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class IncomingNordic(Pipeline):
     title = "Validering av Nordisk EPUB 3"
-    
-    email_smtp = {
-        "host": os.getenv("MAIL_SERVER"),
-        "port": os.getenv("MAIL_PORT"),
-        "user": os.getenv("MAIL_USERNAME"),
-        "pass": os.getenv("MAIL_PASSWORD")
-    }
-    email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
-    email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no"),
-                         Address("Olav Indergaard", "Olav.Indergaard@nlb.no"),
-                         Address("Ammar Usama", "Ammar.Usama@nlb.no"),
-                         Address("Thomas Tsigaridas", "Thomas.Tsigaridas@nlb.no"),
-                         Address("Sobia Awan", "Sobia.Awan@nlb.no"),
-                         Address("Mari Myksvoll", "Mari.Myksvoll@nlb.no") ]
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
     dp2_cli = dp2_home + "/cli/dp2"

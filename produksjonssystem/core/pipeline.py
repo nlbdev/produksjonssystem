@@ -75,6 +75,9 @@ class Pipeline():
     # utility classes; reconfigured every time a book is processed to simplify function signatures
     utils = None
     
+    # email settings
+    email_settings = None
+    
     # should be overridden when extending this class
     title = None
     
@@ -88,7 +91,7 @@ class Pipeline():
         logging.basicConfig(stream=sys.stdout, level=self._loglevel)
         super().__init__()
     
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None):
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
         
         if not dir_in:
@@ -97,6 +100,12 @@ class Pipeline():
             dir_out = os.environ.get("DIR_OUT")
         if not dir_reports:
             dir_reports = os.environ.get("DIR_REPORTS")
+        if not email_settings:
+            email_settings = {
+                "smtp": {},
+                "sender": None,
+                "recipients": []
+            }
         stop_after_first_job = os.environ.get("STOP_AFTER_FIRST_JOB")
         
         assert dir_in != None and len(dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
@@ -111,6 +120,7 @@ class Pipeline():
         self.dir_in = str(os.path.normpath(dir_in)) + '/'
         self.dir_out = str(os.path.normpath(dir_out)) + '/'
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
+        self.email_settings = email_settings
         
         if Filesystem.ismount(self.dir_in):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
@@ -152,11 +162,11 @@ class Pipeline():
         self._queue = []
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
-    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None):
+    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None):
         """
         Run in a blocking manner (useful from command line)
         """
-        self.start(inactivity_timeout, dir_in, dir_out, dir_reports)
+        self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings)
         try:
             while self._shouldRun:
                 if not os.path.isdir(self.dir_in):

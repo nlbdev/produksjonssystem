@@ -7,6 +7,7 @@ import time
 import logging
 from threading import Thread
 from core.pipeline import Pipeline
+from email.headerregistry import Address
 
 # Import pipelines
 from incoming_nordic import IncomingNordic
@@ -17,6 +18,26 @@ from epub_to_pef import EpubToPef
 # Check that archive dir is defined
 assert os.environ.get("BOOK_ARCHIVE_DIR")
 book_archive_dir = str(os.path.normpath(os.environ.get("BOOK_ARCHIVE_DIR")))
+
+# Configure email
+email = {
+    "smtp": {
+        "host": os.getenv("MAIL_SERVER"),
+        "port": os.getenv("MAIL_PORT"),
+        "user": os.getenv("MAIL_USERNAME"),
+        "pass": os.getenv("MAIL_PASSWORD")
+    },
+    "sender": Address("NLBs Produksjonssystem", "noreply@nlb.no"),
+    "recipients": {
+        "ammar":   Address("Ammar Usama",              "Ammar.Usama@nlb.no"),
+        "jostein": Address("Jostein Austvik Jacobsen", "jostein@nlb.no"),
+        "kari":    Address("Kari Rudjord",             "Kari.Rudjord@nlb.no"),
+        "mari":    Address("Mari Myksvoll",            "Mari.Myksvoll@nlb.no"),
+        "olav":    Address("Olav Indergaard",          "Olav.Indergaard@nlb.no"),
+        "sobia":   Address("Sobia Awan",               "Sobia.Awan@nlb.no"),
+        "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas@nlb.no"),
+    }
+}
 
 # Define directories
 dirs = {
@@ -30,12 +51,12 @@ dirs = {
     "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
 }
 
-# Define pipelines and input/output dirs
+# Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
-    [ IncomingNordic(),  "incoming", "master", "reports" ],
-    [ EpubToHtml(),      "master",   "html",   "reports" ],
-    [ EpubToDtbook(),    "master",   "dtbook", "reports" ],
-    [ EpubToPef(),       "master",   "pef",    "reports" ]
+    [ IncomingNordic(),  "incoming", "master", "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+    [ EpubToHtml(),      "master",   "html",   "reports", ["ammar","jostein","olav"]],
+    [ EpubToDtbook(),    "master",   "dtbook", "reports", ["ammar","jostein","mari","olav"]],
+    [ EpubToPef(),       "master",   "pef",    "reports", ["ammar","jostein","kari"]]
 ]
 
 
@@ -54,14 +75,17 @@ for d in dirs:
 
 # Make sure that the pipelines are defined properly
 for pipeline in pipelines:
-    assert len(pipeline) == 4, "Pipeline declarations have four arguments (not " + len(pipeline) + ")"
+    assert len(pipeline) == 5, "Pipeline declarations have four arguments (not " + len(pipeline) + ")"
     assert isinstance(pipeline[0], Pipeline), "The first argument of a pipeline declaration must be a pipeline instance"
     assert isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string"
     assert isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string"
     assert isinstance(pipeline[3], str), "The fourth argument of a pipeline declaration must be a string"
+    assert isinstance(pipeline[4], list), "The fifth argument of a pipeline declaration must be a list"
     assert pipeline[1] in dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must refer to a key in \"dirs\""
     assert pipeline[2] in dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must refer to a key in \"dirs\""
-    assert pipeline[3] in dirs, "The fourth argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must refer to a key in \"dirs\""
+    assert pipeline[3] in dirs, "The fourth argument of a pipeline declaration (\"" + str(pipeline[3]) + "\") must refer to a key in \"dirs\""
+    for recipient in pipeline[4]:
+        assert recipient in email["recipients"], "All list items in the fifth argument of a pipeline declaration (\"" + str(pipeline[4]) + "\") must refer to a key in \"email['recipients']\""
 
 # Make directories
 for d in dirs:
@@ -69,7 +93,14 @@ for d in dirs:
 
 threads = []
 for pipeline in pipelines:
-    thread = Thread(target=pipeline[0].run, args=(10, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]]))
+    email_settings = {
+        "smtp": email["smtp"],
+        "sender": email["sender"],
+        "recipients": []
+    }
+    for s in pipeline[4]:
+        email_settings["recipients"].append(email["recipients"][s])
+    thread = Thread(target=pipeline[0].run, args=(10, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]], email_settings))
     thread.setDaemon(True)
     thread.start()
     threads.append(thread)

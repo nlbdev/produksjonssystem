@@ -93,18 +93,13 @@ class Report():
         self._add_message('ERROR', message, message_type, add_empty_line)
         logging.error("[" + Report.thread_name(self.pipeline) + "] " + message)
     
-    def email(self, subject, sender=None, recipients=None, smtp=None):
-        assert subject
-        assert sender or self.pipeline.email_sender
-        assert recipients or self.pipeline.email_recipients
-        assert smtp or self.pipeline.email_smtp
+    def email(self, smtp, sender, recipients, subject=None):
+        assert sender
+        assert recipients
+        assert smtp
         
-        if not sender:
-            sender = self.pipeline.email_sender
-        if not recipients:
-            recipients = self.pipeline.email_recipients
-        if not smtp:
-            smtp = self.pipeline.email_smtp
+        if not subject:
+            subject = self.title if self.title else self.pipeline.title
         
         # 0. Create attachment with complete log (including DEBUG statements)
         self.attachLog()

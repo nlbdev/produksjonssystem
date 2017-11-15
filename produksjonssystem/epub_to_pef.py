@@ -9,7 +9,6 @@ from datetime import datetime, timezone
 import subprocess
 import shutil
 import re
-from email.headerregistry import Address
 
 from core.pipeline import Pipeline
 
@@ -19,17 +18,6 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class EpubToPef(Pipeline):
     title = "EPUB til PEF"
-    
-    email_smtp = {
-        "host": os.getenv("MAIL_SERVER"),
-        "port": os.getenv("MAIL_PORT"),
-        "user": os.getenv("MAIL_USERNAME"),
-        "pass": os.getenv("MAIL_PASSWORD")
-    }
-    email_sender = Address("NLBs Produksjonssystem", "noreply@nlb.no")
-    email_recipients = [ Address("Jostein Austvik Jacobsen", "jostein@nlb.no"),
-                         Address("Ammar Usama", "Ammar.Usama@nlb.no"),
-                         Address("Kari Rudjord", "Kari.Rudjord@nlb.no") ]
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
     dp2_cli = dp2_home + "/cli/dp2"
