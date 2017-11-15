@@ -209,6 +209,7 @@ class Filesystem():
         return smb, file, unc
     
     # in case you want to override something
-    def translate(self, english_text, translated_text):
-        self._i18n[english_text] = translated_text
+    @staticmethod
+    def translate(english_text, translated_text):
+        Filesystem._i18n[english_text] = translated_text
     
