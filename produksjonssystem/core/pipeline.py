@@ -290,6 +290,8 @@ class Pipeline():
                 with self._lock:
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
                     books = sorted(books, key=lambda b: b["last_event"])
+                    if books:
+                        logging.info("[" + Report.thread_name() + "] queue: " + ", ".join([b["name"] for b in books][:5]) + (", ... ( " + str(len(books) - 5) + " more )" if len(books) > 5 else ""))
                     
                     self.book = None
                     if len(books):
