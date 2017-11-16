@@ -27,7 +27,7 @@ class EpubToPef(Pipeline):
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
-        self.on_book()
+        self.utils.report.title = self.title + " EPUB master slettet: " + book_id
     
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])

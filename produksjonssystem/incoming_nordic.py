@@ -25,7 +25,7 @@ class IncomingNordic(Pipeline):
     first_job = True # Will be set to false after first job is triggered
     
     def on_book_deleted(self):
-        pass # do nothing
+        self.utils.report.should_email = False
     
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: "+self.book['name'])

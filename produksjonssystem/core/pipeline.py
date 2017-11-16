@@ -286,6 +286,10 @@ class Pipeline():
             
             except Exception:
                 logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
+                try:
+                    Report.emailPlainText(Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""), traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                except Exception:
+                    logging.exception("[" + Report.thread_name() + "] Could not e-mail exception")
     
     def _handle_book_events_thread(self):
         while self._shouldHandleBooks and self._shouldRun:
@@ -351,6 +355,10 @@ class Pipeline():
                 
             except Exception:
                 logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
+                try:
+                    Report.emailPlainText(Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""), traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                except Exception:
+                    logging.exception("[" + Report.thread_name() + "] Could not e-mail exception")
                 
             finally:
                 time.sleep(1)

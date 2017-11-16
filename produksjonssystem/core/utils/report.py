@@ -24,6 +24,7 @@ class Report():
     stdout_verbosity = 'INFO'
     pipeline = None
     title = None
+    should_email = True
     _report_dir = None
     _messages = None
     
@@ -97,10 +98,38 @@ class Report():
         self._add_message('ERROR', message, message_type, add_empty_line)
         logging.error("[" + Report.thread_name(self.pipeline) + "] " + message)
     
-    def email(self, smtp, sender, recipients, subject=None):
+    @staticmethod
+    def emailPlainText(subject, message, smtp, sender, recipients):
+        assert subject
+        assert message
+        assert smtp
         assert sender
         assert recipients
+        
+        # 1. build e-mail
+        msg = EmailMessage()
+        msg['Subject'] = subject
+        msg['From'] = sender
+        msg['To'] = recipients if isinstance(recipients, Address) else tuple(recipients)
+        msg.set_content(message)
+        
+        # 2. send e-mail
+        if smtp["host"] and smtp["port"]:
+            with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
+                s.ehlo()
+                s.starttls()
+                if smtp["user"] and smtp["pass"]:
+                    s.login(smtp["user"], smtp["pass"])
+                else:
+                    logging.debug("[" + Report.thread_name() + "] email user/pass not configured")
+                s.send_message(msg)
+        else:
+            logging.warn("[" + Report.thread_name() + "] email host/port not configured")
+    
+    def email(self, smtp, sender, recipients, subject=None):
         assert smtp
+        assert sender
+        assert recipients
         
         if not subject:
             subject = self.title if self.title else self.pipeline.title
