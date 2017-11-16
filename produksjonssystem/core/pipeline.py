@@ -210,7 +210,6 @@ class Pipeline():
         path = os.path.join(self.dir_in, name)
         
         assert not "/" in name
-        assert os.path.exists(path)
         
         shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True)
         deep_md5, modified = Filesystem.path_md5(path=path, shallow=False)
