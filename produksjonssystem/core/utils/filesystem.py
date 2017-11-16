@@ -64,8 +64,8 @@ class Filesystem():
                     attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
                     modified = max(modified, stat.st_mtime)
 
-        md5 = hashlib.md5(str(attributes).encode()).hexdigest(), modified
-        return md5, None
+        md5 = hashlib.md5(str(attributes).encode()).hexdigest()
+        return md5, modified
     
     def copytree(self, src, dst):
         assert os.path.isdir(src)
