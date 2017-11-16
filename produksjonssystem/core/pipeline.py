@@ -71,7 +71,6 @@ class Pipeline():
     _shouldHandleBooks = False
     _shouldRun = True
     _stopAfterFirstJob = False
-    _loglevel = None
     
     # dynamic (reset on stop(), changes over time)
     _queue = None
@@ -86,14 +85,13 @@ class Pipeline():
     # should be overridden when extending this class
     title = None
     
-    def __init__(self, loglevel=None):
+    def __init__(self):
         self.utils = DotMap()
         self.utils.report = None
         self.utils.epub = None
         self.utils.filesystem = None
         self._queue = []
-        self._loglevel = logging.INFO if not None else loglevel
-        logging.basicConfig(stream=sys.stdout, level=self._loglevel)
+        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
         super().__init__()
     
     def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None):
