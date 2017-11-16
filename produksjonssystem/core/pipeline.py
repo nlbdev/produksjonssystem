@@ -343,7 +343,8 @@ class Pipeline():
                             self._shouldRun = False
                         logging.exception("[" + Report.thread_name() + "] Sending email")
                         try:
-                            self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                            if self.utils.report.should_email:
+                                self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                         except Exception:
                             logging.exception("[" + Report.thread_name() + "] An error occured while sending email")
                         finally:
