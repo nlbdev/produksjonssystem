@@ -10,16 +10,22 @@ import smtplib
 import time
 import logging
 import threading
-from datetime import datetime, timezone
 
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from email.headerregistry import Address
 from email.utils import make_msgid
+from slacker import Slacker
 
 from core.utils.filesystem import Filesystem
 
 class Report():
     """Logging and reporting"""
+    
+    _slack = None
+    _slack_token = os.getenv("SLACK_TOKEN", None)
+    _slack_authed = None
+    _slack_channel = os.getenv("SLACK_CHANNEL", "#test")
     
     stdout_verbosity = 'INFO'
     pipeline = None
@@ -125,6 +131,8 @@ class Report():
                 s.send_message(msg)
         else:
             logging.warn("[" + Report.thread_name() + "] email host/port not configured")
+        
+        Report.slack(text=subject, attachments=None)
     
     def email(self, smtp, sender, recipients, subject=None):
         assert smtp
@@ -182,9 +190,18 @@ class Report():
                 "style": "background-color: #ffbfbf;"
             }
         }
-            
+        
+        attachments = []
         for m in self._messages["attachment"]:
             smb, file, unc = Filesystem.networkpath(m["text"])
+            attachments.append({
+                "title": os.path.basename(file) + ("/" if os.path.isdir(m["text"]) else ""),
+                "smb": smb,
+                "file": file,
+                "unc": unc,
+                "severity": m["severity"]
+            })
+        for attachment in attachments:
             # UNC links seems to be preserved when viewed in Outlook.
             # file: and smb: URIs are disallowed or removed.
             # So these links will only work in Windows.
@@ -193,9 +210,9 @@ class Report():
             # the transfers go through http:. This could maybe be mapped
             # using environment variables.
             li = "<li>"
-            li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[m["severity"]]["icon"] + "</span> "
-            li += "<span style=\"vertical-align: middle; " + attachment_styles[m["severity"]]["style"] + "\">"
-            li += "<a href=\"" + unc + "\">" + os.path.basename(file) + ("/" if os.path.isdir(m["text"]) else "") + "</a></sup>"
+            li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
+            li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
+            li += "<a href=\"" + attachment["unc"] + "\">" + attachment["title"] + "</a></sup>"
             li += "</span>"
             li += "</li>"
             markdown_text.append(li)
@@ -243,9 +260,50 @@ class Report():
         with open('/tmp/email.html', "w") as f:
             f.write(markdown_html)  
             logging.debug("[" + Report.thread_name(self.pipeline) + "] email html: /tmp/email.html")
+        
+        # 5. send message to Slack
+        slack_attachments = []
+        for attachment in attachments:
+            color = None
+            if attachment["severity"] == "SUCCESS":
+                color = "good"
+            elif attachment["severity"] == "WARN":
+                color = "warning"
+            elif attachment["severity"] == "ERROR":
+                color = "danger"
+            slack_attachments.append({
+                "title_link": attachment["smb"],
+                "title": attachment["title"],
+                "fallback": attachment["title"],
+                "color": color
+            })
+        Report.slack(text=subject, attachments=slack_attachments)
     
-    def slack(self, message):
-        logging.warn("[" + Report.thread_name(self.pipeline) + "] TODO: send message to Slack")
+    @staticmethod
+    def slack(text, attachments):
+        assert not text or isinstance(text, str)
+        assert not attachments or isinstance(attachments, list)
+        assert text or attachments
+        
+        if Report._slack_authed is None or Report._slack is None:
+            Report._slack = Slacker(os.getenv("SLACK_TOKEN"))
+            try:
+                auth = Report._slack.auth.test()
+                if auth.successful:
+                    logging.info("[" + Report.thread_name() + "] Slack authorized as \"" + auth.body.get("user") + "\" as part of the team \"" + auth.body.get("team") + "\"")
+                    Report._slack_authed = True
+                else:
+                    logging.warn("[" + Report.thread_name() + "] Failed to authorize to Slack")
+                    Report._slack_authed = False
+                
+            except Exception:
+                logging.exception("[" + Report.thread_name() + "] Failed to authorize to Slack")
+                Report._slack_authed = False
+        
+        if Report._slack_authed is not True:
+            logging.warn("[" + Report.thread_name() + "] Not authorized to send messages to Slack")
+        
+        Report._slack.chat.post_message(channel=Report._slack_channel, as_user=True, text=text, attachments=attachments)
     
     def attachLog(self):
         logpath = os.path.join(self.reportDir(), "log.txt")
