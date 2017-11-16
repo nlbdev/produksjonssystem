@@ -313,10 +313,6 @@ class Pipeline():
                         new_queue = [b for b in self._queue if b is not self.book]
                         self._queue = new_queue
                 
-                # If the book was both created and deleted within a short time interval; then ignore it
-                if self.book and "created" in self.book["events"] and "deleted" in self.book["events"]:
-                    self.book = None
-                
                 if self.book:
                     # Determine order of creation/deletion, as well as type of book event
                     created_seq = []
@@ -339,39 +335,44 @@ class Pipeline():
                     elif "deleted" in self.book["events"]:
                         event = "deleted"
                     
-                    # configure utils before processing book
-                    self.utils.report = Report(self)
-                    self.utils.epub = Epub(self)
-                    self.utils.filesystem = Filesystem(self)
+                    # created first, then deleted => ignore
+                    if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
+                        pass
                     
-                    try:
-                        if event == "created":
-                            self.on_book_created()
+                    # trigger book event
+                    else:
+                        # configure utils before processing book
+                        self.utils.report = Report(self)
+                        self.utils.epub = Epub(self)
+                        self.utils.filesystem = Filesystem(self)
                         
-                        elif event == "deleted":
-                            self.on_book_deleted()
-                        
-                        else:
-                            self.on_book_modified()
-                        
-                    except Exception:
-                        self.utils.report.error("An error occured while handling the book")
-                        self.utils.report.error(traceback.format_exc())
-                        logging.exception("[" + Report.thread_name() + "] An error occured while handling the book")
-                    
-                    finally:
-                        if self._stopAfterFirstJob:
-                            self._shouldRun = False
-                        logging.exception("[" + Report.thread_name() + "] Sending email")
                         try:
-                            if self.utils.report.should_email:
-                                self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
-                        except Exception:
-                            logging.exception("[" + Report.thread_name() + "] An error occured while sending email")
-                        finally:
-                            logpath = self.utils.report.attachLog()
-                            logging.exception("[" + Report.thread_name() + "] Logfile: " + logpath)
+                            if event == "created":
+                                self.on_book_created()
                             
+                            elif event == "deleted":
+                                self.on_book_deleted()
+                            
+                            else:
+                                self.on_book_modified()
+                            
+                        except Exception:
+                            self.utils.report.error("An error occured while handling the book")
+                            self.utils.report.error(traceback.format_exc())
+                            logging.exception("[" + Report.thread_name() + "] An error occured while handling the book")
+                        
+                        finally:
+                            if self._stopAfterFirstJob:
+                                self._shouldRun = False
+                            logging.exception("[" + Report.thread_name() + "] Sending email")
+                            try:
+                                if self.utils.report.should_email:
+                                    self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                            except Exception:
+                                logging.exception("[" + Report.thread_name() + "] An error occured while sending email")
+                            finally:
+                                logpath = self.utils.report.attachLog()
+                                logging.exception("[" + Report.thread_name() + "] Logfile: " + logpath)
                 
             except Exception:
                 logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
