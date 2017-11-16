@@ -49,6 +49,11 @@ class Pipeline():
     Do not override methods or variables starting with underscore (_).
     """
     
+    _i18n = {
+        "An error occured while monitoring of": "En feil oppstod ved overvåking av",
+        "An error occured while checking for book events": "En feil oppstod ved håndtering av bokhendelse"
+    }
+    
     _lock = RLock()
     
     # The current book
@@ -280,7 +285,7 @@ class Pipeline():
                 
             
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + "An error occured while monitoring of" + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
+                logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
     
     def _handle_book_events_thread(self):
         while self._shouldHandleBooks and self._shouldRun:
@@ -345,10 +350,15 @@ class Pipeline():
                             
                 
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + "An error occured while checking for book events" + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
+                logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
                 
             finally:
                 time.sleep(1)
+    
+    # in case you want to override something
+    @staticmethod
+    def translate(english_text, translated_text):
+        Pipeline._i18n[english_text] = translated_text
     
     # This should be overridden
     def on_book_created(self):
