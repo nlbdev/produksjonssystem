@@ -66,8 +66,7 @@ class Filesystem():
                         attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
                         modified = max(modified, stat.st_mtime)
             except FileNotFoundError as e:
-                self.pipeline.utils.report.error(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
-                self.pipeline.utils.report.debug(traceback.format_exc())
+                logging.exception("[" + Report.thread_name() + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
                 raise e
 
         md5 = hashlib.md5(str(attributes).encode()).hexdigest()
