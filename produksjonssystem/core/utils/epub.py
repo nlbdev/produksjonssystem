@@ -3,9 +3,14 @@
 import os
 import zipfile
 import pathlib
+import traceback
 
 class Epub():
     """Methods for working with EPUB files/filesets"""
+    
+    _i18n = {
+        "Problem reading EPUB file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av EPUB-filen. Kanskje noen endret eller slettet den?"
+    }
     
     pipeline = None
     
@@ -39,9 +44,19 @@ class Epub():
         assert directory, "unzip: directory must be specified: "+str(directory)
         assert os.path.isdir(directory), "unzip: directory must exist and be a directory: "+directory
         with zipfile.ZipFile(file, "r") as zip_ref:
-            zip_ref.extractall(directory)
+            try:
+                zip_ref.extractall(directory)
+            except EOFError as e:
+                self.pipeline.utils.report.error(Epub._i18n["Problem reading EPUB file. Did someone modify or delete it maybe?"])
+                self.pipeline.utils.report.debug(traceback.format_exc())
+                raise e
     
     def meta(self, file, property, default=None):
         """Read OPF metadata"""
         # file: either .epub or .opf
         self.pipeline.utils.report.warn("TODO: Epub.meta(file, property, default=None)")
+    
+    # in case you want to override something
+    @staticmethod
+    def translate(english_text, translated_text):
+        Epub._i18n[english_text] = translated_text
