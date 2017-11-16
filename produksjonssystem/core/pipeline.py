@@ -318,16 +318,37 @@ class Pipeline():
                     self.book = None
                 
                 if self.book:
+                    # Determine order of creation/deletion, as well as type of book event
+                    created_seq = []
+                    deleted_seq = []
+                    event = "modified"
+                    for e in range(0, len(self.book["events"])):
+                        event = self.book["events"][e]
+                        if event == "created":
+                            created_seq.append(e)
+                        elif event == "deleted":
+                            deleted_seq.append(e)
+                    
+                    if created_seq and deleted_seq:
+                        if max(deleted_seq) > max(created_seq):
+                            event = "deleted"
+                        else:
+                            event = "created"
+                    elif "created" in self.book["events"]:
+                        event = "created"
+                    elif "deleted" in self.book["events"]:
+                        event = "deleted"
+                    
                     # configure utils before processing book
                     self.utils.report = Report(self)
                     self.utils.epub = Epub(self)
                     self.utils.filesystem = Filesystem(self)
                     
                     try:
-                        if "created" in self.book["events"]:
+                        if event == "created":
                             self.on_book_created()
                         
-                        elif "deleted" in self.book["events"]:
+                        elif event == "deleted":
                             self.on_book_deleted()
                         
                         else:
