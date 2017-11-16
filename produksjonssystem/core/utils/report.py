@@ -68,7 +68,7 @@ class Report():
             lines.append("")
         
         for line in lines:
-            self._messages[message_type].append({ 'severity': severity, 'text': line })
+            self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M:%S"), 'severity': severity, 'text': line })
     
     @staticmethod
     def thread_name(pipeline=None):
