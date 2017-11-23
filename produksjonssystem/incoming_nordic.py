@@ -167,6 +167,10 @@ class IncomingNordic(Pipeline):
         except subprocess.TimeoutExpired as e:
             self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + book_id + ", og prosessen ble derfor stoppet.")
         
+        except Exception:
+            logging.exception("En feil oppstod ved produksjon av ACE-rapporten for " + book_id)
+            self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + book_id)
+        
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(book_dir, book_id)
