@@ -104,7 +104,7 @@ for pipeline in pipelines:
     }
     for s in pipeline[4]:
         email_settings["recipients"].append(email["recipients"][s])
-    thread = Thread(target=pipeline[0].run, args=(10, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]], email_settings))
+    thread = Thread(target=pipeline[0].run, args=(10, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]], email_settings, book_archive_dir))
     thread.setDaemon(True)
     thread.start()
     threads.append(thread)

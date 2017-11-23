@@ -195,8 +195,11 @@ class Report():
         attachments = []
         for m in self._messages["attachment"]:
             smb, file, unc = Filesystem.networkpath(m["text"])
+            relpath = os.path.relpath(m["text"], self.pipeline.dir_base)
+            if m["text"].startswith(self.reportDir()):
+                relpath = os.path.relpath(m["text"], self.reportDir())
             attachments.append({
-                "title": os.path.basename(file) + ("/" if os.path.isdir(m["text"]) else ""),
+                "title": relpath + ("/" if os.path.isdir(m["text"]) else ""),
                 "smb": smb,
                 "file": file,
                 "unc": unc,

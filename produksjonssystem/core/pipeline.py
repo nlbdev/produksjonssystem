@@ -94,7 +94,7 @@ class Pipeline():
         logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
         super().__init__()
     
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None):
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
         
         if not dir_in:
@@ -109,11 +109,14 @@ class Pipeline():
                 "sender": None,
                 "recipients": []
             }
+        if not dir_base:
+            dir_base = os.getenv("BASE_DIR", dir_in)
         stop_after_first_job = os.environ.get("STOP_AFTER_FIRST_JOB")
         
         assert dir_in != None and len(dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
         assert dir_out != None and len(dir_out) > 0 and os.path.exists(dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
         assert dir_reports != None and len(dir_reports) > 0 and os.path.exists(dir_reports), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
+        assert dir_base, "Base directory could not be determined"
         assert not stop_after_first_job or stop_after_first_job in [ "1", "true", "0", "false" ], "The environment variable STOP_AFTER_FIRST_JOB, if defined, must be \"true\"/\"false\" (or \"1\"/\"0\")."
         
         self._stopAfterFirstJob = False
@@ -123,6 +126,7 @@ class Pipeline():
         self.dir_in = str(os.path.normpath(dir_in)) + '/'
         self.dir_out = str(os.path.normpath(dir_out)) + '/'
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
+        self.dir_base = str(os.path.normpath(dir_base)) + '/'
         self.email_settings = email_settings
         
         if Filesystem.ismount(self.dir_in):
@@ -165,11 +169,11 @@ class Pipeline():
         self._queue = []
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
-    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None):
+    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None):
         """
         Run in a blocking manner (useful from command line)
         """
-        self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings)
+        self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings, dir_base)
         try:
             while self._shouldRun:
                 if not os.path.isdir(self.dir_in):
