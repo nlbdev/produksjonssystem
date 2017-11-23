@@ -328,7 +328,7 @@ class Report():
         if content:
             if isinstance(content, list):
                 content = "\n".join(content)
-            with open(path, "x") as f:
+            with open(path, "a") as f:
                 f.write(content)
         if severity == "DEBUG":
             self.info(path, message_type="attachment", add_empty_line=False)
