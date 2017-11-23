@@ -57,7 +57,8 @@ class Report():
             report_dir += re.sub("[^a-zA-Z0-9-]", "", self.pipeline.title.lower().replace(" ","-"))
             report_dir = os.path.join(self.pipeline.dir_reports, report_dir)
             os.makedirs(report_dir)
-        return report_dir
+            self._report_dir = report_dir
+        return self._report_dir
     
     def _add_message(self, severity, message, message_type, add_empty_line):
         lines = None
