@@ -1,4 +1,4 @@
-slacker==0.9.60
 dotmap==1.2.20
 Markdown==2.6.9
 Pygments==2.2.0
+slacker==0.9.60

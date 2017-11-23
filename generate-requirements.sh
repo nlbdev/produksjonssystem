@@ -1,4 +1,3 @@
 #!/bin/bash
 
-pipreqs . --force
-
+pipreqs . --force --print | sort > requirements.txt
