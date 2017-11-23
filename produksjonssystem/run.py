@@ -7,6 +7,7 @@ import time
 import logging
 from threading import Thread
 from core.pipeline import Pipeline
+from core.plotter import Plotter
 from email.headerregistry import Address
 
 # Import pipelines
@@ -95,6 +96,10 @@ for pipeline in pipelines:
 for d in dirs:
     os.makedirs(dirs[d], exist_ok=True)
 
+if os.environ.get("DEBUG", "1") == "1":
+    time.sleep(1)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 threads = []
 for pipeline in pipelines:
     email_settings = {
@@ -109,9 +114,10 @@ for pipeline in pipelines:
     thread.start()
     threads.append(thread)
 
-if os.environ.get("DEBUG", "1") == "1":
-    time.sleep(1)
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+plotter = Plotter(pipelines, report_dir=dirs["reports"])
+graph_thread = Thread(target=plotter.run)
+graph_thread.setDaemon(True)
+graph_thread.start()
 
 try:
     running = True
@@ -127,6 +133,8 @@ except KeyboardInterrupt:
 
 for pipeline in pipelines:
     pipeline[0].stop(exit=True)
+    plotter.should_run = False
 
+graph_thread.join()
 for thread in threads:
     thread.join()

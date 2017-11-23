@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<title>NLBs produksjonssystem</title>
+<style>
+* { font-family: sans-serif; }
+body > * { text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>NLBs produksjonssystem</h1>
+
+<figure>
+<img id="graph" src="graph.png" alt="Diagram over NLBs produksjonssystem."/>
+<img id="graph-load" src="graph.png" style="display: none;"/>
+</figure>
+
+<script>
+window.onload = function() {
+    var image = document.getElementById("graph");
+    var imageLoad = document.getElementById("graph-load");
+    
+    function updateImage() {
+        imageLoad.src = imageLoad.src.split("?")[0] + "?" + new Date().getTime();
+        imageLoad.onload = function () {
+            image.src = imageLoad.src;
+        };
+    }
+    
+    setInterval(updateImage, 1000);
+}
+</script>
+
+</body>
+</html>
