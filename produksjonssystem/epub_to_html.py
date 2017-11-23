@@ -52,6 +52,8 @@ class EpubToHtml(Pipeline):
             
             self.first_job = False
         
+        self.utils.report.attachment(None, self.book["source"], "DEBUG")
+        
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
