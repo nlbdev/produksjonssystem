@@ -9,6 +9,7 @@ import subprocess
 import shutil
 import re
 import json
+import logging
 
 from core.pipeline import Pipeline
 
@@ -164,7 +165,7 @@ class IncomingNordic(Pipeline):
             
             # attach report
             ace_status = None
-            with open(os.path.join(ace_dir, "ace.json")) as json_report:
+            with open(os.path.join(ace_dir, "report.json")) as json_report:
                 ace_status = json.load(json_report)["earl:result"]["earl:outcome"]
             if ace_status == "pass":
                 ace_status = "SUCCESS"
