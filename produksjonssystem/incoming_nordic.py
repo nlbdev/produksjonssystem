@@ -8,6 +8,7 @@ import time
 import subprocess
 import shutil
 import re
+import json
 
 from core.pipeline import Pipeline
 
@@ -162,7 +163,14 @@ class IncomingNordic(Pipeline):
             process = self.utils.filesystem.run([self.ace_cli, "-o", ace_dir, book_file])
             
             # attach report
-            self.utils.report.attachment(None, os.path.join(ace_dir, "report.html"), "DEBUG")
+            ace_status = None
+            with open(os.path.join(ace_dir, "ace.json")) as json_report:
+                ace_status = json.load(json_report)["earl:result"]["earl:outcome"]
+            if ace_status == "pass":
+                ace_status = "SUCCESS"
+            else:
+                ace_status = "WARN"
+            self.utils.report.attachment(None, os.path.join(ace_dir, "report.html"), ace_status)
             
         except subprocess.TimeoutExpired as e:
             self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + book_id + ", og prosessen ble derfor stoppet.")
