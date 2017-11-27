@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
+import hashlib
 import os
-import shutil
-import subprocess
-import socket
 import re
-import urllib.request
+import shutil
+import socket
+import subprocess
 import tempfile
 import traceback
-import hashlib
+import urllib.request
+import zipfile
+
 from pathlib import Path
 
 class Filesystem():
@@ -26,7 +28,8 @@ class Filesystem():
         "Unable to remove": "Klarte ikke å fjerne",
         "directory": "mappe",
         "file": "fil",
-        "that should no longer exist": "som ikke skal eksistere lenger"
+        "that should no longer exist": "som ikke skal eksistere lenger",
+        "Problem reading ZIP file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?"
     }
     
     shutil_ignore_patterns = shutil.ignore_patterns("Thumbs.db") # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
@@ -169,10 +172,11 @@ class Filesystem():
         else:
             self.copy(source, target)
         
-        # update modification time for directory
-        f = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=target).name
-        Path(f).touch()
-        os.remove(f)
+        if os.path.isdir(target):
+            # update modification time for directory
+            f = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=target).name
+            Path(f).touch()
+            os.remove(f)
         
         return target
     
@@ -210,6 +214,49 @@ class Filesystem():
             raise
         
         return completedProcess
+    
+    def zip(self, directory, file):
+        """Zip the contents of `dir`"""
+        assert directory, "zip: directory must be specified: "+str(directory)
+        assert os.path.isdir(directory), "zip: directory must exist and be a directory: "+directory
+        assert file, "zip: file must be specified: "+str(file)
+        dirpath = pathlib.Path(directory)
+        filepath = pathlib.Path(file)
+        with zipfile.ZipFile(file, 'w') as archive:
+            for f in dirpath.rglob('*'):
+                relative = str(f.relative_to(dirpath))
+                self.pipeline.utils.report.debug("zipping: " + relative)
+                archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
+    
+    def unzip(self, archive, target):
+        """Unzip the contents of `archive`, as `dir`"""
+        assert archive, "unzip: archive must be specified: "+str(archive)
+        assert os.path.exists(archive), "unzip: archive must exist: "+archive
+        assert target, "unzip: target must be specified: "+str(target)
+        assert os.path.isdir(target) or not os.path.exists(target), "unzip: if target exists, it must be a directory: "+target
+        
+        if not os.path.exists(target):
+            os.makedirs(target)
+        
+        if os.path.isdir(archive):
+            self.copy(archive, target)
+            
+        else:
+            with zipfile.ZipFile(archive, "r") as zip_ref:
+                try:
+                    zip_ref.extractall(target)
+                except EOFError as e:
+                    self.pipeline.utils.report.error(Epub._i18n["Problem reading ZIP file. Did someone modify or delete it maybe?"])
+                    self.pipeline.utils.report.debug(traceback.format_exc())
+                    raise e
+            
+            # ensure that permissions are correct
+            os.chmod(target, 0o777)
+            for root, dirs, files in os.walk(target):
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), 0o777)
+                for f in files:
+                    os.chmod(os.path.join(root, f), 0o666)
     
     @staticmethod
     def ismount(path):

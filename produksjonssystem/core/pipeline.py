@@ -330,7 +330,7 @@ class Pipeline():
                             deleted_seq.append(e)
                     
                     if created_seq and deleted_seq:
-                        if max(deleted_seq) > max(created_seq):
+                        if max(deleted_seq) > max(created_seq) or not os.path.exists(self.book["source"]):
                             event = "deleted"
                         else:
                             event = "created"

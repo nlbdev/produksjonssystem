@@ -52,30 +52,28 @@ class EpubToPef(Pipeline):
             
             self.first_job = False
         
-        self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
         
-        book_id = self.book["name"]
+        book_dir = os.path.join(workspace_dir, "book")
+        self.utils.filesystem.unzip(self.book["source"], book_dir)
         
-        if not os.path.isdir(self.book["source"]):
-            self.utils.report.info(book_id + " er ikke en mappe.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+        # sjekk at dette er en EPUB
+        if not self.utils.epub.isepub(self.book["source"]):
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        if not os.path.isfile(os.path.join(self.book["source"], "EPUB/package.opf")):
-            self.utils.report.info(book_id + ": EPUB/package.opf eksisterer ikke.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+        book_id = self.utils.epub.meta(book_dir, "dc:identifier")
+        
+        if not book_id:
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        # kopier boka til en midlertidig mappe
-        book_dir = os.path.join(workspace_dir, book_id)
-        self.utils.filesystem.copy(self.book["source"], book_dir)
+        book_file = os.path.join(workspace_dir, book_id + ".epub")
         
         # lag en zippet versjon av EPUBen også
-        book_file = os.path.join(workspace_dir, book_id + ".epub")
         self.utils.report.info("Pakker sammen " + book_id + "...")
         self.utils.epub.zip(book_dir, book_file)
         

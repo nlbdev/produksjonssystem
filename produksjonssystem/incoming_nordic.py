@@ -57,48 +57,26 @@ class IncomingNordic(Pipeline):
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
         
-        book_id = self.book["name"]
-        book_dir = os.path.join(workspace_dir, book_id)
+        book_dir = os.path.join(workspace_dir, "book")
+        self.utils.filesystem.unzip(self.book["source"], book_dir)
         
-        # unzip EPUB hvis den er zippet
-        if os.path.isfile(self.book["source"]) and self.book["name"].endswith(".epub"):
-            book_id = self.book["name"].replace(".epub","")
-            book_dir = os.path.join(workspace_dir, book_id)
-            self.utils.report.info("Pakker ut " + self.book["name"])
-            os.makedirs(book_dir)
-            self.utils.epub.unzip(self.book["source"], book_dir)
-            
-        # eller bare kopier filesettet hvis den ikke er zippet
-        elif os.path.isdir(self.book["source"]):
-            self.utils.filesystem.copy(self.book["source"], book_dir)
-            
-        # hvis det hverken er en EPUB eller en mappe så er noe galt; avbryt
-        else:
-            self.utils.report.error(book_id + " er hverken en \".epub\"-fil eller en mappe.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+        # sjekk at dette er en EPUB
+        if not self.utils.epub.isepub(self.book["source"]):
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
-        if not os.path.isfile(os.path.join(book_dir, "EPUB/package.opf")):
-            self.utils.report.error(book_id + ": EPUB/package.opf eksisterer ikke; kan ikke validere EPUB.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
-            return
+        book_id = self.utils.epub.meta(book_dir, "dc:identifier")
         
-        # sørg for at filrettighetene stemmer
-        os.chmod(book_dir, 0o777)
-        for root, dirs, files in os.walk(book_dir):
-            for d in dirs:
-                os.chmod(os.path.join(root, d), 0o777)
-            for f in files:
-                os.chmod(os.path.join(root, f), 0o666)
+        if not book_id:
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
         
         book_file = os.path.join(workspace_dir, book_id + ".epub")
         
         # lag en zippet versjon av EPUBen også
         self.utils.report.info("Pakker sammen " + book_id + "...")
         self.utils.epub.zip(book_dir, book_file)
-        
-        # -- Kommer vi hit så er vi ganske sikre på at vi har med et EPUB-filsett å gjøre. --
         
         job_dir  = os.path.join(workspace_dir, "nordic-epub3-validate/")
         os.makedirs(job_dir)

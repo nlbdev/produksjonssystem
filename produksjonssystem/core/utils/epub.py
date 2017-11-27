@@ -11,7 +11,9 @@ class Epub():
     """Methods for working with EPUB files/filesets"""
     
     _i18n = {
-        "Problem reading EPUB file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av EPUB-filen. Kanskje noen endret eller slettet den?"
+        "does not exist": "eksisterer ikke",
+        "cannot validate EPUB": "kan ikke validere EPUB",
+        "the file does not end with \".epub\" or \".zip\"": "filen slutter ikke med \".epub\" eller \".zip\""
     }
     
     pipeline = None
@@ -35,23 +37,26 @@ class Epub():
                     f.write("application/epub+zip")
             self.pipeline.utils.report.debug("zipping: mimetype")
             archive.write(str(mimetype), 'mimetype', compress_type=zipfile.ZIP_STORED)
-            for f in dirpath.rglob('*.*'):
-                self.pipeline.utils.report.debug("zipping: "+str(f.relative_to(dirpath)))
-                archive.write(str(f), str(f.relative_to(dirpath)), compress_type=zipfile.ZIP_DEFLATED)
+            for f in dirpath.rglob('*'):
+                relative = str(f.relative_to(dirpath))
+                if relative == "mimetype":
+                    continue
+                self.pipeline.utils.report.debug("zipping: " + relative)
+                archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
     
-    def unzip(self, file, directory):
-        """Unzip the contents of `file`, as `dir`"""
-        assert file, "unzip: file must be specified: "+str(file)
-        assert os.path.isfile(file), "unzip: file must exist and be a file: "+file
-        assert directory, "unzip: directory must be specified: "+str(directory)
-        assert os.path.isdir(directory), "unzip: directory must exist and be a directory: "+directory
-        with zipfile.ZipFile(file, "r") as zip_ref:
-            try:
-                zip_ref.extractall(directory)
-            except EOFError as e:
-                self.pipeline.utils.report.error(Epub._i18n["Problem reading EPUB file. Did someone modify or delete it maybe?"])
-                self.pipeline.utils.report.debug(traceback.format_exc())
-                raise e
+    def isepub(self, path):
+        assert os.path.exists(path), "Epub.isepub(path): path must exist (" + str(path) + ")"
+        
+        # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
+        if os.path.isdir(path) and not os.path.isfile(os.path.join(path, "EPUB/package.opf")):
+            self.pipeline.utils.report.error(os.path.basename(path) + ": EPUB/package.opf" + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
+            return False
+        
+        elif os.path.isfile(path) and not (path.endswith(".epub") or path.endswith(".zip")):
+            self.pipeline.utils.report.error(os.path.basename(path) + ": " + Epub._i18n["the file does not end with \".epub\" or \".zip\""] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
+            return False
+        
+        return True
     
     def opf_path(self, book_dir):
         assert os.path.isdir(book_dir), "Epub.meta(book_dir, property): book_dir must be a directory (" + str(book_dir) + ")"
