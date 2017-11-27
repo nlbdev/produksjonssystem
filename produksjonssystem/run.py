@@ -12,6 +12,7 @@ from email.headerregistry import Address
 
 # Import pipelines
 from incoming_nordic import IncomingNordic
+from nordic_to_nlbpub import NordicToNlbpub
 from epub_to_html import EpubToHtml
 from epub_to_dtbook import EpubToDtbook
 from epub_to_pef import EpubToPef
@@ -45,6 +46,7 @@ dirs = {
     "reports": os.path.join(book_archive_dir, "rapporter"),
     "incoming": os.path.join(book_archive_dir, "innkommende"),
     "master": os.path.join(book_archive_dir, "master/EPUB"),
+    "nlbpub": os.path.join(book_archive_dir, "master/NLBPUB"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "html_narration": os.path.join(book_archive_dir, "distribusjonsformater/HTML-til-innlesing"),
@@ -55,6 +57,7 @@ dirs = {
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
     [ IncomingNordic(),  "incoming", "master", "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+    [ NordicToNlbpub(),  "master",   "nlbpub", "reports", ["ammar","jostein","olav"]],
     [ EpubToHtml(),      "master",   "html",   "reports", ["ammar","jostein","olav"]],
     [ EpubToDtbook(),    "master",   "dtbook", "reports", ["ammar","jostein","mari","olav"]],
     [ EpubToPef(),       "master",   "pef",    "reports", ["ammar","jostein","kari"]]
