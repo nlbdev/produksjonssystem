@@ -92,6 +92,10 @@ class Pipeline():
         self.dir_trigger = os.getenv("TRIGGER_DIR")
         if self.dir_trigger:
             self.dir_trigger = os.path.join(self.dir_trigger, self.uid)
+            try:
+                os.makedirs(self.dir_trigger)
+            except Exception:
+                logging.exception("[" + Report.thread_name() + "] " + "Could not create trigger directory: " + self.dir_trigger)
         else:
             self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
             self.dir_trigger = self._dir_trigger_obj.name
