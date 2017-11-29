@@ -20,29 +20,6 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
-# Notes:
-# - the watchdog python module uses inotify for monitoring files. inotify needs to be configured allow watching enough files/folders
-# - inotify seems to use 100MB (± 50MB ?) RAM to monitor about 500k files
-# - there are currently 7499 DTBooks in our DTBook archive, which consists of a total of 258210 files/folders (⇒ 35 files/folders per book)
-# - system should support 100k books per format, which means it needs to monitor about 3.5M files/folders per format (⇒ 1GB)
-# - system should support 20 formats, which means it needs to monitor about 70M files/folders in total (⇒ 21GB)
-# - so inotify probably needs to have 21 GB RAM available for monitoring 100k books in 20 formats
-# - to mitigate:
-#   - in the beginning we'll probably watch at most 5 formats, and we won't have more 10-20k books for a while
-#     - meaning we need 1 GB for inotify
-#     - inotify needs to be configured to watch at least 3,5M files/folders
-#   - in the future, each pipeline can run in its own docker container,
-#     i.e. inotify only needs to handle one format (TODO files/folders ⇒ TODO MB)
-#   - a custom implementation that is not based on inotify could be implemented,
-#     for instance by iterating all top-level files/folders in the watched directory,
-#     checking 1 per second, doing a MD5 checksum of the file/folder, and comparing
-#     with a previously calculated MD5 checksum to see if something has changed.
-#     checksums doesn't have to be stored between each run since the pipeline should
-#     also be able to be triggered manually from slack if needed.
-# 
-# UPDATE: it seems that inotify doesn't report changes when the change happens on a remote filesystem,
-#         so a custom mechanism has to be implemented.
-
 class Pipeline():
     """
     Base class for creating pipelines.
