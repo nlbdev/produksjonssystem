@@ -17,6 +17,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class EpubToDtbook(Pipeline):
+    uid = "epub-to-dtbook"
     title = "EPUB til DTBook"
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")

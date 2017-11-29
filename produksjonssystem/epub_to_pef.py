@@ -17,6 +17,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class EpubToPef(Pipeline):
+    uid = "epub-to-pef"
     title = "EPUB til PEF"
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")

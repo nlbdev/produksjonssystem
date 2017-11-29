@@ -17,6 +17,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class NordicToNlbpub(Pipeline):
+    uid = "nordic-epub-to-nlbpub"
     title = "Nordisk EPUB til NLBPUB"
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")

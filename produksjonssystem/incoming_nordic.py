@@ -18,6 +18,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class IncomingNordic(Pipeline):
+    uid = "incoming-nordic"
     title = "Validering av Nordisk EPUB 3"
     
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")

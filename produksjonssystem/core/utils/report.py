@@ -54,7 +54,7 @@ class Report():
             report_dir += "-"
             report_dir += datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
             report_dir += "-"
-            report_dir += re.sub("[^a-zA-Z0-9-]", "", self.pipeline.title.lower().replace(" ","-"))
+            report_dir += self.pipeline.uid
             report_dir = os.path.join(self.pipeline.dir_reports, report_dir)
             os.makedirs(report_dir)
             self._report_dir = report_dir
