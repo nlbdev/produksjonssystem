@@ -226,14 +226,15 @@ class Pipeline():
                 
                 time.sleep(1) # unless anything has recently changed, give the system time to breathe between each iteration
                 
-                for f in os.listdir(self.dir_trigger):
-                    triggerfile = os.path.join(self.dir_trigger, f)
-                    if os.path.isfile(triggerfile):
-                        try:
-                            os.remove(triggerfile)
-                            self._add_book_to_queue(f, "modified")
-                        except Exception:
-                            logging.exception("[" + Report.thread_name() + "] An error occured while trying to delete triggerfile: " + triggerfile)
+                if os.path.isdir(self.dir_trigger):
+                    for f in os.listdir(self.dir_trigger):
+                        triggerfile = os.path.join(self.dir_trigger, f)
+                        if os.path.isfile(triggerfile):
+                            try:
+                                os.remove(triggerfile)
+                                self._add_book_to_queue(f, "modified")
+                            except Exception:
+                                logging.exception("[" + Report.thread_name() + "] An error occured while trying to delete triggerfile: " + triggerfile)
                 
                 # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                 dirlist = os.listdir(self.dir_in)
