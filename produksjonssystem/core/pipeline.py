@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-import traceback
-import time
 import os
 import sys
+import time
 import logging
+import tempfile
+import traceback
 
 from pathlib import Path
 from threading import Thread, RLock
@@ -32,6 +32,7 @@ class Pipeline():
     }
     
     _lock = RLock()
+    _dir_trigger_obj = None # store TemporaryDirectory object in instance so that it's not cleaned up
     
     # The current book
     book = None
@@ -40,6 +41,7 @@ class Pipeline():
     dir_in = None
     dir_out = None
     dir_reports = None
+    dir_trigger = None
     
     # constants (set during instantiation)
     _inactivity_timeout = 10
@@ -87,7 +89,14 @@ class Pipeline():
             }
         if not dir_base:
             dir_base = os.getenv("BASE_DIR", dir_in)
-        stop_after_first_job = os.environ.get("STOP_AFTER_FIRST_JOB")
+        self.dir_trigger = os.getenv("TRIGGER_DIR")
+        if self.dir_trigger:
+            self.dir_trigger = os.path.join(self.dir_trigger, self.uid)
+        else:
+            self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
+            self.dir_trigger = self._dir_trigger_obj.name
+        
+        stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
         
         assert dir_in != None and len(dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
         assert dir_out != None and len(dir_out) > 0 and os.path.exists(dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
@@ -216,6 +225,15 @@ class Pipeline():
                     continue
                 
                 time.sleep(1) # unless anything has recently changed, give the system time to breathe between each iteration
+                
+                for f in os.listdir(self.dir_trigger):
+                    triggerfile = os.path.join(self.dir_trigger, f)
+                    if os.path.isfile(triggerfile):
+                        try:
+                            os.remove(triggerfile)
+                            self._add_book_to_queue(f, "modified")
+                        except Exception:
+                            logging.exception("[" + Report.thread_name() + "] An error occured while trying to delete triggerfile: " + triggerfile)
                 
                 # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                 dirlist = os.listdir(self.dir_in)
