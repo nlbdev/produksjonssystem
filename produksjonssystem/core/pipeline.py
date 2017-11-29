@@ -43,7 +43,6 @@ class Pipeline():
     
     # constants (set during instantiation)
     _inactivity_timeout = 10
-    _observer = None
     _bookHandlerThread = None
     _shouldHandleBooks = False
     _shouldRun = True
@@ -135,14 +134,6 @@ class Pipeline():
             self._shouldHandleBooks = False
         if exit:
             self._shouldRun = False
-        if self._observer:
-            try:
-                self._observer.stop()
-                self._observer.join()
-            except Exception:
-                logging.exception("[" + Report.thread_name() + "] Failed to start watching \"" + self.dir_in + "\"")
-            finally:
-                self._observer = None
         self._queue = []
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
