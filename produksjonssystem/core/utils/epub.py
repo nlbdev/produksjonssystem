@@ -5,7 +5,7 @@ import pathlib
 import traceback
 import zipfile
 
-import xml.etree.ElementTree as etree
+from lxml import etree as ElementTree
 
 class Epub():
     """Methods for working with EPUB files/filesets"""
@@ -60,7 +60,7 @@ class Epub():
     
     def opf_path(self, book_dir):
         assert os.path.isdir(book_dir), "Epub.meta(book_dir, property): book_dir must be a directory (" + str(book_dir) + ")"
-        container = etree.parse(os.path.join(book_dir, "META-INF/container.xml")).getroot()
+        container = ElementTree.parse(os.path.join(book_dir, "META-INF/container.xml")).getroot()
         rootfiles = container.findall('{urn:oasis:names:tc:opendocument:xmlns:container}rootfiles')[0]
         rootfile = rootfiles.findall('{urn:oasis:names:tc:opendocument:xmlns:container}rootfile')[0]
         opf = rootfile.attrib["full-path"]
@@ -70,7 +70,7 @@ class Epub():
         """Read OPF metadata"""
         assert os.path.isdir(book_dir), "Epub.meta(book_dir, name): book_dir must be a directory (" + str(book_dir) + ")"
         opf_path = self.opf_path(book_dir)
-        opf = etree.parse(os.path.join(book_dir, opf_path)).getroot()
+        opf = ElementTree.parse(os.path.join(book_dir, opf_path)).getroot()
         metadata = opf.findall('{http://www.idpf.org/2007/opf}metadata')[0]
         meta = metadata.getchildren()
         for m in meta:
