@@ -93,7 +93,8 @@ class Pipeline():
         if self.dir_trigger:
             self.dir_trigger = os.path.join(self.dir_trigger, self.uid)
             try:
-                os.makedirs(self.dir_trigger)
+                if not os.path.exists(self.dir_trigger):
+                    os.makedirs(self.dir_trigger)
             except Exception:
                 logging.exception("[" + Report.thread_name() + "] " + "Could not create trigger directory: " + self.dir_trigger)
         else:
