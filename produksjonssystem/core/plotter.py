@@ -39,8 +39,8 @@ class Plotter():
                     title = pipeline[0].title if pipeline[0].title else pipeline_id
                     queue_size = len(pipeline[0]._queue) if pipeline[0]._queue else 0
                     book = pipeline[0].book["name"] if pipeline[0].book else ""
-                    relpath_in = os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
-                    relpath_out = os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
+                    relpath_in = "in" if not pipeline[0].dir_in and pipeline[0].dir_base else os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
+                    relpath_out = "out" if not pipeline[0].dir_out and pipeline[0].dir_base else os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
                     
                     pipeline_label = title + "\n" + "I køen: " + str(queue_size) + "\n" + (book if book else "(venter)")
                     
