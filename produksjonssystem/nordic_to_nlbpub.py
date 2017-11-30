@@ -28,7 +28,7 @@ class NordicToNlbpub(Pipeline):
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
-        self.utils.report.title = self.title + " EPUB master slettet: " + book_id
+        self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
     
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
