@@ -27,6 +27,7 @@ class DaisyPipelineJob():
     dir_output = None
     job_id = None
     pipeline = None
+    status = None
     
     def __init__(self, pipeline, script, arguments):
         self.pipeline = pipeline

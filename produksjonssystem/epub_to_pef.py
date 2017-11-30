@@ -10,6 +10,9 @@ import subprocess
 import shutil
 import re
 
+from core.utils.epub import Epub
+from core.utils.daisy_pipeline import DaisyPipelineJob
+
 from core.pipeline import Pipeline
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -39,129 +42,69 @@ class EpubToPef(Pipeline):
         self.on_book()
     
     def on_book(self):
-        if self.first_job:
-            try:
-                # start engine if it's not started already
-                process = self.utils.filesystem.run([self.dp2_cli, "help"], shell=True)
-                
-            except subprocess.TimeoutExpired as e:
-                self.utils.report.info("Oppstart av Pipeline 2 tok for lang tid og ble derfor stoppet.")
-                
-            except subprocess.CalledProcessError as e:
-                self.utils.report.debug("En feil oppstod når Pipeline 2 startet. Vi venter noen sekunder og håper det går bra alikevel...")
-                time.sleep(5)
-            
-            self.first_job = False
-        
-        # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
-        workspace_dir_object = tempfile.TemporaryDirectory()
-        workspace_dir = workspace_dir_object.name
-        
-        book_dir = os.path.join(workspace_dir, "book")
-        self.utils.filesystem.unzip(self.book["source"], book_dir)
+        self.utils.report.attachment(None, self.book["source"], "DEBUG")
+        epub = Epub(self, self.book["source"])
         
         # sjekk at dette er en EPUB
-        if not self.utils.epub.isepub(self.book["source"]):
+        if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        book_id = self.utils.epub.meta(book_dir, "dc:identifier")
-        
-        if not book_id:
+        if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        book_file = os.path.join(workspace_dir, book_id + ".epub")
-        
-        # lag en zippet versjon av EPUBen også
-        self.utils.report.info("Pakker sammen " + book_id + "...")
-        self.utils.epub.zip(book_dir, book_file)
-        
-        braille_versions = {
-            "fullskrift": [ "--braille-standard", "(dots:6)(grade:0)", "--line-spacing", "single", "--duplex", "true" ],
-            "kortskrift": [ "--braille-standard", "(dots:6)(grade:2)", "--line-spacing", "single", "--duplex", "true" ],
-            "lesetrening": [ "--braille-standard", "(dots:6)(grade:0)", "--line-spacing", "double", "--duplex", "false" ]
+        braille_arguments = {
+            "fullskrift": {
+                "epub": epub.asFile(),
+                "braille-standard": "(dots:6)(grade:0)",
+                "line-spacing": "single",
+                "duplex": "true"
+            },
+            "kortskrift": {
+                "epub": epub.asFile(),
+                "braille-standard": "(dots:6)(grade:2)",
+                "line-spacing": "single",
+                "duplex": "true"
+            },
+            "lesetrening": {
+                "epub": epub.asFile(),
+                "braille-standard": "(dots:6)(grade:0)",
+                "line-spacing": "double",
+                "duplex": "false"
+            }
         }
-        for braille_version in braille_versions:
-            job_dir  = os.path.join(workspace_dir, "epub3-to-pef", braille_version)
-            os.makedirs(job_dir)
-
-            result_dir = os.path.join(job_dir, "result/")
-            
-            job_id = None
-            result_status = None
+        for braille_version in braille_arguments:
             pef_dir = None
             
-            try:
-                self.utils.report.info("Konverterer fra EPUB til PEF (" + braille_version + ")...")
-                cmd = [self.dp2_cli, "nlb:epub3-to-pef", "--epub", book_file]
-                cmd.extend(braille_versions[braille_version])
-                cmd.extend([ "--output", result_dir, "-p"])
-                process = self.utils.filesystem.run(cmd)
-                
-                # get dp2 job id
-                job_id = None
-                for line in process.stdout.decode("utf-8").split("\n"):
-                    # look for: Job {id} sent to the server
-                    m = re.match("^Job (.*) sent to the server$", line)
-                    if m:
-                        job_id = m.group(1)
-                        break
-                assert job_id, "Could not find the job ID for the conversion job"
-                
-                # get conversion log (the run method will log stdout/stderr as debug output)
-                process = self.utils.filesystem.run([self.dp2_cli, "log", job_id])
-                
-                # get conversion status
-                process = self.utils.filesystem.run([self.dp2_cli, "status", job_id])
-                result_status = None
-                for line in process.stdout.decode("utf-8").split("\n"):
-                    # look for: Job {id} sent to the server
-                    m = re.match("^Status: (.*)$", line)
-                    if m:
-                        result_status = m.group(1)
-                        break
-                assert result_status, "Klarte ikke å finne jobb-status for konverterings-jobben"
-                self.utils.report.debug("Pipeline 2 status: " + result_status)
-                
-                # get conversion report
-                if os.path.isdir(os.path.join(result_dir, "preview-output-dir")):
-                    self.utils.filesystem.copy(os.path.join(result_dir, "preview-output-dir"), os.path.join(self.utils.report.reportDir(), "preview-" + braille_version))
-                    self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + book_id + ".pef.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
-                
-                pef_dir = os.path.join(result_dir, "pef-output-dir")
-                
-            except subprocess.TimeoutExpired as e:
-                self.utils.report.info("Konvertering av " + book_id + " fra EPUB til PEF tok for lang tid og ble derfor stoppet.")
-                self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
-                return
-                
-            finally:
-                if job_id:
-                    try:
-                        process = self.utils.filesystem.run([self.dp2_cli, "delete", job_id])
-                    except subprocess.TimeoutExpired as e:
-                        self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
-                        pass
+            self.utils.report.info("Konverterer fra EPUB til PEF (" + braille_version + ")...")
+            dp2_job = DaisyPipelineJob(self, "nlb:epub3-to-pef", braille_arguments[braille_version])
             
-            if result_status != "DONE":
+            # get conversion report
+            if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
+                self.utils.filesystem.copy(os.path.join(dp2_job.dir_output, "preview-output-dir"), os.path.join(self.utils.report.reportDir(), "preview-" + braille_version))
+                self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + epub.identifier() + ".pef.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+            
+            if dp2_job.status != "DONE":
                 self.utils.report.info("Klarte ikke å konvertere boken")
-                self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
                 return
+            
+            pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
             
             if not os.path.isdir(pef_dir):
                 self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-                self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
                 return
             
             self.utils.report.info("Boken ble konvertert. Kopierer til PEF-arkiv.")
             
-            archived_path = self.utils.filesystem.storeBook(pef_dir, book_id, subdir=braille_version)
+            archived_path = self.utils.filesystem.storeBook(pef_dir, epub.identifier(), subdir=braille_version)
             self.utils.report.attachment(None, archived_path, "DEBUG")
-            self.utils.report.info(book_id + " ble lagt til i arkivet under PEF/" + braille_version + ".")
+            self.utils.report.info(epub.identifier() + " ble lagt til i arkivet under PEF/" + braille_version + ".")
         
-        self.utils.report.title = self.title + ": " + book_id + " ble konvertert 👍😄"
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":

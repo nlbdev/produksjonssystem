@@ -12,7 +12,6 @@ from pathlib import Path
 from threading import Thread, RLock
 from dotmap import DotMap
 
-from core.utils.epub import Epub
 from core.utils.filesystem import Filesystem
 from core.utils.report import Report
 
@@ -66,7 +65,6 @@ class Pipeline():
     def __init__(self):
         self.utils = DotMap()
         self.utils.report = None
-        self.utils.epub = None
         self.utils.filesystem = None
         self._queue = []
         logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
@@ -343,7 +341,6 @@ class Pipeline():
                     else:
                         # configure utils before processing book
                         self.utils.report = Report(self)
-                        self.utils.epub = Epub(self)
                         self.utils.filesystem = Filesystem(self)
                         
                         try:

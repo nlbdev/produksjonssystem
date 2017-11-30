@@ -10,6 +10,9 @@ import subprocess
 import shutil
 import re
 
+from core.utils.epub import Epub
+from core.utils.daisy_pipeline import DaisyPipelineJob
+
 from core.pipeline import Pipeline
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -39,195 +42,76 @@ class NordicToNlbpub(Pipeline):
         self.on_book()
     
     def on_book(self):
-        if self.first_job:
-            try:
-                # start engine if it's not started already
-                process = self.utils.filesystem.run([self.dp2_cli, "help"], shell=True)
-                
-            except subprocess.TimeoutExpired as e:
-                self.utils.report.info("Oppstart av Pipeline 2 tok for lang tid og ble derfor stoppet.")
-                
-            except subprocess.CalledProcessError as e:
-                self.utils.report.debug("En feil oppstod når Pipeline 2 startet. Vi venter noen sekunder og håper det går bra alikevel...")
-                time.sleep(5)
-            
-            self.first_job = False
-        
-        # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
-        workspace_dir_object = tempfile.TemporaryDirectory()
-        workspace_dir = workspace_dir_object.name
-        
-        book_dir = os.path.join(workspace_dir, "book")
-        self.utils.filesystem.unzip(self.book["source"], book_dir)
+        self.utils.report.attachment(None, self.book["source"], "DEBUG")
+        epub = Epub(self, self.book["source"])
         
         # sjekk at dette er en EPUB
-        if not self.utils.epub.isepub(self.book["source"]):
+        if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        book_id = self.utils.epub.meta(book_dir, "dc:identifier")
-        
-        if not book_id:
+        if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        book_file = os.path.join(workspace_dir, book_id + ".epub")
-        
-        # lag en zippet versjon av EPUBen også
-        self.utils.report.info("Pakker sammen " + book_id + "...")
-        self.utils.epub.zip(book_dir, book_file)
-        
-        job_dir  = os.path.join(workspace_dir, "epub3-to-nlbpub/")
-        os.makedirs(job_dir)
-        
-        
         # ---------- step 1: convert from nordic epub to nordic html ----------
         
-        result_dir = os.path.join(job_dir, "result-nordic-html/")
-        
-        job_id = None
-        result_status = None
         html_dir = None
         html_file = None
         
-        try:
-            self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-            process = self.utils.filesystem.run([self.dp2_cli, "nordic-epub3-to-html", "--epub", book_file, "--fail-on-error", "true", "--output", result_dir, "-p"])
-            
-            # get dp2 job id
-            job_id = None
-            for line in process.stdout.decode("utf-8").split("\n"):
-                # look for: Job {id} sent to the server
-                m = re.match("^Job (.*) sent to the server$", line)
-                if m:
-                    job_id = m.group(1)
-                    break
-            assert job_id, "Could not find the job ID for the conversion job"
-            
-            # get conversion log (the run method will log stdout/stderr as debug output)
-            process = self.utils.filesystem.run([self.dp2_cli, "log", job_id])
-            
-            # get conversion status
-            process = self.utils.filesystem.run([self.dp2_cli, "status", job_id])
-            result_status = None
-            for line in process.stdout.decode("utf-8").split("\n"):
-                # look for: Job {id} sent to the server
-                m = re.match("^Status: (.*)$", line)
-                if m:
-                    result_status = m.group(1)
-                    break
-            assert result_status, "Klarte ikke å finne jobb-status for konverterings-jobben"
-            self.utils.report.debug("Pipeline 2 status: " + result_status)
-            
-            # get conversion report
-            with open(os.path.join(result_dir, "html-report/report.xhtml"), 'r') as result_report:
-                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
-            
-            html_dir = os.path.join(result_dir, "output-dir", book_id)
-            html_file = os.path.join(html_dir, book_id + ".xhtml")
-            
-        except subprocess.TimeoutExpired as e:
-            self.utils.report.info("Konvertering av " + book_id + " fra Nordic EPUB til NLBPUB tok for lang tid og ble derfor stoppet.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
-            return
-            
-        finally:
-            if job_id:
-                try:
-                    process = self.utils.filesystem.run([self.dp2_cli, "delete", job_id])
-                except subprocess.TimeoutExpired as e:
-                    self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
-                    pass
+        self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
+        dp2_job_epub3_to_html = DaisyPipelineJob(self, "nordic-epub3-to-html", { "epub": epub.asFile(), "fail-on-error": "true" })
         
-        if result_status != "DONE":
-            self.utils.report.info("Klarte ikke å konvertere boken")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+        # get conversion report
+        report_file = os.path.join(dp2_job_epub3_to_html.dir_output, "html-report/report.xhtml")
+        if os.path.isfile(report_file):
+            with open(report_file, 'r') as result_report:
+                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job_epub3_to_html.status == "DONE" else "ERROR")
+        
+        if dp2_job_epub3_to_html.status != "DONE":
+            self.utils.report.error("Klarte ikke å konvertere boken")
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
+        
+        html_dir = os.path.join(dp2_job_epub3_to_html.dir_output, "output-dir", epub.identifier())
+        html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
         
         if not os.path.isdir(html_dir):
             self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
+        
+        
+        # TODO: XSLT-steg her for å rydde opp nordisk EPUB
         
         
         # ---------- step 2: convert from nordic html to generic epub ----------
         
-        result_dir = os.path.join(job_dir, "result-generic-epub/")
+        self.utils.report.info("Konverterer fra Nordic HTML5 til generisk EPUB3...")
+        dp2_job_html_to_epub3 = DaisyPipelineJob(self, "html-to-epub3", { "html": html_file, "metadata": html_file })
         
-        job_id = None
-        result_status = None
-        generic_epub = None
-        
-        try:
-            self.utils.report.info("Konverterer fra Nordic HTML5 til generisk EPUB3...")
-            process = self.utils.filesystem.run([self.dp2_cli, "html-to-epub3", "--html", html_file, "--metadata", html_file, "--output", result_dir, "-p"])
-            
-            # get dp2 job id
-            job_id = None
-            for line in process.stdout.decode("utf-8").split("\n"):
-                # look for: Job {id} sent to the server
-                m = re.match("^Job (.*) sent to the server$", line)
-                if m:
-                    job_id = m.group(1)
-                    break
-            assert job_id, "Could not find the job ID for the conversion job"
-            
-            # get conversion log (the run method will log stdout/stderr as debug output)
-            process = self.utils.filesystem.run([self.dp2_cli, "log", job_id])
-            
-            # get conversion status
-            process = self.utils.filesystem.run([self.dp2_cli, "status", job_id])
-            result_status = None
-            for line in process.stdout.decode("utf-8").split("\n"):
-                # look for: Job {id} sent to the server
-                m = re.match("^Status: (.*)$", line)
-                if m:
-                    result_status = m.group(1)
-                    break
-            assert result_status, "Klarte ikke å finne jobb-status for konverterings-jobben"
-            self.utils.report.debug("Pipeline 2 status: " + result_status)
-            
-            generic_epub = os.path.join(result_dir, "output-dir", book_id + ".epub")
-            
-        except subprocess.TimeoutExpired as e:
-            self.utils.report.info("Konvertering av " + book_id + " fra Nordic HTML5 til generisk EPUB3 tok for lang tid og ble derfor stoppet.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
-            return
-            
-        finally:
-            if job_id:
-                try:
-                    process = self.utils.filesystem.run([self.dp2_cli, "delete", job_id])
-                except subprocess.TimeoutExpired as e:
-                    self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
-                    pass
-        
-        if result_status != "DONE":
-            self.utils.report.info("Klarte ikke å konvertere boken")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+        if dp2_job_html_to_epub3.status != "DONE":
+            self.utils.report.error("Klarte ikke å konvertere boken")
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
         
-        if not os.path.isdir(html_dir):
-            self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
+        nlbpub_path = os.path.join(dp2_job_html_to_epub3.dir_output, "output-dir", epub.identifier() + ".epub")
+        nlbpub = Epub(self, nlbpub_path)
+        
+        if not nlbpub.isepub():
+            self.utils.report.error("Resultatet ble ikke en gyldig EPUB")
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
         
-        
-        # ---------- step 3: unzip EPUB
-        
-        result_dir = os.path.join(job_dir, "unzipped-nlbpub/")
-        self.utils.report.info("Pakker ut EPUB")
-        os.makedirs(result_dir)
-        self.utils.filesystem.unzip(generic_epub, result_dir)
-        
+        # ---------- step 3: unzip and save EPUB
         
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
         
-        archived_path = self.utils.filesystem.storeBook(result_dir, book_id)
+        archived_path = self.utils.filesystem.storeBook(nlbpub.asDir(), epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(book_id + " ble lagt til i NLBPUB-arkivet.")
-        self.utils.report.title = self.title + ": " + book_id + " ble konvertert 👍😄"
+        self.utils.report.info(epub.identifier() + " ble lagt til i NLBPUB-arkivet.")
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":
