@@ -11,6 +11,8 @@ import re
 import json
 import logging
 
+from core.utils.daisy_pipeline import DaisyPipelineJob
+
 from core.pipeline import Pipeline
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -40,20 +42,6 @@ class IncomingNordic(Pipeline):
         self.on_book()
     
     def on_book(self):
-        if self.first_job:
-            try:
-                # start engine if it's not started already
-                process = self.utils.filesystem.run([self.dp2_cli, "help"], shell=True)
-                
-            except subprocess.TimeoutExpired as e:
-                self.utils.report.info("Oppstart av Pipeline 2 tok for lang tid og ble derfor stoppet.")
-                
-            except subprocess.CalledProcessError as e:
-                self.utils.report.debug("En feil oppstod når Pipeline 2 startet. Vi venter noen sekunder og håper det går bra alikevel...")
-                time.sleep(5)
-            
-            self.first_job = False
-        
         # Bruk sub-mapper for å unngå overskriving og filnavn-kollisjoner
         workspace_dir_object = tempfile.TemporaryDirectory()
         workspace_dir = workspace_dir_object.name
@@ -79,60 +67,16 @@ class IncomingNordic(Pipeline):
         self.utils.report.info("Pakker sammen " + book_id + "...")
         self.utils.epub.zip(book_dir, book_file)
         
-        job_dir  = os.path.join(workspace_dir, "nordic-epub3-validate/")
-        os.makedirs(job_dir)
-
-        result_dir = os.path.join(job_dir, "result/")
+        self.utils.report.info("Validerer EPUB...")
+        dp2_job = DaisyPipelineJob(self, "nordic-epub3-validate", { "epub": book_file })
         
-        job_id = None
-        result_status = None
+        # get validation report
+        report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
+        if os.path.isfile(report_file):
+            with open(report_file, 'r') as result_report:
+                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
         
-        try:
-            self.utils.report.info("Validerer EPUB...")
-            process = self.utils.filesystem.run([self.dp2_cli, "nordic-epub3-validate", "--epub", book_file, "--output", result_dir, "-p"])
-            
-            # get dp2 job id
-            job_id = None
-            for line in process.stdout.decode("utf-8").split("\n"):
-                # look for: Job {id} sent to the server
-                m = re.match("^Job (.*) sent to the server$", line)
-                if m:
-                    job_id = m.group(1)
-                    break
-            assert job_id, "Could not find the job ID for the validation job"
-            
-            # get validation log (the run method will log stdout/stderr as debug output)
-            process = self.utils.filesystem.run([self.dp2_cli, "log", job_id])
-            
-            # get validation status
-            process = self.utils.filesystem.run([self.dp2_cli, "status", job_id])
-            result_status = None
-            for line in process.stdout.decode("utf-8").split("\n"):
-                # look for: Job {id} sent to the server
-                m = re.match("^Status: (.*)$", line)
-                if m:
-                    result_status = m.group(1)
-                    break
-            assert result_status, "Klarte ikke å finne jobb-status for validerings-jobben"
-            self.utils.report.debug("Pipeline 2 status: " + result_status)
-            
-            # get validation report
-            with open(os.path.join(result_dir, "html-report/report.xhtml"), 'r') as result_report:
-                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if result_status == "DONE" else "ERROR")
-            
-        except subprocess.TimeoutExpired as e:
-            self.utils.report.error("Validering av " + book_id + " tok for lang tid og ble derfor stoppet.")
-            self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
-            return
-            
-        finally:
-            if job_id:
-                try:
-                    process = self.utils.filesystem.run([self.dp2_cli, "delete", job_id])
-                except subprocess.TimeoutExpired as e:
-                    self.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + job_id)
-        
-        if result_status != "DONE":
+        if dp2_job.status != "DONE":
             self.utils.report.error("Klarte ikke å validere boken")
             self.utils.report.title = self.title + ": " + book_id + " feilet 😭👎"
             return
