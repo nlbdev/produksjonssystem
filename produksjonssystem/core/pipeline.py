@@ -176,6 +176,10 @@ class Pipeline():
             pass
         self.stop()
     
+    def trigger(self, name):
+        with open(fname, 'a'):
+            Path(os.path.join(self.dir_trigger, name)).touch()
+    
     def _add_book_to_queue(self, name, event_type):
         with self._lock:
             book_in_queue = False
