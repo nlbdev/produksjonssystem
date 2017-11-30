@@ -150,7 +150,7 @@ class Filesystem():
         else:
             shutil.copy(source, destination)
     
-    def storeBook(self, source, book_id, move=False, subdir=None):
+    def storeBook(self, source, book_id, move=False, subdir=None, dir_out=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
         assert book_id
@@ -160,7 +160,8 @@ class Filesystem():
         assert not "/" in book_id
         assert not subdir or not ".." in subdir
         assert not subdir or not "/" in subdir
-        dir_out = self.pipeline.dir_out
+        if not dir_out:
+            dir_out = self.pipeline.dir_out
         if subdir:
             dir_out = os.path.join(dir_out, subdir)
         target = os.path.join(dir_out, book_id)
