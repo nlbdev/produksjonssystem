@@ -328,6 +328,11 @@ class Report():
     def attachment(self, content, path, severity):
         assert path and os.path.isabs(path), "Links must have an absolute path."
         assert not content or isinstance(content, list) or isinstance(content, str), "Attachment content must be a string or list when given."
+        
+        if path in [m["text"] for m in self._messages["attachment"]]:
+            self.debug("Skipping attachment; tried attaching same attachment twice: " + path)
+            return
+        
         if content:
             if isinstance(content, list):
                 content = "\n".join(content)
