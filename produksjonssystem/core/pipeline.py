@@ -42,6 +42,9 @@ class Pipeline():
     dir_reports = None
     dir_trigger = None
     
+    # This one is meant for use in static contexts (Pipeline.dirs[uid][in|out|reports|trigger])
+    dirs = None
+    
     # constants (set during instantiation)
     shouldHandleBooks = True
     _inactivity_timeout = 10
@@ -117,6 +120,16 @@ class Pipeline():
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
         self.dir_base = str(os.path.normpath(dir_base)) + '/'
         self.email_settings = email_settings
+        
+        # make dirs available from static contexts
+        if not Pipeline.dirs:
+            Pipeline.dirs = {}
+        if not self.uid in Pipeline.dirs:
+            Pipeline.dirs[self.uid] = {}
+        Pipeline.dirs[self.uid]["in"] = self.dir_in
+        Pipeline.dirs[self.uid]["out"] = self.dir_out
+        Pipeline.dirs[self.uid]["reports"] = self.dir_reports
+        Pipeline.dirs[self.uid]["base"] = self.dir_base
         
         if Filesystem.ismount(self.dir_in):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
