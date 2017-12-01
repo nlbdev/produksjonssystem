@@ -13,6 +13,7 @@ from email.headerregistry import Address
 # Import pipelines
 from incoming_nordic import IncomingNordic
 from nordic_to_nlbpub import NordicToNlbpub
+from update_metadata import UpdateMetadata
 from epub_to_html import EpubToHtml
 from epub_to_dtbook import EpubToDtbook
 from epub_to_pef import EpubToPef
@@ -47,6 +48,7 @@ dirs = {
     "incoming": os.path.join(book_archive_dir, "innkommende"),
     "master": os.path.join(book_archive_dir, "master/EPUB"),
     "nlbpub": os.path.join(book_archive_dir, "master/NLBPUB"),
+    "metadata": os.path.join(book_archive_dir, "metadata"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "html_narration": os.path.join(book_archive_dir, "distribusjonsformater/HTML-til-innlesing"),

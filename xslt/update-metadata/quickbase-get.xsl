@@ -10,24 +10,8 @@
     
     <xsl:output indent="yes"/>
     
-    <xsl:param name="book-id"/>
-    
-    <!--
-        Quickbase fields with book IDs:
-        
-        isbn.xml:
-            7: "Tilvekstnummer"
-        
-        records.xml:
-            13: Tilvekstnummer EPUB
-            20: Tilvekstnummer DAISY 2.02 Skjønnlitteratur
-            24: Tilvekstnummer DAISY 2.02 Studielitteratur
-            28: Tilvekstnummer Punktskrift
-            31: Tilvekstnummer DAISY 2.02 Innlest fulltekst
-            32: Tilvekstnummer e-bok
-            38: Tilvekstnummer ekstern produksjon
-    -->
-    <xsl:variable name="book-id-rows" select="if (ends-with(base-uri(/*), '/isbn.xml')) then ('7') else if (ends-with(base-uri(/*), '/records.xml')) then ('13','20','24','28','31','32','38') else ()" as="xs:string*"/>
+    <xsl:param name="book-id" required="yes"/>
+    <xsl:param name="book-id-rows" required="yes"/>
     
     <xsl:template match="@* | node()">
         <xsl:copy>
@@ -35,16 +19,32 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="qdbapi">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | table"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="table">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | name | desc | original | fields | lastluserid | lusers | records"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="original">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | table_id | app_id | cre_date | mod_date | def_sort_fid | def_sort_order | key_fid | single_record_name | plural_record_name"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:template match="records">
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="*"/>
+            <xsl:apply-templates select="@* | record"/>
         </xsl:copy>
     </xsl:template>
     
     <xsl:template match="record">
-        <xsl:variable name="book-ids" select="distinct-values(for $f in f[@id = $book-id-rows] return (if ($f/text()) then $f/text() else ()))"/>
-        <xsl:message select="$book-ids"/>
+        <xsl:variable name="book-ids" select="distinct-values(for $f in f[@id = tokenize($book-id-rows,'\s+')] return (if ($f/normalize-space(text())) then $f/normalize-space(text()) else ()))"/>
         <xsl:if test="$book-id = $book-ids">
             <xsl:copy-of select="."/>
         </xsl:if>
