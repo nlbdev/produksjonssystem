@@ -175,7 +175,7 @@ class UpdateMetadata(Pipeline):
         pipeline.utils.report.info("bibliofil-to-opf.xsl")
         pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'bibliofil.xml'))
         pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'bibliofil.opf'))
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "bibliofil-to-opf.xsl"),
+        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "marcxchange-to-opf/marcxchange-to-opf.xsl"),
                        source=os.path.join(metadata_dir, 'bibliofil.xml'),
                        target=os.path.join(metadata_dir, 'bibliofil.opf'))
         
