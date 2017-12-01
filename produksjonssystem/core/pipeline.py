@@ -175,7 +175,7 @@ class Pipeline():
         self.stop()
     
     def trigger(self, name):
-        with open(fname, 'a'):
+        with open(name, 'a'):
             Path(os.path.join(self.dir_trigger, name)).touch()
     
     def _add_book_to_queue(self, name, event_type):
