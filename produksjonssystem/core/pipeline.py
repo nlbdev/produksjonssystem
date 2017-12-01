@@ -13,7 +13,7 @@ from threading import Thread, RLock
 from dotmap import DotMap
 
 from core.utils.filesystem import Filesystem
-from core.utils.report import Report
+from core.utils.report import Report, DummyReport
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -412,6 +412,42 @@ class Pipeline():
     def on_book_deleted(self):
         logging.info("[" + Report.thread_name() + "] Book deleted (unhandled book event): "+self.book['name'])
 
+class DummyPipeline(Pipeline):
+    uid = "dummy"
+    title = "Dummy"
+    
+    utils = None
+    _dummy_should_run = None
+    
+    def __init__(self, uid=None, title=None):
+        if uid:
+            self.uid = uid
+        if title:
+            self.title = title
+        self.utils = DotMap()
+        self.utils.report = DummyReport(self)
+        self.utils.filesystem = Filesystem(self)
+        self._dummy_should_run = False
+    
+    def start(self, *args, **kwargs):
+        self._dummy_should_run = True
+    
+    def stop(self, *args, **kwargs):
+        self._dummy_should_run = False
+    
+    def run(self, *args, **kwargs):
+        self.start(*args, **kwargs)
+        while self._dummy_should_run:
+            time.sleep(1)
+    
+    def on_book_deleted(self):
+        self.utils.report.should_email = False
+    
+    def on_book_modified(self):
+        self.utils.report.should_email = False
+    
+    def on_book_created(self):
+        self.utils.report.should_email = False
 
 if __name__ == '__main__':
     args = sys.argv[1:]
