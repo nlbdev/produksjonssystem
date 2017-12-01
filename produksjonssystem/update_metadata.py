@@ -86,7 +86,7 @@ class UpdateMetadata(Pipeline):
         while self._shouldWatchMetadata:
             try:
                 time.sleep(1)
-                day = 15 # 60 * 60 * 24
+                day = 60 # 60 * 60 * 24
                 
                 # find a book_id where we haven't retrieved updated metadata in a while
                 for book_id in os.listdir(self.dir_out):
