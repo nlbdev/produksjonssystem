@@ -43,9 +43,10 @@ class Pipeline():
     dir_trigger = None
     
     # constants (set during instantiation)
+    shouldHandleBooks = True
     _inactivity_timeout = 10
     _bookHandlerThread = None
-    _shouldHandleBooks = False
+    _dirInAvailable = False
     _shouldRun = True
     _stopAfterFirstJob = False
     
@@ -125,7 +126,8 @@ class Pipeline():
             return
         self._inactivity_timeout = inactivity_timeout
         
-        self._shouldHandleBooks = True
+        self.shouldHandleBooks = True
+        self._dirInAvailable = True
         
         self._md5 = {}
         for f in os.listdir(self.dir_in):
@@ -143,7 +145,7 @@ class Pipeline():
     
     def stop(self, exit=False):
         if self._bookHandlerThread:
-            self._shouldHandleBooks = False
+            self._dirInAvailable = False
         if exit:
             self._shouldRun = False
         self._queue = []
@@ -157,14 +159,14 @@ class Pipeline():
         try:
             while self._shouldRun:
                 if not os.path.isdir(self.dir_in):
-                    if self._shouldHandleBooks:
+                    if self._dirInAvailable:
                         logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Stop watching...")
                         self.stop()
                         
                     else:
                         logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is still not available...")
                         
-                if not self._shouldHandleBooks and os.path.isdir(self.dir_in):
+                if not self._dirInAvailable and os.path.isdir(self.dir_in):
                     logging.info("[" + Report.thread_name() + "] " + self.dir_in + " is available again. Start watching...")
                     self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports)
                 
@@ -214,7 +216,7 @@ class Pipeline():
         }
     
     def _monitor_book_events_thread(self):
-        while self._shouldHandleBooks and self._shouldRun:
+        while self.shouldHandleBooks and self._dirInAvailable and self._shouldRun:
             try:
                 # books that are recently changed (check often in case of new file changes)
                 recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
@@ -288,7 +290,7 @@ class Pipeline():
                     logging.exception("[" + Report.thread_name() + "] Could not e-mail exception")
     
     def _handle_book_events_thread(self):
-        while self._shouldHandleBooks and self._shouldRun:
+        while self.shouldHandleBooks and self._dirInAvailable and self._shouldRun:
             try:
                 if not os.path.isdir(self.dir_in):
                     # when base dir is not available we should stop watching the directory,
