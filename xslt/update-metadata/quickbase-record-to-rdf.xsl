@@ -3,1908 +3,2125 @@
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:nlbprod="http://www.nlb.no/production"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
-                xmlns:opf="http://www.idpf.org/2007/opf"
-                xmlns="http://www.idpf.org/2007/opf"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:schema="http://schema.org/"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns:f="#"
+                xmlns="http://www.w3.org/1999/xhtml"
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes"/>
+    <xsl:output indent="yes" method="xhtml"/>
+    
+    <xsl:param name="rdf-xml-path" as="xs:string"/>
 
     <xsl:template match="/qdbapi">
-        <metadata>
-            <xsl:namespace name="dcterms" select="'http://purl.org/dc/terms/'"/>
+        <xsl:variable name="metadata" as="node()*">
             <xsl:for-each select="/qdbapi/table/records/record/f">
                 <xsl:sort select="@id"/>
-                <xsl:apply-templates select="."/>
+                <xsl:variable name="meta" as="node()*">
+                    <xsl:apply-templates select="."/>
+                </xsl:variable>
+                <xsl:choose>
+                    <xsl:when test="$meta[self::html:dd]">
+                        <xsl:copy-of select="$meta"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:message select="concat('Ingen regel for QuickBase-felt i Record-tabell: ', @id)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:for-each>
-        </metadata>
+        </xsl:variable>
+        
+        <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
+            <head>
+                <title><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:title']]"/></title>
+                <style>
+                    <xsl:text><![CDATA[
+dl {
+   margin-top: 0;
+   margin-bottom: 1rem;
+}
+
+dt {
+    font-weight: 700;
+}
+
+dd {
+    margin-bottom: .5rem;
+    margin-left: 0;
+    text-indent: 2rem;
+}
+
+body {
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #292b2c;
+    margin: 2rem;
+}
+
+section dl {
+    margin-left: 2rem;
+}
+
+]]></xsl:text>
+                </style>
+            </head>
+            <body vocab="http://schema.org/" typeof="CreativeWork" resource="#creativeWork">
+                <h1><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:title']]"/></h1>
+                
+                <xsl:call-template name="list-metadata-rdfa">
+                    <xsl:with-param name="metadata" select="$metadata[self::*]"/>
+                    <xsl:with-param name="type-id" select="'#creativeWork'"/>
+                </xsl:call-template>
+                
+                <xsl:for-each select="distinct-values($metadata/@_type-id[not(.='#creativeWork')])">
+                    <section vocab="http://schema.org/" typeof="Book" resource="{.}">
+                        <link property="exampleOfWork" href="#creativeWork"/>
+                        <h2><xsl:value-of select="if (. = '#epub') then 'EPUB' else if (. = '#audio') then 'Lydbok' else if (. = '#braille') then 'Punktskrift' else if (. = '#ebook') then 'E-tekst' else if (. = '#external') then 'Ekstern' else ."/></h2>
+                        <xsl:call-template name="list-metadata-rdfa">
+                            <xsl:with-param name="metadata" select="$metadata[self::*]"/>
+                            <xsl:with-param name="type-id" select="."/>
+                        </xsl:call-template>
+                    </section>
+                </xsl:for-each>
+            </body>
+        </html>
+        
+        <xsl:if test="$rdf-xml-path">
+            <xsl:result-document href="{$rdf-xml-path}" indent="yes">
+                <rdf:RDF>
+                    <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
+                    <xsl:namespace name="schema" select="'http://schema.org/'"/>
+                    <xsl:namespace name="nlbprod" select="'http://www.nlb.no/production'"/>
+                    <rdf:Description rdf:about="#creativeWork">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                        <xsl:call-template name="list-metadata-rdfxml">
+                            <xsl:with-param name="metadata" select="$metadata[self::*]"/>
+                            <xsl:with-param name="type-id" select="'#creativeWork'"/>
+                        </xsl:call-template>
+                    </rdf:Description>
+                    <xsl:for-each select="distinct-values($metadata/@_type-id[not(.='#creativeWork')])">
+                        <rdf:Description rdf:about="{.}">
+                            <rdf:type rdf:resource="http://schema.org/Book"/>
+                            <schema:exampleOfWork rdf:resource="#creativeWork"/>
+                            <xsl:call-template name="list-metadata-rdfxml">
+                                <xsl:with-param name="metadata" select="$metadata[self::*]"/>
+                                <xsl:with-param name="type-id" select="."/>
+                            </xsl:call-template>
+                        </rdf:Description>
+                    </xsl:for-each>
+                </rdf:RDF>
+            </xsl:result-document>
+        </xsl:if>
     </xsl:template>
     
-    <xsl:template match="f">
-        <xsl:message select="concat('Ingen regel for QuickBase-felt i Record-tabell: ', @id)"/>
+    <xsl:template name="list-metadata-rdfa">
+        <xsl:param name="metadata" as="element()*"/>
+        <xsl:param name="type-id" as="xs:string"/>
+        <dl>
+            <xsl:for-each-group select="$metadata" group-starting-with="html:dt">
+                <xsl:if test="current-group()[self::html:dd[@_type-id=$type-id and normalize-space(.)]]">
+                    <xsl:variable name="baseType" select="(current-group()[self::html:dt]/@_base_type)[1]" as="xs:string"/>
+                    <xsl:variable name="fieldType" select="(current-group()[self::html:dt]/@_field_type)[1]" as="xs:string"/>
+                    <xsl:variable name="property" select="(current-group()[self::html:dd]/@property)[1]" as="xs:string"/>
+                    <xsl:for-each select="current-group()[self::html:dt]">
+                        <xsl:copy>
+                            <xsl:copy-of select="@* except (@_type-id | @_field_type | @_base_type)"/>
+                            <xsl:attribute name="title" select="$property"/>
+                            <xsl:copy-of select="node()"/>
+                        </xsl:copy>
+                    </xsl:for-each>
+                    <xsl:for-each select="current-group()[self::html:dd]">
+                        <xsl:copy>
+                            <xsl:copy-of select="@* except (@_type-id | @_field_type | @_base_type)"/>
+                            <xsl:value-of select="f:quickbase-value(text()[1], $fieldType, $baseType)"/>
+                        </xsl:copy>
+                    </xsl:for-each>
+                </xsl:if>
+            </xsl:for-each-group>
+        </dl>
+    </xsl:template>
+    
+    <xsl:template name="list-metadata-rdfxml">
+        <xsl:param name="metadata" as="element()*"/>
+        <xsl:param name="type-id" as="xs:string"/>
+        <xsl:for-each-group select="$metadata" group-starting-with="html:dt">
+            <xsl:if test="current-group()[self::html:dd[@_type-id=$type-id and normalize-space(.)]]">
+                <xsl:variable name="baseType" select="(current-group()[self::html:dt]/@_base_type)[1]" as="xs:string"/>
+                <xsl:variable name="fieldType" select="(current-group()[self::html:dt]/@_field_type)[1]" as="xs:string"/>
+                <xsl:variable name="property" select="(current-group()[self::html:dd]/@property)[1]" as="xs:string"/>
+                <xsl:for-each select="current-group()[self::html:dd]">
+                    <xsl:element name="{@property}">
+                        <xsl:value-of select="f:quickbase-value(text()[1], $fieldType, $baseType)"/>
+                    </xsl:element>
+                </xsl:for-each>
+            </xsl:if>
+        </xsl:for-each-group>
+    </xsl:template>
+    
+    <xsl:function name="f:quickbase-value" as="xs:string">
+        <xsl:param name="value" as="xs:string"/>
+        <xsl:param name="fieldType" as="xs:string"/>
+        <xsl:param name="baseType" as="xs:string"/>
+        <xsl:value-of select="string(if ($baseType = 'bool') then boolean(number($value))
+                                else if ($fieldType = 'duration') then f:duration(number($value) div 1000)
+                                else if ($fieldType = 'timestamp') then f:timestamp(xs:integer(number($value) div 1000))
+                                else if ($fieldType = 'date') then f:date(xs:integer(number($value) div 1000))
+                                else $value)"/>
+    </xsl:function>
+    
+    <xsl:function name="f:duration" as="xs:string">
+        <xsl:param name="seconds" as="xs:double"/>
+        <xsl:variable name="s" select="$seconds mod 60"/>
+        <xsl:variable name="m" select="xs:integer(($seconds - $s) div 60 mod 60)"/>
+        <xsl:variable name="h" select="xs:integer(($seconds - $s - $m * 60) div 3600)"/>
+        <xsl:value-of select="concat($h,':',format-number($m,'00'),':',format-number($s,'00.###'))"/>
+    </xsl:function>
+    
+    <xsl:function name="f:timestamp" as="xs:string">
+        <xsl:param name="epoch" as="xs:integer"/>
+        <xsl:value-of select="string(xs:dateTime('1970-01-01T00:00:00') + xs:dayTimeDuration(concat('PT', $epoch, 'S')))"/>
+    </xsl:function>
+    
+    <xsl:function name="f:date" as="xs:string">
+        <xsl:param name="epoch" as="xs:integer"/>
+        <xsl:value-of select="string(xs:date('1970-01-01') + xs:dayTimeDuration(concat('PT', $epoch, 'S')))"/>
+    </xsl:function>
+    
+    <xsl:template match="f" priority="2">
+        <xsl:variable name="id" select="@id"/>
+        <dt _field_type="{/qdbapi/table/fields/field[@id=$id]/@field_type}" _base_type="{/qdbapi/table/fields/field[@id=$id]/@base_type}">
+            <xsl:value-of select="/qdbapi/table/fields/field[@id=$id]/label"/>
+        </dt>
+        <xsl:next-match/>
     </xsl:template>
     
     <xsl:template match="f[@id='1']">
         <!-- Integer -->
-        <meta property="nlbprod:dateCreated">
+       <dd property="nlbprod:dateCreated" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='2']">
         <!-- Integer -->
-        <meta property="nlbprod:dateModified">
+        <dd property="nlbprod:dateModified" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='3']">
         <!-- Integer -->
-        <meta property="nlbprod:recordId">
+        <dd property="nlbprod:recordId" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='4']">
         <!-- String -->
-        <meta property="nlbprod:recordOwner">
+        <dd property="nlbprod:recordOwner" _type-id="#creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='5']">
         <!-- String -->
-        <meta property="nlbprod:lastModifiedBy">
+        <dd property="nlbprod:lastModifiedBy" _type-id="#creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='6']">
         <!-- Integer -->
-        <meta property="nlbprod:registrationDate">
+        <dd property="nlbprod:registrationDate" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='7']">
         <!-- String -->
-        <meta property="nlbprod:createdBy">
+        <dd property="nlbprod:createdBy" _type-id="#creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='8']">
         <!-- String -->
-        <meta property="nlbprod:title">
+        <dd property="nlbprod:title" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='9']">
         <!-- String -->
-        <meta property="nlbprod:author">
+        <dd property="nlbprod:author" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='10']">
         <!-- String -->
-        <meta property="nlbprod:publisher">
+        <dd property="nlbprod:publisher" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='11']">
         <!-- String -->
-        <meta property="nlbprod:originalISBN">
+        <dd property="nlbprod:originalISBN" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='12']">
         <!-- String -->
-        <meta property="nlbprod:productionTurnaroundTime">
+        <dd property="nlbprod:productionTurnaroundTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='13']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.epub">
+        <dd property="nlbprod:identifier.epub" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='14']">
         <!-- Boolean -->
-        <meta property="nlbprod:epubCatalogued">
+        <dd property="nlbprod:epubCatalogued" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='15']">
         <!-- Boolean -->
-        <meta property="nlbprod:sourceFileReceived">
+        <dd property="nlbprod:sourceFileReceived" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='16']">
         <!-- String -->
-        <meta property="nlbprod:producer">
+        <dd property="nlbprod:producer" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='17']">
         <!-- Boolean -->
-        <meta property="nlbprod:productionApproved">
+        <dd property="nlbprod:productionApproved" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='18']">
         <!-- Integer -->
-        <meta property="nlbprod:numberOfPages">
+        <dd property="nlbprod:numberOfPages" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='19']">
         <!-- Integer -->
-        <meta property="nlbprod:numberOfImages">
+        <dd property="nlbprod:numberOfImages" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='20']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.daisy202">
+        <dd property="nlbprod:identifier.daisy202" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='21']">
         <!-- String -->
-        <meta property="nlbprod:nlbIsbnDaisy202">
+        <dd property="nlbprod:nlbIsbnDaisy202" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='22']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202narrated">
+        <dd property="nlbprod:formatDaisy202narrated" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='23']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202tts">
+        <dd property="nlbprod:formatDaisy202tts" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='24']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.daisy202" id="identifier-daisy202student">
+        <dd property="nlbprod:identifier.daisy202" _type-id="#audio" id="identifier-daisy202student">
             <xsl:value-of select="."/>
-        </meta>
-        <meta property="nlbprod:dcterms:audience" refines="#identifier-daisy202student">Student</meta>
+        </dd>
+        <!--<dd property="dcterms:audience" _type-id="#audio" refines="#identifier-daisy202student">Student</dd>-->
     </xsl:template>
     
     <xsl:template match="f[@id='25']">
         <!-- String -->
-        <meta property="nlbprod:nlbIsbnDaisy202student">
+        <dd property="nlbprod:nlbIsbnDaisy202student" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='26']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202narratedStudent">
+        <dd property="nlbprod:formatDaisy202narratedStudent" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='27']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202ttsStudent">
+        <dd property="nlbprod:formatDaisy202ttsStudent" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='28']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.braille">
+        <dd property="nlbprod:identifier.braille" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='29']">
         <!-- String -->
-        <meta property="nlbprod:nlbIsbnBraille">
+        <dd property="nlbprod:nlbIsbnBraille" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='30']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatBraille">
+        <dd property="nlbprod:formatBraille" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='31']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.daisy202" id="identifier-daisy202narratedfulltext">
+        <dd property="nlbprod:identifier.daisy202" _type-id="#audio" id="identifier-daisy202narratedfulltext">
             <xsl:value-of select="."/>
-        </meta>
-        <meta property="dc:type" refines="#identifier-daisy202narratedfulltext">Narrated Fulltext</meta>
+        </dd>
+        <!--<dd property="dc:type" _type-id="#audio" refines="#identifier-daisy202narratedfulltext">Narrated Fulltext</dd>-->
     </xsl:template>
     
     <xsl:template match="f[@id='32']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.ebook">
+        <dd property="nlbprod:identifier.ebook" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='33']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202narratedFulltext">
+        <dd property="nlbprod:formatDaisy202narratedFulltext" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='36']">
         <!-- String -->
-        <meta property="nlbprod:nlbIsbnEbook">
+        <dd property="nlbprod:nlbIsbnEbook" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='37']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatEbook">
+        <dd property="nlbprod:formatEbook" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='38']">
         <!-- Integer -->
-        <meta property="nlbprod:identifier.external">
+        <dd property="nlbprod:identifier.external" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='40']">
         <!-- Boolean -->
-        <meta property="nlbprod:preparedForNarration">
+        <dd property="nlbprod:preparedForNarration" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='41']">
         <!-- Boolean -->
-        <meta property="nlbprod:daisy202productionComplete">
+        <dd property="nlbprod:daisy202productionComplete" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='42']">
         <!-- Boolean -->
-        <meta property="nlbprod:daisy202ttsProductionComplete">
+        <dd property="nlbprod:daisy202ttsProductionComplete" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='43']">
         <!-- Boolean -->
-        <meta property="nlbprod:brailleProductionComplete">
+        <dd property="nlbprod:brailleProductionComplete" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='44']">
         <!-- Boolean -->
-        <meta property="nlbprod:ebookProductionComplete">
+        <dd property="nlbprod:ebookProductionComplete" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='46']">
         <!-- Boolean -->
-        <meta property="nlbprod:handedOverToNarrator">
+        <dd property="nlbprod:handedOverToNarrator" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='47']">
         <!-- Integer -->
-        <meta property="nlbprod:timeForLastChange">
+        <dd property="nlbprod:timeForLastChange" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='48']">
         <!-- String -->
-        <meta property="nlbprod:lastChangedBy">
+        <dd property="nlbprod:lastChangedBy" _type-id="#creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='49']">
         <!-- Integer -->
-        <meta property="nlbprod:productionsId">
+        <dd property="nlbprod:productionsId" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='51']">
         <!-- String -->
-        <meta property="nlbprod:commentCatalogization">
+        <dd property="nlbprod:commentCatalogization" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='55']">
         <!-- Boolean -->
-        <meta property="nlbprod:sourceFileOrdered">
+        <dd property="nlbprod:sourceFileOrdered" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='56']">
         <!-- Integer -->
-        <meta property="nlbprod:catalogizationDateEpub">
+        <dd property="nlbprod:catalogizationDateEpub" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='58']">
         <!-- String -->
-        <meta property="nlbprod:wipsIsbn">
+        <dd property="nlbprod:wipsIsbn" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='60']">
         <!-- Boolean -->
-        <meta property="nlbprod:forManualPreparationInNLB">
+        <dd property="nlbprod:forManualPreparationInNLB" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='61']">
         <!-- Integer -->
-        <meta property="nlbprod:productionApprovedDate">
+        <dd property="nlbprod:productionApprovedDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='62']">
         <!-- Integer -->
-        <meta property="nlbprod:orderDate">
+        <dd property="nlbprod:orderDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='63']">
         <!-- String -->
-        <meta property="nlbprod:narrator">
+        <dd property="nlbprod:narrator" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='64']">
         <!-- Integer -->
-        <meta property="nlbprod:narrationTime">
+        <dd property="nlbprod:narrationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='65']">
         <!-- Integer -->
-        <meta property="nlbprod:handedOverToNarratorDate">
+        <dd property="nlbprod:handedOverToNarratorDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='66']">
         <!-- String -->
-        <meta property="nlbprod:student">
+        <dd property="nlbprod:student" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='67']">
         <!-- String -->
-        <meta property="nlbprod:genre">
+        <dd property="nlbprod:genre" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='68']">
         <!-- Boolean -->
-        <meta property="nlbprod:narrationComplete">
+        <dd property="nlbprod:narrationComplete" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='69']">
         <!-- Integer -->
-        <meta property="nlbprod:narrationCompletionDate">
+        <dd property="nlbprod:narrationCompletionDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='71']">
         <!-- Integer -->
-        <meta property="nlbprod:agreedNarrationCompletionDate">
+        <dd property="nlbprod:agreedNarrationCompletionDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='73']">
         <!-- Integer -->
-        <meta property="nlbprod:preparedDate">
+        <dd property="nlbprod:preparedDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='74']">
         <!-- String -->
-        <meta property="nlbprod:producer2">
+        <dd property="nlbprod:producer2" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='77']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202wips">
+        <dd property="nlbprod:formatDaisy202wips" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='80']">
         <!-- String -->
-        <meta property="nlbprod:addRecord">
+        <dd property="nlbprod:addRecord" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='81']">
         <!-- Integer -->
-        <meta property="nlbprod:sourceFileOrderedDate">
+        <dd property="nlbprod:sourceFileOrderedDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='82']">
         <!-- Integer -->
-        <meta property="nlbprod:sourceFileReceivedOrScannedDate">
+        <dd property="nlbprod:sourceFileReceivedOrScannedDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='83']">
         <!-- String -->
-        <meta property="nlbprod:sourceFileFormat">
+        <dd property="nlbprod:sourceFileFormat" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='84']">
         <!-- Boolean -->
-        <meta property="nlbprod:epubDTBookOrdered">
+        <dd property="nlbprod:epubDTBookOrdered" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='85']">
         <!-- Integer -->
-        <meta property="nlbprod:daisy202ProductionCompleteDate">
+        <dd property="nlbprod:daisy202ProductionCompleteDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='86']">
         <!-- Integer -->
-        <meta property="nlbprod:daisy202ttsProductionCompleteDate">
+        <dd property="nlbprod:daisy202ttsProductionCompleteDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='87']">
         <!-- Integer -->
-        <meta property="nlbprod:brailleProductionCompleteDate">
+        <dd property="nlbprod:brailleProductionCompleteDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='88']">
         <!-- Integer -->
-        <meta property="nlbprod:ebookProductionCompleteDate">
+        <dd property="nlbprod:ebookProductionCompleteDate" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='97']">
         <!-- Number -->
-        <meta property="nlbprod:feeNarratedTime">
+        <dd property="nlbprod:feeNarratedTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='98']">
         <!-- Number -->
-        <meta property="nlbprod:feePreparationTime">
+        <dd property="nlbprod:feePreparationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='99']">
         <!-- Number -->
-        <meta property="nlbprod:additionalFeeNightAndWeekend">
+        <dd property="nlbprod:additionalFeeNightAndWeekend" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='103']">
         <!-- Number -->
-        <meta property="nlbprod:narratedTimeInHours">
+        <dd property="nlbprod:narratedTimeInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='116']">
         <!-- Integer -->
-        <meta property="nlbprod:preparationTime">
+        <dd property="nlbprod:preparationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='117']">
         <!-- Integer -->
-        <meta property="nlbprod:additionalNightAndWeekend">
+        <dd property="nlbprod:additionalNightAndWeekend" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='119']">
         <!-- Number -->
-        <meta property="nlbprod:preparationTimeInHours">
+        <dd property="nlbprod:preparationTimeInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='120']">
         <!-- Number -->
-        <meta property="nlbprod:nightAndWeekendInHours">
+        <dd property="nlbprod:nightAndWeekendInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='122']">
         <!-- Number -->
-        <meta property="nlbprod:sumFee">
+        <dd property="nlbprod:sumFee" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='131']">
         <!-- Integer -->
-        <meta property="nlbprod:otherWorkForNLB">
+        <dd property="nlbprod:otherWorkForNLB" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='137']">
         <!-- Boolean -->
-        <meta property="nlbprod:feeComplete">
+        <dd property="nlbprod:feeComplete" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='138']">
         <!-- Integer -->
-        <meta property="nlbprod:feeCompleteDate">
+        <dd property="nlbprod:feeCompleteDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='139']">
         <!-- Number -->
-        <meta property="nlbprod:otherWorkInHours">
+        <dd property="nlbprod:otherWorkInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='141']">
         <!-- Number -->
-        <meta property="nlbprod:advancePayment">
+        <dd property="nlbprod:advancePayment" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='142']">
         <!-- Number -->
-        <meta property="nlbprod:totalSumFee">
+        <dd property="nlbprod:totalSumFee" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='143']">
         <!-- Integer -->
-        <meta property="nlbprod:advancePaymentDate">
+        <dd property="nlbprod:advancePaymentDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='145']">
         <!-- Number -->
-        <meta property="nlbprod:feeOtherWork">
+        <dd property="nlbprod:feeOtherWork" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='146']">
         <!-- Boolean -->
-        <meta property="nlbprod:daisy202readyForLoan">
+        <dd property="nlbprod:daisy202readyForLoan" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='147']">
         <!-- Integer -->
-        <meta property="nlbprod:daisy202readyForLoanDate">
+        <dd property="nlbprod:daisy202readyForLoanDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='148']">
         <!-- String -->
-        <meta property="nlbprod:narrationComment">
+        <dd property="nlbprod:narrationComment" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='149']">
         <!-- Boolean -->
-        <meta property="nlbprod:brailleReadyForLoan">
+        <dd property="nlbprod:brailleReadyForLoan" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='150']">
         <!-- Integer -->
-        <meta property="nlbprod:brailleReadyForLoanDate">
+        <dd property="nlbprod:brailleReadyForLoanDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='151']">
         <!-- Boolean -->
-        <meta property="nlbprod:ebookReadyForLoan">
+        <dd property="nlbprod:ebookReadyForLoan" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='152']">
         <!-- Integer -->
-        <meta property="nlbprod:EBOOKReadyForLoanDate">
+        <dd property="nlbprod:EBOOKReadyForLoanDate" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='153']">
         <!-- String -->
-        <meta property="nlbprod:orderFormExternalProduction">
+        <dd property="nlbprod:orderFormExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='154']">
         <!-- Boolean -->
-        <meta property="nlbprod:dtbookReturned">
+        <dd property="nlbprod:dtbookReturned" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='155']">
         <!-- Integer -->
-        <meta property="nlbprod:dtbookReturnedDate">
+        <dd property="nlbprod:dtbookReturnedDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='156']">
         <!-- Integer -->
-        <meta property="nlbprod:daisy202ExpectedCompleteDate">
+        <dd property="nlbprod:daisy202ExpectedCompleteDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='157']">
         <!-- Integer -->
-        <meta property="nlbprod:daisy202studentExpectedCompleteDate">
+        <dd property="nlbprod:daisy202studentExpectedCompleteDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='158']">
         <!-- Integer -->
-        <meta property="nlbprod:brailleExpectedCompleteDate">
+        <dd property="nlbprod:brailleExpectedCompleteDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='159']">
         <!-- Integer -->
-        <meta property="nlbprod:ebookProductionExpectedCompleteDate">
+        <dd property="nlbprod:ebookProductionExpectedCompleteDate" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='160']">
         <!-- Integer -->
-        <meta property="nlbprod:externalProductionExpectedCompleteDate">
+        <dd property="nlbprod:externalProductionExpectedCompleteDate" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='161']">
         <!-- Integer -->
-        <meta property="nlbprod:dueDateForProduction">
+        <dd property="nlbprod:dueDateForProduction" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='163']">
         <!-- String -->
-        <meta property="nlbprod:editingInstructions">
+        <dd property="nlbprod:editingInstructions" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='164']">
         <!-- String -->
-        <meta property="nlbprod:translator">
+        <dd property="nlbprod:translator" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='165']">
         <!-- String -->
-        <meta property="nlbprod:language">
+        <dd property="nlbprod:language" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='167']">
         <!-- String -->
-        <meta property="nlbprod:deliveryControl">
+        <dd property="nlbprod:deliveryControl" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='170']">
         <!-- String -->
-        <meta property="nlbprod:category">
+        <dd property="nlbprod:category" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='171']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatNotes">
+        <dd property="nlbprod:formatNotes" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='175']">
         <!-- String -->
-        <meta property="nlbprod:commentPostProduction">
+        <dd property="nlbprod:commentPostProduction" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='176']">
         <!-- Integer -->
-        <meta property="nlbprod:playtimeDaisy202">
+        <dd property="nlbprod:playtimeDaisy202" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='177']">
         <!-- Integer -->
-        <meta property="nlbprod:playtimeDaisy202tts">
+        <dd property="nlbprod:playtimeDaisy202tts" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='178']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatBrailleClub">
+        <dd property="nlbprod:formatBrailleClub" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='180']">
         <!-- Boolean -->
-        <meta property="nlbprod:notForFee">
+        <dd property="nlbprod:notForFee" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='184']">
         <!-- Integer -->
-        <meta property="nlbprod:extraPreparationTime">
+        <dd property="nlbprod:extraPreparationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='185']">
         <!-- Number -->
-        <meta property="nlbprod:extraPreparationTimeInHours">
+        <dd property="nlbprod:extraPreparationTimeInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='186']">
         <!-- Number -->
-        <meta property="nlbprod:feeExtraPreparationTime">
+        <dd property="nlbprod:feeExtraPreparationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='262']">
         <!-- Boolean -->
-        <meta property="nlbprod:generateFee">
+        <dd property="nlbprod:generateFee" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='268']">
         <!-- Boolean -->
-        <meta property="nlbprod:openLinespacing">
+        <dd property="nlbprod:openLinespacing" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='269']">
         <!-- String -->
-        <meta property="nlbprod:braillePages">
+        <dd property="nlbprod:braillePages" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='270']">
         <!-- String -->
-        <meta property="nlbprod:volumes">
+        <dd property="nlbprod:volumes" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='279']">
         <!-- Number -->
-        <meta property="nlbprod:rateNarrationTime">
+        <dd property="nlbprod:rateNarrationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='280']">
         <!-- Number -->
-        <meta property="nlbprod:ratePreparationTime">
+        <dd property="nlbprod:ratePreparationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='281']">
         <!-- Number -->
-        <meta property="nlbprod:rateExtraPreparationTime">
+        <dd property="nlbprod:rateExtraPreparationTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='282']">
         <!-- Number -->
-        <meta property="nlbprod:rateAdditionalWork">
+        <dd property="nlbprod:rateAdditionalWork" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='285']">
         <!-- Number -->
-        <meta property="nlbprod:rateOtherWork">
+        <dd property="nlbprod:rateOtherWork" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='286']">
         <!-- String -->
-        <meta property="nlbprod:feeModel">
+        <dd property="nlbprod:feeModel" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='304']">
         <!-- Boolean -->
-        <meta property="nlbprod:generateReceipt">
+        <dd property="nlbprod:generateReceipt" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='308']">
         <!-- Number -->
-        <meta property="nlbprod:employeeNumber">
+        <dd property="nlbprod:employeeNumber" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='309']">
         <!-- String -->
-        <meta property="nlbprod:account">
+        <dd property="nlbprod:account" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='310']">
         <!-- Number -->
-        <meta property="nlbprod:costLocation">
+        <dd property="nlbprod:costLocation" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='311']">
         <!-- Number -->
-        <meta property="nlbprod:overriding">
+        <dd property="nlbprod:overriding" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='312']">
         <!-- Number -->
-        <meta property="nlbprod:paymentType">
+        <dd property="nlbprod:paymentType" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='314']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionDaisy202">
+        <dd property="nlbprod:signaturePostProductionDaisy202" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='315']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionDaisy202tts">
+        <dd property="nlbprod:signaturePostProductionDaisy202tts" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='316']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionBraille">
+        <dd property="nlbprod:signaturePostProductionBraille" _type-id="#braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='317']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionEbook">
+        <dd property="nlbprod:signaturePostProductionEbook" _type-id="#ebook">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='318']">
         <!-- Boolean -->
-        <meta property="nlbprod:singlePagePrint">
+        <dd property="nlbprod:singlePagePrint" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='319']">
         <!-- Boolean -->
-        <meta property="nlbprod:brailleClubProductionComplete">
+        <dd property="nlbprod:brailleClubProductionComplete" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='320']">
         <!-- Integer -->
-        <meta property="nlbprod:brailleClubProductionCompleteDate">
+        <dd property="nlbprod:brailleClubProductionCompleteDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='321']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionBrailleClub">
+        <dd property="nlbprod:signaturePostProductionBrailleClub" _type-id="#braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='323']">
         <!-- String -->
-        <meta property="nlbprod:signaturePreparation">
+        <dd property="nlbprod:signaturePreparation" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='324']">
         <!-- String -->
-        <meta property="nlbprod:signatureDaisy202readyForLoan">
+        <dd property="nlbprod:signatureDaisy202readyForLoan" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='325']">
         <!-- String -->
-        <meta property="nlbprod:signatureEbookReadyForLoan">
+        <dd property="nlbprod:signatureEbookReadyForLoan" _type-id="#ebook">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='326']">
         <!-- String -->
-        <meta property="nlbprod:signatureBrailleReadyForLoan">
+        <dd property="nlbprod:signatureBrailleReadyForLoan" _type-id="#braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='327']">
         <!-- Boolean -->
-        <meta property="nlbprod:brailleClubReadyForLoan">
+        <dd property="nlbprod:brailleClubReadyForLoan" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='328']">
         <!-- Integer -->
-        <meta property="nlbprod:brailleClubReadyForLoanDate">
+        <dd property="nlbprod:brailleClubReadyForLoanDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='329']">
         <!-- String -->
-        <meta property="nlbprod:signatureBrailleClubReadyForLoan">
+        <dd property="nlbprod:signatureBrailleClubReadyForLoan" _type-id="#braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='330']">
         <!-- String -->
-        <meta property="nlbprod:priceCategory">
+        <dd property="nlbprod:priceCategory" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='342']">
         <!-- String -->
-        <meta property="nlbprod:emailPublisherContact">
+        <dd property="nlbprod:emailPublisherContact" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='343']">
         <!-- String -->
-        <meta property="nlbprod:emailStudent">
+        <dd property="nlbprod:emailStudent" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='344']">
         <!-- String -->
-        <meta property="nlbprod:signatureDTBookOrdered">
+        <dd property="nlbprod:signatureDTBookOrdered" _type-id="#epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='345']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatDaisy202externalProduction">
+        <dd property="nlbprod:formatDaisy202externalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='346']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatEbookExternalProduction">
+        <dd property="nlbprod:formatEbookExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='347']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatAudioCDWAVExternalProduction">
+        <dd property="nlbprod:formatAudioCDWAVExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='348']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatAudioCDMP3ExternalProduction">
+        <dd property="nlbprod:formatAudioCDMP3ExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='349']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatOtherExternalProduction">
+        <dd property="nlbprod:formatOtherExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='350']">
         <!-- String -->
-        <meta property="nlbprod:commentExternalProduction">
+        <dd property="nlbprod:commentExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='351']">
         <!-- Boolean -->
-        <meta property="nlbprod:externalProductionProductionComplete">
+        <dd property="nlbprod:externalProductionProductionComplete" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='352']">
         <!-- Integer -->
-        <meta property="nlbprod:externalProductionProductionCompleteDate">
+        <dd property="nlbprod:externalProductionProductionCompleteDate" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='353']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionExternalProduction">
+        <dd property="nlbprod:signaturePostProductionExternalProduction" _type-id="#external">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='354']">
         <!-- Integer -->
-        <meta property="nlbprod:playtimeExternalProduction">
+        <dd property="nlbprod:playtimeExternalProduction" _type-id="#external">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='357']">
         <!-- String -->
-        <meta property="nlbprod:feeForMultipleNarrators">
+        <dd property="nlbprod:feeForMultipleNarrators" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='360']">
         <!-- String -->
-        <meta property="nlbprod:signatureDeliveredToNarrator">
+        <dd property="nlbprod:signatureDeliveredToNarrator" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='362']">
         <!-- Boolean -->
-        <meta property="nlbprod:duplicate">
+        <dd property="nlbprod:duplicate" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='366']">
         <!-- Boolean -->
-        <meta property="nlbprod:partialBrailleProduction">
+        <dd property="nlbprod:partialBrailleProduction" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='367']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatBraillePartialProduction">
+        <dd property="nlbprod:formatBraillePartialProduction" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='368']">
         <!-- Boolean -->
-        <meta property="nlbprod:formatTactilePrint">
+        <dd property="nlbprod:formatTactilePrint" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='370']">
         <!-- String -->
-        <meta property="nlbprod:commentBraille">
+        <dd property="nlbprod:commentBraille" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='371']">
         <!-- Boolean -->
-        <meta property="nlbprod:tactilePrintReadyForLoan">
+        <dd property="nlbprod:tactilePrintReadyForLoan" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='372']">
         <!-- Integer -->
-        <meta property="nlbprod:tactilePrintReadyForLoanDate">
+        <dd property="nlbprod:tactilePrintReadyForLoanDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='374']">
         <!-- Boolean -->
-        <meta property="nlbprod:tactilePrintProductionComplete">
+        <dd property="nlbprod:tactilePrintProductionComplete" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='375']">
         <!-- Integer -->
-        <meta property="nlbprod:tactilePrintProductionCompleteDate">
+        <dd property="nlbprod:tactilePrintProductionCompleteDate" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='377']">
         <!-- String -->
-        <meta property="nlbprod:signatureTactilePrintProductionComplete">
+        <dd property="nlbprod:signatureTactilePrintProductionComplete" _type-id="#braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='378']">
         <!-- String -->
-        <meta property="nlbprod:signatureTactilePrintReadyForLoan">
+        <dd property="nlbprod:signatureTactilePrintReadyForLoan" _type-id="#braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='379']">
         <!-- Integer -->
-        <meta property="nlbprod:waitingBecauseOfTechnicalProblems">
+        <dd property="nlbprod:waitingBecauseOfTechnicalProblems" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='380']">
         <!-- Integer -->
-        <meta property="nlbprod:inStudioWithProducer">
+        <dd property="nlbprod:inStudioWithProducer" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='381']">
         <!-- Number -->
-        <meta property="nlbprod:rateWaitingTime">
+        <dd property="nlbprod:rateWaitingTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='382']">
         <!-- Number -->
-        <meta property="nlbprod:rateInStudioWithProducer">
+        <dd property="nlbprod:rateInStudioWithProducer" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='383']">
         <!-- Number -->
-        <meta property="nlbprod:waitingBecauseOfTechnicalProblemsInHours">
+        <dd property="nlbprod:waitingBecauseOfTechnicalProblemsInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='384']">
         <!-- Number -->
-        <meta property="nlbprod:inStudioWithProducerInHours">
+        <dd property="nlbprod:inStudioWithProducerInHours" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='385']">
         <!-- Number -->
-        <meta property="nlbprod:compensationWaitingTime">
+        <dd property="nlbprod:compensationWaitingTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='386']">
         <!-- Number -->
-        <meta property="nlbprod:compensationInStudioWithProducer">
+        <dd property="nlbprod:compensationInStudioWithProducer" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='387']">
         <!-- String -->
-        <meta property="nlbprod:sourceFile">
+        <dd property="nlbprod:sourceFile" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='388']">
         <!-- String -->
-        <meta property="nlbprod:estimatedBookCategory">
+        <dd property="nlbprod:estimatedBookCategory" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='389']">
         <!-- String -->
-        <meta property="nlbprod:bookCategory">
+        <dd property="nlbprod:bookCategory" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='390']">
         <!-- Integer -->
-        <meta property="nlbprod:numberOfPages2">
+        <dd property="nlbprod:numberOfPages2" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='392']">
         <!-- String -->
-        <meta property="nlbprod:uploadEpub">
+        <dd property="nlbprod:uploadEpub" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='393']">
         <!-- Boolean -->
-        <meta property="nlbprod:productionDelivered">
+        <dd property="nlbprod:productionDelivered" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='395']">
         <!-- Integer -->
-        <meta property="nlbprod:productionDeliveryDate">
+        <dd property="nlbprod:productionDeliveryDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='396']">
         <!-- String -->
-        <meta property="nlbprod:agency">
+        <dd property="nlbprod:agency" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='397']">
         <!-- Number -->
-        <meta property="nlbprod:productionNumberUID">
+        <dd property="nlbprod:productionNumberUID" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='398']">
         <!-- Boolean -->
-        <meta property="nlbprod:leaveAMessage">
+        <dd property="nlbprod:leaveAMessage" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='399']">
         <!-- String -->
-        <meta property="nlbprod:productionQuestionsAndNotes">
+        <dd property="nlbprod:productionQuestionsAndNotes" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='402']">
         <!-- String -->
-        <meta property="nlbprod:commentOrder">
+        <dd property="nlbprod:commentOrder" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='403']">
         <!-- String -->
-        <meta property="nlbprod:purchaseOrderId">
+        <dd property="nlbprod:purchaseOrderId" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='405']">
         <!-- Boolean -->
-        <meta property="nlbprod:asciimath">
+        <dd property="nlbprod:asciimath" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='406']">
         <!-- String -->
-        <meta property="nlbprod:sourceFileFormat2">
+        <dd property="nlbprod:sourceFileFormat2" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='407']">
         <!-- String -->
-        <meta property="nlbprod:alternateSourceFileURL">
+        <dd property="nlbprod:alternateSourceFileURL" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='408']">
         <!-- Boolean -->
-        <meta property="nlbprod:exercisesAndAnswers">
+        <dd property="nlbprod:exercisesAndAnswers" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='409']">
         <!-- Boolean -->
-        <meta property="nlbprod:inlineTextStyling">
+        <dd property="nlbprod:inlineTextStyling" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='410']">
         <!-- Boolean -->
-        <meta property="nlbprod:extractionOfTextContentInImages">
+        <dd property="nlbprod:extractionOfTextContentInImages" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='413']">
         <!-- Boolean -->
-        <meta property="nlbprod:productionReturned">
+        <dd property="nlbprod:productionReturned" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='414']">
         <!-- Integer -->
-        <meta property="nlbprod:productionReturnDate">
+        <dd property="nlbprod:productionReturnDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='415']">
         <!-- String -->
-        <meta property="nlbprod:commentEpubOrder">
+        <dd property="nlbprod:commentEpubOrder" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='416']">
         <!-- Boolean -->
-        <meta property="nlbprod:productionDownloaded">
+        <dd property="nlbprod:productionDownloaded" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='417']">
         <!-- Integer -->
-        <meta property="nlbprod:downloadedDate">
+        <dd property="nlbprod:downloadedDate" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='418']">
         <!-- String -->
-        <meta property="nlbprod:signatureForDownload">
+        <dd property="nlbprod:signatureForDownload" _type-id="#epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='419']">
         <!-- Integer -->
-        <meta property="nlbprod:pages">
+        <dd property="nlbprod:pages" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='420']">
         <!-- String -->
-        <meta property="nlbprod:title2">
+        <dd property="nlbprod:title2" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='421']">
         <!-- String -->
-        <meta property="nlbprod:author2">
+        <dd property="nlbprod:author2" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='422']">
         <!-- String -->
-        <meta property="nlbprod:contributor">
+        <dd property="nlbprod:contributor" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='423']">
         <!-- String -->
-        <meta property="nlbprod:language2">
+        <dd property="nlbprod:language2" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='426']">
         <!-- String -->
-        <meta property="nlbprod:signatureApprovedProduction">
+        <dd property="nlbprod:signatureApprovedProduction" _type-id="#epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='427']">
         <!-- String -->
-        <meta property="nlbprod:signatureReturnedProduction">
+        <dd property="nlbprod:signatureReturnedProduction" _type-id="#epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='428']">
         <!-- String -->
-        <meta property="nlbprod:validationLogFile">
+        <dd property="nlbprod:validationLogFile" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='429']">
         <!-- String -->
-        <meta property="nlbprod:originalISSN">
+        <dd property="nlbprod:originalISSN" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='430']">
         <!-- String -->
-        <meta property="nlbprod:volumeNumber">
+        <dd property="nlbprod:volumeNumber" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='431']">
         <!-- String -->
-        <meta property="nlbprod:dcSourceUrnIsbn">
+        <dd property="nlbprod:dcSourceUrnIsbn" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='432']">
         <!-- Boolean -->
-        <meta property="nlbprod:urgentProduction">
+        <dd property="nlbprod:urgentProduction" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='434']">
         <!-- Number -->
-        <meta property="nlbprod:nightAndWeekendPercentageOfTotalTime">
+        <dd property="nlbprod:nightAndWeekendPercentageOfTotalTime" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='436']">
         <!-- String -->
-        <meta property="nlbprod:signatureFee">
+        <dd property="nlbprod:signatureFee" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='437']">
         <!-- String -->
-        <meta property="nlbprod:signatureRegistration">
+        <dd property="nlbprod:signatureRegistration" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='438']">
         <!-- Boolean -->
-        <meta property="nlbprod:newRegistration">
+        <dd property="nlbprod:newRegistration" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='439']">
         <!-- String -->
-        <meta property="nlbprod:narratorCopy">
+        <dd property="nlbprod:narratorCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='440']">
         <!-- Number -->
-        <meta property="nlbprod:employeeNumberCopy">
+        <dd property="nlbprod:employeeNumberCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='442']">
         <!-- Integer -->
-        <meta property="nlbprod:agreedNarrationCompletionDateCopy">
+        <dd property="nlbprod:agreedNarrationCompletionDateCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='443']">
         <!-- Boolean -->
-        <meta property="nlbprod:handedOverToNarratorCopy">
+        <dd property="nlbprod:handedOverToNarratorCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='444']">
         <!-- Integer -->
-        <meta property="nlbprod:handedOverToNarratorDateCopy">
+        <dd property="nlbprod:handedOverToNarratorDateCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='445']">
         <!-- Boolean -->
-        <meta property="nlbprod:generateReceiptCopy">
+        <dd property="nlbprod:generateReceiptCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='446']">
         <!-- String -->
-        <meta property="nlbprod:producerCopy">
+        <dd property="nlbprod:producerCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='447']">
         <!-- Boolean -->
-        <meta property="nlbprod:narrationCompleteCopy">
+        <dd property="nlbprod:narrationCompleteCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='448']">
         <!-- Integer -->
-        <meta property="nlbprod:narrationCompleteDateCopy">
+        <dd property="nlbprod:narrationCompleteDateCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='449']">
         <!-- String -->
-        <meta property="nlbprod:feeModelCopy">
+        <dd property="nlbprod:feeModelCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='450']">
         <!-- Integer -->
-        <meta property="nlbprod:narrationTimeCopy">
+        <dd property="nlbprod:narrationTimeCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='451']">
         <!-- Number -->
-        <meta property="nlbprod:narrationTimeInHoursCopy">
+        <dd property="nlbprod:narrationTimeInHoursCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='452']">
         <!-- Number -->
-        <meta property="nlbprod:rateOtherWorkCopy">
+        <dd property="nlbprod:rateOtherWorkCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='453']">
         <!-- Number -->
-        <meta property="nlbprod:rateExtraPreparationCopy">
+        <dd property="nlbprod:rateExtraPreparationCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='454']">
         <!-- Number -->
-        <meta property="nlbprod:rateNarrationCopy">
+        <dd property="nlbprod:rateNarrationCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='455']">
         <!-- Number -->
-        <meta property="nlbprod:ratePreparationCopy">
+        <dd property="nlbprod:ratePreparationCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='456']">
         <!-- Number -->
-        <meta property="nlbprod:feeOtherWorkCopy">
+        <dd property="nlbprod:feeOtherWorkCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='457']">
         <!-- Number -->
-        <meta property="nlbprod:feeExtraPreparationCopy">
+        <dd property="nlbprod:feeExtraPreparationCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='458']">
         <!-- Number -->
-        <meta property="nlbprod:feePreparationCopy">
+        <dd property="nlbprod:feePreparationCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='459']">
         <!-- Number -->
-        <meta property="nlbprod:feeNarrationCopy">
+        <dd property="nlbprod:feeNarrationCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='461']">
         <!-- Integer -->
-        <meta property="nlbprod:inStudioWithProducerCopy">
+        <dd property="nlbprod:inStudioWithProducerCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='462']">
         <!-- Number -->
-        <meta property="nlbprod:sumFeeCopy">
+        <dd property="nlbprod:sumFeeCopy" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='463']">
         <!-- Boolean -->
-        <meta property="nlbprod:postProductionStarted">
+        <dd property="nlbprod:postProductionStarted" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='464']">
         <!-- Integer -->
-        <meta property="nlbprod:postProductionStartedDate">
+        <dd property="nlbprod:postProductionStartedDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='465']">
         <!-- String -->
-        <meta property="nlbprod:signaturePostProductionStarted">
+        <dd property="nlbprod:signaturePostProductionStarted" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='466']">
         <!-- Boolean -->
-        <meta property="nlbprod:feeClaimHandled">
+        <dd property="nlbprod:feeClaimHandled" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='467']">
         <!-- Integer -->
-        <meta property="nlbprod:feeClaimHandledDate">
+        <dd property="nlbprod:feeClaimHandledDate" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='468']">
         <!-- String -->
-        <meta property="nlbprod:signatureFeeClaimHandled">
+        <dd property="nlbprod:signatureFeeClaimHandled" _type-id="#audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
             <xsl:value-of select="/qdbapi/table/lusers/luser[@id=$id]/text()"/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='469']">
         <!-- String -->
-        <meta property="nlbprod:epub3">
+        <dd property="nlbprod:epub3" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='470']">
         <!-- String -->
-        <meta property="nlbprod:ebook">
+        <dd property="nlbprod:ebook" _type-id="#ebook">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='471']">
         <!-- String -->
-        <meta property="nlbprod:daisy202">
+        <dd property="nlbprod:daisy202" _type-id="#audio">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='472']">
         <!-- String -->
-        <meta property="nlbprod:braille">
+        <dd property="nlbprod:braille" _type-id="#braille">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='473']">
         <!-- Boolean -->
-        <meta property="nlbprod:bokbasen">
+        <dd property="nlbprod:bokbasen" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='474']">
         <!-- String -->
-        <meta property="nlbprod:statusIcon">
+        <dd property="nlbprod:statusIcon" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='475']">
         <!-- String -->
-        <meta property="nlbprod:status">
+        <dd property="nlbprod:status" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='476']">
         <!-- Number -->
-        <meta property="nlbprod:pricePerPage">
+        <dd property="nlbprod:pricePerPage" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='477']">
         <!-- Number -->
-        <meta property="nlbprod:totalPriceForEpubProduction">
+        <dd property="nlbprod:totalPriceForEpubProduction" _type-id="#epub">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='479']">
         <!-- String -->
-        <meta property="nlbprod:dcCreator">
+        <dd property="nlbprod:dcCreator" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='480']">
+        <!-- Number -->
+        <dd property="nlbprod:multivolumeNumberOfCDs" _type-id="#audio">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='481']">
+        <!-- Boolean -->
+        <dd property="nlbprod:narratedFulltext" _type-id="#audio">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='482']">
+        <!-- Boolean -->
+        <dd property="nlbprod:ocrChecked" _type-id="#epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='483']">
+        <!-- Boolean -->
+        <dd property="nlbprod:metadataChecked" _type-id="#epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='484']">
+        <!-- Boolean -->
+        <dd property="nlbprod:structureChecked" _type-id="#epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='485']">
+        <!-- Boolean -->
+        <dd property="nlbprod:editingInstructionsChecked" _type-id="#epub">
+            <xsl:value-of select="."/>
+        </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='record_id']">
         <!-- Integer -->
-        <meta property="nlbprod:record_id">
+        <dd property="nlbprod:record_id" _type-id="#creativeWork">
             <xsl:value-of select="."/>
-        </meta>
+        </dd>
     </xsl:template>
 
 </xsl:stylesheet>
