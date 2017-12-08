@@ -30,15 +30,15 @@ email = {
         "user": os.getenv("MAIL_USERNAME"),
         "pass": os.getenv("MAIL_PASSWORD")
     },
-    "sender": Address("NLBs Produksjonssystem", "noreply@nlb.no"),
+    "sender": Address("NLBs Produksjonssystem", "jostein", "nlb.no"),
     "recipients": {
-        "ammar":   Address("Ammar Usama",              "Ammar.Usama@nlb.no"),
-        "jostein": Address("Jostein Austvik Jacobsen", "jostein@nlb.no"),
-        "kari":    Address("Kari Rudjord",             "Kari.Rudjord@nlb.no"),
-        "mari":    Address("Mari Myksvoll",            "Mari.Myksvoll@nlb.no"),
-        "olav":    Address("Olav Indergaard",          "Olav.Indergaard@nlb.no"),
-        "sobia":   Address("Sobia Awan",               "Sobia.Awan@nlb.no"),
-        "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas@nlb.no"),
+        "ammar":   Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
+        "jostein": Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
+        "kari":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
+        "mari":    Address("Mari Myksvoll",            "Mari.Myksvoll",     "nlb.no"),
+        "olav":    Address("Olav Indergaard",          "Olav.Indergaard",   "nlb.no"),
+        "sobia":   Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
+        "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
     }
 }
 
