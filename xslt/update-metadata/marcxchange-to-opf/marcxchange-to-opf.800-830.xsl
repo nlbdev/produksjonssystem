@@ -32,7 +32,7 @@
         </xsl:for-each>
 
         <xsl:for-each select="marcxchange:subfield[@code='b']">
-            <meta property="suffixName" refines="#{$creator-id}">
+            <meta property="honorificSuffix" refines="#{$creator-id}">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -47,7 +47,7 @@
                     </meta>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="title" refines="#{$creator-id}">
+                    <meta property="honorificPrefix" refines="#{$creator-id}">
                         <xsl:value-of select="text()"/>
                     </meta>
                 </xsl:otherwise>
@@ -59,19 +59,19 @@
                 <xsl:when test="matches(text(),'.*[^\d-].*')">
                     <xsl:variable name="sign" select="if (matches(text(),$YEAR_NEGATIVE)) then '-' else ''"/>
                     <xsl:variable name="value" select="replace(text(), $YEAR_VALUE, '')"/>
-                    <meta property="birth" refines="#{$creator-id}">
+                    <meta property="birthDate" refines="#{$creator-id}">
                         <xsl:value-of select="concat($sign,$value)"/>
                     </meta>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:variable name="years" select="tokenize(text(),'-')"/>
                     <xsl:if test="count($years) &gt; 0">
-                        <meta property="birth" refines="#{$creator-id}">
+                        <meta property="birthDate" refines="#{$creator-id}">
                             <xsl:value-of select="$years[1]"/>
                         </meta>
                     </xsl:if>
                     <xsl:if test="count($years) &gt; 1 and string-length($years[2]) &gt; 0">
-                        <meta property="death" refines="#{$creator-id}">
+                        <meta property="deathDate" refines="#{$creator-id}">
                             <xsl:value-of select="$years[2]"/>
                         </meta>
                     </xsl:if>

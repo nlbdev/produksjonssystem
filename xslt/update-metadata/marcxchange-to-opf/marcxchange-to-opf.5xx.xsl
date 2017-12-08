@@ -16,7 +16,7 @@
 
     <xsl:template match="marcxchange:datafield[@tag='503']">
         <xsl:for-each select="marcxchange:subfield[@code='a']">
-            <meta property="edition">
+            <meta property="bookEdition">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -110,7 +110,7 @@
             </meta>
         </xsl:for-each>
         <xsl:for-each select="marcxchange:subfield[@code='d']">
-            <meta property="edition.original">
+            <meta property="bookEdition.original">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>

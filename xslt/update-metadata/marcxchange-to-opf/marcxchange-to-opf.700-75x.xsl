@@ -40,7 +40,7 @@
         </xsl:choose>
 
         <xsl:for-each select="marcxchange:subfield[@code='b']">
-            <meta property="suffixName" refines="#{$contributor-id}">
+            <meta property="honorificSuffix" refines="#{$contributor-id}">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -55,7 +55,7 @@
                     </meta>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="title" refines="#{$contributor-id}">
+                    <meta property="honorificPrefix" refines="#{$contributor-id}">
                         <xsl:value-of select="text()"/>
                     </meta>
                 </xsl:otherwise>
@@ -67,19 +67,19 @@
                 <xsl:when test="matches(text(),'.*[^\d-].*')">
                     <xsl:variable name="sign" select="if (matches(text(),$YEAR_NEGATIVE)) then '-' else ''"/>
                     <xsl:variable name="value" select="replace(text(), $YEAR_VALUE, '')"/>
-                    <meta property="birth" refines="#{$contributor-id}">
+                    <meta property="birthDate" refines="#{$contributor-id}">
                         <xsl:value-of select="concat($sign,$value)"/>
                     </meta>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:variable name="years" select="tokenize(text(),'-')"/>
                     <xsl:if test="count($years) &gt; 0">
-                        <meta property="birth" refines="#{$contributor-id}">
+                        <meta property="birthDate" refines="#{$contributor-id}">
                             <xsl:value-of select="$years[1]"/>
                         </meta>
                     </xsl:if>
                     <xsl:if test="count($years) &gt; 1 and string-length($years[2]) &gt; 0">
-                        <meta property="death" refines="#{$contributor-id}">
+                        <meta property="deathDate" refines="#{$contributor-id}">
                             <xsl:value-of select="$years[2]"/>
                         </meta>
                     </xsl:if>
@@ -140,17 +140,17 @@
                 </meta>
             </xsl:for-each>
             <xsl:for-each select="marcxchange:subfield[@code='b']">
-                <meta property="dc:title.part.subTitle" refines="#{$title-id}">
+                <meta property="dc:title.part.subTitle.other" refines="#{$title-id}">
                     <xsl:value-of select="text()"/>
                 </meta>
             </xsl:for-each>
             <xsl:for-each select="marcxchange:subfield[@code='n']">
-                <meta property="partNumber" refines="#{$title-id}">
+                <meta property="position" refines="#{$title-id}">
                     <xsl:value-of select="text()"/>
                 </meta>
             </xsl:for-each>
             <xsl:for-each select="marcxchange:subfield[@code='p']">
-                <meta property="dc:title.part.alternative" refines="#{$title-id}">
+                <meta property="dc:title.part.subTitle" refines="#{$title-id}">
                     <xsl:value-of select="text()"/>
                 </meta>
             </xsl:for-each>

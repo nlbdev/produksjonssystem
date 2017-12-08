@@ -34,7 +34,7 @@
             </meta>
         </xsl:for-each>
         <xsl:for-each select="marcxchange:subfield[@code='v']">
-            <meta property="series.partNumber">
+            <meta property="series.position">
                 <xsl:if test="$series-title">
                     <xsl:attribute name="refines" select="concat('#',$title-id)"/>
                 </xsl:if>

@@ -17,7 +17,7 @@
             </meta>
 
             <xsl:for-each select="marcxchange:subfield[@code='t']">
-                <meta property="websok.type" refines="{$websok-id}">
+                <meta property="websok.type" refines="#{$websok-id}">
                     <xsl:value-of select="text()"/>
                 </meta>
             </xsl:for-each>

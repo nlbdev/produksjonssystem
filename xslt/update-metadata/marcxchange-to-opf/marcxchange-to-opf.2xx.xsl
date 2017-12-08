@@ -22,7 +22,7 @@
         </xsl:for-each>
 
         <xsl:for-each select="marcxchange:subfield[@code='b']">
-            <meta property="dc:title.subTitle">
+            <meta property="dc:title.subTitle.other">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -40,13 +40,13 @@
         </xsl:for-each>
 
         <xsl:for-each select="marcxchange:subfield[@code='n']">
-            <meta property="partNumber">
+            <meta property="position">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
 
         <xsl:for-each select="marcxchange:subfield[@code='p']">
-            <meta property="partName">
+            <meta property="dc:title.subTitle">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -64,7 +64,20 @@
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
+        
         <xsl:for-each select="marcxchange:subfield[@code='b']">
+            <meta property="dc:title.subTitle.alternative.other">
+                <xsl:value-of select="text()"/>
+            </meta>
+        </xsl:for-each>
+        
+        <xsl:for-each select="marcxchange:subfield[@code='n']">
+            <meta property="position">
+                <xsl:value-of select="text()"/>
+            </meta>
+        </xsl:for-each>
+        
+        <xsl:for-each select="marcxchange:subfield[@code='p']">
             <meta property="dc:title.subTitle.alternative">
                 <xsl:value-of select="text()"/>
             </meta>
@@ -73,7 +86,7 @@
 
     <xsl:template match="marcxchange:datafield[@tag='250']">
         <xsl:for-each select="marcxchange:subfield[@code='a']">
-            <meta property="edition">
+            <meta property="bookEdition">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
