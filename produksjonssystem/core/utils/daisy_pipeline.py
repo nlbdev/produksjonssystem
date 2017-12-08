@@ -32,6 +32,9 @@ class DaisyPipelineJob():
     def __init__(self, pipeline, script, arguments):
         self.pipeline = pipeline
         
+        self._dir_output_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-daisy-pipeline-output")
+        self.dir_output = self._dir_output_obj.name
+        
         if DaisyPipelineJob.first_job:
             try:
                 # start engine if it's not started already
@@ -96,8 +99,6 @@ class DaisyPipelineJob():
             # get results
             if self.status and self.status != "ERROR":
                 self.pipeline.utils.report.debug("Getting job results")
-                self._dir_output_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-daisy-pipeline-output")
-                self.dir_output = self._dir_output_obj.name
                 process = self.pipeline.utils.filesystem.run([self.dp2_cli, "results", "--output", self.dir_output, self.job_id])
             
         except subprocess.TimeoutExpired as e:
