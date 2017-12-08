@@ -238,7 +238,20 @@ class UpdateMetadata(Pipeline):
         self.utils.report.should_email = False
     
     def on_book_modified(self):
-        self.utils.report.should_email = False
+        if "triggered" not in self.book["events"]:
+            self.utils.report.should_email = False
+            return
+        
+        try:
+            book_path = os.path.join(self.dir_out, self.book["name"])
+            if not os.path.exists(book_path):
+                self.utils.report.error("Book \"" + self.book["name"] + "\" does not exist in " + self.dir_out)
+                return
+            epub = Epub(self, os.path.join(self.dir_out, self.book["name"]))
+            UpdateMetadata.update(self, epub)
+        except Exception:
+            logging.exception("[" + Report.thread_name() + "] An unexpected error occured while updating metadata for " + self.book["name"])
+            self.utils.report.error("An unexpected error occured while updating metadata for " + self.book["name"])
     
     def on_book_created(self):
         self.utils.report.should_email = False
