@@ -22,18 +22,24 @@ class Xslt():
     # treat as instance variables
     pipeline = None
     
-    def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}):
+    def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}, template=None):
         assert pipeline
         assert stylesheet
-        assert source
+        assert source or template
         assert target
         
         self.pipeline = pipeline
         
         try:
-            command = ["java", "-jar", self.saxon_jar, "-s:" + source, "-xsl:" + stylesheet, "-o:" + target]
+            command = ["java", "-jar", self.saxon_jar]
+            if source:
+                command.append("-s:" + source)
+            else:
+                command.append("-it:" + template)
+            command.append("-xsl:" + stylesheet)
+            command.append("-o:" + target)
             for param in parameters:
-                command.extend([param + "=" + parameters[param]])
+                command.append(param + "=" + parameters[param])
             
             self.pipeline.utils.report.debug("Running XSLT")
             process = self.pipeline.utils.filesystem.run(command)
