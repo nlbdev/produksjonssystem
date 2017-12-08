@@ -37,6 +37,9 @@ class UpdateMetadata(Pipeline):
     dp2_cli = dp2_home + "/cli/dp2"
     saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
     
+    quickbase_record_id_rows = [ "13", "20", "24", "28", "31", "32", "38" ]
+    quickbase_isbn_id_rows = [ "7" ]
+    
     logPipeline = DummyPipeline(uid=uid, title=title)
     
     first_job = True # Will be set to false after first job is triggered
@@ -208,7 +211,7 @@ class UpdateMetadata(Pipeline):
         xslt_job = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-get.xsl"),
                                   source=UpdateMetadata.sources["quickbase"]["records"],
                                   target=target,
-                                  parameters={ "book-id-rows": "13 20 24 28 31 32 38", "book-id": book_id })
+                                  parameters={ "book-id-rows": str.join(" ", UpdateMetadata.quickbase_record_id_rows), "book-id": book_id })
     
     @staticmethod
     def get_quickbase_isbn(pipeline, book_id, target):
@@ -220,7 +223,7 @@ class UpdateMetadata(Pipeline):
         xslt_job = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-get.xsl"),
                                   source=UpdateMetadata.sources["quickbase"]["isbn"],
                                   target=target,
-                                  parameters={ "book-id-rows": "7", "book-id": book_id })
+                                  parameters={ "book-id-rows": str.join(" ", UpdateMetadata.quickbase_isbn_id_rows), "book-id": book_id })
     
     @staticmethod
     def get_bibliofil(pipeline, book_id, target):
