@@ -3,4 +3,5 @@ graphviz==0.5.2
 lxml==3.7.3
 Markdown==2.6.9
 Pygments==2.2.0
+requests==2.10.0
 slacker==0.9.60
