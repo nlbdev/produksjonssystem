@@ -30,7 +30,7 @@ email = {
         "user": os.getenv("MAIL_USERNAME"),
         "pass": os.getenv("MAIL_PASSWORD")
     },
-    "sender": Address("NLBs Produksjonssystem", "jostein", "nlb.no"),
+    "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no"),
     "recipients": {
         "ammar":   Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
         "jostein": Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
@@ -53,16 +53,17 @@ dirs = {
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "html_narration": os.path.join(book_archive_dir, "distribusjonsformater/HTML-til-innlesing"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
-    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
+    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF")
 }
 
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
-    [ IncomingNordic(),  "incoming", "master", "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
-    [ NordicToNlbpub(),  "master",   "nlbpub", "reports", ["ammar","jostein","olav"]],
-    [ EpubToHtml(),      "master",   "html",   "reports", ["ammar","jostein","olav"]],
-    [ EpubToDtbook(),    "master",   "dtbook", "reports", ["ammar","jostein","mari","olav"]],
-    [ EpubToPef(),       "master",   "pef",    "reports", ["ammar","jostein","kari"]]
+    [ IncomingNordic(),  "incoming", "master",   "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+    #[ NordicToNlbpub(),  "master",   "nlbpub",   "reports", ["ammar","jostein","olav"]],
+    #[ UpdateMetadata(),  "metadata", "nlbpub",   "reports", ["jostein"]],
+    [ EpubToHtml(),      "master",   "html",     "reports", ["ammar","jostein","olav"]],
+    [ EpubToDtbook(),    "master",   "dtbook",   "reports", ["ammar","jostein","mari","olav"]],
+    [ EpubToPef(),       "master",   "pef",      "reports", ["ammar","jostein","kari"]]
 ]
 
 
