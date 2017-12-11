@@ -41,6 +41,7 @@ class Pipeline():
     dir_out = None
     dir_reports = None
     dir_trigger = None
+    dir_base = None
     
     # This one is meant for use in static contexts (Pipeline.dirs[uid][in|out|reports|trigger])
     dirs = None
@@ -181,7 +182,7 @@ class Pipeline():
                         
                 if not self._dirInAvailable and os.path.isdir(self.dir_in):
                     logging.info("[" + Report.thread_name() + "] " + self.dir_in + " is available again. Start watching...")
-                    self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports)
+                    self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base)
                 
                 time.sleep(1)
                 
