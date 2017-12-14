@@ -27,8 +27,9 @@
             <xsl:next-match/>
         </xsl:variable>
         
-        <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat('urn:isbn:', replace(normalize-space(@content),'[^\d]','')), 'creativeWork')[1]"/>
-        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content)), 'book')[1]"/>
+        <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat('urn:isbn:', replace(normalize-space(@content),'[^\d]','')), concat('creativeWork_',generate-id()))[1]"/>
+        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content)), concat('book_',generate-id()))[1]"/>
+        <xsl:variable name="resource-original" select="concat('original_',generate-id())"/>
         
         <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
             <head>
@@ -72,7 +73,7 @@ section dl {
                         <p>Bibliofil-metadata mangler.</p>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:attribute name="{if ($resource-creativeWork = 'creativeWork') then 'id' else 'about'}" select="$resource-creativeWork"/>
+                        <xsl:attribute name="{if (matches($resource-creativeWork,'^(http|urn)')) then 'about' else 'id'}" select="$resource-creativeWork"/>
                         <h1><xsl:value-of select="$metadata/dc:title/@content"/></h1>
                         
                         <xsl:call-template name="list-metadata-rdfa">
@@ -80,8 +81,8 @@ section dl {
                             <xsl:with-param name="type" select="'creativeWork'"/>
                         </xsl:call-template>
                         
-                        <section vocab="http://schema.org/" typeof="Book" id="original">
-                            <link property="exampleOfWork" href="{if ($resource-creativeWork = 'creativeWork') then '#creativeWork' else $resource-creativeWork}"/>
+                        <section vocab="http://schema.org/" typeof="Book" id="{$resource-original}">
+                            <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
                             <h1>Original</h1>
                             
                             <xsl:call-template name="list-metadata-rdfa">
@@ -90,10 +91,10 @@ section dl {
                             </xsl:call-template>
                         </section>
                         
-                        <section vocab="http://schema.org/" typeof="Book" id="original">
-                            <xsl:attribute name="{if ($resource-book = 'book') then 'id' else 'about'}" select="$resource-book"/>
-                            <link property="exampleOfWork" href="{if ($resource-creativeWork = 'creativeWork') then '#creativeWork' else $resource-creativeWork}"/>
-                            <link property="frbr:translationOf" href="#original"/>
+                        <section vocab="http://schema.org/" typeof="Book" id="{$resource-original}">
+                            <xsl:attribute name="{if (matches($resource-book,'^(http|urn)')) then 'about' else 'id'}" select="$resource-book"/>
+                            <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                            <link property="frbr:translationOf" href="#{$resource-original}"/>
                             
                             <h1><xsl:value-of select="$metadata/dc:format/@content"/></h1>
                             
@@ -116,26 +117,26 @@ section dl {
                     <xsl:namespace name="nlbbib" select="'http://www.nlb.no/bibliographic'"/>
                     <xsl:if test="$metadata">
                         <rdf:Description>
-                            <xsl:attribute name="rdf:{if ($resource-creativeWork = 'creativeWork') then 'ID' else 'about'}" select="$resource-creativeWork"/>
+                            <xsl:attribute name="rdf:{if (matches($resource-creativeWork,'^(http|urn)')) then 'about' else 'ID'}" select="$resource-creativeWork"/>
                             <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
                             <xsl:call-template name="list-metadata-rdfxml">
                                 <xsl:with-param name="metadata" select="$metadata"/>
                                 <xsl:with-param name="type" select="'creativeWork'"/>
                             </xsl:call-template>
                         </rdf:Description>
-                        <rdf:Description rdf:ID="original">
+                        <rdf:Description rdf:ID="{$resource-original}">
                             <rdf:type rdf:resource="http://schema.org/Book"/>
-                            <schema:exampleOfWork rdf:resource="{if ($resource-creativeWork = 'creativeWork') then '#creativeWork' else $resource-creativeWork}"/>
+                            <schema:exampleOfWork rdf:resource="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
                             <xsl:call-template name="list-metadata-rdfxml">
                                 <xsl:with-param name="metadata" select="$metadata"/>
                                 <xsl:with-param name="type" select="'original'"/>
                             </xsl:call-template>
                         </rdf:Description>
                         <rdf:Description>
-                            <xsl:attribute name="rdf:{if ($resource-book = 'book') then 'ID' else 'about'}" select="$resource-book"/>
+                            <xsl:attribute name="rdf:{if (matches($resource-book,'^(http|urn)')) then 'about' else 'ID'}" select="$resource-book"/>
                             <rdf:type rdf:resource="http://schema.org/Book"/>
-                            <schema:exampleOfWork rdf:resource="{if ($resource-creativeWork = 'creativeWork') then '#creativeWork' else $resource-creativeWork}"/>
-                            <frbr:translationOf rdf:resource="#original"/>
+                            <schema:exampleOfWork rdf:resource="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                            <frbr:translationOf rdf:resource="#{$resource-original}"/>
                             <xsl:call-template name="list-metadata-rdfxml">
                                 <xsl:with-param name="metadata" select="$metadata"/>
                                 <xsl:with-param name="type" select="'book'"/>

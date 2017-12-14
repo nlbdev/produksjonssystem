@@ -34,7 +34,7 @@
         </xsl:variable>
         
         <xsl:variable name="identifier" select="($metadata[self::html:dd[@property = 'nlbprod:isbn.identifier' and normalize-space(.)]])[1]/normalize-space(.)"/>
-        <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else 'book'"/>
+        <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else concat('book_', generate-id())"/>
         
         <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
             <head>
@@ -73,7 +73,7 @@ section dl {
                 </style>
             </head>
             <body vocab="http://schema.org/" typeof="Book">
-                <xsl:attribute name="{if ($resource = 'book') then 'id' else 'about'}" select="$resource"/>
+                <xsl:attribute name="{if (matches($resource,'^(http|urn)')) then 'about' else 'id'}" select="$resource"/>
                 <h1><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:isbn.title']]"/></h1>
                 
                 <xsl:call-template name="list-metadata-rdfa">
@@ -89,7 +89,7 @@ section dl {
                     <xsl:namespace name="schema" select="'http://schema.org/'"/>
                     <xsl:namespace name="nlbprod" select="'http://www.nlb.no/production'"/>
                     <rdf:Description>
-                        <xsl:attribute name="rdf:{if ($resource = 'book') then 'ID' else 'about'}" select="$resource"/>
+                        <xsl:attribute name="rdf:{if (matches($resource,'^(http|urn)')) then 'about' else 'ID'}" select="$resource"/>
                         <rdf:type rdf:resource="http://schema.org/Book"/>
                         <xsl:call-template name="list-metadata-rdfxml">
                             <xsl:with-param name="metadata" select="$metadata[self::*]"/>

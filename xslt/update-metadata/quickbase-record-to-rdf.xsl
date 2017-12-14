@@ -72,7 +72,7 @@ section dl {
                 </style>
             </head>
             <body vocab="http://schema.org/" typeof="CreativeWork">
-                <xsl:attribute name="{if ($resource-creativeWork = 'creativeWork') then 'id' else 'about'}" select="$resource-creativeWork"/>
+                <xsl:attribute name="{if (matches($resource-creativeWork,'^(http|urn)')) then 'about' else 'id'}" select="$resource-creativeWork"/>
                 <h1><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:title']]"/></h1>
                 
                 <xsl:call-template name="list-metadata-rdfa">
@@ -83,8 +83,8 @@ section dl {
                 <xsl:for-each select="distinct-values($metadata/@_type-id[not(.='creativeWork')])">
                     <section vocab="http://schema.org/" typeof="Book">
                         <xsl:variable name="resource" select="f:resource($metadata, .)"/>
-                        <xsl:attribute name="{if ($resource = .) then 'id' else 'about'}" select="$resource"/>
-                        <link property="exampleOfWork" href="{if ($resource-creativeWork = 'creativeWork') then '#creativeWork' else $resource-creativeWork}"/>
+                        <xsl:attribute name="{if (matches($resource,'^(http|urn)')) then 'about' else 'id'}" select="$resource"/>
+                        <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
                         <h2><xsl:value-of select="if (. = '#epub') then 'EPUB' else if (. = '#audio') then 'Lydbok' else if (. = '#braille') then 'Punktskrift' else if (. = '#ebook') then 'E-tekst' else if (. = '#external') then 'Ekstern' else ."/></h2>
                         <xsl:call-template name="list-metadata-rdfa">
                             <xsl:with-param name="metadata" select="$metadata[self::*]"/>
@@ -102,7 +102,7 @@ section dl {
                     <xsl:namespace name="schema" select="'http://schema.org/'"/>
                     <xsl:namespace name="nlbprod" select="'http://www.nlb.no/production'"/>
                     <rdf:Description>
-                        <xsl:attribute name="rdf:{if ($resource-creativeWork = 'creativeWork') then 'ID' else 'about'}" select="$resource-creativeWork"/>
+                        <xsl:attribute name="rdf:{if (matches($resource-creativeWork,'^(http|urn)')) then 'about' else 'ID'}" select="$resource-creativeWork"/>
                         <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
                         <xsl:call-template name="list-metadata-rdfxml">
                             <xsl:with-param name="metadata" select="$metadata[self::*]"/>
@@ -112,9 +112,9 @@ section dl {
                     <xsl:for-each select="distinct-values($metadata/@_type-id[not(.='creativeWork')])">
                         <rdf:Description>
                             <xsl:variable name="resource" select="f:resource($metadata, .)"/>
-                            <xsl:attribute name="rdf:{if ($resource = .) then 'ID' else 'about'}" select="$resource"/>
+                            <xsl:attribute name="rdf:{if (matches($resource,'^(http|urn)')) then 'about' else 'ID'}" select="$resource"/>
                             <rdf:type rdf:resource="http://schema.org/Book"/>
-                            <schema:exampleOfWork rdf:resource="{if ($resource-creativeWork = 'creativeWork') then '#creativeWork' else $resource-creativeWork}"/>
+                            <schema:exampleOfWork rdf:resource="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
                             <xsl:call-template name="list-metadata-rdfxml">
                                 <xsl:with-param name="metadata" select="$metadata[self::*]"/>
                                 <xsl:with-param name="type-id" select="."/>
@@ -182,7 +182,7 @@ section dl {
                 <xsl:value-of select="concat('urn:isbn:', ($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])[1]/replace(normalize-space(.),'[^\d]',''))"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="$type-id"/>
+                <xsl:value-of select="concat($type-id, '_', ($metadata[1]/generate-id(), replace(string(current-dateTime()),'[^\d]',''))[1])"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -299,7 +299,7 @@ section dl {
     
     <xsl:template match="f[@id='11']">
         <!-- String -->
-        <dd property="nlbprod:originalISBN" _type-id="creativeWork">
+        <dd property="schema:isbn" _type-id="creativeWork">
             <xsl:value-of select="."/>
         </dd>
     </xsl:template>
