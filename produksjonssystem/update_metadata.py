@@ -152,8 +152,9 @@ class UpdateMetadata(Pipeline):
         
         # path to directory with metadata from Quickbase / Bibliofil / Bokbasen
         metadata_dir = os.path.join(Pipeline.dirs[UpdateMetadata.uid]["in"], epub.identifier())
-        if not os.path.exists(metadata_dir):
-            os.makedirs(metadata_dir)
+        os.makedirs(metadata_dir, exist_ok=True)
+        os.makedirs(metadata_dir + '/quickbase', exist_ok=True)
+        os.makedirs(metadata_dir + '/bibliofil', exist_ok=True)
         
         with open(os.path.join(metadata_dir, "last_updated"), "w") as last_updated:
             last_updated.write(str(int(time.time())))
@@ -161,16 +162,16 @@ class UpdateMetadata(Pipeline):
         rdf_files = []
         
         pipeline.utils.report.info("quickbase-record-to-rdf.xsl")
-        rdf_path = os.path.join(metadata_dir, 'quickbase-record.rdf')
-        pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'quickbase-record.xml'))
-        pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'quickbase-record.html'))
+        rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+        pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'quickbase/record.xml'))
+        pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'quickbase/record.html'))
         pipeline.utils.report.info("    rdf    = " + rdf_path)
-        UpdateMetadata.get_quickbase_record(pipeline, epub.identifier(), os.path.join(metadata_dir, 'quickbase-record.xml'))
+        UpdateMetadata.get_quickbase_record(pipeline, epub.identifier(), os.path.join(metadata_dir, 'quickbase/record.xml'))
         Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-record-to-rdf.xsl"),
-                       source=os.path.join(metadata_dir, 'quickbase-record.xml'),
-                       target=os.path.join(metadata_dir, 'quickbase-record.html'),
+                       source=os.path.join(metadata_dir, 'quickbase/record.xml'),
+                       target=os.path.join(metadata_dir, 'quickbase/record.html'),
                        parameters={ "rdf-xml-path": rdf_path })
-        rdf_files.append(os.path.basename(rdf_path))
+        rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
         qb_record = ElementTree.parse(rdf_path).getroot()
         identifiers = qb_record.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=qb_record.nsmap)
@@ -178,28 +179,28 @@ class UpdateMetadata(Pipeline):
         
         for identifier in identifiers:
             pipeline.utils.report.info("bibliofil-to-rdf.xsl")
-            rdf_path = os.path.join(metadata_dir, 'bibliofil-' + identifier + '.rdf')
-            pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'bibliofil-' + identifier + '.xml'))
-            pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'bibliofil-' + identifier + '.html'))
+            rdf_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.rdf')
+            pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
+            pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'))
             pipeline.utils.report.info("    rdf    = " + rdf_path)
-            UpdateMetadata.get_bibliofil(pipeline, identifier, os.path.join(metadata_dir, 'bibliofil-' + identifier + '.xml'))
+            UpdateMetadata.get_bibliofil(pipeline, identifier, os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
             Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "bibliofil-to-rdf.xsl"),
-                           source=os.path.join(metadata_dir, 'bibliofil-' + identifier + '.xml'),
-                           target=os.path.join(metadata_dir, 'bibliofil-' + identifier + '.html'),
+                           source=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'),
+                           target=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'),
                            parameters={ "rdf-xml-path": rdf_path })
-            rdf_files.append(os.path.basename(rdf_path))
+            rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
             
             pipeline.utils.report.info("quickbase-isbn-to-rdf.xsl")
-            rdf_path = os.path.join(metadata_dir, 'quickbase-isbn-' + identifier + '.rdf')
-            pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'quickbase-isbn-' + identifier + '.xml'))
-            pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'quickbase-isbn-' + identifier + '.html'))
+            rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.rdf')
+            pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
+            pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'))
             pipeline.utils.report.info("    rdf    = " + rdf_path)
-            UpdateMetadata.get_quickbase_isbn(pipeline, identifier, os.path.join(metadata_dir, 'quickbase-isbn-' + identifier + '.xml'))
+            UpdateMetadata.get_quickbase_isbn(pipeline, identifier, os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
             Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-isbn-to-rdf.xsl"),
-                           source=os.path.join(metadata_dir, 'quickbase-isbn-' + identifier + '.xml'),
-                           target=os.path.join(metadata_dir, 'quickbase-isbn-' + identifier + '.html'),
+                           source=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'),
+                           target=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'),
                            parameters={ "rdf-xml-path": rdf_path })
-            rdf_files.append(os.path.basename(rdf_path))
+            rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
         pipeline.utils.report.info("rdf-join.xsl")
         pipeline.utils.report.info("    metadata-dir = " + metadata_dir + "/")
