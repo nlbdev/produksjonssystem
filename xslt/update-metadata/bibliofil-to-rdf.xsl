@@ -192,7 +192,9 @@ section dl {
         <xsl:param name="metadata" as="element()"/>
         <xsl:param name="type" as="xs:string" required="yes"/>
         
-        <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator')"/>
+        <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'schema:isbn.original',
+                                                             'dc:contributor.translator', 'dc:contributor.photographer', 'dc:contributor.illustrator', 'dc:contributor.consultant', 'dc:contributor.secretary', 'dc:contributor.editor',
+                                                             'dc:contributor.collaborator', 'dc:contributor.commentator', 'dc:contributor.narrator', 'dc:contributor.director', 'dc:contributor.compiler')"/>
         <xsl:variable name="nlbbibProperties" select="('series.issn','series.position','periodical','periodicity','magazine','newspaper','watermark','external-production','websok.url','websok.type','bibliofil-id','pseudonym')"/>
         
         <xsl:for-each select="$metadata/*">
@@ -220,11 +222,20 @@ section dl {
             <xsl:choose>
                 <xsl:when test="$type = 'creativeWork'">
                     <xsl:if test="$name = $creativeWorkProperties">
-                        <xsl:sequence select="$element"/>
+                        <xsl:choose>
+                            <xsl:when test="$name = 'schema:isbn.original'">
+                                <xsl:element name="schema:isbn">
+                                    <xsl:copy-of select="$element/node()"/>
+                                </xsl:element>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:sequence select="$element"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:if>
                 </xsl:when>
                 <xsl:when test="$type = 'original'">
-                    <xsl:if test="ends-with($name, '.original')">
+                    <xsl:if test="ends-with($name, '.original') and not($name = 'isbn.original')">
                         <xsl:element name="{replace($name,'.original$','')}">
                             <xsl:copy-of select="$element/node()"/>
                         </xsl:element>
