@@ -29,7 +29,9 @@ class Filesystem():
         "directory": "mappe",
         "file": "fil",
         "that should no longer exist": "som ikke skal eksistere lenger",
-        "Problem reading ZIP file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?"
+        "Problem reading ZIP file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?",
+        "An error occured while trying to delete the folder": "En feil oppstod ved sletting av mappen",
+        "Maybe someone has a file or folder open on their computer?": "Kanskje noen har en fil eller mappe åpen på datamaskinen sin?"
     }
     
     shutil_ignore_patterns = shutil.ignore_patterns("Thumbs.db") # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
@@ -167,7 +169,11 @@ class Filesystem():
         target = os.path.join(dir_out, book_id)
         if os.path.exists(target):
             self.pipeline.utils.report.info(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
-            shutil.rmtree(target)
+            try:
+                shutil.rmtree(target)
+            except OSError:
+                self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the folder"] + " " dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
+                raise
         if move:
             shutil.move(source, target)
         else:
