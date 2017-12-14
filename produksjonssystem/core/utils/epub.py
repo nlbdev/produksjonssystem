@@ -77,7 +77,7 @@ class Epub():
     def isepub(self):
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if os.path.isdir(self.book_path) and not os.path.isfile(os.path.join(self.book_path, "EPUB/package.opf")):
-            self.pipeline.utils.report.error(os.path.basename(self.book_path) + ": EPUB/package.opf" + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
+            self.pipeline.utils.report.error(os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
             return False
         
         elif os.path.isfile(self.book_path):
