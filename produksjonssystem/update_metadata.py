@@ -161,6 +161,20 @@ class UpdateMetadata(Pipeline):
         
         rdf_files = []
         
+        opf_path = os.path.join(epub.book_path, epub.opf_path())
+        if not os.path.exists(opf_path):
+            pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
+            return
+        
+        pipeline.utils.report.info("nlbpub-opf-to-rdf.xsl")
+        rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
+        pipeline.utils.report.info("    source = " + opf_path)
+        pipeline.utils.report.info("    target = " + rdf_path)
+        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "nlbpub-opf-to-rdf.xsl"),
+                       source=opf_path,
+                       target=rdf_path)
+        rdf_files.append('epub/' + os.path.basename(rdf_path))
+        
         pipeline.utils.report.info("quickbase-record-to-rdf.xsl")
         rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
         pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, 'quickbase/record.xml'))
