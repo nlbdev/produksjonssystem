@@ -238,8 +238,7 @@
                     <xsl:when test=".='gt'">
                         <meta property="dc:format.other.no">Elektronisk ressurs</meta>
                         <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.no">DTBok</meta>
-                        <dc:format>DTBook</dc:format>
+                        <dc:format>EPUB</dc:format>
                     </xsl:when>
                     <xsl:when test=".='h'">
                         <meta property="dc:format.other.no">Tredimensjonal gjenstand</meta>
@@ -444,8 +443,7 @@
                         <meta property="dc:format.no">Punktskrift</meta>
                     </xsl:when>
                     <xsl:when test=".='gt'">
-                        <dc:format>DTBook</dc:format>
-                        <meta property="dc:format.no">DTBok</meta>
+                        <dc:format>EPUB</dc:format>
                     </xsl:when>
                     <xsl:when test=".='ge'">
                         <dc:format>XHTML</dc:format>

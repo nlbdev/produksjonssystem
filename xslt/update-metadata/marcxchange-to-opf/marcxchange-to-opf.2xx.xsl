@@ -34,7 +34,7 @@
                 </xsl:when>
                 <xsl:when test="matches(text(),'.*dtbook.*','i')">
                     <dc:type>Full Text</dc:type>
-                    <dc:format>DTBook</dc:format>
+                    <dc:format>EPUB</dc:format>
                 </xsl:when>
             </xsl:choose>
         </xsl:for-each>
