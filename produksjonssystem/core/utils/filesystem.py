@@ -173,7 +173,7 @@ class Filesystem():
             try:
                 shutil.rmtree(target)
             except OSError:
-                self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the folder"] + " " dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
+                self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
                 raise
         if move:
             shutil.move(source, target)
