@@ -89,7 +89,7 @@ class UpdateMetadata(Pipeline):
         while self._shouldWatchMetadata:
             try:
                 time.sleep(1)
-                day = 10 # 60 * 60 * 24
+                day = 60 * 60 * 24
                 
                 # find a book_id where we haven't retrieved updated metadata in a while
                 for book_id in os.listdir(self.dir_out):
@@ -137,7 +137,7 @@ class UpdateMetadata(Pipeline):
     def update(pipeline, epub):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only update metadata in EPUBs")
-            return
+            return False
         
         # get path to OPF in EPUB (unzip if necessary)
         opf = epub.opf_path()
@@ -164,7 +164,7 @@ class UpdateMetadata(Pipeline):
         opf_path = os.path.join(epub.book_path, epub.opf_path())
         if not os.path.exists(opf_path):
             pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
-            return
+            return False
         
         pipeline.utils.report.debug("nlbpub-opf-to-rdf.xsl")
         rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
@@ -229,23 +229,94 @@ class UpdateMetadata(Pipeline):
                        })
         
         pipeline.utils.report.debug("rdf-to-opf.xsl")
+        opf_metadata = os.path.join(metadata_dir, "metadata.opf")
         pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, "metadata.rdf"))
         pipeline.utils.report.debug("    target = " + opf_metadata)
         Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
                        source=os.path.join(metadata_dir, "metadata.rdf"),
-                       target=os.path.join(metadata_dir, "metadata.opf"))
+                       target=opf_metadata)
         
         pipeline.utils.report.debug("opf-to-html.xsl")
+        html_head = os.path.join(metadata_dir, "metadata.html")
         pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, "metadata.opf"))
         pipeline.utils.report.debug("    target = " + html_head)
         Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "opf-to-html.xsl"),
                        source=os.path.join(metadata_dir, "metadata.opf"),
-                       target=os.path.join(metadata_dir, "metadata.html"))
+                       target=html_head)
         
-        # TODO
-        pipeline.utils.report.info(epub.identifier() + ": TODO: oppdater metadata")
-        pipeline.utils.report.info("OPF: " + opf)
-        pipeline.utils.report.info("metadata: " + metadata_dir)
+        updated_file_obj = tempfile.NamedTemporaryFile()
+        updated_file = updated_file_obj.name
+        
+        pipeline.utils.report.debug("update-opf.xsl")
+        pipeline.utils.report.debug("    source       = " + opf_path)
+        pipeline.utils.report.debug("    target       = " + updated_file)
+        pipeline.utils.report.debug("    opf_metadata = " + opf_metadata)
+        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-opf.xsl"),
+                       source=opf_path,
+                       target=updated_file,
+                       parameters={ "opf_metadata": opf_metadata })
+        
+        xml = ElementTree.parse(opf_path).getroot()
+        old_modified = xml.xpath("/*/*[local-name()='metadata']/*[@property='dcterms:modified'][1]/text()")
+        old_modified = old_modified[0] if old_modified else None
+        
+        xml = ElementTree.parse(updated_file).getroot()
+        new_modified = xml.xpath("/*/*[local-name()='metadata']/*[@property='dcterms:modified'][1]/text()")
+        new_modified = new_modified[0] if new_modified else None
+        
+        updates = []
+        
+        if old_modified != new_modified:
+            pipeline.utils.report.info("Updating OPF metadata")
+            updates.append({
+                            "updated_file_obj": updated_file_obj,
+                            "updated_file": updated_file,
+                            "target": opf_path
+                          })
+        
+        html_paths = xml.xpath("/*/*[local-name()='manifest']/*[@media-type='application/xhtml+xml']/@href")
+        
+        for html_relpath in html_paths:
+            html_path = os.path.normpath(os.path.join(os.path.dirname(opf_path), html_relpath))
+            
+            updated_file_obj = tempfile.NamedTemporaryFile()
+            updated_file = updated_file_obj.name
+            
+            pipeline.utils.report.debug("update-html.xsl")
+            pipeline.utils.report.debug("    source    = " + html_path)
+            pipeline.utils.report.debug("    target    = " + updated_file)
+            pipeline.utils.report.debug("    html_head = " + html_head)
+            Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-html.xsl"),
+                           source=html_path,
+                           target=updated_file,
+                           parameters={ "html_head": html_head })
+            
+            xml = ElementTree.parse(html_path).getroot()
+            old_modified = xml.xpath("/*/*[local-name()='head']/*[@name='dcterms:modified'][1]/@content")
+            old_modified = old_modified[0] if old_modified else None
+            
+            xml = ElementTree.parse(updated_file).getroot()
+            new_modified = xml.xpath("/*/*[local-name()='head']/*[@name='dcterms:modified'][1]/@content")
+            new_modified = new_modified[0] if new_modified else None
+            
+            if old_modified != new_modified:
+                pipeline.utils.report.info("Updating HTML metadata for " + html_relpath)
+                updates.append({
+                                "updated_file_obj": updated_file_obj,
+                                "updated_file": updated_file,
+                                "target": html_path
+                              })
+        
+        if updates:
+            # do all copy operations at once to avoid triggering multiple modification events
+            for update in updates:
+                shutil.copy(update["updated_file"], update["target"])
+            pipeline.utils.report.info("Metadata in " + epub.identifier() + " was updated")
+            
+        else:
+            pipeline.utils.report.info("Metadata in " + epub.identifier() + " is already up to date")
+        
+        return bool(updates)
     
     @staticmethod
     def get_quickbase_record(pipeline, book_id, target):
