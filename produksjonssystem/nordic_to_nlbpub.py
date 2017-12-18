@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import os
-import tempfile
-import time
-from datetime import datetime, timezone
-import subprocess
-import shutil
 import re
+import sys
+import time
+import shutil
+import tempfile
+import subprocess
 
+from lxml import etree as ElementTree
+from datetime import datetime, timezone
 from core.utils.epub import Epub
+from core.utils.xslt import Xslt
+from update_metadata import UpdateMetadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
