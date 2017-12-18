@@ -133,7 +133,7 @@ class Epub():
                 opf = ElementTree.XML(opf)
         
         metadata = opf.findall('{http://www.idpf.org/2007/opf}metadata')[0]
-        meta = metadata.getchildren()
+        meta = metadata.findall("*")
         for m in meta:
             if "refines" in m.attrib:
                 continue
