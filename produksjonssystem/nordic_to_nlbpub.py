@@ -26,6 +26,7 @@ class NordicToNlbpub(Pipeline):
     uid = "nordic-epub-to-nlbpub"
     title = "Nordisk EPUB til NLBPUB"
     
+    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
     dp2_cli = dp2_home + "/cli/dp2"
     saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
@@ -58,7 +59,7 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        # ---------- step 1: convert from nordic epub to nordic html ----------
+        # ---------- convert from nordic epub to nordic html ----------
         
         html_dir = None
         html_file = None
@@ -86,10 +87,18 @@ class NordicToNlbpub(Pipeline):
             return
         
         
-        # TODO: XSLT-steg her for å rydde opp nordisk EPUB
+        # ---------- clean up nordic html ----------
         
+        clean_html_obj = tempfile.NamedTemporaryFile()
+        clean_html = clean_html_obj.name
         
-        # ---------- step 2: convert from nordic html to generic epub ----------
+        Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
+                   source=html_file,
+                   target=clean_html)
+        
+        shutil.copy(clean_html, html_file)
+        
+        # ---------- convert from html to generic epub ----------
         
         self.utils.report.info("Konverterer fra Nordic HTML5 til generisk EPUB3...")
         dp2_job_html_to_epub3 = DaisyPipelineJob(self, "html-to-epub3", { "html": html_file, "metadata": html_file })
@@ -100,14 +109,34 @@ class NordicToNlbpub(Pipeline):
             return
         
         nlbpub_path = os.path.join(dp2_job_html_to_epub3.dir_output, "output-dir", epub.identifier() + ".epub")
-        nlbpub = Epub(self, nlbpub_path)
+        nlbpub_zipped = Epub(self, nlbpub_path)
         
-        if not nlbpub.isepub():
+        if not nlbpub_zipped.isepub():
             self.utils.report.error("Resultatet ble ikke en gyldig EPUB")
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
         
-        # ---------- step 3: unzip and save EPUB
+        # ---------- unzip EPUB and fix dc:identifier (which are not set correctly by html-to-epub3 script) ----------
+        
+        nlbpub = Epub(self, nlbpub_zipped.asDir())
+        
+        opf_temp_obj = tempfile.NamedTemporaryFile()
+        opf_temp = opf_temp_obj.name
+        
+        opf_path = os.path.join(nlbpub.book_path, nlbpub.opf_path())
+        xml = ElementTree.parse(opf_path)
+        identifier = xml.getroot().xpath("*[local-name()='metadata']/*[name()='dc:identifier' and not(@refines)]")[0]
+        identifier.text = epub.identifier()
+        xml.write(opf_temp)
+        
+        shutil.copy(opf_temp, opf_path)
+        
+        # ---------- update metadata ----------
+        
+        self.utils.report.info("Oppdaterer metadata.")
+        UpdateMetadata.update(self, nlbpub)
+        
+        # ---------- save EPUB ----------
         
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
         
