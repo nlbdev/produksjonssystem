@@ -232,6 +232,9 @@ section dl {
                                 <xsl:element name="schema:isbn">
                                     <xsl:copy-of select="$element/(@* | node())"/>
                                 </xsl:element>
+                                <xsl:element name="dc:source">
+                                    <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\d]',''))"/>
+                                </xsl:element>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:sequence select="$element"/>
