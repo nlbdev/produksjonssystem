@@ -235,6 +235,13 @@ class UpdateMetadata(Pipeline):
                        source=os.path.join(metadata_dir, "metadata.rdf"),
                        target=os.path.join(metadata_dir, "metadata.opf"))
         
+        pipeline.utils.report.info("opf-to-html.xsl")
+        pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, "metadata.opf") + "/")
+        pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, "metadata.html"))
+        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "opf-to-html.xsl"),
+                       source=os.path.join(metadata_dir, "metadata.opf"),
+                       target=os.path.join(metadata_dir, "metadata.html"))
+        
         # TODO
         pipeline.utils.report.info(epub.identifier() + ": TODO: oppdater metadata")
         pipeline.utils.report.info("OPF: " + opf)
