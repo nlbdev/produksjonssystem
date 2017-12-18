@@ -28,6 +28,11 @@
         <metadata>
             <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
             <xsl:namespace name="opf" select="'http://www.idpf.org/2007/opf'"/>
+            
+            <xsl:variable name="metadata-prefixes" select="distinct-values($metadata/@property[contains(.,':')]/substring-before(.,':')[not(.=('dc','a11y','dcterms','epubsc','marc','media','onix','rendition','schema','xsd'))])"/>
+            <xsl:variable name="mappings" select="for $p in $metadata-prefixes return concat($p, ': ', namespace-uri-for-prefix($p, (//*[substring-before(name(),':') = $p])[1]))"/>
+            <xsl:attribute name="prefix" select="string-join($mappings,' ')"/>
+            
             <xsl:copy-of select="$metadata"/>
         </metadata>
     </xsl:template>
