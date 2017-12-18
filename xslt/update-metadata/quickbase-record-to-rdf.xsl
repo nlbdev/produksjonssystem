@@ -390,7 +390,7 @@ section dl {
     
     <xsl:template match="f[@id='24']">
         <!-- Integer -->
-        <dd property="nlbprod:identifier.daisy202" _type-id="audio" id="identifier-daisy202student">
+        <dd property="nlbprod:identifier.daisy202.student" _type-id="audio" id="identifier-daisy202student">
             <xsl:value-of select="."/>
         </dd>
         <!--<dd property="dcterms:audience" _type-id="audio" refines="#identifier-daisy202student">Student</dd>-->
@@ -440,7 +440,7 @@ section dl {
     
     <xsl:template match="f[@id='31']">
         <!-- Integer -->
-        <dd property="nlbprod:identifier.daisy202" _type-id="audio" id="identifier-daisy202narratedfulltext">
+        <dd property="nlbprod:identifier.daisy202.fulltext" _type-id="audio" id="identifier-daisy202narratedfulltext">
             <xsl:value-of select="."/>
         </dd>
         <!--<dd property="dc:type" _type-id="audio" refines="#identifier-daisy202narratedfulltext">Narrated Fulltext</dd>-->
