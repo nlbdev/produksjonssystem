@@ -44,7 +44,7 @@
         <xsl:variable name="braille" select="(rdf:Description[dc:format = 'Braille'])[1]"/>
         
         <xsl:text><![CDATA[
-   ]]></xsl:text>
+      ]]></xsl:text>
         <xsl:comment select="' Boknummer for EPUB-utgaven '"/>
         <xsl:text><![CDATA[
 ]]></xsl:text>

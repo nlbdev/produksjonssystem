@@ -25,7 +25,8 @@
                 <rdf:Description rdf:about="{$resource}">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     
-                    <xsl:apply-templates select="dc:* | meta[@property]"/>
+                    <xsl:apply-templates select="dc:identifier"/>
+                    <xsl:apply-templates select="meta[starts-with(@property,'nordic:')]"/>
                 </rdf:Description>
             </rdf:RDF>
         </xsl:variable>
