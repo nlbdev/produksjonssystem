@@ -228,6 +228,13 @@ class UpdateMetadata(Pipeline):
                            "rdf-files": " ".join(rdf_files)
                        })
         
+        pipeline.utils.report.info("rdf-to-opf.xsl")
+        pipeline.utils.report.info("    source = " + os.path.join(metadata_dir, "metadata.rdf") + "/")
+        pipeline.utils.report.info("    target = " + os.path.join(metadata_dir, "metadata.opf"))
+        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
+                       source=os.path.join(metadata_dir, "metadata.rdf"),
+                       target=os.path.join(metadata_dir, "metadata.opf"))
+        
         # TODO
         pipeline.utils.report.info(epub.identifier() + ": TODO: oppdater metadata")
         pipeline.utils.report.info("OPF: " + opf)

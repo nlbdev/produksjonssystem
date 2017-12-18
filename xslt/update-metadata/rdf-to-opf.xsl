@@ -17,8 +17,6 @@
     
     <xsl:output indent="yes"/>
     
-    <xsl:param name="about" required="yes"/>
-    
     <xsl:variable name="opf-allowed-dc-elements" select="('dc:identifier', 'dc:title', 'dc:language', 'dc:contributor', 'dc:coverage',
                                                           'dc:creator', 'dc:date', 'dc:description', 'dc:format', 'dc:publisher',
                                                           'dc:relation', 'dc:rights', 'dc:source', 'dc:subject', 'dc:type')"/>
@@ -41,7 +39,7 @@
         <xsl:variable name="braille" select="(rdf:Description[dc:format = 'Braille'])[1]"/>
         
         <xsl:text><![CDATA[
-    ]]></xsl:text>
+   ]]></xsl:text>
         <xsl:comment select="' Boknummer for EPUB-utgaven '"/>
         <xsl:text><![CDATA[
 ]]></xsl:text>
