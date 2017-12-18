@@ -37,6 +37,7 @@ email = {
         "kari":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
         "mari":    Address("Mari Myksvoll",            "Mari.Myksvoll",     "nlb.no"),
         "olav":    Address("Olav Indergaard",          "Olav.Indergaard",   "nlb.no"),
+        "per":     Address("Per Sennels",              "Per.Sennels",       "nlb.no"),
         "sobia":   Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
         "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
     }
@@ -59,7 +60,7 @@ dirs = {
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
     [ IncomingNordic(),  "incoming", "master",   "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
-    [ NordicToNlbpub(),  "master",   "nlbpub",   "reports", ["jostein"]],
+    [ NordicToNlbpub(),  "master",   "nlbpub",   "reports", ["jostein","olav","per"]],
     [ UpdateMetadata(),  "metadata", "nlbpub",   "reports", ["jostein"]],
     [ EpubToHtml(),      "master",   "html",     "reports", ["ammar","jostein","olav"]],
     [ EpubToDtbook(),    "master",   "dtbook",   "reports", ["ammar","jostein","mari","olav"]],
