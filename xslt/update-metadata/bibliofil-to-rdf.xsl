@@ -191,6 +191,7 @@ section dl {
     <xsl:template name="list-metadata-rdfxml" as="element()*">
         <xsl:param name="metadata" as="element()"/>
         <xsl:param name="type" as="xs:string" required="yes"/>
+        <xsl:param name="nested" as="xs:boolean" select="false()" required="no"/>
         
         <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'schema:isbn.original',
                                                              'dc:contributor.translator', 'dc:contributor.photographer', 'dc:contributor.illustrator', 'dc:contributor.consultant', 'dc:contributor.secretary', 'dc:contributor.editor',
@@ -210,6 +211,7 @@ section dl {
                             <xsl:call-template name="list-metadata-rdfxml">
                                 <xsl:with-param name="metadata" select="."/>
                                 <xsl:with-param name="type" select="$type"/>
+                                <xsl:with-param name="nested" select="true()"/>
                             </xsl:call-template>
                         </xsl:when>
                         <xsl:otherwise>
@@ -220,12 +222,15 @@ section dl {
             </xsl:variable>
             
             <xsl:choose>
+                <xsl:when test="$nested">
+                    <xsl:sequence select="$element"/>
+                </xsl:when>
                 <xsl:when test="$type = 'creativeWork'">
                     <xsl:if test="$name = $creativeWorkProperties">
                         <xsl:choose>
                             <xsl:when test="$name = 'schema:isbn.original'">
                                 <xsl:element name="schema:isbn">
-                                    <xsl:copy-of select="$element/node()"/>
+                                    <xsl:copy-of select="$element/(@* | node())"/>
                                 </xsl:element>
                             </xsl:when>
                             <xsl:otherwise>
