@@ -21,7 +21,7 @@
         </xsl:variable>
 
         <xsl:variable name="role" select="nlb:parseRole(concat('',(marcxchange:subfield[@code='e'], marcxchange:subfield[@code='r'], marcxchange:subfield[@code='x'])[1]/text()))"/>
-        <xsl:variable name="role" select="if ($role='dc:creator') then 'dc:contributor' else $role">
+        <xsl:variable name="role" select="if ($role='dc:creator') then 'dc:contributor.other' else $role">
             <!-- because 700 never is the main author -->
         </xsl:variable>
 

@@ -301,8 +301,8 @@
                 <xsl:value-of select="'dc:creator.afterword'"/>
             </xsl:when>
             <xsl:when test="matches($role,'.*noter.*')">
-                <!-- Collaborator -->
-                <xsl:value-of select="'dc:contributor.collaborator'"/>
+                <!-- Other -->
+                <xsl:value-of select="'dc:contributor.other'"/>
             </xsl:when>
             <xsl:when test="matches($role,'.*kommentar.*')">
                 <!-- Commentator for written text -->
@@ -332,7 +332,7 @@
                 <xsl:value-of select="'dc:contributor.compiler'"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="'dc:creator'"/>
+                <xsl:value-of select="'dc:contributor.other'"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
