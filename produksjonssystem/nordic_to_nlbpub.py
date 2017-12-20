@@ -142,4 +142,4 @@ class NordicToNlbpub(Pipeline):
 
 
 if __name__ == "__main__":
-    EpubToHtml().run()
+    NordicToNlbpub().run()
