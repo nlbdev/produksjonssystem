@@ -27,11 +27,6 @@ class NordicToNlbpub(Pipeline):
     title = "Nordisk EPUB til NLBPUB"
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
-    dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
-    dp2_cli = dp2_home + "/cli/dp2"
-    saxon_cli = "java -jar " + os.path.join(dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
-    
-    first_job = True # Will be set to false after first job is triggered
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
