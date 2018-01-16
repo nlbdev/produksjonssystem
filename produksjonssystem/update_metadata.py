@@ -187,13 +187,13 @@ class UpdateMetadata(Pipeline):
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         
         for identifier in identifiers:
-            pipeline.utils.report.debug("bibliofil-to-rdf.xsl")
+            pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
             rdf_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.rdf')
             pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
             pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'))
             pipeline.utils.report.debug("    rdf    = " + rdf_path)
             UpdateMetadata.get_bibliofil(pipeline, identifier, os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
-            Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "bibliofil-to-rdf.xsl"),
+            Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/bibliofil-to-rdf.xsl"),
                            source=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'),
                            target=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'),
                            parameters={ "rdf-xml-path": rdf_path })

@@ -12,8 +12,8 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:import href="iso-639.xsl"/>
-    <xsl:import href="marcrel.xsl"/>
+    <xsl:import href="normarc/iso-639.xsl"/>
+    <xsl:import href="normarc/marcrel.xsl"/>
     
     <xsl:output indent="yes"/>
     

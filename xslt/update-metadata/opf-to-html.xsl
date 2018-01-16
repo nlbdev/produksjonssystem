@@ -9,7 +9,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:import href="marcrel.xsl"/>
+    <xsl:import href="normarc/marcrel.xsl"/>
     
     <xsl:output indent="yes"/>
     
