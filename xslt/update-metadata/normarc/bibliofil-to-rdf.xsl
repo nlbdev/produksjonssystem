@@ -15,7 +15,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:import href="marcxchange-to-opf/marcxchange-to-opf.xsl"/>
+    <xsl:import href="marcxchange-to-opf.xsl"/>
     <xsl:variable name="nested" select="true()"/>
     
     <xsl:output indent="yes" method="xhtml"/>

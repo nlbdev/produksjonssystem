@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:nlb="http://metadata.nlb.no/vocabulary/#" stylesheet="marcxchange-to-opf.xsl">
+
+    <x:scenario label="parse birthDate/deathDate - #1">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'(1546-1601)'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1546,1601'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #2">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'-'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="','"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #3">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'-1290'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="',1290'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #4">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1015-1066'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1015,1066'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #5">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1030'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1030,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #6">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'106-43 f.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-106,-43'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #7">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1122?-1204'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1122,1204'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #8">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1632-1675.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1632,1675'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #9">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1862 - 1890'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1862,1890'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #10">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1900-2002'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1900,2002'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #11">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1905-'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1905,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #12">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1930?-2005'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1930,2005'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #13">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1939 -'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1939,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #14">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'1958-,'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1958,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #15">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'2000'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'2000,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #16">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'2015'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'2015,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #17">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'287-212 f.Kr.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-287,-212'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #18">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'40-93'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'40,93'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #19">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'43-17 f.Kr.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-43,-17'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #20">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'50-130'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'50,130'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #21">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'850-933'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'850,933'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #22">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'975-1028'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'975,1028'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #23">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'978-82-16-0833'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="','"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #24">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'995-1030'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'995,1030'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #25">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'?-1801'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="',1801'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #26">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca 1350 f.Kr'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-1350,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #27">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca 485-425 f.Kr.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-485,-425'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #28">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca. 4 f.Kr.-65 e.Kr.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-4,65'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #29">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca. 490 f.Kr.'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'-490,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #30">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca. 800'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'800,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #31">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca. 900'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'900,'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #32">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca. 910-ca. 990'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'910,990'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #33">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca.1100-1163/64'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1100,1163'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #34">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'ca.1364-1431'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="'1364,1431'"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #35">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'n'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="','"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #36">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'sv'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="','"/>
+    </x:scenario>
+
+    <x:scenario label="parse birthDate/deathDate - #37">
+        <x:call function="nlb:parseBirthDeath">
+            <x:param name="value" select="'Tolaas, Erlend'"/>
+        </x:call>
+        <x:expect label="the result should be as expected" select="','"/>
+    </x:scenario>
+
+
+
+</x:description>
