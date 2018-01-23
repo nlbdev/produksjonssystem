@@ -258,7 +258,7 @@
         </xsl:choose>
     
         <xsl:choose>
-            <xsl:when test="normalize-space($POS35-37)">
+            <xsl:when test="normalize-space($POS35-37) and normalize-space($POS35-37) != 'mul'">
                 <dc:language>
                     <xsl:value-of select="$POS35-37"/>
                 </dc:language>
@@ -751,7 +751,7 @@
     
     <xsl:template match="*:datafield[@tag='020']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="isbn" scheme="ISBN">
+            <meta property="isbn">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -759,7 +759,7 @@
     
     <xsl:template match="*:datafield[@tag='022']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="issn" scheme="ISSN">
+            <meta property="issn">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -777,7 +777,7 @@
         <xsl:for-each select="*:subfield[@code='h']">
             <xsl:variable name="text" select="text()"/>
             <xsl:for-each select="(1 to xs:integer(floor(string-length($text) div 3)))">
-                <meta property="dc:language.original">
+                <meta property="dc:language.original{if (position() lt last()) then '.intermediary' else ''}">
                     <xsl:value-of select="substring($text,1+(.-1)*3,3)"/>
                 </meta>
             </xsl:for-each>
@@ -807,21 +807,17 @@
     
     <xsl:template match="*:datafield[@tag='100']">
         <xsl:variable name="creator-id" select="concat('creator-',1+count(preceding-sibling::*:datafield[@tag='100' or @tag='110']))"/>
-        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[1]"/>
-        <xsl:variable name="name">
-            <xsl:choose>
-                <xsl:when test="$name/@code='w'">
-                    <xsl:value-of select="$name/text()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="if (not(contains($name/text(),','))) then replace($name/text(), $FIRST_LAST_NAME, '$2, $1') else $name/text()"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-    
+        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
+        
         <dc:creator id="{$creator-id}">
-            <xsl:value-of select="$name"/>
+            <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
         </dc:creator>
+        
+        <xsl:if test="contains($name,',')">
+            <meta property="file-as" refines="#{$creator-id}">
+                <xsl:value-of select="$name"/>
+            </meta>
+        </xsl:if>
     
         <xsl:for-each select="*:subfield[@code='b']">
             <meta property="honorificSuffix" refines="#{$creator-id}">
@@ -833,7 +829,6 @@
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
                     <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                    <xsl:variable name="pseudonym" select="if (not(contains($pseudonym,','))) then replace($pseudonym, $FIRST_LAST_NAME, '$2, $1') else $pseudonym"/>
                     <meta property="pseudonym" refines="#{$creator-id}">
                         <xsl:value-of select="$pseudonym"/>
                     </meta>
@@ -1038,22 +1033,28 @@
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:choose>
                 <xsl:when test="$fields[self::dc:format]='DAISY 2.02'">
-                    <meta property="dc:format.extent.duration">
-                        <xsl:choose>
-                            <xsl:when test="matches(text(),'^.*?\d+ *t+\.? *\d+ *min\.?.*?$')">
+                    <xsl:choose>
+                        <xsl:when test="matches(text(),'^.*?\d+ *t+\.? *\d+ *min\.?.*?$')">
+                            <meta property="dc:format.extent.duration">
                                 <xsl:value-of select="replace(text(),'^.*?(\d+) *t+\.? *(\d+) *min\.?.*?$','$1 t. $2 min.')"/>
-                            </xsl:when>
-                            <xsl:when test="matches(text(),'^.*?\d+ *min\.?.*?$')">
+                            </meta>
+                        </xsl:when>
+                        <xsl:when test="matches(text(),'^.*?\d+ *min\.?.*?$')">
+                            <meta property="dc:format.extent.duration">
                                 <xsl:value-of select="replace(text(),'^.*?(\d+) *min\.?.*?$','0 t. $1 min.')"/>
-                            </xsl:when>
-                            <xsl:when test="matches(text(),'^.*?\d+ *t\.?.*?$')">
+                            </meta>
+                        </xsl:when>
+                        <xsl:when test="matches(text(),'^.*?\d+ *t\.?.*?$')">
+                            <meta property="dc:format.extent.duration">
                                 <xsl:value-of select="replace(text(),'^.*?(\d+) *t\.?.*?$','$1 t. 0 min.')"/>
-                            </xsl:when>
-                            <xsl:otherwise>
+                            </meta>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <meta property="dc:format.extent">
                                 <xsl:value-of select="text()"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </meta>
+                            </meta>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
                     <meta property="dc:format.extent">
@@ -1112,22 +1113,10 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='449']">
-        <xsl:variable name="fields">
-            <xsl:apply-templates select="../*:datafield[@tag='300']"/>
-        </xsl:variable>
         <xsl:for-each select="*:subfield[@code='n']">
-            <xsl:choose>
-                <xsl:when test="$fields/meta[@property='dc:format.extent']">
-                    <meta property="dc:format.extent.other">
-                        <xsl:value-of select="concat(text(),' CDs')"/>
-                    </meta>
-                </xsl:when>
-                <xsl:otherwise>
-                    <meta property="dc:format.extent">
-                        <xsl:value-of select="concat(text(),' CDs')"/>
-                    </meta>
-                </xsl:otherwise>
-            </xsl:choose>
+            <meta property="dc:format.extent.cd">
+                <xsl:value-of select="concat(text(),' CDs')"/>
+            </meta>
         </xsl:for-each>
     </xsl:template>
     
@@ -1147,7 +1136,7 @@
     
     <xsl:template match="*:datafield[@tag='503']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="bookEdition">
+            <meta property="bookEdition.history">
                 <xsl:value-of select="text()"/>
             </meta>
         </xsl:for-each>
@@ -1160,13 +1149,19 @@
     <xsl:template match="*:datafield[@tag='511']">
         <xsl:variable name="contributor-id" select="concat('contributor-511-',1+count(preceding-sibling::*:datafield[@tag='511']))"/>
         <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:variable name="contributor-name" select="text()"/>
             <meta property="dc:contributor.narrator">
                 <xsl:if test="position() = 1">
                     <xsl:attribute name="id" select="$contributor-id"/>
+                    <xsl:value-of select="if (contains($contributor-name,',')) then concat(normalize-space(substring-after($contributor-name,',')),' ',normalize-space(substring-before($contributor-name,','))) else $contributor-name"/>
                 </xsl:if>
-                <xsl:variable name="contributor-name" select="text()"/>
-                <xsl:value-of select="if (not(contains($contributor-name,','))) then replace($contributor-name, $FIRST_LAST_NAME, '$2, $1') else $contributor-name"/>
             </meta>
+            
+            <xsl:if test="contains($contributor-name,',')">
+                <meta property="file-as" refines="#{$contributor-id}">
+                    <xsl:value-of select="$contributor-name"/>
+                </meta>
+            </xsl:if>
     
             <xsl:variable name="pos" select="position()"/>
             <xsl:for-each select="../*:subfield[@code='3'][position() = $pos]">
@@ -1317,26 +1312,19 @@
         </xsl:for-each>
     
         <xsl:variable name="subject-id" select="concat('subject-600-',1+count(preceding-sibling::*:datafield[@tag='600']))"/>
-        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[1]"/>
-        <xsl:variable name="name">
-            <xsl:choose>
-                <xsl:when test="not($name/text())">
-                    <xsl:value-of select="$name/text()"/>
-                </xsl:when>
-                <xsl:when test="$name/@code='w'">
-                    <xsl:value-of select="$name/text()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="if (not(contains($name/text(),','))) then replace($name/text(), $FIRST_LAST_NAME, '$2, $1') else $name/text()"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-    
+        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
+        
         <xsl:if test="not($name='')">
     
             <dc:subject id="{$subject-id}">
-                <xsl:value-of select="$name"/>
+                <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
             </dc:subject>
+            
+            <xsl:if test="contains($name,',')">
+                <meta property="file-as" refines="#{$subject-id}">
+                    <xsl:value-of select="$name"/>
+                </meta>
+            </xsl:if>
     
             <xsl:for-each select="*:subfield[@code='b']">
                 <meta property="honorificSuffix" refines="#{$subject-id}">
@@ -1348,7 +1336,6 @@
                 <xsl:choose>
                     <xsl:when test="matches(text(), $PSEUDONYM)">
                         <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                        <xsl:variable name="pseudonym" select="if (not(contains($pseudonym,','))) then replace($pseudonym, $FIRST_LAST_NAME, '$2, $1') else $pseudonym"/>
                         <meta property="pseudonym" refines="#{$subject-id}">
                             <xsl:value-of select="$pseudonym"/>
                         </meta>
@@ -1741,18 +1728,8 @@
     
     <xsl:template match="*:datafield[@tag='700']">
         <xsl:variable name="contributor-id" select="concat('contributor-700-',1+count(preceding-sibling::*:datafield[@tag='700']))"/>
-        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[1]"/>
-        <xsl:variable name="name">
-            <xsl:choose>
-                <xsl:when test="$name/@code='w'">
-                    <xsl:value-of select="$name/text()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="if (not(contains($name/text(),','))) then replace($name/text(), $FIRST_LAST_NAME, '$2, $1') else $name/text()"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-    
+        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
+        
         <xsl:variable name="role" select="nlb:parseRole(concat('',(*:subfield[@code='e'], *:subfield[@code='r'], *:subfield[@code='x'])[1]/text()))"/>
         <xsl:variable name="role" select="if ($role='dc:creator') then 'dc:contributor.other' else $role">
             <!-- because 700 never is the main author -->
@@ -1762,16 +1739,22 @@
             <xsl:when test="matches($role,'^dc:\w+$')">
                 <xsl:element name="{$role}">
                     <xsl:attribute name="id" select="$contributor-id"/>
-                    <xsl:value-of select="$name"/>
+                    <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
                 </xsl:element>
             </xsl:when>
             <xsl:otherwise>
                 <meta property="{$role}" id="{$contributor-id}">
-                    <xsl:value-of select="$name"/>
+                    <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
                 </meta>
             </xsl:otherwise>
         </xsl:choose>
-    
+        
+        <xsl:if test="contains($name,',')">
+            <meta property="file-as" refines="#{$contributor-id}">
+                <xsl:value-of select="$name"/>
+            </meta>
+        </xsl:if>
+        
         <xsl:for-each select="*:subfield[@code='b']">
             <meta property="honorificSuffix" refines="#{$contributor-id}">
                 <xsl:value-of select="text()"/>
@@ -1782,7 +1765,6 @@
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
                     <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                    <xsl:variable name="pseudonym" select="if (not(contains($pseudonym,','))) then replace($pseudonym, $FIRST_LAST_NAME, '$2, $1') else $pseudonym"/>
                     <meta property="pseudonym" refines="#{$contributor-id}">
                         <xsl:value-of select="$pseudonym"/>
                     </meta>
@@ -1952,22 +1934,18 @@
     
     <xsl:template match="*:datafield[@tag='800']">
         <xsl:variable name="creator-id" select="concat('series-creator-',1+count(preceding-sibling::*:datafield[@tag='800']))"/>
-        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[1]"/>
-        <xsl:variable name="name">
-            <xsl:choose>
-                <xsl:when test="$name/@code='w'">
-                    <xsl:value-of select="$name/text()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="if (not(contains($name/text(),','))) then replace($name/text(), $FIRST_LAST_NAME, '$2, $1') else $name/text()"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-    
+        <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
+        
         <dc:creator.series id="{$creator-id}">
-            <xsl:value-of select="$name"/>
+            <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
         </dc:creator.series>
-    
+        
+        <xsl:if test="contains($name,',')">
+            <meta property="file-as" refines="#{$creator-id}">
+                <xsl:value-of select="$name"/>
+            </meta>
+        </xsl:if>
+        
         <xsl:for-each select="*:subfield[@code='t']">
             <xsl:variable name="alternate-title" select="string((../../*:datafield[@tag='440']/*:subfield[@code='a'])[1]/text()) != (text(),'')"/>
             <meta property="dc:title.series{if ($alternate-title or preceding-sibling::*[@code='t']) then '.alternate' else ''}">
@@ -1985,7 +1963,6 @@
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
                     <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                    <xsl:variable name="pseudonym" select="if (not(contains($pseudonym,','))) then replace($pseudonym, $FIRST_LAST_NAME, '$2, $1') else $pseudonym"/>
                     <meta property="pseudonym" refines="#{$creator-id}">
                         <xsl:value-of select="$pseudonym"/>
                     </meta>
