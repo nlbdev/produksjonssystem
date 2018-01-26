@@ -99,41 +99,24 @@ class NordicToNlbpub(Pipeline):
         
         # ---------- convert from html to generic epub ----------
         
-        self.utils.report.info("Konverterer fra Nordic HTML5 til generisk EPUB3...")
-        dp2_job_html_to_epub3 = DaisyPipelineJob(self, "html-to-epub3", { "html": html_file, "metadata": html_file })
+        self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
+        nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
+        nlbpub_tempdir = nlbpub_tempdir_obj.name
         
-        if dp2_job_html_to_epub3.status != "DONE":
-            self.utils.report.error("Klarte ikke å konvertere boken")
+        nlbpub = Epub.from_html(self, html_dir, nlbpub_tempdir)
+        if nlbpub == None:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
         
-        nlbpub_path = os.path.join(dp2_job_html_to_epub3.dir_output, "output-dir", epub.identifier() + ".epub")
-        nlbpub_zipped = Epub(self, nlbpub_path)
-        
-        if not nlbpub_zipped.isepub():
-            self.utils.report.error("Resultatet ble ikke en gyldig EPUB")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
-            return
-        
-        # ---------- unzip EPUB and fix dc:identifier (which are not set correctly by html-to-epub3 script) ----------
-        
-        nlbpub = Epub(self, nlbpub_zipped.asDir())
-        
-        opf_temp_obj = tempfile.NamedTemporaryFile()
-        opf_temp = opf_temp_obj.name
-        
-        opf_path = os.path.join(nlbpub.book_path, nlbpub.opf_path())
-        xml = ElementTree.parse(opf_path)
-        identifier = xml.getroot().xpath("*[local-name()='metadata']/*[name()='dc:identifier' and not(@refines)]")[0]
-        identifier.text = epub.identifier()
-        xml.write(opf_temp)
-        
-        shutil.copy(opf_temp, opf_path)
         
         # ---------- update metadata ----------
         
-        self.utils.report.info("Oppdaterer metadata.")
-        UpdateMetadata.update(self, nlbpub)
+        self.utils.report.info("Oppdaterer metadata...")
+        updated = UpdateMetadata.update(self, nlbpub)
+        if isinstance(updated, bool) and updated == False:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            return
+        
         
         # ---------- save EPUB ----------
         
