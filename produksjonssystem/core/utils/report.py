@@ -356,8 +356,5 @@ class Report():
 class DummyReport(Report):
     pipeline = None
     
-    def __init__(self, pipeline):
-        self.pipeline = pipeline
-    
     def _add_message(self, severity, message, message_type, add_empty_line):
         pass
