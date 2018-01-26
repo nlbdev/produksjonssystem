@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import os
+import re
+import sys
+import time
+import shutil
+import tempfile
+import subprocess
+
+from lxml import etree as ElementTree
+from datetime import datetime, timezone
+from core.utils.epub import Epub
+from core.utils.xslt import Xslt
+
+from core.pipeline import Pipeline
+
+if sys.version_info[0] != 3 or sys.version_info[1] < 5:
+    print("# This script requires Python version 3.5+")
+    sys.exit(1)
+
+class NlbpubToNarrationEpub(Pipeline):
+    uid = "nlbpub-to-narration-epub"
+    title = "NLBPUB til innlesningsklar EPUB"
+    
+    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
+    
+    def on_book_deleted(self):
+        self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
+        self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+    
+    def on_book_modified(self):
+        self.utils.report.info("Endret bok i mappa: " + self.book['name'])
+        self.on_book()
+    
+    def on_book_created(self):
+        self.utils.report.info("Ny bok i mappa: " + self.book['name'])
+        self.on_book()
+    
+    def on_book(self):
+        self.utils.report.attachment(None, self.book["source"], "DEBUG")
+        epub = Epub(self, self.book["source"])
+        
+        # sjekk at dette er en EPUB
+        if not epub.isepub():
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        
+        if not epub.identifier():
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        
+        
+        # ---------- lag en kopi av EPUBen ----------
+        
+        narration_epubdir_obj = tempfile.TemporaryDirectory()
+        narration_epubdir = narration_epubdir_obj.name
+        self.utils.filesystem.copy(self.book["source"], narration_epubdir)
+        nlbpub = Epub(self, narration_epubdir)
+        
+        
+        # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
+        
+        opf_path = nlbpub.opf_path()
+        if not opf_path:
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        opf_path = os.path.join(narration_epubdir, opf_path)
+        xml = ElementTree.parse(opf_path).getroot()
+        
+        html_file = xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
+        html_file = html_file[0] if html_file else None
+        if not html_file:
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        html_file = os.path.join(os.path.dirname(opf_path), html_file)
+        if not os.path.isfile(html_file):
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        
+        clean_html_obj = tempfile.NamedTemporaryFile()
+        clean_html = clean_html_obj.name
+        
+        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "prepare-for-narration.xsl"),
+                          source=html_file,
+                          target=clean_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            return
+        
+        shutil.copy(clean_html, html_file)
+        
+        
+        # ---------- lag nav.xhtml på nytt ----------
+        
+        nav_file = xml.xpath("/*/*[local-name()='manifest']/*[contains(@properties,'nav')]/@href")
+        nav_file = nav_file[0] if nav_file else None
+        if not nav_file:
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne navigasjonsfila i OPFen.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        nav_file = os.path.join(os.path.dirname(opf_path), nav_file)
+        
+        xslt = Epub.html_to_nav(self, html_file, nav_file)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            return
+        
+        
+        # ---------- save EPUB ----------
+        
+        self.utils.report.info("Boken ble konvertert. Kopierer til innlesningsklart EPUB-arkiv.")
+        
+        archived_path = self.utils.filesystem.storeBook(nlbpub.asFile(), epub.identifier(), file_extension="epub", move=True)
+        self.utils.report.attachment(None, archived_path, "DEBUG")
+        self.utils.report.info(epub.identifier() + " ble lagt til i innlesningsklart EPUB-arkiv.")
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
+
+
+if __name__ == "__main__":
+    NlbpubToNarrationEpub().run()

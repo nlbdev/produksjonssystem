@@ -6,17 +6,18 @@ import sys
 import time
 import logging
 from threading import Thread
-from core.pipeline import Pipeline
 from core.plotter import Plotter
+from core.pipeline import Pipeline
 from email.headerregistry import Address
 
 # Import pipelines
-from incoming_nordic import IncomingNordic
-from nordic_to_nlbpub import NordicToNlbpub
-from update_metadata import UpdateMetadata
+from epub_to_pef import EpubToPef
 from epub_to_html import EpubToHtml
 from epub_to_dtbook import EpubToDtbook
-from epub_to_pef import EpubToPef
+from incoming_nordic import IncomingNordic
+from update_metadata import UpdateMetadata
+from nordic_to_nlbpub import NordicToNlbpub
+from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 
 # Check that archive dir is defined
 assert os.environ.get("BOOK_ARCHIVE_DIR")
@@ -33,11 +34,13 @@ email = {
     "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no"),
     "recipients": {
         "ammar":   Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
+        "eivind":  Address("Eivind Haugen",            "Eivind.Haugen",     "nlb.no"),
         "jostein": Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
         "kari":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
         "mari":    Address("Mari Myksvoll",            "Mari.Myksvoll",     "nlb.no"),
         "olav":    Address("Olav Indergaard",          "Olav.Indergaard",   "nlb.no"),
         "per":     Address("Per Sennels",              "Per.Sennels",       "nlb.no"),
+        "roald":   Address("Roald Madland",            "Roald.Madland",     "nlb.no"),
         "sobia":   Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
         "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
     }
@@ -52,19 +55,20 @@ dirs = {
     "metadata": os.path.join(book_archive_dir, "metadata"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
-    "html_narration": os.path.join(book_archive_dir, "distribusjonsformater/HTML-til-innlesing"),
+    "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
     "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF")
 }
 
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
-    [ IncomingNordic(),  "incoming", "master",   "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
-    [ NordicToNlbpub(),  "master",   "nlbpub",   "reports", ["jostein","olav","per"]],
-    [ UpdateMetadata(),  "metadata", "nlbpub",   "reports", ["jostein"]],
-    [ EpubToHtml(),      "master",   "html",     "reports", ["ammar","jostein","olav"]],
-    [ EpubToDtbook(),    "master",   "dtbook",   "reports", ["ammar","jostein","mari","olav"]],
-    [ EpubToPef(),       "master",   "pef",      "reports", ["ammar","jostein","kari"]]
+    [ IncomingNordic(),         "incoming",       "master",           "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+    [ NordicToNlbpub(),         "master",         "nlbpub",           "reports", ["jostein","olav","per"]],
+    [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"]],
+    [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["jostein","per","eivind","roald"]],
+    [ EpubToHtml(),             "master",         "html",             "reports", ["ammar","jostein","olav"]],
+    [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
+    [ EpubToPef(),              "master",         "pef",              "reports", ["ammar","jostein","kari"]]
 ]
 
 
