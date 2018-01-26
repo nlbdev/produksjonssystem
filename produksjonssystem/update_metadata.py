@@ -182,6 +182,7 @@ class UpdateMetadata(Pipeline):
         xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "nlbpub-opf-to-rdf.xsl"),
                               source=opf_path,
                               target=rdf_path,
+                              parameters={ "include-source-reference": "true" })
         if not xslt.success:
             return False
         rdf_files.append('epub/' + os.path.basename(rdf_path))
@@ -199,6 +200,7 @@ class UpdateMetadata(Pipeline):
                               target=os.path.join(metadata_dir, 'quickbase/record.html'),
                               parameters={
                                 "rdf-xml-path": rdf_path,
+                                "include-source-reference": "true"
                               })
         if not xslt.success:
             return False
@@ -220,6 +222,7 @@ class UpdateMetadata(Pipeline):
                                   target=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'),
                                   parameters={
                                     "rdf-xml-path": rdf_path,
+                                    "include-source-reference": "true"
                                   })
             if not xslt.success:
                 return False
@@ -238,6 +241,7 @@ class UpdateMetadata(Pipeline):
                                   target=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'),
                                   parameters={
                                     "rdf-xml-path": rdf_path,
+                                    "include-source-reference": "true"
                                   })
             if not xslt.success:
                 return False
