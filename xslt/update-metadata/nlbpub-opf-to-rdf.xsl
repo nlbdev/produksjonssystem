@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:nlb="http://www.nlb.no/"
                 xmlns:f="#"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:schema="http://schema.org/"
@@ -12,6 +13,7 @@
                 version="2.0">
     
     <xsl:output indent="yes"/>
+    <xsl:param name="include-source-reference" select="false()"/>
     
     <xsl:template match="/package">
         <xsl:apply-templates select="metadata"/>
@@ -47,6 +49,9 @@
         <xsl:choose>
             <xsl:when test="$namespace">
                 <xsl:element name="{(@property, name())[1]}" namespace="{$namespace}">
+                    <xsl:if test="$include-source-reference">
+                        <xsl:attribute name="nlb:metadata-source" select="'EPUB'"/>
+                    </xsl:if>
                     <xsl:choose>
                         <xsl:when test="@id and ../*/@refines = @id">
                             <xsl:attribute name="schema:name" select="text()"/>
@@ -79,15 +84,17 @@
                 </xsl:when>
             </xsl:choose>
             
-            <xsl:analyze-string select="$element/ancestor::package/@prefix" regex="([^\s]+):\s+([^\s]+)">
-                <xsl:matching-substring>
-                    <xsl:variable name="opf-prefix" select="replace(., '\s*([^\s]+):\s+([^\s]+)\s*', '$1')"/>
-                    <xsl:variable name="opf-uri" select="replace(., '\s*([^\s]+):\s+([^\s]+)\s*', '$2')"/>
-                    <xsl:if test="$opf-prefix = $prefix">
-                        <xsl:sequence select="$opf-uri"/>
-                    </xsl:if>
-                </xsl:matching-substring>
-            </xsl:analyze-string>
+            <xsl:if test="$element/ancestor::package/@prefix">
+                <xsl:analyze-string select="$element/ancestor::package/@prefix" regex="([^\s]+):\s+([^\s]+)">
+                    <xsl:matching-substring>
+                        <xsl:variable name="opf-prefix" select="replace(., '\s*([^\s]+):\s+([^\s]+)\s*', '$1')"/>
+                        <xsl:variable name="opf-uri" select="replace(., '\s*([^\s]+):\s+([^\s]+)\s*', '$2')"/>
+                        <xsl:if test="$opf-prefix = $prefix">
+                            <xsl:sequence select="$opf-uri"/>
+                        </xsl:if>
+                    </xsl:matching-substring>
+                </xsl:analyze-string>
+            </xsl:if>
         </xsl:variable>
         <xsl:value-of select="$uri[1]"/>
     </xsl:function>
