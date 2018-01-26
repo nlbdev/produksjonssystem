@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:nlbprod="http://www.nlb.no/production"
+                xmlns:nlb="http://www.nlb.no/"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:schema="http://schema.org/"
@@ -14,6 +15,7 @@
     <xsl:output indent="yes" method="xhtml"/>
     
     <xsl:param name="rdf-xml-path" as="xs:string"/>
+    <xsl:param name="include-source-reference" select="false()"/>
 
     <xsl:template match="/qdbapi">
         <xsl:variable name="metadata" as="node()*">
@@ -36,7 +38,7 @@
         <xsl:variable name="identifier" select="($metadata[self::html:dd[@property = 'nlbprod:isbn.identifier' and normalize-space(.)]])[1]/normalize-space(.)"/>
         <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else concat('book_', generate-id())"/>
         
-        <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
+        <html>
             <head>
                 <title><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:isbn.title']]"/></title>
                 <style>
@@ -133,8 +135,10 @@ section dl {
                 <xsl:variable name="baseType" select="(current-group()[self::html:dt]/@_base_type)[1]" as="xs:string"/>
                 <xsl:variable name="fieldType" select="(current-group()[self::html:dt]/@_field_type)[1]" as="xs:string"/>
                 <xsl:variable name="property" select="(current-group()[self::html:dd]/@property)[1]" as="xs:string"/>
+                <xsl:variable name="metadata-source" select="current-group()[self::html:dt]/@nlb:metadata-source" as="attribute()?"/>
                 <xsl:for-each select="current-group()[self::html:dd]">
                     <xsl:element name="{@property}">
+                        <xsl:copy-of select="$metadata-source"/>
                         <xsl:value-of select="f:quickbase-value(text()[1], $fieldType, $baseType)"/>
                     </xsl:element>
                 </xsl:for-each>
@@ -174,6 +178,13 @@ section dl {
     <xsl:template match="f" priority="2">
         <xsl:variable name="id" select="@id"/>
         <dt _field_type="{/qdbapi/table/fields/field[@id=$id]/@field_type}" _base_type="{/qdbapi/table/fields/field[@id=$id]/@base_type}">
+            
+            <xsl:if test="$include-source-reference">
+                <xsl:variable name="label" select="/qdbapi/table/fields/field[@id=current()/@id]/label" as="xs:string?"/>
+                <xsl:variable name="book" select="(../f[@id='7'])[1]" as="xs:string?"/>
+                <xsl:attribute name="nlb:metadata-source" select="concat('Quickbase ISBN@', $book, ' ', $label)"/>
+            </xsl:if>
+            
             <xsl:value-of select="/qdbapi/table/fields/field[@id=$id]/label"/>
         </dt>
         <xsl:next-match/>
