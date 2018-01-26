@@ -9,6 +9,7 @@
                 xmlns:schema="http://schema.org/"
                 xmlns:frbr="http://purl.org/vocab/frbr/core#"
                 xmlns:nlbbib="http://www.nlb.no/bibliographic"
+                xmlns:nlb="http://www.nlb.no/"
                 xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns:f="#"
                 xmlns="http://www.w3.org/1999/xhtml"
@@ -21,6 +22,7 @@
     <xsl:output indent="yes" method="xhtml"/>
     
     <xsl:param name="rdf-xml-path" as="xs:string"/>
+    <xsl:param name="include-source-reference" select="false()" as="xs:boolean"/>
     
     <xsl:template match="/SRU:searchRetrieveResponse">
         <xsl:variable name="metadata" as="element()?">
@@ -171,6 +173,9 @@ section dl {
             <xsl:for-each select="$rdfxml">
                 <dt title="{name()}"><xsl:value-of select="name()"/></dt>
                 <dd property="{name()}">
+                    <xsl:if test="@nlb:metadata-source">
+                        <xsl:attribute name="title" select="@nlb:metadata-source"/>
+                    </xsl:if>
                     <xsl:choose>
                         <xsl:when test="count(*)">
                             <p><xsl:value-of select="@schema:name"/></p>
@@ -205,6 +210,7 @@ section dl {
             
             <xsl:variable name="element" as="element()">
                 <xsl:element name="{$name}">
+                    <xsl:copy-of select="@nlb:metadata-source"/>
                     <xsl:choose>
                         <xsl:when test="count(*)">
                             <xsl:attribute name="schema:name" select="@content"/>
@@ -233,6 +239,7 @@ section dl {
                                     <xsl:copy-of select="$element/(@* | node())"/>
                                 </xsl:element>
                                 <xsl:element name="dc:source">
+                                    <xsl:copy-of select="@nlb:metadata-source"/>
                                     <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\d]',''))"/>
                                 </xsl:element>
                             </xsl:when>
@@ -245,6 +252,7 @@ section dl {
                 <xsl:when test="$type = 'original'">
                     <xsl:if test="ends-with($name, '.original') and not($name = 'isbn.original')">
                         <xsl:element name="{replace($name,'.original$','')}">
+                            <xsl:copy-of select="@nlb:metadata-source"/>
                             <xsl:copy-of select="$element/node()"/>
                         </xsl:element>
                     </xsl:if>

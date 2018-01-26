@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
-               xmlns:nlb="http://metadata.nlb.no/vocabulary/#"
+               xmlns:nlb="http://www.nlb.no/"
                xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
                xmlns:dc="http://purl.org/dc/elements/1.1/"
                xmlns:opf="http://www.idpf.org/2007/opf"
                xmlns="http://www.idpf.org/2007/opf"
                stylesheet="marcxchange-to-opf.xsl">
-
+    
     <x:scenario label="parse birthDate/deathDate - #1">
         <x:call function="nlb:parseBirthDeath">
             <x:param name="value" select="'(1546-1601)'"/>
@@ -408,7 +408,7 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Forfatter(e)" focus="">
+    <x:scenario label="Forfatter(e)">
         <x:context>
             <marcxchange:datafield tag="100" ind1=" " ind2="0">
                 <marcxchange:subfield code="a">Dalai Lama</marcxchange:subfield>
@@ -448,7 +448,8 @@
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected">
-            <meta property="dc:contributor.translator" id="contributor-700-1">Windt-Val, Benedicta</meta>
+            <meta property="dc:contributor.translator" id="contributor-700-1">Benedicta Windt-Val</meta>
+            <meta property="file-as" refines="#contributor-700-1">Windt-Val, Benedicta</meta>
             <meta property="bibliofil-id" refines="#contributor-700-1">19594200</meta>
         </x:expect>
     </x:scenario>

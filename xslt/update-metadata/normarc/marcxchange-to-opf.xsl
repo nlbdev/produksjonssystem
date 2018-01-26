@@ -3,7 +3,7 @@
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xmlns:nlb="http://metadata.nlb.no/vocabulary/#"
+                xmlns:nlb="http://www.nlb.no/"
                 xmlns:SRU="http://www.loc.gov/zing/sru/"
                 xmlns:normarc="info:lc/xmlns/marcxchange-v1"
                 xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
@@ -17,6 +17,7 @@
     <xsl:output indent="yes"/>
     
     <xsl:param name="nested" select="false()"/>
+    <xsl:param name="include-source-reference" select="false()"/>
     
     <xsl:template match="@*|node()">
         <xsl:choose>
@@ -195,14 +196,49 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template name="meta">
+        <xsl:param name="context" as="element()?" select="."/>
+        <xsl:param name="property" as="xs:string"/>
+        <xsl:param name="value" as="xs:string"/>
+        <xsl:param name="id" as="xs:string?" select="()"/>
+        <xsl:param name="refines" as="xs:string?" select="()"/>
+        
+        <xsl:variable name="dublin-core" select="$property = ('dc:contributor', 'dc:coverage', 'dc:creator', 'dc:date', 'dc:description', 'dc:format', 'dc:identifier',
+                                                              'dc:language', 'dc:publisher', 'dc:relation', 'dc:rights', 'dc:source', 'dc:subject', 'dc:title', 'dc:type')" as="xs:boolean"/>
+        
+        <xsl:element name="{if ($dublin-core) then $property else 'meta'}">
+            <xsl:if test="$include-source-reference">
+                <xsl:variable name="identifier" as="xs:string?" select="($context/(../* | ../../*)[self::*:controlfield[@tag='001']])[1]/text()"/>
+                <xsl:variable name="tag" select="($context/../@tag, $context/@tag, '???')[1]"/>
+                <xsl:attribute name="nlb:metadata-source" select="concat('Bibliofil', if ($identifier) then concat('@',$identifier) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
+            </xsl:if>
+            
+            <xsl:if test="not($dublin-core)">
+                <xsl:attribute name="property" select="$property"/>
+            </xsl:if>
+            
+            <xsl:if test="$id">
+                <xsl:attribute name="id" select="$id"/>
+            </xsl:if>
+            
+            <xsl:if test="$refines">
+                <xsl:attribute name="refines" select="concat('#',$refines)"/>
+            </xsl:if>
+            
+            <xsl:value-of select="$value"/>
+        </xsl:element>
+    </xsl:template>
+    
     <!-- 00X KONTROLLFELT -->
     
     <xsl:template match="*:leader"/>
     
     <xsl:template match="*:controlfield[@tag='001']">
-        <dc:identifier id="pub-id">
-            <xsl:value-of select="text()"/>
-        </dc:identifier>
+        <xsl:call-template name="meta">
+            <xsl:with-param name="property" select="'dc:identifier'"/>
+            <xsl:with-param name="value" select="text()"/>
+            <xsl:with-param name="id" select="'pub-id'"/>
+        </xsl:call-template>
     </xsl:template>
     
     <xsl:template match="*:controlfield[@tag='007']">
@@ -217,51 +253,49 @@
     
         <xsl:choose>
             <xsl:when test="$POS22='a'">
-                <meta property="audience">Adult</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS22='j'">
-                <meta property="audience">Juvenile</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Juvenile'"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
     
         <xsl:choose>
             <xsl:when test="$POS33='0'">
-                <meta property="dc:type.genre">Non-fiction</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Non-fiction'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS33='1'">
-                <meta property="dc:type.genre">Fiction</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Fiction'"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
     
         <xsl:choose>
             <xsl:when test="$POS34='0'">
-                <meta property="dc:type.genre">Non-biography</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Non-biography'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS34='1'">
-                <meta property="dc:type.genre">Biography</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS34='a'">
-                <meta property="dc:type.genre">Biography</meta>
-                <meta property="dc:type.genre">Autobiography</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Autobiography'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS34='b'">
-                <meta property="dc:type.genre">Biography</meta>
-                <meta property="dc:type.genre">Individual biography</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Individual biography'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS34='c'">
-                <meta property="dc:type.genre">Biography</meta>
-                <meta property="dc:type.genre">Collective biography</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Collective biography'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS34='d'">
-                <meta property="dc:type.genre">Biography</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
     
         <xsl:choose>
             <xsl:when test="normalize-space($POS35-37) and normalize-space($POS35-37) != 'mul'">
-                <dc:language>
-                    <xsl:value-of select="$POS35-37"/>
-                </dc:language>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:language'"/><xsl:with-param name="value" select="$POS35-37"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
     </xsl:template>
@@ -273,513 +307,519 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='019']">
-        <xsl:for-each select="*:subfield[@code='a']/tokenize(replace(text(),'\s',''),'[,\.\-_]')">
-            <xsl:choose>
-                <xsl:when test=".='a'">
-                    <meta property="audience">Ages 0-5</meta>
-                </xsl:when>
-                <xsl:when test=".='b'">
-                    <meta property="audience">Ages 6-8</meta>
-                </xsl:when>
-                <xsl:when test=".='bu'">
-                    <meta property="audience">Ages 9-10</meta>
-                </xsl:when>
-                <xsl:when test=".='u'">
-                    <meta property="audience">Ages 11-12</meta>
-                </xsl:when>
-                <xsl:when test=".='mu'">
-                    <meta property="audience">Ages 13+</meta>
-                </xsl:when>
-            </xsl:choose>
+        <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:variable name="context" select="."/>
+            <xsl:for-each select="tokenize(replace(text(),'\s',''),'[,\.\-_]')">
+                <xsl:choose>
+                    <xsl:when test=".='a'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 0-5'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='b'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 6-8'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='bu'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 9-10'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='u'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 11-12'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='mu'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 13+'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
         </xsl:for-each>
     
         <xsl:variable name="b" as="element()*">
-            <xsl:for-each select="*:subfield[@code='b']/tokenize(replace(text(),'\s',''),'[,\.\-_]')">
-                <xsl:choose>
-                    <xsl:when test=".='a'">
-                        <meta property="dc:format.other.no">Kartografisk materiale</meta>
-                        <meta property="dc:format.other">Cartographic materials</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ab'">
-                        <meta property="dc:format.other.no">Kartografisk materiale</meta>
-                        <meta property="dc:format.other">Cartographic materials</meta>
-                        <meta property="dc:format.other.no">Atlas</meta>
-                        <meta property="dc:format.other">Atlas</meta>
-                    </xsl:when>
-                    <xsl:when test=".='aj'">
-                        <meta property="dc:format.other.no">Kartografisk materiale</meta>
-                        <meta property="dc:format.other">Cartographic materials</meta>
-                        <meta property="dc:format.other.no">Kart</meta>
-                        <meta property="dc:format.other">Map</meta>
-                    </xsl:when>
-                    <xsl:when test=".='b'">
-                        <meta property="dc:format.other.no">Manuskripter</meta>
-                        <meta property="dc:format.other">Manuscripts</meta>
-                    </xsl:when>
-                    <xsl:when test=".='c'">
-                        <meta property="dc:format.other.no">Musikktrykk</meta>
-                        <meta property="dc:format.other">Sheet music</meta>
-                        <dc:format>Braille</dc:format>
-                        <meta property="dc:format.no">Punktskrift</meta>
-                    </xsl:when>
-                    <xsl:when test=".='d'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                    </xsl:when>
-                    <xsl:when test=".='da'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Grammofonplate</meta>
-                        <meta property="dc:format.other">Gramophone record</meta>
-                    </xsl:when>
-                    <xsl:when test=".='db'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Kassett</meta>
-                        <meta property="dc:format.other">Cassette</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dc'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">CD (kompaktplate)</meta>
-                        <meta property="dc:format.other">Compact Disk</meta>
-                        <dc:format>DAISY 2.02</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='dd'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Avspiller med lydfil</meta>
-                        <meta property="dc:format.other">Player with audio file</meta>
-                    </xsl:when>
-                    <xsl:when test=".='de'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Digikort</meta>
-                        <meta property="dc:format.other">Digikort</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dg'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Musikk</meta>
-                        <meta property="dc:format.other">Music</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dh'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Språkkurs</meta>
-                        <meta property="dc:format.other">Language course</meta>
-                    </xsl:when>
-                    <xsl:when test=".='di'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Lydbok</meta>
-                        <meta property="dc:format.other">Audio book</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dj'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Annen tale/annet</meta>
-                        <meta property="dc:format.other">Other voice/other</meta>
-                        <dc:format>DAISY 2.02</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='dk'">
-                        <meta property="dc:format.other.no">Lydopptak</meta>
-                        <meta property="dc:format.other">Audio recording</meta>
-                        <meta property="dc:format.other.no">Kombidokument</meta>
-                        <meta property="dc:format.other">Combined document</meta>
-                    </xsl:when>
-                    <xsl:when test=".='e'">
-                        <meta property="dc:format.other.no">Film</meta>
-                        <meta property="dc:format.other">Video</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ec'">
-                        <meta property="dc:format.other.no">Film</meta>
-                        <meta property="dc:format.other">Video</meta>
-                        <meta property="dc:format.other.no">Filmspole</meta>
-                        <meta property="dc:format.other">Video tape</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ed'">
-                        <meta property="dc:format.other.no">Film</meta>
-                        <meta property="dc:format.other">Video</meta>
-                        <meta property="dc:format.other.no">Videokassett (VHS)</meta>
-                        <meta property="dc:format.other">VHS</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ee'">
-                        <meta property="dc:format.other.no">Film</meta>
-                        <meta property="dc:format.other">Video</meta>
-                        <meta property="dc:format.other.no">Videoplate (DVD)</meta>
-                        <meta property="dc:format.other">DVD</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ef'">
-                        <meta property="dc:format.other.no">Film</meta>
-                        <meta property="dc:format.other">Video</meta>
-                        <meta property="dc:format.other.no">Blu-ray-plate</meta>
-                        <meta property="dc:format.other">Blu-ray</meta>
-                    </xsl:when>
-                    <xsl:when test=".='eg'">
-                        <meta property="dc:format.other.no">Film</meta>
-                        <meta property="dc:format.other">Video</meta>
-                        <meta property="dc:format.other.no">3D</meta>
-                        <meta property="dc:format.other">3D</meta>
-                    </xsl:when>
-                    <xsl:when test=".='f'">
-                        <meta property="dc:format.other.no">Grafisk materiale</meta>
-                        <meta property="dc:format.other">Graphic materials</meta>
-                    </xsl:when>
-                    <xsl:when test=".='fd'">
-                        <meta property="dc:format.other.no">Grafisk materiale</meta>
-                        <meta property="dc:format.other">Graphic materials</meta>
-                        <meta property="dc:format.other.no">Dias</meta>
-                        <meta property="dc:format.other">Slides</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ff'">
-                        <meta property="dc:format.other.no">Grafisk materiale</meta>
-                        <meta property="dc:format.other">Graphic materials</meta>
-                        <meta property="dc:format.other.no">Fotografi</meta>
-                        <meta property="dc:format.other">Photography</meta>
-                    </xsl:when>
-                    <xsl:when test=".='fi'">
-                        <meta property="dc:format.other.no">Grafisk materiale</meta>
-                        <meta property="dc:format.other">Graphic materials</meta>
-                        <meta property="dc:format.other.no">Kunstreproduksjon</meta>
-                        <meta property="dc:format.other">Art reproduction</meta>
-                    </xsl:when>
-                    <xsl:when test=".='g'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <dc:format>XHTML</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='gb'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">Diskett</meta>
-                        <meta property="dc:format.other">Floppy</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gc'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">DVD-ROM</meta>
-                        <meta property="dc:format.other">DVD</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gd'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">CD-ROM</meta>
-                        <meta property="dc:format.other">CD</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ge'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">Nettressurs</meta>
-                        <meta property="dc:format.other">Web resource</meta>
-                        <dc:format>XHTML</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='gf'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">Lagringsbrikke</meta>
-                        <meta property="dc:format.other">Storage card</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gg'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">Blu-ray ROM</meta>
-                        <meta property="dc:format.other">Blu-ray</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gh'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other">UMD</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gi'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <meta property="dc:format.other.no">Wii-plate</meta>
-                        <meta property="dc:format.other">Wii disk</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gt'">
-                        <meta property="dc:format.other.no">Elektronisk ressurs</meta>
-                        <meta property="dc:format.other">Electronic resource</meta>
-                        <dc:format>EPUB</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='h'">
-                        <meta property="dc:format.other.no">Tredimensjonal gjenstand</meta>
-                        <meta property="dc:format.other">Three-dimensional object</meta>
-                    </xsl:when>
-                    <xsl:when test=".='i'">
-                        <meta property="dc:format.other.no">Mikroform</meta>
-                        <meta property="dc:format.other">Microform</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ib'">
-                        <meta property="dc:format.other.no">Mikroform</meta>
-                        <meta property="dc:format.other">Microform</meta>
-                        <meta property="dc:format.other.no">Mikrofilmspole</meta>
-                        <meta property="dc:format.other">Microfilm tape</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ic'">
-                        <meta property="dc:format.other.no">Mikroform</meta>
-                        <meta property="dc:format.other">Microform</meta>
-                        <meta property="dc:format.other.no">Mikrofilmkort</meta>
-                        <meta property="dc:format.other">Microfilm card</meta>
-                    </xsl:when>
-                    <xsl:when test=".='j'">
-                        <meta property="dc:format.other.no">Periodika</meta>
-                        <meta property="dc:format.other">Serial</meta>
-                        <meta property="periodical">true</meta>
-                    </xsl:when>
-                    <xsl:when test=".='jn'">
-                        <meta property="dc:format.other.no">Periodika</meta>
-                        <meta property="dc:format.other">Serial</meta>
-                        <meta property="dc:format.other.no">Avis</meta>
-                        <meta property="dc:format.other">Newspaper</meta>
-                        <meta property="periodical">true</meta>
-                        <meta property="newspaper">true</meta>
-                    </xsl:when>
-                    <xsl:when test=".='jp'">
-                        <meta property="dc:format.other.no">Periodika</meta>
-                        <meta property="dc:format.other">Serial</meta>
-                        <meta property="dc:format.other.no">Tidsskrift</meta>
-                        <meta property="dc:format.other">Magazine</meta>
-                        <meta property="periodical">true</meta>
-                        <meta property="magazine">true</meta>
-                    </xsl:when>
-                    <xsl:when test=".='k'">
-                        <meta property="dc:format.other.no">Artikler</meta>
-                        <meta property="dc:format.other">Article</meta>
-                    </xsl:when>
-                    <xsl:when test=".='l'">
-                        <meta property="dc:format.other.no">Fysiske bøker</meta>
-                        <meta property="dc:format.other">Physical book</meta>
-                        <dc:format>Braille</dc:format>
-                        <meta property="dc:format.no">Punktskrift</meta>
-                    </xsl:when>
-                    <xsl:when test=".='m'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ma'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">PC</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mb'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Playstation 2</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mc'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Playstation 3</meta>
-                    </xsl:when>
-                    <xsl:when test=".='md'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Playstation Portable</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mi'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Xbox</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mj'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Xbox 360</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mn'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Nintendo DS</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mo'">
-                        <meta property="dc:format.other.no">Dataspill</meta>
-                        <meta property="dc:format.other">Video game</meta>
-                        <meta property="dc:format.other">Nintendo Wii</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dl'">
-                        <meta property="dc:format.other.no">SACD</meta>
-                        <meta property="dc:format.other">SACD</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dm'">
-                        <meta property="dc:format.other.no">DVD-audio</meta>
-                        <meta property="dc:format.other">DVD-audio</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dn'">
-                        <meta property="dc:format.other.no">Blu-Ray-audio</meta>
-                        <meta property="dc:format.other">Blu-Ray-audio</meta>
-                    </xsl:when>
-                    <xsl:when test=".='dz'">
-                        <meta property="dc:format.other.no">MP3</meta>
-                        <meta property="dc:format.other">MP3</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ea'">
-                        <meta property="dc:format.other.no">E-film</meta>
-                        <meta property="dc:format.other">E-film</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ga'">
-                        <meta property="dc:format.other.no">Nedlastbar fil</meta>
-                        <meta property="dc:format.other">Downloadable file</meta>
-                    </xsl:when>
-                    <xsl:when test=".='je'">
-                        <meta property="dc:format.other.no">E-tidsskrifter</meta>
-                        <meta property="dc:format.other">E-periodicals</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ka'">
-                        <meta property="dc:format.other.no">E-artikler</meta>
-                        <meta property="dc:format.other">E-articles</meta>
-                    </xsl:when>
-                    <xsl:when test=".='la'">
-                        <meta property="dc:format.other.no">E-bøker</meta>
-                        <meta property="dc:format.other">E-books</meta>
-                    </xsl:when>
-                    <xsl:when test=".='me'">
-                        <meta property="dc:format.other.no">Playstation 4</meta>
-                        <meta property="dc:format.other">Playstation 4</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mk'">
-                        <meta property="dc:format.other.no">Xbox One</meta>
-                        <meta property="dc:format.other">Xbox One</meta>
-                    </xsl:when>
-                    <xsl:when test=".='mp'">
-                        <meta property="dc:format.other.no">Nintendo Wii U</meta>
-                        <meta property="dc:format.other">Nintendo Wii U</meta>
-                    </xsl:when>
-                    <xsl:when test=".='n'">
-                        <meta property="dc:format.other.no">Filformater</meta>
-                        <meta property="dc:format.other">File formats</meta>
-                    </xsl:when>
-                    <xsl:when test=".='na'">
-                        <meta property="dc:format.other.no">PDF</meta>
-                        <meta property="dc:format.other">PDF</meta>
-                    </xsl:when>
-                    <xsl:when test=".='nb'">
-                        <meta property="dc:format.other.no">EPUB</meta>
-                        <meta property="dc:format.other">EPUB</meta>
-                    </xsl:when>
-                    <xsl:when test=".='nc'">
-                        <meta property="dc:format.other.no">MOBI</meta>
-                        <meta property="dc:format.other">MOBI</meta>
-                    </xsl:when>
-                    <xsl:when test=".='nl'">
-                        <meta property="dc:format.other.no">WMA (Windows Media Audio)</meta>
-                        <meta property="dc:format.other">WMA (Windows Media Audio)</meta>
-                    </xsl:when>
-                    <xsl:when test=".='ns'">
-                        <meta property="dc:format.other.no">WMV (Windows Media Video)</meta>
-                        <meta property="dc:format.other">WMV (Windows Media Video)</meta>
-                    </xsl:when>
-                    <xsl:when test=".='o'">
-                        <meta property="dc:format.other.no">Digital rettighetsadministrasjon (DRM)</meta>
-                        <meta property="dc:format.other">Digital rights management (DRM)</meta>
-                    </xsl:when>
-                    <xsl:when test=".='te'">
-                        <!-- non-standard -->
-                        <dc:format>Braille</dc:format>
-                        <meta property="dc:format.no">Punktskrift</meta>
-                    </xsl:when>
-                </xsl:choose>
+            <xsl:for-each select="*:subfield[@code='b']">
+                <xsl:variable name="context" select="."/>
+                <xsl:for-each select="tokenize(replace(text(),'\s',''),'[,\.\-_]')">
+                    <xsl:choose>
+                        <xsl:when test=".='a'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kartografisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Cartographic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ab'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kartografisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Cartographic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Atlas'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Atlas'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='aj'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kartografisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Cartographic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kart'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Map'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='b'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Manuskripter'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Manuscripts'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='c'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Musikktrykk'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Sheet music'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='d'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='da'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Grammofonplate'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Gramophone record'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='db'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kassett'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Cassette'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dc'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'CD (kompaktplate)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Compact Disk'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dd'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Avspiller med lydfil'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Player with audio file'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='de'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Digikort'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Digikort'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dg'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Musikk'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Music'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dh'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Språkkurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Language course'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='di'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydbok'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio book'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dj'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Annen tale/annet'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Other voice/other'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dk'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Audio recording'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kombidokument'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Combined document'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='e'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ec'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Filmspole'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video tape'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ed'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Videokassett (VHS)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'VHS'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ee'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Videoplate (DVD)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'DVD'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ef'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Blu-ray-plate'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Blu-ray'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='eg'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'3D'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'3D'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='f'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Grafisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Graphic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='fd'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Grafisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Graphic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dias'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Slides'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ff'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Grafisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Graphic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Fotografi'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Photography'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='fi'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Grafisk materiale'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Graphic materials'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Kunstreproduksjon'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Art reproduction'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='g'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gb'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Diskett'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Floppy'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gc'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'DVD-ROM'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'DVD'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gd'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'CD-ROM'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'CD'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ge'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Nettressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Web resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gf'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lagringsbrikke'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Storage card'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gg'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Blu-ray ROM'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Blu-ray'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gh'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'UMD'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gi'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Wii-plate'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Wii disk'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gt'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='h'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Tredimensjonal gjenstand'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Three-dimensional object'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='i'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Mikroform'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Microform'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ib'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Mikroform'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Microform'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Mikrofilmspole'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Microfilm tape'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ic'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Mikroform'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Microform'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Mikrofilmkort'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Microfilm card'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='j'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Periodika'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Serial'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodical'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='jn'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Periodika'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Serial'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Avis'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Newspaper'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodical'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'newspaper'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='jp'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Periodika'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Serial'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Tidsskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Magazine'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodical'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'magazine'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='k'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Artikler'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Article'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='l'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Fysiske bøker'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Physical book'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='m'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ma'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'PC'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mb'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Playstation 2'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mc'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Playstation 3'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='md'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Playstation Portable'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mi'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Xbox'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mj'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Xbox 360'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mn'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Nintendo DS'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mo'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Video game'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Nintendo Wii'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dl'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'SACD'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'SACD'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dm'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'DVD-audio'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'DVD-audio'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dn'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Blu-Ray-audio'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Blu-Ray-audio'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dz'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'MP3'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'MP3'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ea'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'E-film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'E-film'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ga'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Nedlastbar fil'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Downloadable file'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='je'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'E-tidsskrifter'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'E-periodicals'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ka'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'E-artikler'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'E-articles'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='la'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'E-bøker'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'E-books'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='me'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Playstation 4'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Playstation 4'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mk'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Xbox One'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Xbox One'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='mp'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Nintendo Wii U'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Nintendo Wii U'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='n'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Filformater'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'File formats'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='na'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'PDF'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'PDF'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='nb'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'EPUB'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'EPUB'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='nc'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'MOBI'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'MOBI'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='nl'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'WMA (Windows Media Audio)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'WMA (Windows Media Audio)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ns'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'WMV (Windows Media Video)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'WMV (Windows Media Video)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='o'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Digital rettighetsadministrasjon (DRM)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Digital rights management (DRM)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='te'">
+                            <!-- non-standard -->
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:for-each>
             </xsl:for-each>
         </xsl:variable>
         <xsl:copy-of select="$b"/>
     
         <xsl:if test="not($b[self::dc:format])">
-            <xsl:for-each select="*:subfield[@code='e']/tokenize(replace(text(),'\s',''),'[,\.\-_]')">
-                <xsl:choose>
-                    <xsl:when test=".='dc'">
-                        <dc:format>DAISY 2.02</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='dj'">
-                        <dc:format>DAISY 2.02</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='te'">
-                        <dc:format>Braille</dc:format>
-                        <meta property="dc:format.no">Punktskrift</meta>
-                    </xsl:when>
-                    <xsl:when test=".='c'">
-                        <dc:format>Braille</dc:format>
-                        <meta property="dc:format.no">Punktskrift</meta>
-                    </xsl:when>
-                    <xsl:when test=".='l'">
-                        <dc:format>Braille</dc:format>
-                        <meta property="dc:format.no">Punktskrift</meta>
-                    </xsl:when>
-                    <xsl:when test=".='gt'">
-                        <dc:format>EPUB</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='ge'">
-                        <dc:format>XHTML</dc:format>
-                    </xsl:when>
-                    <xsl:when test=".='g'">
-                        <dc:format>XHTML</dc:format>
-                    </xsl:when>
-                </xsl:choose>
+            <xsl:for-each select="*:subfield[@code='e']">
+                <xsl:variable name="context" select="."/>
+                <xsl:for-each select="tokenize(replace(text(),'\s',''),'[,\.\-_]')">
+                    <xsl:choose>
+                        <xsl:when test=".='dc'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='dj'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='te'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='c'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='l'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='gt'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='ge'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='g'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:for-each>
             </xsl:for-each>
         </xsl:if>
     
-        <xsl:for-each select="*:subfield[@code='d']/(for $i in (1 to string-length(text())) return substring(text(),$i,1))">
-            <xsl:choose>
-                <xsl:when test=".='N'">
-                    <meta property="dc:type.genre">Biography</meta>
-                    <meta property="dc:type.genre">short story</meta>
-                </xsl:when>
-                <xsl:when test=".='B'">
-                    <meta property="dc:type.genre">Biography</meta>
-                    <meta property="dc:type.genre">short story</meta>
-                </xsl:when>
-                <xsl:when test=".='D'">
-                    <meta property="dc:type.genre">poem</meta>
-                </xsl:when>
-                <xsl:when test=".='R'">
-                    <meta property="dc:type.genre">poem</meta>
-                </xsl:when>
-                <xsl:when test=".='S'">
-                    <meta property="dc:type.genre">play</meta>
-                </xsl:when>
-                <xsl:when test=".='T'">
-                    <meta property="dc:type.genre">cartoon</meta>
-                </xsl:when>
-                <xsl:when test=".='A'">
-                    <meta property="dc:type.genre">anthology</meta>
-                </xsl:when>
-                <xsl:when test=".='L'">
-                    <meta property="dc:type.genre">textbook</meta>
-                </xsl:when>
-            </xsl:choose>
+        <xsl:for-each select="*:subfield[@code='d']">
+            <xsl:variable name="context" select="."/>
+                <xsl:for-each select="for $i in (1 to string-length(text())) return substring(text(),$i,1)">
+                <xsl:choose>
+                    <xsl:when test=".='N'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'short story'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='B'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'short story'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='D'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'poem'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='R'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'poem'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='S'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'play'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='T'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'cartoon'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='A'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'anthology'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test=".='L'">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                    </xsl:when>
+                </xsl:choose>
+                </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='020']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="isbn">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='022']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="issn">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'issn'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='041']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="text" select="text()"/>
+            <xsl:variable name="context" select="."/>
             <xsl:for-each select="(1 to xs:integer(floor(string-length($text) div 3)))">
-                <dc:language>
-                    <xsl:value-of select="substring($text,1+(.-1)*3,3)"/>
-                </dc:language>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:language'"/><xsl:with-param name="value" select="substring($text,1+(.-1)*3,3)"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
             </xsl:for-each>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='h']">
             <xsl:variable name="text" select="text()"/>
+            <xsl:variable name="context" select="."/>
             <xsl:for-each select="(1 to xs:integer(floor(string-length($text) div 3)))">
-                <meta property="dc:language.original{if (position() lt last()) then '.intermediary' else ''}">
-                    <xsl:value-of select="substring($text,1+(.-1)*3,3)"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="concat('dc:language.original',if (position() lt last()) then '.intermediary' else '','')"/><xsl:with-param name="value" select="substring($text,1+(.-1)*3,3)"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
             </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
@@ -788,14 +828,10 @@
     
     <xsl:template match="*:datafield[@tag='082']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:subject.dewey">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="dc:subject.dewey">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -809,34 +845,24 @@
         <xsl:variable name="creator-id" select="concat('creator-',1+count(preceding-sibling::*:datafield[@tag='100' or @tag='110']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
         
-        <dc:creator id="{$creator-id}">
-            <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
-        </dc:creator>
+        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
         
         <xsl:if test="contains($name,',')">
-            <meta property="file-as" refines="#{$creator-id}">
-                <xsl:value-of select="$name"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:if>
     
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="honorificSuffix" refines="#{$creator-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='c']">
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
                     <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                    <meta property="pseudonym" refines="#{$creator-id}">
-                        <xsl:value-of select="$pseudonym"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'pseudonym'"/><xsl:with-param name="value" select="$pseudonym"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="honorificPrefix" refines="#{$creator-id}">
-                        <xsl:value-of select="text()"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificPrefix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -844,28 +870,23 @@
         <xsl:for-each select="*:subfield[@code='d']">
             <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
             <xsl:if test="$birthDeath[1]">
-                <meta property="birthDate" refines="#{$creator-id}">
-                    <xsl:value-of select="$birthDeath[1]"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'birthDate'"/><xsl:with-param name="value" select="$birthDeath[1]"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:if>
             <xsl:if test="$birthDeath[2]">
-                <meta property="deathDate" refines="#{$creator-id}">
-                    <xsl:value-of select="$birthDeath[2]"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
-    
-        <xsl:for-each select="*:subfield[@code='j']/tokenize(replace(text(),'[\.,? ]',''), '-')">
-            <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
-            <meta property="nationality" refines="#{$creator-id}">
-                <xsl:value-of select="$nationality"/>
-            </meta>
+        
+        <xsl:for-each select="*:subfield[@code='j']">
+            <xsl:variable name="context" select="."/>
+            <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
+                <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$creator-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+            </xsl:for-each>
         </xsl:for-each>
         
         <xsl:for-each select="*:subfield[@code='3']">
-            <meta property="bibliofil-id" refines="#{$creator-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -873,26 +894,18 @@
         <xsl:variable name="creator-id" select="concat('creator-',1+count(preceding-sibling::*:datafield[@tag='100' or @tag='110']))"/>
         <xsl:choose>
             <xsl:when test="*:subfield[@code='a']">
-                <dc:creator id="{$creator-id}">
-                    <xsl:value-of select="*:subfield[@code='a']/text()"/>
-                </dc:creator>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
                 <xsl:if test="*:subfield[@code='b']">
-                    <meta property="department" refines="#{$creator-id}">
-                        <xsl:value-of select="*:subfield[@code='b']/text()"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'department'"/><xsl:with-param name="value" select="*:subfield[@code='b']/text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
                 </xsl:if>
             </xsl:when>
             <xsl:when test="*:subfield[@code='b']">
-                <dc:creator id="{$creator-id}">
-                    <xsl:value-of select="*:subfield[@code='b']/text()"/>
-                </dc:creator>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="*:subfield[@code='b']/text()"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
         
         <xsl:for-each select="*:subfield[@code='3']">
-            <meta property="bibliofil-id" refines="#{$creator-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -900,87 +913,65 @@
     
     <xsl:template match="*:datafield[@tag='240']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:title.alternative">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='245']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <dc:title>
-                <xsl:value-of select="text()"/>
-            </dc:title>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="dc:title.subTitle.other">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle.other'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='h']">
             <xsl:choose>
                 <xsl:when test="matches(text(),'.*da[i\\ss][si]y[\\.\\s]*.*','i') or matches(text(),'.*2[.\\s]*0?2.*','i')">
-                    <dc:format>DAISY 2.02</dc:format>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/></xsl:call-template>
                 </xsl:when>
                 <xsl:when test="matches(text(),'.*dtbook.*','i')">
-                    <dc:type>Full Text</dc:type>
-                    <dc:format>EPUB</dc:format>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type'"/><xsl:with-param name="value" select="'Full Text'"/></xsl:call-template>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/></xsl:call-template>
                 </xsl:when>
             </xsl:choose>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='n']">
-            <meta property="position">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='p']">
-            <meta property="dc:title.subTitle">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='w']">
-            <meta property="dc:title.part.sortingKey">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.sortingKey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='246']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:title.alternative">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="dc:title.subTitle.alternative.other">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle.alternative.other'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         
         <xsl:for-each select="*:subfield[@code='n']">
-            <meta property="position">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         
         <xsl:for-each select="*:subfield[@code='p']">
-            <meta property="dc:title.subTitle.alternative">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='250']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="bookEdition">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -988,29 +979,21 @@
         <xsl:if test="*:subfield[@code='b']">
             <xsl:variable name="publisher-id" select="concat('publisher-260-',1+count(preceding-sibling::*:datafield[@tag='260']))"/>
             
-            <dc:publisher id="{$publisher-id}">
-                <xsl:value-of select="(*:subfield[@code='b'])[1]/text()"/>
-            </dc:publisher>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher'"/><xsl:with-param name="value" select="(*:subfield[@code='b'])[1]/text()"/><xsl:with-param name="id" select="$publisher-id"/></xsl:call-template>
             
             <xsl:for-each select="*:subfield[@code='a']">
-                <meta property="dc:publisher.location" refines="#{$publisher-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$publisher-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$publisher-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$publisher-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
         
         <xsl:for-each select="*:subfield[@code='c']">
-            <meta property="dc:date.issued">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='9' and text()='n']">
-            <meta property="watermark">none</meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'watermark'"/><xsl:with-param name="value" select="'none'"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1035,31 +1018,21 @@
                 <xsl:when test="$fields[self::dc:format]='DAISY 2.02'">
                     <xsl:choose>
                         <xsl:when test="matches(text(),'^.*?\d+ *t+\.? *\d+ *min\.?.*?$')">
-                            <meta property="dc:format.extent.duration">
-                                <xsl:value-of select="replace(text(),'^.*?(\d+) *t+\.? *(\d+) *min\.?.*?$','$1 t. $2 min.')"/>
-                            </meta>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.duration'"/><xsl:with-param name="value" select="replace(text(),'^.*?(\d+) *t+\.? *(\d+) *min\.?.*?$','$1 t. $2 min.')"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test="matches(text(),'^.*?\d+ *min\.?.*?$')">
-                            <meta property="dc:format.extent.duration">
-                                <xsl:value-of select="replace(text(),'^.*?(\d+) *min\.?.*?$','0 t. $1 min.')"/>
-                            </meta>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.duration'"/><xsl:with-param name="value" select="replace(text(),'^.*?(\d+) *min\.?.*?$','0 t. $1 min.')"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test="matches(text(),'^.*?\d+ *t\.?.*?$')">
-                            <meta property="dc:format.extent.duration">
-                                <xsl:value-of select="replace(text(),'^.*?(\d+) *t\.?.*?$','$1 t. 0 min.')"/>
-                            </meta>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.duration'"/><xsl:with-param name="value" select="replace(text(),'^.*?(\d+) *t\.?.*?$','$1 t. 0 min.')"/></xsl:call-template>
                         </xsl:when>
                         <xsl:otherwise>
-                            <meta property="dc:format.extent">
-                                <xsl:value-of select="text()"/>
-                            </meta>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="dc:format.extent">
-                        <xsl:value-of select="text()"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -1067,9 +1040,7 @@
     
     <xsl:template match="*:datafield[@tag='310']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="periodicity">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodicity'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1080,43 +1051,36 @@
     
         <xsl:variable name="series-title" as="element()?">
             <xsl:if test="*:subfield[@code='a']">
-                <meta property="dc:title.series" id="{$title-id}">
-                    <xsl:value-of select="*:subfield[@code='a'][1]/text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series'"/><xsl:with-param name="value" select="*:subfield[@code='a'][1]/text()"/><xsl:with-param name="id" select="$title-id"/></xsl:call-template>
             </xsl:if>
         </xsl:variable>
         <xsl:copy-of select="$series-title"/>
         <xsl:for-each select="*:subfield[@code='p']">
-            <meta property="dc:title.subSeries">
-                <xsl:if test="$series-title">
-                    <xsl:attribute name="refines" select="concat('#',$title-id)"/>
-                </xsl:if>
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'dc:title.subSeries'"/>
+                <xsl:with-param name="value" select="text()"/>
+                <xsl:with-param name="refines" select="if ($series-title) then $title-id else ()"/>
+            </xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='x']">
-            <meta property="series.issn">
-                <xsl:if test="$series-title">
-                    <xsl:attribute name="refines" select="concat('#',$title-id)"/>
-                </xsl:if>
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'series.issn'"/>
+                <xsl:with-param name="value" select="text()"/>
+                <xsl:with-param name="refines" select="if ($series-title) then $title-id else ()"/>
+            </xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='v']">
-            <meta property="series.position">
-                <xsl:if test="$series-title">
-                    <xsl:attribute name="refines" select="concat('#',$title-id)"/>
-                </xsl:if>
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'series.position'"/>
+                <xsl:with-param name="value" select="text()"/>
+                <xsl:with-param name="refines" select="if ($series-title) then $title-id else ()"/>
+            </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='449']">
         <xsl:for-each select="*:subfield[@code='n']">
-            <meta property="dc:format.extent.cd">
-                <xsl:value-of select="concat(text(),' CDs')"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.cd'"/><xsl:with-param name="value" select="concat(text(),' CDs')"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1136,9 +1100,7 @@
     
     <xsl:template match="*:datafield[@tag='503']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="bookEdition.history">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.history'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1150,33 +1112,26 @@
         <xsl:variable name="contributor-id" select="concat('contributor-511-',1+count(preceding-sibling::*:datafield[@tag='511']))"/>
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="contributor-name" select="text()"/>
-            <meta property="dc:contributor.narrator">
-                <xsl:if test="position() = 1">
-                    <xsl:attribute name="id" select="$contributor-id"/>
-                    <xsl:value-of select="if (contains($contributor-name,',')) then concat(normalize-space(substring-after($contributor-name,',')),' ',normalize-space(substring-before($contributor-name,','))) else $contributor-name"/>
-                </xsl:if>
-            </meta>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'dc:contributor.narrator'"/>
+                <xsl:with-param name="value" select="if (contains($contributor-name,',')) then concat(normalize-space(substring-after($contributor-name,',')),' ',normalize-space(substring-before($contributor-name,','))) else $contributor-name"/>
+                <xsl:with-param name="id" select="$contributor-id"/>
+            </xsl:call-template>
             
             <xsl:if test="contains($contributor-name,',')">
-                <meta property="file-as" refines="#{$contributor-id}">
-                    <xsl:value-of select="$contributor-name"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$contributor-name"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:if>
     
             <xsl:variable name="pos" select="position()"/>
             <xsl:for-each select="../*:subfield[@code='3'][position() = $pos]">
-                <meta property="bibliofil-id" refines="#{$contributor-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='520']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:description.abstract">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:description.abstract'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1190,9 +1145,7 @@
     
     <xsl:template match="*:datafield[@tag='574']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:title.original">
-                <xsl:value-of select="replace(text(),'^\s*Ori?ginaltit\w*\s*:?\s*','')"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.original'"/><xsl:with-param name="value" select="replace(text(),'^\s*Ori?ginaltit\w*\s*:?\s*','')"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1204,9 +1157,7 @@
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="available" select="nlb:parseDate(text())"/>
             <xsl:if test="$available">
-                <meta property="dc:date.available">
-                    <xsl:value-of select="$available"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.available'"/><xsl:with-param name="value" select="$available"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
@@ -1221,43 +1172,29 @@
     
     <xsl:template match="*:datafield[@tag='596']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:publisher.original.location">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original.location'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="dc:publisher.original">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='c']">
-            <meta property="dc:date.issued.original">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='d']">
-            <meta property="bookEdition.original">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='e']">
             <xsl:choose>
                 <xsl:when test="matches(text(),'^\s*\d+\s*s?[\.\s]*$')">
-                    <meta property="dc:format.extent.pages.original">
-                        <xsl:value-of select="replace(text(),'[^\d]','')"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.pages.original'"/><xsl:with-param name="value" select="replace(text(),'[^\d]','')"/></xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="dc:format.extent.original">
-                        <xsl:value-of select="text()"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='f']">
-            <meta property="isbn.original">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1269,13 +1206,13 @@
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:choose>
                 <xsl:when test="contains(text(),'RNIB')">
-                    <meta property="external-production">RNIB</meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'external-production'"/><xsl:with-param name="value" select="'RNIB'"/></xsl:call-template>
                 </xsl:when>
                 <xsl:when test="contains(text(),'TIGAR')">
-                    <meta property="external-production">TIGAR</meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'external-production'"/><xsl:with-param name="value" select="'TIGAR'"/></xsl:call-template>
                 </xsl:when>
                 <xsl:when test="contains(text(),'INNKJØPT')">
-                    <meta property="external-production">WIPS</meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'external-production'"/><xsl:with-param name="value" select="'WIPS'"/></xsl:call-template>
                 </xsl:when>
             </xsl:choose>
             <xsl:variable name="tag592">
@@ -1284,9 +1221,7 @@
             <xsl:if test="not($tag592/meta[@property='dc:date.available'])">
                 <xsl:variable name="available" select="nlb:parseDate(text())"/>
                 <xsl:if test="$available">
-                    <meta property="dc:date.available">
-                        <xsl:value-of select="$available"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.available'"/><xsl:with-param name="value" select="$available"/></xsl:call-template>
                 </xsl:if>
             </xsl:if>
         </xsl:for-each>
@@ -1296,19 +1231,13 @@
     
     <xsl:template match="*:datafield[@tag='600']">
         <xsl:for-each select="*:subfield[@code='0']">
-            <meta property="dc:subject.keyword">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='x']">
-            <meta property="dc:subject.keyword">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='1']">
-            <meta property="dc:subject.dewey">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:variable name="subject-id" select="concat('subject-600-',1+count(preceding-sibling::*:datafield[@tag='600']))"/>
@@ -1316,34 +1245,24 @@
         
         <xsl:if test="not($name='')">
     
-            <dc:subject id="{$subject-id}">
-                <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
-            </dc:subject>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject'"/><xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
             
             <xsl:if test="contains($name,',')">
-                <meta property="file-as" refines="#{$subject-id}">
-                    <xsl:value-of select="$name"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:if>
     
             <xsl:for-each select="*:subfield[@code='b']">
-                <meta property="honorificSuffix" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='c']">
                 <xsl:choose>
                     <xsl:when test="matches(text(), $PSEUDONYM)">
                         <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                        <meta property="pseudonym" refines="#{$subject-id}">
-                            <xsl:value-of select="$pseudonym"/>
-                        </meta>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'pseudonym'"/><xsl:with-param name="value" select="$pseudonym"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
                     </xsl:when>
                     <xsl:otherwise>
-                        <meta property="honorificPrefix" refines="#{$subject-id}">
-                            <xsl:value-of select="text()"/>
-                        </meta>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificPrefix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
@@ -1351,28 +1270,23 @@
             <xsl:for-each select="*:subfield[@code='d']">
                 <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
                 <xsl:if test="$birthDeath[1]">
-                    <meta property="birthDate" refines="#{$subject-id}">
-                        <xsl:value-of select="$birthDeath[1]"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'birthDate'"/><xsl:with-param name="value" select="$birthDeath[1]"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
                 </xsl:if>
                 <xsl:if test="$birthDeath[2]">
-                    <meta property="deathDate" refines="#{$subject-id}">
-                        <xsl:value-of select="$birthDeath[2]"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
-    
-            <xsl:for-each select="*:subfield[@code='j']/tokenize(replace(text(),'[\.,? ]',''), '-')">
-                <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
-                <meta property="nationality" refines="#{$subject-id}">
-                    <xsl:value-of select="$nationality"/>
-                </meta>
+            
+            <xsl:for-each select="*:subfield[@code='j']">
+                <xsl:variable name="context" select="."/>
+                <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
+                    <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$subject-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                </xsl:for-each>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1381,30 +1295,20 @@
         <xsl:variable name="subject-id" select="concat('subject-610-',1+count(preceding-sibling::*:datafield[@tag='610']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='b']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='q']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1413,14 +1317,10 @@
         <xsl:variable name="subject-id" select="concat('subject-611-',1+count(preceding-sibling::*:datafield[@tag='611']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1429,65 +1329,45 @@
         <xsl:variable name="subject-id" select="concat('subject-650-',1+count(preceding-sibling::*:datafield[@tag='650']))"/>
     
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
             
             <xsl:if test="*:subfield[@code='a']/text()=('Tidsskrifter','Avis')">
-                <meta property="periodical">true</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodical'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
             <xsl:if test="*:subfield[@code='a']/text()='Tidsskrifter'">
-                <meta property="magazine">true</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'magazine'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
             <xsl:if test="*:subfield[@code='a']/text()='Avis'">
-                <meta property="newspaper">true</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'newspaper'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
     
             <xsl:for-each select="*:subfield[@code='0']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='c']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='d']">
-                <meta property="dc:subject.time" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.time'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='q']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='w']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='z']">
-                <meta property="dc:subject.location" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1496,35 +1376,23 @@
         <xsl:variable name="subject-id" select="concat('subject-651-',1+count(preceding-sibling::*:datafield[@tag='651']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.location" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='q']">
-                <meta property="dc:subject.location" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='z']">
-                <meta property="dc:subject.location" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1533,35 +1401,23 @@
         <xsl:variable name="subject-id" select="concat('subject-653-',1+count(preceding-sibling::*:datafield[@tag='653']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
             
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='c']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='q']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1570,6 +1426,7 @@
         <xsl:variable name="subject-id" select="concat('subject-655-',1+count(preceding-sibling::*:datafield[@tag='655']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
+            <xsl:variable name="context" select="."/>
             <xsl:variable name="mainGenre" select="*:subfield[@code='a']/text()"/>
             <xsl:variable name="subGenre" as="xs:string*">
                 <xsl:for-each select="*:subfield[@code='x']">
@@ -1589,31 +1446,19 @@
             </xsl:variable>
             <xsl:variable name="genre" select="if (count($subGenre)) then concat($mainGenre, ' (', string-join($subGenre,'/'), ')') else $mainGenre"/>
             
-            <meta property="dc:type.genre" id="{$subject-id}">
-                <xsl:value-of select="$genre"/>
-            </meta>
-            <meta property="dc:type.genre.no" refines="#{$subject-id}">
-                <xsl:value-of select="$genre"/>
-            </meta>
-            <meta property="dc:type.mainGenre" refines="#{$subject-id}">
-                <xsl:value-of select="$mainGenre"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="$genre"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre.no'"/><xsl:with-param name="value" select="$genre"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.mainGenre'"/><xsl:with-param name="value" select="$mainGenre"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             <xsl:for-each select="$subGenre">
-                <meta property="dc:type.subGenre" refines="#{$subject-id}">
-                    <xsl:value-of select="."/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.subGenre'"/><xsl:with-param name="value" select="."/><xsl:with-param name="refines" select="$subject-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1622,25 +1467,17 @@
         <xsl:variable name="subject-id" select="concat('subject-691-',1+count(preceding-sibling::*:datafield[@tag='691']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1649,14 +1486,10 @@
         <xsl:variable name="subject-id" select="concat('subject-692-',1+count(preceding-sibling::*:datafield[@tag='692']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1665,14 +1498,10 @@
         <xsl:variable name="subject-id" select="concat('subject-693-',1+count(preceding-sibling::*:datafield[@tag='693']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1681,45 +1510,29 @@
         <xsl:variable name="subject-id" select="concat('subject-699-',1+count(preceding-sibling::*:datafield[@tag='699']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <meta property="dc:subject.keyword" id="{$subject-id}">
-                <xsl:value-of select="*:subfield[@code='a']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
             
             <xsl:for-each select="*:subfield[@code='1']">
-                <meta property="dc:subject.dewey" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='c']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='d']">
-                <meta property="dc:subject.time" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.time'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='q']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
-                <meta property="dc:subject.keyword" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='z']">
-                <meta property="location" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$subject-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1734,45 +1547,29 @@
         <xsl:variable name="role" select="if ($role='dc:creator') then 'dc:contributor.other' else $role">
             <!-- because 700 never is the main author -->
         </xsl:variable>
-    
-        <xsl:choose>
-            <xsl:when test="matches($role,'^dc:\w+$')">
-                <xsl:element name="{$role}">
-                    <xsl:attribute name="id" select="$contributor-id"/>
-                    <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
-                </xsl:element>
-            </xsl:when>
-            <xsl:otherwise>
-                <meta property="{$role}" id="{$contributor-id}">
-                    <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
-                </meta>
-            </xsl:otherwise>
-        </xsl:choose>
+        
+        <xsl:call-template name="meta">
+            <xsl:with-param name="property" select="$role"/>
+            <xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
+            <xsl:with-param name="id" select="$contributor-id"/>
+        </xsl:call-template>
         
         <xsl:if test="contains($name,',')">
-            <meta property="file-as" refines="#{$contributor-id}">
-                <xsl:value-of select="$name"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
         </xsl:if>
         
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="honorificSuffix" refines="#{$contributor-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='c']">
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
                     <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                    <meta property="pseudonym" refines="#{$contributor-id}">
-                        <xsl:value-of select="$pseudonym"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'pseudonym'"/><xsl:with-param name="value" select="$pseudonym"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="honorificPrefix" refines="#{$contributor-id}">
-                        <xsl:value-of select="text()"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificPrefix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -1780,58 +1577,45 @@
         <xsl:for-each select="*:subfield[@code='d']">
             <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
             <xsl:if test="$birthDeath[1]">
-                <meta property="birthDate" refines="#{$contributor-id}">
-                    <xsl:value-of select="$birthDeath[1]"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'birthDate'"/><xsl:with-param name="value" select="$birthDeath[1]"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:if>
             <xsl:if test="$birthDeath[2]">
-                <meta property="deathDate" refines="#{$contributor-id}">
-                    <xsl:value-of select="$birthDeath[2]"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
-    
-        <xsl:for-each select="*:subfield[@code='j']/tokenize(replace(text(),'[\.,? ]',''), '-')">
-            <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
-            <meta property="nationality" refines="#{$contributor-id}">
-                <xsl:value-of select="$nationality"/>
-            </meta>
+        
+        <xsl:for-each select="*:subfield[@code='j']">
+            <xsl:variable name="context" select="."/>
+            <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
+                <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$contributor-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+            </xsl:for-each>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='3']">
-            <meta property="bibliofil-id" refines="#{$contributor-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='710']">
         <xsl:for-each select="*:subfield[@code='1']">
-            <meta property="dc:subject.dewey">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
         
         <xsl:if test="*:subfield[@code='a']">
             <xsl:variable name="contributor-id" select="concat('contributor-700-',1+count(preceding-sibling::*:datafield[@tag='700']))"/>
             
-            <dc:contributor id="{$contributor-id}">
-                <xsl:value-of select="*:subfield[@code='a'][1]/text()"/>
-            </dc:contributor>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:contributor'"/><xsl:with-param name="value" select="*:subfield[@code='a'][1]/text()"/><xsl:with-param name="id" select="$contributor-id"/></xsl:call-template>
             
             <xsl:for-each select="*:subfield[@code='3']">
-                <meta property="bibliofil-id" refines="#{$contributor-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='730']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:title.alternative">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1839,29 +1623,19 @@
         <xsl:if test="*:subfield[@code='a']">
             <xsl:variable name="title-id" select="concat('title-740-',1+count(preceding-sibling::*:datafield[@tag='740']))"/>
             <xsl:for-each select="*:subfield[@code='a']">
-                <meta property="dc:title.part" id="{$title-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="id" select="$title-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='b']">
-                <meta property="dc:title.part.subTitle.other" refines="#{$title-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.subTitle.other'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$title-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='n']">
-                <meta property="position" refines="#{$title-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$title-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='p']">
-                <meta property="dc:title.part.subTitle" refines="#{$title-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.subTitle'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$title-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='w']">
-                <meta property="dc:title.part.sortingKey" refines="#{$title-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.sortingKey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$title-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
@@ -1872,30 +1646,19 @@
         <xsl:variable name="series-preceding-id" select="concat('series-preceding-',1+count(preceding-sibling::*:datafield[@tag='780']))"/>
     
         <xsl:if test="*:subfield[@code='t']">
-            <meta property="dc:title.series.preceding" id="{$series-preceding-id}">
-                <xsl:value-of select="*:subfield[@code='t']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.preceding'"/><xsl:with-param name="value" select="*:subfield[@code='t']/text()"/><xsl:with-param name="id" select="$series-preceding-id"/></xsl:call-template>
         </xsl:if>
         <xsl:for-each select="*:subfield[@code='w']">
-            <meta property="dc:identifier.series.preceding.uri" refines="#{$series-preceding-id}">
-                <xsl:value-of select="concat('urn:NBN:no-nb_nlb_',text())"/>
-            </meta>
-            <meta property="dc:identifier.series.preceding">
-                <xsl:choose>
-                    <xsl:when test="parent::*/*:subfield[@code='t']">
-                        <xsl:attribute name="refines" select="concat('#',$series-preceding-id)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:attribute name="id" select="$series-preceding-id"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:identifier.series.preceding.uri'"/><xsl:with-param name="value" select="concat('urn:NBN:no-nb_nlb_',text())"/><xsl:with-param name="refines" select="$series-preceding-id"/></xsl:call-template>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'dc:identifier.series.preceding'"/>
+                <xsl:with-param name="value" select="text()"/>
+                <xsl:with-param name="id" select="if (not(count(parent::*/*:subfield[@code='t']))) then $series-preceding-id else ()"/>
+                <xsl:with-param name="refines" select="if (count(parent::*/*:subfield[@code='t'])) then $series-preceding-id else ()"/>
+            </xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:title.series.preceding.alternative" refines="#{$series-preceding-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.preceding.alternative'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$series-preceding-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1903,30 +1666,19 @@
         <xsl:variable name="series-sequel-id" select="concat('series-sequel-',1+count(preceding-sibling::*:datafield[@tag='785']))"/>
     
         <xsl:for-each select="*:subfield[@code='t']">
-            <meta property="dc:title.series.sequel" id="{$series-sequel-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.sequel'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="id" select="$series-sequel-id"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='w']">
-            <meta property="dc:identifier.series.sequel.uri" refines="#{$series-sequel-id}">
-                <xsl:value-of select="concat('urn:NBN:no-nb_nlb_',text())"/>
-            </meta>
-            <meta property="dc:identifier.series.sequel">
-                <xsl:choose>
-                    <xsl:when test="parent::*/*:subfield[@code='t']">
-                        <xsl:attribute name="refines" select="concat('#',$series-sequel-id)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:attribute name="id" select="$series-sequel-id"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:identifier.series.sequel.uri'"/><xsl:with-param name="value" select="concat('urn:NBN:no-nb_nlb_',text())"/><xsl:with-param name="refines" select="$series-sequel-id"/></xsl:call-template>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'dc:identifier.series.sequel'"/>
+                <xsl:with-param name="value" select="text()"/>
+                <xsl:with-param name="id" select="if (not(count(parent::*/*:subfield[@code='t']))) then $series-sequel-id else ()"/>
+                <xsl:with-param name="refines" select="if (count(parent::*/*:subfield[@code='t'])) then $series-sequel-id else ()"/>
+            </xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='a']">
-            <meta property="dc:title.series.sequel.alternative" refines="#{$series-sequel-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.sequel.alternative'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$series-sequel-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -1936,41 +1688,29 @@
         <xsl:variable name="creator-id" select="concat('series-creator-',1+count(preceding-sibling::*:datafield[@tag='800']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
         
-        <dc:creator.series id="{$creator-id}">
-            <xsl:value-of select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
-        </dc:creator.series>
+        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator.series'"/><xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
         
         <xsl:if test="contains($name,',')">
-            <meta property="file-as" refines="#{$creator-id}">
-                <xsl:value-of select="$name"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:if>
         
         <xsl:for-each select="*:subfield[@code='t']">
             <xsl:variable name="alternate-title" select="string((../../*:datafield[@tag='440']/*:subfield[@code='a'])[1]/text()) != (text(),'')"/>
-            <meta property="dc:title.series{if ($alternate-title or preceding-sibling::*[@code='t']) then '.alternate' else ''}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="concat('dc:title.series',if ($alternate-title or preceding-sibling::*[@code='t']) then '.alternate' else '','')"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='b']">
-            <meta property="honorificSuffix" refines="#{$creator-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='c']">
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
                     <xsl:variable name="pseudonym" select="replace(text(), $PSEUDONYM_REPLACE, '$1')"/>
-                    <meta property="pseudonym" refines="#{$creator-id}">
-                        <xsl:value-of select="$pseudonym"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'pseudonym'"/><xsl:with-param name="value" select="$pseudonym"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
-                    <meta property="honorificPrefix" refines="#{$creator-id}">
-                        <xsl:value-of select="text()"/>
-                    </meta>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificPrefix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -1978,28 +1718,23 @@
         <xsl:for-each select="*:subfield[@code='d']">
             <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
             <xsl:if test="$birthDeath[1]">
-                <meta property="birthDate" refines="#{$creator-id}">
-                    <xsl:value-of select="$birthDeath[1]"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'birthDate'"/><xsl:with-param name="value" select="$birthDeath[1]"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:if>
             <xsl:if test="$birthDeath[2]">
-                <meta property="deathDate" refines="#{$creator-id}">
-                    <xsl:value-of select="$birthDeath[2]"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
     
-        <xsl:for-each select="*:subfield[@code='j']/tokenize(replace(text(),'[\.,? ]',''), '-')">
-            <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
-            <meta property="nationality" refines="#{$creator-id}">
-                <xsl:value-of select="$nationality"/>
-            </meta>
+        <xsl:for-each select="*:subfield[@code='j']">
+            <xsl:variable name="context" select="."/>
+            <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
+                <xsl:variable name="nationality" select="nlb:parseNationality(.)"/>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$creator-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+            </xsl:for-each>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='3']">
-            <meta property="bibliofil-id" refines="#{$creator-id}">
-                <xsl:value-of select="text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
     
@@ -2008,8 +1743,8 @@
     <xsl:template match="*:datafield[@tag='850']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="text()=('NLB/S')">
-                <meta property="audience">Student</meta>
-                <meta property="dc:type.genre">textbook</meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Student'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
@@ -2026,14 +1761,10 @@
         <xsl:variable name="websok-id" select="concat('websok-',1+count(preceding-sibling::*:datafield[@tag='996']))"/>
     
         <xsl:if test="*:subfield[@code='u']">
-            <meta property="websok.url" id="{$websok-id}">
-                <xsl:value-of select="*:subfield[@code='u']/text()"/>
-            </meta>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'websok.url'"/><xsl:with-param name="value" select="*:subfield[@code='u']/text()"/><xsl:with-param name="id" select="$websok-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='t']">
-                <meta property="websok.type" refines="#{$websok-id}">
-                    <xsl:value-of select="text()"/>
-                </meta>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'websok.type'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$websok-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
