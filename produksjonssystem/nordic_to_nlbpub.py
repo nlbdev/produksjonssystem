@@ -87,11 +87,15 @@ class NordicToNlbpub(Pipeline):
         clean_html_obj = tempfile.NamedTemporaryFile()
         clean_html = clean_html_obj.name
         
-        Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
-                   source=html_file,
-                   target=clean_html)
+        xslt = Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
+                          source=html_file,
+                          target=clean_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            return
         
         shutil.copy(clean_html, html_file)
+        
         
         # ---------- convert from html to generic epub ----------
         

@@ -29,6 +29,7 @@ class Xslt():
         assert target
         
         self.pipeline = pipeline
+        self.success = False
         
         try:
             command = ["java", "-jar", self.saxon_jar]
@@ -43,10 +44,10 @@ class Xslt():
             
             self.pipeline.utils.report.debug("Running XSLT")
             process = self.pipeline.utils.filesystem.run(command)
+            self.success = True
             
         except subprocess.TimeoutExpired as e:
             self.pipeline.utils.report.error(Xslt._i18n["The XSLT"] + " " + stylesheet + " " + Xslt._i18n["took too long time and was therefore stopped."])
-            self.status = None
             
         except Exception:
             logging.exception("An error occured while running the XSLT (" + str(stylesheet) + ")")

@@ -179,9 +179,11 @@ class UpdateMetadata(Pipeline):
         rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
         pipeline.utils.report.debug("    source = " + opf_path)
         pipeline.utils.report.debug("    target = " + rdf_path)
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "nlbpub-opf-to-rdf.xsl"),
-                       source=opf_path,
-                       target=rdf_path)
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "nlbpub-opf-to-rdf.xsl"),
+                              source=opf_path,
+                              target=rdf_path,
+        if not xslt.success:
+            return False
         rdf_files.append('epub/' + os.path.basename(rdf_path))
         
         pipeline.utils.report.debug("quickbase-record-to-rdf.xsl")
@@ -189,11 +191,17 @@ class UpdateMetadata(Pipeline):
         pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record.xml'))
         pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/record.html'))
         pipeline.utils.report.debug("    rdf    = " + rdf_path)
-        UpdateMetadata.get_quickbase_record(pipeline, epub.identifier(), os.path.join(metadata_dir, 'quickbase/record.xml'))
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-record-to-rdf.xsl"),
-                       source=os.path.join(metadata_dir, 'quickbase/record.xml'),
-                       target=os.path.join(metadata_dir, 'quickbase/record.html'),
-                       parameters={ "rdf-xml-path": rdf_path })
+        success = UpdateMetadata.get_quickbase_record(pipeline, epub.identifier(), os.path.join(metadata_dir, 'quickbase/record.xml'))
+        if not success:
+            return False
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-record-to-rdf.xsl"),
+                              source=os.path.join(metadata_dir, 'quickbase/record.xml'),
+                              target=os.path.join(metadata_dir, 'quickbase/record.html'),
+                              parameters={
+                                "rdf-xml-path": rdf_path,
+                              })
+        if not xslt.success:
+            return False
         rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
         qb_record = ElementTree.parse(rdf_path).getroot()
@@ -207,10 +215,14 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'))
             pipeline.utils.report.debug("    rdf    = " + rdf_path)
             UpdateMetadata.get_bibliofil(pipeline, identifier, os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
-            Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/bibliofil-to-rdf.xsl"),
-                           source=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'),
-                           target=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'),
-                           parameters={ "rdf-xml-path": rdf_path })
+            xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/bibliofil-to-rdf.xsl"),
+                                  source=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'),
+                                  target=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'),
+                                  parameters={
+                                    "rdf-xml-path": rdf_path,
+                                  })
+            if not xslt.success:
+                return False
             rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
             
             pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl")
@@ -218,40 +230,52 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
             pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'))
             pipeline.utils.report.debug("    rdf    = " + rdf_path)
-            UpdateMetadata.get_quickbase_isbn(pipeline, identifier, os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
-            Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-isbn-to-rdf.xsl"),
-                           source=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'),
-                           target=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'),
-                           parameters={ "rdf-xml-path": rdf_path })
+            success = UpdateMetadata.get_quickbase_isbn(pipeline, identifier, os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
+            if not success:
+                return False
+            xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-isbn-to-rdf.xsl"),
+                                  source=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'),
+                                  target=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'),
+                                  parameters={
+                                    "rdf-xml-path": rdf_path,
+                                  })
+            if not xslt.success:
+                return False
             rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
         pipeline.utils.report.debug("rdf-join.xsl")
         pipeline.utils.report.debug("    metadata-dir = " + metadata_dir + "/")
         pipeline.utils.report.debug("    rdf-files    = " + " ".join(rdf_files))
         pipeline.utils.report.debug("    target       = " + os.path.join(metadata_dir, "metadata.rdf"))
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-join.xsl"),
-                       template="main",
-                       target=os.path.join(metadata_dir, "metadata.rdf"),
-                       parameters={
-                           "metadata-dir": metadata_dir + "/",
-                           "rdf-files": " ".join(rdf_files)
-                       })
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-join.xsl"),
+                              template="main",
+                              target=os.path.join(metadata_dir, "metadata.rdf"),
+                              parameters={
+                                  "metadata-dir": metadata_dir + "/",
+                                  "rdf-files": " ".join(rdf_files)
+                              })
+        if not xslt.success:
+            return False
         
         pipeline.utils.report.debug("rdf-to-opf.xsl")
         opf_metadata = os.path.join(metadata_dir, "metadata.opf")
         pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, "metadata.rdf"))
         pipeline.utils.report.debug("    target = " + opf_metadata)
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
-                       source=os.path.join(metadata_dir, "metadata.rdf"),
-                       target=opf_metadata)
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
+                              source=os.path.join(metadata_dir, "metadata.rdf"),
+                              target=opf_metadata)
+        if not xslt.success:
+            return False
         
         pipeline.utils.report.debug("opf-to-html.xsl")
         html_head = os.path.join(metadata_dir, "metadata.html")
-        pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, "metadata.opf"))
+        pipeline.utils.report.debug("    source = " + opf_metadata)
         pipeline.utils.report.debug("    target = " + html_head)
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "opf-to-html.xsl"),
-                       source=os.path.join(metadata_dir, "metadata.opf"),
-                       target=html_head)
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "opf-to-html.xsl"),
+                              source=opf_metadata,
+                              target=html_head)
+        if not xslt.success:
+            return False
         
         updated_file_obj = tempfile.NamedTemporaryFile()
         updated_file = updated_file_obj.name
@@ -260,10 +284,14 @@ class UpdateMetadata(Pipeline):
         pipeline.utils.report.debug("    source       = " + opf_path)
         pipeline.utils.report.debug("    target       = " + updated_file)
         pipeline.utils.report.debug("    opf_metadata = " + opf_metadata)
-        Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-opf.xsl"),
-                       source=opf_path,
-                       target=updated_file,
-                       parameters={ "opf_metadata": opf_metadata })
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-opf.xsl"),
+                              source=opf_path,
+                              target=updated_file,
+                              parameters={
+                                "opf_metadata": opf_metadata,
+                              })
+        if not xslt.success:
+            return False
         
         xml = ElementTree.parse(opf_path).getroot()
         old_modified = xml.xpath("/*/*[local-name()='metadata']/*[@property='dcterms:modified'][1]/text()")
@@ -295,10 +323,14 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("    source    = " + html_path)
             pipeline.utils.report.debug("    target    = " + updated_file)
             pipeline.utils.report.debug("    html_head = " + html_head)
-            Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-html.xsl"),
-                           source=html_path,
-                           target=updated_file,
-                           parameters={ "html_head": html_head })
+            xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-html.xsl"),
+                                  source=html_path,
+                                  target=updated_file,
+                                  parameters={
+                                    "html_head": html_head,
+                                  })
+            if not xslt.success:
+                return False
             
             xml = ElementTree.parse(html_path).getroot()
             old_modified = xml.xpath("/*/*[local-name()='head']/*[@name='dcterms:modified'][1]/@content")
@@ -340,10 +372,11 @@ class UpdateMetadata(Pipeline):
         #     32: Tilvekstnummer e-bok
         #     38: Tilvekstnummer ekstern produksjon
         
-        xslt_job = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-get.xsl"),
-                                  source=UpdateMetadata.sources["quickbase"]["records"],
-                                  target=target,
-                                  parameters={ "book-id-rows": str.join(" ", UpdateMetadata.quickbase_record_id_rows), "book-id": book_id })
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-get.xsl"),
+                              source=UpdateMetadata.sources["quickbase"]["records"],
+                              target=target,
+                              parameters={ "book-id-rows": str.join(" ", UpdateMetadata.quickbase_record_id_rows), "book-id": book_id })
+        return xslt.success
     
     @staticmethod
     def get_quickbase_isbn(pipeline, book_id, target):
@@ -352,10 +385,11 @@ class UpdateMetadata(Pipeline):
         # Book id rows:
         #     7: "Tilvekstnummer"
         
-        xslt_job = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-get.xsl"),
-                                  source=UpdateMetadata.sources["quickbase"]["isbn"],
-                                  target=target,
-                                  parameters={ "book-id-rows": str.join(" ", UpdateMetadata.quickbase_isbn_id_rows), "book-id": book_id })
+        xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-get.xsl"),
+                              source=UpdateMetadata.sources["quickbase"]["isbn"],
+                              target=target,
+                              parameters={ "book-id-rows": str.join(" ", UpdateMetadata.quickbase_isbn_id_rows), "book-id": book_id })
+        return xslt.success
     
     @staticmethod
     def get_bibliofil(pipeline, book_id, target):
