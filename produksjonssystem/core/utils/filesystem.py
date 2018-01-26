@@ -153,7 +153,7 @@ class Filesystem():
         else:
             shutil.copy(source, destination)
     
-    def storeBook(self, source, book_id, move=False, subdir=None, dir_out=None):
+    def storeBook(self, source, book_id, move=False, subdir=None, dir_out=None, file_extension=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
         assert book_id
@@ -168,12 +168,17 @@ class Filesystem():
         if subdir:
             dir_out = os.path.join(dir_out, subdir)
         target = os.path.join(dir_out, book_id)
+        if os.path.isfile(source) and file_extension:
+            target += "." + str(file_extension)
         if os.path.exists(target):
             self.pipeline.utils.report.info(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
             try:
-                shutil.rmtree(target)
-            except OSError:
-                self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
+                if os.path.isdir(target):
+                    shutil.rmtree(target)
+                else:
+                    os.remove(target)
+            except (OSError, NotADirectoryError):
+                self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the file or folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
                 raise
         if move:
             shutil.move(source, target)
