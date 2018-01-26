@@ -284,6 +284,8 @@ class UpdateMetadata(Pipeline):
         updated_file_obj = tempfile.NamedTemporaryFile()
         updated_file = updated_file_obj.name
         
+        dcterms_modified = str(datetime.datetime.utcnow().isoformat()).split(".")[0] + "Z"
+        
         pipeline.utils.report.debug("update-opf.xsl")
         pipeline.utils.report.debug("    source       = " + opf_path)
         pipeline.utils.report.debug("    target       = " + updated_file)
@@ -293,6 +295,7 @@ class UpdateMetadata(Pipeline):
                               target=updated_file,
                               parameters={
                                 "opf_metadata": opf_metadata,
+                                "modified": dcterms_modified
                               })
         if not xslt.success:
             return False
@@ -332,6 +335,7 @@ class UpdateMetadata(Pipeline):
                                   target=updated_file,
                                   parameters={
                                     "html_head": html_head,
+                                    "modified": dcterms_modified
                                   })
             if not xslt.success:
                 return False
