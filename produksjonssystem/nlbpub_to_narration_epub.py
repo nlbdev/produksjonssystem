@@ -83,17 +83,17 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        clean_html_obj = tempfile.NamedTemporaryFile()
-        clean_html = clean_html_obj.name
+        temp_html_obj = tempfile.NamedTemporaryFile()
+        temp_html = temp_html_obj.name
         
         xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "prepare-for-narration.xsl"),
                           source=html_file,
-                          target=clean_html)
+                          target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
         
-        shutil.copy(clean_html, html_file)
+        shutil.copy(temp_html, html_file)
         
         
         # ---------- lag nav.xhtml på nytt ----------
