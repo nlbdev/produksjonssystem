@@ -8,27 +8,49 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes" method="xml"/>
+    <xsl:output indent="no" method="xhtml" include-content-type="no"/>
     
     <xsl:param name="html_head" required="yes"/>
+    <xsl:param name="modified" as="xs:string?"/>
     
     <xsl:template match="/html">
         <xsl:variable name="current" select="head" as="element()"/>
         <xsl:variable name="new" select="document($html_head)/*" as="element()"/>
         
+        <xsl:text><![CDATA[
+]]></xsl:text>
         <xsl:choose>
             <xsl:when test="f:diff($current, $new)">
                 <xsl:copy>
                     <xsl:copy-of select="$new/namespace::*"/>
                     <xsl:copy-of select="@*"/>
                     <xsl:for-each select="$new">
+                        <xsl:text><![CDATA[
+    ]]></xsl:text>
                         <xsl:copy>
                             <xsl:copy-of select="@* | node()"/>
-                            <meta name="dcterms:modified" content="{format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y]-[M]-[D]T[H]:[m]:[s]Z')}"/>
-                            <xsl:copy-of select="$current/(* except (title | meta))"/>
+                            <xsl:text><![CDATA[
+        ]]></xsl:text>
+                            <meta name="dcterms:modified" content="{if ($modified) then $modified else format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]-[M00]-[D00]T[H00]:[m00]:[s00]Z')}"/>
+                            <xsl:if test="count($current/(* except (title | meta)))">
+                                <xsl:text><![CDATA[
+        
+        ]]></xsl:text>
+                                <xsl:for-each select="$current/(* except (title | meta))">
+                                    <xsl:text><![CDATA[
+        ]]></xsl:text>
+                                    <xsl:copy-of select="."/>
+                                </xsl:for-each>
+                            </xsl:if>
+                            <xsl:text><![CDATA[
+    ]]></xsl:text>
                         </xsl:copy>
                     </xsl:for-each>
-                    <xsl:copy-of select="* except head"/>
+                    <xsl:text><![CDATA[
+    ]]></xsl:text>
+                    <xsl:copy-of select="body"/>
+                    <xsl:text><![CDATA[
+]]></xsl:text>
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>

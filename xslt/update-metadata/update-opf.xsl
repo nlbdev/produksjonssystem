@@ -8,14 +8,17 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes"/>
+    <xsl:output indent="no"/>
     
     <xsl:param name="opf_metadata" required="yes"/>
+    <xsl:param name="modified" as="xs:string?"/>
     
     <xsl:template match="/package">
         <xsl:variable name="current" select="metadata" as="element()"/>
         <xsl:variable name="new" select="document($opf_metadata)/*" as="element()"/>
         
+        <xsl:text><![CDATA[
+]]></xsl:text>
         <xsl:choose>
             <xsl:when test="f:diff($current, $new)">
                 <xsl:copy>
@@ -23,12 +26,20 @@
                     <xsl:copy-of select="@*"/>
                     <xsl:copy-of select="$new/@prefix"/>
                     <xsl:for-each select="$new">
+                        <xsl:text><![CDATA[
+    ]]></xsl:text>
                         <xsl:copy>
-                            <xsl:copy-of select="@* except @prefix | node()"/>
-                            <meta property="dcterms:modified"><xsl:value-of select="format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y]-[M]-[D]T[H]:[m]:[s]Z')"/></meta>
+                            <xsl:copy-of select="@* except @prefix"/>
+                            <xsl:copy-of select="node() except (* | comment())[last()]/following-sibling::node()"/>
+                            <xsl:text><![CDATA[
+        
+        ]]></xsl:text>
+                            <meta property="dcterms:modified"><xsl:value-of select="if ($modified) then $modified else format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]-[M00]-[D00]T[H00]:[m00]:[s00]Z')"/></meta>
+                            <xsl:text><![CDATA[
+    ]]></xsl:text>
                         </xsl:copy>
                     </xsl:for-each>
-                    <xsl:copy-of select="* except metadata"/>
+                    <xsl:copy-of select="node() except metadata/(. | preceding-sibling::node())"/>
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
