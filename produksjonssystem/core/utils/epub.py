@@ -149,6 +149,13 @@ class Epub():
         return None
     
     @staticmethod
+    def html_to_nav(pipeline, source, target):
+        xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-nav.xsl"),
+                              source=source,
+                              target=target)
+        return xslt
+    
+    @staticmethod
     def from_html(pipeline, dir_in, dir_out):
         assert os.path.isdir(dir_in)
         assert os.path.isdir(dir_out) or not os.path.exists(dir_out)
@@ -208,9 +215,7 @@ class Epub():
             return None
         
         # create dir_out/EPUB/nav.xhtml based on input html (xslt)
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-nav.xsl"),
-                              source=html_file,
-                              target=os.path.join(epub_dir, "nav.xhtml"))
+        xslt = Epub.html_to_nav(pipeline, html_file, os.path.join(epub_dir, "nav.xhtml"))
         if not xslt.success:
             return None
         
