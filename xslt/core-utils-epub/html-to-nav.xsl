@@ -9,7 +9,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output method="xhtml" indent="yes"/>
+    <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
     
     <xsl:template match="/html:html">
         <xsl:copy>
