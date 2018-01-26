@@ -10,7 +10,7 @@
     <xsl:output indent="no" method="xhtml" include-content-type="no"/>
     
     <xsl:template match="@* | node()">
-        <xsl:copy>
+        <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
@@ -20,7 +20,7 @@
     
     <!-- make sure that there are id attributes on all headlines -->
     <xsl:template match="h1 | h2 | h3 | h4 | h5 | h6">
-        <xsl:copy>
+        <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:if test="not(@id)">
                 <xsl:attribute name="id" select="generate-id()"/>

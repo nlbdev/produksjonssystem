@@ -21,14 +21,14 @@
 ]]></xsl:text>
         <xsl:choose>
             <xsl:when test="f:diff($current, $new)">
-                <xsl:copy>
-                    <xsl:copy-of select="$new/namespace::*"/>
-                    <xsl:copy-of select="@*"/>
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:copy-of select="$new/namespace::*" exclude-result-prefixes="#all"/>
+                    <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
                     <xsl:for-each select="$new">
                         <xsl:text><![CDATA[
     ]]></xsl:text>
-                        <xsl:copy>
-                            <xsl:copy-of select="@* | node()"/>
+                        <xsl:copy exclude-result-prefixes="#all">
+                            <xsl:copy-of select="@* | node()" exclude-result-prefixes="#all"/>
                             <xsl:text><![CDATA[
         ]]></xsl:text>
                             <meta name="dcterms:modified" content="{if ($modified) then $modified else format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]-[M00]-[D00]T[H00]:[m00]:[s00]Z')}"/>
@@ -39,7 +39,7 @@
                                 <xsl:for-each select="$current/(* except (title | meta))">
                                     <xsl:text><![CDATA[
         ]]></xsl:text>
-                                    <xsl:copy-of select="."/>
+                                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                                 </xsl:for-each>
                             </xsl:if>
                             <xsl:text><![CDATA[
@@ -48,13 +48,13 @@
                     </xsl:for-each>
                     <xsl:text><![CDATA[
     ]]></xsl:text>
-                    <xsl:copy-of select="body"/>
+                    <xsl:copy-of select="body" exclude-result-prefixes="#all"/>
                     <xsl:text><![CDATA[
 ]]></xsl:text>
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy-of select="."/>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>

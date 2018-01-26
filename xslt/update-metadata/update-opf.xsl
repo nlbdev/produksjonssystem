@@ -21,16 +21,16 @@
 ]]></xsl:text>
         <xsl:choose>
             <xsl:when test="f:diff($current, $new)">
-                <xsl:copy>
-                    <xsl:copy-of select="$new/namespace::*"/>
-                    <xsl:copy-of select="@*"/>
-                    <xsl:copy-of select="$new/@prefix"/>
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:copy-of select="$new/namespace::*" exclude-result-prefixes="#all"/>
+                    <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                    <xsl:copy-of select="$new/@prefix" exclude-result-prefixes="#all"/>
                     <xsl:for-each select="$new">
                         <xsl:text><![CDATA[
     ]]></xsl:text>
-                        <xsl:copy>
-                            <xsl:copy-of select="@* except @prefix"/>
-                            <xsl:copy-of select="node() except (* | comment())[last()]/following-sibling::node()"/>
+                        <xsl:copy exclude-result-prefixes="#all">
+                            <xsl:copy-of select="@* except @prefix" exclude-result-prefixes="#all"/>
+                            <xsl:copy-of select="node() except (* | comment())[last()]/following-sibling::node()" exclude-result-prefixes="#all"/>
                             <xsl:text><![CDATA[
         
         ]]></xsl:text>
@@ -39,11 +39,11 @@
     ]]></xsl:text>
                         </xsl:copy>
                     </xsl:for-each>
-                    <xsl:copy-of select="node() except metadata/(. | preceding-sibling::node())"/>
+                    <xsl:copy-of select="node() except metadata/(. | preceding-sibling::node())" exclude-result-prefixes="#all"/>
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy-of select="."/>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>

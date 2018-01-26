@@ -22,8 +22,8 @@
         <xsl:param name="html" as="element()" required="yes"/>
         
         <xsl:for-each select="$opf">
-            <xsl:copy>
-                <xsl:copy-of select="@* except @xml:base"/>
+            <xsl:copy exclude-result-prefixes="#all">
+                <xsl:copy-of select="@* except @xml:base" exclude-result-prefixes="#all"/>
                 <xsl:attribute name="unique-identifier" select="'pub-id'"/>
                 
                 <metadata>
@@ -51,8 +51,8 @@
                     </xsl:for-each>
                 </metadata>
                 
-                <xsl:copy-of select="opf:manifest"/>
-                <xsl:copy-of select="opf:spine"/>
+                <xsl:copy-of select="opf:manifest" exclude-result-prefixes="#all"/>
+                <xsl:copy-of select="opf:spine" exclude-result-prefixes="#all"/>
             </xsl:copy>
         </xsl:for-each>
     </xsl:template>

@@ -12,8 +12,8 @@
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
     
     <xsl:template match="/html:html">
-        <xsl:copy>
-            <xsl:copy-of select="@lang | @xml:lang"/>
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="@lang | @xml:lang" exclude-result-prefixes="#all"/>
             <xsl:apply-templates select="*">
                 <xsl:with-param name="content-filename" select="tokenize(base-uri(.),'/')[last()]" tunnel="yes"/>
             </xsl:apply-templates>
@@ -21,15 +21,15 @@
     </xsl:template>
     
     <xsl:template match="html:head">
-        <xsl:copy>
-            <xsl:copy-of select="html:meta[@charset]"/>
-            <xsl:copy-of select="html:title"/>
-            <xsl:copy-of select="html:meta[@name='dc:identifier']"/>
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="html:meta[@charset]" exclude-result-prefixes="#all"/>
+            <xsl:copy-of select="html:title" exclude-result-prefixes="#all"/>
+            <xsl:copy-of select="html:meta[@name='dc:identifier']" exclude-result-prefixes="#all"/>
         </xsl:copy>
     </xsl:template>
     
     <xsl:template match="html:body">
-        <xsl:copy>
+        <xsl:copy exclude-result-prefixes="#all">
             <xsl:call-template name="toc"/>
             <xsl:call-template name="page-list"/>
         </xsl:copy>
