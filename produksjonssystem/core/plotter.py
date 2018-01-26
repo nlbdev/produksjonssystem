@@ -31,6 +31,7 @@ class Plotter():
     
     def run(self):
         while self.should_run:
+            time.sleep(1)
             try:
                 dot = Digraph(name="Produksjonssystem", format="png")
                 
@@ -57,4 +58,3 @@ class Plotter():
                 
             except Exception:
                 logging.exception("An error occured while generating plot")
-            time.sleep(1)
