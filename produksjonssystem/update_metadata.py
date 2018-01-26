@@ -34,6 +34,10 @@ class UpdateMetadata(Pipeline):
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
+    # if UpdateMetadata is not loaded, use a temporary directory
+    # for storing metadata so that the static methods still work
+    metadata_tempdir_obj = None
+    
     quickbase_record_id_rows = [ "13", "20", "24", "28", "31", "32", "38" ]
     quickbase_isbn_id_rows = [ "7" ]
     
@@ -122,6 +126,8 @@ class UpdateMetadata(Pipeline):
                         if not book_id in self.metadata:
                             self.metadata[book_id] = {}
                         self.metadata[book_id]["last_updated"] = now
+                        if not os.path.exists(metadata_dir):
+                            os.makedirs(metadata_dir)
                         with open(last_updated_path, "w") as last_updated_file:
                             last_updated_file.write(str(now))
                 
@@ -146,7 +152,15 @@ class UpdateMetadata(Pipeline):
             opf = opf_obj.name
         
         # path to directory with metadata from Quickbase / Bibliofil / Bokbasen
-        metadata_dir = os.path.join(Pipeline.dirs[UpdateMetadata.uid]["in"], epub.identifier())
+        metadata_dir = None
+        if UpdateMetadata.uid in Pipeline.dirs:
+            metadata_dir = os.path.join(Pipeline.dirs[UpdateMetadata.uid]["in"], epub.identifier())
+        else:
+            if not UpdateMetadata.metadata_tempdir_obj:
+                UpdateMetadata.metadata_tempdir_obj = tempfile.TemporaryDirectory(prefix="metadata-")
+                pipeline.utils.report.info("Using temporary directory for metadata: " + UpdateMetadata.metadata_tempdir_obj.name)
+            metadata_dir = os.path.join(UpdateMetadata.metadata_tempdir_obj.name, epub.identifier())
+        pipeline.utils.report.attachment(None, metadata_dir, "DEBUG")
         os.makedirs(metadata_dir, exist_ok=True)
         os.makedirs(metadata_dir + '/quickbase', exist_ok=True)
         os.makedirs(metadata_dir + '/bibliofil', exist_ok=True)
