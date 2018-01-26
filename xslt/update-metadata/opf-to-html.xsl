@@ -11,10 +11,12 @@
     
     <xsl:import href="normarc/marcrel.xsl"/>
     
-    <xsl:output indent="yes"/>
+    <xsl:output indent="no"/>
     
     <xsl:template match="/*">
         <xsl:for-each select="//opf:metadata">
+            <xsl:text><![CDATA[
+    ]]></xsl:text>
             <head>
                 <!-- Copy namespaces from @prefix -->
                 <xsl:if test="ancestor-or-self::*/@prefix">
@@ -46,31 +48,71 @@
                     </xsl:choose>
                 </xsl:for-each>
                 
+                <xsl:text><![CDATA[
+        ]]></xsl:text>
                 <meta charset="utf-8"/>
-                <title><xsl:value-of select="dc:title[1]"/></title>
+                <xsl:call-template name="copy-meta">
+                    <xsl:with-param name="meta" select="dc:title[1]"/>
+                    <xsl:with-param name="rename" select="'title'"/>
+                </xsl:call-template>
+                <xsl:text><![CDATA[
+        ]]></xsl:text>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <xsl:if test="dc:description.abstract">
-                    <meta name="description" content="{dc:description.abstract[1]}"/>
+                    <xsl:call-template name="copy-meta">
+                        <xsl:with-param name="meta" select="dc:description.abstract[1]"/>
+                        <xsl:with-param name="rename" select="'description'"/>
+                    </xsl:call-template>
                 </xsl:if>
                 
-                <xsl:text><![CDATA[
-]]></xsl:text>
-                
-                <xsl:for-each select="node() except (dc:title[1], dc:description.abstract[1])">
+                <xsl:for-each select="(* | comment()) except (dc:title[1], dc:description.abstract[1])">
                     <xsl:choose>
+                        <xsl:when test="self::comment() and (not(preceding-sibling::*) or (preceding-sibling::text() intersect preceding-sibling::*[1]/following-sibling::text())[matches(.,'.*\n.*')])">
+                            <xsl:text><![CDATA[
+        
+        ]]></xsl:text>
+                            <xsl:copy-of select="."/>
+                        </xsl:when>
                         <xsl:when test="self::*">
                             <xsl:variable name="name" select="(@property, name())[1]"/>
                             <xsl:variable name="name" select="if ($name = 'dc:contributor' and @opf:role) then concat('dc:contributor.',nlb:marcrel-to-role(@opf:role)) else $name"/>
                             
-                            <meta name="{$name}" content="{text()}"/>
+                            <xsl:call-template name="copy-meta">
+                                <xsl:with-param name="meta" select="."/>
+                                <xsl:with-param name="rename" select="$name"/>
+                            </xsl:call-template>
                         </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:copy-of select="."/>
-                        </xsl:otherwise>
                     </xsl:choose>
                 </xsl:for-each>
+                <xsl:text><![CDATA[
+    ]]></xsl:text>
             </head>
         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="copy-meta">
+        <xsl:param name="meta" as="element()"/>
+        <xsl:param name="rename" as="xs:string?"/>
+        
+        <xsl:variable name="name" select="if ($rename) then $rename else ($meta/@property, $meta/name())[1]"/>
+        
+        <xsl:text><![CDATA[
+        ]]></xsl:text>
+        <xsl:choose>
+            <xsl:when test="$name = 'title'">
+                <title>
+                    <xsl:value-of select="$meta/text()"/>
+                </title>
+            </xsl:when>
+            <xsl:otherwise>
+                <meta name="{$name}" content="{$meta/text()}" />
+            </xsl:otherwise>
+        </xsl:choose>
+        <xsl:variable name="comment" select="(if ($meta/following-sibling::*) then $meta/following-sibling::comment() intersect $meta/following-sibling::*[1]/preceding-sibling::comment() else $meta/following-sibling::comment())[1]" as="comment()?"/>
+        <xsl:if test="$comment">
+            <xsl:text> </xsl:text>
+            <xsl:copy-of select="$comment"/>
+        </xsl:if>
     </xsl:template>
     
 </xsl:stylesheet>
