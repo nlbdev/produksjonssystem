@@ -131,9 +131,16 @@ graph_thread.setDaemon(True)
 graph_thread.start()
 
 try:
+    dir_trigger = os.getenv("TRIGGER_DIR")
+    
     running = True
     while running:
         time.sleep(1)
+        
+        if dir_trigger and os.path.exists(os.path.join(dir_trigger, "stop")):
+            for pipeline in pipelines:
+                pipeline[0].stop(exit=True)
+        
         for thread in threads:
             if not thread.isAlive():
                 running = False
