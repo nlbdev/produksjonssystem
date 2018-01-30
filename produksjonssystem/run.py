@@ -131,13 +131,16 @@ graph_thread.setDaemon(True)
 graph_thread.start()
 
 try:
-    dir_trigger = os.getenv("TRIGGER_DIR")
+    stopfile = os.getenv("TRIGGER_DIR")
+    if stopfile:
+        stopfile = os.path.join(stopfile, "stop")
     
     running = True
     while running:
         time.sleep(1)
         
-        if dir_trigger and os.path.exists(os.path.join(dir_trigger, "stop")):
+        if os.path.exists(stopfile):
+            os.remove(stopfile)
             for pipeline in pipelines:
                 pipeline[0].stop(exit=True)
         
