@@ -127,13 +127,14 @@ class NlbpubToNarrationEpub(Pipeline):
         
         # ---------- lag nav.xhtml på nytt ----------
         
-        nav_file = nlbpub.nav_path()
-        if not nav_file:
+        nav_path = nlbpub.nav_path()
+        if not nav_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne navigasjonsfila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
+        nav_path = os.path.join(narration_epubdir, nav_path)
         
-        xslt = Epub.html_to_nav(self, html_file, nav_file)
+        xslt = Epub.html_to_nav(self, html_file, nav_path)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
