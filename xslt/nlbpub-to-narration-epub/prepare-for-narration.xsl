@@ -9,6 +9,7 @@
     <xsl:output method="xhtml" indent="no" include-content-type="no"/>
     
     <xsl:template match="@* | node()">
+        <!-- Endret!!!!! -->
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
