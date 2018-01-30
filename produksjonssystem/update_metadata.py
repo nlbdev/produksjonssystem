@@ -115,7 +115,7 @@ class UpdateMetadata(Pipeline):
                         needs_update = True
                     
                     if needs_update:
-                        epub = Epub(None, os.path.join(os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], book_id)))
+                        epub = Epub(self.logPipeline, os.path.join(os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], book_id)))
                         
                         try:
                             UpdateMetadata.update(self.logPipeline, epub)
