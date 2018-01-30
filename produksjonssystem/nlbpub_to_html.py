@@ -69,16 +69,9 @@ class NlbpubToHtml(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         opf_path = os.path.join(temp_epubdir, opf_path)
-        xml = ElementTree.parse(opf_path).getroot()
+        opf_xml = ElementTree.parse(opf_path).getroot()
         
-        result_identifier = xml.xpath("/*/*[local-name()='metadata']/*[@property = 'nlbprod:identifier.ebook']")
-        result_identifier = result_identifier[0].text if result_identifier else None
-        if not result_identifier:
-            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer for e-bok-utgaven i OPFen.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
-        
-        html_file = xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
+        html_file = opf_xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
         html_file = html_file[0] if html_file else None
         if not html_file:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
@@ -103,8 +96,20 @@ class NlbpubToHtml(Pipeline):
         html_dir = os.path.dirname(opf_path)
         
         os.remove(html_file)
+        
+        # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
+        
+        html_xml = ElementTree.parse(temp_html).getroot()
+        result_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
+        result_identifier = result_identifier[0].attrib["content"] if result_identifier and "content" in result_identifier[0].attrib else None
+        if not result_identifier:
+            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer i ny HTML-fil.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        
         html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # html vs xhtml ?
         shutil.copy(temp_html, html_file)
+        # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
         
         shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
                     os.path.join(html_dir, "NLB_logo.jpg"))
@@ -112,7 +117,7 @@ class NlbpubToHtml(Pipeline):
         
         # ---------- slett EPUB-spesifikke filer ----------
         
-        items = xml.xpath("/*/*[local-name()='manifest']/*")
+        items = opf_xml.xpath("/*/*[local-name()='manifest']/*")
         for item in items:
             delete = False
             

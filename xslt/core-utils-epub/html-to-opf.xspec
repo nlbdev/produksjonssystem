@@ -23,7 +23,7 @@
                     <head>
                         <meta charset="UTF-8" />
                         <title>Rampete Robins forundringspakke</title>
-                        <meta name="dc:identifier" content="561702" />
+                        <meta name="dc:identifier" content="333121" />
                         <meta name="viewport" content="width=device-width" />
                         <meta name="nordic:guidelines" content="2015-1" />
                         <meta name="nordic:supplier" content="AEL Data" />
@@ -46,7 +46,7 @@
         <x:expect label="The metadata should be properly copied over">
             <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
                 <metadata>
-                    <dc:identifier id="pub-id">561702</dc:identifier>
+                    <dc:identifier id="pub-id">333121</dc:identifier>
                     <dc:title>Rampete Robins forundringspakke</dc:title>
                     <meta property="nordic:guidelines">2015-1</meta>
                     <meta property="nordic:supplier">AEL Data</meta>
@@ -61,7 +61,7 @@
                 </metadata>
                 <manifest>
                     <item properties="nav" media-type="application/xhtml+xml" id="item_1" href="nav.xhtml"/>
-                    <item media-type="application/xhtml+xml" id="item_2" href="EPUB/561702.xhtml"/>
+                    <item media-type="application/xhtml+xml" id="item_2" href="EPUB/333121.xhtml"/>
                 </manifest>
                 <spine>
                     <itemref idref="item_2" id="itemref_1"/>

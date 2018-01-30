@@ -26,8 +26,8 @@
                 <xsl:copy-of select="@* except @xml:base" exclude-result-prefixes="#all"/>
                 <xsl:attribute name="unique-identifier" select="'pub-id'"/>
                 
+                <xsl:variable name="metadata" select="$html/html:head/*[self::html:meta or self::html:title]" as="element()*"/>
                 <metadata>
-                    <xsl:variable name="metadata" select="$html/html:head/*[self::html:meta or self::html:title]" as="element()*"/>
                     <dc:identifier id="pub-id">
                         <xsl:value-of select="$metadata[@name='dc:identifier']/@content"/>
                     </dc:identifier>
@@ -51,10 +51,30 @@
                     </xsl:for-each>
                 </metadata>
                 
-                <xsl:copy-of select="opf:manifest" exclude-result-prefixes="#all"/>
+                <xsl:apply-templates select="opf:manifest">
+                    <xsl:with-param name="identifier" select="$metadata[@name='dc:identifier']/string(@content)" as="xs:string" tunnel="yes"/>
+                </xsl:apply-templates>
+                
                 <xsl:copy-of select="opf:spine" exclude-result-prefixes="#all"/>
             </xsl:copy>
         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="opf:manifest">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+            <xsl:apply-templates select="opf:item"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="opf:item">
+        <xsl:param name="identifier" as="xs:string" tunnel="yes"/>
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+            <xsl:if test="../../opf:spine/opf:itemref/@idref = @id">
+                <xsl:attribute name="href" select="concat(replace(@href, '[^/]+$', ''), $identifier, '.xhtml')"/>
+            </xsl:if>
+        </xsl:copy>
     </xsl:template>
     
 </xsl:stylesheet>
