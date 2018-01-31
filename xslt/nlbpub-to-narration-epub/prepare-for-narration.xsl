@@ -81,7 +81,7 @@
             <xsl:if test="//element()[fnk:epub-type(@epub:type, 'cover')]">
                 <xsl:call-template name="bygg-opp-cover"/>
             </xsl:if>
-            <xsl:apply-templates select="@* | node()"/>
+            <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
 
