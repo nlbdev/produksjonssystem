@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import shutil
 import pathlib
 import zipfile
@@ -22,7 +23,6 @@ class Epub():
     pipeline = None
     book_path = None
     _temp_obj = None
-    book_identifier = None
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../..", "xslt"))
     uid = "core-utils-epub"
@@ -119,10 +119,28 @@ class Epub():
         opf = rootfile.attrib["full-path"]
         return opf
     
+    def nav_path(self):
+        opf = None
+        opf_path = self.opf_path()
+        
+        if os.path.isdir(self.book_path):
+            opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
+            
+        else:
+            with zipfile.ZipFile(self.book_path, 'r') as archive:
+                opf = archive.read(opf_path)
+                opf = ElementTree.XML(opf)
+        
+        manifest = opf.findall('{http://www.idpf.org/2007/opf}manifest')[0]
+        items = manifest.findall("*")
+        for item in items:
+            if "properties" in item.attrib and "nav" in re.split(r'\s+', item.attrib["properties"]):
+                return os.path.join(os.path.dirname(opf_path), item.attrib["href"])
+        
+        return None
+    
     def identifier(self, default=None):
-        if not self.book_identifier:
-            self.book_identifier = self.meta("dc:identifier")
-        return self.book_identifier
+        return self.meta("dc:identifier")
     
     def meta(self, name, default=None):
         """Read OPF metadata"""
@@ -151,6 +169,13 @@ class Epub():
     @staticmethod
     def html_to_nav(pipeline, source, target):
         xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-nav.xsl"),
+                              source=source,
+                              target=target)
+        return xslt
+    
+    @staticmethod
+    def html_to_opf(pipeline, source, target):
+        xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-opf.xsl"),
                               source=source,
                               target=target)
         return xslt
@@ -208,9 +233,7 @@ class Epub():
             pipeline.utils.report.info("Could not find content file...")
             return None
         
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-opf.xsl"),
-                              source=temp_opf,
-                              target=os.path.join(epub_dir, "package.opf"))
+        xslt = Epub.html_to_opf(pipeline, temp_opf, os.path.join(epub_dir, "package.opf"))
         if not xslt.success:
             return None
         

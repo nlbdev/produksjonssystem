@@ -17,6 +17,12 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="html[not(preceding-sibling::text()[contains(.,'&#xA;')])]">
+        <xsl:text><![CDATA[
+]]></xsl:text>
+        <xsl:next-match/>
+    </xsl:template>
+    
     <xsl:template match="head/comment()"/>
     <xsl:template match="meta[@name='dc:identifier']"/>
     <xsl:template match="meta[@name='dcterms:modified']"/>

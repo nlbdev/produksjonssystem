@@ -303,13 +303,6 @@
                 <marcxchange:subfield code="p">[Tigergjengen]</marcxchange:subfield>
             </marcxchange:datafield>
             
-            <marcxchange:datafield tag="260" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">Oslo</marcxchange:subfield>
-                <marcxchange:subfield code="b">Cappelen Damm lyd</marcxchange:subfield>
-                <marcxchange:subfield code="c">2018</marcxchange:subfield>
-                <marcxchange:subfield code="3">19295500</marcxchange:subfield>
-            </marcxchange:datafield>
-            
             <marcxchange:datafield tag="250" ind1=" " ind2=" ">
                 <marcxchange:subfield code="a">3. utgave</marcxchange:subfield>
             </marcxchange:datafield>
@@ -355,11 +348,6 @@
             <meta property="position">2</meta>
             <meta property="dc:title.subTitle">[Tigergjengen]</meta>
             
-            <dc:publisher id="publisher-260-1">Cappelen Damm lyd</dc:publisher>
-            <meta property="dc:publisher.location" refines="#publisher-260-1">Oslo</meta>
-            <meta property="bibliofil-id" refines="#publisher-260-1">19295500</meta>
-            <meta property="dc:date.issued">2018</meta>
-            
             <meta property="bookEdition">3. utgave</meta>
             <meta property="bookEdition.history">Første gang utgitt 1968</meta>
             
@@ -373,106 +361,164 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Informasjon om originalboka">
+    <x:scenario label="Bruk forlag fra eldste utgave som inneholder årstall">
         <x:context>
-            <marcxchange:datafield tag="041" ind1=" " ind2=" ">
-                <marcxchange:subfield code="h">engtib</marcxchange:subfield>
-            </marcxchange:datafield>
-            
-            <marcxchange:datafield tag="574" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">Originaltittel:  La Mucama de Omicunle</marcxchange:subfield>
-            </marcxchange:datafield>
-            
-            <marcxchange:datafield tag="596" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">Oslo</marcxchange:subfield>
-                <marcxchange:subfield code="b">Cappelen Damm akademisk</marcxchange:subfield>
-                <marcxchange:subfield code="c">2017</marcxchange:subfield>
-                <marcxchange:subfield code="d">3. utg.</marcxchange:subfield>
-                <marcxchange:subfield code="e">414 s.</marcxchange:subfield>
-                <marcxchange:subfield code="f">978-82-02-53797-5</marcxchange:subfield>
-            </marcxchange:datafield>
+            <marcxchange:record>
+                <marcxchange:datafield tag="260" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Trondheim</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Tapir</marcxchange:subfield>
+                    <marcxchange:subfield code="c">2018</marcxchange:subfield>
+                    <marcxchange:subfield code="3">123456789</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="260" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">[Oslo]</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Cappelen Damm lyd</marcxchange:subfield>
+                    <marcxchange:subfield code="c">2015</marcxchange:subfield>
+                    <marcxchange:subfield code="3">19295500</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="260" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Bergen</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Tanum</marcxchange:subfield>
+                    <marcxchange:subfield code="3">987654321</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected">
-            <meta property="dc:language.original.intermediary">eng</meta>
-            <meta property="dc:language.original">tib</meta>
-            
-            <meta property="dc:title.original">La Mucama de Omicunle</meta>
-            
-            <meta property="dc:publisher.original.location">Oslo</meta>
-            <meta property="dc:publisher.original">Cappelen Damm akademisk</meta>
-            <meta property="dc:date.issued.original">2017</meta>
-            <meta property="bookEdition.original">3. utg.</meta>
-            <meta property="dc:format.extent.pages.original">414</meta>
-            <meta property="isbn.original">978-82-02-53797-5</meta>
+            <metadata>
+                <dc:publisher id="publisher-260-2">Cappelen Damm lyd</dc:publisher>
+                <meta property="bibliofil-id" refines="#publisher-260-2">19295500</meta>
+                <meta property="dc:date.issued">2015</meta>
+                <meta property="dc:publisher.location">Oslo</meta>
+                
+                <meta property="dc:publisher.other" id="publisher-260-1">Tapir</meta>
+                <meta property="bibliofil-id" refines="#publisher-260-1">123456789</meta>
+                <meta property="dc:date.issued" refines="#publisher-260-1">2018</meta>
+                <meta property="dc:publisher.location" refines="#publisher-260-1">Trondheim</meta>
+                
+                <meta property="dc:publisher.other" id="publisher-260-3">Tanum</meta>
+                <meta property="bibliofil-id" refines="#publisher-260-3">987654321</meta>
+                <meta property="dc:publisher.location" refines="#publisher-260-3">Bergen</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Informasjon om originalboka">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="041" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="h">engtib</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="574" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Originaltittel:  La Mucama de Omicunle</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">[Oslo]</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Cappelen Damm akademisk</marcxchange:subfield>
+                    <marcxchange:subfield code="c">2017</marcxchange:subfield>
+                    <marcxchange:subfield code="d">3. utg.</marcxchange:subfield>
+                    <marcxchange:subfield code="e">414 s.</marcxchange:subfield>
+                    <marcxchange:subfield code="f">978-82-02-53797-5</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="dc:date.issued.original">2017</meta>
+                <meta property="dc:format.extent.pages.original">414</meta>
+                <meta property="dc:language.original">tib</meta>
+                <meta property="dc:language.original.intermediary">eng</meta>
+                <meta property="dc:publisher.original">Cappelen Damm akademisk</meta>
+                <meta property="dc:publisher.original.location">Oslo</meta>
+                <meta property="dc:title.original">La Mucama de Omicunle</meta>
+                <meta property="bookEdition.original">3. utg.</meta>
+                <meta property="isbn.original">978-82-02-53797-5</meta>
+            </metadata>
         </x:expect>
     </x:scenario>
     
     <x:scenario label="Forfatter(e)">
         <x:context>
-            <marcxchange:datafield tag="100" ind1=" " ind2="0">
-                <marcxchange:subfield code="a">Dalai Lama</marcxchange:subfield>
-                <marcxchange:subfield code="q">Hans Hellighet Dalai Lama</marcxchange:subfield>
-                <marcxchange:subfield code="b">XIV</marcxchange:subfield>
-                <marcxchange:subfield code="d">1935-</marcxchange:subfield>
-                <marcxchange:subfield code="j">tib.</marcxchange:subfield>
-                <marcxchange:subfield code="3">18927000</marcxchange:subfield>
-            </marcxchange:datafield>
-            
-            <marcxchange:datafield tag="110" ind1="0" ind2="0">
-                <marcxchange:subfield code="a">NLB</marcxchange:subfield>
-                <marcxchange:subfield code="q">Norsk Lyd- og blindeskriftbibliotek</marcxchange:subfield>
-                <marcxchange:subfield code="3">18158500</marcxchange:subfield>
-            </marcxchange:datafield>
+            <marcxchange:record>
+                <marcxchange:datafield tag="100" ind1=" " ind2="0">
+                    <marcxchange:subfield code="a">Dalai Lama</marcxchange:subfield>
+                    <marcxchange:subfield code="q">Hans Hellighet Dalai Lama</marcxchange:subfield>
+                    <marcxchange:subfield code="b">XIV</marcxchange:subfield>
+                    <marcxchange:subfield code="d">1935-</marcxchange:subfield>
+                    <marcxchange:subfield code="j">tib.</marcxchange:subfield>
+                    <marcxchange:subfield code="3">18927000</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="110" ind1="0" ind2="0">
+                    <marcxchange:subfield code="a">NLB</marcxchange:subfield>
+                    <marcxchange:subfield code="q">Norsk Lyd- og blindeskriftbibliotek</marcxchange:subfield>
+                    <marcxchange:subfield code="3">18158500</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected">
-            <dc:creator id="creator-1">Hans Hellighet Dalai Lama</dc:creator>
-            <meta property="honorificSuffix" refines="#creator-1">XIV</meta>
-            <meta property="birthDate" refines="#creator-1">1935</meta>
-            <meta property="nationality" refines="#creator-1">tib</meta>
-            <meta property="bibliofil-id" refines="#creator-1">18927000</meta>
-            
-            <dc:creator id="creator-2">NLB</dc:creator>
-            <meta property="bibliofil-id" refines="#creator-2">18158500</meta>
+            <metadata>
+                <dc:creator id="creator-1">Hans Hellighet Dalai Lama</dc:creator>
+                <meta property="bibliofil-id" refines="#creator-1">18927000</meta>
+                <meta property="birthDate" refines="#creator-1">1935</meta>
+                <meta property="honorificSuffix" refines="#creator-1">XIV</meta>
+                <meta property="nationality" refines="#creator-1">tib</meta>
+                
+                <dc:creator id="creator-2">NLB</dc:creator>
+                <meta property="bibliofil-id" refines="#creator-2">18158500</meta>
+            </metadata>
         </x:expect>
     </x:scenario>
     
     <x:scenario label="For oversatte bøker: Navn på oversetter(e)">
         <x:context>
-            <marcxchange:datafield tag="700" ind1=" " ind2="0">
-                <marcxchange:subfield code="a">Windt-Val, Benedicta</marcxchange:subfield>
-                <marcxchange:subfield code="e">overs.</marcxchange:subfield>
-                <marcxchange:subfield code="3">19594200</marcxchange:subfield>
-            </marcxchange:datafield>
+            <marcxchange:record>
+                <marcxchange:datafield tag="700" ind1=" " ind2="0">
+                    <marcxchange:subfield code="a">Windt-Val, Benedicta</marcxchange:subfield>
+                    <marcxchange:subfield code="e">overs.</marcxchange:subfield>
+                    <marcxchange:subfield code="3">19594200</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected">
-            <meta property="dc:contributor.translator" id="contributor-700-1">Benedicta Windt-Val</meta>
-            <meta property="file-as" refines="#contributor-700-1">Windt-Val, Benedicta</meta>
-            <meta property="bibliofil-id" refines="#contributor-700-1">19594200</meta>
+            <metadata>
+                <meta property="dc:contributor.translator" id="contributor-700-1">Benedicta Windt-Val</meta>
+                <meta property="bibliofil-id" refines="#contributor-700-1">19594200</meta>
+                <meta property="file-as" refines="#contributor-700-1">Windt-Val, Benedicta</meta>
+            </metadata>
         </x:expect>
     </x:scenario>
     
     <x:scenario label="Navn på innleser(e)">
         <x:context>
-            <marcxchange:datafield tag="511" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">Brage Talesyntese</marcxchange:subfield>
-                <marcxchange:subfield code="3">19209900</marcxchange:subfield>
-            </marcxchange:datafield>
-            
-            <marcxchange:datafield tag="511" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">Fry, Stephen</marcxchange:subfield>
-                <marcxchange:subfield code="3">17738500</marcxchange:subfield>
-            </marcxchange:datafield>
+            <marcxchange:record>
+                <marcxchange:datafield tag="511" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Brage Talesyntese</marcxchange:subfield>
+                    <marcxchange:subfield code="3">19209900</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="511" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Fry, Stephen</marcxchange:subfield>
+                    <marcxchange:subfield code="3">17738500</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
         </x:context>
         <x:expect label="the metadata should be extracted as expected">
-            <meta property="dc:contributor.narrator" id="contributor-511-1">Brage Talesyntese</meta>
-            <meta property="bibliofil-id" refines="#contributor-511-1">19209900</meta>
-            
-            <meta property="dc:contributor.narrator" id="contributor-511-2">Stephen Fry</meta>
-            <meta property="file-as" refines="#contributor-511-2">Fry, Stephen</meta>
-            <meta property="bibliofil-id" refines="#contributor-511-2">17738500</meta>
+            <metadata>
+                <meta property="dc:contributor.narrator" id="contributor-511-1">Brage Talesyntese</meta>
+                <meta property="bibliofil-id" refines="#contributor-511-1">19209900</meta>
+                
+                <meta property="dc:contributor.narrator" id="contributor-511-2">Stephen Fry</meta>
+                <meta property="bibliofil-id" refines="#contributor-511-2">17738500</meta>
+                <meta property="file-as" refines="#contributor-511-2">Fry, Stephen</meta>
+            </metadata>
         </x:expect>
     </x:scenario>
 

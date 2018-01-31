@@ -66,9 +66,9 @@
                         <xsl:choose>
                             <xsl:when test="self::dc:*">
                                 <xsl:if test="not($with-duplicates[position() &lt; $position and name()=current()/name() and text()=current()/text() and string(@refines)=string(current()/@refines)])">
-                                    <xsl:copy>
-                                        <xsl:copy-of select="$with-duplicates[self::dc:*[name()=current()/name() and text()=current()/text() and string(@refines)=string(current()/@refines)]]/@*"/>
-                                        <xsl:copy-of select="node()"/>
+                                    <xsl:copy exclude-result-prefixes="#all">
+                                        <xsl:copy-of select="$with-duplicates[self::dc:*[name()=current()/name() and text()=current()/text() and string(@refines)=string(current()/@refines)]]/@*" exclude-result-prefixes="#all"/>
+                                        <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
                                     </xsl:copy>
                                 </xsl:if>
                             </xsl:when>
@@ -76,9 +76,9 @@
                                 <xsl:variable name="this" select="."/>
                                 <xsl:if
                                     test="not($with-duplicates[position() &lt; $position and @property=current()/@property and text()=current()/text() and string(@refines)=string(current()/@refines)])">
-                                    <xsl:copy>
-                                        <xsl:copy-of select="$with-duplicates[self::meta[@property=current()/@property and text()=current()/text() and string(@refines)=string(current()/@refines)]]/@*"/>
-                                        <xsl:copy-of select="node()"/>
+                                    <xsl:copy exclude-result-prefixes="#all">
+                                        <xsl:copy-of select="$with-duplicates[self::meta[@property=current()/@property and text()=current()/text() and string(@refines)=string(current()/@refines)]]/@*" exclude-result-prefixes="#all"/>
+                                        <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
                                     </xsl:copy>
                                 </xsl:if>
                             </xsl:when>
@@ -90,7 +90,7 @@
                     <xsl:for-each select="$without-duplicates[self::dc:*[not(@refines)]]">
                         <xsl:sort
                             select="if (not(contains('dc:identifier dc:title dc:creator dc:format',name()))) then 100 else count(tokenize(substring-before('dc:identifier dc:title dc:creator dc:format',name()),' '))"/>
-                        <xsl:copy-of select="."/>
+                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                         <xsl:if test="@id">
                             <xsl:call-template name="copy-meta-refines">
                                 <xsl:with-param name="meta-set" select="$with-duplicates"/>
@@ -100,7 +100,7 @@
                     </xsl:for-each>
                     <xsl:for-each select="$without-duplicates[self::meta[starts-with(@property,'dc:') and not(@refines)]]">
                         <xsl:sort select="@property"/>
-                        <xsl:copy-of select="."/>
+                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                         <xsl:if test="@id">
                             <xsl:call-template name="copy-meta-refines">
                                 <xsl:with-param name="meta-set" select="$with-duplicates"/>
@@ -110,7 +110,7 @@
                     </xsl:for-each>
                     <xsl:for-each select="$without-duplicates[self::meta[not(starts-with(@property,'dc:')) and contains(@property,':') and not(@refines)]]">
                         <xsl:sort select="@property"/>
-                        <xsl:copy-of select="."/>
+                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                         <xsl:if test="@id">
                             <xsl:call-template name="copy-meta-refines">
                                 <xsl:with-param name="meta-set" select="$with-duplicates"/>
@@ -120,7 +120,7 @@
                     </xsl:for-each>
                     <xsl:for-each select="$without-duplicates[self::meta[not(contains(@property,':')) and not(@refines)]]">
                         <xsl:sort select="@property"/>
-                        <xsl:copy-of select="."/>
+                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                         <xsl:if test="@id">
                             <xsl:call-template name="copy-meta-refines">
                                 <xsl:with-param name="meta-set" select="$with-duplicates"/>
@@ -132,12 +132,12 @@
     
                 <xsl:for-each select="$sorted">
                     <!-- remove unneccessary id's on non-DC elements -->
-                    <xsl:copy>
-                        <xsl:copy-of select="@* except @id"/>
+                    <xsl:copy exclude-result-prefixes="#all">
+                        <xsl:copy-of select="@* except @id" exclude-result-prefixes="#all"/>
                         <xsl:if test="self::dc:* or @id and $sorted[@refines = concat('#',current()/@id)]">
-                            <xsl:copy-of select="@id"/>
+                            <xsl:copy-of select="@id" exclude-result-prefixes="#all"/>
                         </xsl:if>
-                        <xsl:copy-of select="node()"/>
+                        <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
                     </xsl:copy>
                 </xsl:for-each>
             </metadata>
@@ -146,12 +146,12 @@
         <xsl:choose>
             <xsl:when test="string($nested) = 'true'">
                 <xsl:for-each select="$metadata">
-                    <xsl:copy>
-                        <xsl:copy-of select="@*"/>
+                    <xsl:copy exclude-result-prefixes="#all">
+                        <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
                         <xsl:for-each select="*[not(@refines)] | comment()">
                             <xsl:choose>
                                 <xsl:when test="self::comment()">
-                                    <xsl:copy-of select="."/>
+                                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                                 </xsl:when>
                                 <xsl:when test="self::*">
                                     <xsl:apply-templates select="." mode="nesting"/>
@@ -162,7 +162,7 @@
                 </xsl:for-each>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy-of select="$metadata"/>
+                <xsl:copy-of select="$metadata" exclude-result-prefixes="#all"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -173,7 +173,7 @@
         <xsl:variable name="idref" select="concat('#',$id)"/>
         <xsl:for-each select="$meta-set[self::meta[@refines=$idref]]">
             <xsl:sort select="@property"/>
-            <xsl:copy-of select="."/>
+            <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             <xsl:if test="@id">
                 <xsl:call-template name="copy-meta-refines">
                     <xsl:with-param name="meta-set" select="$meta-set"/>
@@ -184,8 +184,8 @@
     </xsl:template>
     
     <xsl:template match="*" mode="nesting">
-        <xsl:copy>
-            <xsl:copy-of select="@* except (@property, @refines)"/>
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="@* except (@property, @refines)" exclude-result-prefixes="#all"/>
             <xsl:if test="@property">
                 <xsl:attribute name="name" select="@property"/>
             </xsl:if>
@@ -721,7 +721,7 @@
                 </xsl:for-each>
             </xsl:for-each>
         </xsl:variable>
-        <xsl:copy-of select="$b"/>
+        <xsl:copy-of select="$b" exclude-result-prefixes="#all"/>
     
         <xsl:if test="not($b[self::dc:format])">
             <xsl:for-each select="*:subfield[@code='e']">
@@ -976,22 +976,30 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='260']">
+        <xsl:variable name="publisher-id" select="concat('publisher-260-',1+count(preceding-sibling::*:datafield[@tag='260']))"/>
+        <xsl:variable name="issued" select="min(../*:datafield[@tag='260']/*:subfield[@code='c' and matches(text(),'^\d+$')]/xs:integer(text()))"/>
+        <xsl:variable name="primary" select="(not($issued) and not(preceding-sibling::*:datafield[@tag='260'])) or (*:subfield[@code='c']/text() = string($issued) and not(preceding-sibling::*:datafield[@tag='260']/*:subfield[@code='c' and text() = string($issued)]))"/>
+        
         <xsl:if test="*:subfield[@code='b']">
-            <xsl:variable name="publisher-id" select="concat('publisher-260-',1+count(preceding-sibling::*:datafield[@tag='260']))"/>
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="if ($primary) then 'dc:publisher' else 'dc:publisher.other'"/>
+                <xsl:with-param name="value" select="(*:subfield[@code='b'])[1]/text()"/>
+                <xsl:with-param name="id" select="$publisher-id"/>
+                <xsl:with-param name="context" select="(*:subfield[@code='b'])[1]"/>
+            </xsl:call-template>
             
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher'"/><xsl:with-param name="value" select="(*:subfield[@code='b'])[1]/text()"/><xsl:with-param name="id" select="$publisher-id"/></xsl:call-template>
-            
-            <xsl:for-each select="*:subfield[@code='a']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$publisher-id"/></xsl:call-template>
-            </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$publisher-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
         
-        <xsl:for-each select="*:subfield[@code='c']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+        <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="if ($primary) then () else $publisher-id"/></xsl:call-template>
         </xsl:for-each>
+        <xsl:for-each select="*:subfield[@code='c']">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="if ($primary) then () else $publisher-id"/></xsl:call-template>
+        </xsl:for-each>
+        
         <xsl:for-each select="*:subfield[@code='9' and text()='n']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'watermark'"/><xsl:with-param name="value" select="'none'"/></xsl:call-template>
         </xsl:for-each>
@@ -1006,7 +1014,7 @@
         <xsl:variable name="fields" as="element()*">
             <xsl:choose>
                 <xsl:when test="$fields[self::dc:format]">
-                    <xsl:copy-of select="$fields"/>
+                    <xsl:copy-of select="$fields" exclude-result-prefixes="#all"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates select="../*:datafield[@tag='019']"/>
@@ -1054,7 +1062,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series'"/><xsl:with-param name="value" select="*:subfield[@code='a'][1]/text()"/><xsl:with-param name="id" select="$title-id"/></xsl:call-template>
             </xsl:if>
         </xsl:variable>
-        <xsl:copy-of select="$series-title"/>
+        <xsl:copy-of select="$series-title" exclude-result-prefixes="#all"/>
         <xsl:for-each select="*:subfield[@code='p']">
             <xsl:call-template name="meta">
                 <xsl:with-param name="property" select="'dc:title.subSeries'"/>
@@ -1172,7 +1180,7 @@
     
     <xsl:template match="*:datafield[@tag='596']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original.location'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='b']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
@@ -1363,7 +1371,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='z']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
@@ -1376,19 +1384,19 @@
         <xsl:variable name="subject-id" select="concat('subject-651-',1+count(preceding-sibling::*:datafield[@tag='651']))"/>
         
         <xsl:if test="*:subfield[@code='a']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="*:subfield[@code='a']/replace(text(),'[\[\]]','')"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='q']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='z']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
@@ -1528,7 +1536,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='z']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'location'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
     
             <xsl:for-each select="*:subfield[@code='3']">
