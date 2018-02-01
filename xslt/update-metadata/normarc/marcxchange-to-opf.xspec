@@ -336,10 +336,12 @@
             <meta property="dc:type.genre">Fiction</meta>
             <meta property="dc:type.genre">Non-biography</meta>
             <dc:language>nob</dc:language>
+            <meta property="typicalAgeRange">17-</meta>
             
             <meta property="audience">Adult</meta>
             <meta property="dc:type.genre">Fiction</meta>
             <meta property="dc:type.genre">Non-biography</meta>
+            <meta property="typicalAgeRange">17-</meta>
             <dc:language>eng</dc:language>
             <dc:language>sve</dc:language>
             
@@ -351,10 +353,10 @@
             <meta property="bookEdition">3. utgave</meta>
             <meta property="bookEdition.history">Første gang utgitt 1968</meta>
             
-            <meta property="dc:format.extent">387 s.</meta>
-            <meta property="dc:format.extent">25 b.</meta>
+            <meta property="dc:format.extent.pages">387</meta>
+            <meta property="dc:format.extent.volumes">25</meta>
             <meta property="dc:format.extent.duration">11 t. 18 min.</meta>
-            <meta property="dc:format.extent.cd">2 CDs</meta>
+            <meta property="dc:format.extent.cd">2</meta>
             
             <meta property="isbn">82-02-02743-8</meta>
             <meta property="issn">1600-6208</meta>
@@ -518,6 +520,49 @@
                 <meta property="dc:contributor.narrator" id="contributor-511-2">Stephen Fry</meta>
                 <meta property="bibliofil-id" refines="#contributor-511-2">17738500</meta>
                 <meta property="file-as" refines="#contributor-511-2">Fry, Stephen</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Bibliotek">
+        <x:context>
+            <marcxchange:datafield tag="850" ind1=" " ind2=" ">
+                <marcxchange:subfield code="a">NLB/L</marcxchange:subfield>
+            </marcxchange:datafield>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <meta property="library">NLB</meta>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Bidragsyter med flere roller">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="100" ind1="1" ind2="0">
+                    <marcxchange:subfield code="a">Alice</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="700" ind1="1" ind2="0">
+                    <marcxchange:subfield code="a">Alice</marcxchange:subfield>
+                    <marcxchange:subfield code="e">medf.</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="700" ind1="1" ind2="0">
+                    <marcxchange:subfield code="a">Bob</marcxchange:subfield>
+                    <marcxchange:subfield code="e">medf.</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="700" ind1="1" ind2="0">
+                    <marcxchange:subfield code="a">Bob</marcxchange:subfield>
+                    <marcxchange:subfield code="e">red.</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:creator id="creator-1">Alice</dc:creator>
+                <dc:contributor id="contributor-700-1">Alice</dc:contributor>
+                
+                <dc:contributor id="contributor-700-2">Bob</dc:contributor>
+                <meta property="dc:contributor.editor">Bob</meta>
             </metadata>
         </x:expect>
     </x:scenario>

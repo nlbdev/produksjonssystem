@@ -16,103 +16,100 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:import href="marcxchange-to-opf.xsl"/>
     <xsl:variable name="nested" select="true()"/>
     
     <xsl:output indent="yes" method="xhtml"/>
     
-    <xsl:param name="rdf-xml-path" as="xs:string"/>
-    <xsl:param name="include-source-reference" select="false()" as="xs:boolean"/>
+    <xsl:param name="rdf-xml-path" as="xs:string?"/>
     
-    <xsl:template match="/SRU:searchRetrieveResponse">
-        <xsl:variable name="metadata" as="element()?">
-            <xsl:next-match/>
-        </xsl:variable>
+    <xsl:template match="/*">
+        <xsl:variable name="metadata" as="element()" select="/*"/>
         
         <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat('urn:isbn:', replace(normalize-space(@content),'[^\d]','')), concat('creativeWork_',generate-id()))[1]"/>
         <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content)), concat('book_',generate-id()))[1]"/>
         <xsl:variable name="resource-original" select="concat('original_',generate-id())"/>
         
-        <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
-            <head>
-                <title><xsl:value-of select="($metadata/dc:title/@content, 'Bibliofil')[1]"/></title>
-                <style>
-                    <xsl:text><![CDATA[
-dl {
-   margin-top: 0;
-   margin-bottom: 1rem;
-}
-
-dt {
-    font-weight: 700;
-}
-
-dd {
-    margin-bottom: .5rem;
-    margin-left: 0;
-    text-indent: 2rem;
-}
-
-body {
-    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #292b2c;
-    margin: 2rem;
-}
-
-section dl {
-    margin-left: 2rem;
-}
-
-]]></xsl:text>
-                </style>
-            </head>
-            <body vocab="http://schema.org/" typeof="CreativeWork">
-                <xsl:choose>
-                    <xsl:when test="not($metadata)">
-                        <p>Bibliofil-metadata mangler.</p>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:attribute name="{if (matches($resource-creativeWork,'^(http|urn)')) then 'about' else 'id'}" select="$resource-creativeWork"/>
-                        <h1><xsl:value-of select="$metadata/dc:title/@content"/></h1>
-                        
-                        <xsl:call-template name="list-metadata-rdfa">
-                            <xsl:with-param name="metadata" select="$metadata"/>
-                            <xsl:with-param name="type" select="'creativeWork'"/>
-                        </xsl:call-template>
-                        
-                        <section vocab="http://schema.org/" typeof="Book" id="{$resource-original}">
-                            <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
-                            <h1>Original</h1>
+        <xsl:variable name="html" as="element()">
+            <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
+                <head>
+                    <title><xsl:value-of select="($metadata/dc:title/@content, 'Bibliofil')[1]"/></title>
+                    <style>
+                        <xsl:text><![CDATA[
+                            dl {
+                            margin-top: 0;
+                            margin-bottom: 1rem;
+                            }
+                            
+                            dt {
+                            font-weight: 700;
+                            }
+                            
+                            dd {
+                            margin-bottom: .5rem;
+                            margin-left: 0;
+                            text-indent: 2rem;
+                            }
+                            
+                            body {
+                            font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+                            font-size: 1rem;
+                            font-weight: 400;
+                            line-height: 1.5;
+                            color: #292b2c;
+                            margin: 2rem;
+                            }
+                            
+                            section dl {
+                            margin-left: 2rem;
+                            }
+                            
+                            ]]></xsl:text>
+                    </style>
+                </head>
+                <body vocab="http://schema.org/" typeof="CreativeWork">
+                    <xsl:choose>
+                        <xsl:when test="not($metadata)">
+                            <p>Bibliofil-metadata mangler.</p>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="{if (matches($resource-creativeWork,'^(http|urn)')) then 'about' else 'id'}" select="$resource-creativeWork"/>
+                            <h1><xsl:value-of select="$metadata/dc:title/@content"/></h1>
                             
                             <xsl:call-template name="list-metadata-rdfa">
                                 <xsl:with-param name="metadata" select="$metadata"/>
-                                <xsl:with-param name="type" select="'original'"/>
+                                <xsl:with-param name="type" select="'creativeWork'"/>
                             </xsl:call-template>
-                        </section>
-                        
-                        <section vocab="http://schema.org/" typeof="Book" id="{$resource-original}">
-                            <xsl:attribute name="{if (matches($resource-book,'^(http|urn)')) then 'about' else 'id'}" select="$resource-book"/>
-                            <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
-                            <link property="frbr:translationOf" href="#{$resource-original}"/>
                             
-                            <h1><xsl:value-of select="$metadata/dc:format/@content"/></h1>
+                            <section vocab="http://schema.org/" typeof="Book" id="{$resource-original}">
+                                <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                                <h1>Original</h1>
+                                
+                                <xsl:call-template name="list-metadata-rdfa">
+                                    <xsl:with-param name="metadata" select="$metadata"/>
+                                    <xsl:with-param name="type" select="'original'"/>
+                                </xsl:call-template>
+                            </section>
                             
-                            <xsl:call-template name="list-metadata-rdfa">
-                                <xsl:with-param name="metadata" select="$metadata"/>
-                                <xsl:with-param name="type" select="'book'"/>
-                            </xsl:call-template>
-                        </section>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </body>
-        </html>
+                            <section vocab="http://schema.org/" typeof="Book" id="{$resource-original}">
+                                <xsl:attribute name="{if (matches($resource-book,'^(http|urn)')) then 'about' else 'id'}" select="$resource-book"/>
+                                <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                                <link property="frbr:translationOf" href="#{$resource-original}"/>
+                                
+                                <h1><xsl:value-of select="$metadata/dc:format/@content"/></h1>
+                                
+                                <xsl:call-template name="list-metadata-rdfa">
+                                    <xsl:with-param name="metadata" select="$metadata"/>
+                                    <xsl:with-param name="type" select="'book'"/>
+                                </xsl:call-template>
+                            </section>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </body>
+            </html>
+        </xsl:variable>
         
-        <xsl:if test="$rdf-xml-path">
-            <xsl:result-document href="{$rdf-xml-path}" indent="yes">
-                <rdf:RDF>
+        <xsl:variable name="rdf" as="element()">
+            <rdf:RDF>
                     <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
                     <xsl:namespace name="schema" select="'http://schema.org/'"/>
                     <xsl:namespace name="frbr" select="'http://purl.org/vocab/frbr/core#'"/>
@@ -146,8 +143,20 @@ section dl {
                         </rdf:Description>
                     </xsl:if>
                 </rdf:RDF>
-            </xsl:result-document>
-        </xsl:if>
+        </xsl:variable>
+        
+        <xsl:choose>
+            <xsl:when test="$rdf-xml-path">
+                <xsl:sequence select="$html"/>
+                <xsl:result-document href="{$rdf-xml-path}" indent="yes">
+                    <xsl:sequence select="$rdf"/>
+                </xsl:result-document>
+                
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$rdf"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <xsl:template name="list-metadata-rdfa" as="element()?">

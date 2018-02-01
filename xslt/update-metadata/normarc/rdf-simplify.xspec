@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:nlb="http://www.nlb.no/"
+               xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:opf="http://www.idpf.org/2007/opf"
+               stylesheet="rdf-simplify.xsl">
+    
+    <x:param name="simplified" select="true()"/>
+    
+    <x:scenario label="Basic test">
+        <x:context>
+            <rdf:RDF xmlns:schema="http://schema.org/"
+                     xmlns:frbr="http://purl.org/vocab/frbr/core#"
+                     xmlns:nlbbib="http://www.nlb.no/bibliographic"
+                     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                     xmlns:pkg="http://expath.org/ns/pkg"
+                     xmlns:impl="urn:x-xspec:compile:xslt:impl"
+                     xmlns:nlb="http://www.nlb.no/"
+                     xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
+                     xmlns:dc="http://purl.org/dc/elements/1.1/"
+                     xmlns:opf="http://www.idpf.org/2007/opf">
+                <rdf:Description rdf:about="urn:isbn:9788280876652">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:title>Ved vannkanten</dc:title>
+                    <dc:creator schema:name="Sara Gruen">
+                        <nlbbib:bibliofil-id>19083400</nlbbib:bibliofil-id>
+                        <schema:file-as>Gruen, Sara</schema:file-as>
+                        <schema:nationality>ca</schema:nationality>
+                        <schema:nationality>us</schema:nationality>
+                    </dc:creator>
+                    <dc:language>nob</dc:language>
+                    <dc:contributor.narrator schema:name="Sibeth Hoff">
+                        <nlbbib:bibliofil-id>17876900</nlbbib:bibliofil-id>
+                    </dc:contributor.narrator>
+                    <dc:contributor.translator schema:name="Hedda Vormeland">
+                        <nlbbib:bibliofil-id>19090100</nlbbib:bibliofil-id>
+                        <schema:file-as>Vormeland, Hedda</schema:file-as>
+                    </dc:contributor.translator>
+                    <schema:isbn>978-82-8087-665-2</schema:isbn>
+                    <dc:source>urn:isbn:9788280876652</dc:source>
+                </rdf:Description>
+                <rdf:Description rdf:ID="original_d4e1">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788280876652"/>
+                    <dc:date.issued>2015</dc:date.issued>
+                    <dc:format.extent.pages>371</dc:format.extent.pages>
+                    <dc:publisher>Bazar</dc:publisher>
+                    <dc:title>At the water's edge</dc:title>
+                    <schema:isbn>978-82-8087-665-2</schema:isbn>
+                </rdf:Description>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=626512">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788280876652"/>
+                    <frbr:translationOf rdf:resource="#original_d4e1"/>
+                    <dc:identifier>626512</dc:identifier>
+                    <dc:format>DAISY 2.02</dc:format>
+                    <dc:publisher schema:name="Norsk lyd- og blindeskriftbibliotek">
+                        <nlbbib:bibliofil-id>17192400</nlbbib:bibliofil-id>
+                        <dc:publisher.location>Oslo</dc:publisher.location>
+                    </dc:publisher>
+                    <dc:date.available>2017-03-17</dc:date.available>
+                    <dc:date.issued>2017</dc:date.issued>
+                    <dc:description.abstract>Fra forlagets omtale: Madeline Hyde følger motvillig med ektemannen og deres beste venn til det skotske høylandet på jakt etter sjøormen i Loch Ness - samtidig som et virkelig monster, Hitler, fører krig mot de allierte. I den lille landsbyen har lokalbefolkningen ikke annet forakt til overs for de privilegerte nykommerne. Maddie blir overlatt til seg selv på det isolerte hotellet, der det er mangel på mat og brensel, og et besøk av postbudet kan bety tragiske nyheter.</dc:description.abstract>
+                    <dc:format.extent.duration>11 t. 56 min.</dc:format.extent.duration>
+                    <dc:format.other>Audio recording</dc:format.other>
+                    <dc:format.other>Compact Disk</dc:format.other>
+                    <dc:format.other>Other voice/other</dc:format.other>
+                    <dc:format.other.no>Lydopptak</dc:format.other.no>
+                    <dc:format.other.no>CD (kompaktplate)</dc:format.other.no>
+                    <dc:format.other.no>Annen tale/annet</dc:format.other.no>
+                    <dc:publisher.original.location>Oslo</dc:publisher.original.location>
+                    <dc:title.part>At the water's edge</dc:title.part>
+                    <dc:type.genre>Fiction</dc:type.genre>
+                    <dc:type.genre>Non-biography</dc:type.genre>
+                    <dc:type.genre>poem</dc:type.genre>
+                    <dc:type.genre schema:name="Kjærlighet">
+                        <nlbbib:bibliofil-id>19881400</nlbbib:bibliofil-id>
+                        <dc:type.genre.no>Kjærlighet</dc:type.genre.no>
+                        <dc:type.mainGenre>Kjærlighet</dc:type.mainGenre>
+                    </dc:type.genre>
+                    <dc:type.genre schema:name="Underholdning">
+                        <nlbbib:bibliofil-id>19882000</nlbbib:bibliofil-id>
+                        <dc:type.genre.no>Underholdning</dc:type.genre.no>
+                        <dc:type.mainGenre>Underholdning</dc:type.mainGenre>
+                    </dc:type.genre>
+                    <schema:audience>Adult</schema:audience>
+                    <schema:isbn>978-82-16-24118-9</schema:isbn>
+                    <schema:library>NLB</schema:library>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <RDF>
+                <CreativeWork about="urn:isbn:9788280876652">
+                    <title name="Ved vannkanten"/>
+                    <creator name="Sara Gruen">
+                        <bibliofil-id name="19083400"/>
+                        <file-as name="Gruen, Sara"/>
+                        <nationality name="ca"/>
+                        <nationality name="us"/>
+                    </creator>
+                    <language name="nob"/>
+                    <contributor.narrator name="Sibeth Hoff">
+                        <bibliofil-id name="17876900"/>
+                    </contributor.narrator>
+                    <contributor.translator name="Hedda Vormeland">
+                        <bibliofil-id name="19090100"/>
+                        <file-as name="Vormeland, Hedda"/>
+                    </contributor.translator>
+                    <isbn name="978-82-8087-665-2"/>
+                    <source name="urn:isbn:9788280876652"/>
+                </CreativeWork>
+                <Book ID="original_d4e1">
+                    <exampleOfWork resource="urn:isbn:9788280876652"/>
+                    <date.issued name="2015"/>
+                    <format.extent.pages name="371"/>
+                    <publisher name="Bazar"/>
+                    <title name="At the water's edge"/>
+                    <isbn name="978-82-8087-665-2"/>
+                </Book>
+                <Book about="http://websok.nlb.no/cgi-bin/websok?tnr=626512">
+                    <exampleOfWork resource="urn:isbn:9788280876652"/>
+                    <translationOf resource="#original_d4e1"/>
+                    <identifier name="626512"/>
+                    <format name="DAISY 2.02"/>
+                    <publisher name="Norsk lyd- og blindeskriftbibliotek">
+                        <bibliofil-id name="17192400"/>
+                        <publisher.location name="Oslo"/>
+                    </publisher>
+                    <date.available name="2017-03-17"/>
+                    <date.issued name="2017"/>
+                    <description.abstract name="Fra forlagets omtale: Madeline Hyde følger motvillig med ektemannen og deres beste venn til det skotske høylandet på jakt etter sjøormen i Loch Ness - samtidig som et virkelig monster, Hitler, fører krig mot de allierte. I den lille landsbyen har lokalbefolkningen ikke annet forakt til overs for de privilegerte nykommerne. Maddie blir overlatt til seg selv på det isolerte hotellet, der det er mangel på mat og brensel, og et besøk av postbudet kan bety tragiske nyheter."/>
+                    <format.extent.duration name="11 t. 56 min."/>
+                    <format.other name="Audio recording"/>
+                    <format.other name="Compact Disk"/>
+                    <format.other name="Other voice/other"/>
+                    <format.other.no name="Lydopptak"/>
+                    <format.other.no name="CD (kompaktplate)"/>
+                    <format.other.no name="Annen tale/annet"/>
+                    <publisher.original.location name="Oslo"/>
+                    <title.part name="At the water's edge"/>
+                    <type.genre name="Fiction"/>
+                    <type.genre name="Non-biography"/>
+                    <type.genre name="poem"/>
+                    <type.genre name="Kjærlighet">
+                        <bibliofil-id name="19881400"/>
+                        <type.genre.no name="Kjærlighet"/>
+                        <type.mainGenre name="Kjærlighet"/>
+                    </type.genre>
+                    <type.genre name="Underholdning">
+                        <bibliofil-id name="19882000"/>
+                        <type.genre.no name="Underholdning"/>
+                        <type.mainGenre name="Underholdning"/>
+                    </type.genre>
+                    <audience name="Adult"/>
+                    <isbn name="978-82-16-24118-9"/>
+                    <library name="NLB"/>
+                </Book>
+            </RDF>
+        </x:expect>
+    </x:scenario>
+
+</x:description>
