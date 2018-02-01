@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:fnk="http://www.nlb.no/2017/functions/"
-    xmlns:epub="http://www.idpf.org/2007/ops"
-    xpath-default-namespace="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="#all" version="2.0">
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fnk="http://www.nlb.no/2017/functions/"
+    xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
 
     <xsl:include href="funksjoner.xsl"/>
     <xsl:include href="metadata.xsl"/>
     <xsl:include href="struktur-etc.xsl"/>
     <xsl:include href="fulltekst-start-og-slutt.xsl"/>
     <xsl:include href="cover.xsl"/>
+    <xsl:include href="logg.xsl"/>
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (0.9 / 2018-01-31)</xsl:message>
-       
+        <xsl:message>prepare-for-narration.xsl (0.9.1 / 2018-02-02)</xsl:message>
+
+        <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
+
         <xsl:call-template name="varsle-om-manglende-metadata-i-nlbpub"/>
-        
+
         <xsl:message>* Transformerer ... </xsl:message>
-        
+
         <!--<xsl:message>TEST: <xsl:value-of select="$metadata.forventet"/></xsl:message>
         <xsl:message>Antall: <xsl:value-of select="count($metadata.forventet)"/></xsl:message>-->
 
