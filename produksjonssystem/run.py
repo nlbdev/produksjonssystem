@@ -65,7 +65,7 @@ pipelines = [
     [ IncomingNordic(),         "incoming",       "master",           "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
     [ NordicToNlbpub(),         "master",         "nlbpub",           "reports", ["jostein","olav","per"]],
     [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"]],
-    [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per","roald"]],
+    [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
     [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
     [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
     [ EpubToPef(),              "master",         "pef",              "reports", ["ammar","jostein","kari"]]
