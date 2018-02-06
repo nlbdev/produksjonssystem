@@ -24,8 +24,10 @@
 
             <xsl:result-document href="{$LOG.url}" method="text" encoding="windows-1252">
                 <xsl:variable name="NL" as="xs:string" select="'&#10;'"/>
+                <xsl:value-of select="concat('Fil: ', document-uri(/), $NL)"/>
                 <xsl:value-of
                     select="concat('ID: ', //meta[@name eq 'dc:identifier']/@content, ' (', current-dateTime(), ')', $NL)"/>
+                <xsl:value-of select="concat('Tittel: ', //title, $NL)"/>
                 <xsl:value-of select="concat('Bokmål: ', $SPRÅK.nb, $NL)"/>
                 <xsl:value-of select="concat('Nynorsk: ', $SPRÅK.nn, $NL)"/>
                 <xsl:value-of select="concat('Engelsk: ', $SPRÅK.en, $NL)"/>
@@ -41,6 +43,7 @@
                         <xsl:value-of select="concat('! Mangler ', current(), $NL)"/>
                     </xsl:if>
                 </xsl:for-each>
+                <xsl:value-of select="$NL"/>
             </xsl:result-document>
         </xsl:if>
     </xsl:template>

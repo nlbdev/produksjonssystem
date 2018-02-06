@@ -10,11 +10,12 @@
     <xsl:include href="fulltekst-start-og-slutt.xsl"/>
     <xsl:include href="cover.xsl"/>
     <xsl:include href="logg.xsl"/>
+    <xsl:include href="lag-synkroniseringspunkter.xsl"/>
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (0.9.1 / 2018-02-02)</xsl:message>
+        <xsl:message>prepare-for-narration.xsl (0.9.2 / 2018-02-06)</xsl:message>
 
         <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
 

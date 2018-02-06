@@ -17,14 +17,14 @@
     <xsl:variable name="metadata.forventet" as="xs:string*"
         select="
             (
-            'dc:date.issued.original', 'dc:publisher.original', 'dc:date.issued.original', 'bookEdition.original', 'dc:contributor.narrator')
+            'dc:date.issued.original', 'dc:publisher.original', 'bookEdition.original', 'dc:contributor.narrator')
             [normalize-space(.) ne '']"/>
 
     <!-- Transformasjonen avbrytes hvsi det er essensiell metadata som mangler -->
     <xsl:variable name="metadata.essensiell" as="xs:string*"
         select="
             (
-            'dc:creator', 'schema:isbn', 'dc:publisher.original.location',
+            'dc:creator', 'schema:isbn', 'dc:publisher.original.location', 'dc:language',
             (: Legg til litt mer hvis boken er oversatt :)
             if ($boken.er-oversatt) then
                 ('dc:language.original', 'dc:title.original', 'dc:contributor.translator')

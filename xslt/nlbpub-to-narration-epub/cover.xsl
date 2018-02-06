@@ -22,30 +22,78 @@
     <xsl:template name="bygg-opp-cover">
         <xsl:message>* Bygger opp cover</xsl:message>
         <section epub:type="frontmatter" id="level1_nlb_cover">
-            <h1>Omslag</h1>
+            <h1>
+                <xsl:choose>
+                    <xsl:when test="$SPRÅK.en">
+                        <xsl:text>Book jacket</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>Omslag</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </h1>
             <xsl:apply-templates select="//*[fnk:epub-type(@epub:type, 'cover')]/*"
-                mode="brygg-opp-cover"/>
+                mode="bygg-opp-cover"/>
         </section>
     </xsl:template>
     
     <xsl:template
         match="*[fnk:epub-type(@epub:type, 'cover')]/section[matches(@class, '^(frontcover|rearcover|leftflap|rightflap)$')]"
-        mode="brygg-opp-cover">
-        <!-- TODO: Nynorsk og engelsk -->
+        mode="bygg-opp-cover">
         <xsl:variable name="overskrift" as="xs:string">
             <xsl:choose>
                 <xsl:when test="@class eq 'frontcover'">
-                    <xsl:value-of select="'Forside'"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>Front cover</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.nn">
+                            <xsl:text>Framside</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Forside</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:when test="@class eq 'rearcover'">
-                    <xsl:value-of select="'Bakside'"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>Back cover</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.nn">
+                            <xsl:text>Bakside</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Bakside</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:when test="@class eq 'leftflap'">
-                    <xsl:value-of select="'Venstre innbrett'"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>Left flap</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.nn">
+                            <xsl:text>Venstre innbrett</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Venstre innbrett</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
                     <!-- Bare 'rightflap' som er mulig nå -->
-                    <xsl:value-of select="'Høyre innbrett'"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>Right flap</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.nn">
+                            <xsl:text>Høgre innbrett</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Høyre innbrett</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
