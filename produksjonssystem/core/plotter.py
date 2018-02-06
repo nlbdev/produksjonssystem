@@ -45,7 +45,10 @@ class Plotter():
                     
                     pipeline_label = title + "\n" + "I køen: " + str(queue_size) + "\n" + (book if book else "(venter)")
                     
-                    dot.attr("node", shape="box", style="filled", fillcolor="lightskyblue")
+                    fillcolor = "lightskyblue1"
+                    if book or queue_size:
+                        fillcolor = "lightslateblue"
+                    dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
                     dot.node(pipeline_id, pipeline_label)
                     
                     dot.attr("node", shape="folder", style="filled", fillcolor="wheat")
