@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import os
-import tempfile
-import time
-from datetime import datetime, timezone
-import subprocess
-import shutil
 import re
+import sys
+import time
+import shutil
+import tempfile
+import subprocess
 
-from core.utils.epub import Epub
-from core.utils.daisy_pipeline import DaisyPipelineJob
-
+from lxml import etree as ElementTree
+from datetime import datetime, timezone
 from core.pipeline import Pipeline
+from core.utils.epub import Epub
+from core.utils.xslt import Xslt
+from update_metadata import UpdateMetadata
+from core.utils.daisy_pipeline import DaisyPipelineJob
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -22,6 +24,8 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class EpubToDtbook(Pipeline):
     uid = "epub-to-dtbook"
     title = "EPUB til DTBook"
+    
+    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -49,11 +53,35 @@ class EpubToDtbook(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        dtbook_dir = None
-        self.utils.report.info("Konverterer fra EPUB til DTBook...")
-        dp2_job = DaisyPipelineJob(self, "nordic-epub3-to-dtbook", { "epub": epub.asFile() })
         
-        # get conversion report
+        # ---------- lag en kopi av EPUBen ----------
+        
+        self.utils.report.info("Lager kopi av EPUB...")
+        nordic_epubdir_obj = tempfile.TemporaryDirectory()
+        nordic_epubdir = nordic_epubdir_obj.name
+        self.utils.filesystem.copy(epub.asDir(), nordic_epubdir)
+        nordic_epub = Epub(self, nordic_epubdir)
+        
+        
+        # ---------- oppdater metadata ----------
+        
+        self.utils.report.info("Oppdaterer metadata...")
+        updated = UpdateMetadata.update(self, nordic_epub)
+        if isinstance(updated, bool) and updated == False:
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            return
+        
+        
+        # ---------- konverter nordisk EPUB til nordisk DTBook ----------
+        
+        self.utils.report.info("Konverterer fra EPUB til DTBook...")
+        dtbook_dir = None
+        dp2_job = DaisyPipelineJob(self, "nordic-epub3-to-dtbook", { "epub": nordic_epub.asFile(), "fail-on-error": "false" })
+        
+        
+        # ---------- hent rapport fra konvertering ----------
+        
+        self.utils.report.info("Henter rapport fra konvertering...")
         report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
         if os.path.isfile(report_file):
             with open(report_file, 'r') as result_report:
@@ -61,22 +89,59 @@ class EpubToDtbook(Pipeline):
         
         if dp2_job.status != "DONE":
             self.utils.report.error("Klarte ikke å konvertere boken")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
             return
         
-        dtbook_dir = os.path.join(dp2_job.dir_output, "output-dir", epub.identifier())
+        dtbook_dir = os.path.join(dp2_job.dir_output, "output-dir", nordic_epub.identifier())
+        dtbook_file = os.path.join(dp2_job.dir_output, "output-dir", nordic_epub.identifier(), nordic_epub.identifier() + ".xml")
         
         if not os.path.isdir(dtbook_dir):
             self.utils.report.error("Finner ikke den konverterte boken: " + dtbook_dir)
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
             return
+        
+        if not os.path.isfile(dtbook_file):
+            self.utils.report.error("Finner ikke den konverterte boken: " + dtbook_file)
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            return
+        
+        
+        # ---------- gjør tilpasninger i DTBook ----------
+        
+        temp_dtbook_obj = tempfile.NamedTemporaryFile()
+        temp_dtbook = temp_dtbook_obj.name
+        self.utils.report.debug("prepare-for-tts.xsl")
+        self.utils.report.debug("    source = " + dtbook_file)
+        self.utils.report.debug("    target = " + temp_dtbook)
+        xslt = Xslt(self, stylesheet=os.path.join(EpubToDtbook.xslt_dir, EpubToDtbook.uid, "prepare-for-tts.xsl"),
+                          source=dtbook_file,
+                          target=temp_dtbook)
+        if not xslt.success:
+            return False
+        
+        new_identifier = None
+        dtbook_xml = ElementTree.parse(temp_dtbook).getroot()
+        metadata = dtbook_xml.findall('{http://www.daisy.org/z3986/2005/dtbook/}head')[0]
+        meta = metadata.findall("*")
+        for m in meta:
+            if m.attrib["name"] == "dtb:uid":
+                new_identifier = m.attrib["content"]
+        if not new_identifier:
+            self.utils.report.error("Finner ikke det nye boknummeret")
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            return
+        shutil.copy(temp_dtbook, os.path.join(os.path.dirname(dtbook_file), new_identifier + ".xml"))
+        os.remove(dtbook_file)
+        
+        
+        # ---------- lagre DTBook ----------
         
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
         
-        archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
+        archived_path = self.utils.filesystem.storeBook(dtbook_dir, new_identifier)
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
-        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
+        self.utils.report.info(new_identifier + " ble lagt til i DTBook-arkivet.")
+        self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":
