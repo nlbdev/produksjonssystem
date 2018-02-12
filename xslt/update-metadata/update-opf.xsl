@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:opf="http://www.idpf.org/2007/opf"
+                xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:f="#"
                 xpath-default-namespace="http://www.idpf.org/2007/opf"
                 xmlns="http://www.idpf.org/2007/opf"
@@ -25,12 +26,26 @@
                     <xsl:copy-of select="$new/namespace::*" exclude-result-prefixes="#all"/>
                     <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
                     <xsl:copy-of select="$new/@prefix" exclude-result-prefixes="#all"/>
+                    <xsl:attribute name="unique-identifier" select="'pub-identifier'"/>
                     <xsl:for-each select="$new">
                         <xsl:text><![CDATA[
     ]]></xsl:text>
                         <xsl:copy exclude-result-prefixes="#all">
                             <xsl:copy-of select="@* except @prefix" exclude-result-prefixes="#all"/>
-                            <xsl:copy-of select="node() except (* | comment())[last()]/following-sibling::node()" exclude-result-prefixes="#all"/>
+                            <xsl:for-each select="node() except (* | comment())[last()]/following-sibling::node()">
+                                <xsl:choose>
+                                    <xsl:when test="self::dc:identifier">
+                                        <xsl:copy exclude-result-prefixes="#all">
+                                            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                                            <xsl:attribute name="id" select="'pub-identifier'"/>
+                                            <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
+                                        </xsl:copy>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:for-each>
                             <xsl:text><![CDATA[
         
         ]]></xsl:text>

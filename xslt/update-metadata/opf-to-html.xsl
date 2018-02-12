@@ -51,10 +51,12 @@
                 <xsl:text><![CDATA[
         ]]></xsl:text>
                 <meta charset="utf-8"/>
-                <xsl:call-template name="copy-meta">
-                    <xsl:with-param name="meta" select="dc:title[1]"/>
-                    <xsl:with-param name="rename" select="'title'"/>
-                </xsl:call-template>
+                <xsl:if test="dc:title[1]">
+                    <xsl:call-template name="copy-meta">
+                        <xsl:with-param name="meta" select="dc:title[1]"/>
+                        <xsl:with-param name="rename" select="'title'"/>
+                    </xsl:call-template>
+                </xsl:if>
                 <xsl:text><![CDATA[
         ]]></xsl:text>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>

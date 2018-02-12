@@ -55,14 +55,16 @@
         <xsl:variable name="daisy202" select="(rdf:Description[dc:format = 'DAISY 2.02'])[1]"/>
         <xsl:variable name="braille" select="(rdf:Description[dc:format = 'Braille'])[1]"/>
         
-        <xsl:text><![CDATA[
+        <xsl:if test="$epub/dc:identifier[1]">
+            <xsl:text><![CDATA[
         ]]></xsl:text>
-        <xsl:comment select="' Boknummer for EPUB-utgaven '"/>
-        
-        <xsl:call-template name="meta">
-            <xsl:with-param name="rdf-property" select="$epub/dc:identifier[1]"/>
-            <xsl:with-param name="id" select="'pub-id'"/>
-        </xsl:call-template>
+            <xsl:comment select="' Boknummer for EPUB-utgaven '"/>
+            
+            <xsl:call-template name="meta">
+                <xsl:with-param name="rdf-property" select="$epub/dc:identifier[1]"/>
+                <xsl:with-param name="id" select="'pub-id'"/>
+            </xsl:call-template>
+        </xsl:if>
         
         
         <xsl:text><![CDATA[

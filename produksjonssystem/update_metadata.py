@@ -211,19 +211,32 @@ class UpdateMetadata(Pipeline):
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         
         for identifier in identifiers:
-            pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
+            pipeline.utils.report.debug("normarc/marcxchange-to-opf.xsl")
+            marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml')
+            current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.opf')
+            html_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html')
             rdf_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.rdf')
-            pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
-            pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'))
-            pipeline.utils.report.debug("    rdf    = " + rdf_path)
-            UpdateMetadata.get_bibliofil(pipeline, identifier, os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'))
-            xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/bibliofil-to-rdf.xsl"),
-                                  source=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml'),
-                                  target=os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html'),
+            
+            pipeline.utils.report.debug("    source = " + marcxchange_path)
+            pipeline.utils.report.debug("    target = " + current_opf_path)
+            UpdateMetadata.get_bibliofil(pipeline, identifier, marcxchange_path)
+            xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/marcxchange-to-opf.xsl"),
+                                  source=marcxchange_path,
+                                  target=current_opf_path,
                                   parameters={
-                                    "rdf-xml-path": rdf_path,
+                                    "nested": "true",
                                     "include-source-reference": "true"
                                   })
+            if not xslt.success:
+                return False
+            pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
+            pipeline.utils.report.debug("    source = " + current_opf_path)
+            pipeline.utils.report.debug("    target = " + html_path)
+            pipeline.utils.report.debug("    rdf    = " + rdf_path)
+            xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/bibliofil-to-rdf.xsl"),
+                                  source=current_opf_path,
+                                  target=html_path,
+                                  parameters={ "rdf-xml-path": rdf_path })
             if not xslt.success:
                 return False
             rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
@@ -360,10 +373,10 @@ class UpdateMetadata(Pipeline):
             # do all copy operations at once to avoid triggering multiple modification events
             for update in updates:
                 shutil.copy(update["updated_file"], update["target"])
-            pipeline.utils.report.info("Metadata in " + epub.identifier() + " was updated")
+            pipeline.utils.report.info("Metadata in {} was updated".format(epub.identifier()))
             
         else:
-            pipeline.utils.report.info("Metadata in " + epub.identifier() + " is already up to date")
+            pipeline.utils.report.info("Metadata in {} is already up to date".format(epub.identifier()))
         
         return bool(updates)
     
