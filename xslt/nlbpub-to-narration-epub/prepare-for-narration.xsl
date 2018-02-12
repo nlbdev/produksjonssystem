@@ -14,8 +14,9 @@
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 
+    
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (0.9.2 / 2018-02-06)</xsl:message>
+        <xsl:message>prepare-for-narration.xsl (0.9.3 / 2018-02-12)</xsl:message>
 
         <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
 
@@ -26,6 +27,8 @@
         <!--<xsl:message>TEST: <xsl:value-of select="$metadata.forventet"/></xsl:message>
         <xsl:message>Antall: <xsl:value-of select="count($metadata.forventet)"/></xsl:message>-->
 
+        <!--        <xsl:message>Sidetall i section: <xsl:value-of select="count(//section/div[@class eq 'page-normal'])"/></xsl:message>
+        <xsl:message>Sidetall i avsnitt: <xsl:value-of select="count(//section/p/span[@class eq 'page-normal'])"/></xsl:message>-->
         <xsl:message>
             <xsl:text>* Spraak: </xsl:text>
             <xsl:choose>
@@ -42,7 +45,9 @@
             <xsl:value-of select="//meta[@name eq 'dc:language'][1]/@content"/>
             <xsl:text>)</xsl:text>
         </xsl:message>
-        <xsl:apply-templates/>
+
+        <xsl:apply-templates></xsl:apply-templates>
+        
     </xsl:template>
 
     <xsl:template match="@* | node()" priority="-5" mode="#all">
@@ -66,6 +71,9 @@
                         select="//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"/>
                     <!--                    <xsl:attribute name="content" select="//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"></xsl:attribute>-->
                 </xsl:copy>
+            </xsl:when>
+            <xsl:when test="@name eq 'nlbprod:identifier.epub'">
+                <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:when test="starts-with(@name, 'nlbprod:')">
                 <!-- Tar bort all metadata som begynner med 'nlbprod:' -->
@@ -94,7 +102,6 @@
             <xsl:apply-templates/>
             <!-- Og helt på slutten av det elementet legger vi inn sluttinformasjon -->
             <xsl:call-template name="generer-sluttinformasjon"/>
-
         </xsl:copy>
     </xsl:template>
 
