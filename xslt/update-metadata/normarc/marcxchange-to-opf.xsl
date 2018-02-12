@@ -49,6 +49,20 @@
         </xsl:choose>
     </xsl:template>
     
+    <xsl:template match="/*">
+        <xsl:variable name="result" as="element()?">
+            <xsl:next-match/>
+        </xsl:variable>
+        <xsl:choose>
+            <xsl:when test="count($result)">
+                <xsl:sequence select="$result"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <metadata/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     <xsl:template match="SRU:*">
         <xsl:apply-templates select="node()"/>
     </xsl:template>

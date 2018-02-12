@@ -16,6 +16,8 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
+    <!-- note: assumes input XML is from marcxchange-to-opf.xsl with param nested = true -->
+    
     <xsl:variable name="nested" select="true()"/>
     
     <xsl:output indent="yes" method="xhtml"/>
