@@ -125,7 +125,6 @@
         <xsl:variable name="authority" select="if (count($rdf-property/nlbbib:bibliofil-id)) then 'http://ns.nb.no/normarc' else ()" as="xs:string?"/>
         <xsl:variable name="term" select="$rdf-property/nlbbib:bibliofil-id" as="xs:string?"/>
         <xsl:variable name="translation" select="$rdf-property/../*[name() = concat($property,'.no')]/(@schema:name, text())[1]"/>
-        <xsl:variable name="display-as" select="if (starts-with($property, 'dc:creator') or starts-with($property, 'dc:contributor') and contains($value, ',')) then normalize-space(concat(substring-after($value,','),' ',substring-before($value,','))) else ()" as="xs:string?"/>
         <xsl:variable name="metadata-source" select="$rdf-property/@nlb:metadata-source"/>
         
         <xsl:if test="$value and not($property = 'dcterms:modified') and not(ends-with($property,'.no'))">
@@ -165,13 +164,6 @@
                 <xsl:choose>
                     <xsl:when test="starts-with($property,'dc:language') and string-length($value) = 3">
                         <xsl:value-of select="nlb:iso-639-3-to-iso-639-1($value)"/>
-                    </xsl:when>
-                    
-                    <xsl:when test="$display-as">
-                        <xsl:if test="$epub-version = '3.1'">
-                            <xsl:attribute name="opf:file-as" select="$value"/>
-                        </xsl:if>
-                        <xsl:value-of select="$display-as"/>
                     </xsl:when>
                     
                     <xsl:otherwise>
