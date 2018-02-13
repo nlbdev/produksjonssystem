@@ -891,7 +891,7 @@
         
         <xsl:if test="$name">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
-        
+            
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:for-each>
@@ -979,16 +979,16 @@
                 </xsl:when>
             </xsl:choose>
         </xsl:for-each>
-    
+        
         <!-- https://github.com/nlbdev/normarc/issues/5 -->
         <xsl:for-each select="*:subfield[@code='n']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
-    
+        
         <xsl:for-each select="*:subfield[@code='p']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="concat('dc:title.part',if (count(../*:datafield[@tag='740']/*:subfield[@code='a']) eq 0) then '' else '.other')"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
-    
+        
         <xsl:for-each select="*:subfield[@code='w']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.sortingKey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
@@ -1227,32 +1227,38 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='596']">
-        <xsl:variable name="original-publisher-id" select="concat('original-publisher-596-',1+count(preceding-sibling::*:datafield[@tag='596']))"/>
-        <xsl:for-each select="*:subfield[@code='b']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="id" select="$original-publisher-id"/></xsl:call-template>
-        </xsl:for-each>
-        <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
-        </xsl:for-each>
-        <xsl:for-each select="*:subfield[@code='c']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$original-publisher-id"/></xsl:call-template>
-        </xsl:for-each>
-        <xsl:for-each select="*:subfield[@code='d']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
-        </xsl:for-each>
-        <xsl:for-each select="*:subfield[@code='e']">
-            <xsl:choose>
-                <xsl:when test="matches(text(),'^\s*\d+\s*s?[\.\s]*$')">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.pages.original'"/><xsl:with-param name="value" select="replace(text(),'[^\d]','')"/></xsl:call-template>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:for-each>
-        <xsl:for-each select="*:subfield[@code='f']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
-        </xsl:for-each>
+        <xsl:variable name="preceding-issued-years" select="(for $year in (preceding-sibling::*:datafield[@tag='596']/*:subfield[@code='c']/number(nlb:parseYear(text(), false()))) return if ($year eq $year) then $year else (), xs:double('INF'))"/>
+        <xsl:variable name="following-issued-years" select="(for $year in (following-sibling::*:datafield[@tag='596']/*:subfield[@code='c']/number(nlb:parseYear(text(), false()))) return if ($year eq $year) then $year else (), xs:double('INF'))"/>
+        <xsl:variable name="issued-year" select="(*:subfield[@code='c']/number(nlb:parseYear(text(), false())))[1]"/>
+        
+        <xsl:if test="$issued-year lt min($preceding-issued-years) and $issued-year le min($following-issued-years)
+                      or not($issued-year eq $issued-year) and min(($preceding-issued-years, $following-issued-years)) = xs:double('INF') and not(preceding-sibling::*:datafield[@tag='596'])">
+            <xsl:for-each select="*:subfield[@code='b']">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="*:subfield[@code='a']">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="*:subfield[@code='c']">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="*:subfield[@code='d']">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="*:subfield[@code='e']">
+                <xsl:choose>
+                    <xsl:when test="matches(text(),'^\s*\d+\s*s?[\.\s]*$')">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.pages.original'"/><xsl:with-param name="value" select="replace(text(),'[^\d]','')"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            <xsl:for-each select="*:subfield[@code='f']">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='597']">
@@ -1303,7 +1309,7 @@
         <xsl:if test="not($name='')">
     
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+            
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
@@ -2170,24 +2176,32 @@
                 
             </xsl:when>
             <xsl:when test="count($split) = 2">
-                <xsl:variable name="sign_death" select="if (matches($split[2],$YEAR_NEGATIVE)) then '-' else ''"/>
-                <xsl:variable name="year_death" select="replace($split[2], '^[^\d]*(\d+)([^\d].*)?$', '$1')"/>
-                <xsl:variable name="year_death" select="if (matches($year_death,'^\d+$')) then $year_death else ''"/>
-                
-                <xsl:variable name="sign_birth" select="if (matches($split[1],$YEAR_NEGATIVE)) then '-' else $sign_death"/>
-                <xsl:variable name="year_birth" select="replace($split[1], '^[^\d]*(\d+)([^\d].*)?$', '$1')"/>
-                <xsl:variable name="year_birth" select="if (matches($year_birth,'^\d+$')) then $year_birth else ''"/>
-                
-                <xsl:value-of select="concat($sign_birth,$year_birth,',',$sign_death,$year_death)"/>
+                <xsl:variable name="year_death" select="nlb:parseYear($split[2], false())"/>
+                <xsl:variable name="year_birth" select="nlb:parseYear($split[1], number($year_death) lt 0)"/>
+                <xsl:value-of select="concat($year_birth,',',$year_death)"/>
                 
             </xsl:when>
             <xsl:when test="count($split) = 1">
-                <xsl:variable name="sign" select="if (matches($split[1],$YEAR_NEGATIVE)) then '-' else ''"/>
-                <xsl:variable name="year" select="replace($split[1], '^[^\d]*(\d+)([^\d].*)?$', '$1')"/>
-                <xsl:variable name="year" select="if (matches($year,'^\d+$')) then $year else ''"/>
-                
-                <xsl:value-of select="concat($sign,$year,',')"/>
+                <xsl:value-of select="concat(nlb:parseYear($split[1], false()),',')"/>
             </xsl:when>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="nlb:parseYear">
+        <xsl:param name="value"/>
+        <xsl:param name="assume-negative"/>
+        
+        <xsl:variable name="sign" select="if (matches($value,$YEAR_NEGATIVE) or $assume-negative) then '-' else ''"/>
+        <xsl:variable name="year" select="replace($value, '^[^\d]*(\d+)([^\d].*)?$', '$1')"/>
+        <xsl:variable name="year" select="if (matches($year,'^\d+$')) then $year else ''"/>
+        
+        <xsl:choose>
+            <xsl:when test="$year">
+                <xsl:sequence select="concat($sign, $year)"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="()"/>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
     

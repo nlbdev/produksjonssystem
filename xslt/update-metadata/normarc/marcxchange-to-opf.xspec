@@ -566,5 +566,34 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Flere originalforlag">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Melhus</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Lydbokforlaget</marcxchange:subfield>
+                    <marcxchange:subfield code="c">1996</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">[Oslo]</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Cappelen</marcxchange:subfield>
+                    <marcxchange:subfield code="c">1995</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">John Solheim</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Salka Valka</marcxchange:subfield>
+                    <marcxchange:subfield code="c">Ukjent</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="dc:date.issued.original">1995</meta>
+                <meta property="dc:publisher.original">Cappelen</meta>
+                <meta property="dc:publisher.original.location">Oslo</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>
