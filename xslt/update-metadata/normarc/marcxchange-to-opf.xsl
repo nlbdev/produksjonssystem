@@ -965,7 +965,7 @@
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='b']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle.other'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='h']">
@@ -980,12 +980,13 @@
             </xsl:choose>
         </xsl:for-each>
     
+        <!-- https://github.com/nlbdev/normarc/issues/5 -->
         <xsl:for-each select="*:subfield[@code='n']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='p']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="concat('dc:title.part',if (count(../*:datafield[@tag='740']/*:subfield[@code='a']) eq 0) then '' else '.other')"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
     
         <xsl:for-each select="*:subfield[@code='w']">

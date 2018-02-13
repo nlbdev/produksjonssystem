@@ -297,10 +297,11 @@
             
             <marcxchange:datafield tag="245" ind1=" " ind2=" ">
                 <marcxchange:subfield code="a">Tommy flytter</marcxchange:subfield>
+                <marcxchange:subfield code="b">[Tigergjengen]</marcxchange:subfield>
                 <marcxchange:subfield code="h">daisy 2.02</marcxchange:subfield>
                 <marcxchange:subfield code="c">Nina Skauge</marcxchange:subfield>
                 <marcxchange:subfield code="n">2</marcxchange:subfield>
-                <marcxchange:subfield code="p">[Tigergjengen]</marcxchange:subfield>
+                <marcxchange:subfield code="p">[Tittel for del av verk]</marcxchange:subfield>
             </marcxchange:datafield>
             
             <marcxchange:datafield tag="250" ind1=" " ind2=" ">
@@ -346,9 +347,10 @@
             <dc:language>sve</dc:language>
             
             <dc:title>Tommy flytter</dc:title>
+            <meta property="dc:title.subTitle">Tigergjengen</meta>
             <dc:format>DAISY 2.02</dc:format>
             <meta property="position">2</meta>
-            <meta property="dc:title.subTitle">[Tigergjengen]</meta>
+            <meta property="dc:title.part">Tittel for del av verk</meta>
             
             <meta property="bookEdition">3. utgave</meta>
             <meta property="bookEdition.history">Første gang utgitt 1968</meta>
