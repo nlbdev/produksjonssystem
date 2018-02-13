@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class NlbpubToNarrationEpub(Pipeline):
     uid = "nlbpub-to-narration-epub"
-    title = "NLBPUB til innlesningsklar EPUB"
+    title = "NLBPUB til innlesingsklar EPUB"
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
@@ -87,13 +87,28 @@ class NlbpubToNarrationEpub(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
         
+        self.utils.report.info("Tilpasser innhold for innlesing...")
+        self.utils.report.debug("prepare-for-narration.xsl")
+        self.utils.report.debug("    source = " + html_file)
+        self.utils.report.debug("    target = " + temp_html)
         xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "prepare-for-narration.xsl"),
                           source=html_file,
                           target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
+        shutil.copy(temp_html, html_file)
         
+        self.utils.report.info("Lager synkroniseringspunkter...")
+        self.utils.report.debug("lag-synkroniseringspunkter.xsl")
+        self.utils.report.debug("    source = " + html_file)
+        self.utils.report.debug("    target = " + temp_html)
+        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "lag-synkroniseringspunkter.xsl"),
+                          source=html_file,
+                          target=temp_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            return
         shutil.copy(temp_html, html_file)
         
         # ---------- erstatt metadata i OPF med metadata fra HTML ----------
@@ -142,11 +157,11 @@ class NlbpubToNarrationEpub(Pipeline):
         
         # ---------- save EPUB ----------
         
-        self.utils.report.info("Boken ble konvertert. Kopierer til innlesningsklart EPUB-arkiv.")
+        self.utils.report.info("Boken ble konvertert. Kopierer til innlesingsklart EPUB-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(nlbpub.asFile(), nlbpub.identifier(), file_extension="epub", move=True)
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i innlesningsklart EPUB-arkiv.")
+        self.utils.report.info(epub.identifier() + " ble lagt til i innlesingsklart EPUB-arkiv.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
 
