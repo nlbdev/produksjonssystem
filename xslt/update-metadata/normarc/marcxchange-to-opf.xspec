@@ -491,9 +491,8 @@
         
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
-                <meta property="dc:contributor.translator" id="contributor-700-1">Benedicta Windt-Val</meta>
+                <meta property="dc:contributor.translator" id="contributor-700-1">Windt-Val, Benedicta</meta>
                 <meta property="bibliofil-id" refines="#contributor-700-1">19594200</meta>
-                <meta property="file-as" refines="#contributor-700-1">Windt-Val, Benedicta</meta>
             </metadata>
         </x:expect>
     </x:scenario>
@@ -517,9 +516,8 @@
                 <meta property="dc:contributor.narrator" id="contributor-511-1">Brage Talesyntese</meta>
                 <meta property="bibliofil-id" refines="#contributor-511-1">19209900</meta>
                 
-                <meta property="dc:contributor.narrator" id="contributor-511-2">Stephen Fry</meta>
+                <meta property="dc:contributor.narrator" id="contributor-511-2">Fry, Stephen</meta>
                 <meta property="bibliofil-id" refines="#contributor-511-2">17738500</meta>
-                <meta property="file-as" refines="#contributor-511-2">Fry, Stephen</meta>
             </metadata>
         </x:expect>
     </x:scenario>

@@ -890,11 +890,7 @@
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
         
         <xsl:if test="$name">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
-            
-            <xsl:if test="contains($name,',')">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
-            </xsl:if>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
         
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
@@ -1177,14 +1173,10 @@
             <xsl:variable name="contributor-name" select="text()"/>
             <xsl:call-template name="meta">
                 <xsl:with-param name="property" select="'dc:contributor.narrator'"/>
-                <xsl:with-param name="value" select="if (contains($contributor-name,',')) then concat(normalize-space(substring-after($contributor-name,',')),' ',normalize-space(substring-before($contributor-name,','))) else $contributor-name"/>
+                <xsl:with-param name="value" select="$contributor-name"/>
                 <xsl:with-param name="id" select="$contributor-id"/>
             </xsl:call-template>
             
-            <xsl:if test="contains($contributor-name,',')">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$contributor-name"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
-            </xsl:if>
-    
             <xsl:variable name="pos" select="position()"/>
             <xsl:for-each select="../*:subfield[@code='3'][position() = $pos]">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
@@ -1309,11 +1301,7 @@
         
         <xsl:if test="not($name='')">
     
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject'"/><xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
-            <xsl:if test="contains($name,',')">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
-            </xsl:if>
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
     
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
@@ -1615,13 +1603,9 @@
             
             <xsl:call-template name="meta">
                 <xsl:with-param name="property" select="$role"/>
-                <xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/>
+                <xsl:with-param name="value" select="$name"/>
                 <xsl:with-param name="id" select="$contributor-id"/>
             </xsl:call-template>
-            
-            <xsl:if test="contains($name,',')">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
-            </xsl:if>
             
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
@@ -1754,11 +1738,7 @@
         <xsl:variable name="creator-id" select="concat('series-creator-',1+count(preceding-sibling::*:datafield[@tag='800']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
         
-        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator.series'"/><xsl:with-param name="value" select="if (contains($name,',')) then concat(normalize-space(substring-after($name,',')),' ',normalize-space(substring-before($name,','))) else $name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
-        
-        <xsl:if test="contains($name,',')">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'file-as'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
-        </xsl:if>
+        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator.series'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
         
         <xsl:for-each select="*:subfield[@code='t']">
             <xsl:variable name="alternate-title" select="string((../../*:datafield[@tag='440']/*:subfield[@code='a'])[1]/text()) != (text(),'')"/>
