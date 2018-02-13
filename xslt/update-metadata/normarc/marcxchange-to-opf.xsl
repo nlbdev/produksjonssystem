@@ -841,13 +841,17 @@
     
     <xsl:template match="*:datafield[@tag='020']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:if test="not(text() = '0')">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            </xsl:if>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='022']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'issn'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:if test="not(text() = '0')">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'issn'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            </xsl:if>
         </xsl:for-each>
     </xsl:template>
     
@@ -1126,11 +1130,13 @@
             </xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='x']">
-            <xsl:call-template name="meta">
-                <xsl:with-param name="property" select="'series.issn'"/>
-                <xsl:with-param name="value" select="text()"/>
-                <xsl:with-param name="refines" select="if ($series-title) then $title-id else ()"/>
-            </xsl:call-template>
+            <xsl:if test="not(text() = '0')">
+                <xsl:call-template name="meta">
+                    <xsl:with-param name="property" select="'series.issn'"/>
+                    <xsl:with-param name="value" select="text()"/>
+                    <xsl:with-param name="refines" select="if ($series-title) then $title-id else ()"/>
+                </xsl:call-template>
+            </xsl:if>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='v']">
             <xsl:call-template name="meta">
@@ -1268,7 +1274,9 @@
                 </xsl:choose>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='f']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                <xsl:if test="not(text() = '0')">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'isbn.original'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                </xsl:if>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>

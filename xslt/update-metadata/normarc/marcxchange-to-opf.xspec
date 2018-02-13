@@ -382,6 +382,31 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Manglende ISBN">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="020" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">0</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="022" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">0</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="440" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="x">0</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="f">0</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="bookEdition.original">1</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
     <x:scenario label="Bruk forlag fra eldste utgave som inneholder årstall">
         <x:context>
             <marcxchange:record>
