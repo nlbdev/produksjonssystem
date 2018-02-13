@@ -49,8 +49,8 @@
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="/*">
-        <xsl:variable name="result" as="element()?">
+    <xsl:template match="/*" priority="2">
+        <xsl:variable name="result" as="element()*">
             <xsl:next-match/>
         </xsl:variable>
         <xsl:choose>
