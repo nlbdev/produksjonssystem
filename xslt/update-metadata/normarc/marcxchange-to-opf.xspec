@@ -367,14 +367,18 @@
     
     <x:scenario label="Manglende utgave">
         <x:context>
-            <marcxchange:datafield tag="245" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">Tommy flytter</marcxchange:subfield>
-            </marcxchange:datafield>
+            <marcxchange:record>
+                <marcxchange:datafield tag="245" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Tommy flytter</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected">
-            <dc:title>Tommy flytter</dc:title>
-            <meta property="bookEdition">1</meta>
+            <metadata>
+                <dc:title>Tommy flytter</dc:title>
+                <meta property="bookEdition">1</meta>
+            </metadata>
         </x:expect>
     </x:scenario>
     
