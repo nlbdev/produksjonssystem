@@ -4,8 +4,23 @@
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
 
-
+    <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
+    
     <xsl:variable name="maks-antall-p-per-synkpunkt" as="xs:integer" select="15"/>
+    
+    <xsl:template match="/">
+        <xsl:message>lag-synkroniseringspunkter.xsl (0.9.0 / 2018-02-13)</xsl:message>
+        <xsl:message>* Transformerer ... </xsl:message>
+        <xsl:message>* Lager synkroniseringspunkter ... </xsl:message>
+        
+        <xsl:apply-templates></xsl:apply-templates>
+    </xsl:template>
+    
+    <xsl:template match="@* | node()" priority="-5" mode="#all">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
 
     <xsl:template match="section/p[descendant::span[@epub:type eq 'pagebreak']]" priority="5">
         <!-- section/p-elementer med sidetall skal gjengis som de er, og skal ikke wrappes i  noe

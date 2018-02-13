@@ -3,6 +3,8 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fnk="http://www.nlb.no/2017/functions/"
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
+    
+    <!-- TODO: Ta bort synkpunkter rundt genererte avsnitt -->
 
     <xsl:include href="funksjoner.xsl"/>
     <xsl:include href="metadata.xsl"/>
@@ -10,13 +12,13 @@
     <xsl:include href="fulltekst-start-og-slutt.xsl"/>
     <xsl:include href="cover.xsl"/>
     <xsl:include href="logg.xsl"/>
-    <xsl:include href="lag-synkroniseringspunkter.xsl"/>
+    <!--<xsl:include href="lag-synkroniseringspunkter.xsl"/>-->
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 
-    
+
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (0.9.3 / 2018-02-12)</xsl:message>
+        <xsl:message>prepare-for-narration.xsl (0.9.4 / 2018-02-13)</xsl:message>
 
         <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
 
@@ -46,8 +48,8 @@
             <xsl:text>)</xsl:text>
         </xsl:message>
 
-        <xsl:apply-templates></xsl:apply-templates>
-        
+        <xsl:apply-templates/>
+
     </xsl:template>
 
     <xsl:template match="@* | node()" priority="-5" mode="#all">
