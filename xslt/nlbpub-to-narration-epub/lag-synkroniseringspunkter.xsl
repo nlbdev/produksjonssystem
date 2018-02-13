@@ -91,16 +91,14 @@
         <xsl:variable name="sp.id" as="xs:string" select="generate-id()"/>
 
         <xsl:for-each select="1 to $antall-synkpunkter - 1">
-            <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',current())}"
-                style="border:1mm solid red;">
+            <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',current())}">
                 <xsl:apply-templates
                     select="$alle-relevante-p-elementer[(position() ge (current() - 1) * $antall-p-per-synkpunkt + 1) and position() le (current() * $antall-p-per-synkpunkt)]"
                     mode="inkluder-i-wrapper"/>
             </div>
         </xsl:for-each>
         <!-- Og så resten av avsnittene -->
-        <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',$antall-synkpunkter)}"
-            style="border:1mm solid blue;">
+        <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',$antall-synkpunkter)}">
             <xsl:apply-templates
                 select="$alle-relevante-p-elementer[position() ge (($antall-synkpunkter - 1) * $antall-p-per-synkpunkt + 1)]"
                 mode="inkluder-i-wrapper"/>
