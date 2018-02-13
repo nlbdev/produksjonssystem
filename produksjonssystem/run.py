@@ -12,6 +12,7 @@ from email.headerregistry import Address
 
 # Import pipelines
 from epub_to_pef import EpubToPef
+from dtbook_to_tts import DtbookToTts
 from epub_to_dtbook import EpubToDtbook
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
@@ -54,6 +55,7 @@ dirs = {
     "nlbpub": os.path.join(book_archive_dir, "master/NLBPUB"),
     "metadata": os.path.join(book_archive_dir, "metadata"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
+    "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
@@ -67,8 +69,9 @@ pipelines = [
     [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"]],
     [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
     [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
-    [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
-    [ EpubToPef(),              "master",         "pef",              "reports", ["ammar","jostein","kari"]]
+    [ EpubToPef(),              "master",         "pef",              "reports", ["ammar","jostein","kari"]],
+    [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","olav"]],
+    [ DtbookToTts(),            "dtbook",         "dtbook_tts",           "reports", ["ammar","jostein","mari","olav"]],
 ]
 
 

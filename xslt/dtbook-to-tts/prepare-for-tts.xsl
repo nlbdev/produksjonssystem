@@ -54,7 +54,7 @@
         <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:contributor.editor']/@content" as="xs:string*"/>
         <xsl:for-each select="$authors">
             <docauthor>
-                <xsl:value-of select="."/>
+                <xsl:value-of select="string-join(reverse(tokenize(.,' *, *')),' ')"/>
             </docauthor>
         </xsl:for-each>
         <xsl:if test="count($authors) = 0">

@@ -106,41 +106,13 @@ class EpubToDtbook(Pipeline):
             return
         
         
-        # ---------- gjør tilpasninger i DTBook ----------
-        
-        temp_dtbook_obj = tempfile.NamedTemporaryFile()
-        temp_dtbook = temp_dtbook_obj.name
-        self.utils.report.debug("prepare-for-tts.xsl")
-        self.utils.report.debug("    source = " + dtbook_file)
-        self.utils.report.debug("    target = " + temp_dtbook)
-        xslt = Xslt(self, stylesheet=os.path.join(EpubToDtbook.xslt_dir, EpubToDtbook.uid, "prepare-for-tts.xsl"),
-                          source=dtbook_file,
-                          target=temp_dtbook)
-        if not xslt.success:
-            return False
-        
-        new_identifier = None
-        dtbook_xml = ElementTree.parse(temp_dtbook).getroot()
-        metadata = dtbook_xml.findall('{http://www.daisy.org/z3986/2005/dtbook/}head')[0]
-        meta = metadata.findall("*")
-        for m in meta:
-            if m.attrib["name"] == "dtb:uid":
-                new_identifier = m.attrib["content"]
-        if not new_identifier:
-            self.utils.report.error("Finner ikke det nye boknummeret")
-            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
-            return
-        shutil.copy(temp_dtbook, os.path.join(os.path.dirname(dtbook_file), new_identifier + ".xml"))
-        os.remove(dtbook_file)
-        
-        
         # ---------- lagre DTBook ----------
         
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
         
-        archived_path = self.utils.filesystem.storeBook(dtbook_dir, new_identifier)
+        archived_path = self.utils.filesystem.storeBook(dtbook_dir, nordic_epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(new_identifier + " ble lagt til i DTBook-arkivet.")
+        self.utils.report.info(nordic_epub.identifier() + " ble lagt til i DTBook-arkivet.")
         self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " ble konvertert 👍😄"
 
 
