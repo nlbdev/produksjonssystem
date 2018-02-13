@@ -365,6 +365,19 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Manglende utgave">
+        <x:context>
+            <marcxchange:datafield tag="245" ind1=" " ind2=" ">
+                <marcxchange:subfield code="a">Tommy flytter</marcxchange:subfield>
+            </marcxchange:datafield>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <dc:title>Tommy flytter</dc:title>
+            <meta property="bookEdition">1</meta>
+        </x:expect>
+    </x:scenario>
+    
     <x:scenario label="Bruk forlag fra eldste utgave som inneholder årstall">
         <x:context>
             <marcxchange:record>
@@ -592,6 +605,7 @@
                 <meta property="dc:date.issued.original">1995</meta>
                 <meta property="dc:publisher.original">Cappelen</meta>
                 <meta property="dc:publisher.original.location">Oslo</meta>
+                <meta property="bookEdition.original">1</meta>
             </metadata>
         </x:expect>
     </x:scenario>

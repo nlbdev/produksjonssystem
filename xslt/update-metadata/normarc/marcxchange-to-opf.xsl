@@ -992,6 +992,11 @@
         <xsl:for-each select="*:subfield[@code='w']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.sortingKey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
+        
+        <!-- *245 finnes alltid, men ikke alltid *250. Opprett bookEdition herifra dersom *250 ikke definerer bookEdition. -->
+        <xsl:if test="count(../*:datafield[@tag='250']/*:subfield[@code='a']) = 0">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition'"/><xsl:with-param name="value" select="'1'"/></xsl:call-template>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='246']">
@@ -1242,9 +1247,16 @@
             <xsl:for-each select="*:subfield[@code='c']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
             </xsl:for-each>
-            <xsl:for-each select="*:subfield[@code='d']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
-            </xsl:for-each>
+            <xsl:choose>
+                <xsl:when test="count(*:subfield[@code='d']) = 0">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.original'"/><xsl:with-param name="value" select="'1'"/></xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:for-each select="*:subfield[@code='d']">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+                    </xsl:for-each>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:for-each select="*:subfield[@code='e']">
                 <xsl:choose>
                     <xsl:when test="matches(text(),'^\s*\d+\s*s?[\.\s]*$')">
