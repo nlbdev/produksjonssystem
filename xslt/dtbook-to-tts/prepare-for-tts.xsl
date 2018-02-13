@@ -15,7 +15,7 @@
     </xsl:template>
     
     <xsl:template match="meta[@name=('dtb:uid','dc:Identifier')]">
-        <xsl:variable name="identifier" select="(../meta[@name='nlbprod:identifier.daisy202'], ../meta[@name='nlbprod:identifier.daisy202.student'], ../meta[starts-with(@name,'nlbprod:identifier.daisy202')])[1]/@content" as="xs:string"/>
+        <xsl:variable name="identifier" select="(../meta[@name='nlbprod:identifier.daisy202'], ../meta[@name='nlbprod:identifier.daisy202.student'], ../meta[starts-with(@name,'nlbprod:identifier.daisy202')])[1]/@content" as="xs:string?"/>
         <xsl:choose>
             <xsl:when test="$identifier">
                 <xsl:copy exclude-result-prefixes="#all">
