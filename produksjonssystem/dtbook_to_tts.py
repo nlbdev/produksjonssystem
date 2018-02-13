@@ -92,7 +92,8 @@ class DtbookToTts(Pipeline):
             self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎"
             return
         shutil.copy(temp_dtbook, os.path.join(dtbook_dir, new_identifier + ".xml"))
-        os.remove(dtbook_file)
+        if new_identifier != identifier:
+            os.remove(dtbook_file)
         
         
         # ---------- lagre DTBook ----------
