@@ -4,18 +4,33 @@
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
 
+    <!-- 
+        (c) 2018 NLB
+        
+        Denne transformasjonen brukes på output fra transformasjonen basert på prepare-for-narration.xsl.
+        
+        Transformasjonen plasserer et div.synch-point-wrapper (med @id) rundt alle //section/p-elementer, som er direkte søsken (altså uten andre elementer mellom) og der ingen av disse p-elementene inneholder sideskift.
+        p-elementer som ikke oppfyller disse kriteriene beholdes uforandret.
+        
+        Per Sennels, 14.02.2018
+    -->
+
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
-    
+
+    <!-- 
+        Her kan vi bestemme maks antall p-elementer som kan inngå i ét div.synch-point-wrapper element. 
+        Er det flere p-elementer som skal "wrappes sammen", så fordeles de i flere  div.synch-point-wrapper element med omtrent like mange p per wrapper.
+    -->
     <xsl:variable name="maks-antall-p-per-synkpunkt" as="xs:integer" select="15"/>
-    
+
     <xsl:template match="/">
-        <xsl:message>lag-synkroniseringspunkter.xsl (0.9.0 / 2018-02-13)</xsl:message>
+        <xsl:message>lag-synkroniseringspunkter.xsl (1.0.0 / 2018-02-14)</xsl:message>
         <xsl:message>* Transformerer ... </xsl:message>
         <xsl:message>* Lager synkroniseringspunkter ... </xsl:message>
-        
-        <xsl:apply-templates></xsl:apply-templates>
+
+        <xsl:apply-templates/>
     </xsl:template>
-    
+
     <xsl:template match="@* | node()" priority="-5" mode="#all">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()" mode="#current"/>
@@ -24,27 +39,28 @@
 
     <xsl:template match="section/p[descendant::span[@epub:type eq 'pagebreak']]" priority="5">
         <!-- section/p-elementer med sidetall skal gjengis som de er, og skal ikke wrappes i  noe
-            Merk @priority som sikrer at den overstyres andre regler
+            Merk @priority som sikrer at den overstyrer andre regler
         -->
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@*"/>
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
-    
-    <xsl:template match="
-        section/p[(local-name(preceding-sibling::element()[1]) eq 'p') and not(preceding-sibling::element()[1]/descendant::span[@epub:type eq 'pagebreak'])]">
+
+    <xsl:template
+        match="
+            section/p[(local-name(preceding-sibling::element()[1]) eq 'p') and not(preceding-sibling::element()[1]/descendant::span[@epub:type eq 'pagebreak'])]">
         <!-- Denne matcher alle section/p som følger etter en p (med mindre det har sidetall, se over)
             Slike p-elementer skal tas bort, ettersom de håndteres av template-under
         -->
-        <!--Tar bort denne 
+        <!-- Bare for debugging: 
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@*"/>
             <xsl:attribute name="style" select="'text-decoration: line-through;'"/>
             <xsl:apply-templates/>
         </xsl:copy> -->
     </xsl:template>
-    
+
     <xsl:template
         match="
             section/p[
@@ -68,7 +84,7 @@
                 <xsl:when
                     test="
                         every $e in following-sibling::element()
-                        satisfies (local-name($e) eq 'p') and not($e/descendant::span[@epub:type eq 'pagebreak'])">
+                            satisfies (local-name($e) eq 'p') and not($e/descendant::span[@epub:type eq 'pagebreak'])">
                     <!-- ALLE etterfølgende søsken er p-elementer, og ingen av dem inneholder sidetall, så gjør det enkelt: ta med alle etterfølgende søsken -->
                     <xsl:sequence select="following-sibling::element()"/>
                 </xsl:when>
@@ -90,6 +106,7 @@
             select="xs:integer(ceiling($antall-p div $antall-synkpunkter))"/>
         <xsl:variable name="sp.id" as="xs:string" select="generate-id()"/>
 
+        <!-- Fordel p-elementer i synkpunkter (Merk at hvis alle p får plass i et synk-punkt, så vil for-each under ikke ha noen effekt) -->
         <xsl:for-each select="1 to $antall-synkpunkter - 1">
             <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',current())}">
                 <xsl:apply-templates
@@ -97,6 +114,7 @@
                     mode="inkluder-i-wrapper"/>
             </div>
         </xsl:for-each>
+        
         <!-- Og så resten av avsnittene -->
         <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',$antall-synkpunkter)}">
             <xsl:apply-templates
@@ -106,9 +124,9 @@
         </div>
     </xsl:template>
 
-    
-    
-   
+
+
+
 
     <xsl:template match="p" mode="inkluder-i-wrapper">
         <xsl:copy exclude-result-prefixes="#all">

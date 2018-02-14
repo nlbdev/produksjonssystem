@@ -5,6 +5,13 @@
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
 
 
+    <!-- 
+        (c) 2018 NLB
+        
+        Per Sennels, 14.02.2018
+    -->
+    
+
     <!-- This module is added in order to create a text file with some debug information
         DO NOT GENERATE A LOG UNLESS YOU ARE DEAD CERTAIN THAT YOU NEED TO AND WANT TO
     -->

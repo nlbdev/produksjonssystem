@@ -4,7 +4,24 @@
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
     
-    <!-- TODO: Ta bort synkpunkter rundt genererte avsnitt -->
+    <!-- 
+        (c) 2018 NLB
+        
+        Denne transformasjonen brukes på XHTML-dokumentet i en NLBPUB-fil for å gjøre dette dokumenetet optimalt for 
+        innlesing av fulltekstlydbøker.
+        
+        Transformasjonen gjør følgende: 
+        * Fjerner irelevant metadata
+        * Genererer startinformasjon (på bokmål, nynorsk eller engelsk): tittel, lydbokavtalen, info om den trykte boken og info om den tilrettelagte utgaven
+        * Hvis XHTML-filen inneholder //element()[fnk:epub-type(@epub:type, 'cover')]: Ta bort opprinnelig cover, og bygg opp et nytt med standardiserte overskrifter
+        * Genererer sluttinformasjon (på bokmål, nynorsk eller engelsk): tittel, lydbokavtalen, info om den trykte boken og info om den tilrettelagte utgaven
+        
+        * Transformasjonen generer også noen meldinger knyttet til om metadata finnes eller ikke, men hvis det blir en generell metadata test tidliger i produksjonssystemet, så kan dette fjernes.
+        
+        Denne transformasjonen etterfølges av en transformasjon med filen lag-synkrinseringspunkter.xsl.
+        
+        Per Sennels, 14.02.2018
+    -->
 
     <xsl:include href="funksjoner.xsl"/>
     <xsl:include href="metadata.xsl"/>
@@ -18,19 +35,17 @@
 
 
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (0.9.4 / 2018-02-13)</xsl:message>
-
+        <xsl:message>prepare-for-narration.xsl (1.0.0 / 2018-02-14)</xsl:message>
+        
+        <!-- Denne er mest for debugging. Kan kanskje fjernes på sikt, og da kan man slette filen logg.xsl -->
         <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
 
+        <!-- Hvis metadata testes tisltrekkelig andre steder, og denne transformasjone bare skjer på bøker med tilstrekkelig metadata,
+            så kan linjen under slettes, og tilhørenede templates kan fjernes. -->
         <xsl:call-template name="varsle-om-manglende-metadata-i-nlbpub"/>
 
         <xsl:message>* Transformerer ... </xsl:message>
 
-        <!--<xsl:message>TEST: <xsl:value-of select="$metadata.forventet"/></xsl:message>
-        <xsl:message>Antall: <xsl:value-of select="count($metadata.forventet)"/></xsl:message>-->
-
-        <!--        <xsl:message>Sidetall i section: <xsl:value-of select="count(//section/div[@class eq 'page-normal'])"/></xsl:message>
-        <xsl:message>Sidetall i avsnitt: <xsl:value-of select="count(//section/p/span[@class eq 'page-normal'])"/></xsl:message>-->
         <xsl:message>
             <xsl:text>* Spraak: </xsl:text>
             <xsl:choose>
@@ -63,7 +78,7 @@
     </xsl:template>
 
     <xsl:template match="meta">
-        <!-- Rydde opp litt i metadata, blant annet fjerner en del som ikke lenger er nødvendige -->
+        <!-- Rydder opp litt i metadata, blant annet fjerner en del som ikke lenger er nødvendige -->
         <xsl:choose>
             <xsl:when
                 test="@name eq 'dc:identifier' and exists(//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'])">
@@ -78,7 +93,7 @@
                 <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:when test="starts-with(@name, 'nlbprod:')">
-                <!-- Tar bort all metadata som begynner med 'nlbprod:' -->
+                <!-- Tar bort all annen metadata som begynner med 'nlbprod:' -->
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy-of select="."/>

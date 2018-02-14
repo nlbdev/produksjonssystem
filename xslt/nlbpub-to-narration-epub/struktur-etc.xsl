@@ -6,6 +6,11 @@
     xpath-default-namespace="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all" version="2.0">
     
+    <!-- 
+        (c) 2018 NLB
+        
+        Per Sennels, 14.02.2018
+    -->
     
     <!-- Bestem hvilket språk som gjelder. Hentes fra Bibliofil, via metadata -->
     <!-- nynorsk -->
@@ -31,7 +36,7 @@
     <xsl:variable name="STRUKTUR.level3" as="element()*"
         select="//body/section[contains(@epub:type, 'bodymatter')]/section/section"/>
     <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean"
-        select="exists(//div[@epub:type eq 'pagebreak'])"/>
+        select="exists(//*[@epub:type eq 'pagebreak'])"/>
     <xsl:variable name="STRUKTUR.dybde" as="xs:integer"
         select="
         max(for $e in //section

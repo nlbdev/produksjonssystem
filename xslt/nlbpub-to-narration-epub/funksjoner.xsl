@@ -6,7 +6,14 @@
     xpath-default-namespace="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all" version="2.0">
 
-
+    <!-- 
+        (c) 2018 NLB
+        
+        En del nyttige funksjoner
+        
+        Per Sennels, 14.02.2018
+    -->
+    
     <xsl:function name="fnk:metadata-finnes" as="xs:boolean">
         <xsl:param name="navn" as="xs:string"></xsl:param>
         <xsl:value-of select="exists($metadata[@name eq $navn])"/>

@@ -4,7 +4,14 @@
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
 
-
+    <!-- 
+        (c) 2018 NLB
+        
+        En del av denne koden kan forenkles eller fjernes, hvis man kan være sikker på at all nødvendig metadata er på plass i file.
+        Inntil da, får vi beholde den som den er
+        
+        Per Sennels, 14.02.2018
+    -->
     <xsl:variable name="metadata" as="element()*" select="//meta"/>
 
     <!-- Antar her at boken er oversatt, HVIS OG BARE HVIS følgende metadata er gitt: 'dc:language.original' og 'dc:title.original'  -->

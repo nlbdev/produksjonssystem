@@ -4,6 +4,12 @@
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
 
+    <!-- 
+        (c) 2018 NLB
+        
+        Per Sennels, 14.02.2018
+    -->
+    
     <xsl:template name="generer-startinformasjon">
         <xsl:call-template name="generer-tittel"/>
         <!-- PSPS: Alltid før cover,sier Roald -->
@@ -123,7 +129,7 @@
                 <xsl:when test="$SPRÅK.en">
                     <p>
                         <xsl:text>This edition is produced by NLB in </xsl:text>
-                        <!-- psps-20171017: Raffinere årstallet under litt mer -->
+                        <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text> pursuant to article 17a of the Norwegian Copyright Act and can be reproduced for private use only. 
                             This copy is not to be redistributed. 
@@ -138,7 +144,7 @@
                 <xsl:when test="$SPRÅK.nn">
                     <p>
                         <xsl:text>Denne utgåva er produsert av NLB i </xsl:text>
-                        <!-- psps-20171017: Raffinere årstallet under litt mer -->
+                        <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text> med heimel i åndsverklova § 17a, og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over skal
                         alle digitale eksemplar destruerast eller returnerast til produsenten.
@@ -154,7 +160,7 @@
                 <xsl:otherwise>
                     <p>
                         <xsl:text>Denne utgaven er produsert av NLB i </xsl:text>
-                        <!-- psps-20171017: Raffinere årstallet under litt mer -->
+                        <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text> med hjemmel i åndsverklovens § 17a, og kan kun kopieres til privat bruk. 
                             Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp skal alle digitale eksemplar 
@@ -204,13 +210,10 @@
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
                             <xsl:choose>
-                                <!-- 20171018-psps: Antar at sideskift alltid er div. Må sjekke dette.
-                               Samt at sidetallet alltid er div@title
-                           -->
                                 <xsl:when test="$STRUKTUR.har-sidetall">
                                     <xsl:text>, and has </xsl:text>
                                     <xsl:value-of
-                                        select="//div[@epub:type eq 'pagebreak'][not(following::div[@epub:type eq 'pagebreak'])]/@title"/>
+                                        select="//*[@epub:type eq 'pagebreak'][not(following::*[@epub:type eq 'pagebreak'])]/@title"/>
                                     <xsl:text> pages.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -245,10 +248,6 @@
                                 <xsl:text>The book was first published in </xsl:text>
                                 <xsl:value-of
                                     select="fnk:hent-metadata-fra-nlbpub('dc:language.original', true())"/>
-                                <!-- psps-20180131: Later til at det ikke er informasjon om årstall for originaltutgaven i Bibliofil, så det dropper vi
-                            <xsl:text> in </xsl:text>
-                            <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('TODO-originalutgave-år', true())"/> -->
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
@@ -287,13 +286,10 @@
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
                             <xsl:choose>
-                                <!-- 20171018-psps: Antar at sideskift alltid er div. Må sjekke dette.
-                               Samt at sidetallet alltid er div@title
-                           -->
-                                <xsl:when test="exists(//div[@epub:type eq 'pagebreak'])">
+                                <xsl:when test="$STRUKTUR.har-sidetall">
                                     <xsl:text>, og er på </xsl:text>
                                     <xsl:value-of
-                                        select="//div[@epub:type eq 'pagebreak'][not(following::div[@epub:type eq 'pagebreak'])]/@title"/>
+                                        select="//*[@epub:type eq 'pagebreak'][not(following::*[@epub:type eq 'pagebreak'])]/@title"/>
                                     <xsl:text> sider.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -313,7 +309,6 @@
                     <xsl:if
                         test="fnk:metadata-finnes('dc:date.issued.original') and fnk:metadata-finnes('bookEdition.original')">
                         <p>
-                            <!-- 20171018-psps: Hva er kriteriet for å ta med dette? -->
                             <xsl:text>Boka er første gang utgjeven  i </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
@@ -329,10 +324,6 @@
                                 <xsl:text>Boka er første gong utgjeven på </xsl:text>
                                 <xsl:value-of
                                     select="fnk:hent-metadata-fra-nlbpub('dc:language.original', true())"/>
-                                <!-- psps-20180131: Later til at det ikke er informasjon om årstall for originaltutgaven i Bibliofil, så det dropper vi
-                            <xsl:text> i </xsl:text>
-                            <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('originalutgave-år', true())"/> -->
                                 <xsl:text>. </xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
@@ -370,13 +361,10 @@
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
                             <xsl:choose>
-                                <!-- 20171018-psps: Antar at sideskift alltid er div. Må sjekke dette.
-                               Samt at sidetallet alltid er div@title
-                           -->
                                 <xsl:when test="$STRUKTUR.har-sidetall">
                                     <xsl:text>, og er på </xsl:text>
                                     <xsl:value-of
-                                        select="//div[@epub:type eq 'pagebreak'][not(following::div[@epub:type eq 'pagebreak'])]/@title"/>
+                                        select="//*[@epub:type eq 'pagebreak'][not(following::*[@epub:type eq 'pagebreak'])]/@title"/>
                                     <xsl:text> sider.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -411,10 +399,6 @@
                                 <xsl:text>Boka er første gang utgitt på </xsl:text>
                                 <xsl:value-of
                                     select="fnk:hent-metadata-fra-nlbpub('dc:language.original', true())"/>
-                                <!-- psps-20180131: Later til at det ikke er informasjon om årstall for originaltutgaven i Bibliofil, så det dropper vi
-                            <xsl:text> i </xsl:text>
-                            <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('TODO-originalutgave-år', true())"/> -->
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
