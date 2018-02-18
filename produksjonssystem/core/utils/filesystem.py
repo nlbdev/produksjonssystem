@@ -61,7 +61,8 @@ class Filesystem():
         
         stat = os.stat(path)
         st_size = stat.st_size if os.path.isfile(path) else 0
-        attributes.extend([path, stat.st_mtime, st_size, stat.st_mode])
+        st_mtime = round(stat.st_mtime)
+        attributes.extend([path, st_mtime, st_size, stat.st_mode])
         modified = stat.st_mtime
 
         if not shallow:
@@ -73,13 +74,15 @@ class Filesystem():
                         filePath = os.path.join(dirPath, f)
                         stat = os.stat(filePath)
                         st_size = stat.st_size if os.path.isfile(path) else 0
-                        attributes.extend([filePath, stat.st_mtime, st_size, stat.st_mode])
+                        st_mtime = round(stat.st_mtime)
+                        attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
                         modified = max(modified, stat.st_mtime)
                     for sd in subdirList:
                         subdirPath = os.path.join(dirPath, sd)
                         stat = os.stat(subdirPath)
                         st_size = stat.st_size if os.path.isfile(path) else 0
-                        attributes.extend([subdirPath, stat.st_mtime, st_size, stat.st_mode])
+                        st_mtime = round(stat.st_mtime)
+                        attributes.extend([subdirPath, st_mtime, st_size, stat.st_mode])
                         modified = max(modified, stat.st_mtime)
             except FileNotFoundError as e:
                 logging.exception("[" + str(threading.get_ident()) + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
