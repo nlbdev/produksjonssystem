@@ -79,7 +79,7 @@ pipelines = [
 # Don't edit below this line if you only want to add/remove/modify a pipeline
 # ---------------------------------------------------------------------------
 
-if len(sys.argv) > 1 and sys.argv[1].lower() == "debug":
+if "debug" in sys.argv:
     logging.getLogger().setLevel(logging.DEBUG)
 else:
     logging.getLogger().setLevel(logging.INFO)
