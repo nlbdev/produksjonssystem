@@ -75,7 +75,8 @@ class Plotter():
                     dot.edge(pipeline[1], pipeline_id)
                     dot.edge(pipeline_id, pipeline[2])
                 
-                dot.render(os.path.join(self.report_dir, 'graph'))
+                dot.render(os.path.join(self.report_dir, 'graph_'))
+                shutil.move(os.path.join(self.report_dir, 'graph_.png'), os.path.join(self.report_dir, 'graph.png'))
                 
             except Exception:
                 logging.exception("An error occured while generating plot")
