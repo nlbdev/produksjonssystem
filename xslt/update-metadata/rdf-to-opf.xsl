@@ -45,7 +45,7 @@
             
             <xsl:copy-of select="$metadata"/>
             <xsl:text><![CDATA[
-]]></xsl:text>
+    ]]></xsl:text>
         </metadata>
     </xsl:template>
     
