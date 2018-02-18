@@ -217,8 +217,8 @@ class Pipeline():
         
         assert not "/" in name
         
-        shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True)
-        deep_md5, modified = Filesystem.path_md5(path=path, shallow=False)
+        shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True, expect=self._md5[name]["shallow"] if name in self._md5 else None)
+        deep_md5, modified = Filesystem.path_md5(path=path, shallow=False, expect=self._md5[name]["deep"] if name in self._md5 else None)
         modified = max(modified if modified else 0, self._md5[name]["modified"] if name in self._md5 else 0)
         self._md5[name] = {
             "shallow": shallow_md5,
@@ -236,7 +236,7 @@ class Pipeline():
                     recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
                     if recently_changed:
                         for f in recently_changed:
-                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False, expect=self._md5[f]["deep"] if f in self._md5 else None)
                             self._md5[f]["deep_checked"] = int(time.time())
                             if deep_md5 != self._md5[f]["deep"]:
                                 self._md5[f]["modified"] = int(time.time())
@@ -270,7 +270,7 @@ class Pipeline():
                             logging.debug("[" + Report.thread_name() + "] book created: " + f)
                             continue
                         
-                        shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=True)
+                        shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=True, expect=self._md5[f]["shallow"] if f in self._md5 else None)
                         if shallow_md5 != self._md5[f]["shallow"]:
                             self._update_md5(f)
                             self._add_book_to_queue(f, "modified")
@@ -289,7 +289,7 @@ class Pipeline():
                     long_time_since_checked = sorted([{ "name": f, "md5": self._md5[f]} for f in self._md5 if time.time() - self._md5[f]["modified"] > self._inactivity_timeout], key=lambda f: f["md5"]["deep_checked"])
                     for b in long_time_since_checked[:10]:
                         f = b["name"]
-                        deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                        deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False, expect=self._md5[f]["deep"] if f in self._md5 else None)
                         if not f in self._md5:
                             self._update_md5(f)
                         else:

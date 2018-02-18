@@ -8,6 +8,7 @@ import hashlib
 import logging
 import zipfile
 import tempfile
+import threading
 import traceback
 import subprocess
 import urllib.request
@@ -47,7 +48,7 @@ class Filesystem():
         self.pipeline = pipeline
     
     @staticmethod
-    def path_md5(path, shallow):
+    def path_md5(path, shallow, expect=None):
         attributes = []
 
         # In addition to the path, we use these stat attributes:
@@ -78,10 +79,14 @@ class Filesystem():
                         attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
                         modified = max(modified, stat.st_mtime)
             except FileNotFoundError as e:
-                logging.exception("[" + Report.thread_name() + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
+                logging.exception("[" + str(threading.get_ident()) + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
                 raise e
-
+        
         md5 = hashlib.md5(str(attributes).encode()).hexdigest()
+        
+        if expect and expect != md5:
+            logging.debug("[" + str(threading.get_ident()) + "] MD5 changed for " + str(path) + ": " + str(attributes))
+        
         return md5, modified
     
     def copytree(self, src, dst):
