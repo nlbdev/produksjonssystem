@@ -334,28 +334,10 @@ class Pipeline():
                 
                 if self.book:
                     # Determine order of creation/deletion, as well as type of book event
-                    created_seq = []
-                    deleted_seq = []
-                    event = "modified"
-                    for e in range(0, len(self.book["events"])):
-                        event = self.book["events"][e]
-                        if event == "created":
-                            created_seq.append(e)
-                        elif event == "deleted":
-                            deleted_seq.append(e)
-                    
-                    if created_seq and deleted_seq:
-                        if max(deleted_seq) > max(created_seq) or not os.path.exists(self.book["source"]):
-                            event = "deleted"
-                        else:
-                            event = "created"
-                    elif "created" in self.book["events"]:
-                        event = "created"
-                    elif "deleted" in self.book["events"]:
-                        event = "deleted"
+                    event = Pipeline.get_main_event(self.book["events"])
                     
                     # created first, then deleted => ignore
-                    if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
+                    if event == "create_before_delete":
                         pass
                     
                     # trigger book event
@@ -401,6 +383,34 @@ class Pipeline():
                 
             finally:
                 time.sleep(1)
+    
+    @staticmethod
+    def get_main_event(events):
+        created_seq = []
+        deleted_seq = []
+        event = "modified"
+        
+        for e in range(0, len(events)):
+            event = events[e]
+            if event == "created":
+                created_seq.append(e)
+            elif event == "deleted":
+                deleted_seq.append(e)
+        
+        if created_seq and deleted_seq:
+            if max(deleted_seq) > max(created_seq) or not os.path.exists(self.book["source"]):
+                event = "deleted"
+            else:
+                event = "created"
+        elif "created" in events:
+            event = "created"
+        elif "deleted" in events:
+            event = "deleted"
+        
+        if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
+            event = "create_before_delete"
+        
+        return event
     
     # in case you want to override something
     @staticmethod

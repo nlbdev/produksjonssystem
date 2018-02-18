@@ -6,7 +6,9 @@ import sys
 import time
 import shutil
 import logging
+
 from graphviz import Digraph
+from core.pipeline import Pipeline
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -37,13 +39,29 @@ class Plotter():
                 
                 for pipeline in self.pipelines:
                     pipeline_id = pipeline[0].__class__.__name__
-                    title = pipeline[0].title if pipeline[0].title else pipeline_id
+                    title = pipeline[0].title if pipeline[0].title else pipeline_id 
+                    
+                    queue_created = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "created"]) if pipeline[0]._queue else 0
+                    queue_deleted = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "deleted"]) if pipeline[0]._queue else 0
+                    queue_modified = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "modified"]) if pipeline[0]._queue else 0
+                    queue_triggered = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "triggered"]) if pipeline[0]._queue else 0
+                    queue_string = []
+                    if queue_created:
+                        queue_string.append("nye:"+str(queue_created))
+                    if queue_modified:
+                        queue_string.append("endret:"+str(queue_modified))
+                    if queue_deleted:
+                        queue_string.append("slettet:"+str(queue_deleted))
+                    if queue_triggered:
+                        queue_string.append("trigget:"+str(queue_triggered))
+                    queue_string = ", ".join(queue_string)
+                    
                     queue_size = len(pipeline[0]._queue) if pipeline[0]._queue else 0
                     book = pipeline[0].book["name"] if pipeline[0].book else ""
                     relpath_in = "in" if not pipeline[0].dir_in and pipeline[0].dir_base else os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
                     relpath_out = "out" if not pipeline[0].dir_out and pipeline[0].dir_base else os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
                     
-                    pipeline_label = title + "\n" + "I køen: " + str(queue_size) + "\n" + (book if book else "(venter)")
+                    pipeline_label = title + "\n" + queue_string + "\n" + ("Behandler: " + str(book) if book else "(venter)")
                     
                     fillcolor = "lightskyblue1"
                     if book or queue_size:
