@@ -1,7 +1,7 @@
 dotmap==1.2.20
 graphviz==0.5.2
-lxml==3.7.3
-Markdown==2.6.9
+lxml==4.0.0
+Markdown==2.6.11
 Pygments==2.2.0
-requests==2.10.0
+requests==2.18.1
 slacker==0.9.60
