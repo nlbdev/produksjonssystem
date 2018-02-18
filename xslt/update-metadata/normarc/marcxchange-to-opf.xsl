@@ -18,6 +18,7 @@
     
     <xsl:param name="nested" select="false()"/>
     <xsl:param name="include-source-reference" select="false()"/>
+    <xsl:param name="identifier" select="''"/>
     
     <xsl:template match="@*|node()">
         <xsl:choose>
@@ -250,7 +251,7 @@
     <xsl:template match="*:controlfield[@tag='001']">
         <xsl:call-template name="meta">
             <xsl:with-param name="property" select="'dc:identifier'"/>
-            <xsl:with-param name="value" select="text()"/>
+            <xsl:with-param name="value" select="if ($identifier) then $identifier else text()"/>
             <xsl:with-param name="id" select="'pub-id'"/>
         </xsl:call-template>
     </xsl:template>
@@ -1824,7 +1825,11 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='856']">
-        <!--<xsl:message select="'NORMARC-felt ignorert: 856 ELEKTRONISK LOKALISERING OG TILGANG'"/>-->
+        <xsl:if test="*:subfield[@code='u']/text() = 'URN:NBN:no-nb_nlb_'">
+            <xsl:for-each select="*:subfield[@code='s']">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:source.urn-nbn'"/><xsl:with-param name="value" select="concat('urn:nbn:no-nb_nlb_', text())"/></xsl:call-template>
+            </xsl:for-each>
+        </xsl:if>
     </xsl:template>
     
     <!-- 9XX HENVISNINGER -->

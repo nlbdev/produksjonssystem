@@ -638,5 +638,29 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Namespace Identifier (NID) 'NBN' for national bibliography numbers">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="856" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="u">URN:NBN:no-nb_nlb_</marcxchange:subfield>
+                    <marcxchange:subfield code="s">140759411</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="856" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="u">URN:NBN:no-nb_nlb_</marcxchange:subfield>
+                    <marcxchange:subfield code="s">ABCD</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="856" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="u">URN:NBN:no-nb_nlb_</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_140759411</meta>
+                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_ABCD</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>
