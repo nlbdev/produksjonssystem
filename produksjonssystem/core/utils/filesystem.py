@@ -60,7 +60,8 @@ class Filesystem():
             return "d41d8cd98f00b204e9800998ecf8427e", 0 if not shallow else None # MD5 of an empty string
         
         stat = os.stat(path)
-        attributes.extend([path, stat.st_mtime, stat.st_size, stat.st_mode])
+        st_size = stat.st_size if os.path.isfile(path) else 0
+        attributes.extend([path, stat.st_mtime, st_size, stat.st_mode])
         modified = stat.st_mtime
 
         if not shallow:
@@ -71,12 +72,14 @@ class Filesystem():
                     for f in fileList:
                         filePath = os.path.join(dirPath, f)
                         stat = os.stat(filePath)
-                        attributes.extend([filePath, stat.st_mtime, stat.st_size, stat.st_mode])
+                        st_size = stat.st_size if os.path.isfile(path) else 0
+                        attributes.extend([filePath, stat.st_mtime, st_size, stat.st_mode])
                         modified = max(modified, stat.st_mtime)
                     for sd in subdirList:
                         subdirPath = os.path.join(dirPath, sd)
                         stat = os.stat(subdirPath)
-                        attributes.extend([subdirPath, stat.st_mtime, stat.st_size, stat.st_mode])
+                        st_size = stat.st_size if os.path.isfile(path) else 0
+                        attributes.extend([subdirPath, stat.st_mtime, st_size, stat.st_mode])
                         modified = max(modified, stat.st_mtime)
             except FileNotFoundError as e:
                 logging.exception("[" + str(threading.get_ident()) + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
