@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:frbr="http://purl.org/vocab/frbr/core#"
+               xmlns:nlb="http://www.nlb.no/"
+               xmlns:nlbbib="http://www.nlb.no/bibliographic"
+               xmlns:nlbprod="http://www.nlb.no/production"
+               xmlns:nordic="http://www.mtm.se/epub/"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:schema="http://schema.org/"
+               stylesheet="rdf-join.xsl">
+    
+    <x:param name="metadata-dir" select="''"/>
+    <x:param name="rdf-files" select="''"/>
+    
+    <x:scenario label="Basic test">
+        <x:call template="main-testable">
+            <x:param name="descriptions">
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558294072018" _source="epub">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <dc:identifier nlb:metadata-source="EPUB">558294072018</dc:identifier>
+                    <dc:format>EPUB</dc:format>
+                    <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
+                    <nordic:supplier nlb:metadata-source="EPUB">Technofunda</nordic:supplier>
+                </rdf:Description>
+            
+                <rdf:Description rdf:ID="creativeWork_d3d2e0" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
+                    <nlbprod:dateCreated xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Date Created">2017-11-30T08:03:18</nlbprod:dateCreated>
+                    <nlbprod:publisher xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Forlag">Hjemmet Mortensen</nlbprod:publisher>
+                    <schema:isbn xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Original ISBN">ISBN</schema:isbn>
+                    <nlbprod:translator xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Oversetter">Etternavn, Fornavn Mellomnavn</nlbprod:translator>
+                    <nlbprod:language xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Språk">Språk</nlbprod:language>
+                    <nlbprod:category xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Kategori">Voksen</nlbprod:category>
+                    <nlbprod:dateModified xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Date Modified">2017-11-30T08:03:18</nlbprod:dateModified>
+                    <nlbprod:recordId xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Record ID#">16415</nlbprod:recordId>
+                    <nlbprod:duplicate xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Duplikat">false</nlbprod:duplicate>
+                    <nlbprod:recordOwner xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Record Owner">OlavI</nlbprod:recordOwner>
+                    <nlbprod:newRegistration xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ny registrering">false</nlbprod:newRegistration>
+                    <nlbprod:lastModifiedBy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Last Modified By">OlavI</nlbprod:lastModifiedBy>
+                    <nlbprod:registrationDate xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Registreringsdato">2017-11-30</nlbprod:registrationDate>
+                    <nlbprod:genre xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Genre">Periodika</nlbprod:genre>
+                    <nlbprod:title xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tittel">Vi menn 07/2018</nlbprod:title>
+                    <nlbprod:addRecord xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Add Record">https://dtbook.quickbase.com/db/bmgg4agc5?a=API_GenAddRecordForm&amp;_fid_6=16415&amp;z=</nlbprod:addRecord>
+                    <nlbprod:author xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Forfatter">Øystå, Alexander</nlbprod:author>
+                </rdf:Description>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624594072018" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d3d2e0"></schema:exampleOfWork>
+                    <nlbprod:narratedTimeInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Innlest tid i timer">0.00</nlbprod:narratedTimeInHours>
+                    <nlbprod:preparationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Forberedelsestid">0:00:00</nlbprod:preparationTime>
+                    <nlbprod:additionalNightAndWeekend xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Kvelds- og helgetillegg">0:00:00</nlbprod:additionalNightAndWeekend>
+                    <nlbprod:preparationTimeInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Forberedelsestid i timer">0.00</nlbprod:preparationTimeInHours>
+                    <nlbprod:nightAndWeekendInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Kvelds- og helgetillegg i timer">0.00</nlbprod:nightAndWeekendInHours>
+                    <nlbprod:sumFee xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Sum honorar">0.00</nlbprod:sumFee>
+                    <nlbprod:feeComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ferdig honorert">false</nlbprod:feeComplete>
+                    <nlbprod:otherWorkInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Annet arbeid i timer">0.00</nlbprod:otherWorkInHours>
+                    <nlbprod:totalSumFee xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Total sum honorar">0.00</nlbprod:totalSumFee>
+                    <nlbprod:feeOtherWork xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar annet arbeid">0.00</nlbprod:feeOtherWork>
+                    <nlbprod:daisy202readyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 DAISY 2.02 klar for utlån">false</nlbprod:daisy202readyForLoan>
+                    <nlbprod:notForFee xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ikke til honorering">false</nlbprod:notForFee>
+                    <nlbprod:extraPreparationTimeInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ekstra forberedelsestid i timer">0.00</nlbprod:extraPreparationTimeInHours>
+                    <nlbprod:feeExtraPreparationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar ekstra forberedelsestid">0.00</nlbprod:feeExtraPreparationTime>
+                    <nlbprod:identifier.daisy202 xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer DAISY 2.02 Skjønnlitteratur">624594072018</nlbprod:identifier.daisy202>
+                    <nlbprod:formatDaisy202narrated xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 Innlest Skjønn">false</nlbprod:formatDaisy202narrated>
+                    <nlbprod:formatDaisy202tts xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 TTS Skjønn">false</nlbprod:formatDaisy202tts>
+                    <nlbprod:formatDaisy202narratedStudent xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 Innlest Studie">false</nlbprod:formatDaisy202narratedStudent>
+                    <nlbprod:generateFee xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Generer fakturagrunnlag">false</nlbprod:generateFee>
+                    <nlbprod:formatDaisy202ttsStudent xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 TTS Studie">false</nlbprod:formatDaisy202ttsStudent>
+                    <nlbprod:generateReceipt xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Generer kvittering">false</nlbprod:generateReceipt>
+                    <nlbprod:account xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Konto">0326</nlbprod:account>
+                    <nlbprod:costLocation xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Kostnadssted">20</nlbprod:costLocation>
+                    <nlbprod:overriding xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Overstyring">131</nlbprod:overriding>
+                    <nlbprod:paymentType xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Lønnart">5515</nlbprod:paymentType>
+                    <nlbprod:formatDaisy202narratedFulltext xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 Innlest fulltekst">false</nlbprod:formatDaisy202narratedFulltext>
+                    <nlbprod:feeForMultipleNarrators xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorering av flere innlesere">javascript:void(copyMasterDetailButtonHandler('&amp;copyFid=8&amp;destrid=0&amp;sourcerid=16415',
+                        'bhh8n666n'))
+                    </nlbprod:feeForMultipleNarrators>
+                    <nlbprod:waitingBecauseOfTechnicalProblemsInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Venting pga teknisk feil i timer">0.00</nlbprod:waitingBecauseOfTechnicalProblemsInHours>
+                    <nlbprod:inStudioWithProducerInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 I studio med produsent i timer">0.00</nlbprod:inStudioWithProducerInHours>
+                    <nlbprod:compensationWaitingTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Kompensasjon ventetid">0.00</nlbprod:compensationWaitingTime>
+                    <nlbprod:compensationInStudioWithProducer xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Kompensasjon i studio med produsent">0.00</nlbprod:compensationInStudioWithProducer>
+                    <nlbprod:preparedForNarration xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tilrettelagt for innlesing">false</nlbprod:preparedForNarration>
+                    <nlbprod:daisy202productionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 DAISY 2.02 ferdig produsert">false</nlbprod:daisy202productionComplete>
+                    <nlbprod:daisy202ttsProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 DAISY 2.02 TTS ferdig produsert">false</nlbprod:daisy202ttsProductionComplete>
+                    <nlbprod:handedOverToNarratorCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Levert innleser_copy">false</nlbprod:handedOverToNarratorCopy>
+                    <nlbprod:generateReceiptCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Generer kvittering_copy">false</nlbprod:generateReceiptCopy>
+                    <nlbprod:narrationCompleteCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ferdig innlest_copy">false</nlbprod:narrationCompleteCopy>
+                    <nlbprod:narrationTimeCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Innlest tid_copy">0:00:00</nlbprod:narrationTimeCopy>
+                    <nlbprod:narrationTimeInHoursCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Innlest tid i timer_copy">0.00</nlbprod:narrationTimeInHoursCopy>
+                    <nlbprod:feeOtherWorkCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar annet arbeid_copy">0.00</nlbprod:feeOtherWorkCopy>
+                    <nlbprod:feeExtraPreparationCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar ekstra forberedelsestid_copy">0.00</nlbprod:feeExtraPreparationCopy>
+                    <nlbprod:feePreparationCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar forberedelsestid_copy">0.00</nlbprod:feePreparationCopy>
+                    <nlbprod:feeNarrationCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar pr ferdig innlest tid_copy">0.00</nlbprod:feeNarrationCopy>
+                    <nlbprod:handedOverToNarrator xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Levert innleser">false</nlbprod:handedOverToNarrator>
+                    <nlbprod:sumFeeCopy xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Sum honorar_copy">0.00</nlbprod:sumFeeCopy>
+                    <nlbprod:postProductionStarted xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Etterarbeid startet">false</nlbprod:postProductionStarted>
+                    <nlbprod:feeClaimHandled xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorarkrav behandlet">false</nlbprod:feeClaimHandled>
+                    <nlbprod:narratedFulltext xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Innlest fulltekst">false</nlbprod:narratedFulltext>
+                    <nlbprod:narrationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Innlest tid">0:00:00</nlbprod:narrationTime>
+                    <nlbprod:narrationComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ferdig innlest">false</nlbprod:narrationComplete>
+                    <nlbprod:formatDaisy202wips xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 WIPS">false</nlbprod:formatDaisy202wips>
+                    <nlbprod:feeNarratedTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar pr ferdig innlest tid">0.00</nlbprod:feeNarratedTime>
+                    <nlbprod:feePreparationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Honorar forberedelsestid">0.00</nlbprod:feePreparationTime>
+                    <nlbprod:additionalFeeNightAndWeekend xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tillegg kveld og helg">0.00</nlbprod:additionalFeeNightAndWeekend>
+                </rdf:Description>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558294072018" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d3d2e0"></schema:exampleOfWork>
+                    <nlbprod:identifier.epub xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer EPUB">558294072018</nlbprod:identifier.epub>
+                    <nlbprod:epubCatalogued xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 EPUB ferdig katalogisert">false</nlbprod:epubCatalogued>
+                    <nlbprod:sourceFileReceived xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 PDF/grunnlagsfil mottatt og lagret">false</nlbprod:sourceFileReceived>
+                    <nlbprod:dtbookReturned xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 DTBook sendt i retur">false</nlbprod:dtbookReturned>
+                    <nlbprod:productionApproved xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Production approved">false</nlbprod:productionApproved>
+                    <nlbprod:productionDelivered xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Production delivered">false</nlbprod:productionDelivered>
+                    <nlbprod:agency xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Agency">NLB</nlbprod:agency>
+                    <nlbprod:leaveAMessage xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Leave a message">false</nlbprod:leaveAMessage>
+                    <nlbprod:purchaseOrderId xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Purchase order ID">https://dtbook.quickbase.com/db/bhh8n666n?a=dr&amp;rid=16415</nlbprod:purchaseOrderId>
+                    <nlbprod:asciimath xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 ASCIIMath">false</nlbprod:asciimath>
+                    <nlbprod:exercisesAndAnswers xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Exercises and answers">false</nlbprod:exercisesAndAnswers>
+                    <nlbprod:inlineTextStyling xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Inline text styling">false</nlbprod:inlineTextStyling>
+                    <nlbprod:extractionOfTextContentInImages xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Extraction of text content in images">false</nlbprod:extractionOfTextContentInImages>
+                    <nlbprod:productionReturned xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Production returned">false</nlbprod:productionReturned>
+                    <nlbprod:productionDownloaded xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Production downloaded">false</nlbprod:productionDownloaded>
+                    <nlbprod:urgentProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Hasteproduksjon">false</nlbprod:urgentProduction>
+                    <nlbprod:bokbasen xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 www.bokbasen.no">false</nlbprod:bokbasen>
+                    <nlbprod:ocrChecked xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 OCR-kontroll utført">false</nlbprod:ocrChecked>
+                    <nlbprod:metadataChecked xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Metadata kontrollert">false</nlbprod:metadataChecked>
+                    <nlbprod:structureChecked xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Struktur kontrollert">false</nlbprod:structureChecked>
+                    <nlbprod:editingInstructionsChecked xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Editing instructions kontrollert">false</nlbprod:editingInstructionsChecked>
+                    <nlbprod:sourceFileOrdered xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 PDF/grunnlagsfil bestilt">false</nlbprod:sourceFileOrdered>
+                    <nlbprod:forManualPreparationInNLB xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Til manuell tilrettelegging i NLB">false</nlbprod:forManualPreparationInNLB>
+                    <nlbprod:epubDTBookOrdered xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 EPUB/DTBook ordered">false</nlbprod:epubDTBookOrdered>
+                </rdf:Description>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115494072018" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d3d2e0"></schema:exampleOfWork>
+                    <nlbprod:brailleReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Punktskrift klar for utlån">false</nlbprod:brailleReadyForLoan>
+                    <nlbprod:formatNotes xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Noter">false</nlbprod:formatNotes>
+                    <nlbprod:formatBrailleClub xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Punktklubb">false</nlbprod:formatBrailleClub>
+                    <nlbprod:openLinespacing xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Åpen linjeavstand">false</nlbprod:openLinespacing>
+                    <nlbprod:identifier.braille xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer Punktskrift">115494072018</nlbprod:identifier.braille>
+                    <nlbprod:formatBraille xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Punktskrift">false</nlbprod:formatBraille>
+                    <nlbprod:singlePagePrint xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Enkeltsidig trykk">false</nlbprod:singlePagePrint>
+                    <nlbprod:brailleClubProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
+                    <nlbprod:brailleClubReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Punktklubb klar for utlån">false</nlbprod:brailleClubReadyForLoan>
+                    <nlbprod:partialBrailleProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Til delproduksjon punktskrift">false</nlbprod:partialBrailleProduction>
+                    <nlbprod:formatBraillePartialProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Punktskrift delproduksjon">false</nlbprod:formatBraillePartialProduction>
+                    <nlbprod:formatTactilePrint xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Taktil trykk">false</nlbprod:formatTactilePrint>
+                    <nlbprod:tactilePrintReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Taktilt trykk klar for utlån">false</nlbprod:tactilePrintReadyForLoan>
+                    <nlbprod:tactilePrintProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Taktilt trykk ferdig produsert">false</nlbprod:tactilePrintProductionComplete>
+                    <nlbprod:brailleProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Punktskrift ferdig produsert">false</nlbprod:brailleProductionComplete>
+                </rdf:Description>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356894072018" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d3d2e0"></schema:exampleOfWork>
+                    <nlbprod:ebookReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
+                    <nlbprod:identifier.ebook xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer e-bok">356894072018</nlbprod:identifier.ebook>
+                    <nlbprod:formatEbook xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: E-bok">false</nlbprod:formatEbook>
+                    <nlbprod:ebookProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 E-bok ferdig produsert">false</nlbprod:ebookProductionComplete>
+                </rdf:Description>
+                <rdf:Description rdf:ID="external_d3d2e0" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d3d2e0"></schema:exampleOfWork>
+                    <nlbprod:formatDaisy202externalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 ekstern produksjon">false</nlbprod:formatDaisy202externalProduction>
+                    <nlbprod:formatEbookExternalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: E-bok ekstern produksjon">false</nlbprod:formatEbookExternalProduction>
+                    <nlbprod:formatAudioCDWAVExternalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Audio CD WAV ekstern produksjon">false</nlbprod:formatAudioCDWAVExternalProduction>
+                    <nlbprod:formatAudioCDMP3ExternalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Audio CD MP3 ekstern produksjon">false</nlbprod:formatAudioCDMP3ExternalProduction>
+                    <nlbprod:formatOtherExternalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Format: Annet format ekstern produksjon">false</nlbprod:formatOtherExternalProduction>
+                    <nlbprod:externalProductionProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558294072018 Ekstern produksjon ferdig produsert">false</nlbprod:externalProductionProductionComplete>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="creativeWork_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
+                    <dc:title xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *245$a">Vi menn</dc:title>
+                    <dc:language xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *008">nob</dc:language>
+                    <dc:contributor.editor xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *700" schema:name="Øystå, Alexender">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *700$3">20180500</nlbbib:bibliofil-id>
+                    </dc:contributor.editor>
+                    <dc:contributor.narrator xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *511$a" schema:name="Brage Talesyntese">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *511$3">19209900</nlbbib:bibliofil-id>
+                    </dc:contributor.narrator>
+                    <schema:bookEdition xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *245">1</schema:bookEdition>
+                </rdf:Description>
+                <rdf:Description rdf:ID="original_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                    <dc:date.issued xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *596$c">2016</dc:date.issued>
+                    <dc:publisher xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *596$b">Hjemmet Mortensen</dc:publisher>
+                    <schema:bookEdition xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *596">1</schema:bookEdition>
+                </rdf:Description>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624594072018" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                    <frbr:translationOf rdf:resource="#original_d1e1"></frbr:translationOf>
+                    <dc:identifier xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *001">624594</dc:identifier>
+                    <dc:format xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *245$h">DAISY 2.02</dc:format>
+                    <dc:publisher xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *260$b" schema:name="Norsk lyd- og blindeskriftbibliotek">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *260$3">17192400</nlbbib:bibliofil-id>
+                    </dc:publisher>
+                    <dc:date.issued xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *260$c">2018</dc:date.issued>
+                    <dc:description.abstract xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *520$a">Vi Menn er Norges største magasin rettet mot menn. Det omhandler aktualitets-reportasjer,populærvitenskp,sport,
+                        bil/motor/båt/MC, teknologi, humor/erotikk, politikk, økonomi m.m.
+                    </dc:description.abstract>
+                    <dc:format.other xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Audio recording</dc:format.other>
+                    <dc:format.other xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Compact Disk</dc:format.other>
+                    <dc:format.other xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Other voice/other</dc:format.other>
+                    <dc:format.other xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Serial</dc:format.other>
+                    <dc:format.other xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Magazine</dc:format.other>
+                    <dc:format.other.no xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Lydopptak</dc:format.other.no>
+                    <dc:format.other.no xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">CD (kompaktplate)</dc:format.other.no>
+                    <dc:format.other.no xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Annen tale/annet</dc:format.other.no>
+                    <dc:format.other.no xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Periodika</dc:format.other.no>
+                    <dc:format.other.no xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *019$b">Tidsskrift</dc:format.other.no>
+                    <dc:publisher.location xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *260$a">Oslo</dc:publisher.location>
+                    <dc:publisher.original.location xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *596$a">Oslo</dc:publisher.original.location>
+                    <dc:source.urn-nbn nlb:metadata-source="Bibliofil@624594 *856$s">urn:nbn:no-nb_nlb_140759411</dc:source.urn-nbn>
+                    <dc:subject.keyword xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *650" schema:name="Tidsskrifter">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *650$3">15224000</nlbbib:bibliofil-id>
+                    </dc:subject.keyword>
+                    <dc:type.genre xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *008">Fiction</dc:type.genre>
+                    <dc:type.genre xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *008">Non-biography</dc:type.genre>
+                    <schema:audience xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *008">Adult</schema:audience>
+                    <schema:issn xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *022$a">0042-4951</schema:issn>
+                    <schema:library xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *850$a">NLB</schema:library>
+                    <nlbbib:magazine xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *650">true</nlbbib:magazine>
+                    <nlbbib:periodical xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *650">true</nlbbib:periodical>
+                    <nlbbib:series.position xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *440$v">52 nr. pr.år</nlbbib:series.position>
+                    <schema:typicalAgeRange xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624594 *008">17-</schema:typicalAgeRange>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="book_d1e1" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="creativeWork_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
+                </rdf:Description>
+                <rdf:Description rdf:ID="original_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                </rdf:Description>
+                <rdf:Description rdf:ID="book_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                    <frbr:translationOf rdf:resource="#original_d1e1"></frbr:translationOf>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="book_d1e1" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="creativeWork_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
+                </rdf:Description>
+                <rdf:Description rdf:ID="original_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                </rdf:Description>
+                <rdf:Description rdf:ID="book_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                    <frbr:translationOf rdf:resource="#original_d1e1"></frbr:translationOf>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="book_d1e1" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="creativeWork_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
+                </rdf:Description>
+                <rdf:Description rdf:ID="original_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                </rdf:Description>
+                <rdf:Description rdf:ID="book_d1e1" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"></schema:exampleOfWork>
+                    <frbr:translationOf rdf:resource="#original_d1e1"></frbr:translationOf>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="book_d1e1" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
+                </rdf:Description>
+            </x:param>
+        </x:call>
+
+        <x:expect label="The result should be as expected">
+            <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/"
+                     xmlns:schema="http://schema.org/"
+                     xmlns:nlbprod="http://www.nlb.no/production"
+                     xmlns:frbr="http://purl.org/vocab/frbr/core#"
+                     xmlns:nlbbib="http://www.nlb.no/bibliographic"
+                     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                     xmlns:nlb="http://www.nlb.no/"
+                     xmlns:nordic="http://www.mtm.se/epub/">
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115494072018">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                    <nlbprod:brailleClubProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
+                    <nlbprod:brailleClubReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 Punktklubb klar for utlån">false</nlbprod:brailleClubReadyForLoan>
+                    <nlbprod:brailleProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Punktskrift ferdig produsert">false</nlbprod:brailleProductionComplete>
+                    <nlbprod:brailleReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 Punktskrift klar for utlån">false</nlbprod:brailleReadyForLoan>
+                    <nlbprod:formatBraille nlb:metadata-source="Quickbase Record@558294072018 Format: Punktskrift">false</nlbprod:formatBraille>
+                    <nlbprod:formatBrailleClub nlb:metadata-source="Quickbase Record@558294072018 Format: Punktklubb">false</nlbprod:formatBrailleClub>
+                    <nlbprod:formatBraillePartialProduction nlb:metadata-source="Quickbase Record@558294072018 Format: Punktskrift delproduksjon">false</nlbprod:formatBraillePartialProduction>
+                    <nlbprod:formatNotes nlb:metadata-source="Quickbase Record@558294072018 Format: Noter">false</nlbprod:formatNotes>
+                    <nlbprod:formatTactilePrint nlb:metadata-source="Quickbase Record@558294072018 Format: Taktil trykk">false</nlbprod:formatTactilePrint>
+                    <nlbprod:identifier.braille nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer Punktskrift">115494072018</nlbprod:identifier.braille>
+                    <nlbprod:openLinespacing nlb:metadata-source="Quickbase Record@558294072018 Åpen linjeavstand">false</nlbprod:openLinespacing>
+                    <nlbprod:partialBrailleProduction nlb:metadata-source="Quickbase Record@558294072018 Til delproduksjon punktskrift">false</nlbprod:partialBrailleProduction>
+                    <nlbprod:singlePagePrint nlb:metadata-source="Quickbase Record@558294072018 Enkeltsidig trykk">false</nlbprod:singlePagePrint>
+                    <nlbprod:tactilePrintProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Taktilt trykk ferdig produsert">false</nlbprod:tactilePrintProductionComplete>
+                    <nlbprod:tactilePrintReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 Taktilt trykk klar for utlån">false</nlbprod:tactilePrintReadyForLoan>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356894072018">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                    <nlbprod:ebookProductionComplete nlb:metadata-source="Quickbase Record@558294072018 E-bok ferdig produsert">false</nlbprod:ebookProductionComplete>
+                    <nlbprod:ebookReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
+                    <nlbprod:formatEbook nlb:metadata-source="Quickbase Record@558294072018 Format: E-bok">false</nlbprod:formatEbook>
+                    <nlbprod:identifier.ebook nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer e-bok">356894072018</nlbprod:identifier.ebook>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558294072018">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <dc:identifier nlb:metadata-source="EPUB">558294072018</dc:identifier>
+                    <dc:format>EPUB</dc:format>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                    <nlbprod:agency nlb:metadata-source="Quickbase Record@558294072018 Agency">NLB</nlbprod:agency>
+                    <nlbprod:asciimath nlb:metadata-source="Quickbase Record@558294072018 ASCIIMath">false</nlbprod:asciimath>
+                    <nlbprod:bokbasen nlb:metadata-source="Quickbase Record@558294072018 www.bokbasen.no">false</nlbprod:bokbasen>
+                    <nlbprod:dtbookReturned nlb:metadata-source="Quickbase Record@558294072018 DTBook sendt i retur">false</nlbprod:dtbookReturned>
+                    <nlbprod:editingInstructionsChecked nlb:metadata-source="Quickbase Record@558294072018 Editing instructions kontrollert">false</nlbprod:editingInstructionsChecked>
+                    <nlbprod:epubCatalogued nlb:metadata-source="Quickbase Record@558294072018 EPUB ferdig katalogisert">false</nlbprod:epubCatalogued>
+                    <nlbprod:epubDTBookOrdered nlb:metadata-source="Quickbase Record@558294072018 EPUB/DTBook ordered">false</nlbprod:epubDTBookOrdered>
+                    <nlbprod:exercisesAndAnswers nlb:metadata-source="Quickbase Record@558294072018 Exercises and answers">false</nlbprod:exercisesAndAnswers>
+                    <nlbprod:extractionOfTextContentInImages nlb:metadata-source="Quickbase Record@558294072018 Extraction of text content in images">false</nlbprod:extractionOfTextContentInImages>
+                    <nlbprod:forManualPreparationInNLB nlb:metadata-source="Quickbase Record@558294072018 Til manuell tilrettelegging i NLB">false</nlbprod:forManualPreparationInNLB>
+                    <nlbprod:identifier.epub nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer EPUB">558294072018</nlbprod:identifier.epub>
+                    <nlbprod:inlineTextStyling nlb:metadata-source="Quickbase Record@558294072018 Inline text styling">false</nlbprod:inlineTextStyling>
+                    <nlbprod:leaveAMessage nlb:metadata-source="Quickbase Record@558294072018 Leave a message">false</nlbprod:leaveAMessage>
+                    <nlbprod:metadataChecked nlb:metadata-source="Quickbase Record@558294072018 Metadata kontrollert">false</nlbprod:metadataChecked>
+                    <nlbprod:ocrChecked nlb:metadata-source="Quickbase Record@558294072018 OCR-kontroll utført">false</nlbprod:ocrChecked>
+                    <nlbprod:productionApproved nlb:metadata-source="Quickbase Record@558294072018 Production approved">false</nlbprod:productionApproved>
+                    <nlbprod:productionDelivered nlb:metadata-source="Quickbase Record@558294072018 Production delivered">false</nlbprod:productionDelivered>
+                    <nlbprod:productionDownloaded nlb:metadata-source="Quickbase Record@558294072018 Production downloaded">false</nlbprod:productionDownloaded>
+                    <nlbprod:productionReturned nlb:metadata-source="Quickbase Record@558294072018 Production returned">false</nlbprod:productionReturned>
+                    <nlbprod:purchaseOrderId nlb:metadata-source="Quickbase Record@558294072018 Purchase order ID">https://dtbook.quickbase.com/db/bhh8n666n?a=dr&amp;rid=16415</nlbprod:purchaseOrderId>
+                    <nlbprod:sourceFileOrdered nlb:metadata-source="Quickbase Record@558294072018 PDF/grunnlagsfil bestilt">false</nlbprod:sourceFileOrdered>
+                    <nlbprod:sourceFileReceived nlb:metadata-source="Quickbase Record@558294072018 PDF/grunnlagsfil mottatt og lagret">false</nlbprod:sourceFileReceived>
+                    <nlbprod:structureChecked nlb:metadata-source="Quickbase Record@558294072018 Struktur kontrollert">false</nlbprod:structureChecked>
+                    <nlbprod:urgentProduction nlb:metadata-source="Quickbase Record@558294072018 Hasteproduksjon">false</nlbprod:urgentProduction>
+                    <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
+                    <nordic:supplier nlb:metadata-source="EPUB">Technofunda</nordic:supplier>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624594072018">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <frbr:translationOf rdf:resource="#original_d1e1"/>
+                    <dc:identifier nlb:metadata-source="Bibliofil@624594 *001">624594</dc:identifier>
+                    <dc:format nlb:metadata-source="Bibliofil@624594 *245$h">DAISY 2.02</dc:format>
+                    <dc:date.issued nlb:metadata-source="Bibliofil@624594 *260$c">2018</dc:date.issued>
+                    <dc:description.abstract nlb:metadata-source="Bibliofil@624594 *520$a">Vi Menn er Norges største magasin rettet mot menn. Det omhandler aktualitets-reportasjer,populærvitenskp,sport,
+                        bil/motor/båt/MC, teknologi, humor/erotikk, politikk, økonomi m.m.
+                    </dc:description.abstract>
+                    <dc:format.other nlb:metadata-source="Bibliofil@624594 *019$b">Audio recording</dc:format.other>
+                    <dc:format.other nlb:metadata-source="Bibliofil@624594 *019$b">Compact Disk</dc:format.other>
+                    <dc:format.other nlb:metadata-source="Bibliofil@624594 *019$b">Other voice/other</dc:format.other>
+                    <dc:format.other nlb:metadata-source="Bibliofil@624594 *019$b">Serial</dc:format.other>
+                    <dc:format.other nlb:metadata-source="Bibliofil@624594 *019$b">Magazine</dc:format.other>
+                    <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">Lydopptak</dc:format.other.no>
+                    <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">CD (kompaktplate)</dc:format.other.no>
+                    <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">Annen tale/annet</dc:format.other.no>
+                    <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">Periodika</dc:format.other.no>
+                    <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">Tidsskrift</dc:format.other.no>
+                    <dc:publisher nlb:metadata-source="Bibliofil@624594 *260$b"
+                        schema:name="Norsk lyd- og blindeskriftbibliotek">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *260$3">17192400</nlbbib:bibliofil-id>
+                    </dc:publisher>
+                    <dc:publisher.location nlb:metadata-source="Bibliofil@624594 *260$a">Oslo</dc:publisher.location>
+                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@624594 *596$a">Oslo</dc:publisher.original.location>
+                    <dc:source.urn-nbn nlb:metadata-source="Bibliofil@624594 *856$s">urn:nbn:no-nb_nlb_140759411</dc:source.urn-nbn>
+                    <dc:subject.keyword nlb:metadata-source="Bibliofil@624594 *650" schema:name="Tidsskrifter">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *650$3">15224000</nlbbib:bibliofil-id>
+                    </dc:subject.keyword>
+                    <dc:type.genre nlb:metadata-source="Bibliofil@624594 *008">Fiction</dc:type.genre>
+                    <dc:type.genre nlb:metadata-source="Bibliofil@624594 *008">Non-biography</dc:type.genre>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                    <schema:audience nlb:metadata-source="Bibliofil@624594 *008">Adult</schema:audience>
+                    <schema:issn nlb:metadata-source="Bibliofil@624594 *022$a">0042-4951</schema:issn>
+                    <schema:library nlb:metadata-source="Bibliofil@624594 *850$a">NLB</schema:library>
+                    <schema:typicalAgeRange nlb:metadata-source="Bibliofil@624594 *008">17-</schema:typicalAgeRange>
+                    <nlbbib:magazine nlb:metadata-source="Bibliofil@624594 *650">true</nlbbib:magazine>
+                    <nlbbib:periodical nlb:metadata-source="Bibliofil@624594 *650">true</nlbbib:periodical>
+                    <nlbbib:series.position nlb:metadata-source="Bibliofil@624594 *440$v">52 nr. pr.år</nlbbib:series.position>
+                    
+                    <nlbprod:account nlb:metadata-source="Quickbase Record@558294072018 Konto">0326</nlbprod:account>
+                    <nlbprod:additionalFeeNightAndWeekend nlb:metadata-source="Quickbase Record@558294072018 Tillegg kveld og helg">0.00</nlbprod:additionalFeeNightAndWeekend>
+                    <nlbprod:additionalNightAndWeekend nlb:metadata-source="Quickbase Record@558294072018 Kvelds- og helgetillegg">0:00:00</nlbprod:additionalNightAndWeekend>
+                    <nlbprod:compensationInStudioWithProducer nlb:metadata-source="Quickbase Record@558294072018 Kompensasjon i studio med produsent">0.00</nlbprod:compensationInStudioWithProducer>
+                    <nlbprod:compensationWaitingTime nlb:metadata-source="Quickbase Record@558294072018 Kompensasjon ventetid">0.00</nlbprod:compensationWaitingTime>
+                    <nlbprod:costLocation nlb:metadata-source="Quickbase Record@558294072018 Kostnadssted">20</nlbprod:costLocation>
+                    <nlbprod:daisy202productionComplete nlb:metadata-source="Quickbase Record@558294072018 DAISY 2.02 ferdig produsert">false</nlbprod:daisy202productionComplete>
+                    <nlbprod:daisy202readyForLoan nlb:metadata-source="Quickbase Record@558294072018 DAISY 2.02 klar for utlån">false</nlbprod:daisy202readyForLoan>
+                    <nlbprod:daisy202ttsProductionComplete nlb:metadata-source="Quickbase Record@558294072018 DAISY 2.02 TTS ferdig produsert">false</nlbprod:daisy202ttsProductionComplete>
+                    <nlbprod:extraPreparationTimeInHours nlb:metadata-source="Quickbase Record@558294072018 Ekstra forberedelsestid i timer">0.00</nlbprod:extraPreparationTimeInHours>
+                    <nlbprod:feeClaimHandled nlb:metadata-source="Quickbase Record@558294072018 Honorarkrav behandlet">false</nlbprod:feeClaimHandled>
+                    <nlbprod:feeComplete nlb:metadata-source="Quickbase Record@558294072018 Ferdig honorert">false</nlbprod:feeComplete>
+                    <nlbprod:feeExtraPreparationCopy nlb:metadata-source="Quickbase Record@558294072018 Honorar ekstra forberedelsestid_copy">0.00</nlbprod:feeExtraPreparationCopy>
+                    <nlbprod:feeExtraPreparationTime nlb:metadata-source="Quickbase Record@558294072018 Honorar ekstra forberedelsestid">0.00</nlbprod:feeExtraPreparationTime>
+                    <nlbprod:feeForMultipleNarrators nlb:metadata-source="Quickbase Record@558294072018 Honorering av flere innlesere">javascript:void(copyMasterDetailButtonHandler('&amp;copyFid=8&amp;destrid=0&amp;sourcerid=16415',
+                        'bhh8n666n'))
+                    </nlbprod:feeForMultipleNarrators>
+                    <nlbprod:feeNarratedTime nlb:metadata-source="Quickbase Record@558294072018 Honorar pr ferdig innlest tid">0.00</nlbprod:feeNarratedTime>
+                    <nlbprod:feeNarrationCopy nlb:metadata-source="Quickbase Record@558294072018 Honorar pr ferdig innlest tid_copy">0.00</nlbprod:feeNarrationCopy>
+                    <nlbprod:feeOtherWork nlb:metadata-source="Quickbase Record@558294072018 Honorar annet arbeid">0.00</nlbprod:feeOtherWork>
+                    <nlbprod:feeOtherWorkCopy nlb:metadata-source="Quickbase Record@558294072018 Honorar annet arbeid_copy">0.00</nlbprod:feeOtherWorkCopy>
+                    <nlbprod:feePreparationCopy nlb:metadata-source="Quickbase Record@558294072018 Honorar forberedelsestid_copy">0.00</nlbprod:feePreparationCopy>
+                    <nlbprod:feePreparationTime nlb:metadata-source="Quickbase Record@558294072018 Honorar forberedelsestid">0.00</nlbprod:feePreparationTime>
+                    <nlbprod:formatDaisy202narrated nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 Innlest Skjønn">false</nlbprod:formatDaisy202narrated>
+                    <nlbprod:formatDaisy202narratedFulltext nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 Innlest fulltekst">false</nlbprod:formatDaisy202narratedFulltext>
+                    <nlbprod:formatDaisy202narratedStudent nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 Innlest Studie">false</nlbprod:formatDaisy202narratedStudent>
+                    <nlbprod:formatDaisy202tts nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 TTS Skjønn">false</nlbprod:formatDaisy202tts>
+                    <nlbprod:formatDaisy202ttsStudent nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 TTS Studie">false</nlbprod:formatDaisy202ttsStudent>
+                    <nlbprod:formatDaisy202wips nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 WIPS">false</nlbprod:formatDaisy202wips>
+                    <nlbprod:generateFee nlb:metadata-source="Quickbase Record@558294072018 Generer fakturagrunnlag">false</nlbprod:generateFee>
+                    <nlbprod:generateReceipt nlb:metadata-source="Quickbase Record@558294072018 Generer kvittering">false</nlbprod:generateReceipt>
+                    <nlbprod:generateReceiptCopy nlb:metadata-source="Quickbase Record@558294072018 Generer kvittering_copy">false</nlbprod:generateReceiptCopy>
+                    <nlbprod:handedOverToNarrator nlb:metadata-source="Quickbase Record@558294072018 Levert innleser">false</nlbprod:handedOverToNarrator>
+                    <nlbprod:handedOverToNarratorCopy nlb:metadata-source="Quickbase Record@558294072018 Levert innleser_copy">false</nlbprod:handedOverToNarratorCopy>
+                    <nlbprod:identifier.daisy202 nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer DAISY 2.02 Skjønnlitteratur">624594072018</nlbprod:identifier.daisy202>
+                    <nlbprod:inStudioWithProducerInHours nlb:metadata-source="Quickbase Record@558294072018 I studio med produsent i timer">0.00</nlbprod:inStudioWithProducerInHours>
+                    <nlbprod:narratedFulltext nlb:metadata-source="Quickbase Record@558294072018 Innlest fulltekst">false</nlbprod:narratedFulltext>
+                    <nlbprod:narratedTimeInHours nlb:metadata-source="Quickbase Record@558294072018 Innlest tid i timer">0.00</nlbprod:narratedTimeInHours>
+                    <nlbprod:narrationComplete nlb:metadata-source="Quickbase Record@558294072018 Ferdig innlest">false</nlbprod:narrationComplete>
+                    <nlbprod:narrationCompleteCopy nlb:metadata-source="Quickbase Record@558294072018 Ferdig innlest_copy">false</nlbprod:narrationCompleteCopy>
+                    <nlbprod:narrationTime nlb:metadata-source="Quickbase Record@558294072018 Innlest tid">0:00:00</nlbprod:narrationTime>
+                    <nlbprod:narrationTimeCopy nlb:metadata-source="Quickbase Record@558294072018 Innlest tid_copy">0:00:00</nlbprod:narrationTimeCopy>
+                    <nlbprod:narrationTimeInHoursCopy nlb:metadata-source="Quickbase Record@558294072018 Innlest tid i timer_copy">0.00</nlbprod:narrationTimeInHoursCopy>
+                    <nlbprod:nightAndWeekendInHours nlb:metadata-source="Quickbase Record@558294072018 Kvelds- og helgetillegg i timer">0.00</nlbprod:nightAndWeekendInHours>
+                    <nlbprod:notForFee nlb:metadata-source="Quickbase Record@558294072018 Ikke til honorering">false</nlbprod:notForFee>
+                    <nlbprod:otherWorkInHours nlb:metadata-source="Quickbase Record@558294072018 Annet arbeid i timer">0.00</nlbprod:otherWorkInHours>
+                    <nlbprod:overriding nlb:metadata-source="Quickbase Record@558294072018 Overstyring">131</nlbprod:overriding>
+                    <nlbprod:paymentType nlb:metadata-source="Quickbase Record@558294072018 Lønnart">5515</nlbprod:paymentType>
+                    <nlbprod:postProductionStarted nlb:metadata-source="Quickbase Record@558294072018 Etterarbeid startet">false</nlbprod:postProductionStarted>
+                    <nlbprod:preparationTime nlb:metadata-source="Quickbase Record@558294072018 Forberedelsestid">0:00:00</nlbprod:preparationTime>
+                    <nlbprod:preparationTimeInHours nlb:metadata-source="Quickbase Record@558294072018 Forberedelsestid i timer">0.00</nlbprod:preparationTimeInHours>
+                    <nlbprod:preparedForNarration nlb:metadata-source="Quickbase Record@558294072018 Tilrettelagt for innlesing">false</nlbprod:preparedForNarration>
+                    <nlbprod:sumFee nlb:metadata-source="Quickbase Record@558294072018 Sum honorar">0.00</nlbprod:sumFee>
+                    <nlbprod:sumFeeCopy nlb:metadata-source="Quickbase Record@558294072018 Sum honorar_copy">0.00</nlbprod:sumFeeCopy>
+                    <nlbprod:totalSumFee nlb:metadata-source="Quickbase Record@558294072018 Total sum honorar">0.00</nlbprod:totalSumFee>
+                    <nlbprod:waitingBecauseOfTechnicalProblemsInHours nlb:metadata-source="Quickbase Record@558294072018 Venting pga teknisk feil i timer">0.00</nlbprod:waitingBecauseOfTechnicalProblemsInHours>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="book_d1e1">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <frbr:translationOf rdf:resource="#original_d1e1"/>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="creativeWork_d1e1">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:title nlb:metadata-source="Bibliofil@624594 *245$a">Vi menn</dc:title>
+                    <dc:language nlb:metadata-source="Bibliofil@624594 *008">nob</dc:language>
+                    <dc:contributor.editor nlb:metadata-source="Bibliofil@624594 *700"
+                        schema:name="Øystå, Alexender">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *700$3">20180500</nlbbib:bibliofil-id>
+                    </dc:contributor.editor>
+                    <dc:contributor.narrator nlb:metadata-source="Bibliofil@624594 *511$a"
+                        schema:name="Brage Talesyntese">
+                        <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *511$3">19209900</nlbbib:bibliofil-id>
+                    </dc:contributor.narrator>
+                    <schema:isbn nlb:metadata-source="Quickbase Record@558294072018 Original ISBN">ISBN</schema:isbn>
+                    <schema:bookEdition nlb:metadata-source="Bibliofil@624594 *245">1</schema:bookEdition>
+                    <nlbprod:addRecord nlb:metadata-source="Quickbase Record@558294072018 Add Record">https://dtbook.quickbase.com/db/bmgg4agc5?a=API_GenAddRecordForm&amp;_fid_6=16415&amp;z=</nlbprod:addRecord>
+                    <nlbprod:author nlb:metadata-source="Quickbase Record@558294072018 Forfatter">Øystå, Alexander</nlbprod:author>
+                    <nlbprod:category nlb:metadata-source="Quickbase Record@558294072018 Kategori">Voksen</nlbprod:category>
+                    <nlbprod:dateCreated nlb:metadata-source="Quickbase Record@558294072018 Date Created">2017-11-30T08:03:18</nlbprod:dateCreated>
+                    <nlbprod:dateModified nlb:metadata-source="Quickbase Record@558294072018 Date Modified">2017-11-30T08:03:18</nlbprod:dateModified>
+                    <nlbprod:duplicate nlb:metadata-source="Quickbase Record@558294072018 Duplikat">false</nlbprod:duplicate>
+                    <nlbprod:genre nlb:metadata-source="Quickbase Record@558294072018 Genre">Periodika</nlbprod:genre>
+                    <nlbprod:language nlb:metadata-source="Quickbase Record@558294072018 Språk">Språk</nlbprod:language>
+                    <nlbprod:lastModifiedBy nlb:metadata-source="Quickbase Record@558294072018 Last Modified By">OlavI</nlbprod:lastModifiedBy>
+                    <nlbprod:newRegistration nlb:metadata-source="Quickbase Record@558294072018 Ny registrering">false</nlbprod:newRegistration>
+                    <nlbprod:publisher nlb:metadata-source="Quickbase Record@558294072018 Forlag">Hjemmet Mortensen</nlbprod:publisher>
+                    <nlbprod:recordId nlb:metadata-source="Quickbase Record@558294072018 Record ID#">16415</nlbprod:recordId>
+                    <nlbprod:recordOwner nlb:metadata-source="Quickbase Record@558294072018 Record Owner">OlavI</nlbprod:recordOwner>
+                    <nlbprod:registrationDate nlb:metadata-source="Quickbase Record@558294072018 Registreringsdato">2017-11-30</nlbprod:registrationDate>
+                    <nlbprod:title nlb:metadata-source="Quickbase Record@558294072018 Tittel">Vi menn 07/2018</nlbprod:title>
+                    <nlbprod:translator nlb:metadata-source="Quickbase Record@558294072018 Oversetter">Etternavn, Fornavn Mellomnavn</nlbprod:translator>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="external_d3d2e0">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                    <nlbprod:externalProductionProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Ekstern produksjon ferdig produsert">false</nlbprod:externalProductionProductionComplete>
+                    <nlbprod:formatAudioCDMP3ExternalProduction nlb:metadata-source="Quickbase Record@558294072018 Format: Audio CD MP3 ekstern produksjon">false</nlbprod:formatAudioCDMP3ExternalProduction>
+                    <nlbprod:formatAudioCDWAVExternalProduction nlb:metadata-source="Quickbase Record@558294072018 Format: Audio CD WAV ekstern produksjon">false</nlbprod:formatAudioCDWAVExternalProduction>
+                    <nlbprod:formatDaisy202externalProduction nlb:metadata-source="Quickbase Record@558294072018 Format: DAISY 2.02 ekstern produksjon">false</nlbprod:formatDaisy202externalProduction>
+                    <nlbprod:formatEbookExternalProduction nlb:metadata-source="Quickbase Record@558294072018 Format: E-bok ekstern produksjon">false</nlbprod:formatEbookExternalProduction>
+                    <nlbprod:formatOtherExternalProduction nlb:metadata-source="Quickbase Record@558294072018 Format: Annet format ekstern produksjon">false</nlbprod:formatOtherExternalProduction>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="original_d1e1">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <dc:date.issued nlb:metadata-source="Bibliofil@624594 *596$c">2016</dc:date.issued>
+                    <dc:publisher nlb:metadata-source="Bibliofil@624594 *596$b">Hjemmet Mortensen</dc:publisher>
+                    <schema:exampleOfWork rdf:resource="#creativeWork_d1e1"/>
+                    <schema:bookEdition nlb:metadata-source="Bibliofil@624594 *596">1</schema:bookEdition>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
