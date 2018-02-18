@@ -23,12 +23,13 @@
     <xsl:output indent="yes" method="xhtml"/>
     
     <xsl:param name="rdf-xml-path" as="xs:string?"/>
+    <xsl:param name="edition-identifier" select="''" as="xs:string"/>
     
     <xsl:template match="/*">
         <xsl:variable name="metadata" as="element()" select="/*"/>
         
         <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat('urn:isbn:', replace(normalize-space(@content),'[^\d]','')), concat('creativeWork_',generate-id()))[1]"/>
-        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content)), concat('book_',generate-id()))[1]"/>
+        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content), $edition-identifier), concat('book_',generate-id()))[1]"/>
         <xsl:variable name="resource-original" select="concat('original_',generate-id())"/>
         
         <xsl:variable name="html" as="element()">
