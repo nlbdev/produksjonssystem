@@ -151,15 +151,21 @@ class UpdateMetadata(Pipeline):
                 opf_file.write(archive.read(opf))
             opf = opf_obj.name
         
+        # Publication and edition identifiers are the same except for periodicals
+        edition_identifier = epub.identifier()
+        pub_identifier = edition_identifier
+        if len(pub_identifier) > 6:
+            pub_identifier = pub_identifier[:6]
+        
         # path to directory with metadata from Quickbase / Bibliofil / Bokbasen
         metadata_dir = None
         if UpdateMetadata.uid in Pipeline.dirs:
-            metadata_dir = os.path.join(Pipeline.dirs[UpdateMetadata.uid]["in"], epub.identifier())
+            metadata_dir = os.path.join(Pipeline.dirs[UpdateMetadata.uid]["in"], edition_identifier)
         else:
             if not UpdateMetadata.metadata_tempdir_obj:
                 UpdateMetadata.metadata_tempdir_obj = tempfile.TemporaryDirectory(prefix="metadata-")
                 pipeline.utils.report.info("Using temporary directory for metadata: " + UpdateMetadata.metadata_tempdir_obj.name)
-            metadata_dir = os.path.join(UpdateMetadata.metadata_tempdir_obj.name, epub.identifier())
+            metadata_dir = os.path.join(UpdateMetadata.metadata_tempdir_obj.name, edition_identifier)
         pipeline.utils.report.attachment(None, metadata_dir, "DEBUG")
         os.makedirs(metadata_dir, exist_ok=True)
         os.makedirs(metadata_dir + '/quickbase', exist_ok=True)
@@ -192,7 +198,7 @@ class UpdateMetadata(Pipeline):
         pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record.xml'))
         pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/record.html'))
         pipeline.utils.report.debug("    rdf    = " + rdf_path)
-        success = UpdateMetadata.get_quickbase_record(pipeline, epub.identifier(), os.path.join(metadata_dir, 'quickbase/record.xml'))
+        success = UpdateMetadata.get_quickbase_record(pipeline, edition_identifier, os.path.join(metadata_dir, 'quickbase/record.xml'))
         if not success:
             return False
         xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-record-to-rdf.xsl"),
@@ -210,22 +216,27 @@ class UpdateMetadata(Pipeline):
         identifiers = qb_record.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=qb_record.nsmap)
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         
-        for identifier in identifiers:
+        for format_edition_identifier in identifiers:
+            format_pub_identifier = format_edition_identifier
+            if len(format_pub_identifier) > 6:
+                format_pub_identifier = format_pub_identifier[:6]
+            
             pipeline.utils.report.debug("normarc/marcxchange-to-opf.xsl")
-            marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.xml')
-            current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.opf')
-            html_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.html')
-            rdf_path = os.path.join(metadata_dir, 'bibliofil/' + identifier + '.rdf')
+            marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.xml')
+            current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.opf')
+            html_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.html')
+            rdf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.rdf')
             
             pipeline.utils.report.debug("    source = " + marcxchange_path)
             pipeline.utils.report.debug("    target = " + current_opf_path)
-            UpdateMetadata.get_bibliofil(pipeline, identifier, marcxchange_path)
+            UpdateMetadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/marcxchange-to-opf.xsl"),
                                   source=marcxchange_path,
                                   target=current_opf_path,
                                   parameters={
                                     "nested": "true",
-                                    "include-source-reference": "true"
+                                    "include-source-reference": "true",
+                                    "identifier": format_edition_identifier
                                   })
             if not xslt.success:
                 return False
@@ -242,16 +253,16 @@ class UpdateMetadata(Pipeline):
             rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
             
             pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl")
-            rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.rdf')
-            pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
-            pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'))
+            rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.rdf')
+            pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
+            pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'))
             pipeline.utils.report.debug("    rdf    = " + rdf_path)
-            success = UpdateMetadata.get_quickbase_isbn(pipeline, identifier, os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'))
+            success = UpdateMetadata.get_quickbase_isbn(pipeline, format_edition_identifier, os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
             if not success:
                 return False
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "quickbase-isbn-to-rdf.xsl"),
-                                  source=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.xml'),
-                                  target=os.path.join(metadata_dir, 'quickbase/isbn-' + identifier + '.html'),
+                                  source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'),
+                                  target=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'),
                                   parameters={
                                     "rdf-xml-path": rdf_path,
                                     "include-source-reference": "true"
@@ -321,6 +332,16 @@ class UpdateMetadata(Pipeline):
         new_modified = xml.xpath("/*/*[local-name()='metadata']/*[@property='dcterms:modified'][1]/text()")
         new_modified = new_modified[0] if new_modified else None
         
+        ## Check that the new metadata is usable
+        new_identifier = xml.xpath("/*/*[local-name()='metadata']/*[local-name()='identifier' and not(@refines)][1]/text()")
+        new_identifier = new_identifier[0] if new_identifier else None
+        if not new_identifier:
+            pipeline.utils.report.error("Could not find identifier in updated metadata")
+            return False
+        if not new_identifier == edition_identifier:
+            pipeline.utils.report.error("Expected identifier to be '{}', but in the updated metadata is was '{}'".format(edition_identifier, new_identifier))
+            return False
+        
         updates = []
         
         if old_modified != new_modified:
@@ -373,10 +394,10 @@ class UpdateMetadata(Pipeline):
             # do all copy operations at once to avoid triggering multiple modification events
             for update in updates:
                 shutil.copy(update["updated_file"], update["target"])
-            pipeline.utils.report.info("Metadata in {} was updated".format(epub.identifier()))
+            pipeline.utils.report.info("Metadata in {} was updated".format(edition_identifier))
             
         else:
-            pipeline.utils.report.info("Metadata in {} is already up to date".format(epub.identifier()))
+            pipeline.utils.report.info("Metadata in {} is already up to date".format(edition_identifier))
         
         return bool(updates)
     
