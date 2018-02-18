@@ -100,7 +100,7 @@ class DtbookToTts(Pipeline):
         
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-TTS-arkiv.")
         
-        archived_path = self.utils.filesystem.storeBook(dtbook_dir, new_identifier)
+        archived_path = self.utils.filesystem.storeBook(dtbook_dir, identifier)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(new_identifier + " ble lagt til i DTBook-TTS-arkivet.")
         self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄"
