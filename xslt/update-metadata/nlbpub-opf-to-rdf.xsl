@@ -28,6 +28,7 @@
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     
                     <xsl:apply-templates select="dc:identifier"/>
+                    <dc:format>EPUB</dc:format>
                     <xsl:apply-templates select="meta[starts-with(@property,'nordic:')]"/>
                 </rdf:Description>
             </rdf:RDF>
