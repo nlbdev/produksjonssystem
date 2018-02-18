@@ -35,7 +35,13 @@ class Filesystem():
         "Maybe someone has a file or folder open on their computer?": "Kanskje noen har en fil eller mappe åpen på datamaskinen sin?"
     }
     
-    shutil_ignore_patterns = shutil.ignore_patterns("Thumbs.db") # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
+    shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
+        "Thumbs.db", "*.swp", "ehthumbs.db", "ehthumbs_vista.db", "*.stackdump", "Desktop.ini", "desktop.ini",
+        "$RECYCLE.BIN/", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
+        ".LSOverride", "._*", ".DocumentRevisions-V100", ".fseventsd", ".Spotlight-V100", ".TemporaryItems",
+        ".Trashes", ".VolumeIcon.icns", ".com.apple.timemachine.donotpresent", ".AppleDB", ".AppleDesktop",
+        "Network Trash Folder", "Temporary Items", ".apdisk"
+    )
     
     def __init__(self, pipeline):
         self.pipeline = pipeline
