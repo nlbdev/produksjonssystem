@@ -49,24 +49,6 @@
                 <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:otherwise>
         </xsl:choose>
-        
-        <xsl:variable name="authors" select="/*/head/meta[lower-case(@name)='dc:creator']/@content" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:contributor.editor']/@content" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher.original']/@content" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher']/@content" as="xs:string*"/>
-        <xsl:for-each select="$authors">
-            <docauthor>
-                <xsl:value-of select="string-join(reverse(tokenize(.,' *, *')),' ')"/>
-            </docauthor>
-        </xsl:for-each>
-        <xsl:if test="count($authors) = 0">
-            <xsl:message select="'Fant ingen forfattere (dc:creator) eller redaktører (dc:contributor.editor).'"/>
-            <xsl:copy-of select="following-sibling::docauthor" exclude-result-prefixes="#all"/>
-        </xsl:if>
     </xsl:template>
-    
-    <xsl:template match="docauthor"/>
-    
-    <xsl:template match="@xml:lang[. = /*/tokenize(lower-case(string(@xml:lang)),'-')[last()]]"/>
     
 </xsl:stylesheet>

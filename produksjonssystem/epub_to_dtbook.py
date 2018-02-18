@@ -106,6 +106,22 @@ class EpubToDtbook(Pipeline):
             return
         
         
+        # ---------- gjør tilpasninger i DTBook ----------
+        
+        temp_dtbook_obj = tempfile.NamedTemporaryFile()
+        temp_dtbook = temp_dtbook_obj.name
+        self.utils.report.debug("dtbook-cleanup.xsl")
+        self.utils.report.debug("    source = " + dtbook_file)
+        self.utils.report.debug("    target = " + temp_dtbook)
+        xslt = Xslt(self, stylesheet=os.path.join(EpubToDtbook.xslt_dir, EpubToDtbook.uid, "dtbook-cleanup.xsl"),
+                          source=dtbook_file,
+                          target=temp_dtbook)
+        if not xslt.success:
+            return False
+        
+        shutil.copy(temp_dtbook, dtbook_file)
+        
+        
         # ---------- lagre DTBook ----------
         
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
