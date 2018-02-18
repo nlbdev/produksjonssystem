@@ -43,7 +43,7 @@ class Xslt():
                 command.append(param + "=" + parameters[param])
             
             self.pipeline.utils.report.debug("Running XSLT")
-            process = self.pipeline.utils.filesystem.run(command)
+            process = self.pipeline.utils.filesystem.run(command, stdout_level="INFO", stderr_level="INFO")
             self.success = True
             
         except subprocess.TimeoutExpired as e:

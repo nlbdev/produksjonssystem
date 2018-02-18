@@ -210,7 +210,7 @@ class Filesystem():
         elif os.path.isfile(self.pipeline.book["source"]):
             os.remove(self.pipeline.book["source"])
     
-    def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True):
+    def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
         """Convenience method for subprocess.run, with our own defaults"""
         if not cwd:
             cwd = self.pipeline.dir_in
@@ -222,18 +222,18 @@ class Filesystem():
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
             
             self.pipeline.utils.report.debug("---- stdout: ----")
-            self.pipeline.utils.report.debug(completedProcess.stdout.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip())
             self.pipeline.utils.report.debug("-----------------")
             self.pipeline.utils.report.debug("---- stderr: ----")
-            self.pipeline.utils.report.debug(completedProcess.stderr.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip())
             self.pipeline.utils.report.debug("-----------------")
             
         except subprocess.CalledProcessError as e:
             self.pipeline.utils.report.debug("---- stdout: ----")
-            self.pipeline.utils.report.debug(e.stdout.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stdout_level, e.stdout.decode("utf-8").strip())
             self.pipeline.utils.report.debug("-----------------")
             self.pipeline.utils.report.debug("---- stderr: ----")
-            self.pipeline.utils.report.debug(e.stderr.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stderr_level, e.stderr.decode("utf-8").strip())
             self.pipeline.utils.report.debug("-----------------")
             raise
         

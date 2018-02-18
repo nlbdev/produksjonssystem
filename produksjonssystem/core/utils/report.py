@@ -60,7 +60,21 @@ class Report():
             self._report_dir = report_dir
         return self._report_dir
     
-    def _add_message(self, severity, message, message_type, add_empty_line):
+    def add_message(self, severity, message, message_type="message", add_empty_line=True):
+        if severity == "DEBUG":
+            logging.debug("[" + Report.thread_name(self.pipeline) + "] " + message)
+        elif severity == "INFO":
+            logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
+        elif severity == "SUCCESS":
+            logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
+        elif severity == "WARN":
+            logging.warn("[" + Report.thread_name(self.pipeline) + "] " + message)
+        elif severity == "ERROR":
+            logging.error("[" + Report.thread_name(self.pipeline) + "] " + message)
+        else:
+            logging.warn("[" + Report.thread_name(self.pipeline) + "] Unknown message severity: " + str(severity))
+            logging.warn("[" + Report.thread_name(self.pipeline) + "] " + message)
+        
         lines = None
         if isinstance(message, list):
             lines = message
@@ -86,24 +100,19 @@ class Report():
         return str(threading.get_ident())
     
     def debug(self, message, message_type="message", add_empty_line=True):
-        self._add_message('DEBUG', message, message_type, add_empty_line)
-        logging.debug("[" + Report.thread_name(self.pipeline) + "] " + message)
+        self.add_message('DEBUG', message, message_type, add_empty_line)
     
     def info(self, message, message_type="message", add_empty_line=True):
-        self._add_message('INFO', message, message_type, add_empty_line)
-        logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
+        self.add_message('INFO', message, message_type, add_empty_line)
     
     def success(self, message, message_type="message", add_empty_line=True):
-        self._add_message('SUCCESS', message, message_type, add_empty_line)
-        logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
+        self.add_message('SUCCESS', message, message_type, add_empty_line)
     
     def warn(self, message, message_type="message", add_empty_line=True):
-        self._add_message('WARN', message, message_type, add_empty_line)
-        logging.warn("[" + Report.thread_name(self.pipeline) + "] " + message)
+        self.add_message('WARN', message, message_type, add_empty_line)
     
     def error(self, message, message_type="message", add_empty_line=True):
-        self._add_message('ERROR', message, message_type, add_empty_line)
-        logging.error("[" + Report.thread_name(self.pipeline) + "] " + message)
+        self.add_message('ERROR', message, message_type, add_empty_line)
     
     @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients):
@@ -356,5 +365,5 @@ class Report():
 class DummyReport(Report):
     pipeline = None
     
-    def _add_message(self, severity, message, message_type, add_empty_line):
+    def add_message(self, severity, message, message_type, add_empty_line):
         pass
