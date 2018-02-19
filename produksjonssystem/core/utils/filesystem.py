@@ -228,18 +228,18 @@ class Filesystem():
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
             
             self.pipeline.utils.report.debug("---- stdout: ----")
-            self.pipeline.utils.report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
             self.pipeline.utils.report.debug("---- stderr: ----")
-            self.pipeline.utils.report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
             
         except subprocess.CalledProcessError as e:
             self.pipeline.utils.report.debug("---- stdout: ----")
-            self.pipeline.utils.report.add_message(stdout_level, e.stdout.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stdout_level, e.stdout.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
             self.pipeline.utils.report.debug("---- stderr: ----")
-            self.pipeline.utils.report.add_message(stderr_level, e.stderr.decode("utf-8").strip())
+            self.pipeline.utils.report.add_message(stderr_level, e.stderr.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
             raise
         

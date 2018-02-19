@@ -60,7 +60,7 @@ class Report():
             self._report_dir = report_dir
         return self._report_dir
     
-    def add_message(self, severity, message, message_type="message", add_empty_line=True):
+    def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         if severity == "DEBUG":
             logging.debug("[" + Report.thread_name(self.pipeline) + "] " + message)
         elif severity == "INFO":
@@ -85,7 +85,13 @@ class Report():
             self._messages[message_type] = []
         
         lines = [l for line in lines for l in line.split("\n")]
-        if add_empty_line:
+        if add_empty_line_between:
+            spaced_lines = []
+            for line in lines:
+                spaced_lines.append(line)
+                spaced_lines.append("")
+            lines = spaced_lines
+        if add_empty_line_last:
             lines.append("")
         
         for line in lines:
@@ -99,20 +105,20 @@ class Report():
             return "Main thread"
         return str(threading.get_ident())
     
-    def debug(self, message, message_type="message", add_empty_line=True):
-        self.add_message('DEBUG', message, message_type, add_empty_line)
+    def debug(self, message, message_type="message", add_empty_line_last=True):
+        self.add_message('DEBUG', message, message_type, add_empty_line_last)
     
-    def info(self, message, message_type="message", add_empty_line=True):
-        self.add_message('INFO', message, message_type, add_empty_line)
+    def info(self, message, message_type="message", add_empty_line_last=True):
+        self.add_message('INFO', message, message_type, add_empty_line_last)
     
-    def success(self, message, message_type="message", add_empty_line=True):
-        self.add_message('SUCCESS', message, message_type, add_empty_line)
+    def success(self, message, message_type="message", add_empty_line_last=True):
+        self.add_message('SUCCESS', message, message_type, add_empty_line_last)
     
-    def warn(self, message, message_type="message", add_empty_line=True):
-        self.add_message('WARN', message, message_type, add_empty_line)
+    def warn(self, message, message_type="message", add_empty_line_last=True):
+        self.add_message('WARN', message, message_type, add_empty_line_last)
     
-    def error(self, message, message_type="message", add_empty_line=True):
-        self.add_message('ERROR', message, message_type, add_empty_line)
+    def error(self, message, message_type="message", add_empty_line_last=True):
+        self.add_message('ERROR', message, message_type, add_empty_line_last)
     
     @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients):
@@ -348,15 +354,15 @@ class Report():
             with open(path, "a") as f:
                 f.write(content)
         if severity == "DEBUG":
-            self.info(path, message_type="attachment", add_empty_line=False)
+            self.info(path, message_type="attachment", add_empty_line_last=False)
         elif severity == "INFO":
-            self.info(path, message_type="attachment", add_empty_line=False)
+            self.info(path, message_type="attachment", add_empty_line_last=False)
         elif severity == "SUCCESS":
-            self.success(path, message_type="attachment", add_empty_line=False)
+            self.success(path, message_type="attachment", add_empty_line_last=False)
         elif severity == "WARN":
-            self.warn(path, message_type="attachment", add_empty_line=False)
+            self.warn(path, message_type="attachment", add_empty_line_last=False)
         else: # "ERROR"
-            self.error(path, message_type="attachment", add_empty_line=False)
+            self.error(path, message_type="attachment", add_empty_line_last=False)
     
     # in case you want to override something
     def translate(self, english_text, translated_text):
@@ -365,5 +371,5 @@ class Report():
 class DummyReport(Report):
     pipeline = None
     
-    def add_message(self, severity, message, message_type, add_empty_line):
+    def add_message(self, severity, message, message_type, add_empty_line_last, add_empty_line_between):
         pass
