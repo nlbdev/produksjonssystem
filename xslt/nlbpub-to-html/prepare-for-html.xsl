@@ -32,11 +32,11 @@
         <meta name="schema:isbn.original" content="{@content}"/>
     </xsl:template>
     
-    <xsl:template match="meta[@name='nlbprod:isbn.ebook']">
+    <xsl:template match="meta[@name='nlbprod:isbn.ebook']" priority="1">
         <meta name="schema:isbn" content="{@content}"/>
     </xsl:template>
     
-    <xsl:template match="meta[@name='nlbprod:identifier.epub']">
+    <xsl:template match="meta[@name='nlbprod:identifier.epub']" priority="1">
         <meta name="dc:identifier.epub" content="{@content}"/>
     </xsl:template>
     
