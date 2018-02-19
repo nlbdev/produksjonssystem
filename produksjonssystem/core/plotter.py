@@ -41,10 +41,10 @@ class Plotter():
                     pipeline_id = pipeline[0].__class__.__name__
                     title = pipeline[0].title if pipeline[0].title else pipeline_id 
                     
-                    queue_created = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "created"]) if pipeline[0]._queue else 0
-                    queue_deleted = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "deleted"]) if pipeline[0]._queue else 0
-                    queue_modified = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "modified"]) if pipeline[0]._queue else 0
-                    queue_triggered = len([q for q in pipeline[0]._queue if Pipeline.get_main_event(q["events"]) == "triggered"]) if pipeline[0]._queue else 0
+                    queue_created = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "created"]) if pipeline[0]._queue else 0
+                    queue_deleted = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "deleted"]) if pipeline[0]._queue else 0
+                    queue_modified = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "modified"]) if pipeline[0]._queue else 0
+                    queue_triggered = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "triggered"]) if pipeline[0]._queue else 0
                     queue_string = []
                     if queue_created:
                         queue_string.append("nye:"+str(queue_created))

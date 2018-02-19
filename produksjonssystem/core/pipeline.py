@@ -334,7 +334,7 @@ class Pipeline():
                 
                 if self.book:
                     # Determine order of creation/deletion, as well as type of book event
-                    event = Pipeline.get_main_event(self.book["events"])
+                    event = Pipeline.get_main_event(self.book)
                     
                     # created first, then deleted => ignore
                     if event == "create_before_delete":
@@ -385,26 +385,26 @@ class Pipeline():
                 time.sleep(1)
     
     @staticmethod
-    def get_main_event(events):
+    def get_main_event(book):
         created_seq = []
         deleted_seq = []
         event = "modified"
         
-        for e in range(0, len(events)):
-            event = events[e]
+        for e in range(0, len(book["events"])):
+            event = book["events"][e]
             if event == "created":
                 created_seq.append(e)
             elif event == "deleted":
                 deleted_seq.append(e)
         
         if created_seq and deleted_seq:
-            if max(deleted_seq) > max(created_seq) or not os.path.exists(self.book["source"]):
+            if max(deleted_seq) > max(created_seq) or not os.path.exists(book["source"]):
                 event = "deleted"
             else:
                 event = "created"
-        elif "created" in events:
+        elif "created" in book["events"]:
             event = "created"
-        elif "deleted" in events:
+        elif "deleted" in book["events"]:
             event = "deleted"
         
         if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
