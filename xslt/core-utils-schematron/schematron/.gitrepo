@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/Schematron/schematron.git
+	branch = master
+	commit = 923fa78031c3b609e74fb1a2a0a8509854ca02a8
+	parent = ae5e8ccb61fff67653bf0d276cde5fb5dcf5e899
+	cmdver = 0.3.1
