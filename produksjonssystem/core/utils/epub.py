@@ -24,7 +24,6 @@ class Epub():
     book_path = None
     _temp_obj = None
     
-    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../..", "xslt"))
     uid = "core-utils-epub"
     
     def __init__(self, pipeline, book_path):
@@ -168,14 +167,14 @@ class Epub():
     
     @staticmethod
     def html_to_nav(pipeline, source, target):
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-nav.xsl"),
+        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-nav.xsl"),
                               source=source,
                               target=target)
         return xslt
     
     @staticmethod
     def html_to_opf(pipeline, source, target):
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Epub.xslt_dir, Epub.uid, "html-to-opf.xsl"),
+        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-opf.xsl"),
                               source=source,
                               target=target)
         return xslt

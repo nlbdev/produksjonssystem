@@ -13,6 +13,7 @@ class Xslt():
     """Class used to run XSLTs"""
     
     # treat as class variables
+    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../..", "xslt"))
     saxon_jar = os.path.join(DaisyPipelineJob.dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
     _i18n = {
         "The XSLT": "XSLTen",
