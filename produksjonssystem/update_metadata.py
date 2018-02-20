@@ -22,6 +22,7 @@ from core.pipeline import Pipeline, DummyPipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.report import Report
+from core.utils.schematron import Schematron
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -181,6 +182,9 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
             return False
         
+        
+        # ========== Collect and combine metadata from sources ==========
+        
         pipeline.utils.report.debug("nlbpub-opf-to-rdf.xsl")
         rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
         pipeline.utils.report.debug("    source = " + opf_path)
@@ -304,6 +308,19 @@ class UpdateMetadata(Pipeline):
                               target=html_head)
         if not xslt.success:
             return False
+        
+        
+        # ========== Validate metadata ==========
+        
+        pipeline.utils.report.debug("validate-opf.sch")
+        sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-opf.sch"),
+                                   source=opf_metadata)
+        if not sch.success:
+            pipeline.utils.report.error("Schematron validation failed")
+            return False
+        
+        
+        # ========== Update metadata in EPUB ==========
         
         updated_file_obj = tempfile.NamedTemporaryFile()
         updated_file = updated_file_obj.name
