@@ -186,7 +186,7 @@ section dl {
                 <xsl:value-of select="concat('urn:isbn:', ($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])[1]/replace(normalize-space(.),'[^\d]',''))"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat($type-id, '_', ($metadata[1]/generate-id(), replace(string(current-dateTime()),'[^\d]',''))[1])"/>
+                <xsl:value-of select="concat('record_',replace(string(current-time()),'[^\d]',''), $type-id, '_', ($metadata[1]/generate-id(), '')[1])"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>

@@ -18,6 +18,7 @@
     <xsl:param name="include-source-reference" select="false()"/>
 
     <xsl:template match="/qdbapi">
+        <xsl:variable name="rid" select="/qdbapi/table/records/record/@rid" as="xs:string?"/>
         <xsl:variable name="metadata" as="node()*">
             <xsl:for-each select="/qdbapi/table/records/record/f">
                 <xsl:sort select="@id"/>
@@ -36,7 +37,7 @@
         </xsl:variable>
         
         <xsl:variable name="identifier" select="($metadata[self::html:dd[@property = 'nlbprod:isbn.identifier' and normalize-space(.)]])[1]/normalize-space(.)"/>
-        <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else concat('book_', generate-id())"/>
+        <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else concat('isbn_',($rid,replace(string(current-time()),'[^\d]',''))[1],'_book_', generate-id())"/>
         
         <html>
             <head>
