@@ -42,22 +42,22 @@ class Schematron():
             temp_xml_report = temp_xml_report_obj.name
             
             self.pipeline.utils.report.debug("Compiling schematron ({} + {}): iso_dsdl_include.xsl".format(os.path.basename(schematron), os.path.basename(source)))
-            xslt = Xslt(pipeline, stylesheet=os.path.join(self.schematron_dir, "iso_dsdl_include.xsl"),    source=schematron, target=temp_xml_1)
+            xslt = Xslt(pipeline, stylesheet=os.path.join(self.schematron_dir, "iso_dsdl_include.xsl"),    source=schematron, target=temp_xml_1,      stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
             
             self.pipeline.utils.report.debug("Compiling schematron ({} + {}): iso_abstract_expand.xsl".format(os.path.basename(schematron), os.path.basename(source)))
-            xslt = Xslt(pipeline, stylesheet=os.path.join(self.schematron_dir, "iso_abstract_expand.xsl"), source=temp_xml_1, target=temp_xml_2)
+            xslt = Xslt(pipeline, stylesheet=os.path.join(self.schematron_dir, "iso_abstract_expand.xsl"), source=temp_xml_1, target=temp_xml_2,      stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
             
             self.pipeline.utils.report.debug("Compiling schematron ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
-            xslt = Xslt(pipeline, stylesheet=os.path.join(self.schematron_dir, "iso_svrl_for_xslt2.xsl"),  source=temp_xml_2, target=temp_xml_3)
+            xslt = Xslt(pipeline, stylesheet=os.path.join(self.schematron_dir, "iso_svrl_for_xslt2.xsl"),  source=temp_xml_2, target=temp_xml_3,      stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
             
             self.pipeline.utils.report.debug("Validating against compiled Schematron ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
-            xslt = Xslt(pipeline, stylesheet=temp_xml_3,                                                   source=source,     target=temp_xml_report)
+            xslt = Xslt(pipeline, stylesheet=temp_xml_3,                                                   source=source,     target=temp_xml_report, stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
             

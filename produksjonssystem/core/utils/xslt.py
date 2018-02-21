@@ -23,7 +23,7 @@ class Xslt():
     # treat as instance variables
     pipeline = None
     
-    def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}, template=None):
+    def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}, template=None, stdout_level="INFO", stderr_level="INFO"):
         assert pipeline
         assert stylesheet
         assert source or template
@@ -44,7 +44,7 @@ class Xslt():
                 command.append(param + "=" + parameters[param])
             
             self.pipeline.utils.report.debug("Running XSLT")
-            process = self.pipeline.utils.filesystem.run(command, stdout_level="INFO", stderr_level="INFO")
+            process = self.pipeline.utils.filesystem.run(command, stdout_level=stdout_level, stderr_level=stderr_level)
             self.success = True
             
         except subprocess.TimeoutExpired as e:
