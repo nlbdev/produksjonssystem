@@ -32,7 +32,6 @@
                 <!-- Declare predefined EPUB metadata namespaces -->
                 
                 <xsl:for-each select="distinct-values(*/substring-before((@property, name())[1],':'))">
-                    <xsl:message select="."/>
                     <xsl:variable name="prefix" select="."/>
                     <xsl:choose>
                         <xsl:when test="$prefix = 'dc'"><xsl:namespace name="{$prefix}" select="'http://purl.org/dc/elements/1.1/'"/></xsl:when>
