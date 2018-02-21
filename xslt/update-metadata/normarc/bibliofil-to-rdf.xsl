@@ -28,9 +28,11 @@
     <xsl:template match="/*">
         <xsl:variable name="metadata" as="element()" select="/*"/>
         
-        <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat('urn:isbn:', replace(normalize-space(@content),'[^\d]','')), concat('creativeWork_',generate-id()))[1]"/>
-        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content), $edition-identifier), concat('book_',generate-id()))[1]"/>
-        <xsl:variable name="resource-original" select="concat('original_',generate-id())"/>
+        <xsl:variable name="identifier" select="$metadata/dc:identifier"/>
+        
+        <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat('urn:isbn:', replace(normalize-space(@content),'[^\d]','')), concat('creativeWork_',replace(string(current-time()),'[^\d]',''),'_',generate-id()))[1]"/>
+        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content), $edition-identifier), concat('book_',replace(string(current-time()),'[^\d]',''),'_',generate-id()))[1]"/>
+        <xsl:variable name="resource-original" select="concat('original_',replace(string(current-time()),'[^\d]',''),'_',generate-id())"/>
         
         <xsl:variable name="html" as="element()">
             <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
