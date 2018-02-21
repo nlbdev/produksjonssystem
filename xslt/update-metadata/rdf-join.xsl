@@ -4,6 +4,7 @@
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:schema="http://schema.org/"
+                xmlns:nlb="http://www.nlb.no/"
                 xmlns:f="#"
                 exclude-result-prefixes="#all"
                 version="2.0">
@@ -129,7 +130,16 @@
         <xsl:variable name="new" select="if (count($descriptions)) then $descriptions[1] else ()"/>
         <xsl:variable name="remaining" select="if (count($descriptions)) then $descriptions[position() gt 1] else ()"/>
         
+        <!-- Get dc:identifier from epub if present -->
+        <xsl:variable name="epub-identifier" select="if (not($properties/name() = 'dc:identifier')) then ($descriptions/dc:identifier[@nlb:metadata-source='EPUB'])[1] else ()" as="element()?"/>
+        <xsl:variable name="properties" select="($properties, $epub-identifier)"/>
+        
         <xsl:variable name="merged" as="element()*">
+            <!-- Include dc:identifier from epub if present -->
+            <xsl:if test="not($properties/name() = 'dc:identifier')">
+                <xsl:sequence select="$epub-identifier"/>
+            </xsl:if>
+            
             <!-- Include all pre-existing metadata -->
             <xsl:sequence select="$properties"/>
             
