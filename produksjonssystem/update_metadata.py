@@ -220,6 +220,7 @@ class UpdateMetadata(Pipeline):
         identifiers = qb_record.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=qb_record.nsmap)
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         
+        marcxchange_paths = []
         for format_edition_identifier in identifiers:
             format_pub_identifier = format_edition_identifier
             if len(format_pub_identifier) > 6:
@@ -234,6 +235,7 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("    source = " + marcxchange_path)
             pipeline.utils.report.debug("    target = " + current_opf_path)
             UpdateMetadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
+            marcxchange_paths.append(marcxchange_path)
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/marcxchange-to-opf.xsl"),
                                   source=marcxchange_path,
                                   target=current_opf_path,
@@ -312,7 +314,18 @@ class UpdateMetadata(Pipeline):
         
         # ========== Validate metadata ==========
         
-        pipeline.utils.report.debug("validate-opf.sch")
+        normarc_success = True
+        for marcxchange_path in marcxchange_paths:
+            pipeline.utils.report.info("Validerer NORMARC ({})".format(os.path.basename(marcxchange_path).split(".")[0]))
+            sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
+                                       source=marcxchange_path)
+            if not sch.success:
+                pipeline.utils.report.error("Schematron validation failed")
+                normarc_success = False
+        if not normarc_success:
+            return False
+        
+        pipeline.utils.report.info("Validerer ny OPF-metadata")
         sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-opf.sch"),
                                    source=opf_metadata)
         if not sch.success:
