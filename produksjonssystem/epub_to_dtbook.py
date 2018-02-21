@@ -15,6 +15,7 @@ from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from update_metadata import UpdateMetadata
+from core.utils.schematron import Schematron
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -24,8 +25,6 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class EpubToDtbook(Pipeline):
     uid = "epub-to-dtbook"
     title = "EPUB til DTBook"
-    
-    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -113,13 +112,23 @@ class EpubToDtbook(Pipeline):
         self.utils.report.debug("dtbook-cleanup.xsl")
         self.utils.report.debug("    source = " + dtbook_file)
         self.utils.report.debug("    target = " + temp_dtbook)
-        xslt = Xslt(self, stylesheet=os.path.join(EpubToDtbook.xslt_dir, EpubToDtbook.uid, "dtbook-cleanup.xsl"),
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbook.uid, "dtbook-cleanup.xsl"),
                           source=dtbook_file,
                           target=temp_dtbook)
         if not xslt.success:
             return False
         
         shutil.copy(temp_dtbook, dtbook_file)
+        
+        
+        # ---------- valider resultat ----------
+        
+        self.utils.report.info("Validerer DTBook")
+        sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbook.uid, "validate-dtbook.sch"),
+                               source=dtbook_file)
+        if not sch.success:
+            self.utils.report.error("Validering av DTBook feilet")
+            return False
         
         
         # ---------- lagre DTBook ----------

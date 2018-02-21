@@ -35,6 +35,10 @@
     
     <xsl:template match="docauthor"/>
     
+    <xsl:template match="meta[@name='dc:Date.available']">
+        <meta name="dc:Date" content="{@content}"/>
+    </xsl:template>
+    
     <xsl:template match="meta[lower-case(@name)='dc:language']">
         <meta name="dc:Language" content="{f:lang(@content)}"/>
     </xsl:template>
