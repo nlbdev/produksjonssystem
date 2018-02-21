@@ -320,7 +320,7 @@ class UpdateMetadata(Pipeline):
             sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
                                        source=marcxchange_path)
             if not sch.success:
-                pipeline.utils.report.error("Schematron validation failed")
+                pipeline.utils.report.error("Validering av Bibliofil-metadata feilet")
                 normarc_success = False
         if not normarc_success:
             return False
@@ -329,7 +329,14 @@ class UpdateMetadata(Pipeline):
         sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-opf.sch"),
                                    source=opf_metadata)
         if not sch.success:
-            pipeline.utils.report.error("Schematron validation failed")
+            pipeline.utils.report.error("Validering av OPF-metadata feilet")
+            return False
+        
+        pipeline.utils.report.info("Validerer ny HTML-metadata")
+        sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-html-metadata.sch"),
+                                   source=html_head)
+        if not sch.success:
+            pipeline.utils.report.error("Validering av HTML-metadata feilet")
             return False
         
         

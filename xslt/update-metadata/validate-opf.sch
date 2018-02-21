@@ -3,7 +3,7 @@
         xmlns:sqf="http://www.schematron-quickfix.com/validator/process"
         queryBinding="xslt2">
     
-    <title>Regler for OPF-metadata som skal settes inn i EPUB'ene</title>
+    <title>Regler for OPF-metadata</title>
     
     <ns prefix="opf" uri="http://www.idpf.org/2007/opf"/>
     <ns prefix="dc" uri="http://purl.org/dc/elements/1.1/"/>
@@ -11,7 +11,7 @@
     <pattern>
         <title>Boknummer</title>
         <rule context="opf:metadata">
-            <assert test="count(dc:identifier[not(@refines)]) = 1">Det må være nøyaktig ett EPUB-boknummer (dc:identifier).</assert>
+            <assert test="count(dc:identifier[not(@refines)]) = 1">Det må være nøyaktig ett boknummer (dc:identifier).</assert>
         </rule>
     </pattern>
     
@@ -19,6 +19,20 @@
         <title>Språk</title>
         <rule context="opf:metadata">
             <assert test="count(dc:language) gt 0">Det må være minst ett språk (dc:language).</assert>
+        </rule>
+    </pattern>
+    
+    <pattern>
+        <title>Tittel</title>
+        <rule context="opf:metadata">
+            <assert test="count(dc:title) gt 0">Tittel må være definert (dc:title).</assert>
+        </rule>
+    </pattern>
+    
+    <pattern>
+        <title>Forlag</title>
+        <rule context="opf:metadata">
+            <assert test="count(dc:publisher) gt 0">Forlag må være definert (dc:publisher).</assert>
         </rule>
     </pattern>
     
