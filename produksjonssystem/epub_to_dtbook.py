@@ -66,7 +66,7 @@ class EpubToDtbook(Pipeline):
         # ---------- oppdater metadata ----------
         
         self.utils.report.info("Oppdaterer metadata...")
-        updated = UpdateMetadata.update(self, nordic_epub)
+        updated = UpdateMetadata.update(self, nordic_epub, publication_format="DAISY 2.02", update_identifier=False)
         if isinstance(updated, bool) and updated == False:
             self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
             return

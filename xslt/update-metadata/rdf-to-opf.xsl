@@ -19,15 +19,45 @@
     
     <xsl:output indent="no"/>
     
-    <xsl:param name="epub-version" select="'3.0'" as="xs:string?" required="no"/>
+    <xsl:param name="epub-version" select="'3.0'" as="xs:string"/>
+    <xsl:param name="format" select="''" as="xs:string"/>
+    <xsl:param name="update-identifier" select="false()" as="xs:boolean"/>
     
     <xsl:variable name="opf-allowed-dc-elements" select="('dc:identifier', 'dc:title', 'dc:language', 'dc:contributor', 'dc:coverage',
                                                           'dc:creator', 'dc:date', 'dc:description', 'dc:format', 'dc:publisher',
                                                           'dc:relation', 'dc:rights', 'dc:source', 'dc:subject', 'dc:type')"/>
     
+    <xsl:template name="test">
+        <xsl:param name="context" as="element()"/>
+        <xsl:param name="epub-version" select="$epub-version" as="xs:string"/>
+        <xsl:param name="format" select="$format" as="xs:string"/>
+        <xsl:param name="update-identifier" select="$update-identifier" as="xs:boolean"/>
+        <xsl:for-each select="$context">
+            <xsl:call-template name="main">
+                <xsl:with-param name="epub-version" select="$epub-version" tunnel="yes"/>
+                <xsl:with-param name="epubVersion" select="$epub-version"/>
+                <xsl:with-param name="format" select="$format"/>
+                <xsl:with-param name="update-identifier" select="$update-identifier" tunnel="yes"/>
+            </xsl:call-template>
+        </xsl:for-each>
+    </xsl:template>
+    
     <xsl:template match="/rdf:RDF">
+        <xsl:call-template name="main">
+            <xsl:with-param name="epub-version" select="$epub-version" tunnel="yes"/>
+            <xsl:with-param name="epubVersion" select="$epub-version"/>
+            <xsl:with-param name="format" select="$format"/>
+            <xsl:with-param name="update-identifier" select="$update-identifier" tunnel="yes"/>
+        </xsl:call-template>
+    </xsl:template>
+    
+    <xsl:template name="main">
+        <xsl:param name="epubVersion" as="xs:string"/>
+        <xsl:param name="format" as="xs:string"/>
         <xsl:variable name="metadata" as="node()*">
-            <xsl:call-template name="compile-metadata"/>
+            <xsl:call-template name="compile-metadata">
+                <xsl:with-param name="format" select="$format"/>
+            </xsl:call-template>
         </xsl:variable>
         <xsl:text><![CDATA[
     ]]></xsl:text>
@@ -35,7 +65,7 @@
             <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
             <xsl:namespace name="opf" select="'http://www.idpf.org/2007/opf'"/>
             
-            <xsl:variable name="reserved-prefixes" select="if ($epub-version = '3.1') then ('a11y','dcterms','epubsc','marc','media','onix','rendition','schema','xsd') else ('dcterms','marc','media','onix','xsd')"/>
+            <xsl:variable name="reserved-prefixes" select="if ($epubVersion = '3.1') then ('a11y','dcterms','epubsc','marc','media','onix','rendition','schema','xsd') else ('dcterms','marc','media','onix','xsd')"/>
             <xsl:variable name="metadata-prefixes" select="distinct-values($metadata/@property[contains(.,':')]/substring-before(.,':')[not(.=$reserved-prefixes)])"/>
             <xsl:variable name="mappings" select="for $p in $metadata-prefixes return concat($p, ': ', namespace-uri-for-prefix($p, (//*[substring-before(name(),':') = $p])[1]))"/>
             <xsl:variable name="prefixes" select="string-join($mappings,' ')"/>
@@ -50,18 +80,23 @@
     </xsl:template>
     
     <xsl:template name="compile-metadata" as="node()*">
+        <xsl:param name="format" as="xs:string"/>
+        <xsl:param name="update-identifier" as="xs:boolean" tunnel="yes"/>
         <xsl:variable name="work" select="(rdf:Description[rdf:type/@rdf:resource = 'http://schema.org/CreativeWork'])[1]"/>
         <xsl:variable name="epub" select="(rdf:Description[dc:format = 'EPUB'])[1]"/>
         <xsl:variable name="daisy202" select="(rdf:Description[dc:format = 'DAISY 2.02'])[1]"/>
         <xsl:variable name="braille" select="(rdf:Description[dc:format = 'Braille'])[1]"/>
+        <xsl:variable name="publication" select="if ($format) then (rdf:Description[dc:format = $format])[1] else ()"/>
         
-        <xsl:if test="$epub/dc:identifier[1]">
+        <xsl:variable name="identifier" select="if ($update-identifier) then ($publication, $epub)[1]/dc:identifier[1] else $epub[1]/dc:identifier[1]"/>
+        
+        <xsl:if test="$identifier">
             <xsl:text><![CDATA[
         ]]></xsl:text>
-            <xsl:comment select="' Boknummer for EPUB-utgaven '"/>
+            <xsl:comment select="concat(' Boknummer for ', $identifier/../dc:format, '-utgaven ')"/>
             
             <xsl:call-template name="meta">
-                <xsl:with-param name="rdf-property" select="$epub/dc:identifier[1]"/>
+                <xsl:with-param name="rdf-property" select="$identifier"/>
                 <xsl:with-param name="id" select="'pub-id'"/>
             </xsl:call-template>
         </xsl:if>
@@ -93,7 +128,7 @@
                                'dc:description', 'dc:relation', 'dc:source', 'dc:subject', 'dc:type',
                                distinct-values((//dcterms:* | //nordic:* | //schema:*)[@schema:name or text()]/(tokenize(name(),'\.')[1])))">
             
-            <xsl:variable name="meta" select="$work/*[starts-with(name(), current())]" as="element()*"/>
+            <xsl:variable name="meta" select="($work/*, $publication/(* except schema:isbn))[starts-with(name(), current())]" as="element()*"/> <!-- TODO: find a better way to handle publication ISBNs -->
             <xsl:variable name="meta" select="if (count($meta)) then $meta else $epub/*[starts-with(name(), current())]" as="element()*"/>
             
             <xsl:for-each select="$meta">
@@ -112,6 +147,7 @@
     </xsl:template>
     
     <xsl:template name="meta" as="node()*">
+        <xsl:param name="epub-version" as="xs:string" tunnel="yes"/>
         <xsl:param name="rdf-property" as="element()"/>
         <xsl:param name="rename" as="xs:string?"/>
         <xsl:param name="id" as="xs:string?"/>

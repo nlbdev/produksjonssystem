@@ -136,7 +136,7 @@ class UpdateMetadata(Pipeline):
                 logging.exception("[" + Report.thread_name() + "] An error occured while checking for updates in metadata")
     
     @staticmethod
-    def update(pipeline, epub):
+    def update(pipeline, epub, publication_format="", update_identifier=False):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only update metadata in EPUBs")
             return False
@@ -297,7 +297,11 @@ class UpdateMetadata(Pipeline):
         pipeline.utils.report.debug("    target = " + opf_metadata)
         xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
                               source=os.path.join(metadata_dir, "metadata.rdf"),
-                              target=opf_metadata)
+                              target=opf_metadata,
+                              parameters={
+                                  "format": publication_format,
+                                  "update_identifier": "true" if str(update_identifier).lower() == "true" else "false"
+                              })
         if not xslt.success:
             return False
         
