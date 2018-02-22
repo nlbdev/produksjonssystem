@@ -479,8 +479,8 @@
                 <meta property="dc:format.extent.pages.original">414</meta>
                 <meta property="dc:language.original">tib</meta>
                 <meta property="dc:language.original.intermediary">eng</meta>
+                <meta property="dc:publisher.location.original">Oslo</meta>
                 <meta property="dc:publisher.original">Cappelen Damm akademisk</meta>
-                <meta property="dc:publisher.original.location">Oslo</meta>
                 <meta property="dc:title.original">La Mucama de Omicunle</meta>
                 <meta property="bookEdition.original">3. utg.</meta>
                 <meta property="isbn.original">978-82-02-53797-5</meta>
@@ -632,8 +632,8 @@
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <meta property="dc:date.issued.original">1995</meta>
+                <meta property="dc:publisher.location.original">Oslo</meta>
                 <meta property="dc:publisher.original">Cappelen</meta>
-                <meta property="dc:publisher.original.location">Oslo</meta>
                 <meta property="bookEdition.original">1</meta>
             </metadata>
         </x:expect>

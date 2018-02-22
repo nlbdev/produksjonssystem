@@ -69,7 +69,7 @@
                     <dc:format.other.no>Lydopptak</dc:format.other.no>
                     <dc:format.other.no>CD (kompaktplate)</dc:format.other.no>
                     <dc:format.other.no>Annen tale/annet</dc:format.other.no>
-                    <dc:publisher.original.location>Oslo</dc:publisher.original.location>
+                    <dc:publisher.location.original>Oslo</dc:publisher.location.original>
                     <dc:title.part>At the water's edge</dc:title.part>
                     <dc:type.genre>Fiction</dc:type.genre>
                     <dc:type.genre>Non-biography</dc:type.genre>
@@ -139,7 +139,7 @@
                     <format.other.no name="Lydopptak"/>
                     <format.other.no name="CD (kompaktplate)"/>
                     <format.other.no name="Annen tale/annet"/>
-                    <publisher.original.location name="Oslo"/>
+                    <publisher.location.original name="Oslo"/>
                     <title.part name="At the water's edge"/>
                     <type.genre name="Fiction"/>
                     <type.genre name="Non-biography"/>

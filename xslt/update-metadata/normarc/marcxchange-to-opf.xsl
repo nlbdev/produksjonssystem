@@ -1257,7 +1257,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='a']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.original.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.location.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='c']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
