@@ -15,6 +15,15 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="head">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()"/>
+            <xsl:if test="not(meta[@name='dc:Date'])">
+                <meta name="dc:Date" content="{tokenize(string(current-date()),'\+')[1]}"/>
+            </xsl:if>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:template match="doctitle">
         <xsl:next-match/>
         
@@ -34,10 +43,6 @@
     </xsl:template>
     
     <xsl:template match="docauthor"/>
-    
-    <xsl:template match="meta[@name='dc:Date.available']">
-        <meta name="dc:Date" content="{@content}"/>
-    </xsl:template>
     
     <xsl:template match="meta[lower-case(@name)='dc:language']">
         <meta name="dc:Language" content="{f:lang(@content)}"/>
