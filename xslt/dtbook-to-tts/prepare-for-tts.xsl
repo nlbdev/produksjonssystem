@@ -31,8 +31,8 @@
     </xsl:template>
     
     <xsl:template match="doctitle">
-        <xsl:variable name="title" select="/*/head/meta[lower-case(@name)='dc:title']/@content" as="xs:string?"/>
-        <xsl:variable name="subTitle" select="/*/head/meta[lower-case(@name)='dc:title.subtitle']/@content" as="xs:string?"/>
+        <xsl:variable name="title" select="(/*/head/meta[lower-case(@name)='dc:title'])[1]/@content" as="xs:string?"/>
+        <xsl:variable name="subTitle" select="(/*/head/meta[lower-case(@name)='dc:title.subtitle'])[1]/@content" as="xs:string?"/>
         <xsl:choose>
             <xsl:when test="$title">
                 <xsl:copy exclude-result-prefixes="#all">
