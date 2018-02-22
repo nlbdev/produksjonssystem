@@ -45,6 +45,8 @@ class UpdateMetadata(Pipeline):
     quickbase_record_id_rows = [ "13", "20", "24", "28", "31", "32", "38" ]
     quickbase_isbn_id_rows = [ "7" ]
     
+    formats = ["EPUB", "DAISY 2.02", "XHTML", "Braille"] # values used in dc:format
+    
     logPipeline = DummyPipeline(uid=uid, title=title)
     
     _metadataWatchThread = None
@@ -141,11 +143,13 @@ class UpdateMetadata(Pipeline):
     def update(*args, **kwargs):
         # Only update one book at a time, to avoid potentially overwriting metadata while it's being used
         
+        ret = False
         UpdateMetadata.update_lock.acquire()
         try:
-            UpdateMetadata._update(*args, **kwargs)
+            ret = UpdateMetadata._update(*args, **kwargs)
         finally:
             UpdateMetadata.update_lock.release()
+        return ret
     
     @staticmethod
     def _update(pipeline, epub, publication_format=""):
@@ -170,16 +174,13 @@ class UpdateMetadata(Pipeline):
             if not success:
                 return False
         
-        UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
+        return UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
     
     @staticmethod
-    def get_metadata(pipeline, epub, publication_format=""):
+    def get_metadata(pipeline, epub):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read metadata from EPUBs")
             return False
-        
-        formats = ["EPUB", "DAISY 2.02", "XHTML", "Braille"] # values used in dc:format
-        assert not publication_format or publication_format in formats, "Format for updating metadata, when specified, must be one of: {}".format(", ".join(formats))
         
         # get path to OPF in EPUB (unzip if necessary)
         opf = epub.opf_path()
@@ -327,7 +328,7 @@ class UpdateMetadata(Pipeline):
         opf_metadata = {"": rdf_metadata[""].replace(".rdf",".opf")}
         html_metadata = {"": rdf_metadata[""].replace(".rdf",".html")}
         
-        for f in formats:
+        for f in UpdateMetadata.formats:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
             rdf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.rdf".format(format_id))
             opf_metadata[f] = rdf_metadata[f].replace(".rdf",".opf")
@@ -421,7 +422,7 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("Metadata for '{}' has not changed".format(epub.identifier()))
     
     @staticmethod
-    def insert_metadata(pipeline, epub, publication_format):
+    def insert_metadata(pipeline, epub, publication_format=""):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only update metadata in EPUBs")
             return False
@@ -430,6 +431,8 @@ class UpdateMetadata(Pipeline):
         if not os.path.exists(opf_path):
             pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
             return False
+        
+        assert not publication_format or publication_format in UpdateMetadata.formats, "Format for updating metadata, when specified, must be one of: {}".format(", ".join(UpdateMetadata.formats))
         
         # ========== Update metadata in EPUB ==========
         
@@ -472,9 +475,6 @@ class UpdateMetadata(Pipeline):
         new_identifier = new_identifier[0] if new_identifier else None
         if not new_identifier:
             pipeline.utils.report.error("Could not find identifier in updated metadata")
-            return False
-        if not new_identifier == epub.identifier():
-            pipeline.utils.report.error("Expected identifier to be '{}', but in the updated metadata is was '{}'".format(epub.identifier(), new_identifier))
             return False
         
         updates = []
