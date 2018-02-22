@@ -83,7 +83,7 @@
                             <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@118902 *260$3">17192400</nlbbib:bibliofil-id>
                             <dc:publisher.location nlb:metadata-source="Bibliofil@118902 *260$a">Oslo</dc:publisher.location>
                         </dc:publisher>
-                        <dc:publisher.original.location nlb:metadata-source="Bibliofil@118902 *596$a">oslo</dc:publisher.original.location>
+                        <dc:publisher.location.original nlb:metadata-source="Bibliofil@118902 *596$a">oslo</dc:publisher.location.original>
                         <dc:title.part nlb:metadata-source="Bibliofil@118902 *740$a">Horrid Henry's Lucky Dip</dc:title.part>
                         <dc:title.part nlb:metadata-source="Bibliofil@118902 *740$a">Rampete Robin feirer morsdag</dc:title.part>
                         <dc:title.part nlb:metadata-source="Bibliofil@118902 *740$a">Rampete Robin får feil presang</dc:title.part>
@@ -171,7 +171,7 @@
                             <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@561702 *260$3">17192400</nlbbib:bibliofil-id>
                             <dc:publisher.location nlb:metadata-source="Bibliofil@561702 *260$a">Oslo</dc:publisher.location>
                         </dc:publisher>
-                        <dc:publisher.original.location nlb:metadata-source="Bibliofil@561702 *596$a">Oslo</dc:publisher.original.location>
+                        <dc:publisher.location.original nlb:metadata-source="Bibliofil@561702 *596$a">Oslo</dc:publisher.location.original>
                         <dc:title.part nlb:metadata-source="Bibliofil@561702 *740$a">Horrid Henry's Lucky Dip</dc:title.part>
                         <dc:type.genre nlb:metadata-source="Bibliofil@561702 *008">Fiction</dc:type.genre>
                         <dc:type.genre nlb:metadata-source="Bibliofil@561702 *008">Non-biography</dc:type.genre>
@@ -341,7 +341,7 @@
         <dc:format>EPUB</dc:format> <!-- Bibliofil@561702 *019$b -->
         <meta property="dc:format.other">Electronic resource</meta> <!-- Bibliofil@561702 *019$b -->
         <dc:publisher>Norsk lyd- og blindeskriftbibliotek</dc:publisher> <!-- Bibliofil@561702 *260 -->
-        <meta property="dc:publisher.original.location">Oslo</meta> <!-- Bibliofil@561702 *596$a -->
+        <meta property="dc:publisher.location.original">Oslo</meta> <!-- Bibliofil@561702 *596$a -->
         <meta property="dc:date.issued">2017</meta> <!-- Bibliofil@561702 *260$c -->
         <dc:source>urn:isbn:9788205489813</dc:source> <!-- Bibliofil@561702 *596$f -->
         <meta property="dc:type.genre">Fiction</meta> <!-- Bibliofil@561702 *008 -->
@@ -423,7 +423,7 @@
                             <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@225518 *260$3">17192400</nlbbib:bibliofil-id>
                         </dc:publisher>
                         <dc:publisher.location nlb:metadata-source="Bibliofil@225518 *260$a">Oslo</dc:publisher.location>
-                        <dc:publisher.original.location nlb:metadata-source="Bibliofil@225518 *596$a">London</dc:publisher.original.location>
+                        <dc:publisher.location.original nlb:metadata-source="Bibliofil@225518 *596$a">London</dc:publisher.location.original>
                         <dc:subject.dewey nlb:metadata-source="Bibliofil@225518 *082$a">155.4</dc:subject.dewey>
                         <dc:subject.keyword nlb:metadata-source="Bibliofil@225518 *650"
                             schema:name="Utviklingspsykologi">
@@ -463,7 +463,7 @@
                             <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@562318 *260$3">17192400</nlbbib:bibliofil-id>
                         </dc:publisher>
                         <dc:publisher.location nlb:metadata-source="Bibliofil@562318 *260$a">Oslo</dc:publisher.location>
-                        <dc:publisher.original.location nlb:metadata-source="Bibliofil@562318 *596$a">London</dc:publisher.original.location>
+                        <dc:publisher.location.original nlb:metadata-source="Bibliofil@562318 *596$a">London</dc:publisher.location.original>
                         <dc:title.part.sortingKey nlb:metadata-source="Bibliofil@562318 *245$w">n introduction to child development</dc:title.part.sortingKey>
                         <dc:type nlb:metadata-source="Bibliofil@562318 *245$h">Full Text</dc:type>
                         <dc:type.genre nlb:metadata-source="Bibliofil@562318 *008">Non-fiction</dc:type.genre>
@@ -703,7 +703,7 @@
         <meta property="dc:format.other">Other voice/other</meta> <!-- Bibliofil@225518 *019$b -->
         <dc:publisher>Norsk lyd- og blindeskriftbibliotek</dc:publisher> <!-- Bibliofil@225518 *260$b -->
         <meta property="dc:publisher.location">Oslo</meta> <!-- Bibliofil@225518 *260$a -->
-        <meta property="dc:publisher.original.location">London</meta> <!-- Bibliofil@225518 *596$a -->
+        <meta property="dc:publisher.location.original">London</meta> <!-- Bibliofil@225518 *596$a -->
         <meta property="dc:date.available">2017-02-21</meta> <!-- Bibliofil@225518 *592$a -->
         <meta property="dc:date.issued">2018</meta> <!-- Bibliofil@225518 *260$c -->
         <meta property="dc:description.abstract">Fra forlagets bokomtale: An Introduction to Child Development, Third Edition provides

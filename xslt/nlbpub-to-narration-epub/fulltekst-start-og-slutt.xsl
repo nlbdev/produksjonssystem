@@ -197,7 +197,7 @@
                     <xsl:if
                         test="
                             fnk:metadata-finnes('dc:publisher.original') and
-                            fnk:metadata-finnes('dc:publisher.original.location') and
+                            fnk:metadata-finnes('dc:publisher.location.original') and
                             fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
                             <xsl:text>The book is published by </xsl:text>
@@ -205,7 +205,7 @@
                                 select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original', true())"/>
                             <xsl:text>, </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original.location', true())"/>
+                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.location.original', true())"/>
                             <xsl:text>, in </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
@@ -273,7 +273,7 @@
                     <xsl:if
                         test="
                             fnk:metadata-finnes('dc:publisher.original') and
-                            fnk:metadata-finnes('dc:publisher.original.location') and
+                            fnk:metadata-finnes('dc:publisher.location.original') and
                             fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
                             <xsl:text>Boka er utgjeven av </xsl:text>
@@ -281,7 +281,7 @@
                                 select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original', true())"/>
                             <xsl:text>, </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original.location', true())"/>
+                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.location.original', true())"/>
                             <xsl:text>, i </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
@@ -348,7 +348,7 @@
                     <xsl:if
                         test="
                             fnk:metadata-finnes('dc:publisher.original') and
-                            fnk:metadata-finnes('dc:publisher.original.location') and
+                            fnk:metadata-finnes('dc:publisher.location.original') and
                             fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
                             <xsl:text>Boka er utgitt av </xsl:text>
@@ -356,7 +356,7 @@
                                 select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original', true())"/>
                             <xsl:text>, </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original.location', true())"/>
+                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.location.original', true())"/>
                             <xsl:text>, i </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>

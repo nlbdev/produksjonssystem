@@ -284,7 +284,7 @@
                     <dc:format.other nlb:metadata-source="Bibliofil@562318 *019$b">Electronic resource</dc:format.other>
                     <dc:format.other.no nlb:metadata-source="Bibliofil@562318 *019$b">Elektronisk ressurs</dc:format.other.no>
                     <dc:publisher.location nlb:metadata-source="Bibliofil@562318 *260$a">Oslo</dc:publisher.location>
-                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@562318 *596$a">London</dc:publisher.original.location>
+                    <dc:publisher.location.original nlb:metadata-source="Bibliofil@562318 *596$a">London</dc:publisher.location.original>
                     <dc:title.part.sortingKey nlb:metadata-source="Bibliofil@562318 *245$w">n introduction to child development</dc:title.part.sortingKey>
                     <dc:type.genre nlb:metadata-source="Bibliofil@562318 *008">Non-fiction</dc:type.genre>
                     <dc:type.genre nlb:metadata-source="Bibliofil@562318 *008">Non-biography</dc:type.genre>
@@ -358,7 +358,7 @@
                     <dc:format.other.no nlb:metadata-source="Bibliofil@225518 *019$b">CD (kompaktplate)</dc:format.other.no>
                     <dc:format.other.no nlb:metadata-source="Bibliofil@225518 *019$b">Annen tale/annet</dc:format.other.no>
                     <dc:publisher.location nlb:metadata-source="Bibliofil@225518 *260$a">Oslo</dc:publisher.location>
-                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@225518 *596$a">London</dc:publisher.original.location>
+                    <dc:publisher.location.original nlb:metadata-source="Bibliofil@225518 *596$a">London</dc:publisher.location.original>
                     <dc:subject.dewey nlb:metadata-source="Bibliofil@225518 *082$a">155.4</dc:subject.dewey>
                     <dc:subject.keyword nlb:metadata-source="Bibliofil@225518 *650" schema:name="Utviklingspsykologi">
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@225518 *650$3">20329300</nlbbib:bibliofil-id>
@@ -454,7 +454,7 @@
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@225518 *260$3">17192400</nlbbib:bibliofil-id>
                     </dc:publisher>
                     <dc:publisher.location nlb:metadata-source="Bibliofil@225518 *260$a">Oslo</dc:publisher.location>
-                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@225518 *596$a">London</dc:publisher.original.location>
+                    <dc:publisher.location.original nlb:metadata-source="Bibliofil@225518 *596$a">London</dc:publisher.location.original>
                     <dc:subject.dewey nlb:metadata-source="Bibliofil@225518 *082$a">155.4</dc:subject.dewey>
                     <dc:subject.keyword nlb:metadata-source="Bibliofil@225518 *650"
                         schema:name="Utviklingspsykologi">
@@ -494,7 +494,7 @@
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@562318 *260$3">17192400</nlbbib:bibliofil-id>
                     </dc:publisher>
                     <dc:publisher.location nlb:metadata-source="Bibliofil@562318 *260$a">Oslo</dc:publisher.location>
-                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@562318 *596$a">London</dc:publisher.original.location>
+                    <dc:publisher.location.original nlb:metadata-source="Bibliofil@562318 *596$a">London</dc:publisher.location.original>
                     <dc:title.part.sortingKey nlb:metadata-source="Bibliofil@562318 *245$w">n introduction to child development</dc:title.part.sortingKey>
                     <dc:type nlb:metadata-source="Bibliofil@562318 *245$h">Full Text</dc:type>
                     <dc:type.genre nlb:metadata-source="Bibliofil@562318 *008">Non-fiction</dc:type.genre>
@@ -960,7 +960,7 @@
                     <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">Periodika</dc:format.other.no>
                     <dc:format.other.no nlb:metadata-source="Bibliofil@624594 *019$b">Tidsskrift</dc:format.other.no>
                     <dc:publisher.location nlb:metadata-source="Bibliofil@624594 *260$a">Oslo</dc:publisher.location>
-                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@624594 *596$a">Oslo</dc:publisher.original.location>
+                    <dc:publisher.location.original nlb:metadata-source="Bibliofil@624594 *596$a">Oslo</dc:publisher.location.original>
                     <dc:source.urn-nbn nlb:metadata-source="Bibliofil@624594 *856$s">urn:nbn:no-nb_nlb_140759411</dc:source.urn-nbn>
                     <dc:subject.keyword nlb:metadata-source="Bibliofil@624594 *650" schema:name="Tidsskrifter">
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *650$3">15224000</nlbbib:bibliofil-id>
@@ -1074,7 +1074,7 @@
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *260$3">17192400</nlbbib:bibliofil-id>
                     </dc:publisher>
                     <dc:publisher.location nlb:metadata-source="Bibliofil@624594 *260$a">Oslo</dc:publisher.location>
-                    <dc:publisher.original.location nlb:metadata-source="Bibliofil@624594 *596$a">Oslo</dc:publisher.original.location>
+                    <dc:publisher.location.original nlb:metadata-source="Bibliofil@624594 *596$a">Oslo</dc:publisher.location.original>
                     <dc:source.urn-nbn nlb:metadata-source="Bibliofil@624594 *856$s">urn:nbn:no-nb_nlb_140759411</dc:source.urn-nbn>
                     <dc:subject.keyword nlb:metadata-source="Bibliofil@624594 *650" schema:name="Tidsskrifter">
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *650$3">15224000</nlbbib:bibliofil-id>
