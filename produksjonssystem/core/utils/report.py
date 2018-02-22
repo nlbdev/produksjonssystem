@@ -105,20 +105,20 @@ class Report():
             return "Main thread"
         return str(threading.get_ident())
     
-    def debug(self, message, message_type="message", add_empty_line_last=True):
-        self.add_message('DEBUG', message, message_type, add_empty_line_last)
+    def debug(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('DEBUG', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
     
-    def info(self, message, message_type="message", add_empty_line_last=True):
-        self.add_message('INFO', message, message_type, add_empty_line_last)
+    def info(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('INFO', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
     
-    def success(self, message, message_type="message", add_empty_line_last=True):
-        self.add_message('SUCCESS', message, message_type, add_empty_line_last)
+    def success(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('SUCCESS', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
     
-    def warn(self, message, message_type="message", add_empty_line_last=True):
-        self.add_message('WARN', message, message_type, add_empty_line_last)
+    def warn(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('WARN', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
     
-    def error(self, message, message_type="message", add_empty_line_last=True):
-        self.add_message('ERROR', message, message_type, add_empty_line_last)
+    def error(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('ERROR', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
     
     @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients):
@@ -371,5 +371,9 @@ class Report():
 class DummyReport(Report):
     pipeline = None
     
-    def add_message(self, severity, message, message_type, add_empty_line_last, add_empty_line_between):
-        pass
+    def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+        logging.debug("[" + Report.thread_name(self.pipeline) + "] [" + str(severity) + "] " + str(message))
+    
+    def attachment(self, content, path, severity):
+        logging.debug("[" + Report.thread_name(self.pipeline) + "] attachment: " + (str(content)[:100]) + ("..." if len(str(content)) > 100 else "") + "|" + str(path) + "|" + str(severity))
+    
