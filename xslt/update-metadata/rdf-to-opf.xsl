@@ -123,9 +123,11 @@
         
         ]]></xsl:text>
         <xsl:comment select="concat(' Metadata for åndsverket', if ($publication) then concat(' og ',string(($identifier/../dc:format[1])/text()),'-utgaven') else '', ' ')"/>
+        <xsl:variable name="has-bibliofil-narrator" select="xs:boolean(count(($work, $publication)/dc:contributor.narrator))"/>
         <xsl:for-each select="('dc:title', 'dc:language', 'dc:creator', 'dc:contributor',
                                'dc:format', 'dc:publisher', 'dc:rights', 'dc:coverage', 'dc:date',
                                'dc:description', 'dc:relation', 'dc:source', 'dc:subject', 'dc:type',
+                               if (not($has-bibliofil-narrator)) then 'nlbprod:narrator' else (),
                                distinct-values((//dcterms:* | //nordic:* | //schema:*)[@schema:name or text()]/(tokenize(name(),'\.')[1])))">
             
             <xsl:variable name="meta" select="($work/*, $publication/(* except schema:isbn))[starts-with(name(), current())]" as="element()*"/> <!-- TODO: find a better way to handle publication ISBNs -->
@@ -135,9 +137,19 @@
                 <xsl:sort select="name()"/>
                 <xsl:sort select="(@schema:name, text())[1]"/>
                 
-                <xsl:call-template name="meta">
-                    <xsl:with-param name="rdf-property" select="."/>
-                </xsl:call-template>
+                <xsl:choose>
+                    <xsl:when test="self::nlbprod:narrator">
+                        <xsl:call-template name="meta">
+                            <xsl:with-param name="rdf-property" select="."/>
+                            <xsl:with-param name="rename" select="'dc:contributor.narrator'"/>
+                        </xsl:call-template>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:call-template name="meta">
+                            <xsl:with-param name="rdf-property" select="."/>
+                        </xsl:call-template>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:for-each>
         </xsl:for-each>
         <xsl:text><![CDATA[
