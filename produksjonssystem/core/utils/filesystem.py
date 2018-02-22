@@ -48,6 +48,13 @@ class Filesystem():
         self.pipeline = pipeline
     
     @staticmethod
+    def file_content_md5(path):
+        if not os.path.isfile(path):
+            return "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
+        
+        return hashlib.md5(open(path, 'rb').read()).hexdigest()
+    
+    @staticmethod
     def path_md5(path, shallow, expect=None):
         attributes = []
 
