@@ -24,20 +24,11 @@
     </xsl:template>
     
     <xsl:template match="head/comment()"/>
-    <xsl:template match="meta[@name='dc:identifier']"/>
     <xsl:template match="meta[@name='dcterms:modified']"/>
-    <xsl:template match="meta[starts-with(@name,'nlbprod:')]" priority="0.5"/>
-    
-    <xsl:template match="meta[@name='schema:isbn']">
-        <meta name="schema:isbn.original" content="{@content}"/>
-    </xsl:template>
-    
-    <xsl:template match="meta[@name='nlbprod:isbn.ebook']" priority="1">
-        <meta name="schema:isbn" content="{@content}"/>
-    </xsl:template>
-    
-    <xsl:template match="meta[@name='nlbprod:identifier.epub']" priority="1">
-        <meta name="dc:identifier.epub" content="{@content}"/>
+    <xsl:template match="meta[starts-with(@name,'nlbprod:')]" priority="0.5">
+        <xsl:if test="starts-with(@name, 'nlbprod:isbn') or starts-with(@name,'nlbprod:identifier')">
+            <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="head">
@@ -45,9 +36,6 @@
             <xsl:apply-templates select="@*"/>
             <xsl:variable name="first-meta" select="(title | meta[@charset] | meta[@name='dc:identifier'])/(. | preceding-sibling::node())"/>
             <xsl:apply-templates select="$first-meta"/>
-            <xsl:text><![CDATA[
-        ]]></xsl:text>
-            <meta name="dc:identifier" content="{(meta[@name='nlbprod:identifier.ebook'], meta[@name='dc:identifier'])[1]/@content}"/>
             <xsl:text><![CDATA[
         ]]></xsl:text>
             <meta name="dcterms:modified" content="{if ($modified) then $modified else format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]-[M00]-[D00]T[H00]:[m00]:[s00]Z')}"/>
