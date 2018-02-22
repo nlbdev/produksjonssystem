@@ -131,6 +131,7 @@ class Pipeline():
         Pipeline.dirs[self.uid]["out"] = self.dir_out
         Pipeline.dirs[self.uid]["reports"] = self.dir_reports
         Pipeline.dirs[self.uid]["base"] = self.dir_base
+        Pipeline.dirs[self.uid]["trigger"] = self.dir_trigger
         
         if Filesystem.ismount(self.dir_in):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
