@@ -605,7 +605,7 @@ class UpdateMetadata(Pipeline):
             self.utils.report.should_email = False
             return
         
-        UpdateMetadata.trigger_metadata_pipelines(self.book["name"])
+        UpdateMetadata.trigger_metadata_pipelines(self, self.book["name"])
     
     @staticmethod
     def on_book_created(self):
