@@ -28,7 +28,7 @@
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     
                     <xsl:apply-templates select="dc:identifier"/>
-                    <dc:format>EPUB</dc:format>
+                    <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
                     <xsl:apply-templates select="meta[starts-with(@property,'nordic:')]"/>
                 </rdf:Description>
             </rdf:RDF>
@@ -77,12 +77,13 @@
             <xsl:sequence select="namespace-uri-for-prefix($prefix, $element)"/>
             
             <xsl:choose>
-                <xsl:when test="$prefix = 'dcterms'">
-                    <xsl:sequence select="'http://purl.org/dc/terms/'"/>
-                </xsl:when>
-                <xsl:when test="$prefix = 'schema'">
-                    <xsl:sequence select="'http://schema.org/'"/>
-                </xsl:when>
+                <xsl:when test="$prefix = 'nlbbib'"><xsl:sequence select="'http://www.nlb.no/bibliographic'"/></xsl:when>
+                <xsl:when test="$prefix = 'nlbprod'"><xsl:sequence select="'http://www.nlb.no/production'"/></xsl:when>
+                <xsl:when test="$prefix = 'nordic'"><xsl:sequence select="'http://www.mtm.se/epub/'"/></xsl:when>
+                <xsl:when test="$prefix = 'schema'"><xsl:sequence select="'http://schema.org/'"/></xsl:when>
+                <xsl:when test="$prefix = 'dcterms'"><xsl:sequence select="'http://purl.org/dc/terms/'"/></xsl:when>
+                <xsl:when test="$prefix = 'rdf'"><xsl:sequence select="'http://www.w3.org/1999/02/22-rdf-syntax-ns#'"/></xsl:when>
+                <xsl:when test="$prefix = 'opf'"><xsl:sequence select="'http://www.idpf.org/2007/opf'"/></xsl:when>
             </xsl:choose>
             
             <xsl:if test="$element/ancestor::package/@prefix">
