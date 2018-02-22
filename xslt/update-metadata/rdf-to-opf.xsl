@@ -93,7 +93,7 @@
         <xsl:if test="$identifier">
             <xsl:text><![CDATA[
         ]]></xsl:text>
-            <xsl:comment select="concat(' Boknummer for ', $identifier/../dc:format, '-utgaven ')"/>
+            <xsl:comment select="concat(' Boknummer for ', string(($identifier/../dc:format[1])/text()), '-utgaven ')"/>
             
             <xsl:call-template name="meta">
                 <xsl:with-param name="rdf-property" select="$identifier"/>
