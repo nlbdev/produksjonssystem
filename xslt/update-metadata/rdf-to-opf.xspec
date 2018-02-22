@@ -332,7 +332,7 @@
         <meta property="nlbprod:identifier.daisy202.fulltext">410302</meta> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Innlest fulltekst -->
         <meta property="nlbprod:identifier.external">910702</meta> <!-- Quickbase Record@561702 Tilvekstnummer ekstern produksjon -->
         
-        <!-- Metadata for åndsverket og utgavene -->
+        <!-- Metadata for åndsverket -->
         <dc:title>Rampete Robins forundringspakke</dc:title> <!-- Bibliofil@561702 *245$a -->
         <dc:language>nb-NO</dc:language> <!-- Bibliofil@561702 *008 -->
         <dc:creator>Francesca Simon</dc:creator> <!-- Bibliofil@561702 *100 -->
@@ -688,7 +688,7 @@
         <meta property="nlbprod:identifier.daisy202.student">225518</meta> <!-- Quickbase Record@562318 Tilvekstnummer DAISY 2.02 Studielitteratur -->
         <meta property="nlbprod:identifier.external">911318</meta> <!-- Quickbase Record@562318 Tilvekstnummer ekstern produksjon -->
         
-        <!-- Metadata for åndsverket og utgavene -->
+        <!-- Metadata for åndsverket og DAISY 2.02-utgaven -->
         <dc:title>An introduction to child development</dc:title> <!-- Bibliofil@225518 *245$a -->
         <meta property="dc:title.part.sortingKey">n introduction to child development</meta> <!-- Bibliofil@225518 *245$w -->
         <dc:language>en</dc:language> <!-- Bibliofil@225518 *008 -->

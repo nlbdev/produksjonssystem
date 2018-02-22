@@ -122,7 +122,7 @@
         <xsl:text><![CDATA[
         
         ]]></xsl:text>
-        <xsl:comment select="' Metadata for åndsverket og utgavene '"/>
+        <xsl:comment select="concat(' Metadata for åndsverket', if ($publication) then concat(' og ',string(($identifier/../dc:format[1])/text()),'-utgaven') else '', ' ')"/>
         <xsl:for-each select="('dc:title', 'dc:language', 'dc:creator', 'dc:contributor',
                                'dc:format', 'dc:publisher', 'dc:rights', 'dc:coverage', 'dc:date',
                                'dc:description', 'dc:relation', 'dc:source', 'dc:subject', 'dc:type',
