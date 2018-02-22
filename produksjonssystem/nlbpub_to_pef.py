@@ -21,7 +21,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class NlbpubToPef(Pipeline):
-    uid = "epub-to-pef"
+    uid = "nlbpub-to-pef"
     title = "NLBPUB til PEF"
     
     def on_book_deleted(self):
