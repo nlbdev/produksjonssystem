@@ -11,8 +11,8 @@ from core.pipeline import Pipeline
 from email.headerregistry import Address
 
 # Import pipelines
-from epub_to_pef import EpubToPef
 from dtbook_to_tts import DtbookToTts
+from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
@@ -69,7 +69,7 @@ pipelines = [
     [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"]],
     [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
     [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
-    [ EpubToPef(),              "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
+    [ NlbpubToPef(),            "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
     [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
     [ DtbookToTts(),            "dtbook",         "dtbook_tts",       "reports", ["ammar","jostein","mari","olav"]],
 ]

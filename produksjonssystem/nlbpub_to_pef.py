@@ -20,9 +20,9 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
-class EpubToPef(Pipeline):
+class NlbpubToPef(Pipeline):
     uid = "epub-to-pef"
-    title = "EPUB til PEF"
+    title = "NLBPUB til PEF"
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -123,4 +123,4 @@ class EpubToPef(Pipeline):
 
 
 if __name__ == "__main__":
-    EpubToPef().run()
+    NlbpubToPef().run()
