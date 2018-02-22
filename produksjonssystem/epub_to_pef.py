@@ -11,6 +11,7 @@ import shutil
 import re
 
 from core.utils.epub import Epub
+from update_metadata import UpdateMetadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
@@ -49,21 +50,41 @@ class EpubToPef(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
+        
+        # ---------- lag en kopi av EPUBen ----------
+        
+        temp_epubdir_obj = tempfile.TemporaryDirectory()
+        temp_epubdir = temp_epubdir_obj.name
+        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
+        temp_epub = Epub(self, temp_epubdir)
+        
+        
+        # ---------- oppdater metadata ----------
+        
+        self.utils.report.info("Oppdaterer metadata...")
+        updated = UpdateMetadata.update(self, temp_epub, publication_format="Braille")
+        if isinstance(updated, bool) and updated == False:
+            self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎"
+            return
+        
+        
+        # ---------- konverter til PEF ----------
+        
         braille_arguments = {
             "fullskrift": {
-                "epub": epub.asFile(),
+                "epub": temp_epub.asFile(),
                 "braille-standard": "(dots:6)(grade:0)",
                 "line-spacing": "single",
                 "duplex": "true"
             },
             "kortskrift": {
-                "epub": epub.asFile(),
+                "epub": temp_epub.asFile(),
                 "braille-standard": "(dots:6)(grade:2)",
                 "line-spacing": "single",
                 "duplex": "true"
             },
             "lesetrening": {
-                "epub": epub.asFile(),
+                "epub": temp_epub.asFile(),
                 "braille-standard": "(dots:6)(grade:0)",
                 "line-spacing": "double",
                 "duplex": "false"
@@ -78,25 +99,25 @@ class EpubToPef(Pipeline):
             # get conversion report
             if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
                 self.utils.filesystem.copy(os.path.join(dp2_job.dir_output, "preview-output-dir"), os.path.join(self.utils.report.reportDir(), "preview-" + braille_version))
-                self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + epub.identifier() + ".pef.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+                self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + temp_epub.identifier() + ".pef.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
             
             if dp2_job.status != "DONE":
                 self.utils.report.info("Klarte ikke å konvertere boken")
-                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+                self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎"
                 return
             
             pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
             
             if not os.path.isdir(pef_dir):
                 self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+                self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎"
                 return
             
             self.utils.report.info("Boken ble konvertert. Kopierer til PEF-arkiv.")
             
-            archived_path = self.utils.filesystem.storeBook(pef_dir, epub.identifier(), subdir=braille_version)
+            archived_path = self.utils.filesystem.storeBook(pef_dir, temp_epub.identifier(), subdir=braille_version)
             self.utils.report.attachment(None, archived_path, "DEBUG")
-            self.utils.report.info(epub.identifier() + " ble lagt til i arkivet under PEF/" + braille_version + ".")
+            self.utils.report.info(temp_epub.identifier() + " ble lagt til i arkivet under PEF/" + braille_version + ".")
         
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
