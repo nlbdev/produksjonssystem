@@ -11,10 +11,10 @@ import subprocess
 
 from lxml import etree as ElementTree
 from datetime import datetime, timezone
+from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-
-from core.pipeline import Pipeline
+from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -59,6 +59,15 @@ class NlbpubToNarrationEpub(Pipeline):
         narration_epubdir = narration_epubdir_obj.name
         self.utils.filesystem.copy(self.book["source"], narration_epubdir)
         nlbpub = Epub(self, narration_epubdir)
+        
+        
+        # ---------- oppdater metadata ----------
+        
+        self.utils.report.info("Oppdaterer metadata...")
+        updated = UpdateMetadata.update(self, nlbpub, publication_format="DAISY 2.02")
+        if isinstance(updated, bool) and updated == False:
+            self.utils.report.title = self.title + ": " + nlbpub.identifier() + " feilet 😭👎"
+            return
         
         
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
@@ -110,6 +119,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
         shutil.copy(temp_html, html_file)
+        
         
         # ---------- erstatt metadata i OPF med metadata fra HTML ----------
         
