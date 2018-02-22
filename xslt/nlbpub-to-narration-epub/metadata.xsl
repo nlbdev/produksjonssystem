@@ -24,7 +24,7 @@
     <xsl:variable name="metadata.forventet" as="xs:string*"
         select="
             (
-            'dc:date.issued.original', 'dc:publisher.original', 'bookEdition.original', 'dc:contributor.narrator')
+            'dc:date.issued.original', 'dc:publisher.original', 'schema:bookEdition.original', 'dc:contributor.narrator')
             [normalize-space(.) ne '']"/>
 
     <!-- Transformasjonen avbrytes hvsi det er essensiell metadata som mangler -->
