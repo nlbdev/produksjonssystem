@@ -356,7 +356,7 @@ class UpdateMetadata(Pipeline):
                                   target=opf_metadata[f],
                                   parameters={
                                       "format": f,
-                                      "update_identifier": "true"
+                                      "update-identifier": "true"
                                   })
             if not xslt.success:
                 return False
