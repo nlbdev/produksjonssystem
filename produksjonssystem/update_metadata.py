@@ -16,7 +16,7 @@ import traceback
 import subprocess
 
 from lxml import etree as ElementTree
-from threading import Thread
+from threading import Thread, Lock
 
 from core.pipeline import Pipeline, DummyPipeline
 from core.utils.epub import Epub
@@ -46,6 +46,8 @@ class UpdateMetadata(Pipeline):
     
     _metadataWatchThread = None
     _shouldWatchMetadata = True
+    
+    update_lock = Lock()
     
     metadata = None
     sources = {
@@ -136,7 +138,17 @@ class UpdateMetadata(Pipeline):
                 logging.exception("[" + Report.thread_name() + "] An error occured while checking for updates in metadata")
     
     @staticmethod
-    def update(pipeline, epub, publication_format="", update_identifier=False):
+    def update(*args, **kwargs):
+        # Only update one book at a time, to avoid potentially overwriting metadata while it's being used
+        
+        UpdateMetadata.update_lock.acquire()
+        try:
+            UpdateMetadata._update(*args, **kwargs)
+        finally:
+            UpdateMetadata.update_lock.release()
+    
+    @staticmethod
+    def _update(pipeline, epub, publication_format="", update_identifier=False):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only update metadata in EPUBs")
             return False
@@ -183,7 +195,7 @@ class UpdateMetadata(Pipeline):
             return False
         
         
-        # ========== Collect and combine metadata from sources ==========
+        # ========== Collect metadata from sources ==========
         
         pipeline.utils.report.debug("nlbpub-opf-to-rdf.xsl")
         rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
@@ -277,13 +289,21 @@ class UpdateMetadata(Pipeline):
                 return False
             rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
+        
+        # ========== Combine metadata ==========
+        
+        format_id = re.sub(r"[^a-z0-9]", "", publication_format.lower())
+        rdf_metadata = os.path.join(metadata_dir, "metadata-{}.rdf".format(format_id) if publication_format else "metadata.rdf")
+        opf_metadata = rdf_metadata.replace(".rdf",".opf")
+        html_metadata = rdf_metadata.replace(".rdf",".html")
+        
         pipeline.utils.report.debug("rdf-join.xsl")
         pipeline.utils.report.debug("    metadata-dir = " + metadata_dir + "/")
         pipeline.utils.report.debug("    rdf-files    = " + " ".join(rdf_files))
-        pipeline.utils.report.debug("    target       = " + os.path.join(metadata_dir, "metadata.rdf"))
+        pipeline.utils.report.debug("    target       = " + rdf_metadata)
         xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-join.xsl"),
                               template="main",
-                              target=os.path.join(metadata_dir, "metadata.rdf"),
+                              target=rdf_metadata,
                               parameters={
                                   "metadata-dir": metadata_dir + "/",
                                   "rdf-files": " ".join(rdf_files)
@@ -292,11 +312,10 @@ class UpdateMetadata(Pipeline):
             return False
         
         pipeline.utils.report.debug("rdf-to-opf.xsl")
-        opf_metadata = os.path.join(metadata_dir, "metadata.opf")
-        pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, "metadata.rdf"))
+        pipeline.utils.report.debug("    source = " + rdf_metadata)
         pipeline.utils.report.debug("    target = " + opf_metadata)
         xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
-                              source=os.path.join(metadata_dir, "metadata.rdf"),
+                              source=rdf_metadata,
                               target=opf_metadata,
                               parameters={
                                   "format": publication_format,
@@ -306,12 +325,11 @@ class UpdateMetadata(Pipeline):
             return False
         
         pipeline.utils.report.debug("opf-to-html.xsl")
-        html_head = os.path.join(metadata_dir, "metadata.html")
         pipeline.utils.report.debug("    source = " + opf_metadata)
-        pipeline.utils.report.debug("    target = " + html_head)
+        pipeline.utils.report.debug("    target = " + html_metadata)
         xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "opf-to-html.xsl"),
                               source=opf_metadata,
-                              target=html_head)
+                              target=html_metadata)
         if not xslt.success:
             return False
         
@@ -338,7 +356,7 @@ class UpdateMetadata(Pipeline):
         
         pipeline.utils.report.info("Validerer ny HTML-metadata")
         sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-html-metadata.sch"),
-                                   source=html_head)
+                                   source=html_metadata)
         if not sch.success:
             pipeline.utils.report.error("Validering av HTML-metadata feilet")
             return False
@@ -404,12 +422,12 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("update-html.xsl")
             pipeline.utils.report.debug("    source    = " + html_path)
             pipeline.utils.report.debug("    target    = " + updated_file)
-            pipeline.utils.report.debug("    html_head = " + html_head)
+            pipeline.utils.report.debug("    html_head = " + html_metadata)
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "update-html.xsl"),
                                   source=html_path,
                                   target=updated_file,
                                   parameters={
-                                    "html_head": html_head,
+                                    "html_head": html_metadata,
                                     "modified": dcterms_modified
                                   })
             if not xslt.success:
