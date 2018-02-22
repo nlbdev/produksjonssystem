@@ -109,15 +109,6 @@ class NordicToNlbpub(Pipeline):
             return
         
         
-        # ---------- update metadata ----------
-        
-        self.utils.report.info("Oppdaterer metadata...")
-        updated = UpdateMetadata.update(self, nlbpub)
-        if isinstance(updated, bool) and updated == False:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
-            return
-        
-        
         # ---------- save EPUB ----------
         
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
