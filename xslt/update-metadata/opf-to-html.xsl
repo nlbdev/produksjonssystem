@@ -59,14 +59,14 @@
                 <xsl:text><![CDATA[
         ]]></xsl:text>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <xsl:if test="dc:description.abstract">
+                <xsl:if test="opf:meta[@property='dc:description.abstract']">
                     <xsl:call-template name="copy-meta">
-                        <xsl:with-param name="meta" select="dc:description.abstract[1]"/>
+                        <xsl:with-param name="meta" select="opf:meta[@property='dc:description.abstract'][1]"/>
                         <xsl:with-param name="rename" select="'description'"/>
                     </xsl:call-template>
                 </xsl:if>
                 
-                <xsl:for-each select="(* | comment()) except (dc:title[1], dc:description.abstract[1])">
+                <xsl:for-each select="(* | comment()) except (dc:title[1], opf:meta[@property='dc:description.abstract'][1])">
                     <xsl:choose>
                         <xsl:when test="self::comment() and (not(preceding-sibling::*) or (preceding-sibling::text() intersect preceding-sibling::*[1]/following-sibling::text())[matches(.,'.*\n.*')])">
                             <xsl:text><![CDATA[
@@ -102,11 +102,11 @@
         <xsl:choose>
             <xsl:when test="$name = 'title'">
                 <title>
-                    <xsl:value-of select="$meta/text()"/>
+                    <xsl:value-of select="$meta/normalize-space(text())"/>
                 </title>
             </xsl:when>
             <xsl:otherwise>
-                <meta name="{$name}" content="{$meta/text()}" />
+                <meta name="{$name}" content="{$meta/normalize-space(text())}" />
             </xsl:otherwise>
         </xsl:choose>
         <xsl:variable name="comment" select="(if ($meta/following-sibling::*) then $meta/following-sibling::comment() intersect $meta/following-sibling::*[1]/preceding-sibling::comment() else $meta/following-sibling::comment())[1]" as="comment()?"/>

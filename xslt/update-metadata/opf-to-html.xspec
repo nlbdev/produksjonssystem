@@ -34,6 +34,10 @@
     <meta property="dc:type.genre">Non-biography</meta> <!-- Bibliofil@561702 *008 -->
     <meta property="schema:isbn">9788205489813</meta> <!-- Bibliofil@561702 *596$f -->
     <meta property="schema:audience">Juvenile</meta> <!-- Bibliofil@561702 *008 -->
+    <meta property="dc:description.abstract">Fra forlagets omtale: Boka tar for seg logopedisk arbeid med afasirammede. Den drøfter
+         aktuelle temaer innenfor afasirehabilitering fra et teoretisk perspektiv og inneholder
+         også åtte kasusbeskrivelser av logopedisk arbeid med afasirammede.
+      </meta> <!-- Bibliofil@360081 *520$a -->
 </metadata></x:context>
 
         <x:expect label="The result should be as expected" xml:space="preserve">
@@ -41,6 +45,7 @@
         <meta charset="utf-8"/>
         <title>Rampete Robins forundringspakke</title> <!-- Bibliofil@561702 *245$a -->
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="description" content="Fra forlagets omtale: Boka tar for seg logopedisk arbeid med afasirammede. Den drøfter aktuelle temaer innenfor afasirehabilitering fra et teoretisk perspektiv og inneholder også åtte kasusbeskrivelser av logopedisk arbeid med afasirammede."/> <!-- Bibliofil@360081 *520$a -->
         
         <!-- Boknummer for EPUB-utgaven -->
         <meta name="dc:identifier" content="561702"/> <!-- Bibliofil@561702 *001 -->
