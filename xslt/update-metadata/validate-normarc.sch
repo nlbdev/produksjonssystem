@@ -16,19 +16,19 @@
         <title>Format</title>
         
         <rule context="marcxchange:record[marcxchange:controlfield[@tag='001']/starts-with(text(),'1')]">
-            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('za','c')">Bøker med boknummer som starter med 1 må være markert som punktbok i *019$b ('za' for vanlig, eller 'c' for musikktrykk).</assert>
+            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('za','c')">Bøker med boknummer som starter med 1 må være markert som punktbok i *019$b ('za' for vanlig, eller 'c' for musikktrykk; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
         
         <rule context="marcxchange:record[marcxchange:controlfield[@tag='001']/(starts-with(text(),'2') or starts-with(text(),'6'))]">
-            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('dc','dj')">Bøker med boknummer som starter med 2 eller 6 må være markert som lydbok i *019$b ('dc' og/eller 'dj').</assert>
+            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('dc','dj')">Bøker med boknummer som starter med 2 eller 6 må være markert som lydbok i *019$b ('dc' og/eller 'dj'; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
         
         <rule context="marcxchange:record[marcxchange:controlfield[@tag='001']/starts-with(text(),'3')]">
-            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('la')">Bøker med boknummer som starter med 3 må være markert som e-bok i *019$b ('la', gjerne med 'ga' i tillegg).</assert>
+            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('la')">Bøker med boknummer som starter med 3 må være markert som e-bok i *019$b ('la', gjerne med 'ga' i tillegg; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
         
         <rule context="marcxchange:record[marcxchange:controlfield[@tag='001']/starts-with(text(),'5')]">
-            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('gt')">Bøker med boknummer som starter med 5 må være markert som EPUB i *019$b ('gt').</assert>
+            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('gt')">Bøker med boknummer som starter med 5 må være markert som EPUB i *019$b ('gt'; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
     </pattern>
     
