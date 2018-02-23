@@ -448,6 +448,8 @@ class UpdateMetadata(Pipeline):
             if not sch.success:
                 pipeline.utils.report.error("Validering av HTML-metadata feilet")
                 return False
+        
+        return True
     
     @staticmethod
     def insert_metadata(pipeline, epub, publication_format=""):
