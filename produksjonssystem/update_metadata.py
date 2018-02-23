@@ -173,6 +173,8 @@ class UpdateMetadata(Pipeline):
             success = UpdateMetadata.get_metadata(pipeline, epub)
             if not success:
                 return False
+        elif not UpdateMetadata.validate_metadata(pipeline, epub):
+            return False
         
         return UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
     
@@ -264,7 +266,6 @@ class UpdateMetadata(Pipeline):
         identifiers = qb_record.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=qb_record.nsmap)
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         
-        marcxchange_paths = []
         for format_edition_identifier in identifiers:
             format_pub_identifier = format_edition_identifier
             if len(format_pub_identifier) > 6:
@@ -279,7 +280,6 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("    source = " + marcxchange_path)
             pipeline.utils.report.debug("    target = " + current_opf_path)
             UpdateMetadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
-            marcxchange_paths.append(marcxchange_path)
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "normarc/marcxchange-to-opf.xsl"),
                                   source=marcxchange_path,
                                   target=current_opf_path,
@@ -374,7 +374,56 @@ class UpdateMetadata(Pipeline):
         
         # ========== Validate metadata ==========
         
+        if not UpdateMetadata.validate_metadata(pipeline, epub):
+            return False
+        
+        
+        # ========== Trigger conversions if necessary ==========
+        
+        md5_after = []
+        metadata_paths = []
+        for f in os.listdir(metadata_dir):
+            path = os.path.join(metadata_dir, f)
+            if os.path.isfile(path) and (f.endswith(".opf") or f.endswith(".html")):
+                metadata_paths.append(path)
+        metadata_paths.sort()
+        for path in metadata_paths:
+            md5_after.append(Filesystem.file_content_md5(path))
+        
+        md5_before = "".join(md5_before)
+        md5_after = "".join(md5_after)
+        
+        if md5_before != md5_after:
+            pipeline.utils.report.info("Metadata for '{}' has changed".format(epub.identifier()))
+            UpdateMetadata.trigger_metadata_pipelines(pipeline, epub.identifier(), exclude=pipeline.uid)
+        else:
+            pipeline.utils.report.debug("Metadata for '{}' has not changed".format(epub.identifier()))
+        
+        return True
+    
+    @staticmethod
+    def validate_metadata(pipeline, epub):
+        if not isinstance(epub, Epub) or not epub.isepub():
+            pipeline.utils.report.error("Can only update metadata in EPUBs")
+            return False
+        
+        metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier())
+        
+        rdf_metadata = {"": os.path.join(metadata_dir, "metadata.rdf")}
+        opf_metadata = {"": rdf_metadata[""].replace(".rdf",".opf")}
+        html_metadata = {"": rdf_metadata[""].replace(".rdf",".html")}
+        
+        for f in UpdateMetadata.formats:
+            format_id = re.sub(r"[^a-z0-9]", "", f.lower())
+            rdf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.rdf".format(format_id))
+            opf_metadata[f] = rdf_metadata[f].replace(".rdf",".opf")
+            html_metadata[f] = rdf_metadata[f].replace(".rdf",".html")
+        
         normarc_success = True
+        marcxchange_paths = []
+        for f in os.listdir(os.path.join(metadata_dir, "bibliofil")):
+            if f.endswith(".xml"):
+                marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
             pipeline.utils.report.info("Validerer NORMARC ({})".format(os.path.basename(marcxchange_path).split(".")[0]))
             sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
@@ -399,27 +448,6 @@ class UpdateMetadata(Pipeline):
             if not sch.success:
                 pipeline.utils.report.error("Validering av HTML-metadata feilet")
                 return False
-        
-        return True
-        
-        md5_after = []
-        metadata_paths = []
-        for f in os.listdir(metadata_dir):
-            path = os.path.join(metadata_dir, f)
-            if os.path.isfile(path) and (f.endswith(".opf") or f.endswith(".html")):
-                metadata_paths.append(path)
-        metadata_paths.sort()
-        for path in metadata_paths:
-            md5_after.append(Filesystem.file_content_md5(path))
-        
-        md5_before = "".join(md5_before)
-        md5_after = "".join(md5_after)
-        
-        if md5_before != md5_after:
-            pipeline.utils.report.info("Metadata for '{}' has changed".format(epub.identifier()))
-            UpdateMetadata.trigger_metadata_pipelines(pipeline, epub.identifier(), exclude=pipeline.uid)
-        else:
-            pipeline.utils.report.debug("Metadata for '{}' has not changed".format(epub.identifier()))
     
     @staticmethod
     def insert_metadata(pipeline, epub, publication_format=""):
