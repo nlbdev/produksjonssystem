@@ -29,9 +29,16 @@
     </pattern>
     
     <pattern>
-        <title>Forlag</title>
+        <title>Forlag for åndsverk</title>
         <rule context="html:head">
-            <assert test="count(html:meta[@name='dc:publisher']) = 1">Det må være nøyaktig ett forlag (dc:publisher).</assert>
+            <assert test="count(html:meta[@name='dc:publisher.original']) gt 0">Originalforlag må være definert (dc:publisher.original).</assert>
+        </rule>
+    </pattern>
+    
+    <pattern>
+        <title>Forlag for utgave</title>
+        <rule context="html:head[html:meta[@name='dc:format']/@content != 'EPUB']">
+            <assert test="count(html:meta[@name='dc:publisher']) gt 0">Forlag må være definert (dc:publisher).</assert>
         </rule>
     </pattern>
     

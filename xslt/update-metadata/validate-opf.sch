@@ -30,8 +30,15 @@
     </pattern>
     
     <pattern>
-        <title>Forlag</title>
+        <title>Forlag for åndsverk</title>
         <rule context="opf:metadata">
+            <assert test="count(opf:meta[@property='dc:publisher.original']) gt 0">Originalforlag må være definert (dc:publisher.original).</assert>
+        </rule>
+    </pattern>
+    
+    <pattern>
+        <title>Forlag for utgave</title>
+        <rule context="opf:metadata[dc:format/text() != 'EPUB']">
             <assert test="count(dc:publisher) gt 0">Forlag må være definert (dc:publisher).</assert>
         </rule>
     </pattern>
