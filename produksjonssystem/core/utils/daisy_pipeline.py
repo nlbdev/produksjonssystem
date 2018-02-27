@@ -8,7 +8,7 @@ import logging
 import tempfile
 import subprocess
 
-from threading import Lock
+from threading import RLock
 
 class DaisyPipelineJob():
     """Class used to run DAISY Pipeline 2 jobs"""
@@ -33,7 +33,7 @@ class DaisyPipelineJob():
     status = None
     pid = None
     
-    start_lock = Lock()
+    start_lock = RLock()
     
     def __init__(self, pipeline, script, arguments):
         self.pipeline = pipeline
@@ -41,8 +41,7 @@ class DaisyPipelineJob():
         self._dir_output_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-daisy-pipeline-output")
         self.dir_output = self._dir_output_obj.name
         
-        DaisyPipelineJob.start_lock.acquire()
-        try:
+        with DaisyPipelineJob.start_lock:
             procs = DaisyPipelineJob.list_processes()
             if DaisyPipelineJob.pid:
                 procs = [p for p in procs if p.pid != DaisyPipelineJob.pid] # keep DaisyPipelineJob.pid
@@ -83,10 +82,8 @@ class DaisyPipelineJob():
                 procs = DaisyPipelineJob.list_processes()
                 if procs:
                     DaisyPipelineJob.pid = procs[0].pid
-                
-        finally:
+            
             time.sleep(5) # Wait a few seconds after starting Pipeline 2 before releasing the lock
-            DaisyPipelineJob.start_lock.release()
         
         if DaisyPipelineJob.pid:
             try:

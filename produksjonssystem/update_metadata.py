@@ -17,7 +17,7 @@ import subprocess
 
 from lxml import etree as ElementTree
 from pathlib import Path
-from threading import Thread, Lock
+from threading import Thread, RLock
 from core.pipeline import Pipeline, DummyPipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
@@ -52,7 +52,7 @@ class UpdateMetadata(Pipeline):
     _metadataWatchThread = None
     _shouldWatchMetadata = True
     
-    update_lock = Lock()
+    update_lock = RLock()
     
     metadata = None
     sources = {
@@ -144,11 +144,8 @@ class UpdateMetadata(Pipeline):
         # Only update one book at a time, to avoid potentially overwriting metadata while it's being used
         
         ret = False
-        UpdateMetadata.update_lock.acquire()
-        try:
+        with UpdateMetadata.update_lock:
             ret = UpdateMetadata._update(*args, **kwargs)
-        finally:
-            UpdateMetadata.update_lock.release()
         return ret
     
     @staticmethod
