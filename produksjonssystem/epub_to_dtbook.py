@@ -85,6 +85,8 @@ class EpubToDtbook(Pipeline):
         if os.path.isfile(report_file):
             with open(report_file, 'r') as result_report:
                 self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+        else:
+            self.utils.report.warn("Ingen rapport ble funnet.")
         
         if dp2_job.status != "DONE":
             self.utils.report.error("Klarte ikke å konvertere boken")

@@ -48,7 +48,11 @@ class DtbookToTts(Pipeline):
             return
         
         identifier = os.path.basename(os.path.normpath(dtbook_dir))
-        dtbook_file = os.path.join(dtbook_dir, identifier + ".xml")
+        dtbook_file = None
+        for f in os.listdir(dtbook_dir):
+            if f[-4:] == ".xml":
+                dtbook_file = os.path.join(dtbook_dir, f)
+                break
         
         if not os.path.isfile(dtbook_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på mappenavn.")
@@ -64,7 +68,7 @@ class DtbookToTts(Pipeline):
         self.utils.filesystem.copy(dtbook_dir, tts_dtbook_dir)
         dtbook_dir = tts_dtbook_dir
         
-        dtbook_file = os.path.join(dtbook_dir, identifier + ".xml")
+        dtbook_file = os.path.join(dtbook_dir, os.path.basename(dtbook_file))
         
         
         # ---------- gjør tilpasninger i DTBook ----------
