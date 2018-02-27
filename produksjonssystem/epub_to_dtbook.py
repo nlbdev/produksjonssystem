@@ -135,10 +135,10 @@ class EpubToDtbook(Pipeline):
         
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
         
-        archived_path = self.utils.filesystem.storeBook(dtbook_dir, nordic_epub.identifier())
+        archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(nordic_epub.identifier() + " ble lagt til i DTBook-arkivet.")
-        self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " ble konvertert 👍😄"
+        self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":
