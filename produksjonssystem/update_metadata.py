@@ -624,7 +624,8 @@ class UpdateMetadata(Pipeline):
             if pipeline_uid == exclude:
                 continue
             if Pipeline.dirs[pipeline_uid]["in"] == Pipeline.dirs[UpdateMetadata.uid]["out"]:
-                Path(os.path.join(Pipeline.dirs[pipeline_uid]["trigger"], book_id)).touch()
+                with open(os.path.join(Pipeline.dirs[pipeline_uid]["trigger"], book_id), "w") as triggerfile:
+                    print("autotriggered", file=triggerfile)
                 pipeline.utils.report.info("Trigger: {}".format(pipeline_uid))
     
     def on_book_deleted(self):

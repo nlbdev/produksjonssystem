@@ -191,8 +191,13 @@ class Pipeline():
             pass
         self.stop()
     
-    def trigger(self, name):
-        Path(os.path.join(self.dir_trigger, name)).touch()
+    def trigger(self, name, auto=True):
+        path = os.path.join(self.dir_trigger, name)
+        if auto:
+            with open(os.path.join(self.dir_trigger, name), "w") as triggerfile:
+                print("autotriggered", file=triggerfile)
+        else:
+            Path(path).touch()
     
     def _add_book_to_queue(self, name, event_type):
         with self._lock:
@@ -256,8 +261,13 @@ class Pipeline():
                         triggerfile = os.path.join(self.dir_trigger, f)
                         if os.path.isfile(triggerfile):
                             try:
+                                autotriggered = False
+                                with open(triggerfile, "r") as tf:
+                                    first_line = tf.readline().strip()
+                                    if first_line == "autotriggered":
+                                        autotriggered = True
                                 os.remove(triggerfile)
-                                self._add_book_to_queue(f, "triggered")
+                                self._add_book_to_queue(f, "autotriggered" if autotriggered else "triggered")
                             except Exception:
                                 logging.exception("[" + Report.thread_name() + "] An error occured while trying to delete triggerfile: " + triggerfile)
                 
@@ -322,7 +332,14 @@ class Pipeline():
                 
                 with self._lock:
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
-                    books = sorted(books, key=lambda b: b["last_event"])
+                    books = sorted(books, key=lambda b: b["last_event"], reverse=True) # process recently modified books first
+                    
+                    # process books that were started manually first (manual trigger or book modification)
+                    books_autotriggered = [b for b in books if "autotriggered" in b["events"]]
+                    books_manual = [b for b in books if not "autotriggered" in b["events"]]
+                    books = books_manual
+                    books.extend(books_autotriggered)
+                    
                     if books:
                         logging.info("[" + Report.thread_name() + "] queue: " + ", ".join([b["name"] for b in books][:5]) + (", ... ( " + str(len(books) - 5) + " more )" if len(books) > 5 else ""))
                     
@@ -407,6 +424,10 @@ class Pipeline():
             event = "created"
         elif "deleted" in book["events"]:
             event = "deleted"
+        elif "autotriggered" in book["events"]:
+            event = "autotriggered"
+        elif "triggered" in book["events"]:
+            event = "triggered"
         
         if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
             event = "create_before_delete"

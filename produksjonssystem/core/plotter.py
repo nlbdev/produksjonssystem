@@ -45,6 +45,7 @@ class Plotter():
                     queue_deleted = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "deleted"]) if pipeline[0]._queue else 0
                     queue_modified = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "modified"]) if pipeline[0]._queue else 0
                     queue_triggered = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "triggered"]) if pipeline[0]._queue else 0
+                    queue_autotriggered = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "autotriggered"]) if pipeline[0]._queue else 0
                     queue_string = []
                     if queue_created:
                         queue_string.append("nye:"+str(queue_created))
@@ -54,6 +55,8 @@ class Plotter():
                         queue_string.append("slettet:"+str(queue_deleted))
                     if queue_triggered:
                         queue_string.append("trigget:"+str(queue_triggered))
+                    if queue_autotriggered:
+                        queue_string.append("autotrigget:"+str(queue_autotriggered))
                     queue_string = ", ".join(queue_string)
                     
                     queue_size = len(pipeline[0]._queue) if pipeline[0]._queue else 0
