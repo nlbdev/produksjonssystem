@@ -95,8 +95,9 @@ class DtbookToTts(Pipeline):
             self.utils.report.error("Finner ikke det nye boknummeret")
             self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎"
             return
-        shutil.copy(temp_dtbook, os.path.join(dtbook_dir, new_identifier + ".xml"))
-        if new_identifier != identifier:
+        new_dtbook_file = os.path.join(dtbook_dir, new_identifier + ".xml")
+        shutil.copy(temp_dtbook, new_dtbook_file)
+        if dtbook_file != new_dtbook_file:
             os.remove(dtbook_file)
         
         
