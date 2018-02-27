@@ -34,7 +34,8 @@ class Filesystem():
         "that should no longer exist": "som ikke skal eksistere lenger",
         "Problem reading ZIP file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?",
         "An error occured while trying to delete the folder": "En feil oppstod ved sletting av mappen",
-        "Maybe someone has a file or folder open on their computer?": "Kanskje noen har en fil eller mappe åpen på datamaskinen sin?"
+        "Maybe someone has a file or folder open on their computer?": "Kanskje noen har en fil eller mappe åpen på datamaskinen sin?",
+        "A file or folder could not be found. Did someone delete it maybe?": "Filen eller mappen ble ikke funnet. Kanskje noen slettet den?"
     }
     
     shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
@@ -82,6 +83,8 @@ class Filesystem():
                         fileList.sort()
                         subdirList.sort()
                         for f in fileList:
+                            if f.endswith("dirmodified"):
+                                continue
                             filePath = os.path.join(dirPath, f)
                             stat = os.stat(filePath)
                             st_size = stat.st_size if os.path.isfile(path) else 0
