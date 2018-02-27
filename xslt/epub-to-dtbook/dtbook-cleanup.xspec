@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:nlb="http://www.nlb.no/"
+               xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:dtbook="http://www.daisy.org/z3986/2005/dtbook/"
+               xmlns:schema="http://schema.org/"
+               xmlns:frbr="http://purl.org/vocab/frbr/core#"
+               xmlns:nlbbib="http://www.nlb.no/bibliographic"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+               stylesheet="dtbook-cleanup.xsl">
+    
+    <x:scenario label="Contributor with multiple roles (see #45)">
+        <x:context>
+            <dtbook xml:lang="no" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="225296"/>
+                    <meta name="dc:Title" content="Title"/>
+                    <meta name="dc:Identifier" content="225296"/>
+                    <meta name="dc:Language" content="no"/>
+                    <meta name="dc:Contributor" content="Haanes, Vidar L."/>
+                    <meta name="dc:Contributor" content="Hodne, Hans"/>
+                    <meta name="dc:Contributor" content="Leer-Salvesen, Paul"/>
+                    <meta name="dc:Contributor" content="Skottene, Ragnar"/>
+                    <meta name="dc:Contributor" content="Sødal, Helje Kringlebotn"/>
+                    <meta name="dc:Source" content="urn:isbn:9788276347821"/>
+                    <meta name="nlbprod:identifier.braille" content="119296"/>
+                    <meta name="nlbprod:identifier.daisy202.fulltext" content="410696"/>
+                    <meta name="nlbprod:isbn.daisy202.fulltext" content="978-82-16-26496-6"/>
+                    <meta name="nlbprod:identifier.daisy202.student" content="225296"/>
+                    <meta name="nlbprod:isbn.daisy202.student" content="978-82-16-26496-6"/>
+                    <meta name="nlbprod:identifier.ebook" content="360696"/>
+                    <meta name="nlbprod:identifier.epub" content="562096"/>
+                    <meta name="dc:Title.part" content="Tro og tradisjon"/>
+                    <meta name="dc:Title.series.preceding" content="Kristendommen I : Bibelen"/>
+                    <meta name="dc:Contributor.editor" content="Sødal, Helje Kringlebotn"/>
+                    <meta name="dc:Contributor.narrator" content="Brage Talesyntese"/>
+                </head>
+                <book>
+                    <frontmatter>
+                        <doctitle>Title</doctitle>
+                        <docauthor>Foo</docauthor>
+                        <docauthor>Bar</docauthor>
+                    </frontmatter>
+                </book>
+            </dtbook>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <dtbook xml:lang="no" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="225296"/>
+                    <meta name="dc:Title" content="Title"/>
+                    <meta name="dc:Identifier" content="225296"/>
+                    <meta name="dc:Language" content="no"/>
+                    <meta name="dc:Contributor" content="Haanes, Vidar L."/>
+                    <meta name="dc:Contributor" content="Hodne, Hans"/>
+                    <meta name="dc:Contributor" content="Leer-Salvesen, Paul"/>
+                    <meta name="dc:Contributor" content="Skottene, Ragnar"/>
+                    <meta name="dc:Contributor" content="Sødal, Helje Kringlebotn"/>
+                    <meta name="dc:Source" content="urn:isbn:9788276347821"/>
+                    <meta name="nlbprod:identifier.braille" content="119296"/>
+                    <meta name="nlbprod:identifier.daisy202.fulltext" content="410696"/>
+                    <meta name="nlbprod:isbn.daisy202.fulltext" content="978-82-16-26496-6"/>
+                    <meta name="nlbprod:identifier.daisy202.student" content="225296"/>
+                    <meta name="nlbprod:isbn.daisy202.student" content="978-82-16-26496-6"/>
+                    <meta name="nlbprod:identifier.ebook" content="360696"/>
+                    <meta name="nlbprod:identifier.epub" content="562096"/>
+                    <meta name="dc:Title.part" content="Tro og tradisjon"/>
+                    <meta name="dc:Title.series.preceding" content="Kristendommen I : Bibelen"/>
+                    <meta name="dc:Contributor.editor" content="Sødal, Helje Kringlebotn"/>
+                    <meta name="dc:Contributor.narrator" content="Brage Talesyntese"/>
+                    <meta name="dc:Date" content="..."/>
+                </head>
+                <book>
+                    <frontmatter>
+                        <doctitle>Title</doctitle>
+                        <docauthor>Helje Kringlebotn Sødal (red.)</docauthor>
+                    </frontmatter>
+                </book>
+            </dtbook>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

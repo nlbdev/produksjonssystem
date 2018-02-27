@@ -28,7 +28,7 @@
         <xsl:next-match/>
         
         <xsl:variable name="authors" select="/*/head/meta[lower-case(@name)='dc:creator']/@content" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:contributor.editor']/concat(string-join(reverse(tokenize(.,' *, *')),' '),' (red.)')" as="xs:string*"/>
+        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:contributor.editor']/concat(string-join(reverse(tokenize(@content,' *, *')),' '),' (red.)')" as="xs:string*"/>
         <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher.original']/@content" as="xs:string*"/>
         <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher']/@content" as="xs:string*"/>
         <xsl:for-each select="$authors">
@@ -48,7 +48,7 @@
         <meta name="dc:Language" content="{f:lang(@content)}"/>
     </xsl:template>
     
-    <xsl:template match="@xml:lang[. = /*/tokenize(lower-case(string(@xml:lang)),'-')[last()]]" priority="2"/> 
+    <xsl:template match="@xml:lang[not(parent::dtbook) and . = /*/tokenize(lower-case(string(@xml:lang)),'-')[last()]]" priority="2"/> 
     
     <xsl:template match="@xml:lang">
         <xsl:attribute name="xml:lang" select="f:lang(.)"/>
