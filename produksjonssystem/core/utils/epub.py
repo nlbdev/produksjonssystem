@@ -27,7 +27,7 @@ class Epub():
     uid = "core-utils-epub"
     
     def __init__(self, pipeline, book_path):
-        assert os.path.exists(book_path)
+        assert os.path.exists(book_path), "'{}' must exist".format(book_path)
         self.pipeline = pipeline
         self.book_path = book_path
     
