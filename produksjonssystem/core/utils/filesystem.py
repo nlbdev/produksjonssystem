@@ -19,6 +19,7 @@ class Filesystem():
     """Operations on files and directories"""
     
     pipeline = None
+    last_reported_md5 = None # avoid reporting change for same book multiple times
     
     _i18n = {
         "Storing": "Lagrer",
@@ -63,42 +64,44 @@ class Filesystem():
         # st_size: Size of the file in bytes, if it is a regular file or a symbolic link. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
         # st_mtime: Time of most recent content modification expressed in seconds.
         
+        modified = 0
         if not os.path.exists(path):
-            return "d41d8cd98f00b204e9800998ecf8427e", 0 if not shallow else None # MD5 of an empty string
+            md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
         
-        stat = os.stat(path)
-        st_size = stat.st_size if os.path.isfile(path) else 0
-        st_mtime = round(stat.st_mtime)
-        attributes.extend([path, st_mtime, st_size, stat.st_mode])
-        modified = stat.st_mtime
+        else:
+            if os.path.isfile(path):
+                stat = os.stat(path)
+                st_size = stat.st_size if os.path.isfile(path) else 0
+                st_mtime = round(stat.st_mtime)
+                attributes.extend([path, st_mtime, st_size, stat.st_mode])
+                modified = stat.st_mtime
 
-        if not shallow:
-            try:
-                for dirPath, subdirList, fileList in os.walk(path):
-                    fileList.sort()
-                    subdirList.sort()
-                    for f in fileList:
-                        filePath = os.path.join(dirPath, f)
-                        stat = os.stat(filePath)
-                        st_size = stat.st_size if os.path.isfile(path) else 0
-                        st_mtime = round(stat.st_mtime)
-                        attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
-                        modified = max(modified, stat.st_mtime)
-                    for sd in subdirList:
-                        subdirPath = os.path.join(dirPath, sd)
-                        stat = os.stat(subdirPath)
-                        st_size = stat.st_size if os.path.isfile(path) else 0
-                        st_mtime = round(stat.st_mtime)
-                        attributes.extend([subdirPath, st_mtime, st_size, stat.st_mode])
-                        modified = max(modified, stat.st_mtime)
-            except FileNotFoundError as e:
-                logging.exception("[" + str(threading.get_ident()) + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
-                raise e
+            if not shallow:
+                try:
+                    for dirPath, subdirList, fileList in os.walk(path):
+                        fileList.sort()
+                        subdirList.sort()
+                        for f in fileList:
+                            filePath = os.path.join(dirPath, f)
+                            stat = os.stat(filePath)
+                            st_size = stat.st_size if os.path.isfile(path) else 0
+                            st_mtime = round(stat.st_mtime)
+                            attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
+                            modified = max(modified, stat.st_mtime)
+                except FileNotFoundError as e:
+                    logging.exception("[" + str(threading.get_ident()) + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
+                    raise e
+            
+            if attributes:
+                md5 = hashlib.md5(str(attributes).encode()).hexdigest()
+            else:
+                md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
         
-        md5 = hashlib.md5(str(attributes).encode()).hexdigest()
-        
-        if expect and expect != md5:
-            logging.debug("[" + str(threading.get_ident()) + "] MD5 changed for " + str(path) + ": " + str(attributes))
+        if expect and expect != md5 and md5 != Filesystem.last_reported_md5:
+            Filesystem.last_reported_md5 = md5
+            text = "[" + str(threading.get_ident()) + "] MD5 changed for " + str(path) + " (was: {}, is: {}): ".format(expect, md5)
+            logging.info(text + str(attributes)[:1000] + ("…" if len(str(attributes)) > 1000 else ""))
+            logging.debug(text + str(attributes))
         
         return md5, modified
     

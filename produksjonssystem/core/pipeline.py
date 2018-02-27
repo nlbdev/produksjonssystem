@@ -242,7 +242,7 @@ class Pipeline():
                     recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
                     if recently_changed:
                         for f in recently_changed:
-                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False, expect=self._md5[f]["deep"] if f in self._md5 else None)
+                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
                             self._md5[f]["deep_checked"] = int(time.time())
                             if deep_md5 != self._md5[f]["deep"]:
                                 self._md5[f]["modified"] = int(time.time())
