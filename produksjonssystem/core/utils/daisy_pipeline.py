@@ -41,11 +41,15 @@ class DaisyPipelineJob():
         self._dir_output_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-daisy-pipeline-output")
         self.dir_output = self._dir_output_obj.name
         
+        running = False
         with DaisyPipelineJob.start_lock:
+            self.pipeline.utils.report.debug("---------- aquired DP2 start lock ----------")
             procs = DaisyPipelineJob.list_processes()
             if DaisyPipelineJob.pid:
+                self.pipeline.utils.report.debug("found PID")
                 procs = [p for p in procs if p.pid != DaisyPipelineJob.pid] # keep DaisyPipelineJob.pid
-            if len(procs) >= 1:
+            if len(procs) > 1:
+                self.pipeline.utils.report.debug("found more than one process")
                 for p in procs:
                     try:
                         p.terminate()
@@ -57,7 +61,10 @@ class DaisyPipelineJob():
                 for p in alive:
                     p.kill()
             
-            if len(DaisyPipelineJob.list_processes()) == 0:
+            procs = DaisyPipelineJob.list_processes()
+            running = len(procs) == 1
+            if len(procs) == 0:
+                self.pipeline.utils.report.debug("no running DP2 process")
                 try:
                     # start engine if it's not started already
                     process = self.pipeline.utils.filesystem.run([self.dp2_cli, "help"], shell=True)
@@ -81,11 +88,17 @@ class DaisyPipelineJob():
                 # Save PID for Pipeline 2 engine
                 procs = DaisyPipelineJob.list_processes()
                 if procs:
+                    self.pipeline.utils.report.debug("found newly started process")
                     DaisyPipelineJob.pid = procs[0].pid
+                    running = True
+                else:
+                    self.pipeline.utils.report.debug("newly started process not found")
+                
+                time.sleep(5) # Wait a few seconds after starting Pipeline 2 before releasing the lock
             
-            time.sleep(5) # Wait a few seconds after starting Pipeline 2 before releasing the lock
+            self.pipeline.utils.report.debug("---------- released DP2 start lock ----------")
         
-        if DaisyPipelineJob.pid:
+        if running:
             try:
                 command = [self.dp2_cli, script]
                 for arg in arguments:
@@ -154,6 +167,9 @@ class DaisyPipelineJob():
                         self.pipeline.utils.report.debug(self.job_id + " was deleted")
                     except subprocess.TimeoutExpired as e:
                         self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)
+        
+        else:
+            self.pipeline.utils.report.error("DAISY Pipeline 2 is not running.")
     
     @staticmethod
     def list_processes():
