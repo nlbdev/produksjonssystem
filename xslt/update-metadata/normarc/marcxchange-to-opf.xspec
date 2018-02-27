@@ -662,5 +662,34 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Contributor with multiple roles (see #45)">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="700" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Sødal, Helje Kringlebotn</marcxchange:subfield>
+                    <marcxchange:subfield code="d">1962-</marcxchange:subfield>
+                    <marcxchange:subfield code="e">medf.</marcxchange:subfield>
+                    <marcxchange:subfield code="3">17265000</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="700" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Sødal, Helje Kringlebotn</marcxchange:subfield>
+                    <marcxchange:subfield code="d">1962-</marcxchange:subfield>
+                    <marcxchange:subfield code="e">red.</marcxchange:subfield>
+                    <marcxchange:subfield code="3">17265000</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:contributor id="contributor-700-1">Sødal, Helje Kringlebotn</dc:contributor>
+                <meta property="bibliofil-id" refines="#contributor-700-1">17265000</meta>
+                <meta property="birthDate" refines="#contributor-700-1">1962</meta>
+                <meta property="dc:contributor.editor" id="contributor-700-2">Sødal, Helje Kringlebotn</meta>
+                <meta property="bibliofil-id" refines="#contributor-700-2">17265000</meta>
+                <meta property="birthDate" refines="#contributor-700-2">1962</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>
