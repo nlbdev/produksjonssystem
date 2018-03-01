@@ -101,14 +101,23 @@
         </xsl:variable>
         
         <!-- move namespaces to root element and update references -->
-        <xsl:for-each select="$result">
-            <xsl:copy exclude-result-prefixes="#all">
-                <xsl:copy-of select=".//namespace::*"/>
-                <xsl:apply-templates select="@* | node()" mode="update-references">
-                    <xsl:with-param name="descriptions" select="$descriptions" tunnel="yes"/>
-                </xsl:apply-templates>
-            </xsl:copy>
-        </xsl:for-each>
+        <xsl:variable name="result" as="element()">
+            <xsl:for-each select="$result">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:copy-of select=".//namespace::*"/>
+                    <xsl:apply-templates select="@* | node()" mode="update-references">
+                        <xsl:with-param name="descriptions" select="$descriptions" tunnel="yes"/>
+                    </xsl:apply-templates>
+                </xsl:copy>
+            </xsl:for-each>
+        </xsl:variable>
+        
+        <!-- post-processing -->
+        <xsl:variable name="result" as="element()">
+            <xsl:apply-templates select="$result" mode="post-process"/>
+        </xsl:variable>
+        
+        <xsl:copy-of select="$result" exclude-result-prefixes="#all"/>
     </xsl:template>
     
     <xsl:template match="@* | node()" mode="update-references">
@@ -258,6 +267,27 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:attribute name="rdf:ID" select="$id[1]"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="@* | node()" mode="post-process">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="dc:title" mode="post-process">
+        <xsl:variable name="issue" select="(ancestor::rdf:RDF/rdf:Description/@rdf:about[matches(.,'^.*websok.tnr=\d{12}$')]/replace(.,'^.*websok.tnr=\d{6}',''))[1]" as="xs:string?"/>
+        <xsl:choose>
+            <xsl:when test="$issue">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@* | node()" mode="#current"/>
+                    <xsl:value-of select="concat(' ',replace($issue,'^(..)(....)$','$1/$2'))"/>
+                </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
