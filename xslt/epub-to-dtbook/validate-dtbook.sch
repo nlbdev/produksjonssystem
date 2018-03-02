@@ -26,16 +26,16 @@
     <pattern>
         <title>Tittel</title>
         <rule context="dtbook:head">
-            <assert test="count(dtbook:meta[@name='dc:Title']) = 1">Det må være nøyaktig én tittel (dc:Title).</assert>
+            <assert test="count(dtbook:meta[@name='dc:Title']) = 1">Det må være nøyaktig én tittel (dc:Title) Fant <value-of select="count(dtbook:meta[@name='dc:Title'])"/>.</assert>
         </rule>
     </pattern>
     
-    <pattern>
+    <!--<pattern>
         <title>Forlag</title>
         <rule context="dtbook:head">
-            <assert test="count(dtbook:meta[@name='dc:Publisher']) = 1">Det må være nøyaktig ett forlag (dc:Publisher).</assert>
+            <assert test="count(dtbook:meta[@name='dc:Publisher']) = 1">Det må være nøyaktig ett forlag (dc:Publisher). Fant <value-of select="count(dtbook:meta[@name='dc:Publisher'])"/>.</assert>
         </rule>
-    </pattern>
+    </pattern>-->
     
     <pattern>
         <title>Utgivelsesdato</title>

@@ -45,12 +45,12 @@ class EpubToDtbook(Pipeline):
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
         
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
         
         
         # ---------- lag en kopi av EPUBen ----------
@@ -68,7 +68,7 @@ class EpubToDtbook(Pipeline):
         updated = UpdateMetadata.update(self, nordic_epub, publication_format="DAISY 2.02")
         if isinstance(updated, bool) and updated == False:
             self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
-            return
+            return False
         
         
         # ---------- konverter nordisk EPUB til nordisk DTBook ----------
@@ -91,7 +91,7 @@ class EpubToDtbook(Pipeline):
         if dp2_job.status != "DONE":
             self.utils.report.error("Klarte ikke å konvertere boken")
             self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
-            return
+            return False
         
         dtbook_dir = os.path.join(dp2_job.dir_output, "output-dir", nordic_epub.identifier())
         dtbook_file = os.path.join(dp2_job.dir_output, "output-dir", nordic_epub.identifier(), nordic_epub.identifier() + ".xml")
@@ -99,12 +99,12 @@ class EpubToDtbook(Pipeline):
         if not os.path.isdir(dtbook_dir):
             self.utils.report.error("Finner ikke den konverterte boken: " + dtbook_dir)
             self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
-            return
+            return False
         
         if not os.path.isfile(dtbook_file):
             self.utils.report.error("Finner ikke den konverterte boken: " + dtbook_file)
             self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
-            return
+            return False
         
         
         # ---------- gjør tilpasninger i DTBook ----------
