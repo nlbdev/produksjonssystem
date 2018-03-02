@@ -9,7 +9,7 @@
         
         Per Sennels, 14.02.2018
     -->
-    
+
     <xsl:template name="generer-startinformasjon">
         <xsl:call-template name="generer-tittel"/>
         <!-- PSPS: Alltid før cover,sier Roald -->
@@ -32,7 +32,7 @@
                         <xsl:text>av </xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:value-of select="fnk:hent-metadata-fra-nlbpub('dc:creator', false())"/>
+                <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
                 <xsl:text>.</xsl:text>
             </p>
             <p>
@@ -40,19 +40,19 @@
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>Read by </xsl:text>
                         <xsl:value-of
-                            select="fnk:hent-metadata-fra-nlbpub('dc:contributor.narrator', false())"/>
+                            select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                         <xsl:text>.</xsl:text>
                     </xsl:when>
                     <xsl:when test="$SPRÅK.nn">
                         <xsl:text>Det er </xsl:text>
                         <xsl:value-of
-                            select="fnk:hent-metadata-fra-nlbpub('dc:contributor.narrator', false())"/>
+                            select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                         <xsl:text> som les.</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>Det er </xsl:text>
                         <xsl:value-of
-                            select="fnk:hent-metadata-fra-nlbpub('dc:contributor.narrator', false())"/>
+                            select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                         <xsl:text> som leser.</xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -85,7 +85,7 @@
                     <xsl:text>, av </xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:value-of select="fnk:hent-metadata-fra-nlbpub('dc:creator', false())"/>
+            <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
             <xsl:text>.</xsl:text>
         </p>
         <p>
@@ -93,19 +93,19 @@
                 <xsl:when test="$SPRÅK.en">
                     <xsl:text>Read by </xsl:text>
                     <xsl:value-of
-                        select="fnk:hent-metadata-fra-nlbpub('dc:contributor.narrator', false())"/>
+                        select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                     <xsl:text>.</xsl:text>
                 </xsl:when>
                 <xsl:when test="$SPRÅK.nn">
                     <xsl:text>Det var </xsl:text>
                     <xsl:value-of
-                        select="fnk:hent-metadata-fra-nlbpub('dc:contributor.narrator', false())"/>
+                        select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                     <xsl:text> som las.</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:text>Det var </xsl:text>
                     <xsl:value-of
-                        select="fnk:hent-metadata-fra-nlbpub('dc:contributor.narrator', false())"/>
+                        select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                     <xsl:text> som leste.</xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
@@ -202,13 +202,13 @@
                         <p>
                             <xsl:text>The book is published by </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
                             <xsl:text>, </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.location.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:publisher.location.original', true(), false())"/>
                             <xsl:text>, in </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:choose>
                                 <xsl:when test="$STRUKTUR.har-sidetall">
                                     <xsl:text>, and has </xsl:text>
@@ -226,7 +226,7 @@
                         <p>
                             <xsl:text>The original ISBN is </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('schema:isbn', true())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -235,10 +235,10 @@
                         <p>
                             <xsl:text>The book was first published in </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:text>, this is the </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('bookEdition.original', true())"/>
+                                select="fnk:hent-metadata-verdi('bookEdition.original', true(), false())"/>
                             <xsl:text>. edition.</xsl:text>
                         </p>
                     </xsl:if>
@@ -247,14 +247,14 @@
                             <xsl:if test="fnk:metadata-finnes('dc:language.original')">
                                 <xsl:text>The book was first published in </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:hent-metadata-fra-nlbpub('dc:language.original', true())"/>
+                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()),'en')"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
-                                <xsl:text>The original title is </xsl:text>
+                                <xsl:text> The original title is </xsl:text>
                                 <em>
                                     <xsl:value-of
-                                        select="fnk:hent-metadata-fra-nlbpub('dc:title.original', true())"
+                                        select="fnk:hent-metadata-verdi('dc:title.original', true(), false())"
                                     />
                                 </em>
                                 <xsl:text>.</xsl:text>
@@ -262,7 +262,7 @@
                             <xsl:if test="fnk:metadata-finnes('dc:contributor.translator')">
                                 <xsl:text> The book was translated by </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:hent-metadata-fra-nlbpub('dc:contributor.translator', false())"/>
+                                    select="fnk:hent-metadata-verdi('dc:contributor.translator', false(), true())"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                         </p>
@@ -278,13 +278,13 @@
                         <p>
                             <xsl:text>Boka er utgjeven av </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
                             <xsl:text>, </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.location.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:publisher.location.original', true(), false())"/>
                             <xsl:text>, i </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:choose>
                                 <xsl:when test="$STRUKTUR.har-sidetall">
                                     <xsl:text>, og er på </xsl:text>
@@ -302,7 +302,7 @@
                         <p>
                             <xsl:text>ISBN-nummeret til originalen er  </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('schema:isbn', true())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -311,10 +311,10 @@
                         <p>
                             <xsl:text>Boka er første gang utgjeven  i </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:text>, dette er </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('bookEdition.original', true())"/>
+                                select="fnk:hent-metadata-verdi('bookEdition.original', true(), false())"/>
                             <xsl:text>. utgåva.</xsl:text>
                         </p>
                     </xsl:if>
@@ -323,22 +323,22 @@
                             <xsl:if test="fnk:metadata-finnes('dc:language.original')">
                                 <xsl:text>Boka er første gong utgjeven på </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:hent-metadata-fra-nlbpub('dc:language.original', true())"/>
+                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()),'nn')"/>
                                 <xsl:text>. </xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
-                                <xsl:text>Originaltittel er </xsl:text>
+                                <xsl:text> Originaltittel er </xsl:text>
                                 <em>
                                     <xsl:value-of
-                                        select="fnk:hent-metadata-fra-nlbpub('dc:title.original', true())"
+                                        select="fnk:hent-metadata-verdi('dc:title.original', true(), false())"
                                     />
                                 </em>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:contributor.translator')">
-                                <xsl:text>Boka er omsett av </xsl:text>
+                                <xsl:text> Boka er omsett av </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:hent-metadata-fra-nlbpub('dc:contributor.translator', false())"/>
+                                    select="fnk:hent-metadata-verdi('dc:contributor.translator', false(), true())"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                         </p>
@@ -353,13 +353,13 @@
                         <p>
                             <xsl:text>Boka er utgitt av </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
                             <xsl:text>, </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:publisher.location.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:publisher.location.original', true(), false())"/>
                             <xsl:text>, i </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:choose>
                                 <xsl:when test="$STRUKTUR.har-sidetall">
                                     <xsl:text>, og er på </xsl:text>
@@ -377,7 +377,7 @@
                         <p>
                             <xsl:text>Originalens ISBN er </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('schema:isbn', true())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -386,10 +386,10 @@
                         <p>
                             <xsl:text>Boka er første gang utgitt i  </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('dc:date.issued.original', true())"/>
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:text>, dette er </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-fra-nlbpub('bookEdition.original', true())"/>
+                                select="fnk:hent-metadata-verdi('bookEdition.original', true(), false())"/>
                             <xsl:text>. utgave.</xsl:text>
                         </p>
                     </xsl:if>
@@ -398,22 +398,22 @@
                             <xsl:if test="fnk:metadata-finnes('dc:language.original')">
                                 <xsl:text>Boka er første gang utgitt på </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:hent-metadata-fra-nlbpub('dc:language.original', true())"/>
+                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()),'nb')"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
-                                <xsl:text>Originaltittel er </xsl:text>
+                                <xsl:text> Originaltittel er </xsl:text>
                                 <em>
                                     <xsl:value-of
-                                        select="fnk:hent-metadata-fra-nlbpub('dc:title.original', true())"
+                                        select="fnk:hent-metadata-verdi('dc:title.original', true(), false())"
                                     />
                                 </em>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:contributor.translator')">
-                                <xsl:text>Boka er oversatt av </xsl:text>
+                                <xsl:text> Boka er oversatt av </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:hent-metadata-fra-nlbpub('dc:contributor.translator', false())"/>
+                                    select="fnk:hent-metadata-verdi('dc:contributor.translator', false(), true())"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                         </p>
@@ -646,7 +646,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </p>
-         </section>
+        </section>
     </xsl:template>
 
 

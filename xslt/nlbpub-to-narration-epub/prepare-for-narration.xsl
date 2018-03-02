@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fnk="http://www.nlb.no/2017/functions/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fnk="http://www.nlb.no/2017/functions/" xmlns:nlb="http://www.nlb.no/2018/xml"
     xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
     
@@ -33,9 +33,14 @@
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 
+    <xsl:variable name="ID" as="xs:string" select="replace(document-uri(/),'^.+/(.+?)\.xhtml$','$1')"/>
+    
+    <xsl:variable name="metadata.url" as="xs:string" select="concat(replace(document-uri(.),'^(.+/Arkiv/).+$','$1'),'metadata/',$ID,'/metadata-daisy202.html')"/>
 
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (1.0.0 / 2018-02-14)</xsl:message>
+        <xsl:message>prepare-for-narration.xsl (1.0.1 / 2018-03-01)</xsl:message>
+        <xsl:message><xsl:text>* ID: </xsl:text><xsl:value-of select="$ID"/></xsl:message>
+        <xsl:message><xsl:text>* Henter metadata fra </xsl:text><xsl:value-of select="$metadata.url"/></xsl:message>
         
         <!-- Denne er mest for debugging. Kan kanskje fjernes på sikt, og da kan man slette filen logg.xsl -->
         <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
@@ -45,6 +50,7 @@
         <xsl:call-template name="varsle-om-manglende-metadata-i-nlbpub"/>
 
         <xsl:message>* Transformerer ... </xsl:message>
+        
 
         <xsl:message>
             <xsl:text>* Spraak: </xsl:text>
@@ -59,7 +65,7 @@
                     <xsl:text>Bokmaal (</xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:value-of select="//meta[@name eq 'dc:language'][1]/@content"/>
+            <xsl:value-of select="fnk:hent-metadata-verdi('dc:language',true(),false())"/>
             <xsl:text>)</xsl:text>
         </xsl:message>
 

@@ -7,12 +7,13 @@
     <!-- 
         (c) 2018 NLB
         
-        En del av denne koden kan forenkles eller fjernes, hvis man kan være sikker på at all nødvendig metadata er på plass i file.
+        En del av denne koden kan forenkles eller fjernes, hvis man kan være sikker på at all nødvendig metadata er på plass i filen.
         Inntil da, får vi beholde den som den er
         
         Per Sennels, 14.02.2018
     -->
-    <xsl:variable name="metadata" as="element()*" select="//meta"/>
+    <!--<xsl:variable name="metadata" as="element()*" select="//meta"/>-->
+    <xsl:variable name="metadata" as="element()*" select="doc($metadata.url)//meta"/>
 
     <!-- Antar her at boken er oversatt, HVIS OG BARE HVIS følgende metadata er gitt: 'dc:language.original' og 'dc:title.original'  -->
     <xsl:variable name="boken.er-oversatt" as="xs:boolean"

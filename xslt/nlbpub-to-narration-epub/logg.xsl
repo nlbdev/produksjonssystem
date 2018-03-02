@@ -20,7 +20,7 @@
     
     <!-- Replace the url below with whatever suits your needs -->
     <xsl:variable name="LOG.url" as="xs:string"
-        select="concat('file:/C:/nlb/prosjekter/fulltekstprosjektet-og-epub/transformasjon-av-html5/logg-', //meta[@name eq 'dc:identifier']/@content, '.txt')"/>
+        select="concat('file:/C:/nlb/prosjekter/fulltekstprosjektet-og-epub/transformasjon-av-html5/logg-', $ID, '.txt')"/>
 
     <xsl:template name="generer-loggfil-hvis-etterspurt">
         <xsl:if test="$LOG.generate">
@@ -33,7 +33,7 @@
                 <xsl:variable name="NL" as="xs:string" select="'&#10;'"/>
                 <xsl:value-of select="concat('Fil: ', document-uri(/), $NL)"/>
                 <xsl:value-of
-                    select="concat('ID: ', //meta[@name eq 'dc:identifier']/@content, ' (', current-dateTime(), ')', $NL)"/>
+                    select="concat('ID: ', $ID, ' (', current-dateTime(), ')', $NL)"/>
                 <xsl:value-of select="concat('Tittel: ', //title, $NL)"/>
                 <xsl:value-of select="concat('Bokmål: ', $SPRÅK.nb, $NL)"/>
                 <xsl:value-of select="concat('Nynorsk: ', $SPRÅK.nn, $NL)"/>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:fnk="http://www.nlb.no/2017/functions/"
-    xmlns:epub="http://www.idpf.org/2007/ops"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fnk="http://www.nlb.no/2017/functions/"
+    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:nlb="http://www.nlb.no/2018/xml"
     xpath-default-namespace="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all" version="2.0">
 
@@ -13,26 +12,70 @@
         
         Per Sennels, 14.02.2018
     -->
-    
+    <xsl:variable name="språk-kart" as="element()"
+        select="doc('language-mapping.xml')/nlb:languages"/>
+
+    <xsl:function name="fnk:språkkode-til-tekst" as="xs:string">
+        <xsl:param name="kode-som-skal-ekspanderes" as="xs:string"/>
+        <xsl:param name="kode-for-returnert-tekst"/>
+
+        <xsl:variable name="språk" as="xs:string?"
+            select="$språk-kart/nlb:language[$kode-som-skal-ekspanderes = tokenize(@lang, '\s+')]/nlb:map-to[@lang eq $kode-for-returnert-tekst]"/>
+
+        <xsl:choose>
+            <xsl:when test="not($språk)">
+                <xsl:value-of select="concat('[ukjent språk: ', $kode-som-skal-ekspanderes, ']')"/>
+                <xsl:message>
+                    <xsl:text>* Finner ikke spraak for kodene: </xsl:text>
+                    <xsl:value-of select="$kode-som-skal-ekspanderes"/>
+                    <xsl:text> og </xsl:text>
+                    <xsl:value-of select="$kode-for-returnert-tekst"/>
+                </xsl:message>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$språk"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
     <xsl:function name="fnk:metadata-finnes" as="xs:boolean">
-        <xsl:param name="navn" as="xs:string"></xsl:param>
+        <xsl:param name="navn" as="xs:string"/>
         <xsl:value-of select="exists($metadata[@name eq $navn])"/>
     </xsl:function>
-    
-    <xsl:function name="fnk:hent-metadata-fra-nlbpub" as="xs:string?">
+
+    <xsl:function name="fnk:hent-metadata-verdi" as="xs:string?">
         <xsl:param name="navn" as="xs:string"/>
         <xsl:param name="anta-én-forekomst" as="xs:boolean"/>
+        <xsl:param name="normaliser-navn" as="xs:boolean"/>
         <xsl:choose>
             <xsl:when test="$anta-én-forekomst">
-                <xsl:value-of select="($metadata[@name eq $navn][1]/@content,concat('[MANGLER FORVENTET METADATA: ',$navn,']'))[normalize-space(.) ne ''][1]"/>
+                <xsl:choose>
+                    <xsl:when test="$normaliser-navn">
+                        <xsl:value-of
+                            select="(fnk:normaliser-forfatternavn($metadata[@name eq $navn][1]/@content), concat('[MANGLER FORVENTET METADATA: ', $navn, ']'))[normalize-space(.) ne ''][1]"
+                        />
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of
+                            select="($metadata[@name eq $navn][1]/@content, concat('[MANGLER FORVENTET METADATA: ', $navn, ']'))[normalize-space(.) ne ''][1]"
+                        />
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:choose>
                     <xsl:when test="fnk:metadata-finnes($navn)">
                         <xsl:for-each select="$metadata[@name eq $navn]">
-                            <xsl:value-of select="@content"/>
                             <xsl:choose>
-                                <xsl:when test="position() eq last() -1">
+                                <xsl:when test="$normaliser-navn">
+                                    <xsl:value-of select="fnk:normaliser-forfatternavn(@content)"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:value-of select="@content"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+
+                            <xsl:choose>
+                                <xsl:when test="position() eq last() - 1">
                                     <xsl:choose>
                                         <xsl:when test="$SPRÅK.en">
                                             <xsl:text> and </xsl:text>
@@ -42,7 +85,7 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:when>
-                                <xsl:when test="position() eq last()"></xsl:when>
+                                <xsl:when test="position() eq last()"/>
                                 <xsl:otherwise>
                                     <xsl:text>, </xsl:text>
                                 </xsl:otherwise>
@@ -50,7 +93,7 @@
                         </xsl:for-each>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="concat('[MANGLER FORVENTET METADATA: ',$navn,']')"/>
+                        <xsl:value-of select="concat('[MANGLER FORVENTET METADATA: ', $navn, ']')"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:otherwise>

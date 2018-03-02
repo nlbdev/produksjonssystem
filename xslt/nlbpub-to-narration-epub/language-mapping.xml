@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dette innholdet er basert på informasjon på Språkrådets side: http://www.sprakradet.no/sprakhjelp/Skriverad/Navn_paa_spraak/ -->
+<languages xmlns="http://www.nlb.no/2018/xml">
+    <!-- A -->
+    <language lang="abk ab" info="abkhasisk: språk i Abkhasia (del av Georgia)">
+        <map-to lang="nb">abkhasisk</map-to>
+        <map-to lang="nn">abkhasisk</map-to>
+        <map-to lang="en">Abkhazian</map-to>
+        <map-to lang="fra">abkhaze</map-to>
+    </language>
+    <language lang="aar aa" info="afar: språk i Etiopia">
+        <map-to lang="nb">afar</map-to>
+        <map-to lang="nn">afar</map-to>
+        <map-to lang="en">Afar</map-to>
+        <map-to lang="fra">afar</map-to>
+    </language>
+    <language lang="afr af" info="afrikaans: boerspråket i Sør-Afrika">
+        <map-to lang="nb">afrikaans</map-to>
+        <map-to lang="nn">afrikaans</map-to>
+        <map-to lang="en">Afrikaans</map-to>
+        <map-to lang="fra">afrikaans</map-to>
+    </language>
+    <language lang="aka" info="akan: språk i Ghana">
+        <map-to lang="nb">akan</map-to>
+        <map-to lang="nn">akan</map-to>
+        <map-to lang="en">Akan</map-to>
+        <map-to lang="fra">akan</map-to>
+    </language>
+    <language lang="akk" info="akkadisk: språket i det gamle Babylonia og Assyria">
+        <map-to lang="nb">akkadisk</map-to>
+        <map-to lang="nn">akkadisk</map-to>
+        <map-to lang="en">Akkadian</map-to>
+        <map-to lang="fra">akkadien</map-to>
+    </language>
+    <language lang="alb/sqi sq" info="albansk: språket i Albania">
+        <map-to lang="nb">albansk</map-to>
+        <map-to lang="nn">albansk</map-to>
+        <map-to lang="en">Albanian</map-to>
+        <map-to lang="fra">albanais</map-to>
+    </language>
+    <language lang="ale" info="aleutisk: språket på øygruppa Aleutene">
+        <map-to lang="nb">aleutisk</map-to>
+        <map-to lang="nn">aleutisk</map-to>
+        <map-to lang="en">Aleut</map-to>
+        <map-to lang="fra">aléoute</map-to>
+    </language>
+    <language lang="alg" info="algonkin: indiansk språkfamilie">
+        <map-to lang="nb">algonkin</map-to>
+        <map-to lang="nn">algonkin</map-to>
+        <map-to lang="en">Algonquian languages</map-to>
+        <map-to lang="fra">langues algonquines</map-to>
+    </language>
+    <language lang="amh" info="amharisk: offisielt språk i Etiopia">
+        <map-to lang="nb">amharisk</map-to>
+        <map-to lang="nn">amharisk</map-to>
+        <map-to lang="en">Amharic</map-to>
+        <map-to lang="fra">amharique</map-to>
+    </language>
+    <language lang="ara ar" info="arabisk: språk i Nord-Afrika og Midtøsten">
+        <map-to lang="nb">arabisk</map-to>
+        <map-to lang="nn">arabisk</map-to>
+        <map-to lang="en">Arabic</map-to>
+        <map-to lang="fra">arabe</map-to>
+    </language>
+    <language lang="arw" info="arawak: språkfamilie i Sør-Amerika">
+        <map-to lang="nb">arawak</map-to>
+        <map-to lang="nn">arawak</map-to>
+        <map-to lang="en">Arawak</map-to>
+        <map-to lang="fra">arawak</map-to>
+    </language>
+    <language lang="arm/hye hy" info="armensk: språket i Armenia">
+        <map-to lang="nb">armensk</map-to>
+        <map-to lang="nn">armensk</map-to>
+        <map-to lang="en">Armenian</map-to>
+        <map-to lang="fra">arménien</map-to>
+    </language>
+    <language lang="aze az" info="aserbajdsjansk: språket i Aserbajdsjan">
+        <map-to lang="nb">aserbajdsjansk</map-to>
+        <map-to lang="nn">aserbajdsjansk</map-to>
+        <map-to lang="en">Azerbaijani</map-to>
+        <map-to lang="fra">azéri</map-to>
+    </language>
+    <!-- asianisk samlebetegnelse for noen utdødde språk i For–Asia -->
+    <!-- assamesisk språk i delstaten Assam i India; asm – as -->
+    <language lang="ava" info="avarisk: språk i Kaukasia">
+        <map-to lang="nb">avarisk</map-to>
+        <map-to lang="nn">avarisk</map-to>
+        <map-to lang="en">Avaric</map-to>
+        <map-to lang="fra">avar</map-to>
+    </language>
+    <language lang="ave ae" info="avestisk: språket i Avesta">
+        <map-to lang="nb">avestisk</map-to>
+        <map-to lang="nn">avestisk</map-to>
+        <map-to lang="en">Avestan</map-to>
+        <map-to lang="fra">avestique</map-to>
+    </language>
+    <language lang="aym ay" info="aymara: indianerspråk i Peru">
+        <map-to lang="nb">aymara</map-to>
+        <map-to lang="nn">aymara</map-to>
+        <map-to lang="en">Aymara</map-to>
+        <map-to lang="fra">aymara</map-to>
+    </language>
+    <!-- B -->
+    <language lang="bat"
+        info="baltisk: grein av indoeuropeisk, omfatter de nåværende språka latvisk og litauisk og det utdødde gammelprøyssisk">
+        <map-to lang="nb">baltisk</map-to>
+        <map-to lang="nn">baltisk</map-to>
+        <map-to lang="en">Baltic languages</map-to>
+        <map-to lang="fra">langues baltiques</map-to>
+    </language>
+    <language lang="bal" info="balutsji: språk i Afghanistan, Iran og Pakistan">
+        <map-to lang="nb">balutsji</map-to>
+        <map-to lang="nn">balutsji</map-to>
+        <map-to lang="en">Baluchi</map-to>
+        <map-to lang="fra">baloutchi</map-to>
+    </language>
+    <language lang="bnt" info="bantu: språkgruppe i Afrika">
+        <map-to lang="nb">bantu</map-to>
+        <map-to lang="nn">bantu</map-to>
+        <map-to lang="en">Bantu languages</map-to>
+        <map-to lang="fra">langues bantoues</map-to>
+    </language>
+    <language lang="bak ba" info="basjkirsk: språk i Russland">
+        <map-to lang="nb">basjkirsk</map-to>
+        <map-to lang="nn">basjkirsk</map-to>
+        <map-to lang="en">Bashkir</map-to>
+        <map-to lang="fra">bachkir</map-to>
+    </language>
+    <language lang="baq/eus eu" info="baskisk: språket i Baskerland">
+        <map-to lang="nb">baskisk</map-to>
+        <map-to lang="nn">baskisk</map-to>
+        <map-to lang="en">Basque</map-to>
+        <map-to lang="fra">basque</map-to>
+    </language>
+    <language lang="bem" info="bemba: språk i Zambia">
+        <map-to lang="nb">bemba</map-to>
+        <map-to lang="nn">bemba</map-to>
+        <map-to lang="en">Bemba</map-to>
+        <map-to lang="fra">bemba</map-to>
+    </language>
+    <!-- (bangla) = bengali -->
+    <language lang="ben bn" info="bengali: offisielt språk i Bangladesh">
+        <map-to lang="nb">bengali</map-to>
+        <map-to lang="nn">bengali</map-to>
+        <map-to lang="en">Bengali</map-to>
+        <map-to lang="fra">bengali</map-to>
+    </language>
+    <language lang="ber" info="berbisk: flere språk som tales i deler av Nord-Afrika">
+        <map-to lang="nb">berbisk</map-to>
+        <map-to lang="nn">berbisk</map-to>
+        <map-to lang="en">Berber languages</map-to>
+        <map-to lang="fra">langues berbères</map-to>
+    </language>
+    <language lang="bih bh" info="bihari: fellesbetegnelse på flere indiske språk">
+        <map-to lang="nb">bihari</map-to>
+        <map-to lang="nn">bihari</map-to>
+        <map-to lang="en">Bihari</map-to>
+        <map-to lang="fra">bihari</map-to>
+    </language>
+    <language lang="bis bi" info="bislama: språk i Vanuatu">
+        <map-to lang="nb">bislama</map-to>
+        <map-to lang="nn">bislama</map-to>
+        <map-to lang="en">Bislama</map-to>
+        <map-to lang="fra">bichlamar</map-to>
+    </language>
+    <language lang="nob nb"
+        info="bokmål: den ene av de to offisielle skriftformene i moderne norsk; bokmål er også tilrådd av Språkrådet som betegnelse i andre språk">
+        <map-to lang="nb">bokmål</map-to>
+        <map-to lang="nn">bokmål</map-to>
+        <map-to lang="en">Norwegian Bokmål</map-to>
+        <map-to lang="fra">norvégien bokmål</map-to>
+    </language>
+    <language lang="bos bs" info="bosnisk: språk i Bosnia, jf. neste oppslag">
+        <map-to lang="nb">bosnisk</map-to>
+        <map-to lang="nn">bosnisk</map-to>
+        <map-to lang="en">Bosnian</map-to>
+        <map-to lang="fra">bosniaque</map-to>
+    </language>
+    <!-- bosnisk-kroatisk-serbisk språket i staten Bosnia-Hercegovina; bosniere i Norge kan sjøl velge
+        om de vil kalle språket sitt bosnisk eller kroatisk eller serbisk -->
+    <language lang="bre br" info="bretonsk: keltisk språk i Bretagne">
+        <map-to lang="nb">bretonsk</map-to>
+        <map-to lang="nn">bretonsk</map-to>
+        <map-to lang="en">Breton</map-to>
+        <map-to lang="fra">breton</map-to>
+    </language>
+    <!-- brittonsk keltisk språk i den sørlige del av Storbritannia og i Bretagne -->
+    <language lang="bul bg" info="bulgarsk: språket i Bulgaria">
+        <map-to lang="nb">bulgarsk</map-to>
+        <map-to lang="nn">bulgarsk</map-to>
+        <map-to lang="en">Bulgarian</map-to>
+        <map-to lang="fra">bulgare</map-to>
+    </language>
+    <!-- D -->
+    <language lang="dak" info="dakota: sioux-språk i USA og Canada">
+        <map-to lang="nb">dakota</map-to>
+        <map-to lang="nn">dakota</map-to>
+        <map-to lang="en">Dakota</map-to>
+        <map-to lang="fra">dakota</map-to>
+    </language>
+    <language lang="dan da" info="dansk: språket i Danmark">
+        <map-to lang="nb">dansk</map-to>
+        <map-to lang="nn">dansk</map-to>
+        <map-to lang="en">Danish</map-to>
+        <map-to lang="fra">danois</map-to>
+    </language>
+    <!-- dari variant av farsi i Afghanistan -->
+    <!-- dolgansk språk i Russland -->
+    <language lang="dra" info="dravidisk: språkfamilie i India">
+        <map-to lang="nb">dravidisk</map-to>
+        <map-to lang="nn">dravidisk</map-to>
+        <map-to lang="en">Dravidian languages</map-to>
+        <map-to lang="fra">langues dravidiennes</map-to>
+    </language>
+    <!-- E -->
+    <!-- edo språkgruppe i Nigeria; Edo – edo -->
+    <!-- enetsisk språk i Russland -->
+    <language lang="eng en"
+        info="engelsk: språket i mange stater; kan spesifiseres til f.eks. amerikansk engelsk, australsk engelsk og britisk engelsk">
+        <map-to lang="nb">engelsk</map-to>
+        <map-to lang="nn">engelsk</map-to>
+        <map-to lang="en">English</map-to>
+        <map-to lang="fra">anglais</map-to>
+    </language>
+    <!-- eskimoisk eskimoenes språk, jf. inuittisk; Eskimo – eskimo -->
+    <!-- eskimoisk-aleutisk språkfamilie på den nordlige halvkula -->
+    <language lang="epo eo" info="esperanto: internasjonalt hjelpespråk">
+        <map-to lang="nb">esperanto</map-to>
+        <map-to lang="nn">esperanto</map-to>
+        <map-to lang="en">Esperanto</map-to>
+        <map-to lang="fra">espéranto</map-to>
+    </language>
+    <language lang="est et" info="estisk: språket i Estland">
+        <map-to lang="nb">estisk</map-to>
+        <map-to lang="nn">estisk</map-to>
+        <map-to lang="en">Estonian</map-to>
+        <map-to lang="fra">estonien</map-to>
+    </language>
+    <!-- etruskisk utdødd oldtidsspråk i Italia; Etrurian – étrusque -->
+    <!-- evensk språk i Russland; Evenian -->
+    <!-- evenkisk språk i Russland; Evenkish – evenki -->
+    <!-- F -->
+    <language lang="fat" info="fanti: språkgruppe i Ghana">
+        <map-to lang="nb">fanti</map-to>
+        <map-to lang="nn">fanti</map-to>
+        <map-to lang="en">Fanti</map-to>
+        <map-to lang="fra">fanti</map-to>
+    </language>
+    <!-- farsi hovedspråket i Iran, også kalt persisk eller nypersisk -->
+    <!-- filipino offisielt språk på Filippinene (se også tagalog) -->
+    <language lang="fin fi" info="finsk: språket i Finland">
+        <map-to lang="nb">finsk</map-to>
+        <map-to lang="nn">finsk</map-to>
+        <map-to lang="en">Finnish</map-to>
+        <map-to lang="fra">finnois</map-to>
+    </language>
+    <language lang="fiu"
+        info="finsk-ugrisk: grein av uralsk, omfatter bl.a. estisk, finsk, samisk og ungarsk">
+        <map-to lang="nb">finsk-ugrisk</map-to>
+        <map-to lang="nn">finsk-ugrisk</map-to>
+        <map-to lang="en">Finno-Ugrian languages</map-to>
+        <map-to lang="fra">langues finno–ougriennes</map-to>
+    </language>
+    <!-- flamsk annet navn på nederlandsk slik det snakkes i Belgia; flemish – flamand -->
+    <language lang="fre/fra fr" info="fransk: språket i Frankrike">
+        <map-to lang="nb">fransk</map-to>
+        <map-to lang="nn">fransk</map-to>
+        <map-to lang="en">French</map-to>
+        <map-to lang="fra">français</map-to>
+    </language>
+    <!-- frafra språk i Ghana -->
+    <language lang="fry fy" info="frisisk: språket i Friesland">
+        <map-to lang="nb">frisisk</map-to>
+        <map-to lang="nn">frisisk</map-to>
+        <map-to lang="en">Frisian</map-to>
+        <map-to lang="fra">frison</map-to>
+    </language>
+    <language lang="ful" info="fulfulde: språk i Vest-Afrika">
+        <map-to lang="nb">fulfulde</map-to>
+        <map-to lang="nn">fulfulde</map-to>
+        <map-to lang="en">Fulah</map-to>
+        <map-to lang="fra">peul</map-to>
+    </language>
+    <language lang="fao fo" info="færøysk: språket på Færøyene">
+        <map-to lang="nb">færøysk</map-to>
+        <map-to lang="nn">færøysk</map-to>
+        <map-to lang="en">Faroese</map-to>
+        <map-to lang="fra">féroïen</map-to>
+    </language>
+    <!-- G -->
+    <language lang="gaa" info="ga: språk i Ghana">
+        <map-to lang="nb">ga</map-to>
+        <map-to lang="nn">ga</map-to>
+        <map-to lang="en">Ga</map-to>
+        <map-to lang="fra">ga</map-to>
+    </language>
+    <language lang="glg gl" info="galisisk el. galicisk:	språket i Galicia i Spania">
+        <map-to lang="nb">galisisk</map-to>
+        <map-to lang="nn">galisisk</map-to>
+        <map-to lang="en">gallegan</map-to>
+        <map-to lang="fra">galicien</map-to>
+    </language>
+    <!-- gammelgresk/ -->
+    <language lang="grc" info="gammalgresk: gresk fram til 1453">
+        <map-to lang="nb">gammalgresk</map-to>
+        <map-to lang="nn">gammalgresk</map-to>
+        <map-to lang="en">Ancient Greek</map-to>
+        <map-to lang="fra">grec ancien</map-to>
+    </language>
+    <!-- gammelnorsk/ -->
+    <!-- gammalnorsk norsk i perioden fra ca. 700 til ca. 1370, kalles ofte norrønt -->
+    <!-- gammelprøyssisk/ -->
+    <!-- gammalprøyssisk utdødd baltisk språk -->
+    <language lang="mlg mg" info="gassisk el. madagassisk: språket på Madagaskar">
+        <map-to lang="nb">gassisk</map-to>
+        <map-to lang="nn">gassisk</map-to>
+        <map-to lang="en">Malagasy </map-to>
+        <map-to lang="fra"> malgache</map-to>
+    </language>
+    <language lang="geo/kat ka" info="georgisk: språket i Georgia">
+        <map-to lang="nb">georgisk</map-to>
+        <map-to lang="nn">georgisk</map-to>
+        <map-to lang="en">Georgian</map-to>
+        <map-to lang="fra">géorgien</map-to>
+    </language>
+    <language lang="gem"
+        info="germansk: grein av indoeuropeisk, deles i vestgermansk, østgermansk (med det nå utdøde gotisk) og nordgermansk (= nordisk 1)">
+        <map-to lang="nb">germansk</map-to>
+        <map-to lang="nn">germansk</map-to>
+        <map-to lang="en">germanic</map-to>
+        <map-to lang="fra">langues germaniques</map-to>
+    </language>
+    <!-- giljakisk språk i Russland -->
+    <!-- golde språk i Russland -->
+    <language lang="gon" info="gondi: dravidisk språk i India">
+        <map-to lang="nb">gondi</map-to>
+        <map-to lang="nn">gondi</map-to>
+        <map-to lang="en">Gondi</map-to>
+        <map-to lang="fra">gond</map-to>
+    </language>
+    <language lang="got" info="gotisk: goternes språk">
+        <map-to lang="nb">gotisk</map-to>
+        <map-to lang="nn">gotisk</map-to>
+        <map-to lang="en">Gothic</map-to>
+        <map-to lang="fra">gothique</map-to>
+    </language>
+    <!-- gresk språket i Hellas; kan spesifiseres til gammelgresk eller nygresk -->
+    <language lang="kal kl" info="grønlandsk: språket på Grønland">
+        <map-to lang="nb">grønlandsk</map-to>
+        <map-to lang="nn">grønlandsk</map-to>
+        <map-to lang="en">Kalaallisut</map-to>
+        <map-to lang="fra">groenlandais</map-to>
+    </language>
+    <language lang="grn gn" info="guarani: språk i Paraguay">
+        <map-to lang="nb">guarani</map-to>
+        <map-to lang="nn">guarani</map-to>
+        <map-to lang="en">Guarani</map-to>
+        <map-to lang="fra">guarani</map-to>
+    </language>
+    <language lang="guj gu" info="gujarati: språk i India">
+        <map-to lang="nb">gujarati</map-to>
+        <map-to lang="nn">gujarati</map-to>
+        <map-to lang="en">Gujarati</map-to>
+        <map-to lang="fra">goudjrati</map-to>
+    </language>
+    <!-- gurkhali annet navn på nepali -->
+    <!-- gutnisk gotlandsk språk -->
+    <!-- gælisk fellesbetegnelse for irsk og skotsk-gælisk -->
+    <!-- H -->
+    <language lang="hau ha" info="hausa: språk i Vest-Afrika">
+        <map-to lang="nb">hausa</map-to>
+        <map-to lang="nn">hausa</map-to>
+        <map-to lang="en">Hausa</map-to>
+        <map-to lang="fra">haoussa</map-to>
+    </language>
+    <language lang="heb he" info="hebraisk: språket i Israel">
+        <map-to lang="nb">hebraisk</map-to>
+        <map-to lang="nn">hebraisk</map-to>
+        <map-to lang="en">Hebrew</map-to>
+        <map-to lang="fra">hébreu</map-to>
+    </language>
+    <!-- hettittisk utdødd indoeuropeisk språk; Hittite – hittite -->
+    <language lang="hin hi" info="hindi: språk i Nord-India">
+        <map-to lang="nb">hindi</map-to>
+        <map-to lang="nn">hindi</map-to>
+        <map-to lang="en">hindi</map-to>
+    </language>
+    <!-- (hollandsk) se nederlandsk. -->
+    <language lang="bel be"
+        info="hviterussisk: (bm.) el. kviterussisk (samform)	språket i Hviterussland">
+        <map-to lang="nb">hviterussisk</map-to>
+        <map-to lang="nn">hviterussisk</map-to>
+        <map-to lang="en">Belorusian</map-to>
+        <map-to lang="fra">biélorusse</map-to>
+    </language>
+    <!-- I -->
+    <language lang="ibo" info="ibo: språk i Nigeria">
+        <map-to lang="nb">ibo</map-to>
+        <map-to lang="nn">ibo</map-to>
+        <map-to lang="en">Igbo</map-to>
+        <map-to lang="fra">igbo</map-to>
+    </language>
+    <!-- igala språk i Nigeria -->
+    <!-- indisk samlenavn for flere indoeuropeiske språk -->
+    <language lang="ind id" info="indonesisk: språk og språkfamilie">
+        <map-to lang="nb">indonesisk</map-to>
+        <map-to lang="nn">indonesisk</map-to>
+        <map-to lang="en">Indonesian</map-to>
+        <map-to lang="fra">indonésien</map-to>
+    </language>
+    <!-- indoeuropeisk språkfamilien som de fleste europeiske språka hører til; Indo–European –
+        indo–européen -->
+    <language lang="iku iu"
+        info="inuittisk: språkbetegnelse som svarer til personbetegnelsen inuitt, som nå gjerne brukes i stedet for eskimo (se også eskimoisk)">
+        <map-to lang="nb">inuittisk</map-to>
+        <map-to lang="nn">inuittisk</map-to>
+        <map-to lang="en">Inuktitut</map-to>
+        <map-to lang="fra">inuktitut</map-to>
+    </language>
+    <language lang="ipk ik" info="inupiak: språk i Alaska">
+        <map-to lang="nb">inupiak</map-to>
+        <map-to lang="nn">inupiak</map-to>
+        <map-to lang="en">Inupiaq</map-to>
+        <map-to lang="fra">inupiaq</map-to>
+    </language>
+    <!-- iransk samlenavn for flere indoeuropeiske språk; Iranian – iranien -->
+    <language lang="gle ga" info="irsk: keltisk språk som snakkes i Irland">
+        <map-to lang="nb">irsk</map-to>
+        <map-to lang="nn">irsk</map-to>
+        <map-to lang="en">Irish</map-to>
+        <map-to lang="fra">irlandais</map-to>
+    </language>
+    <language lang="ice/isl is" info="islandsk: språket på Island">
+        <map-to lang="nb">islandsk</map-to>
+        <map-to lang="nn">islandsk</map-to>
+        <map-to lang="en">Icelandic</map-to>
+        <map-to lang="fra">islandais</map-to>
+    </language>
+    <language lang="ita it" info="italiensk: språket i Italia">
+        <map-to lang="nb">italiensk</map-to>
+        <map-to lang="nn">italiensk</map-to>
+        <map-to lang="en">Italian</map-to>
+        <map-to lang="fra">italien</map-to>
+    </language>
+    <!-- italisk oldtidsspråk i Italia, grein av indoeuropeisk med latin som det viktigste
+        enkeltspråket; Italic – italique -->
+    <!-- itelmensk språk i Russland -->
+    <!-- J -->
+    <language lang="jpn ja" info="japansk: språket i Japan">
+        <map-to lang="nb">japansk</map-to>
+        <map-to lang="nn">japansk</map-to>
+        <map-to lang="en">Japanese</map-to>
+        <map-to lang="fra">japonais</map-to>
+    </language>
+    <language lang="yid yi"
+        info="jiddisch: el. jiddisk	blandingsspråk blant jøder i tysktalende deler av Øst–Europa">
+        <map-to lang="nb">jiddisch</map-to>
+        <map-to lang="nn">jiddisch</map-to>
+        <map-to lang="en">Yiddish</map-to>
+        <map-to lang="fra">yiddish</map-to>
+    </language>
+    <language lang="yor yo" info="joruba: språk i Nigeria">
+        <map-to lang="nb">joruba</map-to>
+        <map-to lang="nn">joruba</map-to>
+        <map-to lang="en">Yoruba</map-to>
+        <map-to lang="fra">yoruba</map-to>
+    </language>
+    <!-- jukagirsk språk i Russland -->
+    <!-- K -->
+    <!-- kamtsjadalsk språk i Russland -->
+    <!-- kanaresisk se neste oppslag -->
+    <language lang="kan kn" info="kannada: språk i India, også kalt kanaresisk">
+        <map-to lang="nb">kannada</map-to>
+        <map-to lang="nn">kannada</map-to>
+        <map-to lang="en">Kannada</map-to>
+        <map-to lang="fra">kannada</map-to>
+    </language>
+    <!-- kantonesisk kinesisk språk i provinsen Guangdong; Cantonese – cantonais -->
+    <language lang="kaz kk" info="kasakhisk: språket i Kasakhstan">
+        <map-to lang="nb">kasakhisk</map-to>
+        <map-to lang="nn">kasakhisk</map-to>
+        <map-to lang="en">Kazakh</map-to>
+        <map-to lang="fra">kazakh</map-to>
+    </language>
+    <language lang="kas ks" info="kasjmiri: språket i Kashmir">
+        <map-to lang="nb">kasjmiri</map-to>
+        <map-to lang="nn">kasjmiri</map-to>
+        <map-to lang="en">Kashmiri</map-to>
+        <map-to lang="fra">kashmiri</map-to>
+    </language>
+    <!-- kastiljansk annet navn på det som vanligvis kalles spansk -->
+    <language lang="cat ca" info="katalansk: romansk språk i Catalonia i Spania">
+        <map-to lang="nb">katalansk</map-to>
+        <map-to lang="nn">katalansk</map-to>
+        <map-to lang="en">Catalan</map-to>
+        <map-to lang="fra">catalan</map-to>
+    </language>
+    <!-- keltisk grein av indoeuropeisk; Celtic – celtique -->
+    <!-- kentumspråk gruppe av indoeuropeiske språk -->
+    <!-- ketisk språk i Russland -->
+    <!-- khanti språk i Russland -->
+    <language lang="khm km" info="khmer: språk i Kambodsja">
+        <map-to lang="nb">khmer</map-to>
+        <map-to lang="nn">khmer</map-to>
+        <map-to lang="en">Khmer</map-to>
+        <map-to lang="fra">khmer</map-to>
+    </language>
+    <language lang="chi/zho zh" info="kinesisk: språket i Kina">
+        <map-to lang="nb">kinesisk</map-to>
+        <map-to lang="nn">kinesisk</map-to>
+        <map-to lang="en">Chinese</map-to>
+        <map-to lang="fra">chinois</map-to>
+    </language>
+    <language lang="gil" info="kiribatisk: språket i Kiribati (stat i Stillehavet)">
+        <map-to lang="nb">kiribatisk</map-to>
+        <map-to lang="nn">kiribatisk</map-to>
+        <map-to lang="en">Gilbertese</map-to>
+        <map-to lang="fra">kiribati</map-to>
+    </language>
+    <language lang="chu cu" info="kirkeslavisk: kirkespråk i flere slaviske land">
+        <map-to lang="nb">kirkeslavisk</map-to>
+        <map-to lang="nn">kirkeslavisk</map-to>
+        <map-to lang="en">Church Slavic</map-to>
+        <map-to lang="fra">slavon d’église</map-to>
+    </language>
+    <language lang="kom kv" info="komi: språk i Russland">
+        <map-to lang="nb">komi</map-to>
+        <map-to lang="nn">komi</map-to>
+        <map-to lang="en">Komi</map-to>
+        <map-to lang="fra">komi</map-to>
+    </language>
+    <language lang="kok" info="konkani: språk i India, bl.a. i Goa">
+        <map-to lang="nb">konkani</map-to>
+        <map-to lang="nn">konkani</map-to>
+        <map-to lang="en">Konkani</map-to>
+        <map-to lang="fra">konkani</map-to>
+    </language>
+    <language lang="kor ko" info="koreansk: språket i Korea">
+        <map-to lang="nb">koreansk</map-to>
+        <map-to lang="nn">koreansk</map-to>
+        <map-to lang="en">Korean</map-to>
+        <map-to lang="fra">coréen</map-to>
+    </language>
+    <!-- korjakisk språk i Russland -->
+    <!-- kornisk utdødd keltisk språk i Cornwall i England; Cornish – cornique -->
+    <!-- kreolsk blandingsspråk som har blitt morsmål for ei gruppe mennesker -->
+    <language lang="scr/hrv hr"
+        info="kroatisk: språket i Kroatia (serbokroatisk med latinsk skrift)">
+        <map-to lang="nb">kroatisk</map-to>
+        <map-to lang="nn">kroatisk</map-to>
+        <map-to lang="en">Croatian</map-to>
+        <map-to lang="fra">croate</map-to>
+    </language>
+    <!-- kui språk i India -->
+    <language lang="kur ku" info="kurdisk: kurdernes språk">
+        <map-to lang="nb">kurdisk</map-to>
+        <map-to lang="nn">kurdisk</map-to>
+        <map-to lang="en">Kurdish</map-to>
+        <map-to lang="fra">kurde</map-to>
+    </language>
+    <language lang="fkv" info="kvensk: kvenenes språk">
+        <map-to lang="nb">kvensk</map-to>
+        <map-to lang="nn">kvensk</map-to>
+        <map-to lang="en">Kven</map-to>>
+    </language>
+    <language lang="wel/cym cy" info="kymrisk: el. walisisk	keltisk språk i Wales">
+        <map-to lang="nb">kymrisk</map-to>
+        <map-to lang="nn">kymrisk</map-to>
+        <map-to lang="en">Welsh</map-to>
+        <map-to lang="fra">gallois</map-to>
+    </language>
+    <!-- L -->
+    <!-- ladinsk annet navn på retoromansk -->
+    <!-- lamutisk språk i Russland -->
+    <!-- landsmål fram til 1929 navn på nynorsk 1 -->
+    <language lang="lat la"
+        info="latin: språket i det gamle Romerriket; har romanske språk som datterspråk">
+        <map-to lang="nb">latin</map-to>
+        <map-to lang="nn">latin</map-to>
+        <map-to lang="en">Latin</map-to>
+        <map-to lang="fra">latin</map-to>
+    </language>
+    <language lang="lav lv" info="latvisk: språket i Latvia">
+        <map-to lang="nb">latvisk</map-to>
+        <map-to lang="nn">latvisk</map-to>
+        <map-to lang="en">Latvian</map-to>
+        <map-to lang="fra">lette</map-to>
+    </language>
+    <language lang="lit li" info="litauisk: språket i Litauen">
+        <map-to lang="nb">litauisk</map-to>
+        <map-to lang="nn">litauisk</map-to>
+        <map-to lang="en">Lithuanian</map-to>
+        <map-to lang="fra">lituanien</map-to>
+    </language>
+    <!-- livisk utdøende finskbeslekta språk i Latvia; Livonian – live -->
+    <language lang="luo" info="luo: språk i Kenya og Tanzania">
+        <map-to lang="nb">luo</map-to>
+        <map-to lang="nn">luo</map-to>
+        <map-to lang="en">Luo</map-to>
+        <map-to lang="fra">luo</map-to>
+    </language>
+    <!-- luba språk i Kongo; Luba – luba -->
+    <!-- luoravetlansk språk i Russland -->
+    <language lang="ltz lb"
+        info="luxemb(o)urgsk: betegnelse på det tredje offisielle språket i Luxembourg (vsa. fransk og tysk)">
+        <map-to lang="nb">luxemburgsk</map-to>
+        <map-to lang="nn">luxemburgsk</map-to>
+        <map-to lang="en">Letzeburgesh</map-to>
+        <map-to lang="fra">luxembourgeois</map-to>
+    </language>
+    <!-- lykisk utdødd anatolisk språk; Lycian – lycien -->
+    <!-- M -->
+    <language lang="mlg mg" info="madagassisk: el. gassisk	språket på Madagaskar">
+        <map-to lang="nb">madagassisk</map-to>
+        <map-to lang="nn">madagassisk</map-to>
+        <annet>Malagasy malgache</annet>
+    </language>
+    <language lang="mai bh"
+        info="maithili: språk i delstaten Bihar i India og Terai-regionen i Nepal">
+        <map-to lang="nb">maithili</map-to>
+        <map-to lang="nn">maithili</map-to>
+        <map-to lang="en">Maithili</map-to>
+        <map-to lang="fra">maïthili</map-to>
+    </language>
+    <language lang="mac/mkd mk" info="makedonsk: språket i Makedonia">
+        <map-to lang="nb">makedonsk</map-to>
+        <map-to lang="nn">makedonsk</map-to>
+        <map-to lang="en">Macedonian</map-to>
+        <map-to lang="fra">macédonien</map-to>
+    </language>
+    <language lang="mal ml" info="malayalam: dravidisk språk i delstaten Kerala i India">
+        <map-to lang="nb">malayalam</map-to>
+        <map-to lang="nn">malayalam</map-to>
+        <map-to lang="en">Malayalam</map-to>
+        <map-to lang="fra">malaylam</map-to>
+    </language>
+    <language lang="may/msa ms" info="malayisk: språk i Sørøst-Asia">
+        <map-to lang="nb">malayisk</map-to>
+        <map-to lang="nn">malayisk</map-to>
+        <map-to lang="en">Malay</map-to>
+        <map-to lang="fra">malais</map-to>
+    </language>
+    <language lang="mlt mt" info="maltesisk: språket på Malta">
+        <map-to lang="nb">maltesisk</map-to>
+        <map-to lang="nn">maltesisk</map-to>
+        <map-to lang="en">Maltese</map-to>
+        <map-to lang="fra">maltais</map-to>
+    </language>
+    <!-- mampruli språk i Ghana og Togo -->
+    <!-- mandeisk utdødd semittisk språk -->
+    <language lang="mnc" info="mandsju: tungusisk språk i Kina">
+        <map-to lang="nb">mandsju</map-to>
+        <map-to lang="nn">mandsju</map-to>
+        <map-to lang="en">Manchu</map-to>
+        <map-to lang="fra">mandschou</map-to>
+    </language>
+    <!-- mansi språk i Russland -->
+    <language lang="glv gv" info="manx: utdødd keltisk språk på Man">
+        <map-to lang="nb">manx</map-to>
+        <map-to lang="nn">manx</map-to>
+        <map-to lang="en">Manx</map-to>
+        <map-to lang="fra">manx</map-to>
+    </language>
+    <language lang="mao/mri mi" info="maori: språk på New Zealand">
+        <map-to lang="nb">maori</map-to>
+        <map-to lang="nn">maori</map-to>
+        <map-to lang="en">Maori</map-to>
+        <map-to lang="fra">maori</map-to>
+    </language>
+    
+    <language lang="mar mr" info="marathi: språk i India">
+        <map-to lang="nb">marathi</map-to>
+        <map-to lang="nn">marathi</map-to>
+        <map-to lang="en">Marathi</map-to>
+        <map-to lang="fra">marate</map-to>
+    </language>
+    
+    <language lang="mah mh" info="marshallesisk: språk på Marshalløyene">
+        <map-to lang="nb">marshallesisk</map-to>
+        <map-to lang="nn">marshallesisk</map-to>
+        <map-to lang="en">Marshall</map-to>
+        <map-to lang="fra">marshall</map-to>
+    </language>
+    <language lang="mas" info="masai: språk i Kenya og Tanzania">
+        <map-to lang="nb">masai</map-to>
+        <map-to lang="nn">masai</map-to>
+        <map-to lang="en">Masai</map-to>
+        <map-to lang="fra">massaï</map-to>
+    </language>
+    <!-- mellomnorsk norsk i perioden fra ca. 1370 til ca. 1525 -->
+    <!-- mixtek språk i Mexico; Mixteco – mistek -->
+    <language lang="mon mn" info="mongolsk: språket i Mongolia">
+        <map-to lang="nb">mongolsk</map-to>
+        <map-to lang="nn">mongolsk</map-to>
+        <map-to lang="en">Mongolian</map-to>
+        <map-to lang="fra">mongol</map-to>
+    </language>
+    <language lang="mun" info="munda: språkfamilie i India">
+        <map-to lang="nb">munda</map-to>
+        <map-to lang="nn">munda</map-to>
+        <map-to lang="en">Munda</map-to>
+        <map-to lang="fra">mounda</map-to>
+    </language>
+    <!-- N -->
+    <!-- nanaiisk språk i Russland -->
+    <language lang="dut/nld nl" info="nederlandsk: språk i Nederland og Belgia">
+        <map-to lang="nb">nederlandsk</map-to>
+        <map-to lang="nn">nederlandsk</map-to>
+        <map-to lang="en">Dutch</map-to>
+        <map-to lang="fra">néerlandais</map-to>
+    </language>
+    <!-- negidalsk språk i Russland -->
+    <!-- nenetsisk språk i Russland -->
+    <language lang="nep ne" info="nepali: språket i Nepal; se også gurkhali">
+        <map-to lang="nb">nepali</map-to>
+        <map-to lang="nn">nepali</map-to>
+        <map-to lang="en">Nepali</map-to>
+        <map-to lang="fra">népalais</map-to>
+    </language>
+    <!-- nganasansk språk i Russland -->
+    <!-- nivkhisk språk i Russland -->
+    <!-- nordisk 1 i språkvitenskapen = nordgermansk, dvs. språkene dansk, færøysk, islandsk, norsk og
+        svensk -->
+    <!-- nordisk 2 = lik språkene i Norden, dvs. språkene ovafor pluss finsk, grønlandsk og samisk i
+        tillegg -->
+    <language lang="non"
+        info="norrønt: samlebetegnelse for ganmmelnorsk, gammelfærøysk og gammelislandsk">
+        <map-to lang="nb">norrønt</map-to>
+        <map-to lang="nn">norrønt</map-to>
+        <map-to lang="en">Old Norse</map-to>
+        <map-to lang="fra">vieux norrois</map-to>
+    </language>
+    <language lang="nor no" info="norsk: språket i Norge; se også bokmål og nynorsk">
+        <map-to lang="nb">norsk</map-to>
+        <map-to lang="nn">norsk</map-to>
+        <map-to lang="en">Norwegian</map-to>
+        <map-to lang="fra">norvégien</map-to>
+    </language>
+    <!-- nymylani språk i Russland -->
+    <language lang="nno nn"
+        info="nynorsk: 1	den ene av de to offisielle skriftformene i moderne norsk; nynorsk er også tilrådd av Språkrådet som betegnelse i andre språk">
+        <map-to lang="nb">nynorsk</map-to>
+        <map-to lang="nn">nynorsk</map-to>
+        <map-to lang="en">Norwegian Nynorsk</map-to>
+        <map-to lang="fra">norvégien nynorsk</map-to>
+    </language>
+    <!-- nynorsk 2 norsk i tida etter ca. 1525 -->
+    <!-- O -->
+    <language lang="oci oc" info="oksitansk: el. provençalsk	språk i Sør-Frankrike">
+        <map-to lang="nb">oksitansk</map-to>
+        <map-to lang="nn">oksitansk</map-to>
+        <map-to lang="en">Occitan/Provençal</map-to>
+        <map-to lang="fra">occitan/provençal</map-to>
+    </language>
+    <language lang="ori or" info="oriya: språk i delstaten Orissa i India">
+        <map-to lang="nb">oriya</map-to>
+        <map-to lang="nn">oriya</map-to>
+        <map-to lang="en">Oriya</map-to>
+        <map-to lang="fra">oriya</map-to>
+    </language>
+    <!-- orokisk språk i Russland -->
+    <language lang="orm om" info="oromo: språk i Etiopia">
+        <map-to lang="nb">oromo</map-to>
+        <map-to lang="nn">oromo</map-to>
+        <map-to lang="en">Oromo</map-to>
+        <map-to lang="fra">galla</map-to>
+    </language>
+    <!-- orotsjisk språk i Russland -->
+    <!-- oshiwambo språk i Namibia og Angola -->
+    <language lang="oss os" info="ossetisk: språk i Kaukasus">
+        <map-to lang="nb">ossetisk</map-to>
+        <map-to lang="nn">ossetisk</map-to>
+        <map-to lang="en">Ossetic</map-to>
+        <map-to lang="fra">ossète</map-to>
+    </language>
+    <!-- P -->
+    <language lang="pli pi" info="pali: buddhistisk religiøst språk">
+        <map-to lang="nb">pali</map-to>
+        <map-to lang="nn">pali</map-to>
+        <map-to lang="en">Pali</map-to>
+        <map-to lang="fra">pali</map-to>
+    </language>
+    <language lang="pan pa" info="panjabi: språk i India og Pakistan">
+        <map-to lang="nb">panjabi</map-to>
+        <map-to lang="nn">panjabi</map-to>
+        <map-to lang="en">Panjabi</map-to>
+        <map-to lang="fra">pendjabi</map-to>
+    </language>
+    <language lang="pap" info="papiamento: språk i Vestindia">
+        <map-to lang="nb">papiamento</map-to>
+        <map-to lang="nn">papiamento</map-to>
+        <map-to lang="en">Papiamento</map-to>
+        <map-to lang="fra">papiamento</map-to>
+    </language>
+    <language lang="pus ps" info="pashto: språk i Afghanistan og Pakistan">
+        <map-to lang="nb">pashto</map-to>
+        <map-to lang="nn">pashto</map-to>
+        <map-to lang="en">Pushto</map-to>
+        <map-to lang="fra">pachto</map-to>
+    </language>
+    <!-- permisk språk i Russland -->
+    <!-- persisk se farsi -->
+    <language lang="pol pl" info="polsk: språket i Polen">
+        <map-to lang="nb">polsk</map-to>
+        <map-to lang="nn">polsk</map-to>
+        <map-to lang="en">Polish</map-to>
+        <map-to lang="fra">polonais</map-to>
+    </language>
+    <language lang="pon" info="ponapisk: språket på Pohnpei (øy i Stillehavet)">
+        <map-to lang="nb">ponapisk</map-to>
+        <map-to lang="nn">ponapisk</map-to>
+        <map-to lang="en">Pohnpeian</map-to>
+        <map-to lang="fra">pohnpei</map-to>
+    </language>
+    <language lang="por pt" info="portugisisk: språket i Portugal og Brasil">
+        <map-to lang="nb">portugisisk</map-to>
+        <map-to lang="nn">portugisisk</map-to>
+        <map-to lang="en">Portuguese</map-to>
+        <map-to lang="fra">portugais</map-to>
+    </language>
+    <language lang="pra" info="prakrit: fellesbetegnelse på mellomindiske språk">
+        <map-to lang="nb">prakrit</map-to>
+        <map-to lang="nn">prakrit</map-to>
+        <map-to lang="en">Prakrit</map-to>
+        <map-to lang="fra">prâkrit</map-to>
+    </language>
+    <language lang="oci oc" info="provençalsk: el. oksitansk	språk i Sør-Frankrike">
+        <map-to lang="nb">provençalsk</map-to>
+        <map-to lang="nn">provençalsk</map-to>
+        <map-to lang="en">Provençal/Occitan</map-to>
+        <map-to lang="fra">provençal/occitan</map-to>
+    </language>
+    <!-- Q -->
+    <language lang="que qu" info="quechua: indianerspråk i Sør-Amerika">
+        <map-to lang="nb">quechua</map-to>
+        <map-to lang="nn">quechua</map-to>
+        <map-to lang="en">Quechua</map-to>
+        <map-to lang="fra">quechua</map-to>
+    </language>
+    <!-- R -->
+    <language lang="raj" info="rajasthani: språk i delstaten Rajasthani, India">
+        <map-to lang="nb">rajasthani</map-to>
+        <map-to lang="nn">rajasthani</map-to>
+        <map-to lang="en">Rajasthani</map-to>
+        <map-to lang="fra">rajasthani</map-to>
+    </language>
+    <language lang="roh rm" info="retoromansk: språk i Sveits og Nord–Italia">
+        <map-to lang="nb">retoromansk</map-to>
+        <map-to lang="nn">retoromansk</map-to>
+        <map-to lang="en">Raeto–Romance</map-to>
+        <map-to lang="fra">rhéto–roman</map-to>
+    </language>
+    <!-- riff berbisk språk/dialekt i Marokko -->
+    <!-- riksmål fram til 1929 navn på bokmål -->
+    <!-- romanes sigøynerspråk i Norge og Sverige -->
+    <language lang="rom" info="romani: sigøynerspråk generelt, taterspråk">
+        <map-to lang="nb">romani</map-to>
+        <map-to lang="nn">romani</map-to>
+        <map-to lang="en">Romany</map-to>
+        <map-to lang="fra">tsigane</map-to>
+    </language>
+    <language lang="roa" info="romansk: samlenavn for datterspråk av latin">
+        <map-to lang="nb">romansk</map-to>
+        <map-to lang="nn">romansk</map-to>
+        <map-to lang="en">Romance languages</map-to>
+        <map-to lang="fra">langues romanes</map-to>
+    </language>
+    <language lang="rum/ron ro" info="rumensk: språket i Romania">
+        <map-to lang="nb">rumensk</map-to>
+        <map-to lang="nn">rumensk</map-to>
+        <map-to lang="en">Romanian</map-to>
+        <map-to lang="fra">roumain</map-to>
+    </language>
+    <!-- rusinsk språk i Vojvodina i Jugoslavia; Rusinian -->
+    <language lang="rus ru" info="russisk: språket i Russland">
+        <map-to lang="nb">russisk</map-to>
+        <map-to lang="nn">russisk</map-to>
+        <map-to lang="en">Russian</map-to>
+        <map-to lang="fra">russe</map-to>
+    </language>
+    <!-- S -->
+    <!-- sakha språk i Russland -->
+    <!-- samisk samenes språk; Sami – sami -->
+    <language lang="smo sm" info="samoansk: språket på Samoa">
+        <map-to lang="nb">samoansk</map-to>
+        <map-to lang="nn">samoansk</map-to>
+        <map-to lang="en">Samoan</map-to>
+        <map-to lang="fra">samoan</map-to>
+    </language>
+    <!-- samojedisk en rekke språk i Russland, grein av uralsk; Samoyedic – samoyède -->
+    <language lang="san sa" info="sanskrit: indernes gamle hellige språk">
+        <map-to lang="nb">sanskrit</map-to>
+        <map-to lang="nn">sanskrit</map-to>
+        <map-to lang="en">Sanskrit</map-to>
+        <map-to lang="fra">sanskrit</map-to>
+    </language>
+    <language lang="sat" info="santali: språk i Bangladesh og Nord-India">
+        <map-to lang="nb">santali</map-to>
+        <map-to lang="nn">santali</map-to>
+        <map-to lang="en">Santali</map-to>
+        <map-to lang="fra">santal</map-to>
+    </language>
+    <language lang="srd sc" info="sardisk: språket på Sardinia">
+        <map-to lang="nb">sardisk</map-to>
+        <map-to lang="nn">sardisk</map-to>
+        <map-to lang="en">Sardinian</map-to>
+        <map-to lang="fra">sarde</map-to>
+    </language>
+    <!-- satemspråk gruppe av indoeuropeiske språk -->
+    <!-- selkupisk språk i Russland -->
+    <language lang="sem" info="semittisk: språkgruppe i Nord-Afrika og Midtøsten">
+        <map-to lang="nb">semittisk</map-to>
+        <map-to lang="nn">semittisk</map-to>
+        <map-to lang="en">Semitic</map-to>
+        <map-to lang="fra">sémitique</map-to>
+    </language>
+    <language lang="scc srp"
+        info="serbisk: språket i Serbia og Montenegro (serbokroatisk med kyrillisk skrift)">
+        <map-to lang="nb">serbisk</map-to>
+        <map-to lang="nn">serbisk</map-to>
+        <map-to lang="en">Serbian</map-to>
+        <map-to lang="fra">serbe</map-to>
+    </language>
+    <!-- serbokroatisk tradisjonell betegnelse på serbisk og kroatisk -->
+    <language lang="tsn tn"
+        info="setswana: bantuspråk som tales i Botswana, Namibia, Sør-Afrika og Zimbabwe">
+        <map-to lang="nb">setswana</map-to>
+        <map-to lang="nn">setswana</map-to>
+        <map-to lang="en">Tswana</map-to>
+        <map-to lang="fra">tswana</map-to>
+    </language>
+    <language lang="sna sn" info="shona: språk i Zimbabwe">
+        <map-to lang="nb">shona</map-to>
+        <map-to lang="nn">shona</map-to>
+        <map-to lang="en">Shona</map-to>
+        <map-to lang="fra">shona</map-to>
+    </language>
+    <language lang="sin si" info="singalesisk: offisielt språk på Sri Lanka">
+        <map-to lang="nb">singalesisk</map-to>
+        <map-to lang="nn">singalesisk</map-to>
+        <map-to lang="en">Sinhalese</map-to>
+        <map-to lang="fra">singhalais</map-to>
+    </language>
+    <!-- sinittisk grein av sino-tibetansk, omfatter blant annet kinesisk -->
+    <language lang="sit" info="sino–tibetansk: språkfamilie i Asia">
+        <map-to lang="nb">sino–tibetansk</map-to>
+        <map-to lang="nn">sino–tibetansk</map-to>
+        <map-to lang="en">Sino-Tibetan</map-to>
+        <map-to lang="fra">sino-tibétaine</map-to>
+    </language>
+    <language lang="sio" info="sioux: gruppe av nordamerikanske indianerspråk">
+        <map-to lang="nb">sioux</map-to>
+        <map-to lang="nn">sioux</map-to>
+        <map-to lang="en">Siouan</map-to>
+        <map-to lang="fra">sioux</map-to>
+    </language>
+    <!-- skotsk-gælisk keltisk språk i Skottland -->
+    <language lang="sla"
+        info="slavisk: grein av indoeuropeisk, omfatter østslavisk, vestslavisk og sørslavisk">
+        <map-to lang="nb">slavisk</map-to>
+        <map-to lang="nn">slavisk</map-to>
+        <map-to lang="en">slavic</map-to>
+        <map-to lang="fra">slave</map-to>
+    </language>
+    <language lang="slo/slk sk" info="slovakisk: språket i Slovakia">
+        <map-to lang="nb">slovakisk</map-to>
+        <map-to lang="nn">slovakisk</map-to>
+        <map-to lang="en">Slovak</map-to>
+        <map-to lang="fra">slovaque</map-to>
+    </language>
+    <language lang="slv sl" info="slovensk: språket i Slovenia">
+        <map-to lang="nb">slovensk</map-to>
+        <map-to lang="nn">slovensk</map-to>
+        <map-to lang="en">Slovenian</map-to>
+        <map-to lang="fra">slovène</map-to>
+    </language>
+    <language lang="som so" info="somali: språket i Somalia">
+        <map-to lang="nb">somali</map-to>
+        <map-to lang="nn">somali</map-to>
+        <map-to lang="en">Somali</map-to>
+        <map-to lang="fra">somali</map-to>
+    </language>
+    <language lang="wen"
+        info="sorbisk: vestslaviske språk (høysorbisk og lavsorbisk) i det østlige Tyskland">
+        <map-to lang="nb">sorbisk</map-to>
+        <map-to lang="nn">sorbisk</map-to>
+        <map-to lang="en">Sorbian languages</map-to>
+        <map-to lang="fra">langues sorabe</map-to>
+    </language>
+    <!-- sotho språket i Lesotho; Sotho – sotho -->
+    <language lang="spa es" info="spansk: språket i Spania og Latin-Amerika minus Brasil">
+        <map-to lang="nb">spansk</map-to>
+        <map-to lang="nn">spansk</map-to>
+        <map-to lang="en">Spanish</map-to>
+        <map-to lang="fra">espagnol</map-to>
+    </language>
+    <language lang="sux" info="sumerisk: språket i det gamle Mesopotamia">
+        <map-to lang="nb">sumerisk</map-to>
+        <map-to lang="nn">sumerisk</map-to>
+        <map-to lang="en">Sumerian</map-to>
+        <map-to lang="fra">sumérien</map-to>
+    </language>
+    <language lang="swe se" info="svensk: språket i Sverige; også offisielt språk i Finland">
+        <map-to lang="nb">svensk</map-to>
+        <map-to lang="nn">svensk</map-to>
+        <map-to lang="en">Swedish</map-to>
+        <map-to lang="fra">suédois</map-to>
+    </language>
+    <language lang="swa sw" info="swahili: bantuspråk i Øst-Afrika">
+        <map-to lang="nb">swahili</map-to>
+        <map-to lang="nn">swahili</map-to>
+        <map-to lang="en">Swahili</map-to>
+        <map-to lang="fra">swahili</map-to>
+    </language>
+    <!-- syrjensk språk i Russland, annet navn på komi -->
+    <!-- T -->
+    <language lang="tgk tg" info="tadsjikisk: språket i Tadsjikistan">
+        <map-to lang="nb">tadsjikisk</map-to>
+        <map-to lang="nn">tadsjikisk</map-to>
+        <map-to lang="en">Tajik</map-to>
+        <map-to lang="fra">tadjik</map-to>
+    </language>
+    <language lang="tgl tl"
+        info="tagalog: offisielt språk på Filippinene; annet navn på filipino, som er den offisielle betegnelsen">
+        <map-to lang="nb">tagalog</map-to>
+        <map-to lang="nn">tagalog</map-to>
+        <map-to lang="en">Tagalog</map-to>
+        <map-to lang="fra">tagalog</map-to>
+    </language>
+    <language lang="tah ty" info="tahitisk: språket på Tahiti">
+        <map-to lang="nb">tahitisk</map-to>
+        <map-to lang="nn">tahitisk</map-to>
+        <map-to lang="en">Tahitian</map-to>
+        <map-to lang="fra">tahitien</map-to>
+    </language>
+    <language lang="tai" info="tai: språkgruppe i Sørøst–Asia">
+        <map-to lang="nb">tai</map-to>
+        <map-to lang="nn">tai</map-to>
+        <map-to lang="en">Tai</map-to>
+        <map-to lang="fra">langues thaïes</map-to>
+    </language>
+    <language lang="tam ta" info="tamil: språk i Tamil Nadu i India og på Sri Lanka">
+        <map-to lang="nb">tamil</map-to>
+        <map-to lang="nn">tamil</map-to>
+        <map-to lang="en">Tamil</map-to>
+        <map-to lang="fra">tamoul</map-to>
+    </language>
+    <language lang="tat tt" info="tatarisk: språk i Russland">
+        <map-to lang="nb">tatarisk</map-to>
+        <map-to lang="nn">tatarisk</map-to>
+        <map-to lang="en">Tatar</map-to>
+        <map-to lang="fra">tatar</map-to>
+    </language>
+    <language lang="tel te" info="telugu: språk i India">
+        <map-to lang="nb">telugu</map-to>
+        <map-to lang="nn">telugu</map-to>
+        <map-to lang="en">Telugu</map-to>
+        <map-to lang="fra">télougou</map-to>
+    </language>
+    <language lang="tha th" info="thai: språket i Thailand">
+        <map-to lang="nb">thai</map-to>
+        <map-to lang="nn">thai</map-to>
+        <map-to lang="en">Thai</map-to>
+        <map-to lang="fra">thaï</map-to>
+    </language>
+    <!-- tibeto-burmansk grein av den sino-tibetanske språkfamilien -->
+    <language lang="tig" info="tigré: språk i Etiopia">
+        <map-to lang="nb">tigré</map-to>
+        <map-to lang="nn">tigré</map-to>
+        <map-to lang="en">Tigre</map-to>
+        <map-to lang="fra">tigré</map-to>
+    </language>
+    <language lang="tir ti" info="tigrinja: språk i Etiopia og Eritrea">
+        <map-to lang="nb">tigrinja</map-to>
+        <map-to lang="nn">tigrinja</map-to>
+        <map-to lang="en">Tigrinya</map-to>
+        <map-to lang="fra">tigrigna</map-to>
+    </language>
+    <!-- tofalarisk språk i Russland -->
+    <!-- tokarisk utdødd indoeuropeisk språk i Kina -->
+    <language lang="cze/ces cs" info="tsjekkisk: språket i Tsjekkia">
+        <map-to lang="nb">tsjekkisk</map-to>
+        <map-to lang="nn">tsjekkisk</map-to>
+        <map-to lang="en">Czech</map-to>
+        <map-to lang="fra">tchèque</map-to>
+    </language>
+    <!-- tsjuvansk språk i Russland -->
+    <language lang="tso ts" info="tsonga: språk i Mosambik og Sør–Afrika">
+        <map-to lang="nb">tsonga</map-to>
+        <map-to lang="nn">tsonga</map-to>
+        <map-to lang="en">Tsonga</map-to>
+        <map-to lang="fra">tsonga</map-to>
+    </language>
+    <!-- tubalarisk språk i Russland -->
+    <!-- tulu dravidisk språk i India; Tulu – toulou -->
+    <!-- tungusisk språk i Sibir og i Kina; Tungusic – toungouze -->
+    <language lang="tuk tk" info="turkmensk: språket i Turkmenistan">
+        <map-to lang="nb">turkmensk</map-to>
+        <map-to lang="nn">turkmensk</map-to>
+        <map-to lang="en">Turkmen</map-to>
+        <map-to lang="fra">turkmène</map-to>
+    </language>
+    <!-- turkotatarisk språkfamilie i Asia; Turkic languages– langues turques -->
+    <language lang="tur tr" info="tyrkisk: 1	hovedspråket i Tyrkia">
+        <map-to lang="nb">tyrkisk</map-to>
+        <map-to lang="nn">tyrkisk</map-to>
+        <map-to lang="en">Turkish</map-to>
+        <map-to lang="fra">turc</map-to>
+    </language>
+    <!-- tyrkisk 2 = turkotatarisk -->
+    <language lang="ger/deu de" info="tysk: språk i Tyskland, Østerrike og Sveits">
+        <map-to lang="nb">tysk</map-to>
+        <map-to lang="nn">tysk</map-to>
+        <map-to lang="en">German</map-to>
+        <map-to lang="fra">allemand</map-to>
+    </language>
+    <!-- U -->
+    <!-- udegejsk språk i Russland -->
+    <language lang="uig ug" info="uigurisk: tyrkisk språk i Kasakhstan">
+        <map-to lang="nb">uigurisk</map-to>
+        <map-to lang="nn">uigurisk</map-to>
+        <map-to lang="en">Uighur</map-to>
+        <map-to lang="fra">ouïgour</map-to>
+    </language>
+    <language lang="ukr uk" info="ukrainsk: språket i Ukraina">
+        <map-to lang="nb">ukrainsk</map-to>
+        <map-to lang="nn">ukrainsk</map-to>
+        <map-to lang="en">Ukrainian</map-to>
+        <map-to lang="fra">ukrainien</map-to>
+    </language>
+    <!-- ultsjisk språk i Russland -->
+    <language lang="hun hu" info="ungarsk: språket i Ungarn">
+        <map-to lang="nb">ungarsk</map-to>
+        <map-to lang="nn">ungarsk</map-to>
+        <map-to lang="en">Hungarian</map-to>
+        <map-to lang="fra">hongrois</map-to>
+    </language>
+    <!-- uralsk språkfamilie i Europa og Asia, med greinene finsk–ugrisk og samojedisk; Uralic
+        languages – langues ouraliennes -->
+    <language lang="urd ur" info="urdu: språk i Pakistan og India">
+        <map-to lang="nb">urdu</map-to>
+        <map-to lang="nn">urdu</map-to>
+        <map-to lang="en">Urdu</map-to>
+        <map-to lang="fra">ourdou</map-to>
+    </language>
+    <!-- urnordisk nordisk 1 fram til ca. 700 -->
+    <language lang="uzb uz" info="usbekisk: språket i Usbekistan">
+        <map-to lang="nb">usbekisk</map-to>
+        <map-to lang="nn">usbekisk</map-to>
+        <map-to lang="en">Uzbek</map-to>
+        <map-to lang="fra">ouzbek</map-to>
+    </language>
+    <!-- V -->
+    <language lang="vie vi" info="vietnamesisk: språket i Vietnam">
+        <map-to lang="nb">vietnamesisk</map-to>
+        <map-to lang="nn">vietnamesisk</map-to>
+        <map-to lang="en">Vietnamese</map-to>
+        <map-to lang="fra">vietnamien</map-to>
+    </language>
+    <language lang="vol vo" info="volapyk: internasjonalt hjelpespråk">
+        <map-to lang="nb">volapyk</map-to>
+        <map-to lang="nn">volapyk</map-to>
+        <map-to lang="en">Volapük</map-to>
+        <map-to lang="fra">volapük</map-to>
+    </language>
+    <!-- W -->
+    <language lang="wel/cym cy" info="walisisk: el. kymrisk	keltisk språk i Wales">
+        <map-to lang="nb">walisisk</map-to>
+        <map-to lang="nn">walisisk</map-to>
+        <map-to lang="en">Welsh</map-to>
+        <map-to lang="fra">gallois</map-to>
+    </language>
+    <language lang="wol wo" info="wolof: språk i Gambia og Senegal">
+        <map-to lang="nb">wolof</map-to>
+        <map-to lang="nn">wolof</map-to>
+        <map-to lang="en">Wolof</map-to>
+        <map-to lang="fra">wolof</map-to>
+    </language>
+    <!-- X -->
+    <language lang="xho xh" info="xhosa: bantuspråk i det sørlige Afrika">
+        <map-to lang="nb">xhosa</map-to>
+        <map-to lang="nn">xhosa</map-to>
+        <map-to lang="en">Xhosa</map-to>
+        <map-to lang="fra">xhosa</map-to>
+    </language>
+    <!-- Y -->
+    <!-- yao språk i Malawi, Tanzania og Mosambik -->
+    <!-- yao språk i Kina og Vietnam -->
+    <!-- yapesisk språket på øya Yap i Mikronesia; Yapese -->
+    <!-- Z -->
+    <language lang="zul zu" info="zulu: bantuspråk i det sørlige Afrika">
+        <map-to lang="nb">zulu</map-to>
+        <map-to lang="nn">zulu</map-to>
+        <map-to lang="en">Zulu</map-to>
+        <map-to lang="fra">zoulou</map-to>
+    </language>
+    <!--   -->
+</languages>
