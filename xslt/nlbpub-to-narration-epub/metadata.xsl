@@ -12,8 +12,11 @@
         
         Per Sennels, 14.02.2018
     -->
-    <!--<xsl:variable name="metadata" as="element()*" select="//meta"/>-->
-    <xsl:variable name="metadata" as="element()*" select="doc($metadata.url)//meta"/>
+    
+    <!-- For kjøring i produksjonssystemet -->
+    <xsl:variable name="metadata" as="element()*" select="//meta"/>
+    <!-- For kjøring på lokal PC -->
+    <!--<xsl:variable name="metadata" as="element()*" select="doc($metadata.url)//meta"/>-->
 
     <!-- Antar her at boken er oversatt, HVIS OG BARE HVIS følgende metadata er gitt: 'dc:language.original' og 'dc:title.original'  -->
     <xsl:variable name="boken.er-oversatt" as="xs:boolean"

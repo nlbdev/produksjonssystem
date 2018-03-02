@@ -33,14 +33,15 @@
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 
+    <!-- Brukes bare for kjøring på lokal PC -->
     <xsl:variable name="ID" as="xs:string" select="replace(document-uri(/),'^.+/(.+?)\.xhtml$','$1')"/>
-    
     <xsl:variable name="metadata.url" as="xs:string" select="concat(replace(document-uri(.),'^(.+/Arkiv/).+$','$1'),'metadata/',$ID,'/metadata-daisy202.html')"/>
 
     <xsl:template match="/">
-        <xsl:message>prepare-for-narration.xsl (1.0.2 / 2018-03-02)</xsl:message>
-        <xsl:message><xsl:text>* ID: </xsl:text><xsl:value-of select="$ID"/></xsl:message>
-        <xsl:message><xsl:text>* Henter metadata fra </xsl:text><xsl:value-of select="$metadata.url"/></xsl:message>
+        <xsl:message>prepare-for-narration.xsl (1.0.3 / 2018-03-02)</xsl:message>
+        
+        <!--<xsl:message><xsl:text>* ID: </xsl:text><xsl:value-of select="$ID"/></xsl:message>
+        <xsl:message><xsl:text>* Henter metadata fra </xsl:text><xsl:value-of select="$metadata.url"/></xsl:message>-->
         
         <!-- Denne er mest for debugging. Kan kanskje fjernes på sikt, og da kan man slette filen logg.xsl -->
         <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
