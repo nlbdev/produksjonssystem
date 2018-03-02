@@ -32,4 +32,34 @@
         </rule>
     </pattern>
     
+    <pattern>
+        <title>Forlag</title>
+        
+        <rule context="marcxchange:record[marcxchange:controlfield[@tag='001']/substring(text(),1,1) = ('1','2','3','4','6','7','8','9')]">
+            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='a']">Utgivelsessted for utgaven må være definert i *260$a</assert>
+            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='b']">Forlag for utgaven må være definert i *260$b</assert>
+            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">Utgivelsesår for utgaven må være definert i *260$c</assert>
+            <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a</assert>
+        </rule>
+        
+        <rule context="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">
+            <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISBN i *020$a kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
+        </rule>
+    </pattern>
+    
+    <pattern>
+        <title>Originalforlag</title>
+        
+        <rule context="marcxchange:record[marcxchange:controlfield[@tag='001']/substring(text(),1,1) = ('1','2','3','4','6','7','8','9')]">
+            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='a']">Utgivelsessted for originalen må være definert i *596$a</assert>
+            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='b']">Forlag for originalen må være definert i *596$b</assert>
+            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">Utgivelsesår for originalen må være definert i *596$c</assert>
+            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">ISBN for originalen må være definert i *596$f</assert>
+        </rule>
+        
+        <rule context="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
+            <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISBN i *596$f kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
+        </rule>
+    </pattern>
+    
 </schema>
