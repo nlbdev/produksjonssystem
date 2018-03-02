@@ -1168,7 +1168,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:ID="creativeWork_1355170780100_d1e1">
                     <rdf:type rdf:resource="http://schema.org/CreativeWork" />
-                    <dc:title nlb:metadata-source="Bibliofil@624594 *245$a">Vi menn</dc:title>
+                    <dc:title nlb:metadata-source="Bibliofil@624594 *245$a">Vi menn 07/2018</dc:title>
                     <dc:language nlb:metadata-source="Bibliofil@624594 *008">nob</dc:language>
                     <dc:contributor.editor nlb:metadata-source="Bibliofil@624594 *700"
                         schema:name="Øystå, Alexender">
@@ -1561,7 +1561,7 @@
                      xmlns:nordic="http://www.mtm.se/epub/">
                 <rdf:Description rdf:about="urn:isbn:03328457">
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
-                    <dc:title nlb:metadata-source="Bibliofil@624592 *245$a">Spesialpedagogikk</dc:title>
+                    <dc:title nlb:metadata-source="Bibliofil@624592 *245$a">Spesialpedagogikk 04/2018</dc:title>
                     <dc:language nlb:metadata-source="Bibliofil@624592 *008">nob</dc:language>
                     <dc:contributor.editor nlb:metadata-source="Bibliofil@624592 *700"
                         schema:name="Ruud, Ellen B.">
