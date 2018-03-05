@@ -46,6 +46,9 @@ class Pipeline():
     # This one is meant for use in static contexts (Pipeline.dirs[uid][in|out|reports|trigger])
     dirs = None
     
+    # Other configuration
+    config = None
+    
     # constants (set during instantiation)
     shouldHandleBooks = True
     _inactivity_timeout = 10
@@ -75,7 +78,7 @@ class Pipeline():
         logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
         super().__init__()
     
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
         
         if not dir_in:
@@ -121,6 +124,7 @@ class Pipeline():
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
         self.dir_base = str(os.path.normpath(dir_base)) + '/'
         self.email_settings = email_settings
+        type(self).config = config if config else {}
         
         # make dirs available from static contexts
         if not Pipeline.dirs:
@@ -166,11 +170,11 @@ class Pipeline():
         self._queue = []
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
-    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None):
+    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
         """
         Run in a blocking manner (useful from command line)
         """
-        self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings, dir_base)
+        self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings, dir_base, config)
         try:
             while self._shouldRun:
                 if not os.path.isdir(self.dir_in):
@@ -183,7 +187,7 @@ class Pipeline():
                         
                 if not self._dirInAvailable and os.path.isdir(self.dir_in):
                     logging.info("[" + Report.thread_name() + "] " + self.dir_in + " is available again. Start watching...")
-                    self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base)
+                    self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
                 
                 time.sleep(1)
                 

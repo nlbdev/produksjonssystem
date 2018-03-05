@@ -94,12 +94,13 @@ for d in dirs:
 
 # Make sure that the pipelines are defined properly
 for pipeline in pipelines:
-    assert len(pipeline) == 5, "Pipeline declarations have four arguments (not " + len(pipeline) + ")"
+    assert len(pipeline) == 5 or len(pipeline) == 6, "Pipeline declarations have five or six arguments (not " + len(pipeline) + ")"
     assert isinstance(pipeline[0], Pipeline), "The first argument of a pipeline declaration must be a pipeline instance"
     assert isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string"
     assert isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string"
     assert isinstance(pipeline[3], str), "The fourth argument of a pipeline declaration must be a string"
     assert isinstance(pipeline[4], list), "The fifth argument of a pipeline declaration must be a list"
+    assert len(pipeline) <= 5 or isinstance(pipeline[5], dict), "The sixth argument of a pipelie, if present, must be a dict"
     assert pipeline[1] in dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must refer to a key in \"dirs\""
     assert pipeline[2] in dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must refer to a key in \"dirs\""
     assert pipeline[3] in dirs, "The fourth argument of a pipeline declaration (\"" + str(pipeline[3]) + "\") must refer to a key in \"dirs\""
@@ -123,7 +124,14 @@ for pipeline in pipelines:
     }
     for s in pipeline[4]:
         email_settings["recipients"].append(email["recipients"][s])
-    thread = Thread(target=pipeline[0].run, args=(10, dirs[pipeline[1]], dirs[pipeline[2]], dirs[pipeline[3]], email_settings, book_archive_dir))
+    thread = Thread(target=pipeline[0].run, args=(10,
+                                                  dirs[pipeline[1]],
+                                                  dirs[pipeline[2]],
+                                                  dirs[pipeline[3]],
+                                                  email_settings,
+                                                  book_archive_dir,
+                                                  pipeline[5] if len(pipeline) >= 6 else None
+                                                 ))
     thread.setDaemon(True)
     thread.start()
     threads.append(thread)
