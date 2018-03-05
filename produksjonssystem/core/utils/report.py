@@ -50,7 +50,7 @@ class Report():
     def reportDir(self):
         # Lag rapport-mappe
         if not self._report_dir:
-            report_dir = self.pipeline.book["name"]
+            report_dir = self.pipeline.book["name"] if "name" in self.pipeline.book else "book"
             report_dir += "-"
             report_dir += datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
             report_dir += "-"

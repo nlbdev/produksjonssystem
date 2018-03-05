@@ -119,11 +119,11 @@ class Pipeline():
         if stop_after_first_job in [ "true", "1" ]:
             self._stopAfterFirstJob = True
         
-        self.dir_in = str(os.path.normpath(dir_in)) + '/'
-        self.dir_out = str(os.path.normpath(dir_out)) + '/'
-        self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
-        self.dir_base = str(os.path.normpath(dir_base)) + '/'
-        self.email_settings = email_settings
+        type(self).dir_in = str(os.path.normpath(dir_in)) + '/'
+        type(self).dir_out = str(os.path.normpath(dir_out)) + '/'
+        type(self).dir_reports = str(os.path.normpath(dir_reports)) + '/'
+        type(self).dir_base = str(os.path.normpath(dir_base)) + '/'
+        type(self).email_settings = email_settings
         type(self).config = config if config else {}
         
         # make dirs available from static contexts
@@ -386,10 +386,12 @@ class Pipeline():
                         finally:
                             if self._stopAfterFirstJob:
                                 self._shouldRun = False
-                            logging.exception("[" + Report.thread_name() + "] Sending email")
                             try:
                                 if self.utils.report.should_email:
+                                    logging.exception("[" + Report.thread_name() + "] Sending email")
                                     self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                                else:
+                                    logging.exception("[" + Report.thread_name() + "] Not sending email")
                             except Exception:
                                 logging.exception("[" + Report.thread_name() + "] An error occured while sending email")
                             finally:
@@ -458,6 +460,7 @@ class Pipeline():
 class DummyPipeline(Pipeline):
     uid = "dummy"
     title = "Dummy"
+    book = {}
     
     utils = None
     _dummy_should_run = None

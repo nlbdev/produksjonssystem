@@ -174,7 +174,7 @@ class UpdateMetadata(Pipeline):
             return False
         
         if insert:
-        return UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
+            return UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
         else:
             return True
     
@@ -419,18 +419,48 @@ class UpdateMetadata(Pipeline):
             opf_metadata[f] = rdf_metadata[f].replace(".rdf",".opf")
             html_metadata[f] = rdf_metadata[f].replace(".rdf",".html")
         
+        # Lag separat rapport/e-post for Bibliofil-metadata
+        normarc_pipeline = DummyPipeline(uid=UpdateMetadata.uid, title=UpdateMetadata.title)
+        normarc_pipeline.dir_reports = UpdateMetadata.dir_reports
+        normarc_pipeline.dir_base = UpdateMetadata.dir_base
+        normarc_pipeline.email_settings = UpdateMetadata.email_settings
+        for util in pipeline.utils:
+            if util != "report":
+                normarc_pipeline.utils[util] = pipeline.utils[util]
+        normarc_pipeline.utils.report = Report(normarc_pipeline)
+        
+        # Valider Bibliofil-metadata
         normarc_success = True
         marcxchange_paths = []
         for f in os.listdir(os.path.join(metadata_dir, "bibliofil")):
             if f.endswith(".xml"):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
-            pipeline.utils.report.info("Validerer NORMARC ({})".format(os.path.basename(marcxchange_path).split(".")[0]))
-            sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
+            normarc_pipeline.utils.report.info("Validerer NORMARC ({})".format(os.path.basename(marcxchange_path).split(".")[0]))
+            sch = Schematron(normarc_pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
                                        source=marcxchange_path)
             if not sch.success:
-                pipeline.utils.report.error("Validering av Bibliofil-metadata feilet")
+                normarc_pipeline.utils.report.error("Validering av Bibliofil-metadata feilet")
                 normarc_success = False
+        
+        # Send rapport
+        normarc_pipeline.utils.report.attachLog()
+        if not normarc_success:
+            normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],
+                                                UpdateMetadata.email_settings["sender"],
+                                                UpdateMetadata.config["librarians"],
+                                                subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
+        
+        # Kopier Bibliofil-metadata-rapporten inn i samme rapport som resten av konverteringen
+        for message_type in normarc_pipeline.utils.report._messages:
+            for message in normarc_pipeline.utils.report._messages[message_type]:
+                if message_type == "attachment" and os.path.exists(message["text"]):
+                    new_attachment = os.path.join(pipeline.utils.report.reportDir(), "normarc", os.path.basename(message["text"]))
+                    os.makedirs(os.path.dirname(new_attachment), exist_ok=True)
+                    shutil.copy(message["text"], new_attachment)
+                    message["text"] = new_attachment
+                pipeline.utils.report._messages[message_type].append(message)
+        
         if not normarc_success:
             return False
         
@@ -641,7 +671,7 @@ class UpdateMetadata(Pipeline):
         
         epub = Epub(self, os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], self.book["name"]))
         if UpdateMetadata.update(self, epub, insert=False):
-        UpdateMetadata.trigger_metadata_pipelines(self, self.book["name"])
+            UpdateMetadata.trigger_metadata_pipelines(self, self.book["name"])
     
     @staticmethod
     def on_book_created(self):
