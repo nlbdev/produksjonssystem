@@ -149,7 +149,7 @@ class UpdateMetadata(Pipeline):
         return ret
     
     @staticmethod
-    def _update(pipeline, epub, publication_format=""):
+    def _update(pipeline, epub, publication_format="", insert=True):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read and update metadata from EPUBs")
             return False
@@ -173,7 +173,10 @@ class UpdateMetadata(Pipeline):
         elif not UpdateMetadata.validate_metadata(pipeline, epub):
             return False
         
+        if insert:
         return UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
+        else:
+            return True
     
     @staticmethod
     def get_metadata(pipeline, epub):
@@ -636,6 +639,8 @@ class UpdateMetadata(Pipeline):
             self.utils.report.should_email = False
             return
         
+        epub = Epub(self, os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], self.book["name"]))
+        if UpdateMetadata.update(self, epub, insert=False):
         UpdateMetadata.trigger_metadata_pipelines(self, self.book["name"])
     
     @staticmethod
