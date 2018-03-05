@@ -436,7 +436,7 @@ class UpdateMetadata(Pipeline):
             if f.endswith(".xml"):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
-            normarc_pipeline.utils.report.info("Validerer NORMARC ({})".format(os.path.basename(marcxchange_path).split(".")[0]))
+            normarc_pipeline.utils.report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
             sch = Schematron(normarc_pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
                                        source=marcxchange_path)
             if not sch.success:
