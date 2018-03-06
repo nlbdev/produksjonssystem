@@ -12,8 +12,8 @@
     <ns prefix="DIAG" uri="http://www.loc.gov/zing/sru/diagnostics/"/>
     <ns prefix="marcxchange" uri="info:lc/xmlns/marcxchange-v1"/>
     
-    <let name="identifier" value="string((marcxchange:record/marcxchange:controlfield[@tag='001'])[1])"/>
-    <let name="is-publication" value="marcxchange:record/marcxchange:controlfield[@tag='001']/substring(text(),1,1) = ('1','2','3','4','6','7','8','9')"/>
+    <let name="identifier" value="string((//marcxchange:record/marcxchange:controlfield[@tag='001'])[1])"/>
+    <let name="is-publication" value="//marcxchange:record/marcxchange:controlfield[@tag='001']/substring(text(),1,1) = ('1','2','3','4','6','7','8','9')"/>
     
     <pattern>
         <title>Format</title>
@@ -58,11 +58,11 @@
     <pattern>
         <title>ISBN og ISSN</title>
         
-        <let name="is-magazine" value="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
-        <let name="is-newspaper" value="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
-        <let name="is-periodical" value="$is-magazine or $is-newspaper or marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'j'"/>
-        <let name="isbn-missing" value="marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISBN mangler'"/>
-        <let name="issn-missing" value="marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISSN mangler'"/>
+        <let name="is-magazine" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
+        <let name="is-newspaper" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
+        <let name="is-periodical" value="$is-magazine or $is-newspaper or //marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'j'"/>
+        <let name="isbn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISBN mangler'"/>
+        <let name="issn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISSN mangler'"/>
         
         <rule context="marcxchange:record[$is-periodical]">
             <report test="$is-magazine and $is-newspaper">Et verk kan ikke både være et tidsskrift og en avis. Vennligst kontroller at det ikke er noen konflikt mellom *019$b og *650$a.</report>
@@ -98,9 +98,9 @@
     <pattern>
         <title>Oversatte utgaver</title>
         
-        <let name="is-translated" value="boolean(marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
-                                               | marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
-                                               | marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e'])"/>
+        <let name="is-translated" value="boolean(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
+                                               | //marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
+                                               | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e'])"/>
         
         <rule context="marcxchange:record[$identifier and $is-translated]">
             <assert test="marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']">For oversatte utgaver må originalspråk være definert i *041$h.</assert>
