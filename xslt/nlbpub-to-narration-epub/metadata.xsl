@@ -20,7 +20,7 @@
 
     <!-- Antar her at boken er oversatt, HVIS OG BARE HVIS følgende metadata er gitt: 'dc:language.original' og 'dc:title.original'  -->
     <xsl:variable name="boken.er-oversatt" as="xs:boolean"
-        select="fnk:metadata-finnes('dc:language.original') or fnk:metadata-finnes('dc:title.original')"/>
+        select="fnk:metadata-finnes('dc:language.original') or fnk:metadata-finnes('dc:title.original') or fnk:metadata-finnes('dc:contributor.translator')"/>
 
     <!-- Transformasjonen fortsetter selv om det er forventet metadata som mangler
         NB: Noe metadata som er plassert her bør flyttes over til essensiell, men er her foreløpig for at ting ikke skal stoppe hele tiden
