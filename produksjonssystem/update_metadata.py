@@ -673,7 +673,6 @@ class UpdateMetadata(Pipeline):
         if UpdateMetadata.update(self, epub, insert=False):
             UpdateMetadata.trigger_metadata_pipelines(self, self.book["name"])
     
-    @staticmethod
     def on_book_created(self):
         self.utils.report.should_email = False
 
