@@ -100,7 +100,7 @@
         
         <let name="is-translated" value="boolean(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
                                                | //marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
-                                               | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e'])"/>
+                                               | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
         
         <rule context="marcxchange:record[$identifier and $is-translated]">
             <assert test="marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']">For oversatte utgaver må originalspråk være definert i *041$h.</assert>
