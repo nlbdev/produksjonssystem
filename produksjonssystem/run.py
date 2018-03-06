@@ -68,7 +68,7 @@ dirs = {
 pipelines = [
     [ IncomingNordic(),         "incoming",       "master",           "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
     [ NordicToNlbpub(),         "master",         "nlbpub",           "reports", ["jostein","olav","per"]],
-    [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"], { "librarians": [email["recipients"]["jostein"], email["recipients"]["elih"], email["recipients"]["karik"]] }],
+    [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
     [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
     [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
     [ NlbpubToPef(),            "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
