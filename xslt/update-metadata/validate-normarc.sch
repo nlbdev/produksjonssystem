@@ -61,6 +61,8 @@
         <let name="is-magazine" value="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
         <let name="is-newspaper" value="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
         <let name="is-periodical" value="$is-magazine or $is-newspaper or marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'j'"/>
+        <let name="isbn-missing" value="marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISBN mangler'"/>
+        <let name="issn-missing" value="marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISSN mangler'"/>
         
         <rule context="marcxchange:record[$is-periodical]">
             <report test="$is-magazine and $is-newspaper">Et verk kan ikke både være et tidsskrift og en avis. Vennligst kontroller at det ikke er noen konflikt mellom *019$b og *650$a.</report>
@@ -77,7 +79,7 @@
         </rule>
         
         <!-- Spesifikt for bøker -->
-        <rule context="marcxchange:record[$identifier and not($is-periodical)]">
+        <rule context="marcxchange:record[$identifier and not($is-periodical) and not($isbn-missing)]">
             <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a</assert>
         </rule>
         <rule context="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">
@@ -85,7 +87,7 @@
         </rule>
         
         <!-- Spesifikt for periodika -->
-        <rule context="marcxchange:record[$identifier and $is-periodical]">
+        <rule context="marcxchange:record[$identifier and $is-periodical and not($issn-missing)]">
             <assert test="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">ISSN for utgaven må være definert i *022$a</assert>
         </rule>
         <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
