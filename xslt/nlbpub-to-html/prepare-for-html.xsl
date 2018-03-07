@@ -34,9 +34,9 @@
     <xsl:template match="head">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            <link rel="stylesheet" type="text/css" href="default.css"/>
             <xsl:variable name="first-meta" select="(title | meta[@charset] | meta[@name='dc:identifier'])/(. | preceding-sibling::node())"/>
             <xsl:apply-templates select="$first-meta"/>
+            <link rel="stylesheet" type="text/css" href="default.css"/>
             <xsl:text><![CDATA[
         ]]></xsl:text>
             <meta name="dcterms:modified" content="{if ($modified) then $modified else format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]-[M00]-[D00]T[H00]:[m00]:[s00]Z')}"/>
