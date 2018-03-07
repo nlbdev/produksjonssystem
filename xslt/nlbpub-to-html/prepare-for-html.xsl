@@ -34,6 +34,7 @@
     <xsl:template match="head">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
+            <link rel="stylesheet" type="text/css" href="default.css"/>
             <xsl:variable name="first-meta" select="(title | meta[@charset] | meta[@name='dc:identifier'])/(. | preceding-sibling::node())"/>
             <xsl:apply-templates select="$first-meta"/>
             <xsl:text><![CDATA[
