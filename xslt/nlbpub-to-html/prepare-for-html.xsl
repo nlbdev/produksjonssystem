@@ -70,7 +70,7 @@
                                                                                                                            else 'seks',
                                                                                                            ' nivåer')"/>.</p>
                         <p>E-boka er i formatet HTML. Dette formatet kan åpnes og leses i nettlesere eller i tekstbehandlingsprogram.
-                           For å kunne redigere i teksten må e-boka åpnes i en tekstbehandler (for eksempel Microsoft Word eller Open Office Writer).</p>
+                           For å kunne redigere i teksten må e-boka åpnes i en tekstbehandler (for eksempel Microsoft Word eller LibreOffice Writer).</p>
                         <figure class="image"><img alt="NLB logo" src="NLB_logo.jpg"/></figure>
                     </section>
                 </xsl:when>
@@ -92,7 +92,7 @@
                                                                               else 'six',
                                                               ' levels')"/> of headings.</p>
                         <p>The format of this book is HTML. This file format can be opened in any web browser for reading,
-                           or a text editor for editing purposes (for instance Microsoft Word or Open Office Writer).</p>
+                           or a text editor for editing purposes (for instance Microsoft Word or LibreOffice Writer).</p>
                         <figure class="image"><img alt="NLB logo" src="NLB_logo.jpg"/></figure>
                     </section>
                 </xsl:otherwise>
