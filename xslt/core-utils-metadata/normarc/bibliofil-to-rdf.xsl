@@ -228,6 +228,11 @@
                     <xsl:if test="$name = $creativeWorkProperties or ends-with($name, '.original')">
                         <xsl:choose>
                             <xsl:when test="$name = 'schema:isbn.original'">
+                                <!--
+                                    Åndsverk fra bibliofil har ikke schema:isbn, kun schema:isbn.original.
+                                    Dvs. 5xx-bøker katalogiseres ikke med ISBN i *020$a, men om de hadde
+                                    hatt det så måtte det vært det samme som i *596$f.
+                                -->
                                 <xsl:element name="schema:isbn">
                                     <xsl:copy-of select="$element/(@* | node())"/>
                                 </xsl:element>
