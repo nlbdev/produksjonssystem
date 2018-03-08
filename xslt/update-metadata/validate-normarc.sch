@@ -117,4 +117,39 @@
         </rule>
     </pattern>
     
+    <pattern>
+        <title>Roller for bidragsytere</title>
+        
+        <let name="allowed-roles" value="('arr.', 'bearb.', 'dir.', 'forf.', 'fotogr.',
+                                          'illustr.', 'innl.', 'komp.', 'manusforf.', 'medarb.',
+                                          'medf.', 'oppr.forf.', 'overs.', 'red.', 'regissør',
+                                          'skuesp.', 'tekstf.', 'utg.', 'utøv.')"/>
+        
+        <!--
+             arr. : arrangør
+             bearb. : bearbeider
+             dir. : dirigent
+             forf. : forfatter
+             fotogr. : fotograf
+             illustr. : illustratør
+             innl. : innleser
+             komp. : komponist
+             manusforf. : manusforfatter
+             medarb. : medarbeider
+             medf. : medforfatter
+             oppr.forf. : opprinnelig forfatter
+             overs. : oversetter
+             red. : redaktør
+             regissør : regissør
+             skuesp. : skuespiller
+             tekstf. : tekstforfatter
+             utg. : utgiver
+             utøv. : utøver
+        -->
+        
+        <rule context="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text()">
+            <assert test=". = $allowed-roles">Bidragsytere i *700 må ha (i $e) en av følgende roller: "<value-of select="string-join($allowed-roles,'&quot;, &quot;')"/>". "<value-of select="."/>" er ikke en gyldig rolle.</assert>
+        </rule>
+    </pattern>
+    
 </schema>
