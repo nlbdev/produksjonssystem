@@ -16,12 +16,15 @@ except: pass
 try:(rmtree('/tmp/book-archive/distribusjonsformater/PEF/fullskrift/561195'))
 except: pass
 
-copyfile ('/home/espso/Downloads/epub-test/561195.epub','/tmp/book-archive/innkommende/561195.epub')
+
+file_path = os.path.join(os.path.dirname(__file__),"561195.epub")
+copyfile (file_path,'/tmp/book-archive/innkommende/561195.epub')
+
 
 success = 1;
 t=500;
 
-print("Starting test of NLB production system. Verifyes distribution formats in {0} seconds".format(t))
+print("Starting test of NLB production system. Verifyes distribution formats for 561195.epub in {0} seconds".format(t))
 
 time.sleep(t)
 #Check if folder is  empty
