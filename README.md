@@ -63,6 +63,6 @@ source $HOME/config/set-env.sh
     - `/opt/quickbase/get-latest.sh`
 
 - `cd ~/Desktop/produksjonssystem`
-- sett miljøvariabler i terminalen for testing: `source set-test-env.sh`
+- sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (gjerne legg til dette i `.bashrc`, så slipper du å skrive det hver gang)
 - start systemet: `./produksjonssystem/run.py`
 - stopp systemet: CTRL+C eller `touch /tmp/trigger-produksjonssystem/stop`
