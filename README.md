@@ -6,6 +6,7 @@ Et produksjonssystem basert på overvåking av mapper og automatiske konverterin
 ## Øvrig dokumentasjon
 
 - [Oppdater metadata](docs/update-metadata/README.md)
+- [Lag innlesingsklar EPUB fra NLBPUB](docs/nlbpub-to-narration-epub/README.md)
 
 ## Utviklingsmiljø
 
