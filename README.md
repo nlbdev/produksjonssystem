@@ -66,3 +66,85 @@ source $HOME/config/set-env.sh
 - sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (gjerne legg til dette i `.bashrc`, så slipper du å skrive det hver gang)
 - start systemet: `./produksjonssystem/run.py`
 - stopp systemet: CTRL+C eller `touch /tmp/trigger-produksjonssystem/stop`
+
+## Endre innstillinger for e-postvarsling
+
+### Definere en ny e-postadresse
+
+Definer kortnavn, navn, og e-postadresse:
+
+```python
+email = {
+    #...
+    "recipients": {
+        #...
+        "kortnavn":   Address("Navn Navnesen", "Navn.Navnesen", "nlb.no"),
+    }
+}
+```
+
+### Sett opp varsling på e-post:
+
+Legg til kortnavn på slutten av lista:
+
+```python
+pipelines = [
+    #...
+    [ NlbpubToFormat(), "nlbpub", "format", "reports", ["enperson","annenperson","kortnavn"]],
+]
+```
+
+## Lage en ny pipeline
+
+### Definer pipeline i `run.py`
+
+Definer en ny mappe sammen med de andre mappene, og definer en ny pipeline sammen med de andre pipeline'ene, og sett riktig inn-/ut-mappe.
+
+**`produksjonssystem/run.py`**
+```python
+dirs = {
+    #...
+    "format": os.path.join(book_archive_dir, "distribusjonsformater/Format")
+}
+
+pipelines = [
+    #...
+    [ NlbpubToFormat(), "nlbpub", "format", "reports", ["kortnavn"]],
+]
+```
+
+### Implementer pipeline
+
+Lag en ny Python-fil for pipeline'en i mappen "produksjonssystem". Ta gjerne utgangspunkt i en annen eksisterende pipeline, eller følg den følgende malen:
+
+**`produksjonssystem/nlbpub_to_format.py`**
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import sys
+
+from core.pipeline import Pipeline
+
+if sys.version_info[0] != 3 or sys.version_info[1] < 5:
+    print("# This script requires Python version 3.5+")
+    sys.exit(1)
+
+class NlbpubToFormat(Pipeline):
+    uid = "..."
+    title = "..."
+    
+    def on_book_deleted(self):
+        pass
+    
+    def on_book_modified(self):
+        pass
+    
+    def on_book_created(self):
+        pass
+
+
+if __name__ == "__main__":
+    NlbpubToFormat().run()
+
+```
