@@ -3,6 +3,10 @@ Produksjonssystem
 
 Et produksjonssystem basert på overvåking av mapper og automatiske konverteringer.
 
+## Øvrig dokumentasjon
+
+- [Oppdater metadata](docs/update-metadata/README.md)
+
 ## Utviklingsmiljø
 
 Anbefaler:
