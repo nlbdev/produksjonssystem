@@ -3,6 +3,7 @@ import os
 from shutil import copyfile
 from shutil import rmtree
 import time
+import sys
 
 #This script tests if epub files goes through produksjonssystem successfully
 try:(rmtree('/tmp/book-archive/distribusjonsformater/DTBook/558294092018'))
@@ -20,7 +21,7 @@ file_path = os.path.join(os.path.dirname(__file__),"558294092018.epub")
 copyfile (file_path,'/tmp/book-archive/innkommende/558294092018.epub')
 
 success = 1;
-t=500;
+t=350;
 
 print("Starting test of NLB production system. Verifyes distribution for 558294092018.epub formats in {0} seconds".format(t))
 
@@ -51,5 +52,9 @@ else:
     print("PEF fullskrift does not exist")
     success=0
 
-if (success):print("The test was completed in less than {0} seconds".format(t))
-else : print ("The test was not completed in {0} seconds".format(t))
+if (success):
+    print("The test was completed in less than {0} seconds".format(t))
+    sys.exit(0)
+else :
+    print ("The test was not completed in {0} seconds".format(t))
+    sys.exit(1)
