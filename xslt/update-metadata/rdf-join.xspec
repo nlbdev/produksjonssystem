@@ -1842,4 +1842,40 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Test with no editions">
+        <x:call template="main-testable">
+            <x:param name="descriptions">
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=551103" _source="epub">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <dc:identifier nlb:metadata-source="EPUB">551103</dc:identifier>
+                    <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
+                    <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
+                    <nordic:supplier nlb:metadata-source="EPUB">AEL Data</nordic:supplier>
+                    <nordic:supplieddate nlb:metadata-source="EPUB">2011-02-23</nordic:supplieddate>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="record_0929240430100creativeWork_" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
+                </rdf:Description>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="The result should be as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=551103">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <dc:identifier nlb:metadata-source="EPUB">551103</dc:identifier>
+                    <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
+                    <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
+                    <nordic:supplieddate nlb:metadata-source="EPUB">2011-02-23</nordic:supplieddate>
+                    <nordic:supplier nlb:metadata-source="EPUB">AEL Data</nordic:supplier>
+                </rdf:Description>
+                
+                <rdf:Description rdf:ID="record_0929240430100creativeWork_">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
