@@ -324,24 +324,22 @@ class UpdateMetadata(Pipeline):
         
         # ========== Combine metadata ==========
         
-        rdf_metadata = {"": os.path.join(metadata_dir, "metadata.rdf")}
-        opf_metadata = {"": rdf_metadata[""].replace(".rdf",".opf")}
-        html_metadata = {"": rdf_metadata[""].replace(".rdf",".html")}
+        rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
+        opf_metadata = {"": rdf_metadata.replace(".rdf",".opf")}
+        html_metadata = {"": rdf_metadata.replace(".rdf",".html")}
         
         for f in UpdateMetadata.formats:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
-            rdf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.rdf".format(format_id))
-            opf_metadata[f] = rdf_metadata[f].replace(".rdf",".opf")
-            html_metadata[f] = rdf_metadata[f].replace(".rdf",".html")
+            opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
+            html_metadata[f] = opf_metadata[f].replace(".opf",".html")
         
-        for f in rdf_metadata:
             pipeline.utils.report.debug("rdf-join.xsl")
             pipeline.utils.report.debug("    metadata-dir = " + metadata_dir + "/")
             pipeline.utils.report.debug("    rdf-files    = " + " ".join(rdf_files))
-            pipeline.utils.report.debug("    target       = " + rdf_metadata[f])
+        pipeline.utils.report.debug("    target       = " + rdf_metadata)
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-join.xsl"),
                                   template="main",
-                                  target=rdf_metadata[f],
+                              target=rdf_metadata,
                                   parameters={
                                       "metadata-dir": metadata_dir + "/",
                                       "rdf-files": " ".join(rdf_files)
@@ -349,18 +347,29 @@ class UpdateMetadata(Pipeline):
             if not xslt.success:
                 return False
             
+        xslt_success = True
+        for f in opf_metadata:
             pipeline.utils.report.debug("rdf-to-opf.xsl")
-            pipeline.utils.report.debug("    source = " + rdf_metadata[f])
+            pipeline.utils.report.debug("    source = " + rdf_metadata)
             pipeline.utils.report.debug("    target = " + opf_metadata[f])
             xslt = Xslt(pipeline, stylesheet=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "rdf-to-opf.xsl"),
-                                  source=rdf_metadata[f],
+                                  source=rdf_metadata,
                                   target=opf_metadata[f],
                                   parameters={
                                       "format": f,
                                       "update-identifier": "true"
                                   })
+            
             if not xslt.success:
-                return False
+                xslt_success = False
+            
+            xml = ElementTree.parse(opf_metadata[f]).getroot()
+            if not xml.xpath("/*[local-name()='metadata']/*[name()='dc:identifier']"):
+                pipeline.utils.report.warn("Ingen boknummer for {}. Kan ikke klargjøre metadata for dette formatet.".format(f))
+                os.remove(opf_metadata[f])
+                if os.path.isfile(html_metadata[f]):
+                    os.remove(html_metadata[f])
+                continue
             
             pipeline.utils.report.debug("opf-to-html.xsl")
             pipeline.utils.report.debug("    source = " + opf_metadata[f])
@@ -369,8 +378,10 @@ class UpdateMetadata(Pipeline):
                                   source=opf_metadata[f],
                                   target=html_metadata[f])
             if not xslt.success:
-                return False
+                xslt_success = False
         
+        if not xslt_success:
+            return False
         
         # ========== Validate metadata ==========
         
@@ -409,15 +420,14 @@ class UpdateMetadata(Pipeline):
         
         metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier())
         
-        rdf_metadata = {"": os.path.join(metadata_dir, "metadata.rdf")}
-        opf_metadata = {"": rdf_metadata[""].replace(".rdf",".opf")}
-        html_metadata = {"": rdf_metadata[""].replace(".rdf",".html")}
+        rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
+        opf_metadata = {"": rdf_metadata.replace(".rdf",".opf")}
+        html_metadata = {"": rdf_metadata.replace(".rdf",".html")}
         
         for f in UpdateMetadata.formats:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
-            rdf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.rdf".format(format_id))
-            opf_metadata[f] = rdf_metadata[f].replace(".rdf",".opf")
-            html_metadata[f] = rdf_metadata[f].replace(".rdf",".html")
+            opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
+            html_metadata[f] = opf_metadata[f].replace(".opf",".html")
         
         # Lag separat rapport/e-post for Bibliofil-metadata
         normarc_pipeline = DummyPipeline(uid=UpdateMetadata.uid, title=UpdateMetadata.title)
@@ -464,7 +474,8 @@ class UpdateMetadata(Pipeline):
         if not normarc_success:
             return False
         
-        for f in rdf_metadata:
+        for f in opf_metadata:
+            if os.path.isfile(opf_metadata[f]):
             pipeline.utils.report.info("Validerer ny OPF-metadata for " + (f if f else "åndsverk"))
             sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-opf.sch"),
                                        source=opf_metadata[f])
@@ -472,6 +483,7 @@ class UpdateMetadata(Pipeline):
                 pipeline.utils.report.error("Validering av OPF-metadata feilet")
                 return False
             
+            if os.path.isfile(html_metadata[f]):
             pipeline.utils.report.info("Validerer ny HTML-metadata for " + (f if f else "åndsverk"))
             sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-html-metadata.sch"),
                                        source=html_metadata[f])
@@ -499,9 +511,12 @@ class UpdateMetadata(Pipeline):
         metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier())
         
         format_id = re.sub(r"[^a-z0-9]", "", publication_format.lower())
-        rdf_metadata = os.path.join(metadata_dir, "metadata-{}.rdf".format(format_id))
-        opf_metadata = rdf_metadata.replace(".rdf",".opf")
-        html_metadata = rdf_metadata.replace(".rdf",".html")
+        opf_metadata = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
+        html_metadata = opf_metadata.replace(".opf",".html")
+        
+        if not os.path.exists(opf_metadata) or not os.path.exists(html_metadata):
+            pipeline.utils.report.error("Finner ikke metadata for formatet \"{}\".".format(publication_format))
+            return False
         
         updated_file_obj = tempfile.NamedTemporaryFile()
         updated_file = updated_file_obj.name
