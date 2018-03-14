@@ -283,6 +283,8 @@ class UpdateMetadata(Pipeline):
                     if i_normalized not in original_isbn:
                         original_isbn[i_normalized] = { "pretty": i, "books": [] }
                     original_isbn[i_normalized]["books"].append(b)
+        else:
+            pipeline.utils.report.warn("Finner ikke liste over boknummer og ISBN fra `*596$f` (\"{}\")".format(original_isbn_csv))
         for i in original_isbn:
             data = original_isbn[i]
             if edition_identifier in data["books"] or pub_identifier in data["books"]:
