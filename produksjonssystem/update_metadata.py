@@ -149,7 +149,7 @@ class UpdateMetadata(Pipeline):
         return ret
     
     @staticmethod
-    def _update(pipeline, epub, publication_format="", insert=True):
+    def _update(pipeline, epub, publication_format="", insert=True, force_update=False):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read and update metadata from EPUBs")
             return False
@@ -166,7 +166,7 @@ class UpdateMetadata(Pipeline):
         
         # Get updated metadata for a book, but only if the metadata is older than 5 minutes
         now = int(time.time())
-        if now - last_updated > 300:
+        if now - last_updated > 300 or force_update:
             success = UpdateMetadata.get_metadata(pipeline, epub)
             if not success:
                 return False
@@ -670,7 +670,7 @@ class UpdateMetadata(Pipeline):
             return
         
         epub = Epub(self, os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], self.book["name"]))
-        if UpdateMetadata.update(self, epub, insert=False):
+        if UpdateMetadata.update(self, epub, insert=False, force_update=True):
             UpdateMetadata.trigger_metadata_pipelines(self, self.book["name"])
     
     def on_book_created(self):
