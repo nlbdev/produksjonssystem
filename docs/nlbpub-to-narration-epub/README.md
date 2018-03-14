@@ -1,4 +1,4 @@
-Lag EPUB for innlesing fra NLBPUB
+Lag innlesingsklar EPUB fra NLBPUB
 =================
 
 Dette steget:
