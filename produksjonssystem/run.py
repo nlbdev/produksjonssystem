@@ -144,9 +144,8 @@ graph_thread.setDaemon(True)
 graph_thread.start()
 
 try:
-    stopfile = os.getenv("TRIGGER_DIR")
-    if stopfile:
-        stopfile = os.path.join(stopfile, "stop")
+    triggerdir = os.getenv("TRIGGER_DIR")
+    stopfile = os.path.join(triggerdir, "stop") if triggerdir else None
     
     running = True
     while running:
@@ -161,6 +160,18 @@ try:
             if not thread.isAlive():
                 running = False
                 break
+        
+        # trigger all pipelines that uses the "master" directory as input
+        triggerfiles = os.listdir(triggerdir)
+        for triggerfile in triggerfiles:
+            triggerfilepath = os.path.join(triggerdir, triggerfile)
+            if os.path.isfile(triggerfilepath):
+                os.remove(triggerfilepath)
+                for pipeline in pipelines:
+                    if pipeline[1] == "master":
+                        pipelinetriggerfile = os.path.join(triggerdir, pipeline[0].uid, triggerfile)
+                        with open(pipelinetriggerfile, 'a'):
+                            os.utime(pipelinetriggerfile, None)
     
 except KeyboardInterrupt:
     pass
