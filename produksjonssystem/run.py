@@ -167,8 +167,10 @@ except KeyboardInterrupt:
 
 for pipeline in pipelines:
     pipeline[0].stop(exit=True)
-    plotter.should_run = False
 
-graph_thread.join()
 for thread in threads:
     thread.join()
+
+plotter.should_run = False
+time.sleep(1.5) # give plotter time for one last plot
+graph_thread.join()
