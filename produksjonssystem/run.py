@@ -72,17 +72,28 @@ dirs = {
 
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
+    # Mottak
     [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
     [ NordicToNlbpub(),                             "master",              "nlbpub",              "reports", ["jostein","olav","per"]],
     [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
+    
+    # EPUB
     [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
+    
+    # innlest lydbok
     [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
     [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
     [ DummyPipeline("Innlesing"),                   "epub_narration",      "epub_narrated",       "reports", ["jostein"]],
+    
+    # e-bok
     [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
     [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","jostein","olav"]],
+    
+    # punktskrift
     [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
     [ NlbpubToPef(),                                "pub-in-braille",      "pef",                 "reports", ["ammar","jostein","kari"]],
+    
+    # TTS-lydbok
     [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav"]],
     [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","mari","olav"]],
 ]
