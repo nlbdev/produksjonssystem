@@ -60,6 +60,7 @@ dirs = {
     "metadata": os.path.join(book_archive_dir, "metadata"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
+    "daisy202_tts": os.path.join(book_archive_dir, "utgave-ut/DAISY202-fra-talesyntese"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
     "epub_narrated": os.path.join(book_archive_dir, "utgave-ut/EPUB-innlest"),
@@ -99,6 +100,7 @@ pipelines = [
     # TTS-lydbok
     [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav"]],
     [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","mari","olav"]],
+    [ DummyPipeline("TTS-produksjon"),              "dtbook_tts",          "daisy202_tts",        "reports", ["jostein"]],
 ]
 
 
