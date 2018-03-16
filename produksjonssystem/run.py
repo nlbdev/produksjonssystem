@@ -19,6 +19,7 @@ from incoming_nordic import IncomingNordic
 from insert_metadata import *
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
+from prepare_for_braille import PrepareForBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 
 # Check that archive dir is defined
@@ -64,6 +65,7 @@ dirs = {
     "epub_narrated": os.path.join(book_archive_dir, "utgave-ut/EPUB-innlest"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
     "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
+    "pub-ready-braille": os.path.join(book_archive_dir, "utgave-klargjort/punktskrift"),
     "pub-in-epub": os.path.join(book_archive_dir, "utgave-inn/EPUB"),
     "pub-in-audio": os.path.join(book_archive_dir, "utgave-inn/lydbok"),
     "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
@@ -91,7 +93,8 @@ pipelines = [
     
     # punktskrift
     [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
-    [ NlbpubToPef(),                                "pub-in-braille",      "pef",                 "reports", ["ammar","jostein","kari"]],
+    [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","kari"]],
+    [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","kari"]],
     
     # TTS-lydbok
     [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav"]],
