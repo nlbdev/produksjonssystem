@@ -35,7 +35,7 @@
     <xsl:variable name="metadata.essensiell" as="xs:string*"
         select="
             (
-            'schema:isbn', 'dc:publisher.location.original', 'dc:language',
+            'schema:isbn.original', 'dc:publisher.location.original', 'dc:language',
             (: Legg til litt mer hvis boken er oversatt :)
             if ($boken.er-oversatt) then
                 ('dc:language.original', 'dc:title.original', 'dc:contributor.translator')
