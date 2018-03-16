@@ -31,14 +31,21 @@ h1 { font-size: 2.5vh; }
 <h1>NLBs produksjonssystem</h1>
 
 <figure>
-<img id="graph" src="graph.png" alt="Diagram over NLBs produksjonssystem."/>
-<img id="graph-load" src="graph.png" style="display: none;"/>
+<img id="graph" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Diagram over NLBs produksjonssystem."/>
+<img id="graph-load" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="display: none;"/>
 </figure>
 
 <script>
 window.onload = function() {
     var image = document.getElementById("graph");
     var imageLoad = document.getElementById("graph-load");
+    
+    imagefile = window.location.href.split("/")
+    imagefile = imagefile[imagefile.length-1]
+    imagefile = imagefile.split(".")
+    imagefile = imagefile[0] + ".png"
+    image.src = imagefile
+    imageLoad.src = imagefile
     
     function updateImage() {
         imageLoad.src = imageLoad.src.split("?")[0] + "?" + new Date().getTime();
