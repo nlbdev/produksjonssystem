@@ -729,4 +729,199 @@
     </metadata></x:expect>
     </x:scenario>
 
+<<<<<<< HEAD
+=======
+    </metadata></x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Missing format - 1">
+        <x:call template="test">
+            <x:param name="format" select="'DAISY 2.02'"/>
+            <x:param name="update-identifier" select="true()"/>
+            <x:param name="context">
+                <rdf:RDF>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=551103">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <dc:identifier nlb:metadata-source="EPUB">551103</dc:identifier>
+                        <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
+                        <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
+                        <nordic:supplieddate nlb:metadata-source="EPUB">2011-02-23</nordic:supplieddate>
+                        <nordic:supplier nlb:metadata-source="EPUB">AEL Data</nordic:supplier>
+                    </rdf:Description>
+                    
+                    <rdf:Description rdf:ID="record_0929240430100creativeWork_">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                    </rdf:Description>
+                </rdf:RDF>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected" xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production nordic: http://www.mtm.se/epub/">
+        <!-- Boknummer for DAISY 2.02-utgaven mangler -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.epub">551103</meta> <!-- EPUB -->
+        
+        <!-- Metadata for åndsverket -->
+        <dc:format>EPUB</dc:format> <!-- EPUB -->
+        <meta property="nordic:guidelines">2015-1</meta> <!-- EPUB -->
+        <meta property="nordic:supplieddate">2011-02-23</meta> <!-- EPUB -->
+        <meta property="nordic:supplier">AEL Data</meta> <!-- EPUB -->
+
+    </metadata></x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Missing format - 2">
+        <x:call template="test">
+            <x:param name="format" select="''"/>
+            <x:param name="update-identifier" select="true()"/>
+            <x:param name="context">
+                <rdf:RDF>
+                    <rdf:Description rdf:about="urn:isbn:9788241906640">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                        <dc:title nlb:metadata-source="Bibliofil@551103 *245$a">Glassregnbuen</dc:title>
+                        <dc:creator nlb:metadata-source="Bibliofil@551103 *100"
+                            schema:name="Burke, James Lee">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@551103 *100$3">19775400</nlbbib:bibliofil-id>
+                            <schema:birthDate nlb:metadata-source="Bibliofil@551103 *100$d">1936</schema:birthDate>
+                            <schema:nationality nlb:metadata-source="Bibliofil@551103 *100$j">us</schema:nationality>
+                        </dc:creator>
+                        <dc:language nlb:metadata-source="Bibliofil@551103 *008">nob</dc:language>
+                        <dc:contributor.narrator nlb:metadata-source="Bibliofil@617536 *511$a"
+                            schema:name="Geir Morstad">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@617536 *511$3">17802200</nlbbib:bibliofil-id>
+                        </dc:contributor.narrator>
+                        <dc:contributor.translator nlb:metadata-source="Bibliofil@551103 *700" schema:name="Lyng, Hilde">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@551103 *700$3">17842300</nlbbib:bibliofil-id>
+                            <schema:nationality nlb:metadata-source="Bibliofil@551103 *700$j">no</schema:nationality>
+                        </dc:contributor.translator>
+                        <dc:date.issued.original nlb:metadata-source="Bibliofil@551103 *596$c">2011</dc:date.issued.original>
+                        <dc:format.extent.pages.original nlb:metadata-source="Bibliofil@551103 *596$e">508</dc:format.extent.pages.original>
+                        <dc:language.original nlb:metadata-source="Bibliofil@551103 *041$h">eng</dc:language.original>
+                        <dc:publisher.location.original nlb:metadata-source="Bibliofil@551103 *596$a">Bergen</dc:publisher.location.original>
+                        <dc:publisher.original nlb:metadata-source="Bibliofil@551103 *596$b">Vigmostad Bjørke</dc:publisher.original>
+                        <dc:source nlb:metadata-source="Bibliofil@551103 *596$f">urn:isbn:9788241906640</dc:source>
+                        <dc:title.original nlb:metadata-source="Bibliofil@551103 *574$a">The glass rainbow</dc:title.original>
+                        <schema:isbn nlb:metadata-source="Bibliofil@551103 *596$f">978-82-419-0664-0</schema:isbn>
+                        <schema:bookEdition nlb:metadata-source="Bibliofil@551103 *245">1</schema:bookEdition>
+                        <schema:bookEdition.original nlb:metadata-source="Bibliofil@551103 *596">1</schema:bookEdition.original>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=551103">
+                        <rdf:type rdf:resource="http://schema.org/Book"/>
+                        <dc:identifier nlb:metadata-source="EPUB">551103</dc:identifier>
+                        <dc:format nlb:metadata-source="Bibliofil@551103 *245$h">EPUB</dc:format>
+                        <dc:date.issued nlb:metadata-source="Bibliofil@551103 *260$c">2012</dc:date.issued>
+                        <dc:format.other nlb:metadata-source="Bibliofil@551103 *019$b">Electronic resource</dc:format.other>
+                        <dc:format.other.no nlb:metadata-source="Bibliofil@551103 *019$b">Elektronisk ressurs</dc:format.other.no>
+                        <dc:publisher nlb:metadata-source="Bibliofil@551103 *260$b"
+                            schema:name="Norsk lyd- og blindeskriftbibliotek">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@551103 *260$3">17192400</nlbbib:bibliofil-id>
+                        </dc:publisher>
+                        <dc:publisher.location nlb:metadata-source="Bibliofil@551103 *260$a">Oslo</dc:publisher.location>
+                        <dc:type nlb:metadata-source="Bibliofil@551103 *245$h">Full Text</dc:type>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@551103 *008">Fiction</dc:type.genre>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@551103 *008">Non-biography</dc:type.genre>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@551103 *019$d">poem</dc:type.genre>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@551103 *655" schema:name="Krim">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@551103 *655$3">19880400</nlbbib:bibliofil-id>
+                            <dc:type.genre.no nlb:metadata-source="Bibliofil@551103 *655">Krim</dc:type.genre.no>
+                            <dc:type.mainGenre nlb:metadata-source="Bibliofil@551103 *655">Krim</dc:type.mainGenre>
+                        </dc:type.genre>
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788241906640"/>
+                        <schema:audience nlb:metadata-source="Bibliofil@551103 *008">Adult</schema:audience>
+                        <schema:typicalAgeRange nlb:metadata-source="Bibliofil@551103 *008">17-</schema:typicalAgeRange>
+                        <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
+                        <nordic:supplieddate nlb:metadata-source="EPUB">2011-02-23</nordic:supplieddate>
+                        <nordic:supplier nlb:metadata-source="EPUB">AEL Data</nordic:supplier>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=617536">
+                        <rdf:type rdf:resource="http://schema.org/Book"/>
+                        <dc:identifier nlb:metadata-source="Bibliofil@617536 *001">617536</dc:identifier>
+                        <dc:format nlb:metadata-source="Bibliofil@617536 *245$h">DAISY 2.02</dc:format>
+                        <dc:date.available nlb:metadata-source="Bibliofil@617536 *592$a">2012-04-27</dc:date.available>
+                        <dc:date.issued nlb:metadata-source="Bibliofil@617536 *260$c">2012</dc:date.issued>
+                        <dc:description.abstract nlb:metadata-source="Bibliofil@617536 *520$a">Dave Robicheaux er tilbake i New Iberia og har viklet seg inn i den mest opprivende
+                            og vanskelige saken i karrieren sin. Syv unge kvinner er blitt brutalt drept i nabokommunen.
+                            Mye tyder på at en seriemorder er på ferde. Robicheaux og hans beste venn, Clete Purcel,
+                            konfronterer Herman Stanga, en beryktet hallik og cracklanger som begge mennene forakter.
+                            Clete følger opp med å banke Stanga, foran øynene på flere vitner. Da Stanga senere
+                            blir funnet død, henger Cletes liv og karriere i en tynn tråd.
+                        </dc:description.abstract>
+                        <dc:format.extent.duration nlb:metadata-source="Bibliofil@617536 *300$a">16 t. 56 min.</dc:format.extent.duration>
+                        <dc:format.other nlb:metadata-source="Bibliofil@617536 *019$b">Audio recording</dc:format.other>
+                        <dc:format.other nlb:metadata-source="Bibliofil@617536 *019$b">Compact Disk</dc:format.other>
+                        <dc:format.other nlb:metadata-source="Bibliofil@617536 *019$b">Other voice/other</dc:format.other>
+                        <dc:format.other.no nlb:metadata-source="Bibliofil@617536 *019$b">Lydopptak</dc:format.other.no>
+                        <dc:format.other.no nlb:metadata-source="Bibliofil@617536 *019$b">CD (kompaktplate)</dc:format.other.no>
+                        <dc:format.other.no nlb:metadata-source="Bibliofil@617536 *019$b">Annen tale/annet</dc:format.other.no>
+                        <dc:publisher nlb:metadata-source="Bibliofil@617536 *260$b"
+                            schema:name="Norsk lyd- og blindeskriftbibliotek">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@617536 *260$3">17192400</nlbbib:bibliofil-id>
+                        </dc:publisher>
+                        <dc:publisher.location nlb:metadata-source="Bibliofil@617536 *260$a">Oslo</dc:publisher.location>
+                        <dc:source.urn-nbn nlb:metadata-source="Bibliofil@617536 *856$s">urn:nbn:no-nb_nlb_621293966</dc:source.urn-nbn>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@617536 *008">Fiction</dc:type.genre>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@617536 *008">Non-biography</dc:type.genre>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@617536 *019$d">poem</dc:type.genre>
+                        <dc:type.genre nlb:metadata-source="Bibliofil@617536 *655" schema:name="Krim">
+                            <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@617536 *655$3">19880400</nlbbib:bibliofil-id>
+                            <dc:type.genre.no nlb:metadata-source="Bibliofil@617536 *655">Krim</dc:type.genre.no>
+                            <dc:type.mainGenre nlb:metadata-source="Bibliofil@617536 *655">Krim</dc:type.mainGenre>
+                        </dc:type.genre>
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788241906640"/>
+                        <schema:isbn nlb:metadata-source="Bibliofil@617536 *020$a">978-82-16-12407-9</schema:isbn>
+                        <schema:audience nlb:metadata-source="Bibliofil@617536 *008">Adult</schema:audience>
+                        <schema:library nlb:metadata-source="Bibliofil@617536 *850$a">NLB</schema:library>
+                        <schema:typicalAgeRange nlb:metadata-source="Bibliofil@617536 *008">17-</schema:typicalAgeRange>
+                    </rdf:Description>
+                    <rdf:Description rdf:ID="isbn_1510362860100_book_d1e1">
+                        <rdf:type rdf:resource="http://schema.org/Book"/>
+                    </rdf:Description>
+                    <rdf:Description rdf:ID="isbn_151039120100_book_d1e1">
+                        <rdf:type rdf:resource="http://schema.org/Book"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected" xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production dc: http://purl.org/dc/elements/1.1/ schema: http://schema.org/ nordic: http://www.mtm.se/epub/">
+        <!-- Boknummer for EPUB-utgaven -->
+        <dc:identifier id="pub-id">551103</dc:identifier> <!-- EPUB -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.epub">551103</meta> <!-- EPUB -->
+        
+        <!-- Metadata for åndsverket -->
+        <dc:title>Glassregnbuen</dc:title> <!-- Bibliofil@551103 *245$a -->
+        <meta property="dc:title.original">The glass rainbow</meta> <!-- Bibliofil@551103 *574$a -->
+        <dc:language>nb-NO</dc:language> <!-- Bibliofil@551103 *008 -->
+        <meta property="dc:language.original">en</meta> <!-- Bibliofil@551103 *041$h -->
+        <dc:creator>Burke, James Lee</dc:creator> <!-- Bibliofil@551103 *100 -->
+        <meta property="dc:contributor.narrator">Geir Morstad</meta> <!-- Bibliofil@617536 *511$a -->
+        <meta property="dc:contributor.translator">Lyng, Hilde</meta> <!-- Bibliofil@551103 *700 -->
+        <meta property="dc:format.extent.pages.original">508</meta> <!-- Bibliofil@551103 *596$e -->
+        <meta property="dc:publisher.location.original">Bergen</meta> <!-- Bibliofil@551103 *596$a -->
+        <meta property="dc:publisher.original">Vigmostad Bjørke</meta> <!-- Bibliofil@551103 *596$b -->
+        <meta property="dc:date.issued.original">2011</meta> <!-- Bibliofil@551103 *596$c -->
+        <dc:source>urn:isbn:9788241906640</dc:source> <!-- Bibliofil@551103 *596$f -->
+        <dc:type>Full Text</dc:type> <!-- Bibliofil@551103 *245$h -->
+        <meta property="dc:type.genre">Fiction</meta> <!-- Bibliofil@551103 *008 -->
+        <meta property="dc:type.genre">Krim</meta> <!-- Bibliofil@551103 *655 -->
+        <meta property="dc:type.genre">Non-biography</meta> <!-- Bibliofil@551103 *008 -->
+        <meta property="dc:type.genre">poem</meta> <!-- Bibliofil@551103 *019$d -->
+        <meta property="schema:isbn.original">978-82-419-0664-0</meta> <!-- Bibliofil@551103 *596$f -->
+        <meta property="schema:bookEdition">1</meta> <!-- Bibliofil@551103 *245 -->
+        <meta property="schema:bookEdition.original">1</meta> <!-- Bibliofil@551103 *596 -->
+        <meta property="schema:audience">Adult</meta> <!-- Bibliofil@551103 *008 -->
+        <meta property="schema:typicalAgeRange">17-</meta> <!-- Bibliofil@551103 *008 -->
+        <meta property="nordic:guidelines">2015-1</meta> <!-- EPUB -->
+        <meta property="nordic:supplieddate">2011-02-23</meta> <!-- EPUB -->
+        <meta property="nordic:supplier">AEL Data</meta> <!-- EPUB -->
+
+    </metadata></x:expect>
+    </x:scenario>
+    
+>>>>>>> master
 </x:description>
