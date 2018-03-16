@@ -123,9 +123,6 @@ class NlbpubToHtml(Pipeline):
         shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
                     os.path.join(html_dir, "NLB_logo.jpg"))
         
-        shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "default.css"),
-                    os.path.join(html_dir, "default.css"))
-        
         
         # ---------- slett EPUB-spesifikke filer ----------
         

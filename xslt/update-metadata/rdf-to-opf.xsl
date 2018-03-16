@@ -130,7 +130,7 @@
                                if (not($has-bibliofil-narrator)) then 'nlbprod:narrator' else (),
                                distinct-values((//dcterms:* | //nordic:* | //schema:*)[@schema:name or text()]/(tokenize(name(),'\.')[1])))">
             
-            <xsl:variable name="meta" select="($work/*, $publication/*)[starts-with(name(), current())]" as="element()*"/>
+            <xsl:variable name="meta" select="($work/*, $publication/(* except schema:isbn))[starts-with(name(), current())]" as="element()*"/> <!-- TODO: find a better way to handle publication ISBNs -->
             <xsl:variable name="meta" select="if (count($meta)) then $meta else $epub/*[starts-with(name(), current())]" as="element()*"/>
             
             <xsl:for-each select="$meta">
@@ -142,12 +142,6 @@
                         <xsl:call-template name="meta">
                             <xsl:with-param name="rdf-property" select="."/>
                             <xsl:with-param name="rename" select="'dc:contributor.narrator'"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test="self::schema:isbn intersect $work/*">
-                        <xsl:call-template name="meta">
-                            <xsl:with-param name="rdf-property" select="."/>
-                            <xsl:with-param name="rename" select="'schema:isbn.original'"/>
                         </xsl:call-template>
                     </xsl:when>
                     <xsl:otherwise>
