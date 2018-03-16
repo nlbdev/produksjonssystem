@@ -38,7 +38,7 @@ class Plotter():
                 dot = Digraph(name="Produksjonssystem", format="png")
                 
                 for pipeline in self.pipelines:
-                    pipeline_id = pipeline[0].__class__.__name__
+                    pipeline_id = pipeline[0].uid
                     title = pipeline[0].title if pipeline[0].title else pipeline_id 
                     
                     queue_created = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "created"]) if pipeline[0]._queue else 0
@@ -61,10 +61,20 @@ class Plotter():
                     
                     queue_size = len(pipeline[0]._queue) if pipeline[0]._queue else 0
                     book = pipeline[0].book["name"] if pipeline[0].book else ""
-                    relpath_in = "in" if not pipeline[0].dir_in and pipeline[0].dir_base else os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
-                    relpath_out = "out" if not pipeline[0].dir_out and pipeline[0].dir_base else os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
                     
-                    pipeline_label = title + "\n" + queue_string + "\n" + ("Behandler: " + str(book) if book else "(venter)")
+                    relpath_in = "in"
+                    if pipeline[0].dir_in and not pipeline[0].dir_base:
+                        relpath_in = os.path.basename(os.path.dirname(pipeline[0].dir_in))
+                    elif pipeline[0].dir_in and pipeline[0].dir_base:
+                        relpath_in = os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
+                    
+                    relpath_out = "out"
+                    if pipeline[0].dir_out and not pipeline[0].dir_base:
+                        relpath_out = os.path.basename(os.path.dirname(pipeline[0].dir_out))
+                    elif pipeline[0].dir_out and pipeline[0].dir_base:
+                        relpath_out = os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
+                    
+                    pipeline_label = title + "\n" + queue_string + "\n" + ("Behandler: " + str(book) if book else "(venter)" if pipeline[0].running else "")
                     
                     fillcolor = "lightskyblue1"
                     if book or queue_size:

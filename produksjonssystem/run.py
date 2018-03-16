@@ -7,7 +7,7 @@ import time
 import logging
 from threading import Thread
 from core.plotter import Plotter
-from core.pipeline import Pipeline
+from core.pipeline import Pipeline, DummyPipeline
 from email.headerregistry import Address
 
 # Import pipelines
@@ -61,6 +61,7 @@ dirs = {
     "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
+    "epub_narrated": os.path.join(book_archive_dir, "utgave-ut/EPUB-innlest"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
     "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
     "pub-in-epub": os.path.join(book_archive_dir, "utgave-inn/EPUB"),
@@ -77,6 +78,7 @@ pipelines = [
     [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
     [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
     [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
+    [ DummyPipeline("Innlesing"),                   "epub_narration",      "epub_narrated",       "reports", ["jostein"]],
     [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
     [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","jostein","olav"]],
     [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],

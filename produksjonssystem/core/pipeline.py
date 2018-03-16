@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 import time
 import logging
@@ -469,18 +470,27 @@ class DummyPipeline(Pipeline):
     running = False
     _dummy_should_run = None
     
-    def __init__(self, uid=None, title=None):
-        if uid:
-            self.uid = uid
+    def __init__(self, title=None, uid=None):
         if title:
             self.title = title
+        if uid:
+            self.uid = uid
+        elif title:
+            self.uid = "dummy_{}".format(re.sub(r'[^a-z0-9]', '', title.lower()))
         self.utils = DotMap()
         self.utils.report = DummyReport(self)
         self.utils.filesystem = Filesystem(self)
         self._dummy_should_run = False
     
-    def start(self, *args, **kwargs):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
         self._dummy_should_run = True
+        
+        if dir_in:
+            self.dir_in = str(os.path.normpath(dir_in)) + '/'
+        if dir_out:
+            self.dir_out = str(os.path.normpath(dir_out)) + '/'
+        if dir_base:
+            self.dir_base = str(os.path.normpath(dir_base)) + '/'
     
     def stop(self, *args, **kwargs):
         self._dummy_should_run = False
