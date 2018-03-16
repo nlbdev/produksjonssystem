@@ -17,7 +17,10 @@ except: pass
 try:(rmtree('/tmp/book-archive/distribusjonsformater/PEF/fullskrift/118395'))
 except: pass
 
-copyfile ('/home/espso/Downloads/epub-test/561195.epub','/tmp/book-archive/innkommende/561195.epub')
+#copyfile ('/home/espso/Downloads/epub-test/561195.epub','/tmp/book-archive/innkommende/561195.epub')
+
+file_path = os.path.join(os.path.dirname(__file__),"561195.epub")
+copyfile (file_path,'/tmp/book-archive/innkommende/561195.epub')
 
 success = 1;
 t=350;
