@@ -50,7 +50,6 @@ class Pipeline():
     config = None
     
     # constants (set during instantiation)
-    running = False
     shouldHandleBooks = True
     _inactivity_timeout = 10
     _bookHandlerThread = None
@@ -81,7 +80,6 @@ class Pipeline():
     
     def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
-        self.running = True
         
         if not dir_in:
             dir_in = os.environ.get("DIR_IN")
@@ -170,7 +168,6 @@ class Pipeline():
         if exit:
             self._shouldRun = False
         self._queue = []
-        self.running = False
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
     def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -466,7 +463,6 @@ class DummyPipeline(Pipeline):
     book = {}
     
     utils = None
-    running = False
     _dummy_should_run = None
     
     def __init__(self, uid=None, title=None):
