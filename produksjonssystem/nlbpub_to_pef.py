@@ -11,7 +11,6 @@ import shutil
 import re
 
 from core.utils.epub import Epub
-from update_metadata import UpdateMetadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
@@ -57,15 +56,6 @@ class NlbpubToPef(Pipeline):
         temp_epubdir = temp_epubdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
-        
-        
-        # ---------- oppdater metadata ----------
-        
-        self.utils.report.info("Oppdaterer metadata...")
-        updated = UpdateMetadata.update(self, temp_epub, publication_format="Braille")
-        if isinstance(updated, bool) and updated == False:
-            self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎"
-            return
         
         
         # ---------- konverter til PEF ----------

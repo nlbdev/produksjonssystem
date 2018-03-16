@@ -16,6 +16,7 @@ from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
+from insert_metadata import *
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
@@ -61,19 +62,27 @@ dirs = {
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
     "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
-    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF")
+    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
+    "pub-in-epub": os.path.join(book_archive_dir, "utgave-inn/EPUB"),
+    "pub-in-audio": os.path.join(book_archive_dir, "utgave-inn/lydbok"),
+    "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
+    "pub-in-braille": os.path.join(book_archive_dir, "utgave-inn/punktskrift"),
 }
 
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
-    [ IncomingNordic(),         "incoming",       "master",           "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
-    [ NordicToNlbpub(),         "master",         "nlbpub",           "reports", ["jostein","olav","per"]],
-    [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
-    [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
-    [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
-    [ NlbpubToPef(),            "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
-    [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
-    [ DtbookToTts(),            "dtbook",         "dtbook_tts",       "reports", ["ammar","jostein","mari","olav"]],
+    [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+    [ NordicToNlbpub(),                             "master",              "nlbpub",              "reports", ["jostein","olav","per"]],
+    [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
+    [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
+    [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
+    [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
+    [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
+    [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","jostein","olav"]],
+    [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
+    [ NlbpubToPef(),                                "pub-in-braille",      "pef",                 "reports", ["ammar","jostein","kari"]],
+    [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav"]],
+    [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","mari","olav"]],
 ]
 
 
