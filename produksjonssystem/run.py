@@ -19,7 +19,6 @@ from incoming_nordic import IncomingNordic
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
-from nlbpub_to_docx import NLBpubToDocx
 
 # Check that archive dir is defined
 assert os.environ.get("BOOK_ARCHIVE_DIR")
@@ -47,7 +46,6 @@ email = {
         "roald":   Address("Roald Madland",            "Roald.Madland",     "nlb.no"),
         "sobia":   Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
         "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
-        "espen":  Address("Espen Solhjem",        "Espen.Solhjem", "nlb.no"),
     }
 }
 
@@ -61,7 +59,6 @@ dirs = {
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
-    "docx": os.path.join(book_archive_dir, "distribusjonsformater/docx"),
     "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
     "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF")
@@ -72,12 +69,11 @@ pipelines = [
     [ IncomingNordic(),         "incoming",       "master",           "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
     [ NordicToNlbpub(),         "master",         "nlbpub",           "reports", ["jostein","olav","per"]],
     [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
-    #[ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
+    [ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
     [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
-    #[ NlbpubToPef(),            "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
-    #[ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
-    #[ DtbookToTts(),            "dtbook",         "dtbook_tts",       "reports", ["ammar","jostein","mari","olav"]],
-    [ NLBpubToDocx(),           "nlbpub",         "docx",             "reports", ["espen"]]
+    [ NlbpubToPef(),            "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
+    [ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
+    [ DtbookToTts(),            "dtbook",         "dtbook_tts",       "reports", ["ammar","jostein","mari","olav"]],
 ]
 
 
@@ -148,31 +144,44 @@ graph_thread.setDaemon(True)
 graph_thread.start()
 
 try:
-    stopfile = os.getenv("TRIGGER_DIR")
-    if stopfile:
-        stopfile = os.path.join(stopfile, "stop")
-
+    triggerdir = os.getenv("TRIGGER_DIR")
+    stopfile = os.path.join(triggerdir, "stop") if triggerdir else None
+    
     running = True
     while running:
         time.sleep(1)
-
+        
         if os.path.exists(stopfile):
             os.remove(stopfile)
             for pipeline in pipelines:
                 pipeline[0].stop(exit=True)
-
+        
         for thread in threads:
             if not thread.isAlive():
                 running = False
                 break
-
+        
+        # trigger all pipelines that uses the "master" directory as input
+        triggerfiles = os.listdir(triggerdir)
+        for triggerfile in triggerfiles:
+            triggerfilepath = os.path.join(triggerdir, triggerfile)
+            if os.path.isfile(triggerfilepath):
+                os.remove(triggerfilepath)
+                for pipeline in pipelines:
+                    if pipeline[1] == "master":
+                        pipelinetriggerfile = os.path.join(triggerdir, pipeline[0].uid, triggerfile)
+                        with open(pipelinetriggerfile, 'a'):
+                            os.utime(pipelinetriggerfile, None)
+    
 except KeyboardInterrupt:
     pass
 
 for pipeline in pipelines:
     pipeline[0].stop(exit=True)
-    plotter.should_run = False
 
-graph_thread.join()
 for thread in threads:
     thread.join()
+
+plotter.should_run = False
+time.sleep(1.5) # give plotter time for one last plot
+graph_thread.join()

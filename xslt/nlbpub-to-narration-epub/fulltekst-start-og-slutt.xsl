@@ -222,11 +222,11 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
                         <p>
                             <xsl:text>The original ISBN is </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -298,11 +298,11 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
                         <p>
                             <xsl:text>ISBN-nummeret til originalen er  </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -373,11 +373,11 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
                         <p>
                             <xsl:text>Originalens ISBN er </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>

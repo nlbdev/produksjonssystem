@@ -183,9 +183,7 @@ section dl {
                 <xsl:value-of select="concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier)"/>
             </xsl:when>
             <xsl:when test="$type-id = 'creativeWork' and count($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])">
-                <xsl:variable name="isn" select="($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])[1]/replace(normalize-space(.),'[^\d]','')"/>
-                <xsl:variable name="prefix" select="concat('urn:', if (string-length($isn) = 8) then 'issn' else 'isbn', ':', $isn)"/>
-                <xsl:value-of select="concat($prefix, $isn)"/>
+                <xsl:value-of select="concat('urn:isbn:', ($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])[1]/replace(normalize-space(.),'[^\d]',''))"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat('record_',replace(string(current-time()),'[^\d]',''), $type-id, '_', ($metadata[1]/generate-id(), '')[1])"/>
