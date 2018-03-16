@@ -85,16 +85,15 @@ class NlbpubToHtml(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
         
+        self.utils.report.info("Tilpasser innhold for e-tekst...")
         xslt = Xslt(self, stylesheet=os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "prepare-for-html.xsl"),
                           source=html_file,
                           target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
+        shutil.copy(temp_html, html_file)
         
-        html_dir = os.path.dirname(opf_path)
-        
-        os.remove(html_file)
         
         # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
         
@@ -106,10 +105,13 @@ class NlbpubToHtml(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
         
-        html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # html vs xhtml ?
+        shutil.copy(html_file, temp_html)
+        os.remove(html_file)
+        html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # Bruk html istedenfor xhtml når det ikke er en EPUB
         shutil.copy(temp_html, html_file)
         # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
         
+        html_dir = os.path.dirname(opf_path)
         shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
                     os.path.join(html_dir, "NLB_logo.jpg"))
         
