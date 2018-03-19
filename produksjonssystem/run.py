@@ -40,6 +40,7 @@ email = {
         "ammar":   Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
         "eivind":  Address("Eivind Haugen",            "Eivind.Haugen",     "nlb.no"),
         "elih":    Address("Eli Hafskjold",            "Eli.Hafskjold",     "nlb.no"),
+        "espen":   Address("Espen Solhjem",            "Espen.Solhjem",     "nlb.no"),
         "jostein": Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
         "kari":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
         "karik":   Address("Kari Kummeneje",           "Kari.Kummeneje",    "nlb.no"),
@@ -49,7 +50,7 @@ email = {
         "roald":   Address("Roald Madland",            "Roald.Madland",     "nlb.no"),
         "sobia":   Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
         "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
-        "espen":  Address("Espen Solhjem",        "Espen.Solhjem", "nlb.no"),
+        "wenche":  Address("Wenche Andresen",          "wenche.andresen",   "nlb.no"),
     }
 }
 
@@ -81,8 +82,15 @@ pipelines = [
     # Mottak
     [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
     [ NordicToNlbpub(),                             "master",              "nlbpub",              "reports", ["jostein","olav","per"]],
-    [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
-
+    [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"],
+                                                                                                             { "librarians": [
+                                                                                                                email["recipients"]["elih"],
+                                                                                                                email["recipients"]["jostein"],
+                                                                                                                email["recipients"]["karik"],
+                                                                                                                email["recipients"]["per"],
+                                                                                                                email["recipients"]["wenche"]
+                                                                                                             ]}],
+    
     # EPUB
     [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
 
