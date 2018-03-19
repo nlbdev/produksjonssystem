@@ -7,7 +7,7 @@ import time
 import logging
 from threading import Thread
 from core.plotter import Plotter
-from core.pipeline import Pipeline
+from core.pipeline import Pipeline, DummyPipeline
 from email.headerregistry import Address
 
 # Import pipelines
@@ -16,8 +16,10 @@ from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
+from insert_metadata import *
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
+from prepare_for_braille import PrepareForBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_docx import NLBpubToDocx
 
@@ -60,24 +62,49 @@ dirs = {
     "metadata": os.path.join(book_archive_dir, "metadata"),
     "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
     "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
+    "daisy202_tts": os.path.join(book_archive_dir, "utgave-ut/DAISY202-fra-talesyntese"),
     "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
-    "docx": os.path.join(book_archive_dir, "distribusjonsformater/docx"),
+    "docx": os.path.join(book_archive_dir, "distribusjonsformater/DOCX"),
     "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
+    "epub_narrated": os.path.join(book_archive_dir, "utgave-ut/EPUB-innlest"),
     "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
-    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF")
+    "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
+    "pub-ready-braille": os.path.join(book_archive_dir, "utgave-klargjort/punktskrift"),
+    "pub-in-epub": os.path.join(book_archive_dir, "utgave-inn/EPUB"),
+    "pub-in-audio": os.path.join(book_archive_dir, "utgave-inn/lydbok"),
+    "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
+    "pub-in-braille": os.path.join(book_archive_dir, "utgave-inn/punktskrift"),
 }
 
 # Define pipelines, input/output/report dirs, and email recipients
 pipelines = [
-    [ IncomingNordic(),         "incoming",       "master",           "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
-    [ NordicToNlbpub(),         "master",         "nlbpub",           "reports", ["jostein","olav","per"]],
-    [ UpdateMetadata(),         "metadata",       "nlbpub",           "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
-    #[ NlbpubToNarrationEpub(),  "nlbpub",         "epub_narration",   "reports", ["eivind","jostein","per"]],
-    [ NlbpubToHtml(),           "nlbpub",         "html",             "reports", ["ammar","jostein","olav"]],
-    #[ NlbpubToPef(),            "nlbpub",         "pef",              "reports", ["ammar","jostein","kari"]],
-    #[ EpubToDtbook(),           "master",         "dtbook",           "reports", ["ammar","jostein","mari","olav"]],
-    #[ DtbookToTts(),            "dtbook",         "dtbook_tts",       "reports", ["ammar","jostein","mari","olav"]],
-    [ NLBpubToDocx(),           "nlbpub",         "docx",             "reports", ["espen"]]
+    # Mottak
+    [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+    [ NordicToNlbpub(),                             "master",              "nlbpub",              "reports", ["jostein","olav","per"]],
+    [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"], { "librarians": [email["recipients"]["elih"], email["recipients"]["jostein"], email["recipients"]["karik"], email["recipients"]["per"]] }],
+
+    # EPUB
+    [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
+
+    # innlest lydbok
+    [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
+    [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
+    [ DummyPipeline("Innlesing"),                   "epub_narration",      "epub_narrated",       "reports", ["jostein"]],
+
+    # e-bok
+    [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
+    [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","jostein","olav"]],
+    [ NlbpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
+
+    # punktskrift
+    [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
+    [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","kari"]],
+    [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","kari"]],
+
+    # TTS-lydbok
+    [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav"]],
+    [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","mari","olav"]],
+    [ DummyPipeline("TTS-produksjon"),              "dtbook_tts",          "daisy202_tts",        "reports", ["jostein"]],
 ]
 
 
