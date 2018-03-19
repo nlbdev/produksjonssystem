@@ -94,7 +94,7 @@ pipelines = [
     # e-bok
     [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
     [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","jostein","olav"]],
-    [ NlbpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
+    [ NLBpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
 
     # punktskrift
     [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],

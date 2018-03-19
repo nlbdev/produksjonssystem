@@ -103,13 +103,14 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
             return
 
-        docx_dir = os.path.dirname(opf_path)
+        html_dir = os.path.dirname(opf_path)
 
-        os.remove(html_file)
+        shutil.copy(temp_html, html_file)
+
 
         # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
 
-        html_xml = ElementTree.parse(temp_html).getroot()
+        html_xml = ElementTree.parse(html_file).getroot()
         result_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
         result_identifier = result_identifier[0].attrib["content"] if result_identifier and "content" in result_identifier[0].attrib else None
         if not result_identifier:
@@ -117,53 +118,38 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
 
-        html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # html vs xhtml ?
-        shutil.copy(temp_html, html_file)
+        #html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # html vs xhtml ?
         # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
 
         shutil.copy(os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "NLB_logo.jpg"),
-                    os.path.join(docx_dir, "NLB_logo.jpg"))
+                    os.path.join(html_dir, "NLB_logo.jpg"))
 
         shutil.copy(os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "default.css"),
-                    os.path.join(docx_dir, "default.css"))
+                    os.path.join(html_dir, "default.css"))
 
-        # ---------- slett EPUB-spesifikke filer ----------
 
-        items = opf_xml.xpath("/*/*[local-name()='manifest']/*")
-        for item in items:
-            delete = False
 
-            if "properties" in item.attrib and "nav" in re.split(r'\s+', item.attrib["properties"]):
-                delete = True
 
-            if "media-type" in item.attrib:
-                if item.attrib["media-type"].startswith("audio/"):
-                    delete = True
-                elif item.attrib["media-type"] == "application/smil+xml":
-                    delete = True
-
-            if not delete or not "href" in item.attrib:
-                continue
-
-            fullpath = os.path.join(os.path.dirname(opf_path), item.attrib["href"])
-            os.remove(fullpath)
-        os.remove(opf_path)
-
-        #print("DETTE ER DIR " +docx_dir)
+        #print("DETTE ER DIR " +html_dir)
         #DETTE ER DIR /tmp/tmpzzgzwu2y/EPUB
 
         #print("DETTE ER FIL " +html_file)
         #DETTE ER FIL /tmp/tmpzzgzwu2y/EPUB/558294092018.html
         #print(os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier,result_identifier + ".docx"))
+#"/tmp/book-archive/master/NLBPUB",result_identifier,"EPUB",result_identifier+".xhtml"
+        pathlib.Path(os.path.join(NLBpubToDocx.dir_out,result_identifier)).mkdir(parents=True, exist_ok=True)
 
-        pathlib.Path(os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier)).mkdir(parents=True, exist_ok=True)
-        #print("HEI ESPEN" +self.title)
+        #os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier,result_identifier + ".docx"),
+        print(html_file)
         try:
             self.utils.report.info("Konverterer fra XHTML til DOCX...")
             #print(os.path.join("/tmp/book-archive/master/NLBPUB",result_identifier,"EPUB",result_identifier+".xhtml"))
-            process = self.utils.filesystem.run(["/usr/bin/ebook-convert", os.path.join("/tmp/book-archive/master/NLBPUB",result_identifier,"EPUB",result_identifier+".xhtml"), os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier,result_identifier + ".docx"), "--insert-blank-line"])
-
-            #os.path.join(docx_dir,html_file)
+            process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
+                                                html_file,
+                                                os.path.join(NLBpubToDocx.dir_out,result_identifier,result_identifier + ".docx"),
+                                                "--insert-blank-line"])
+            #print("SE HER ESPEN " +os.path.join(NLBpubToDocx.dir_out,result_identifier,result_identifier+".docx"))
+            #os.path.join(html_dir,html_file)
             #os.path.join("/tmp/book-archive/master/NLBPUB",result_identifier,"epub",result_identifier+".xhtml")
 
             self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
@@ -177,12 +163,12 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.warn("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
         # ---------- lagre HTML-filsett ----------
 
-        self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
+        #self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
 
-        #archived_path = self.utils.filesystem.storeBook(docx_dir, result_identifier)
-        #self.utils.report.attachment(None, archived_path, "DEBUG")
-        #self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
-        #self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
+        #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
+        self.utils.report.attachment(None, os.path.join(NLBpubToDocx.dir_out,result_identifier), "DEBUG")
+        self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":
