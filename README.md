@@ -83,7 +83,7 @@ source $HOME/config/set-env.sh
 
 ## Endre innstillinger for e-postvarsling
 
-### Definere en ny e-postadresse
+### Definere en ny e-
 
 Definer kortnavn, navn, og e-postadresse:
 
@@ -147,13 +147,13 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubToFormat(Pipeline):
     uid = "..."
     title = "..."
-    
+
     def on_book_deleted(self):
         pass
-    
+
     def on_book_modified(self):
         pass
-    
+
     def on_book_created(self):
         pass
 
@@ -162,4 +162,30 @@ if __name__ == "__main__":
     NlbpubToFormat().run()
 
 ```
+
+## Calibre for ebook konvertering
+- `sudo apt-get install calibre`
+- Kan brukes til å konvertere mange ebok formater
+
+## Teste system
+### Automatisk sjekk av produksjonslinje
+- `cd ~/Desktop/produksjonssystem/test`
+- `chmod +x testProdsys.py`
+- `./testProdsys.py`
+- Sjekker at alle utformater blir produsert i løpet av en spesifisert tid
+
+### Installasjon av XSpec
+- Klon XSpec: git clone for eksempel på Desktop `https://github.com/expath/xspec.git`
+- Last ned Saxon HE `https://sourceforge.net/projects/saxon/files/Saxon-HE/9.8/`
+- `~/.bashrc` (legg til på slutten):
+```bash
+export PATH="$PATH:/home/DER-XSpec-ER/xspec/bin"
+export SAXON_CP=/home/DER-SAXON-ER/saxon9he.jar
+```
+- Husk å gjøre XSpec.sh kjørbar
+
+### For å kjøre XSpec testene i produksjonssystemet
+- `cd ~/Desktop/produksjonssystem/xslt`
+- chmod +x xspexTest.sh
+- ./xspecTesh.sh
 >>>>>>> master
