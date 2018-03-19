@@ -5,8 +5,7 @@ Python-skript for å sette opp et produksjonssystem
 basert på overvåking av mapper og automatiske
 konverteringer.
 
-<<<<<<< HEAD
-=======
+
 ## Øvrig dokumentasjon
 
 - [Oppdater metadata](docs/update-metadata/README.md)
@@ -188,4 +187,3 @@ export SAXON_CP=/home/DER-SAXON-ER/saxon9he.jar
 - `cd ~/Desktop/produksjonssystem/xslt`
 - chmod +x xspexTest.sh
 - ./xspecTesh.sh
->>>>>>> master

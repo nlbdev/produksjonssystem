@@ -118,8 +118,6 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
 
-        #html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # html vs xhtml ?
-        # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
 
         shutil.copy(os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "NLB_logo.jpg"),
                     os.path.join(html_dir, "NLB_logo.jpg"))
@@ -127,43 +125,23 @@ class NLBpubToDocx(Pipeline):
         shutil.copy(os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "default.css"),
                     os.path.join(html_dir, "default.css"))
 
-
-
-
-        #print("DETTE ER DIR " +html_dir)
-        #DETTE ER DIR /tmp/tmpzzgzwu2y/EPUB
-
-        #print("DETTE ER FIL " +html_file)
-        #DETTE ER FIL /tmp/tmpzzgzwu2y/EPUB/558294092018.html
-        #print(os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier,result_identifier + ".docx"))
-#"/tmp/book-archive/master/NLBPUB",result_identifier,"EPUB",result_identifier+".xhtml"
         pathlib.Path(os.path.join(NLBpubToDocx.dir_out,result_identifier)).mkdir(parents=True, exist_ok=True)
 
-        #os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier,result_identifier + ".docx"),
-        print(html_file)
         try:
             self.utils.report.info("Konverterer fra XHTML til DOCX...")
-            #print(os.path.join("/tmp/book-archive/master/NLBPUB",result_identifier,"EPUB",result_identifier+".xhtml"))
             process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
                                                 html_file,
-                                                os.path.join(NLBpubToDocx.dir_out,result_identifier,result_identifier + ".docx"),
-                                                "--insert-blank-line"])
-            #print("SE HER ESPEN " +os.path.join(NLBpubToDocx.dir_out,result_identifier,result_identifier+".docx"))
-            #os.path.join(html_dir,html_file)
-            #os.path.join("/tmp/book-archive/master/NLBPUB",result_identifier,"epub",result_identifier+".xhtml")
+                                                os.path.join(NLBpubToDocx.dir_out,result_identifier,result_identifier + ".docx")])
+                                                #"--insert-blank-line"])
 
             self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
-            #"/tmp/book-archive/distribusjonsformater/docx/123.docx"])
-            #(os.path.join("/tmp/book-archive/distribusjonsformater/docx/",result_identifier + ".docx")
+
         except subprocess.TimeoutExpired as e:
             self.utils.report.warn("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
 
         except Exception:
             logging.exception("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
             self.utils.report.warn("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
-        # ---------- lagre HTML-filsett ----------
-
-        #self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
         self.utils.report.attachment(None, os.path.join(NLBpubToDocx.dir_out,result_identifier), "DEBUG")
