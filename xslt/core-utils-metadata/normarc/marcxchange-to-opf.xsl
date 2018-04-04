@@ -254,6 +254,17 @@
             <xsl:with-param name="value" select="if ($identifier) then $identifier else text()"/>
             <xsl:with-param name="id" select="'pub-id'"/>
         </xsl:call-template>
+        
+        <xsl:if test="matches(string($identifier), '^\d{12}$')">
+            <xsl:variable name="year" select="substring($identifier,9)"/>
+            <xsl:variable name="month" select="substring($identifier,7,2)"/>
+            <xsl:if test="not(../*:datafield[@tag='260']/*:subfield[@code='c'])">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued'"/><xsl:with-param name="value" select="$year"/></xsl:call-template>
+            </xsl:if>
+            <xsl:if test="not(../*:datafield[@tag='596']/*:subfield[@code='c'])">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="$year"/></xsl:call-template>
+            </xsl:if>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="*:controlfield[@tag='007']">

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:nlb="http://www.nlb.no/"
+               xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:opf="http://www.idpf.org/2007/opf"
+               xmlns="http://www.idpf.org/2007/opf"
+               stylesheet="marcxchange-to-opf.xsl">
+    
+    <x:param name="identifier" select="'612345022018'"/>
+    <x:param name="include-source-reference" select="'true'"/>
+    
+    <x:scenario label="Bruk boknummer for å lage utgivelsesår for utgaven og originalen">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:controlfield tag="001">612345</marcxchange:controlfield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:identifier nlb:metadata-source="Bibliofil@612345 *001" id="pub-id">612345022018</dc:identifier>
+                <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued">2018</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued.original">2018</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+
+</x:description>
