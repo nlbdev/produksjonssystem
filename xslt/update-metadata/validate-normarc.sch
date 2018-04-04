@@ -14,6 +14,9 @@
     
     <let name="identifier" value="string((//marcxchange:record/marcxchange:controlfield[@tag='001'])[1])"/>
     <let name="is-publication" value="//marcxchange:record/marcxchange:controlfield[@tag='001']/substring(text(),1,1) = ('1','2','3','4','6','7','8','9')"/>
+    <let name="is-magazine" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
+    <let name="is-newspaper" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
+    <let name="is-periodical" value="$is-magazine or $is-newspaper or //marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'j'"/>
     
     <pattern>
         <title>Format</title>
@@ -41,7 +44,12 @@
         <rule context="marcxchange:record[$is-publication]">
             <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='a']">Utgivelsessted for utgaven må være definert i *260$a</assert>
             <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='b']">Forlag for utgaven må være definert i *260$b</assert>
-            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">Utgivelsesår for utgaven må være definert i *260$c</assert>
+        </rule>
+        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
+            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">For bøker må utgivelsesår for utgaven være definert i *260$c</assert>
+        </rule>
+        <rule context="marcxchange:record[$is-publication and $is-periodical]">
+            <report test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">For periodika må *260$c ikke være definert</report>
         </rule>
     </pattern>
     
@@ -51,16 +59,18 @@
         <rule context="marcxchange:record[$is-publication]">
             <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='a']">Utgivelsessted for originalen må være definert i *596$a</assert>
             <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='b']">Forlag for originalen må være definert i *596$b</assert>
-            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">Utgivelsesår for originalen må være definert i *596$c</assert>
+        </rule>
+        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
+            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For bøker må utgivelsesår for originalen være definert i *596$c</assert>
+        </rule>
+        <rule context="marcxchange:record[$is-publication and $is-periodical]">
+            <report test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For periodika må *596$c ikke være definert</report>
         </rule>
     </pattern>
     
     <pattern>
         <title>ISBN og ISSN</title>
         
-        <let name="is-magazine" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
-        <let name="is-newspaper" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
-        <let name="is-periodical" value="$is-magazine or $is-newspaper or //marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'j'"/>
         <let name="isbn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISBN mangler'"/>
         <let name="issn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISSN mangler'"/>
         
