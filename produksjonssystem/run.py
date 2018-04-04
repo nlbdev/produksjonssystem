@@ -90,7 +90,7 @@ pipelines = [
                                                                                                                 email["recipients"]["per"],
                                                                                                                 email["recipients"]["wenche"]
                                                                                                              ]}],
-    
+
     # EPUB
     [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
 
@@ -101,7 +101,7 @@ pipelines = [
 
     # e-bok
     [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
-    [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","jostein","olav"]],
+    [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","espen","jostein","olav"]],
     [ NLBpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
 
     # punktskrift
