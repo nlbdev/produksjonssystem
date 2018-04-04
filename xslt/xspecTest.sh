@@ -1,8 +1,6 @@
 #!/bin/bash
 
-#TEMPDIR="`tempfile`"
-#rm "$TEMPDIR" -r && mkdir "$TEMPDIR"
-#/tmp/yfjhjhg
+
 xspecFiles=($(find . -name '*.xspec'))
 
 success=0
@@ -12,7 +10,7 @@ for (( i=0; i<${#xspecFiles[@]}; i++ ));do
   fName=$(basename ${xspecFiles[i]})
   name=$(echo "$fName" | cut -f 1 -d '.')
 
-  #Runs xSpec tests
+  #Runs xSpec tests. Log info to tmp/stdXSpecTestName.log.
   xspec.sh -t ${xspecFiles[i]} >/tmp/std${name}.log 2>&1
 
   #Third line from the bottom is the one containing test status
@@ -39,9 +37,8 @@ for (( i=0; i<${#xspecFiles[@]}; i++ ));do
     echo -e "XSpec error"
   fi
 echo -e " \n "
-#  .... >/dev/null 2>&1
-#  .... >/tmp/loggfil 2>&1
+
 done
 
-#Returns 0 if all tests was successful, 1 otherwise
+#Returns 0 if all tests were successful, 1 otherwise
 exit $success

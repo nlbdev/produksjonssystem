@@ -6,3 +6,5 @@ target
 *-result.html
 *-result.xml
 xspec/*.xsl
+
+xslt/core-utils-epub/xspec/
