@@ -45,7 +45,7 @@ class Report():
             "attachment": []
         }
         self.pipeline = pipeline
-        logging.basicConfig(stream=sys.stdout)
+        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
     
     def reportDir(self):
         # Lag rapport-mappe
