@@ -37,6 +37,7 @@ class UpdateMetadata(Pipeline):
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
     min_update_interval = 60 * 60 * 24 # 1 day
+    max_metadata_emails_per_day = 5
     
     # if UpdateMetadata is not loaded, use a temporary directory
     # for storing metadata so that the static methods still work
@@ -64,6 +65,9 @@ class UpdateMetadata(Pipeline):
         },
         "bibliofil": {}
     }
+    
+    throttle_metadata_emails = True # if enabled, will only send up to N automated metadata error emails per day, and only in working hours
+    last_metadata_errors = [] # timestamps for last automated metadata updates
     
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
@@ -99,10 +103,23 @@ class UpdateMetadata(Pipeline):
             try:
                 time.sleep(1)
                 
+                if self.throttle_metadata_emails:
+                    # only update metadata in working hours
+                    if not (datetime.date.today().weekday() <= 4):
+                        continue
+                    if not (8 <= datetime.datetime.now().hour <= 15):
+                        continue
+                
                 # find a book_id where we haven't retrieved updated metadata in a while
                 for book_id in os.listdir(self.dir_out):
                     now = int(time.time())
                     metadata_dir = os.path.join(self.dir_in, book_id)
+                    
+                    if self.throttle_metadata_emails:
+                        while len(UpdateMetadata.last_metadata_errors) > 0 and UpdateMetadata.last_metadata_errors[0] < now - 3600*24:
+                            UpdateMetadata.last_metadata_errors = UpdateMetadata.last_metadata_errors[1:]
+                        if len(UpdateMetadata.last_metadata_errors) >= max_metadata_emails_per_day:
+                            break # only process N erroneous books per day (avoid getting flooded with errors)
                     
                     last_updated = self.metadata[book_id]["last_updated"] if book_id in self.metadata else None
                     
@@ -482,6 +499,7 @@ class UpdateMetadata(Pipeline):
         # Send rapport
         normarc_pipeline.utils.report.attachLog()
         if not normarc_success:
+            UpdateMetadata.last_metadata_errors.append(int(time.time()))
             normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],
                                                 UpdateMetadata.email_settings["sender"],
                                                 UpdateMetadata.config["librarians"],
