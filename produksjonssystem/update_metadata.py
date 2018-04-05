@@ -47,7 +47,7 @@ class UpdateMetadata(Pipeline):
     
     formats = ["EPUB", "DAISY 2.02", "XHTML", "Braille"] # values used in dc:format
     
-    logPipeline = DummyPipeline(uid=uid, title=title)
+    logPipeline = None
     
     _metadataWatchThread = None
     _shouldWatchMetadata = True
@@ -68,6 +68,8 @@ class UpdateMetadata(Pipeline):
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
         self.shouldHandleBooks = False
+        
+        self.logPipeline = DummyPipeline(uid=self.uid + "-auto", title=self.title + " automatisk", inherit_config_from=UpdateMetadata)
         
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting to watch metadata...")
         
@@ -457,10 +459,7 @@ class UpdateMetadata(Pipeline):
             html_metadata[f] = opf_metadata[f].replace(".opf",".html")
         
         # Lag separat rapport/e-post for Bibliofil-metadata
-        normarc_pipeline = DummyPipeline(uid=UpdateMetadata.uid, title=UpdateMetadata.title)
-        normarc_pipeline.dir_reports = UpdateMetadata.dir_reports
-        normarc_pipeline.dir_base = UpdateMetadata.dir_base
-        normarc_pipeline.email_settings = UpdateMetadata.email_settings
+        normarc_pipeline = DummyPipeline(uid=UpdateMetadata.uid, title=UpdateMetadata.title, inherit_config_from=UpdateMetadata)
         for util in pipeline.utils:
             if util != "report":
                 normarc_pipeline.utils[util] = pipeline.utils[util]
