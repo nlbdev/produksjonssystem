@@ -30,7 +30,7 @@ class Produksjonssystem():
     dirs = None
     pipelines = None
     
-    def __init__(self, environment):
+    def __init__(self, environment=None):
         
         # Set environment variables (mainly useful when testing)
         assert not environment or isinstance(environment, dict)
