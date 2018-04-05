@@ -1,15 +1,44 @@
 #!/usr/bin/env python
+
+#
+# Run this script from the top-level project directory as follows:
+# python3 -m unittest tests.testProdsys.py
+#
+
 import os
 from shutil import copyfile
 from shutil import rmtree
 import time
 import sys
+import threading
+import tempfile
+
+# import produksjonssystem from relative directory
+prodsys_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "produksjonssystem"))
+sys.path.insert(0, prodsys_path)
+from produksjonssystem import run
+
+# Configure system
+environment = {
+    "BOOK_ARCHIVE_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-archive"),
+    "TRIGGER_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-triggerdir"),
+    "REPORTS_DIR": "/tmp/prodsys-rapporter", # always the same, so that it's easier to view the dashboard(s)
+    "DEBUG": "false",
+    "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
+    "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
+    "STOP_AFTER_FIRST_JOB": "true"
+}
+
+print("")
+print("Dashboard: file://" + os.path.join(environment["REPORTS_DIR"], "dashboard.html"))
+print("Book archive: file://" + os.path.join(environment["BOOK_ARCHIVE_DIR"]))
+print("")
 
 BookID="558237"
 newBookID="356837"
 epubInnL_ID="406837"
 
-distPath='/tmp/book-archive/distribusjonsformater/'
+distPath=os.path.join(environment["BOOK_ARCHIVE_DIR"],'distribusjonsformater')
 DTBook_path=os.path.join(distPath,'DTBook',BookID)
 epubInnL_path=os.path.join(distPath,'EPUB-til-innlesing',epubInnL_ID+'.epub')
 DTBookToTts_path=os.path.join(distPath,'DTBook-til-talesyntese',BookID)
@@ -32,15 +61,26 @@ except: pass
 try:(rmtree(DOCX_path))
 except: pass
 
+prodsys = run.Produksjonssystem(environment=environment)
+prodsys_thread = threading.Thread(target=prodsys.run)
+prodsys_thread.setDaemon(True)
+prodsys_thread.start()
+if not prodsys.wait_until_running():
+    print("Timed out when starting system")
+    sys.exit(1)
+
 file_path = os.path.join(os.path.dirname(__file__),BookID+".epub")
-copyfile (file_path,os.path.join('/tmp/book-archive/innkommende/',BookID+".epub"))
+copyfile (file_path,os.path.join(environment["BOOK_ARCHIVE_DIR"], 'innkommende',BookID+".epub"))
 
 success = 1;
 t=500;
 
 print("Starting test of NLB production system. Verifyes distribution formats for " +BookID+".epub in {0} seconds \n".format(t))
 
-time.sleep(t)
+prodsys_thread.join(timeout=t)
+if prodsys_thread.is_alive():
+    print("The tests timed out")
+
 #Check if folder is not empty
 if  os.path.exists(DTBook_path):print("DTBook  is verified")
 else:
