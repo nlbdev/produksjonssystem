@@ -12,12 +12,12 @@ import zipfile
 import datetime
 import requests
 import tempfile
+import threading
 import traceback
 import subprocess
 
 from lxml import etree as ElementTree
 from pathlib import Path
-from threading import Thread, RLock
 from core.pipeline import Pipeline, DummyPipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
@@ -51,9 +51,8 @@ class UpdateMetadata(Pipeline):
     logPipeline = None
     
     _metadataWatchThread = None
-    _shouldWatchMetadata = True
     
-    update_lock = RLock()
+    update_lock = threading.RLock()
     
     metadata = None
     sources = {
@@ -80,7 +79,7 @@ class UpdateMetadata(Pipeline):
         if not self.metadata:
             self.metadata = {}
         
-        self._metadataWatchThread = Thread(target=self._watch_metadata_thread)
+        self._metadataWatchThread = threading.Thread(target=self._watch_metadata_thread)
         self._metadataWatchThread.setDaemon(True)
         self._metadataWatchThread.start()
         
@@ -88,8 +87,8 @@ class UpdateMetadata(Pipeline):
         
     
     def stop(self, *args, **kwargs):
-        self._shouldWatchMetadata = False
-        if self._metadataWatchThread:
+        self.running = False
+        if self._metadataWatchThread and self._metadataWatchThread != threading.current_thread():
             self._metadataWatchThread.join()
         
         self.logPipeline.stop()
@@ -99,9 +98,12 @@ class UpdateMetadata(Pipeline):
         super().stop(*args, **kwargs)
     
     def _watch_metadata_thread(self):
-        while self._shouldWatchMetadata:
+        while self.running:
             try:
                 time.sleep(1)
+                
+                if self._stopAfterFirstJob:
+                    self.stop(exit=True)
                 
                 if self.throttle_metadata_emails:
                     # only update metadata in working hours
