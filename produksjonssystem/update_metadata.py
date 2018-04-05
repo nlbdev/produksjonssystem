@@ -91,7 +91,8 @@ class UpdateMetadata(Pipeline):
         if self._metadataWatchThread and self._metadataWatchThread != threading.current_thread():
             self._metadataWatchThread.join()
         
-        self.logPipeline.stop()
+        if self.logPipeline:
+            self.logPipeline.stop()
         
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped watching metadata")
         
