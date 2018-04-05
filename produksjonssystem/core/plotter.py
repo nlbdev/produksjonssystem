@@ -90,7 +90,7 @@ class Plotter():
         dot.render(os.path.join(self.report_dir, name + "_"))
         # in case dot.render haven't finished writing the file (try avoiding "No such file" exception)
         if os.path.isfile(os.path.join(self.report_dir, name + "_.png")):
-            shutil.move(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+            os.rename(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
         else:
             logging.warn("[" + Report.thread_name() + "]" + "Plot was not found: {}".format(os.path.join(self.report_dir, name + "_.png")))
         
