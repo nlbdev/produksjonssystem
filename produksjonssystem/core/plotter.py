@@ -88,11 +88,18 @@ class Plotter():
             dot.edge(pipeline_id, pipeline[2])
         
         dot.render(os.path.join(self.report_dir, name + "_"))
-        # in case dot.render haven't finished writing the file (try avoiding "No such file" exception)
-        if os.path.isfile(os.path.join(self.report_dir, name + "_.png")):
-            os.rename(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
-        else:
-            logging.warn("[" + Report.thread_name() + "]" + "Plot was not found: {}".format(os.path.join(self.report_dir, name + "_.png")))
+        
+        # there seems to be some race condition when doing this across a mounted network drive,
+        # so if we get a FileNotFoundError we just retry a few times and it should work.
+        for t in reversed(range(10)):
+            try:
+                os.rename(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+                break
+            except FileNotFoundError as e:
+                logging.debug("[" + Report.thread_name() + "]" + " Unable to rename plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
+                time.sleep(0.5)
+                if t == 0:
+                    raise e
         
         dashboard_file = os.path.join(self.report_dir, name + ".html")
         if not os.path.isfile(dashboard_file):
@@ -111,4 +118,4 @@ class Plotter():
                     self.plot([p[0].uid], p[0].uid)
                 
             except Exception:
-                logging.exception("[" + Report.thread_name() + "]" + "An error occurred while generating plot")
+                logging.exception("[" + Report.thread_name() + "] " + "An error occurred while generating plot")
