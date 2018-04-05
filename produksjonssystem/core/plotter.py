@@ -9,6 +9,7 @@ import logging
 
 from graphviz import Digraph
 from core.pipeline import Pipeline
+from core.utils.report import Report
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -87,7 +88,11 @@ class Plotter():
             dot.edge(pipeline_id, pipeline[2])
         
         dot.render(os.path.join(self.report_dir, name + "_"))
-        shutil.move(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+        # in case dot.render haven't finished writing the file (try avoiding "No such file" exception)
+        if os.path.isfile(os.path.join(self.report_dir, name + "_.png")):
+            shutil.move(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+        else:
+            logging.warn("[" + Report.thread_name() + "]" + "Plot was not found: {}".format(os.path.join(self.report_dir, name + "_.png")))
         
         dashboard_file = os.path.join(self.report_dir, name + ".html")
         if not os.path.isfile(dashboard_file):
@@ -106,4 +111,4 @@ class Plotter():
                     self.plot([p[0].uid], p[0].uid)
                 
             except Exception:
-                logging.exception("An error occured while generating plot")
+                logging.exception("[" + Report.thread_name() + "]" + "An error occurred while generating plot")
