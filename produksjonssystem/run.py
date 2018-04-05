@@ -33,9 +33,10 @@ class Produksjonssystem():
     def __init__(self, environment=None):
         
         # Set environment variables (mainly useful when testing)
-        assert not environment or isinstance(environment, dict)
-        for name in environment:
-            os.environ[name] = environment[name]
+        if environment:
+            assert isinstance(environment, dict)
+            for name in environment:
+                os.environ[name] = environment[name]
         
         # Check that archive dir is defined
         assert os.environ.get("BOOK_ARCHIVE_DIR")
