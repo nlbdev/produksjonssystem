@@ -29,6 +29,7 @@ class Produksjonssystem():
     email = None
     dirs = None
     pipelines = None
+    environment = None
     
     def __init__(self, environment=None):
         
@@ -37,6 +38,10 @@ class Produksjonssystem():
             assert isinstance(environment, dict)
             for name in environment:
                 os.environ[name] = environment[name]
+            self.environment = environment
+        else:
+            self.environment = {}
+        Pipeline.environment = self.environment # Make environment available from pipelines
         
         # Check that archive dir is defined
         assert os.environ.get("BOOK_ARCHIVE_DIR")
@@ -189,7 +194,7 @@ class Produksjonssystem():
                                                           self.dirs[pipeline[3]],
                                                           email_settings,
                                                           self.book_archive_dir,
-                                                          pipeline[5] if len(pipeline) >= 6 else None
+                                                          pipeline[5] if len(pipeline) >= 6 else {}
                                                          ))
             thread.setDaemon(True)
             thread.start()

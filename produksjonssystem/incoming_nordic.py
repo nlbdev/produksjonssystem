@@ -24,7 +24,15 @@ class IncomingNordic(Pipeline):
     uid = "incoming-nordic"
     title = "Validering av Nordisk EPUB 3"
     
-    ace_cli = "/usr/bin/ace"
+    ace_cli = None
+    
+    @staticmethod
+    def init_environment():
+        IncomingNordic.ace_cli = Pipeline.environment["ACE_CLI"] if "ACE_CLI" in Pipeline.environment else "/usr/bin/ace"
+    
+    def __init__(self):
+        IncomingNordic.init_environment()
+        super().__init__()
     
     def on_book_deleted(self):
         self.utils.report.should_email = False
@@ -67,7 +75,7 @@ class IncomingNordic(Pipeline):
         try:
             self.utils.report.info("Genererer ACE-rapport...")
             ace_dir = os.path.join(self.utils.report.reportDir(), "accessibility-report")
-            process = self.utils.filesystem.run([self.ace_cli, "-o", ace_dir, epub.asFile()])
+            process = self.utils.filesystem.run([IncomingNordic.ace_cli, "-o", ace_dir, epub.asFile()])
             
             # attach report
             ace_status = None

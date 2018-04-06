@@ -14,7 +14,7 @@ class Xslt():
     
     # treat as class variables
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../..", "xslt"))
-    saxon_jar = os.path.join(DaisyPipelineJob.dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
+    saxon_jar = None
     _i18n = {
         "The XSLT": "XSLTen",
         "took too long time and was therefore stopped.": "tok for lang tid og ble derfor stoppet.",
@@ -22,6 +22,11 @@ class Xslt():
     
     # treat as instance variables
     pipeline = None
+    
+    @staticmethod
+    def init_environment():
+        DaisyPipelineJob.init_environment()
+        Xslt.saxon_jar = os.path.join(DaisyPipelineJob.dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
     
     def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}, template=None, stdout_level="INFO", stderr_level="INFO"):
         assert pipeline
@@ -32,8 +37,10 @@ class Xslt():
         self.pipeline = pipeline
         self.success = False
         
+        Xslt.init_environment()
+        
         try:
-            command = ["java", "-jar", self.saxon_jar]
+            command = ["java", "-jar", Xslt.saxon_jar]
             if source:
                 command.append("-s:" + source)
             else:

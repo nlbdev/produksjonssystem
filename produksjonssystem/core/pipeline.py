@@ -48,7 +48,8 @@ class Pipeline():
     dirs = None
     
     # Other configuration
-    config = None
+    config = None    # instance config
+    environment = {} # global config
     
     # constants (set during instantiation)
     running = False
