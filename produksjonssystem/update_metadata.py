@@ -299,21 +299,46 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("Leter etter bøker med samme ISBN som {} i {}...".format(edition_identifier, original_isbn_csv))
             with open(original_isbn_csv) as f:
                 for line in f:
-                    b = line.split(",")[0]
-                    i = line.split(",")[1].strip()
+                    b = line.split(",")[0]                            # book id
+                    i = line.split(",")[1].strip()                    # isbn
                     i_normalized = re.sub(r"[^\d]", "", i)
+                    f = sorted(list(set(line.split(",")[2].split()))) # formats
+                    fmt = " ".join(f)
                     if i_normalized not in original_isbn:
-                        original_isbn[i_normalized] = { "pretty": i, "books": [] }
-                    original_isbn[i_normalized]["books"].append(b)
+                        original_isbn[i_normalized] = { "pretty": i, "books": {} }
+                    
+                    for old_fmt in original_isbn[i_normalized]["books"]:
+                        if len([val for val in old_fmt.split() if val in f]):
+                            # same format; rename dict key
+                            f = sorted(list(set(f + [b])))
+                            fmt = " ".join(f)
+                            if fmt in original_isbn[i_normalized]["books"]:
+                                original_isbn[i_normalized]["books"][old_fmt] += original_isbn[i_normalized]["books"][fmt]
+                            original_isbn[i_normalized]["books"][fmt] = original_isbn[i_normalized]["books"].pop(old_fmt)
+                    
+                    if fmt not in original_isbn[i_normalized]["books"]:
+                        original_isbn[i_normalized]["books"][fmt] = []
+                    original_isbn[i_normalized]["books"][fmt].append(b)
+                    original_isbn[i_normalized]["books"][fmt] = sorted(list(set(original_isbn[i_normalized]["books"][fmt])))
         else:
             pipeline.utils.report.warn("Finner ikke liste over boknummer og ISBN fra `*596$f` (\"{}\")".format(original_isbn_csv))
         for i in original_isbn:
             data = original_isbn[i]
-            if edition_identifier in data["books"] or pub_identifier in data["books"]:
-                for b in data["books"]:
-                    if not b in identifiers:
-                        pipeline.utils.report.info("{} har samme ISBN/ISSN i `*596$f` som {}; legger til {} som utgave".format(b, edition_identifier, b))
-                        identifiers.append(b)
+            match = True in [edition_identifier in data["books"][fmt] or pub_identifier in data["books"][fmt] for fmt in data["books"]]
+            if not match:
+                continue
+            for fmt in data["books"]:
+                if len(data["books"][fmt]) > 1:
+                    ignored = [val for val in data["books"][fmt] if val not in identifiers]
+                    pipeline.utils.report.warn("Det er flere bøker med samme original-ISBN/ISSN og samme format: {}".format(", ".join(data["books"][fmt])))
+                    if len(ignored):
+                        pipeline.utils.report.warn("Følgende bøker blir ikke behandlet: {}".format(", ".join(ignored)))
+                    continue
+                else:
+                    fmt_bookid = data["books"][fmt][0]
+                    if not fmt_bookid in identifiers:
+                        pipeline.utils.report.info("{} har samme ISBN/ISSN i `*596$f` som {}; legger til {} som utgave".format(fmt_bookid, edition_identifier, fmt_bookid))
+                        identifiers.append(fmt_bookid)
         
         for format_edition_identifier in identifiers:
             format_pub_identifier = format_edition_identifier
