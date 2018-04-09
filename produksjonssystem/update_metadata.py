@@ -121,7 +121,7 @@ class UpdateMetadata(Pipeline):
                     if self.throttle_metadata_emails:
                         while len(UpdateMetadata.last_metadata_errors) > 0 and UpdateMetadata.last_metadata_errors[0] < now - 3600*24:
                             UpdateMetadata.last_metadata_errors = UpdateMetadata.last_metadata_errors[1:]
-                        if len(UpdateMetadata.last_metadata_errors) >= max_metadata_emails_per_day:
+                        if len(UpdateMetadata.last_metadata_errors) >= UpdateMetadata.max_metadata_emails_per_day:
                             break # only process N erroneous books per day (avoid getting flooded with errors)
                     
                     last_updated = self.metadata[book_id]["last_updated"] if book_id in self.metadata else None
@@ -299,10 +299,17 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.debug("Leter etter bøker med samme ISBN som {} i {}...".format(edition_identifier, original_isbn_csv))
             with open(original_isbn_csv) as f:
                 for line in f:
-                    b = line.split(",")[0]                            # book id
-                    i = line.split(",")[1].strip()                    # isbn
+                    line_split = line.split(",")
+                    if len(line_split) == 1:
+                        pipeline.utils.report.warn("'{}' mangler ISBN og format".format(line_split[0]))
+                        continue
+                    elif len(line_split) == 2:
+                        pipeline.utils.report.warn("'{}' ({}) mangler format".format(line_split[0], line_split[1]))
+                        continue
+                    b = line_split[0]                            # book id
+                    i = line_split[1].strip()                    # isbn
                     i_normalized = re.sub(r"[^\d]", "", i)
-                    f = sorted(list(set(line.split(",")[2].split()))) # formats
+                    f = sorted(list(set(line_split[2].split()))) # formats
                     fmt = " ".join(f)
                     if i_normalized not in original_isbn:
                         original_isbn[i_normalized] = { "pretty": i, "books": {} }
