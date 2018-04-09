@@ -189,19 +189,19 @@ class UpdateMetadata(Pipeline):
         # Get updated metadata for a book, but only if the metadata is older than 5 minutes
         now = int(time.time())
         if now - last_updated > 300 or force_update:
-            success = UpdateMetadata.get_metadata(pipeline, epub)
+            success = UpdateMetadata.get_metadata(pipeline, epub, publication_format=publication_format)
             if not success:
                 return False
-        elif not UpdateMetadata.validate_metadata(pipeline, epub):
+        elif not UpdateMetadata.validate_metadata(pipeline, epub, publication_format=publication_format):
             return False
         
         if insert:
-            return UpdateMetadata.insert_metadata(pipeline, epub, publication_format)
+            return UpdateMetadata.insert_metadata(pipeline, epub, publication_format=publication_format)
         else:
             return True
     
     @staticmethod
-    def get_metadata(pipeline, epub):
+    def get_metadata(pipeline, epub, publication_format=""):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read metadata from EPUBs")
             return False
@@ -466,7 +466,7 @@ class UpdateMetadata(Pipeline):
         
         # ========== Validate metadata ==========
         
-        if not UpdateMetadata.validate_metadata(pipeline, epub):
+        if not UpdateMetadata.validate_metadata(pipeline, epub, publication_format=publication_format):
             return False
         
         
@@ -494,10 +494,12 @@ class UpdateMetadata(Pipeline):
         return True
     
     @staticmethod
-    def validate_metadata(pipeline, epub):
+    def validate_metadata(pipeline, epub, publication_format=""):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only update metadata in EPUBs")
             return False
+        
+        assert not publication_format or publication_format in UpdateMetadata.formats, "Format for validating metadata, when specified, must be one of: {}".format(", ".join(UpdateMetadata.formats))
         
         metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier())
         
@@ -507,8 +509,9 @@ class UpdateMetadata(Pipeline):
         
         for f in UpdateMetadata.formats:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
-            opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
-            html_metadata[f] = opf_metadata[f].replace(".opf",".html")
+            if not publication_format or f == publication_format or f == "EPUB":
+                opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
+                html_metadata[f] = opf_metadata[f].replace(".opf",".html")
         
         # Lag separat rapport/e-post for Bibliofil-metadata
         normarc_pipeline = DummyPipeline(uid=UpdateMetadata.uid, title=UpdateMetadata.title, inherit_config_from=UpdateMetadata)
@@ -524,9 +527,12 @@ class UpdateMetadata(Pipeline):
             if f.endswith(".xml"):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
+            if publication_format and UpdateMetadata.get_format_from_normarc(normarc_pipeline, marcxchange_path) not in [publication_format, "EPUB"]:
+                continue
+            
             normarc_pipeline.utils.report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
             sch = Schematron(normarc_pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-normarc.sch"),
-                                       source=marcxchange_path)
+                                               source=marcxchange_path)
             if not sch.success:
                 normarc_pipeline.utils.report.error("Validering av Bibliofil-metadata feilet")
                 normarc_success = False
@@ -583,7 +589,7 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
             return False
         
-        assert not publication_format or publication_format in UpdateMetadata.formats, "Format for updating metadata, when specified, must be one of: {}".format(", ".join(UpdateMetadata.formats))
+        assert publication_format == "" or publication_format in UpdateMetadata.formats, "Format for updating metadata, when specified, must be one of: {}".format(", ".join(UpdateMetadata.formats))
         
         # ========== Update metadata in EPUB ==========
         
@@ -741,6 +747,34 @@ class UpdateMetadata(Pipeline):
         request = requests.get(url)
         with open(target, "wb") as target_file:
             target_file.write(request.content)
+    
+    @staticmethod
+    def get_format_from_normarc(pipeline, marcxchange_path):
+        xml = ElementTree.parse(marcxchange_path).getroot()
+        nsmap = { 'marcxchange': 'info:lc/xmlns/marcxchange-v1' }
+        marc019b = xml.xpath("//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()", namespaces=nsmap)
+        marc019b = marc019b[0] if marc019b else None
+        
+        if not marc019b:
+            pipeline.utils.report.warn("Fant ikke `*019$b` for {}".format(os.path.basename(marcxchange_path)))
+            return None
+        
+        split = marc019b.split(",")
+        
+        if [val for val in split if val in ['za','c']]:
+            return "Braille"
+        
+        if [val for val in split if val in ['dc','dj']]:
+            return "DAISY 2.02"
+        
+        if [val for val in split if val in ['la']]:
+            return "XHTML"
+        
+        if [val for val in split if val in ['gt']]:
+            return "EPUB"
+        
+        pipeline.utils.report.warn("Ukjent format i `*019$b` for {}: {}".format(os.path.basename(marcxchange_path), marc019b))
+        return None
     
     @staticmethod
     def trigger_metadata_pipelines(pipeline, book_id, exclude=None):
