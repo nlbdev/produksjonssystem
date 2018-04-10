@@ -36,7 +36,7 @@
                         </dc:contributor.translator>
                         <dc:source nlb:metadata-source="Bibliofil@561702 *596$f">urn:isbn:9788205489813</dc:source>
                         <schema:isbn nlb:metadata-source="Bibliofil@561702 *596$f">9788205489813</schema:isbn>
-                        <nlbprod:addRecord nlb:metadata-source="Quickbase Record@561702 Add Record">https://dtbook.quickbase.com/db/bmgg4agc5?a=API_GenAddRecordForm&amp;_fid_6=11704&amp;z=</nlbprod:addRecord>
+                        <nlbprod:addRecord nlb:metadata-source="Quickbase Record@561702 Add Record">https://...</nlbprod:addRecord>
                         <nlbprod:author nlb:metadata-source="Quickbase Record@561702 Forfatter">Simon, Francesca
                             
                         </nlbprod:author>
@@ -50,7 +50,7 @@
                         <nlbprod:genre nlb:metadata-source="Quickbase Record@561702 Genre">Skjønnlitteratur</nlbprod:genre>
                         <nlbprod:language nlb:metadata-source="Quickbase Record@561702 Språk">no</nlbprod:language>
                         <nlbprod:language2 nlb:metadata-source="Quickbase Record@561702 Language">no</nlbprod:language2>
-                        <nlbprod:lastModifiedBy nlb:metadata-source="Quickbase Record@561702 Last Modified By">eli.frisvold@nlb.no</nlbprod:lastModifiedBy>
+                        <nlbprod:lastModifiedBy nlb:metadata-source="Quickbase Record@561702 Last Modified By">ef@nlb.no</nlbprod:lastModifiedBy>
                         <nlbprod:newRegistration nlb:metadata-source="Quickbase Record@561702 Ny registrering">true</nlbprod:newRegistration>
                         <nlbprod:numberOfImages nlb:metadata-source="Quickbase Record@561702 Number of images">221</nlbprod:numberOfImages>
                         <nlbprod:numberOfPages nlb:metadata-source="Quickbase Record@561702 Antall sider">209</nlbprod:numberOfPages>
@@ -63,6 +63,7 @@
                         <nlbprod:translator nlb:metadata-source="Quickbase Record@561702 Oversetter">Holm, Dagny
                             
                         </nlbprod:translator>
+                        <nlbprod:signatureRegistration nlb:metadata-source="Quickbase Record@561702 Signatur registrering">ef@nlb.no</nlbprod:signatureRegistration>
                     </rdf:Description>
                     <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=118902">
                         <rdf:type rdf:resource="http://schema.org/Book"/>
@@ -109,7 +110,7 @@
                         <schema:audience nlb:metadata-source="Bibliofil@118902 *008">Juvenile</schema:audience>
                         <schema:audience nlb:metadata-source="Bibliofil@118902 *019$a">Ages 6-8</schema:audience>
                         <schema:audience nlb:metadata-source="Bibliofil@118902 *019$a">Ages 9-10</schema:audience>
-                        <nlbprod:braille nlb:metadata-source="Quickbase Record@561702 Punktskrift">&lt;img src="https://cdn0.iconfinder.com/data/icons/fatcow/32x32/code.png"&gt;</nlbprod:braille>
+                        <nlbprod:braille nlb:metadata-source="Quickbase Record@561702 Punktskrift">&lt;img src="https://..."&gt;</nlbprod:braille>
                         <nlbprod:brailleClubProductionComplete nlb:metadata-source="Quickbase Record@561702 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
                         <nlbprod:brailleClubReadyForLoan nlb:metadata-source="Quickbase Record@561702 Punktklubb klar for utlån">false</nlbprod:brailleClubReadyForLoan>
                         <nlbprod:braillePages nlb:metadata-source="Quickbase Record@561702 Punktsider">228</nlbprod:braillePages>
@@ -120,7 +121,7 @@
                         <nlbprod:commentBraille nlb:metadata-source="Quickbase Record@561702 Kommentar punktskrift">S 46, s 212 - 213,  skal ikke med
                             S 92: teksten på tegningene skal ikke med.
                             s 75-76 : noe "håndarbeid"?
-                            &amp;#8234;14:15:49&amp;#8236;&amp;#8206;: Opplasting fra "C:\Users\matsk\Documents\A_Braille_office\outgoing_pef\118902.pef"
+                            &amp;#8234;14:15:49&amp;#8236;&amp;#8206;: Opplasting fra "C:\...\118902.pef"
                             til "Y:\UPF\118902.pef" (745.65 kB)
                         </nlbprod:commentBraille>
                         <nlbprod:formatBraille nlb:metadata-source="Quickbase Record@561702 Format: Punktskrift">true</nlbprod:formatBraille>
@@ -136,15 +137,15 @@
                         </nlbprod:isbn.creator>
                         <nlbprod:isbn.identifier nlb:metadata-source="Quickbase ISBN@118902 Tilvekstnummer">118902</nlbprod:isbn.identifier>
                         <nlbprod:isbn.modified nlb:metadata-source="Quickbase ISBN@118902 Date Modified">2017-09-29T12:34:12</nlbprod:isbn.modified>
-                        <nlbprod:isbn.modifier nlb:metadata-source="Quickbase ISBN@118902 Last Modified By">ammar.usama@nlb.no</nlbprod:isbn.modifier>
+                        <nlbprod:isbn.modifier nlb:metadata-source="Quickbase ISBN@118902 Last Modified By">au@nlb.no</nlbprod:isbn.modifier>
                         <nlbprod:isbn.recordid nlb:metadata-source="Quickbase ISBN@118902 Record ID#">1048</nlbprod:isbn.recordid>
                         <nlbprod:isbn.title nlb:metadata-source="Quickbase ISBN@118902 Tittel">Rampete Robins forundringspakke</nlbprod:isbn.title>
                         <nlbprod:isbn.user nlb:metadata-source="Quickbase ISBN@118902 User">Frisvold, Eli</nlbprod:isbn.user>
                         <nlbprod:nlbIsbnBraille nlb:metadata-source="Quickbase Record@561702 NLB ISBN Punktskrift">978-82-16-26048-7</nlbprod:nlbIsbnBraille>
                         <nlbprod:openLinespacing nlb:metadata-source="Quickbase Record@561702 Åpen linjeavstand">false</nlbprod:openLinespacing>
                         <nlbprod:partialBrailleProduction nlb:metadata-source="Quickbase Record@561702 Til delproduksjon punktskrift">false</nlbprod:partialBrailleProduction>
-                        <nlbprod:signatureBrailleReadyForLoan nlb:metadata-source="Quickbase Record@561702 Signatur punktskrift klargjort for utlån">eli.frisvold@nlb.no</nlbprod:signatureBrailleReadyForLoan>
-                        <nlbprod:signaturePostProductionBraille nlb:metadata-source="Quickbase Record@561702 Signatur etterarbeid punktskrift">mats.kober@nlb.no</nlbprod:signaturePostProductionBraille>
+                        <nlbprod:signatureBrailleReadyForLoan nlb:metadata-source="Quickbase Record@561702 Signatur punktskrift klargjort for utlån">ef@nlb.no</nlbprod:signatureBrailleReadyForLoan>
+                        <nlbprod:signaturePostProductionBraille nlb:metadata-source="Quickbase Record@561702 Signatur etterarbeid punktskrift">mk@nlb.no</nlbprod:signaturePostProductionBraille>
                         <nlbprod:singlePagePrint nlb:metadata-source="Quickbase Record@561702 Enkeltsidig trykk">false</nlbprod:singlePagePrint>
                         <nlbprod:tactilePrintProductionComplete nlb:metadata-source="Quickbase Record@561702 Taktilt trykk ferdig produsert">false</nlbprod:tactilePrintProductionComplete>
                         <nlbprod:tactilePrintReadyForLoan nlb:metadata-source="Quickbase Record@561702 Taktilt trykk klar for utlån">false</nlbprod:tactilePrintReadyForLoan>
@@ -178,7 +179,7 @@
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788205489813"/>
                         <schema:audience nlb:metadata-source="Bibliofil@561702 *008">Juvenile</schema:audience>
                         <nlbprod:agency nlb:metadata-source="Quickbase Record@561702 Agency">NLB</nlbprod:agency>
-                        <nlbprod:alternateSourceFileURL nlb:metadata-source="Quickbase Record@561702 Alternate source file URL">https://www.dropbox.com/s/b8z3zulttskrr1k/561702.pdf?dl=0</nlbprod:alternateSourceFileURL>
+                        <nlbprod:alternateSourceFileURL nlb:metadata-source="Quickbase Record@561702 Alternate source file URL">https://...</nlbprod:alternateSourceFileURL>
                         <nlbprod:asciimath nlb:metadata-source="Quickbase Record@561702 ASCIIMath">false</nlbprod:asciimath>
                         <nlbprod:bokbasen nlb:metadata-source="Quickbase Record@561702 www.bokbasen.no">false</nlbprod:bokbasen>
                         <nlbprod:bookCategory nlb:metadata-source="Quickbase Record@561702 Book category">Category 3</nlbprod:bookCategory>
@@ -188,7 +189,7 @@
                         <nlbprod:dtbookReturned nlb:metadata-source="Quickbase Record@561702 DTBook sendt i retur">false</nlbprod:dtbookReturned>
                         <nlbprod:dueDateForProduction nlb:metadata-source="Quickbase Record@561702 Due date for production">2017-10-11</nlbprod:dueDateForProduction>
                         <nlbprod:editingInstructionsChecked nlb:metadata-source="Quickbase Record@561702 Editing instructions kontrollert">false</nlbprod:editingInstructionsChecked>
-                        <nlbprod:epub3 nlb:metadata-source="Quickbase Record@561702 EPUB3">&lt;img src="http://www.tei-c.org/release/xml/tei/odd/webnav/icons/e-book-icons/mdh_epub_doc_32x32.png"&gt;</nlbprod:epub3>
+                        <nlbprod:epub3 nlb:metadata-source="Quickbase Record@561702 EPUB3">&lt;img src="http://..."&gt;</nlbprod:epub3>
                         <nlbprod:epubCatalogued nlb:metadata-source="Quickbase Record@561702 EPUB ferdig katalogisert">true</nlbprod:epubCatalogued>
                         <nlbprod:epubDTBookOrdered nlb:metadata-source="Quickbase Record@561702 EPUB/DTBook ordered">true</nlbprod:epubDTBookOrdered>
                         <nlbprod:estimatedBookCategory nlb:metadata-source="Quickbase Record@561702 Estimated book category">Category 2</nlbprod:estimatedBookCategory>
@@ -212,9 +213,9 @@
                         <nlbprod:productionDownloaded nlb:metadata-source="Quickbase Record@561702 Production downloaded">true</nlbprod:productionDownloaded>
                         <nlbprod:productionNumberUID nlb:metadata-source="Quickbase Record@561702 Production number-UID">561702</nlbprod:productionNumberUID>
                         <nlbprod:productionReturned nlb:metadata-source="Quickbase Record@561702 Production returned">false</nlbprod:productionReturned>
-                        <nlbprod:purchaseOrderId nlb:metadata-source="Quickbase Record@561702 Purchase order ID">https://dtbook.quickbase.com/db/bhh8n666n?a=dr&amp;rid=11704</nlbprod:purchaseOrderId>
-                        <nlbprod:signatureApprovedProduction nlb:metadata-source="Quickbase Record@561702 Signatur godkjent produksjon">mari.myksvoll@nlb.no</nlbprod:signatureApprovedProduction>
-                        <nlbprod:signatureForDownload nlb:metadata-source="Quickbase Record@561702 Signatur for nedlasting">mari.myksvoll@nlb.no</nlbprod:signatureForDownload>
+                        <nlbprod:purchaseOrderId nlb:metadata-source="Quickbase Record@561702 Purchase order ID">https://...</nlbprod:purchaseOrderId>
+                        <nlbprod:signatureApprovedProduction nlb:metadata-source="Quickbase Record@561702 Signatur godkjent produksjon">mm@nlb.no</nlbprod:signatureApprovedProduction>
+                        <nlbprod:signatureForDownload nlb:metadata-source="Quickbase Record@561702 Signatur for nedlasting">mm@nlb.no</nlbprod:signatureForDownload>
                         <nlbprod:sourceFileFormat nlb:metadata-source="Quickbase Record@561702 PDF/Grunnlagsfil format">PDF Image</nlbprod:sourceFileFormat>
                         <nlbprod:sourceFileFormat2 nlb:metadata-source="Quickbase Record@561702 Source file format">PDF Image</nlbprod:sourceFileFormat2>
                         <nlbprod:sourceFileOrdered nlb:metadata-source="Quickbase Record@561702 PDF/grunnlagsfil bestilt">false</nlbprod:sourceFileOrdered>
@@ -223,9 +224,7 @@
                         <nlbprod:sourceFileReceivedOrScannedDate nlb:metadata-source="Quickbase Record@561702 PDF/Grunnlagsfil mottatt/skannet dato">2017-09-27</nlbprod:sourceFileReceivedOrScannedDate>
                         <nlbprod:structureChecked nlb:metadata-source="Quickbase Record@561702 Struktur kontrollert">false</nlbprod:structureChecked>
                         <nlbprod:totalPriceForEpubProduction nlb:metadata-source="Quickbase Record@561702 Total pris for EPUB-produksjon ()">79.8</nlbprod:totalPriceForEpubProduction>
-                        <nlbprod:uploadEpub nlb:metadata-source="Quickbase Record@561702 Upload EPUB 3 file">561702.epubhttps://dtbook.quickbase.com/up/bhh8n666n/g/rmp2/eni/va/561702.epub
-                            
-                        </nlbprod:uploadEpub>
+                        <nlbprod:uploadEpub nlb:metadata-source="Quickbase Record@561702 Upload EPUB 3 file">561702.epubhttps://...</nlbprod:uploadEpub>
                         <nlbprod:urgentProduction nlb:metadata-source="Quickbase Record@561702 Hasteproduksjon">false</nlbprod:urgentProduction>
                     </rdf:Description>
                     <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=628002">
@@ -245,9 +244,7 @@
                         <nlbprod:feeComplete nlb:metadata-source="Quickbase Record@561702 Ferdig honorert">false</nlbprod:feeComplete>
                         <nlbprod:feeExtraPreparationCopy nlb:metadata-source="Quickbase Record@561702 Honorar ekstra forberedelsestid_copy">0.00</nlbprod:feeExtraPreparationCopy>
                         <nlbprod:feeExtraPreparationTime nlb:metadata-source="Quickbase Record@561702 Honorar ekstra forberedelsestid">0.00</nlbprod:feeExtraPreparationTime>
-                        <nlbprod:feeForMultipleNarrators nlb:metadata-source="Quickbase Record@561702 Honorering av flere innlesere">javascript:void(copyMasterDetailButtonHandler('&amp;copyFid=8&amp;destrid=0&amp;sourcerid=11704',
-                            'bhh8n666n'))
-                        </nlbprod:feeForMultipleNarrators>
+                        <nlbprod:feeForMultipleNarrators nlb:metadata-source="Quickbase Record@561702 Honorering av flere innlesere">javascript:void()</nlbprod:feeForMultipleNarrators>
                         <nlbprod:feeNarratedTime nlb:metadata-source="Quickbase Record@561702 Honorar pr ferdig innlest tid">0.00</nlbprod:feeNarratedTime>
                         <nlbprod:feeNarrationCopy nlb:metadata-source="Quickbase Record@561702 Honorar pr ferdig innlest tid_copy">0.00</nlbprod:feeNarrationCopy>
                         <nlbprod:feeOtherWork nlb:metadata-source="Quickbase Record@561702 Honorar annet arbeid">0.00</nlbprod:feeOtherWork>
@@ -285,7 +282,6 @@
                         <nlbprod:preparationTimeInHours nlb:metadata-source="Quickbase Record@561702 Forberedelsestid i timer">0.00</nlbprod:preparationTimeInHours>
                         <nlbprod:preparedForNarration nlb:metadata-source="Quickbase Record@561702 Tilrettelagt for innlesing">false</nlbprod:preparedForNarration>
                         <nlbprod:productionTurnaroundTime nlb:metadata-source="Quickbase Record@561702 Production turnaround time">14</nlbprod:productionTurnaroundTime>
-                        <nlbprod:signatureRegistration nlb:metadata-source="Quickbase Record@561702 Signatur registrering">eli.frisvold@nlb.no</nlbprod:signatureRegistration>
                         <nlbprod:sumFee nlb:metadata-source="Quickbase Record@561702 Sum honorar">0.00</nlbprod:sumFee>
                         <nlbprod:sumFeeCopy nlb:metadata-source="Quickbase Record@561702 Sum honorar_copy">0.00</nlbprod:sumFeeCopy>
                         <nlbprod:totalSumFee nlb:metadata-source="Quickbase Record@561702 Total sum honorar">0.00</nlbprod:totalSumFee>
@@ -515,9 +511,7 @@
                         <nlbprod:feeComplete nlb:metadata-source="Quickbase Record@562318 Ferdig honorert">false</nlbprod:feeComplete>
                         <nlbprod:feeExtraPreparationCopy nlb:metadata-source="Quickbase Record@562318 Honorar ekstra forberedelsestid_copy">0.00</nlbprod:feeExtraPreparationCopy>
                         <nlbprod:feeExtraPreparationTime nlb:metadata-source="Quickbase Record@562318 Honorar ekstra forberedelsestid">0.00</nlbprod:feeExtraPreparationTime>
-                        <nlbprod:feeForMultipleNarrators nlb:metadata-source="Quickbase Record@562318 Honorering av flere innlesere">javascript:void(copyMasterDetailButtonHandler('&amp;copyFid=8&amp;destrid=0&amp;sourcerid=12320',
-                            'bhh8n666n'))
-                        </nlbprod:feeForMultipleNarrators>
+                        <nlbprod:feeForMultipleNarrators nlb:metadata-source="Quickbase Record@562318 Honorering av flere innlesere">javascript:void()</nlbprod:feeForMultipleNarrators>
                         <nlbprod:feeNarratedTime nlb:metadata-source="Quickbase Record@562318 Honorar pr ferdig innlest tid">0.00</nlbprod:feeNarratedTime>
                         <nlbprod:feeNarrationCopy nlb:metadata-source="Quickbase Record@562318 Honorar pr ferdig innlest tid_copy">0.00</nlbprod:feeNarrationCopy>
                         <nlbprod:feeOtherWork nlb:metadata-source="Quickbase Record@562318 Honorar annet arbeid">0.00</nlbprod:feeOtherWork>
@@ -728,11 +722,6 @@
 
     </metadata></x:expect>
     </x:scenario>
-
-<<<<<<< HEAD
-=======
-    </metadata></x:expect>
-    </x:scenario>
     
     <x:scenario label="Missing format - 1">
         <x:call template="test">
@@ -911,7 +900,7 @@
         <meta property="dc:type.genre">Krim</meta> <!-- Bibliofil@551103 *655 -->
         <meta property="dc:type.genre">Non-biography</meta> <!-- Bibliofil@551103 *008 -->
         <meta property="dc:type.genre">poem</meta> <!-- Bibliofil@551103 *019$d -->
-        <meta property="schema:isbn.original">978-82-419-0664-0</meta> <!-- Bibliofil@551103 *596$f -->
+        <meta property="schema:isbn">978-82-419-0664-0</meta> <!-- Bibliofil@551103 *596$f -->
         <meta property="schema:bookEdition">1</meta> <!-- Bibliofil@551103 *245 -->
         <meta property="schema:bookEdition.original">1</meta> <!-- Bibliofil@551103 *596 -->
         <meta property="schema:audience">Adult</meta> <!-- Bibliofil@551103 *008 -->
@@ -923,5 +912,4 @@
     </metadata></x:expect>
     </x:scenario>
     
->>>>>>> master
 </x:description>
