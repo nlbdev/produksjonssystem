@@ -756,7 +756,7 @@ class UpdateMetadata(Pipeline):
         marc019b = marc019b[0] if marc019b else None
         
         if not marc019b:
-            pipeline.utils.report.warn("Fant ikke `*019$b` for {}".format(os.path.basename(marcxchange_path)))
+            pipeline.utils.report.debug("Fant ikke `*019$b` for {}".format(os.path.basename(marcxchange_path)))
             return None
         
         split = marc019b.split(",")
