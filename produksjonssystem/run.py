@@ -58,20 +58,26 @@ class Produksjonssystem():
             },
             "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no"),
             "recipients": {
-                "ammar":   Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
-                "eivind":  Address("Eivind Haugen",            "Eivind.Haugen",     "nlb.no"),
-                "elih":    Address("Eli Hafskjold",            "Eli.Hafskjold",     "nlb.no"),
-                "espen":   Address("Espen Solhjem",            "Espen.Solhjem",     "nlb.no"),
-                "jostein": Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
-                "kari":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
-                "karik":   Address("Kari Kummeneje",           "Kari.Kummeneje",    "nlb.no"),
-                "mari":    Address("Mari Myksvoll",            "Mari.Myksvoll",     "nlb.no"),
-                "olav":    Address("Olav Indergaard",          "Olav.Indergaard",   "nlb.no"),
-                "per":     Address("Per Sennels",              "Per.Sennels",       "nlb.no"),
-                "roald":   Address("Roald Madland",            "Roald.Madland",     "nlb.no"),
-                "sobia":   Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
-                "thomas":  Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
-                "wenche":  Address("Wenche Andresen",          "wenche.andresen",   "nlb.no"),
+                "ammar":    Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
+                "anya":     Address("Anya Bauer-Hartmark",      "Anya.Hartmark",     "nlb.no"),
+                "eivind":   Address("Eivind Haugen",            "Eivind.Haugen",     "nlb.no"),
+                "elif":     Address("Eli Frisvold",             "eli.frisvold",      "nlb.no"),
+                "elih":     Address("Eli Hafskjold",            "Eli.Hafskjold",     "nlb.no"),
+                "espen":    Address("Espen Solhjem",            "Espen.Solhjem",     "nlb.no"),
+                "hanne":    Address("Hanne Lillevold",          "hanne.lillevold",   "nlb.no"),
+                "ingvilda": Address("Ingvild Aanensen",         "ingvild.aanensen",  "nlb.no"),
+                "jostein":  Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
+                "kariga":   Address("Kari Gjølstad Aas",        "kari.gjolstadaas",  "nlb.no"),
+                "karik":    Address("Kari Kummeneje",           "Kari.Kummeneje",    "nlb.no"),
+                "karir":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
+                "marim":    Address("Mari Myksvoll",            "Mari.Myksvoll",     "nlb.no"),
+                "olav":     Address("Olav Indergaard",          "Olav.Indergaard",   "nlb.no"),
+                "per":      Address("Per Sennels",              "Per.Sennels",       "nlb.no"),
+                "roald":    Address("Roald Madland",            "Roald.Madland",     "nlb.no"),
+                "sobia":    Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
+                "therese":  Address("Therese Solbjorg",         "therese.solbjorg",  "nlb.no"),
+                "thomas":   Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
+                "wenche":   Address("Wenche Andresen",          "wenche.andresen",   "nlb.no"),
             }
         }
         
@@ -101,16 +107,23 @@ class Produksjonssystem():
         # Define pipelines, input/output/report dirs, and email recipients
         self.pipelines = [
             # Mottak
-            [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
+            [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ NordicToNlbpub(),                             "master",              "nlbpub",              "reports", ["jostein","olav","per"]],
             [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"],
-                                                                                                                     { "librarians": [
-                                                                                                                        self.email["recipients"]["elih"],
-                                                                                                                        self.email["recipients"]["jostein"],
-                                                                                                                        self.email["recipients"]["karik"],
-                                                                                                                        self.email["recipients"]["per"],
-                                                                                                                        self.email["recipients"]["wenche"]
-                                                                                                                     ]}],
+                                                                                                                     {
+                                                                                                                        "librarians": [
+                                                                                                                            self.email["recipients"]["anya"],
+                                                                                                                            self.email["recipients"]["elif"],
+                                                                                                                            self.email["recipients"]["elih"],
+                                                                                                                            self.email["recipients"]["hanne"],
+                                                                                                                            self.email["recipients"]["ingvilda"],
+                                                                                                                            self.email["recipients"]["kariga"],
+                                                                                                                            self.email["recipients"]["karik"],
+                                                                                                                            self.email["recipients"]["therese"],
+                                                                                                                            self.email["recipients"]["wenche"],
+                                                                                                                        ],
+                                                                                                                        "default_librarian": self.email["recipients"]["elih"]
+                                                                                                                     }],
             
             # EPUB
             [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
@@ -127,12 +140,12 @@ class Produksjonssystem():
             
             # punktskrift
             [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
-            [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","kari"]],
-            [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","kari"]],
+            [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","karir"]],
+            [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","karir"]],
             
             # TTS-lydbok
-            [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
-            [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","mari","olav"]],
+            [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
+            [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav"]],
             [ DummyPipeline("TTS-produksjon"),              "dtbook_tts",          "daisy202_tts",        "reports", ["jostein"]],
         ]
     

@@ -520,6 +520,15 @@ class UpdateMetadata(Pipeline):
                 normarc_pipeline.utils[util] = pipeline.utils[util]
         normarc_pipeline.utils.report = Report(normarc_pipeline)
         
+        signatureRegistration = ElementTree.parse(rdf_metadata).getroot()
+        nsmap = {
+            'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+            'nlbprod': 'http://www.nlb.no/production'
+        }
+        signatureRegistration = signatureRegistration.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:signatureRegistration/text()", namespaces=nsmap)
+        signatureRegistration = signatureRegistration[0].lower() if signatureRegistration else None
+        normarc_pipeline.utils.report.info("*Ansvarlig for katalogisering*: {}".format(signatureRegistration if signatureRegistration else "(ukjent)"))
+        
         # Valider Bibliofil-metadata
         normarc_success = True
         marcxchange_paths = []
@@ -541,9 +550,16 @@ class UpdateMetadata(Pipeline):
         normarc_pipeline.utils.report.attachLog()
         if not normarc_success:
             UpdateMetadata.last_metadata_errors.append(int(time.time()))
+            signatureRegistrationAddress = None
+            if signatureRegistration:
+                for addr in UpdateMetadata.config["librarians"]:
+                    if signatureRegistration == addr.addr_spec.lower():
+                        signatureRegistration = addr
+            if not signatureRegistrationAddress:
+                signatureRegistrationAddress = UpdateMetadata.config["default_librarian"]
             normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],
                                                 UpdateMetadata.email_settings["sender"],
-                                                UpdateMetadata.config["librarians"],
+                                                signatureRegistrationAddress,
                                                 subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
         
         # Kopier Bibliofil-metadata-rapporten inn i samme rapport som resten av konverteringen
