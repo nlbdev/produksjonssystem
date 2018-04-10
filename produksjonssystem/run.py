@@ -131,7 +131,7 @@ class Produksjonssystem():
             [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","kari"]],
             
             # TTS-lydbok
-            [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav","sobia"]],
+            [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","mari","olav","sobia","thomas"]],
             [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","mari","olav"]],
             [ DummyPipeline("TTS-produksjon"),              "dtbook_tts",          "daisy202_tts",        "reports", ["jostein"]],
         ]
