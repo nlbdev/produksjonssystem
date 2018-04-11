@@ -151,7 +151,7 @@ class Produksjonssystem():
             [ EpubToDtbook(),                               "master",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
 
             # DTBook for punktskrift
-            [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",              "reports", ["jostein"]],
+            [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",      "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],
 
             # lydutdrag
