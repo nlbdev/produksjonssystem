@@ -11,7 +11,6 @@ from core.pipeline import Pipeline, DummyPipeline
 from email.headerregistry import Address
 
 # Import pipelines
-from dtbook_to_tts import DtbookToTts
 from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
 from epub_to_dtbook_braille import EpubToDtbookBraille
