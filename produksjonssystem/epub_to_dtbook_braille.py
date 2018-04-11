@@ -142,7 +142,7 @@ class EpubToDtbookBraille(Pipeline):
 
         # ---------- lagre DTBook ----------
 
-        self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
+        self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-for-punktskrift-arkiv.")
 
         archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")

@@ -24,7 +24,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class EpubToDtbook(Pipeline):
     uid = "epub-to-dtbook"
-    title = "EPUB til DTBook"
+    title = "EPUB til DTBook for talesyntese"
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -135,7 +135,7 @@ class EpubToDtbook(Pipeline):
         
         # ---------- lagre DTBook ----------
         
-        self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
+        self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-til-talesyntese-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
