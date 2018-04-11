@@ -91,7 +91,7 @@ class Plotter():
             fillcolor = "lightskyblue1"
             if book or queue_size:
                 fillcolor = "lightslateblue"
-            if not pipeline[0].running:
+            if not pipeline[0].running or isinstance(pipeline[0], DummyPipeline):
                 fillcolor = "white"
             dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
             dot.node(pipeline_id, pipeline_label)
