@@ -512,6 +512,8 @@ class DummyPipeline(Pipeline):
             self.config = inherit_config_from.config
     
     def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
+        self._shouldRun = True
+        
         self.start_common(inactivity_timeout=inactivity_timeout,
                           dir_in=dir_in,
                           dir_out=dir_out,
@@ -519,8 +521,6 @@ class DummyPipeline(Pipeline):
                           email_settings=email_settings,
                           dir_base=dir_base,
                           config=config)
-        
-        self._shouldRun = True
     
     def stop(self, *args, **kwargs):
         self._shouldRun = False
