@@ -97,7 +97,6 @@ class Produksjonssystem():
             "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
             "docx": os.path.join(book_archive_dir, "distribusjonsformater/DOCX"),
             "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
-            "epub_narrated": os.path.join(book_archive_dir, "utgave-ut/EPUB-innlest"),
             "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
             "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
             "pub-ready-braille": os.path.join(book_archive_dir, "utgave-klargjort/punktskrift"),
@@ -136,7 +135,7 @@ class Produksjonssystem():
             # innlest lydbok
             [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
             [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
-            [ DummyPipeline("Innlesing"),                   "epub_narration",      "epub_narrated",       "reports", ["jostein"]],
+            [ DummyPipeline("Innlesing med Hindenburg"),    "epub_narration",      None,                  "reports", ["jostein"]],
 
             # e-bok
             [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
@@ -155,6 +154,7 @@ class Produksjonssystem():
 
             # DTBook for punktskrift
             [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",              "reports", ["jostein"]],
+            [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],
 
             # lydutdrag
             # [ Audio_Abstract(),              "incoming_daisy",          "abstracts",        "reports", ["espen"]],
@@ -184,13 +184,13 @@ class Produksjonssystem():
         for pipeline in self.pipelines:
             assert len(pipeline) == 5 or len(pipeline) == 6, "Pipeline declarations have five or six arguments (not " + len(pipeline) + ")"
             assert isinstance(pipeline[0], Pipeline), "The first argument of a pipeline declaration must be a pipeline instance"
-            assert isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string"
-            assert isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string"
+            assert pipeline[1] == None or isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string or None"
+            assert pipeline[2] == None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
             assert isinstance(pipeline[3], str), "The fourth argument of a pipeline declaration must be a string"
             assert isinstance(pipeline[4], list), "The fifth argument of a pipeline declaration must be a list"
             assert len(pipeline) <= 5 or isinstance(pipeline[5], dict), "The sixth argument of a pipelie, if present, must be a dict"
-            assert pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must refer to a key in \"dirs\""
-            assert pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must refer to a key in \"dirs\""
+            assert pipeline[1] == None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
+            assert pipeline[2] == None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
             assert pipeline[3] in self.dirs, "The fourth argument of a pipeline declaration (\"" + str(pipeline[3]) + "\") must refer to a key in \"dirs\""
             for recipient in pipeline[4]:
                 assert recipient in self.email["recipients"], "All list items in the fifth argument of a pipeline declaration (\"" + str(pipeline[4]) + "\") must refer to a key in \"email['recipients']\""
@@ -213,8 +213,8 @@ class Produksjonssystem():
             for s in pipeline[4]:
                 email_settings["recipients"].append(self.email["recipients"][s])
             thread = Thread(target=pipeline[0].run, args=(10,
-                                                          self.dirs[pipeline[1]],
-                                                          self.dirs[pipeline[2]],
+                                                          self.dirs[pipeline[1]] if pipeline[1] else None,
+                                                          self.dirs[pipeline[2]] if pipeline[2] else None,
                                                           self.dirs[pipeline[3]],
                                                           email_settings,
                                                           self.book_archive_dir,

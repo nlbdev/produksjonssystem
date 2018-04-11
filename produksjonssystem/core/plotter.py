@@ -59,13 +59,13 @@ class Plotter():
             queue_size = len(pipeline[0]._queue) if pipeline[0]._queue else 0
             book = pipeline[0].book["name"] if pipeline[0].book else ""
             
-            relpath_in = "in"
+            relpath_in = None
             if pipeline[0].dir_in and not pipeline[0].dir_base:
                 relpath_in = os.path.basename(os.path.dirname(pipeline[0].dir_in))
             elif pipeline[0].dir_in and pipeline[0].dir_base:
                 relpath_in = os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
             
-            relpath_out = "out"
+            relpath_out = None
             if pipeline[0].dir_out and not pipeline[0].dir_base:
                 relpath_out = os.path.basename(os.path.dirname(pipeline[0].dir_out))
             elif pipeline[0].dir_out and pipeline[0].dir_base:
@@ -95,9 +95,11 @@ class Plotter():
             dot.node(pipeline_id, pipeline_label)
             
             dot.attr("node", shape="folder", style="filled", fillcolor="wheat")
+            if relpath_in:
             dot.node(pipeline[1], relpath_in)
-            dot.node(pipeline[2], relpath_out)
             dot.edge(pipeline[1], pipeline_id)
+            if relpath_out:
+                dot.node(pipeline[2], relpath_out)
             dot.edge(pipeline_id, pipeline[2])
         
         dot.render(os.path.join(self.report_dir, name + "_"))

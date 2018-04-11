@@ -99,8 +99,6 @@ class Pipeline():
         
         stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
         
-        assert dir_in != None and len(dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
-        assert dir_out != None and len(dir_out) > 0 and os.path.exists(dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
         assert dir_reports != None and len(dir_reports) > 0 and os.path.exists(dir_reports), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
         assert dir_base, "Base directory could not be determined"
         assert not stop_after_first_job or stop_after_first_job in [ "1", "true", "0", "false" ], "The environment variable STOP_AFTER_FIRST_JOB, if defined, must be \"true\"/\"false\" (or \"1\"/\"0\")."
@@ -109,7 +107,9 @@ class Pipeline():
         if stop_after_first_job in [ "true", "1" ]:
             self._stopAfterFirstJob = True
         
+        if dir_in:
         self.dir_in = str(os.path.normpath(dir_in)) + '/'
+        if dir_out:
         self.dir_out = str(os.path.normpath(dir_out)) + '/'
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
         self.dir_base = str(os.path.normpath(dir_base)) + '/'
@@ -137,6 +137,9 @@ class Pipeline():
                           email_settings=email_settings,
                           dir_base=dir_base,
                           config=config)
+        
+        assert self.dir_in != None and len(self.dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
+        assert self.dir_out != None and len(self.dir_out) > 0 and os.path.exists(self.dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
         
         self.dir_trigger = os.getenv("TRIGGER_DIR")
         if self.dir_trigger:
