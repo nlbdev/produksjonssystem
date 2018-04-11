@@ -108,9 +108,9 @@ class Pipeline():
             self._stopAfterFirstJob = True
         
         if dir_in:
-        self.dir_in = str(os.path.normpath(dir_in)) + '/'
+            self.dir_in = str(os.path.normpath(dir_in)) + '/'
         if dir_out:
-        self.dir_out = str(os.path.normpath(dir_out)) + '/'
+            self.dir_out = str(os.path.normpath(dir_out)) + '/'
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
         self.dir_base = str(os.path.normpath(dir_base)) + '/'
         self.email_settings = email_settings
@@ -230,6 +230,9 @@ class Pipeline():
                 print("autotriggered", file=triggerfile)
         else:
             Path(path).touch()
+    
+    def get_queue(self):
+        return self._queue
     
     def _add_book_to_queue(self, name, event_type):
         with self._lock:

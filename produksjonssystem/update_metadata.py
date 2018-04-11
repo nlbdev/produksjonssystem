@@ -65,6 +65,8 @@ class UpdateMetadata(Pipeline):
         "bibliofil": {}
     }
     
+    queue = []
+    
     throttle_metadata_emails = True # if enabled, will only send up to N automated metadata error emails per day, and only in working hours
     last_metadata_errors = [] # timestamps for last automated metadata updates
     
@@ -85,9 +87,9 @@ class UpdateMetadata(Pipeline):
         
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching metadata (cache in " + self.dir_in + ")")
         
-    
     def stop(self, *args, **kwargs):
-        self.running = False
+        super().stop(*args, **kwargs)
+        
         if self._metadataWatchThread and self._metadataWatchThread != threading.current_thread():
             self._metadataWatchThread.join()
         
@@ -96,7 +98,8 @@ class UpdateMetadata(Pipeline):
         
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped watching metadata")
         
-        super().stop(*args, **kwargs)
+    def get_queue(self):
+        return UpdateMetadata.queue
     
     def _watch_metadata_thread(self):
         while self.running:
@@ -168,6 +171,7 @@ class UpdateMetadata(Pipeline):
         ret = False
         with UpdateMetadata.update_lock:
             ret = UpdateMetadata._update(*args, **kwargs)
+            UpdateMetadata.queue = []
         return ret
     
     @staticmethod
@@ -175,6 +179,14 @@ class UpdateMetadata(Pipeline):
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read and update metadata from EPUBs")
             return False
+        
+        # make a queue for plotting purposes
+        queue_book = {}
+        queue_book["name"] = epub.identifier()
+        queue_book["source"] = os.path.join(UpdateMetadata.get_metadata_dir(), queue_book["name"])
+        queue_book["events"] = [ "autotriggered" ]
+        queue_book["last_event"] = int(time.time())
+        UpdateMetadata.queue = [ queue_book ]
         
         last_updated = 0
         last_updated_path = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier(), "last_updated")

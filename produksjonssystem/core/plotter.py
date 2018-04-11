@@ -37,12 +37,13 @@ class Plotter():
             
             pipeline_id = pipeline[0].uid
             title = pipeline[0].title if pipeline[0].title else pipeline_id 
+            queue = pipeline[0].get_queue()
             
-            queue_created = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "created"]) if pipeline[0]._queue else 0
-            queue_deleted = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "deleted"]) if pipeline[0]._queue else 0
-            queue_modified = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "modified"]) if pipeline[0]._queue else 0
-            queue_triggered = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "triggered"]) if pipeline[0]._queue else 0
-            queue_autotriggered = len([book for book in pipeline[0]._queue if Pipeline.get_main_event(book) == "autotriggered"]) if pipeline[0]._queue else 0
+            queue_created = len([book for book in queue if Pipeline.get_main_event(book) == "created"]) if queue else 0
+            queue_deleted = len([book for book in queue if Pipeline.get_main_event(book) == "deleted"]) if queue else 0
+            queue_modified = len([book for book in queue if Pipeline.get_main_event(book) == "modified"]) if queue else 0
+            queue_triggered = len([book for book in queue if Pipeline.get_main_event(book) == "triggered"]) if queue else 0
+            queue_autotriggered = len([book for book in queue if Pipeline.get_main_event(book) == "autotriggered"]) if queue else 0
             queue_string = []
             if queue_created:
                 queue_string.append("nye:"+str(queue_created))
@@ -56,7 +57,7 @@ class Plotter():
                 queue_string.append("autotrigget:"+str(queue_autotriggered))
             queue_string = ", ".join(queue_string)
             
-            queue_size = len(pipeline[0]._queue) if pipeline[0]._queue else 0
+            queue_size = len(queue) if queue else 0
             book = pipeline[0].book["name"] if pipeline[0].book else ""
             
             relpath_in = None
