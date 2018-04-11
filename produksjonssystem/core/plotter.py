@@ -73,16 +73,17 @@ class Plotter():
                 relpath_out = os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
             
             status = ""
-            if book:
-                status = "Behandler: {}".format(book)
-            elif isinstance(pipeline[0], DummyPipeline):
-                status = "Manuelt steg"
-            elif pipeline[0]._shouldRun and not pipeline[0].running:
+            if pipeline[0]._shouldRun and not pipeline[0].running:
                 status = "Starter..."
             elif not pipeline[0]._shouldRun and pipeline[0].running:
                 status = "Stopper..."
             elif not pipeline[0].running:
                 status = "Stoppet"
+                queue_string = ""
+            elif book:
+                status = "Behandler: {}".format(book)
+            elif isinstance(pipeline[0], DummyPipeline):
+                status = "Manuelt steg"
             else:
                 status = "Venter"
             pipeline_label = title + "\n" + queue_string + "\n" + status
@@ -97,11 +98,11 @@ class Plotter():
             
             dot.attr("node", shape="folder", style="filled", fillcolor="wheat")
             if relpath_in:
-            dot.node(pipeline[1], relpath_in)
-            dot.edge(pipeline[1], pipeline_id)
+                dot.node(pipeline[1], relpath_in)
+                dot.edge(pipeline[1], pipeline_id)
             if relpath_out:
                 dot.node(pipeline[2], relpath_out)
-            dot.edge(pipeline_id, pipeline[2])
+                dot.edge(pipeline_id, pipeline[2])
         
         dot.render(os.path.join(self.report_dir, name + "_"))
         
