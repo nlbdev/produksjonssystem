@@ -24,6 +24,20 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="meta[starts-with(@name,'nlb')]">
+        <xsl:variable name="name" as="xs:string*">
+            <xsl:value-of select="tokenize(@name,'\.')[1]"/>
+            <xsl:for-each select="tokenize(@name,'\.')[position() gt 1]">
+                <xsl:value-of select="upper-case(substring(.,1,1))"/>
+                <xsl:value-of select="substring(.,2)"/>
+            </xsl:for-each>
+        </xsl:variable>
+        <xsl:copy>
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="name" select="string-join($name,'')"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:template match="doctitle">
         <xsl:next-match/>
         

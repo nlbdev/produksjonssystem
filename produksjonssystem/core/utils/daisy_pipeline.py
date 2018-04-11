@@ -9,13 +9,14 @@ import tempfile
 import subprocess
 
 from threading import RLock
+from core.pipeline import Pipeline
 
 class DaisyPipelineJob():
     """Class used to run DAISY Pipeline 2 jobs"""
     
     # treat as class variables
-    dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
-    dp2_cli = dp2_home + "/cli/dp2"
+    dp2_home = None
+    dp2_cli = None
     _i18n = {
         "Starting Pipeline 2": "Oppstart av Pipeline 2",
         "The DAISY Pipeline 2 job": "DAISY Pipeline 2-jobben",
@@ -101,17 +102,23 @@ class DaisyPipelineJob():
                 return running
         
         return False
-        
+    
+    @staticmethod
+    def init_environment():
+        DaisyPipelineJob.dp2_home = Pipeline.environment["PIPELINE2_HOME"] if "PIPELINE2_HOME" in Pipeline.environment else os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
+        DaisyPipelineJob.dp2_cli = DaisyPipelineJob.dp2_home + "/cli/dp2"
     
     def __init__(self, pipeline, script, arguments):
         self.pipeline = pipeline
+        
+        DaisyPipelineJob.init_environment()
         
         self._dir_output_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-daisy-pipeline-output")
         self.dir_output = self._dir_output_obj.name
         
         if DaisyPipelineJob.start_engine(pipeline):
             try:
-                command = [self.dp2_cli, script]
+                command = [DaisyPipelineJob.dp2_cli, script]
                 for arg in arguments:
                     command.extend(["--" + arg, arguments[arg]])
                 command.extend(["--background"])
@@ -140,7 +147,7 @@ class DaisyPipelineJob():
                     
                     # get job status
                     self.pipeline.utils.report.debug("Getting job status")
-                    process = self.pipeline.utils.filesystem.run([self.dp2_cli, "status", self.job_id])
+                    process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "status", self.job_id])
                     for line in process.stdout.decode("utf-8").split("\n"):
                         # look for: Job {id} sent to the server
                         m = re.match("^Status: (.*)$", line)
@@ -156,12 +163,12 @@ class DaisyPipelineJob():
                 
                 # get job log (the run method will log stdout/stderr as debug output)
                 self.pipeline.utils.report.debug("Getting job log")
-                process = self.pipeline.utils.filesystem.run([self.dp2_cli, "log", self.job_id])
+                process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "log", self.job_id])
                 
                 # get results
                 if self.status and self.status != "ERROR":
                     self.pipeline.utils.report.debug("Getting job results")
-                    process = self.pipeline.utils.filesystem.run([self.dp2_cli, "results", "--output", self.dir_output, self.job_id])
+                    process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "results", "--output", self.dir_output, self.job_id])
                 
             except subprocess.TimeoutExpired as e:
                 self.pipeline.utils.report.error(DaisyPipelineJob._i18n["The DAISY Pipeline 2 job"] + " " + book_id + " " + DaisyPipelineJob._i18n["took too long time and was therefore stopped."])
@@ -174,7 +181,7 @@ class DaisyPipelineJob():
             finally:
                 if self.job_id:
                     try:
-                        process = self.pipeline.utils.filesystem.run([self.dp2_cli, "delete", self.job_id])
+                        process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "delete", self.job_id])
                         self.pipeline.utils.report.debug(self.job_id + " was deleted")
                     except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
                         self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)

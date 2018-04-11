@@ -15,7 +15,7 @@
     </xsl:template>
     
     <xsl:template match="meta[@name=('dtb:uid','dc:Identifier')]">
-        <xsl:variable name="identifier" select="(../meta[@name='nlbprod:identifier.daisy202'], ../meta[@name='nlbprod:identifier.daisy202.student'], ../meta[starts-with(@name,'nlbprod:identifier.daisy202')])[1]/@content" as="xs:string?"/>
+        <xsl:variable name="identifier" select="(../meta[@name='nlbprod:identifierDaisy202'], ../meta[@name='nlbprod:identifierDaisy202Student'], ../meta[starts-with(@name,'nlbprod:identifierDaisy202')])[1]/@content" as="xs:string?"/>
         <xsl:choose>
             <xsl:when test="$identifier">
                 <xsl:copy exclude-result-prefixes="#all">
@@ -24,7 +24,7 @@
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message select="concat('Finner ikke nlbprod:identifier.daisy202; ',@name,' forblir uendret (',@content,').')"/>
+                <xsl:message select="concat('Finner ikke nlbprod:identifierDaisy202; ',@name,' forblir uendret (',@content,').')"/>
                 <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:otherwise>
         </xsl:choose>
@@ -32,7 +32,7 @@
     
     <xsl:template match="doctitle">
         <xsl:variable name="title" select="(/*/head/meta[lower-case(@name)='dc:title'])[1]/@content" as="xs:string?"/>
-        <xsl:variable name="subTitle" select="(/*/head/meta[lower-case(@name)='dc:title.subtitle'])[1]/@content" as="xs:string?"/>
+        <xsl:variable name="subTitle" select="(/*/head/meta[lower-case(@name)='dc:titlesubtitle'])[1]/@content" as="xs:string?"/>
         <xsl:choose>
             <xsl:when test="$title">
                 <xsl:copy exclude-result-prefixes="#all">
@@ -45,7 +45,7 @@
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message select="concat('Finner ikke nlbprod:identifier.daisy202; ',@name,' forblir uendret (',@content,').')"/>
+                <xsl:message select="concat('Finner ikke nlbprod:identifierDaisy202; ',@name,' forblir uendret (',@content,').')"/>
                 <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:otherwise>
         </xsl:choose>

@@ -4,26 +4,22 @@
 import os
 import re
 import sys
-import time
 import shutil
 import tempfile
-import subprocess
 
 from lxml import etree as ElementTree
-from datetime import datetime, timezone
-from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+
+from core.pipeline import Pipeline
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
-class NlbpubToHtml(Pipeline):
-    uid = "nlbpub-to-html"
-    title = "NLBPUB til HTML"
-    
-    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
+class PrepareForBraille(Pipeline):
+    uid = "prepare-for-braille"
+    title = "Klargjør for punktskrift"
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -85,8 +81,8 @@ class NlbpubToHtml(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
         
-        self.utils.report.info("Tilpasser innhold for e-tekst...")
-        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "prepare-for-html.xsl"),
+        self.utils.report.info("Tilpasser innhold for punktskrift...")
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBraille.uid, "prepare-for-braille.xsl"),
                           source=html_file,
                           target=temp_html)
         if not xslt.success:
@@ -110,10 +106,6 @@ class NlbpubToHtml(Pipeline):
         html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # Bruk html istedenfor xhtml når det ikke er en EPUB
         shutil.copy(temp_html, html_file)
         # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
-        
-        html_dir = os.path.dirname(opf_path)
-        shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
-                    os.path.join(html_dir, "NLB_logo.jpg"))
         
         
         # ---------- slett EPUB-spesifikke filer ----------
@@ -141,13 +133,15 @@ class NlbpubToHtml(Pipeline):
         
         # ---------- lagre HTML-filsett ----------
         
-        self.utils.report.info("Boken ble konvertert. Kopierer til HTML-arkiv.")
+        html_dir = os.path.dirname(opf_path)
         
-        archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
+        self.utils.report.info("Boken ble konvertert. Kopierer til arkiv for punkt-klare HTML-filer.")
+        
+        archived_path = self.utils.filesystem.storeBook(html_dir, self.book["name"])
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i HTML-arkivet.")
-        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
+        self.utils.report.info(self.book["name"] + " ble lagt til i arkiv for punkt-klare HTML-filer.")
+        self.utils.report.title = self.title + ": " + self.book["name"] + " ble konvertert 👍😄"
 
 
 if __name__ == "__main__":
-    NlbpubToHtml().run()
+    PrepareForBraille().run()

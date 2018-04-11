@@ -17,8 +17,6 @@
     <let name="is-magazine" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
     <let name="is-newspaper" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
     <let name="is-periodical" value="$is-magazine or $is-newspaper or //marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'j'"/>
-    <let name="isbn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISBN mangler'"/>
-    <let name="issn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISSN mangler'"/>
     
     <pattern>
         <title>Format</title>
@@ -47,11 +45,11 @@
             <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='a']">Utgivelsessted for utgaven må være definert i *260$a</assert>
             <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='b']">Forlag for utgaven må være definert i *260$b</assert>
         </rule>
-        <rule context="marcxchange:record[$is-publication and $is-periodical]">
-            <report test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">Utgivelsesår for utgaven må ikke være definert i *260$c når det katalogiseres periodika</report>
-        </rule>
         <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
-            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">Utgivelsesår for utgaven må være definert i *260$c</assert>
+            <assert test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">For bøker må utgivelsesår for utgaven være definert i *260$c</assert>
+        </rule>
+        <rule context="marcxchange:record[$is-publication and $is-periodical]">
+            <report test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">For periodika må *260$c ikke være definert</report>
         </rule>
     </pattern>
     
@@ -62,16 +60,19 @@
             <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='a']">Utgivelsessted for originalen må være definert i *596$a</assert>
             <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='b']">Forlag for originalen må være definert i *596$b</assert>
         </rule>
-        <rule context="marcxchange:record[$is-publication and $is-periodical]">
-            <report test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">Utgivelsesår for originalen må ikke være definert i *596$c når det katalogiseres periodika</report>
-        </rule>
         <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
-            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">Utgivelsesår for originalen må være definert i *596$c</assert>
+            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For bøker må utgivelsesår for originalen være definert i *596$c</assert>
+        </rule>
+        <rule context="marcxchange:record[$is-publication and $is-periodical]">
+            <report test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For periodika må *596$c ikke være definert</report>
         </rule>
     </pattern>
     
     <pattern>
         <title>ISBN og ISSN</title>
+        
+        <let name="isbn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISBN mangler'"/>
+        <let name="issn-missing" value="//marcxchange:datafield[@tag='598']/marcxchange:subfield[@code='a']/text() = 'Originalutgavens ISSN mangler'"/>
         
         <rule context="marcxchange:record[$is-periodical]">
             <report test="$is-magazine and $is-newspaper">Et verk kan ikke både være et tidsskrift og en avis. Vennligst kontroller at det ikke er noen konflikt mellom *019$b og *650$a.</report>
@@ -112,43 +113,9 @@
                                                | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
         
         <rule context="marcxchange:record[$identifier and $is-translated]">
+            <assert test="marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']">For oversatte utgaver må originalspråk være definert i *041$h.</assert>
             <assert test="marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']">For oversatte utgaver må originaltittel være definert i *574$a.</assert>
             <assert test="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text() = 'overs.'">For oversatte utgaver må det være definert en oversetter i *700 ($e må være "overs.").</assert>
-        </rule>
-    </pattern>
-    
-    <pattern>
-        <title>Roller for bidragsytere</title>
-        
-        <let name="allowed-roles" value="('arr.', 'bearb.', 'dir.', 'forf.', 'fotogr.',
-                                          'illustr.', 'innl.', 'komp.', 'manusforf.', 'medarb.',
-                                          'medf.', 'oppr.forf.', 'overs.', 'red.', 'regissør',
-                                          'skuesp.', 'tekstf.', 'utg.', 'utøv.')"/>
-        
-        <!--
-             arr. : arrangør
-             bearb. : bearbeider
-             dir. : dirigent
-             forf. : forfatter
-             fotogr. : fotograf
-             illustr. : illustratør
-             innl. : innleser
-             komp. : komponist
-             manusforf. : manusforfatter
-             medarb. : medarbeider
-             medf. : medforfatter
-             oppr.forf. : opprinnelig forfatter
-             overs. : oversetter
-             red. : redaktør
-             regissør : regissør
-             skuesp. : skuespiller
-             tekstf. : tekstforfatter
-             utg. : utgiver
-             utøv. : utøver
-        -->
-        
-        <rule context="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text()">
-            <assert test=". = $allowed-roles">Bidragsytere i *700 må ha (i $e) en av følgende roller: "<value-of select="string-join($allowed-roles,'&quot;, &quot;')"/>". "<value-of select="."/>" er ikke en gyldig rolle.</assert>
         </rule>
     </pattern>
     

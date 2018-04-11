@@ -45,17 +45,17 @@ class Report():
             "attachment": []
         }
         self.pipeline = pipeline
-        logging.basicConfig(stream=sys.stdout)
+        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
     
     def reportDir(self):
         # Lag rapport-mappe
         if not self._report_dir:
-            report_dir = self.pipeline.book["name"] if "name" in self.pipeline.book else "book"
-            report_dir += "-"
-            report_dir += datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
-            report_dir += "-"
-            report_dir += self.pipeline.uid
-            report_dir = os.path.join(self.pipeline.dir_reports, report_dir)
+            report_dir = os.path.join(self.pipeline.dir_reports, "logs")
+            timestring = datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
+            if "name" in self.pipeline.book:
+                report_dir = os.path.join(report_dir, self.pipeline.book["name"], timestring + "-" + self.pipeline.uid)
+            else:
+                report_dir = os.path.join(report_dir, self.pipeline.uid, timestring)
             os.makedirs(report_dir)
             self._report_dir = report_dir
         return self._report_dir

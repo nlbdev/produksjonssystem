@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import sys
 import time
 import logging
@@ -47,9 +48,11 @@ class Pipeline():
     dirs = None
     
     # Other configuration
-    config = None
+    config = None    # instance config
+    environment = {} # global config
     
     # constants (set during instantiation)
+    running = False
     shouldHandleBooks = True
     _inactivity_timeout = 10
     _bookHandlerThread = None
@@ -78,9 +81,7 @@ class Pipeline():
         logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
         super().__init__()
     
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
-        
+    def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
         if not dir_in:
             dir_in = os.environ.get("DIR_IN")
         if not dir_out:
@@ -95,17 +96,6 @@ class Pipeline():
             }
         if not dir_base:
             dir_base = os.getenv("BASE_DIR", dir_in)
-        self.dir_trigger = os.getenv("TRIGGER_DIR")
-        if self.dir_trigger:
-            self.dir_trigger = os.path.join(self.dir_trigger, self.uid)
-            try:
-                if not os.path.exists(self.dir_trigger):
-                    os.makedirs(self.dir_trigger)
-            except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + "Could not create trigger directory: " + self.dir_trigger)
-        else:
-            self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
-            self.dir_trigger = self._dir_trigger_obj.name
         
         stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
         
@@ -119,12 +109,12 @@ class Pipeline():
         if stop_after_first_job in [ "true", "1" ]:
             self._stopAfterFirstJob = True
         
-        type(self).dir_in = str(os.path.normpath(dir_in)) + '/'
-        type(self).dir_out = str(os.path.normpath(dir_out)) + '/'
-        type(self).dir_reports = str(os.path.normpath(dir_reports)) + '/'
-        type(self).dir_base = str(os.path.normpath(dir_base)) + '/'
-        type(self).email_settings = email_settings
-        type(self).config = config if config else {}
+        self.dir_in = str(os.path.normpath(dir_in)) + '/'
+        self.dir_out = str(os.path.normpath(dir_out)) + '/'
+        self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
+        self.dir_base = str(os.path.normpath(dir_base)) + '/'
+        self.email_settings = email_settings
+        self.config = config if config else {}
         
         # make dirs available from static contexts
         if not Pipeline.dirs:
@@ -135,7 +125,40 @@ class Pipeline():
         Pipeline.dirs[self.uid]["out"] = self.dir_out
         Pipeline.dirs[self.uid]["reports"] = self.dir_reports
         Pipeline.dirs[self.uid]["base"] = self.dir_base
+        
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
+        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
+        
+        # common code shared with DummyPipeline
+        self.start_common(inactivity_timeout=inactivity_timeout,
+                          dir_in=dir_in,
+                          dir_out=dir_out,
+                          dir_reports=dir_reports,
+                          email_settings=email_settings,
+                          dir_base=dir_base,
+                          config=config)
+        
+        self.dir_trigger = os.getenv("TRIGGER_DIR")
+        if self.dir_trigger:
+            self.dir_trigger = os.path.join(self.dir_trigger, self.uid)
+            try:
+                if not os.path.exists(self.dir_trigger):
+                    os.makedirs(self.dir_trigger)
+            except Exception:
+                logging.exception("[" + Report.thread_name() + "] " + "Could not create trigger directory: " + self.dir_trigger)
+        else:
+            self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
+            self.dir_trigger = self._dir_trigger_obj.name
+        
+        # make trigger dir available from static contexts
         Pipeline.dirs[self.uid]["trigger"] = self.dir_trigger
+        
+        type(self).dir_in = self.dir_in
+        type(self).dir_out = self.dir_out
+        type(self).dir_reports = self.dir_reports
+        type(self).dir_base = self.dir_base
+        type(self).email_settings = self.email_settings
+        type(self).config = self.config
         
         if Filesystem.ismount(self.dir_in):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
@@ -160,6 +183,7 @@ class Pipeline():
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
         
+        self.running = True
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
     
     def stop(self, exit=False):
@@ -168,6 +192,7 @@ class Pipeline():
         if exit:
             self._shouldRun = False
         self._queue = []
+        self.running = False
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
     def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -385,7 +410,7 @@ class Pipeline():
                         
                         finally:
                             if self._stopAfterFirstJob:
-                                self._shouldRun = False
+                                self.stop(exit=True)
                             try:
                                 if self.utils.report.should_email:
                                     logging.exception("[" + Report.thread_name() + "] Sending email")
@@ -463,27 +488,49 @@ class DummyPipeline(Pipeline):
     book = {}
     
     utils = None
-    _dummy_should_run = None
+    running = False
     
-    def __init__(self, uid=None, title=None):
-        if uid:
-            self.uid = uid
+    def __init__(self, title=None, uid=None, inherit_config_from=None):
         if title:
             self.title = title
+        if uid:
+            self.uid = uid
+        elif title:
+            self.uid = "dummy_{}".format(re.sub(r'[^a-z0-9]', '', title.lower()))
         self.utils = DotMap()
         self.utils.report = DummyReport(self)
         self.utils.filesystem = Filesystem(self)
-        self._dummy_should_run = False
+        self._shouldRun = False
+        
+        if inherit_config_from:
+            assert issubclass(inherit_config_from, Pipeline)
+            self.dir_in = inherit_config_from.dir_in
+            self.dir_out = inherit_config_from.dir_out
+            self.dir_reports = inherit_config_from.dir_reports
+            self.dir_base = inherit_config_from.dir_base
+            self.email_settings = inherit_config_from.email_settings
+            self.config = inherit_config_from.config
     
-    def start(self, *args, **kwargs):
-        self._dummy_should_run = True
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
+        self.start_common(inactivity_timeout=inactivity_timeout,
+                          dir_in=dir_in,
+                          dir_out=dir_out,
+                          dir_reports=dir_reports,
+                          email_settings=email_settings,
+                          dir_base=dir_base,
+                          config=config)
+        
+        self._shouldRun = True
     
     def stop(self, *args, **kwargs):
-        self._dummy_should_run = False
+        self._shouldRun = False
     
     def run(self, *args, **kwargs):
         self.start(*args, **kwargs)
-        while self._dummy_should_run:
+        while self._shouldRun:
+            if self._stopAfterFirstJob:
+                self.stop()
+                break
             time.sleep(1)
     
     def on_book_deleted(self):

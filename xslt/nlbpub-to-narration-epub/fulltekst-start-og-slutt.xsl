@@ -234,12 +234,12 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
                         <p>
                             <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>The original ISBN is </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -314,12 +314,12 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
                         <p>
                             <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>ISBN-nummeret til originalen er  </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
@@ -393,12 +393,12 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
                         <p>
                             <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Originalens ISBN er </xsl:text>
                             <xsl:value-of
-                                select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
                             <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>

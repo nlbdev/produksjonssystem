@@ -59,6 +59,7 @@
                 <xsl:with-param name="format" select="$format"/>
             </xsl:call-template>
         </xsl:variable>
+        <xsl:variable name="this-xslt" select="document(static-base-uri())/*"/>
         <xsl:text><![CDATA[
     ]]></xsl:text>
         <metadata>
@@ -67,7 +68,7 @@
             
             <xsl:variable name="reserved-prefixes" select="if ($epubVersion = '3.1') then ('a11y','dcterms','epubsc','marc','media','onix','rendition','schema','xsd') else ('dcterms','marc','media','onix','xsd')"/>
             <xsl:variable name="metadata-prefixes" select="distinct-values($metadata/@property[contains(.,':')]/substring-before(.,':')[not(.=$reserved-prefixes)])"/>
-            <xsl:variable name="mappings" select="for $p in $metadata-prefixes return concat($p, ': ', namespace-uri-for-prefix($p, (//*[substring-before(name(),':') = $p])[1]))"/>
+            <xsl:variable name="mappings" select="for $p in $metadata-prefixes return concat($p, ': ', namespace-uri-for-prefix($p, (//*[substring-before(name(),':') = $p], $this-xslt)[1]))"/>
             <xsl:variable name="prefixes" select="string-join($mappings,' ')"/>
             <xsl:if test="$prefixes">
                 <xsl:attribute name="prefix" select="$prefixes"/>
@@ -84,23 +85,27 @@
         <xsl:param name="update-identifier" as="xs:boolean" tunnel="yes"/>
         <xsl:variable name="work" select="(rdf:Description[rdf:type/@rdf:resource = 'http://schema.org/CreativeWork'])[1]"/>
         <xsl:variable name="epub" select="(rdf:Description[dc:format = 'EPUB'])[1]"/>
-        <xsl:variable name="daisy202" select="(rdf:Description[dc:format = 'DAISY 2.02'])[1]"/>
-        <xsl:variable name="braille" select="(rdf:Description[dc:format = 'Braille'])[1]"/>
         <xsl:variable name="publication" select="if ($format) then (rdf:Description[dc:format = $format])[1] else ()"/>
         
-        <xsl:variable name="identifier" select="if ($update-identifier) then ($publication, $epub)[1]/dc:identifier[1] else $epub[1]/dc:identifier[1]"/>
+        <xsl:variable name="identifier" select="if ($update-identifier and $format) then $publication[1]/dc:identifier[1] else $epub[1]/dc:identifier[1]"/>
         
-        <xsl:if test="$identifier">
-            <xsl:text><![CDATA[
+        <xsl:choose>
+            <xsl:when test="$identifier">
+                <xsl:text><![CDATA[
         ]]></xsl:text>
-            <xsl:comment select="concat(' Boknummer for ', string(($identifier/../dc:format[1])/text()), '-utgaven ')"/>
-            
-            <xsl:call-template name="meta">
-                <xsl:with-param name="rdf-property" select="$identifier"/>
-                <xsl:with-param name="id" select="'pub-id'"/>
-            </xsl:call-template>
-        </xsl:if>
-        
+                <xsl:comment select="concat(' Boknummer for ', (if ($format) then $format else 'EPUB'), '-utgaven ')"/>
+                
+                <xsl:call-template name="meta">
+                    <xsl:with-param name="rdf-property" select="$identifier"/>
+                    <xsl:with-param name="id" select="'pub-id'"/>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:text><![CDATA[
+        ]]></xsl:text>
+                <xsl:comment select="concat(' Boknummer for ', (if ($format) then $format else 'EPUB'), '-utgaven mangler ')"/>
+            </xsl:otherwise>
+        </xsl:choose>
         
         <xsl:text><![CDATA[
         
@@ -118,11 +123,23 @@
                 </xsl:call-template>
             </xsl:if>
         </xsl:for-each>
+        <xsl:if test="not(//nlbprod:identifier.epub)">
+            <xsl:call-template name="meta">
+                <xsl:with-param name="rdf-property" select="$epub[1]/dc:identifier[1]"/>
+                <xsl:with-param name="rename" select="'nlbprod:identifier.epub'"/>
+            </xsl:call-template>
+            <xsl:if test="$epub[1]/schema:isbn[1]">
+                <xsl:call-template name="meta">
+                    <xsl:with-param name="rdf-property" select="$epub[1]/schema:isbn[1]"/>
+                    <xsl:with-param name="rename" select="'nlbprod:isbn.epub'"/>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:if>
         
         <xsl:text><![CDATA[
         
         ]]></xsl:text>
-        <xsl:comment select="concat(' Metadata for åndsverket', if ($publication) then concat(' og ',string(($identifier/../dc:format[1])/text()),'-utgaven') else '', ' ')"/>
+        <xsl:comment select="concat(' Metadata for åndsverket', if ($publication) then concat(' og ',$format,'-utgaven') else '', ' ')"/>
         <xsl:variable name="has-bibliofil-narrator" select="xs:boolean(count(($work, $publication)/dc:contributor.narrator))"/>
         <xsl:for-each select="('dc:title', 'dc:language', 'dc:creator', 'dc:contributor',
                                'dc:format', 'dc:publisher', 'dc:rights', 'dc:coverage', 'dc:date',
@@ -130,7 +147,7 @@
                                if (not($has-bibliofil-narrator)) then 'nlbprod:narrator' else (),
                                distinct-values((//dcterms:* | //nordic:* | //schema:*)[@schema:name or text()]/(tokenize(name(),'\.')[1])))">
             
-            <xsl:variable name="meta" select="($work/*, $publication/*)[starts-with(name(), current())]" as="element()*"/>
+            <xsl:variable name="meta" select="($work/*, $publication/(* except schema:isbn))[starts-with(name(), current())]" as="element()*"/> <!-- TODO: find a better way to handle publication ISBNs -->
             <xsl:variable name="meta" select="if (count($meta)) then $meta else $epub/*[starts-with(name(), current())]" as="element()*"/>
             
             <xsl:for-each select="$meta">
@@ -142,12 +159,6 @@
                         <xsl:call-template name="meta">
                             <xsl:with-param name="rdf-property" select="."/>
                             <xsl:with-param name="rename" select="'dc:contributor.narrator'"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test="self::schema:isbn intersect $work/*">
-                        <xsl:call-template name="meta">
-                            <xsl:with-param name="rdf-property" select="."/>
-                            <xsl:with-param name="rename" select="'schema:isbn.original'"/>
                         </xsl:call-template>
                     </xsl:when>
                     <xsl:otherwise>
@@ -170,9 +181,6 @@
         <xsl:param name="rename" as="xs:string?"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:variable name="property" select="$rdf-property/name()" as="xs:string"/>
-        <xsl:if test="not($rdf-property/(@schema:name, text())[1])">
-            <xsl:message select="$rdf-property"/>
-        </xsl:if>
         <xsl:variable name="value" select="$rdf-property/(@schema:name, text())[1]" as="xs:string"/>
         <xsl:variable name="marcrel" select="if ($epub-version = '3.1' and starts-with($property,'dc:contributor.')) then nlb:role-to-marcrel(substring-after($property,'dc:contributor.')) else ()" as="xs:string?"/>
         <xsl:variable name="property" select="if ($marcrel) then 'dc:contributor' else $property" as="xs:string"/>
