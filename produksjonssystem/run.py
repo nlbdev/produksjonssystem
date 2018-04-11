@@ -14,6 +14,7 @@ from email.headerregistry import Address
 from dtbook_to_tts import DtbookToTts
 from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
+from epub_to_dtbook_braille import EpubToDtbookBraille
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
 from insert_metadata import *
@@ -22,17 +23,18 @@ from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_docx import NLBpubToDocx
+from make_abstracts import Audio_Abstract
 
 class Produksjonssystem():
-    
+
     book_archive_dir = None
     email = None
     dirs = None
     pipelines = None
     environment = None
-    
+
     def __init__(self, environment=None):
-        
+
         # Set environment variables (mainly useful when testing)
         if environment:
             assert isinstance(environment, dict)
@@ -42,12 +44,12 @@ class Produksjonssystem():
         else:
             self.environment = {}
         Pipeline.environment = self.environment # Make environment available from pipelines
-        
+
         # Check that archive dir is defined
         assert os.environ.get("BOOK_ARCHIVE_DIR")
         book_archive_dir = str(os.path.normpath(os.environ.get("BOOK_ARCHIVE_DIR")))
         self.book_archive_dir = book_archive_dir # for convenience; both method variable and instance variable
-        
+
         # Configure email
         self.email = {
             "smtp": {
@@ -80,7 +82,7 @@ class Produksjonssystem():
                 "wenche":   Address("Wenche Andresen",          "wenche.andresen",   "nlb.no"),
             }
         }
-        
+
         # Define directories
         self.dirs = {
             "reports": os.getenv("REPORTS_DIR", os.path.join(book_archive_dir, "rapporter")),
@@ -89,6 +91,7 @@ class Produksjonssystem():
             "nlbpub": os.path.join(book_archive_dir, "master/NLBPUB"),
             "metadata": os.path.join(book_archive_dir, "metadata"),
             "dtbook": os.path.join(book_archive_dir, "distribusjonsformater/DTBook"),
+            "dtbook_braille": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-punktskrift"),
             "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
             "daisy202_tts": os.path.join(book_archive_dir, "utgave-ut/DAISY202-fra-talesyntese"),
             "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
@@ -102,8 +105,10 @@ class Produksjonssystem():
             "pub-in-audio": os.path.join(book_archive_dir, "utgave-inn/lydbok"),
             "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dir, "utgave-inn/punktskrift"),
+            "incoming_daisy": os.path.join(book_archive_dir, "utgave-inn/daisy202"),
+            "abstracts": os.path.join(book_archive_dir, "utgave-ut/baksidetekst")
         }
-        
+
         # Define pipelines, input/output/report dirs, and email recipients
         self.pipelines = [
             # Mottak
@@ -124,42 +129,48 @@ class Produksjonssystem():
                                                                                                                         ],
                                                                                                                         "default_librarian": self.email["recipients"]["elih"]
                                                                                                                      }],
-            
+
             # EPUB
             [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
-            
+
             # innlest lydbok
             [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
             [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
             [ DummyPipeline("Innlesing"),                   "epub_narration",      "epub_narrated",       "reports", ["jostein"]],
-            
+
             # e-bok
             [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
             [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","espen","jostein","olav"]],
             [ NLBpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
-            
+
             # punktskrift
             [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
             [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","karir"]],
             [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","karir"]],
-            
+
             # TTS-lydbok
             [ EpubToDtbook(),                               "master",              "dtbook",              "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DtbookToTts(),                                "dtbook",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav"]],
             [ DummyPipeline("TTS-produksjon"),              "dtbook_tts",          "daisy202_tts",        "reports", ["jostein"]],
+
+            # DTBook for punktskrift
+            [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",              "reports", ["jostein"]],
+
+            # lydutdrag
+            # [ Audio_Abstract(),              "incoming_daisy",          "abstracts",        "reports", ["espen"]],
         ]
-    
-    
+
+
     # ---------------------------------------------------------------------------
     # Don't edit below this line if you only want to add/remove/modify a pipeline
     # ---------------------------------------------------------------------------
-    
+
     def run(self):
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
         else:
             logging.getLogger().setLevel(logging.INFO)
-        
+
         # Make sure that directories are defined properly
         for d in self.dirs:
             self.dirs[d] = os.path.normpath(self.dirs[d])
@@ -168,7 +179,7 @@ class Produksjonssystem():
                 assert self.dirs[d].startswith(self.book_archive_dir + "/"), "Directory \"" + d + "\" must be part of the book archive: " + self.dirs[d]
             assert os.path.normpath(self.dirs[d]) != os.path.normpath(self.book_archive_dir), "The directory \"" + d + "\" must not be equal to the book archive dir: " + self.dirs[d]
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
-        
+
         # Make sure that the pipelines are defined properly
         for pipeline in self.pipelines:
             assert len(pipeline) == 5 or len(pipeline) == 6, "Pipeline declarations have five or six arguments (not " + len(pipeline) + ")"
@@ -183,15 +194,15 @@ class Produksjonssystem():
             assert pipeline[3] in self.dirs, "The fourth argument of a pipeline declaration (\"" + str(pipeline[3]) + "\") must refer to a key in \"dirs\""
             for recipient in pipeline[4]:
                 assert recipient in self.email["recipients"], "All list items in the fifth argument of a pipeline declaration (\"" + str(pipeline[4]) + "\") must refer to a key in \"email['recipients']\""
-        
+
         # Make directories
         for d in self.dirs:
             os.makedirs(self.dirs[d], exist_ok=True)
-        
+
         if os.environ.get("DEBUG", "1") == "1":
             time.sleep(1)
             logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s %(message)s")
-        
+
         threads = []
         for pipeline in self.pipelines:
             email_settings = {
@@ -212,26 +223,26 @@ class Produksjonssystem():
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
-        
+
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run)
         graph_thread.setDaemon(True)
         graph_thread.start()
-        
+
         try:
             stopfile = os.getenv("TRIGGER_DIR")
             if stopfile:
                 stopfile = os.path.join(stopfile, "stop")
-            
+
             running = True
             while running:
                 time.sleep(1)
-                
+
                 if os.path.exists(stopfile):
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
-                
+
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
                     for pipeline in self.pipelines:
@@ -243,21 +254,21 @@ class Produksjonssystem():
                         if not thread.isAlive():
                             running = False
                             break
-        
+
         except KeyboardInterrupt:
             pass
-        
+
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
             plotter.should_run = False
-        
+
         graph_thread.join()
         for thread in threads:
             thread.join()
-    
+
     def wait_until_running(self, timeout=60):
         start_time = time.time()
-        
+
         while time.time() - start_time < timeout:
             waiting = 0
             for pipeline in self.pipelines:
@@ -265,9 +276,9 @@ class Produksjonssystem():
                     waiting += 1
             if waiting == 0:
                 return True
-        
+
         return False
-    
+
     def stop(self):
         stopfile = os.getenv("TRIGGER_DIR")
         assert stopfile, "TRIGGER_DIR must be defined"
