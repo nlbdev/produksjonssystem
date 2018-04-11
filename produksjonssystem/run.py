@@ -92,7 +92,6 @@ class Produksjonssystem():
             "metadata": os.path.join(book_archive_dir, "metadata"),
             "dtbook_braille": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-punktskrift"),
             "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
-            "daisy202_tts": os.path.join(book_archive_dir, "utgave-ut/DAISY202-fra-talesyntese"),
             "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
             "docx": os.path.join(book_archive_dir, "distribusjonsformater/DOCX"),
             "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
@@ -147,8 +146,8 @@ class Produksjonssystem():
             [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","karir"]],
 
             # TTS-lydbok
-            [ DummyPipeline("TTS-produksjon"),              "dtbook_tts",          "daisy202_tts",        "reports", ["jostein"]],
             [ EpubToDtbook(),                               "master",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
+            [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          None,                  "reports", ["jostein"]],
 
             # DTBook for punktskrift
             [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",      "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
