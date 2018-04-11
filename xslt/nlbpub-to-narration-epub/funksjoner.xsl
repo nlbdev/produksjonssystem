@@ -137,6 +137,24 @@
                     satisfies $a eq $type"
         />
     </xsl:function>
+    
+    <xsl:function name="fnk:lag-stor-førstebokstav" as="xs:string">
+        <xsl:param name="tekst" as="xs:string"></xsl:param>
+        <xsl:choose>
+            <xsl:when test="normalize-space($tekst) eq ''">
+                <xsl:value-of select="$tekst"/>
+            </xsl:when>
+            <xsl:when test="string-length(normalize-space($tekst)) eq 1">
+                <xsl:value-of select="upper-case($tekst)"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="første-bokstav" as="xs:string" select="substring($tekst,1,1)"/>
+                <xsl:variable name="resten" as="xs:string" select="substring($tekst,2)"/>
+                <xsl:value-of select="concat(upper-case($første-bokstav),$resten)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
     <xsl:function name="fnk:tall-til-tallord" as="xs:string">
         <xsl:param name="tall" as="xs:integer"/>
         <xsl:param name="intetkjønn" as="xs:boolean"/>

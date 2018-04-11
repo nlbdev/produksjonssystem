@@ -36,6 +36,7 @@
                 <xsl:text>.</xsl:text>
             </p>
             <p>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>Read by </xsl:text>
@@ -63,6 +64,7 @@
     <xsl:template name="generer-sluttinformasjon">
         <hr class="separator"/>
         <p>
+            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
             <xsl:choose>
                 <xsl:when test="$SPRÅK.en">
                     <xsl:text>You've been listening to </xsl:text>
@@ -89,6 +91,7 @@
             <xsl:text>.</xsl:text>
         </p>
         <p>
+            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
             <xsl:choose>
                 <xsl:when test="$SPRÅK.en">
                     <xsl:text>Read by </xsl:text>
@@ -115,6 +118,7 @@
     <xsl:template name="lydbokavtalen">
         <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">
             <h1>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>The audiobook agreement</xsl:text>
@@ -128,6 +132,7 @@
             <xsl:choose>
                 <xsl:when test="$SPRÅK.en">
                     <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>This edition is produced by NLB in </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
@@ -137,12 +142,14 @@
                             The copy will be marked so that it will be possible to trace it to the borrower if misused.</xsl:text>
                     </p>
                     <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>Violation of these terms of agreement may lead to liability according to the Copyright Act. 
                             Such actions may also result in loss of the right to borrow accessible literature.</xsl:text>
                     </p>
                 </xsl:when>
                 <xsl:when test="$SPRÅK.nn">
                     <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>Denne utgåva er produsert av NLB i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
@@ -152,6 +159,7 @@
                         misbruk.</xsl:text>
                     </p>
                     <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>Brot på desse avtalevilkåra kan medføre ansvar etter åndsverklova.
                         Slike handlingar kan også medføre tap av retten til å låne tilrettelagde
                         lydbøker.</xsl:text>
@@ -159,6 +167,7 @@
                 </xsl:when>
                 <xsl:otherwise>
                     <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>Denne utgaven er produsert av NLB i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
@@ -168,6 +177,7 @@
                             til deg som låner ved misbruk.</xsl:text>
                     </p>
                     <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>Brudd på disse avtalevilkårene kan medføre ansvar etter åndsverkloven. 
                             Slike handlinger kan også medføre tap av retten til å låne tilrettelagte lydbøker.</xsl:text>
                     </p>
@@ -180,6 +190,7 @@
     <xsl:template name="info-om-boka">
         <section epub:type="frontmatter" id="nlb-level1-om-boka">
             <h1>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>About the book</xsl:text>
@@ -200,6 +211,7 @@
                             fnk:metadata-finnes('dc:publisher.location.original') and
                             fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>The book is published by </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
@@ -224,6 +236,7 @@
                     </xsl:if>
                     <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>The original ISBN is </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
@@ -233,6 +246,7 @@
                     <xsl:if
                         test="fnk:metadata-finnes('dc:date.issued.original') and fnk:metadata-finnes('bookEdition.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>The book was first published in </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
@@ -244,10 +258,11 @@
                     </xsl:if>
                     <xsl:if test="$boken.er-oversatt">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:if test="fnk:metadata-finnes('dc:language.original')">
                                 <xsl:text>The book was first published in </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()),'en')"/>
+                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()), 'en')"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
@@ -276,6 +291,7 @@
                             fnk:metadata-finnes('dc:publisher.location.original') and
                             fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Boka er utgjeven av </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
@@ -300,6 +316,7 @@
                     </xsl:if>
                     <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>ISBN-nummeret til originalen er  </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
@@ -309,6 +326,7 @@
                     <xsl:if
                         test="fnk:metadata-finnes('dc:date.issued.original') and fnk:metadata-finnes('bookEdition.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Boka er første gang utgjeven  i </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
@@ -320,10 +338,11 @@
                     </xsl:if>
                     <xsl:if test="$boken.er-oversatt">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:if test="fnk:metadata-finnes('dc:language.original')">
                                 <xsl:text>Boka er første gong utgjeven på </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()),'nn')"/>
+                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()), 'nn')"/>
                                 <xsl:text>. </xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
@@ -351,6 +370,7 @@
                             fnk:metadata-finnes('dc:publisher.location.original') and
                             fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Boka er utgitt av </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
@@ -375,6 +395,7 @@
                     </xsl:if>
                     <xsl:if test="fnk:metadata-finnes('schema:isbn.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Originalens ISBN er </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('schema:isbn.original', true(), false())"/>
@@ -384,6 +405,7 @@
                     <xsl:if
                         test="fnk:metadata-finnes('dc:date.issued.original') and fnk:metadata-finnes('bookEdition.original')">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Boka er første gang utgitt i  </xsl:text>
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
@@ -395,10 +417,11 @@
                     </xsl:if>
                     <xsl:if test="$boken.er-oversatt">
                         <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:if test="fnk:metadata-finnes('dc:language.original')">
                                 <xsl:text>Boka er første gang utgitt på </xsl:text>
                                 <xsl:value-of
-                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()),'nb')"/>
+                                    select="fnk:språkkode-til-tekst(fnk:hent-metadata-verdi('dc:language.original', true(), false()), 'nb')"/>
                                 <xsl:text>.</xsl:text>
                             </xsl:if>
                             <xsl:if test="fnk:metadata-finnes('dc:title.original')">
@@ -427,7 +450,7 @@
                     Bør vi gjøre noe hvis det ikke er tilfelle.
                 -->
                 <p>
-
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                     <xsl:choose>
                         <xsl:when
                             test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
@@ -579,6 +602,7 @@
     <xsl:template name="info-om-den-tilrettelagte-utgaven">
         <section epub:type="frontmatter" id="nlb-level1-om-lydboka">
             <h1>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">About the accessible edition</xsl:when>
                     <xsl:when test="$SPRÅK.nn">
@@ -590,6 +614,7 @@
                 </xsl:choose>
             </h1>
             <p>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>This edition contains synchronised text and audio.
@@ -606,6 +631,7 @@
                 </xsl:choose>
             </p>
             <p>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>It is possible to navigate the audiobook by </xsl:text>
