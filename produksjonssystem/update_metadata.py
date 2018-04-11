@@ -97,7 +97,7 @@ class UpdateMetadata(Pipeline):
             self.logPipeline.stop()
         
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped watching metadata")
-        
+    
     def get_queue(self):
         return UpdateMetadata.queue
     
@@ -566,8 +566,10 @@ class UpdateMetadata(Pipeline):
             if signatureRegistration:
                 for addr in UpdateMetadata.config["librarians"]:
                     if signatureRegistration == addr.addr_spec.lower():
-                        signatureRegistration = addr
+                        signatureRegistrationAddress = addr
             if not signatureRegistrationAddress:
+                normarc_pipeline.utils.report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: '{}'".format(signatureRegistration if signatureRegistration else "(ukjent)", UpdateMetadata.config["default_librarian"].addr_spec.lower()))
+                normarc_pipeline.utils.report.debug("Aktive bibliotekarer: {}".format(", ".join([addr.addr_spec.lower() for addr in UpdateMetadata.config["librarians"]])))
                 signatureRegistrationAddress = UpdateMetadata.config["default_librarian"]
             normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],
                                                 UpdateMetadata.email_settings["sender"],
