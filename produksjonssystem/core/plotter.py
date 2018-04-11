@@ -8,7 +8,7 @@ import shutil
 import logging
 
 from graphviz import Digraph
-from core.pipeline import Pipeline
+from core.pipeline import Pipeline, DummyPipeline
 from core.utils.report import Report
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -71,7 +71,20 @@ class Plotter():
             elif pipeline[0].dir_out and pipeline[0].dir_base:
                 relpath_out = os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
             
-            pipeline_label = title + "\n" + queue_string + "\n" + ("Behandler: " + str(book) if book else "(venter)" if pipeline[0].running else "")
+            status = ""
+            if book:
+                status = "Behandler: {}".format(book)
+            elif isinstance(pipeline[0], DummyPipeline):
+                status = "Manuelt steg"
+            elif pipeline[0]._shouldRun and not pipeline[0].running:
+                status = "Starter..."
+            elif not pipeline[0]._shouldRun and pipeline[0].running:
+                status = "Stopper..."
+            elif not pipeline[0].running:
+                status = "Stoppet"
+            else:
+                status = "Venter"
+            pipeline_label = title + "\n" + queue_string + "\n" + status
             
             fillcolor = "lightskyblue1"
             if book or queue_size:
