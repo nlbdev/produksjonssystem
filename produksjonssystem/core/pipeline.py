@@ -494,7 +494,7 @@ class DummyPipeline(Pipeline):
     book = {}
     
     utils = None
-    running = False
+    running = True
     
     def __init__(self, title=None, uid=None, inherit_config_from=None):
         if title:
@@ -527,9 +527,12 @@ class DummyPipeline(Pipeline):
                           email_settings=email_settings,
                           dir_base=dir_base,
                           config=config)
+        
+        self.running = True
     
     def stop(self, *args, **kwargs):
         self._shouldRun = False
+        self.running = False
     
     def run(self, *args, **kwargs):
         self.start(*args, **kwargs)
