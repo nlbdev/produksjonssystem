@@ -23,7 +23,7 @@ from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_docx import NLBpubToDocx
-from make_abstracts import Audio_Abstract
+# from make_abstracts import Audio_Abstract
 
 class Produksjonssystem():
 
@@ -106,7 +106,7 @@ class Produksjonssystem():
             "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dir, "utgave-inn/punktskrift"),
             "incoming_daisy": os.path.join(book_archive_dir, "utgave-inn/daisy202"),
-            "abstracts": os.path.join(book_archive_dir, "utgave-ut/baksidetekst")
+            # "abstracts": os.path.join(book_archive_dir, "utgave-ut/baksidetekst")
         }
 
         # Define pipelines, input/output/report dirs, and email recipients
