@@ -8,6 +8,7 @@ import logging
 from threading import Thread
 from core.plotter import Plotter
 from core.pipeline import Pipeline, DummyPipeline
+from core.utils.report import Report
 from email.headerregistry import Address
 
 # Import pipelines
@@ -160,8 +161,21 @@ class Produksjonssystem():
     # ---------------------------------------------------------------------------
     # Don't edit below this line if you only want to add/remove/modify a pipeline
     # ---------------------------------------------------------------------------
-
+    
+    def info(self, text):
+        print(text)
+        Report.slack(text, None)
+    
     def run(self):
+        try:
+            self.info("Produksjonssystemet er startet")
+            self._run()
+        except Exception as e:
+            self.info("En feil oppstod i produksjonssystemet: {}".format(str(e) if str(e) else "(ukjent)"))
+        finally:
+            self.info("Produksjonssystemet er stoppet")
+    
+    def _run(self):
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
         else:
@@ -235,7 +249,7 @@ class Produksjonssystem():
                 time.sleep(1)
 
                 if os.path.exists(stopfile):
-                    logging.info("Found stopfile, will stop the system: {}".format(stopfile))
+                    self.info("Sender stoppsignal til alle pipelines...")
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
@@ -258,11 +272,11 @@ class Produksjonssystem():
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
         
-        logging.info("Waiting for all pipelines to shut down...")
+        self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
             thread.join()
         
-        logging.info("Stop plotting...")
+        self.info("Venter på at plotteren skal stoppe...")
         plotter.should_run = False
         graph_thread.join()
 
