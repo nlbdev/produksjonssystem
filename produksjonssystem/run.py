@@ -239,6 +239,7 @@ class Produksjonssystem():
                 time.sleep(1)
 
                 if os.path.exists(stopfile):
+                    logging.info("Found stopfile, will stop the system: {}".format(stopfile))
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
@@ -261,10 +262,11 @@ class Produksjonssystem():
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
             plotter.should_run = False
-
-        graph_thread.join()
+        
+        logging.info("Waiting for all pipelines to shut down...")
         for thread in threads:
             thread.join()
+        graph_thread.join()
 
     def wait_until_running(self, timeout=60):
         start_time = time.time()
