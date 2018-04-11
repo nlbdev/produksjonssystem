@@ -20,8 +20,10 @@ from produksjonssystem import run
 
 # Configure system
 environment = {
-    "BOOK_ARCHIVE_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-archive"),
-    "TRIGGER_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-triggerdir"),
+    #"BOOK_ARCHIVE_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-archive"),
+    "BOOK_ARCHIVE_DIR": "/tmp/prodsys-archive",
+    "TRIGGER_DIR": "/tmp/prodsys-trigger",
+    #"TRIGGER_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-triggerdir"),
     "REPORTS_DIR": "/tmp/prodsys-rapporter", # always the same, so that it's easier to view the dashboard(s)
     "DEBUG": "false",
     "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
@@ -81,40 +83,40 @@ prodsys_thread.join(timeout=t)
 if prodsys_thread.is_alive():
     print("The tests timed out")
 
-#Check if folder is not empty
-if  os.path.exists(DTBook_path):print("DTBook  is verified")
+# Check if folder is not empty
+if os.path.exists(DTBook_path):print("DTBook  is verified")
 else:
     print("DTBook does not exist")
-    success=0
+    success = 0
 
-if  os.path.exists(DTBookToTts_path):print("DTBook til talesyntese  is verified")
+if os.path.exists(DTBookToTts_path):print("DTBook til talesyntese  is verified")
 else:
     print("DTBook til talesyntese does not exist")
-    success=0
+    success = 0
 
-if  os.path.exists(epubInnL_path):print("Epub til innlesing  is verified")
+if os.path.exists(epubInnL_path):print("Epub til innlesing  is verified")
 else:
     print("Epub til innlesing does not exist")
-    success=0
+    success = 0
 
-if  os.path.exists(HTML_path):print("HTML  is verified")
+if os.path.exists(HTML_path):print("HTML  is verified")
 else:
     print("HTML does not exist")
-    success=0
+    success = 0
 
-if  os.path.exists(DOCX_path):print("DOCX  is verified")
+if os.path.exists(DOCX_path):print("DOCX  is verified")
 else:
     print("DOCX does not exist")
-    success=0
+    success = 0
 
-if  os.path.exists(PEF_path):print("PEF fullskrift  is verified")
+if os.path.exists(PEF_path):print("PEF fullskrift  is verified")
 else:
     print("PEF fullskrift does not exist")
-    success=0
+    success = 0
 
 if (success):
     print("The test was completed in less than {0} seconds".format(t))
     sys.exit(0)
-else :
+else:
     print ("\nThe test was not completed in {0} seconds".format(t))
     sys.exit(1)
