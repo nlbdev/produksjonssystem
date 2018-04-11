@@ -34,6 +34,7 @@ class Produksjonssystem():
     environment = None
 
     def __init__(self, environment=None):
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s")
 
         # Set environment variables (mainly useful when testing)
         if environment:
@@ -163,7 +164,7 @@ class Produksjonssystem():
     # ---------------------------------------------------------------------------
     
     def info(self, text):
-        print(text)
+        logging.info(text)
         Report.slack(text, None)
     
     def run(self):
