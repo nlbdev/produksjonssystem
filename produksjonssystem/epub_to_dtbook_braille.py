@@ -123,8 +123,7 @@ class EpubToDtbookBraille(Pipeline):
 
         shutil.copy(temp_dtbook, dtbook_file)
 
-        #print("temp_dtbook: "+temp_dtbook)
-        print("dtbook_dir: "+(dtbook_dir))
+        # Deletes all files not xml
         for item in os.listdir(dtbook_dir):
             if not item.endswith(".xml"):
                 os.remove(os.path.join(dtbook_dir, item))
