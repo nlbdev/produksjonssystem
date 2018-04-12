@@ -8,7 +8,7 @@ import logging
 from threading import Thread
 from core.plotter import Plotter
 from core.pipeline import Pipeline, DummyPipeline
-from core.utils.report import Report
+from core.utils.slack import Slack
 from email.headerregistry import Address
 
 # Import pipelines
@@ -165,7 +165,7 @@ class Produksjonssystem():
     
     def info(self, text):
         logging.info(text)
-        Report.slack(text, None)
+        Slack.slack(text, None)
     
     def run(self):
         try:

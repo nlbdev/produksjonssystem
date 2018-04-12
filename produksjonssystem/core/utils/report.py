@@ -15,17 +15,12 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 from email.headerregistry import Address
 from email.utils import make_msgid
-from slacker import Slacker
 
 from core.utils.filesystem import Filesystem
+from core.utils.slack import Slack
 
 class Report():
     """Logging and reporting"""
-    
-    _slack = None
-    _slack_token = os.getenv("SLACK_TOKEN", None)
-    _slack_authed = None
-    _slack_channel = os.getenv("SLACK_CHANNEL", "#test")
     
     stdout_verbosity = 'INFO'
     pipeline = None
@@ -148,7 +143,7 @@ class Report():
         else:
             logging.warn("[" + Report.thread_name() + "] email host/port not configured")
         
-        Report.slack(text=subject, attachments=None)
+        Slack.slack(text=subject, attachments=None)
     
     def email(self, smtp, sender, recipients, subject=None):
         assert smtp
@@ -296,33 +291,7 @@ class Report():
                 "fallback": attachment["title"],
                 "color": color
             })
-        Report.slack(text=subject, attachments=slack_attachments)
-    
-    @staticmethod
-    def slack(text, attachments):
-        assert not text or isinstance(text, str)
-        assert not attachments or isinstance(attachments, list)
-        assert text or attachments
-        
-        if Report._slack_authed is None or Report._slack is None:
-            Report._slack = Slacker(os.getenv("SLACK_TOKEN"))
-            try:
-                auth = Report._slack.auth.test()
-                if auth.successful:
-                    logging.info("[" + Report.thread_name() + "] Slack authorized as \"" + auth.body.get("user") + "\" as part of the team \"" + auth.body.get("team") + "\"")
-                    Report._slack_authed = True
-                else:
-                    logging.warn("[" + Report.thread_name() + "] Failed to authorize to Slack")
-                    Report._slack_authed = False
-                
-            except Exception:
-                logging.exception("[" + Report.thread_name() + "] Failed to authorize to Slack")
-                Report._slack_authed = False
-        
-        if Report._slack_authed is not True:
-            logging.warn("[" + Report.thread_name() + "] Not authorized to send messages to Slack")
-        
-        Report._slack.chat.post_message(channel=Report._slack_channel, as_user=True, text=text, attachments=attachments)
+        Slack.slack(text=subject, attachments=slack_attachments)
     
     def attachLog(self):
         logpath = os.path.join(self.reportDir(), "log.txt")
