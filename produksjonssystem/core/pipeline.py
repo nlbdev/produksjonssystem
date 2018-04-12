@@ -187,7 +187,6 @@ class Pipeline():
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
         
-        self.running = True
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
     
     def stop(self, exit=False):
@@ -196,7 +195,6 @@ class Pipeline():
         if exit:
             self._shouldRun = False
         self._queue = []
-        self.running = False
         logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
     
     def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -374,6 +372,8 @@ class Pipeline():
     
     def _handle_book_events_thread(self):
         while self._dirInAvailable and self._shouldRun:
+            self.running = True
+            
             try:
                 if not os.path.isdir(self.dir_in):
                     # when base dir is not available we should stop watching the directory,
@@ -456,6 +456,8 @@ class Pipeline():
                 
             finally:
                 time.sleep(1)
+        
+        self.running = False
     
     @staticmethod
     def get_main_event(book):

@@ -56,7 +56,7 @@
                     <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                         <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
                         <p>Denne e-boka er produsert for: [Studentens navn], av Norsk lyd- og blindeskriftbibliotek i <xsl:value-of select="$year"/>
-                           med hjemmel i åndsverkslovens § 17a, og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres.
+                           med hjemmel i åndsverkslovens § 17, og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres.
                            Ved låneperiodens utløp skal alle digitale eksemplar destrueres eller returneres til produsenten.
                            Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering,
                            kan medføre ansvar etter åndsverkloven.</p>

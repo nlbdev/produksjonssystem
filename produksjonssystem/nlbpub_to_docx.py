@@ -16,6 +16,7 @@ from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from update_metadata import UpdateMetadata
+from nlbpub_to_html import NlbpubToHtml
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -96,7 +97,7 @@ class NLBpubToDocx(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
 
-        xslt = Xslt(self, stylesheet=os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "prepare-for-html.xsl"),
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToHtml.uid, "prepare-for-html.xsl"),
                           source=html_file,
                           target=temp_html)
         if not xslt.success:
@@ -119,10 +120,10 @@ class NLBpubToDocx(Pipeline):
             return
 
 
-        shutil.copy(os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "NLB_logo.jpg"),
+        shutil.copy(os.path.join(Xslt.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
                     os.path.join(html_dir, "NLB_logo.jpg"))
 
-        shutil.copy(os.path.join(NLBpubToDocx.xslt_dir, NLBpubToDocx.uid, "default.css"),
+        shutil.copy(os.path.join(Xslt.xslt_dir, NlbpubToHtml.uid, "default.css"),
                     os.path.join(html_dir, "default.css"))
 
         pathlib.Path(os.path.join(NLBpubToDocx.dir_out,result_identifier)).mkdir(parents=True, exist_ok=True)

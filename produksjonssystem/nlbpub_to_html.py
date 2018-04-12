@@ -112,8 +112,12 @@ class NlbpubToHtml(Pipeline):
         # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
         
         html_dir = os.path.dirname(opf_path)
+        
         shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
                     os.path.join(html_dir, "NLB_logo.jpg"))
+        
+        shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "default.css"),
+                    os.path.join(html_dir, "default.css"))
         
         
         # ---------- slett EPUB-spesifikke filer ----------

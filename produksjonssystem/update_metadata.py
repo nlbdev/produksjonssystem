@@ -106,6 +106,8 @@ class UpdateMetadata(Pipeline):
     
     def _watch_metadata_thread(self):
         while self._shouldRun:
+            self.running = True
+            
             try:
                 time.sleep(1)
                 
@@ -121,6 +123,9 @@ class UpdateMetadata(Pipeline):
                 
                 # find a book_id where we haven't retrieved updated metadata in a while
                 for book_id in os.listdir(self.dir_out):
+                    if not self._shouldRun:
+                        break
+                    
                     now = int(time.time())
                     metadata_dir = os.path.join(self.dir_in, book_id)
                     
@@ -166,6 +171,8 @@ class UpdateMetadata(Pipeline):
                 
             except Exception:
                 logging.exception("[" + Report.thread_name() + "] An error occured while checking for updates in metadata")
+        
+        self.running = False
     
     @staticmethod
     def update(*args, **kwargs):
