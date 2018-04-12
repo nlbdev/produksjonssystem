@@ -78,27 +78,30 @@ class Epub():
         else:
             return self.book_path
     
-    def isepub(self):
+    def isepub(self, report_errors=True):
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if os.path.isdir(self.book_path) and not os.path.isfile(os.path.join(self.book_path, "EPUB/package.opf")):
-            self.pipeline.utils.report.error(os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
+            if report_errors:
+                self.pipeline.utils.report.error(os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
             return False
         
         elif os.path.isfile(self.book_path):
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 if not "mimetype" in [item.filename for item in archive.filelist]:
-                    self.pipeline.utils.warn("No 'mimetype' file in ZIP; this is not an EPUB: " + self.book_path)
+                    if report_errors:
+                        self.pipeline.utils.report.warn("No 'mimetype' file in ZIP; this is not an EPUB: " + self.book_path)
                     return False
                 
                 mimetype = archive.read("mimetype").decode("utf-8")
                 if not mimetype.startswith("application/epub+zip"):
-                    self.pipeline.utils.warn("The 'mimetype' file does not start with the text 'application/epub+zip'; this is not an EPUB: " + self.book_path)
+                    if report_errors:
+                        self.pipeline.utils.report.warn("The 'mimetype' file does not start with the text 'application/epub+zip'; this is not an EPUB: " + self.book_path)
                     return False
                 
                 if not "META-INF/container.xml" in [item.filename for item in archive.filelist]:
-                    self.pipeline.utils.warn("No 'META-INF/container.xml' file in ZIP; this is not an EPUB: " + self.book_path)
+                    if report_errors:
+                        self.pipeline.utils.report.warn("No 'META-INF/container.xml' file in ZIP; this is not an EPUB: " + self.book_path)
                     return False
-                
         
         return True
     

@@ -13,8 +13,9 @@ from pathlib import Path
 from threading import Thread, RLock
 from dotmap import DotMap
 
-from core.utils.filesystem import Filesystem
 from core.utils.report import Report, DummyReport
+from core.utils.filesystem import Filesystem
+from core.utils.epub import Epub
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -233,6 +234,23 @@ class Pipeline():
     
     def get_queue(self):
         return self._queue
+    
+    def current_book_name(self):
+        name = self.book["name"] if self.book else ""
+        
+        try:
+            if self.book and self.book["source"] and os.path.isdir(self.book["source"]):
+                epub = Epub(self, self.book["source"])
+                
+                if epub.isepub(report_errors=False):
+                    title = epub.meta("dc:title")
+                    if title:
+                        name += ": " + title[:25] + ("…" if len(title) > 25 else "")
+            
+        except Exception:
+            logging.exception("[" + Report.thread_name() + "] An error occured while trying to extract the title of the book")
+        
+        return name
     
     def _add_book_to_queue(self, name, event_type):
         with self._lock:

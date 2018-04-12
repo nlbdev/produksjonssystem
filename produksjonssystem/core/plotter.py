@@ -58,7 +58,7 @@ class Plotter():
             queue_string = ", ".join(queue_string)
             
             queue_size = len(queue) if queue else 0
-            book = pipeline[0].book["name"] if pipeline[0].book else ""
+            book = pipeline[0].current_book_name()
             
             relpath_in = None
             if pipeline[0].dir_in and not pipeline[0].dir_base:
@@ -77,11 +77,11 @@ class Plotter():
                 status = "Starter..."
             elif not pipeline[0]._shouldRun and pipeline[0].running:
                 status = "Stopper..."
-            elif not pipeline[0].running:
+            elif not pipeline[0].running and not isinstance(pipeline[0], DummyPipeline):
                 status = "Stoppet"
                 queue_string = ""
             elif book:
-                status = "Behandler: {}".format(book)
+                status = str(book)
             elif isinstance(pipeline[0], DummyPipeline):
                 status = "Manuelt steg"
             else:

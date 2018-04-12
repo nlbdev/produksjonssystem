@@ -9,7 +9,6 @@ import tempfile
 import subprocess
 
 from threading import RLock
-from core.pipeline import Pipeline
 
 class DaisyPipelineJob():
     """Class used to run DAISY Pipeline 2 jobs"""
@@ -105,6 +104,7 @@ class DaisyPipelineJob():
     
     @staticmethod
     def init_environment():
+        from core.pipeline import Pipeline
         DaisyPipelineJob.dp2_home = Pipeline.environment["PIPELINE2_HOME"] if "PIPELINE2_HOME" in Pipeline.environment else os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
         DaisyPipelineJob.dp2_cli = DaisyPipelineJob.dp2_home + "/cli/dp2"
     
