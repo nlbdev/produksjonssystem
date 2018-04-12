@@ -105,7 +105,7 @@ class UpdateMetadata(Pipeline):
         return UpdateMetadata.queue[0]["name"] if len(UpdateMetadata.queue) > 0 else ""
     
     def _watch_metadata_thread(self):
-        while self.running:
+        while self._shouldRun:
             try:
                 time.sleep(1)
                 
