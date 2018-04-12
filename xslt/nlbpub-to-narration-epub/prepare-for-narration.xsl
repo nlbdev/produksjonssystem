@@ -29,10 +29,10 @@
     <xsl:include href="struktur-etc.xsl"/>
     <xsl:include href="fulltekst-start-og-slutt.xsl"/>
     <xsl:include href="cover.xsl"/>
-    <!--<xsl:include href="lister.xsl"/>-->
+<!--    <xsl:include href="lister.xsl"/>-->
     <!--<xsl:include href="innleste-tabeller.xsl"/>-->
-    <!--<xsl:include href="tts-tabeller.xsl"/>-->
-    <xsl:include href="logg.xsl"/>
+<!--    <xsl:include href="tts-tabeller.xsl"/>-->
+   <!-- <xsl:include href="logg.xsl"/>-->
     <xsl:include href="ekstra-informasjon.xsl"/>
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
@@ -56,7 +56,7 @@
         </xsl:message>-->
 
         <!-- Denne er mest for debugging. Kan kanskje fjernes på sikt, og da kan man slette filen logg.xsl -->
-        <xsl:call-template name="generer-loggfil-hvis-etterspurt"/>
+        <!--<xsl:call-template name="generer-loggfil-hvis-etterspurt"/>-->
 
         <!-- Hvis metadata testes tisltrekkelig andre steder, og denne transformasjone bare skjer på bøker med tilstrekkelig metadata,
             så kan linjen under slettes, og tilhørenede templates kan fjernes. -->
@@ -141,4 +141,16 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="*[@class eq 'keep']" priority="20">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()" mode="keep"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="*" mode="keep">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
+    
  </xsl:stylesheet>
