@@ -141,7 +141,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="*[@class eq 'keep']" priority="20">
+    <!--<xsl:template match="*[@class eq 'keep']" priority="20">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()" mode="keep"/>
         </xsl:copy>
@@ -151,6 +151,6 @@
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:copy>
-    </xsl:template>
+    </xsl:template>-->
     
  </xsl:stylesheet>
