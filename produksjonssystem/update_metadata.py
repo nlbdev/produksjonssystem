@@ -603,7 +603,7 @@ class UpdateMetadata(Pipeline):
         
         for f in opf_metadata:
             if os.path.isfile(opf_metadata[f]):
-                pipeline.utils.report.info("Validerer ny OPF-metadata for " + (f if f else "åndsverk"))
+                pipeline.utils.report.info("Validerer OPF-metadata for " + (f if f else "åndsverk"))
                 sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-opf.sch"),
                                            source=opf_metadata[f])
                 if not sch.success:
@@ -611,7 +611,7 @@ class UpdateMetadata(Pipeline):
                     return False
             
             if os.path.isfile(html_metadata[f]):
-                pipeline.utils.report.info("Validerer ny HTML-metadata for " + (f if f else "åndsverk"))
+                pipeline.utils.report.info("Validerer HTML-metadata for " + (f if f else "åndsverk"))
                 sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-html-metadata.sch"),
                                            source=html_metadata[f])
                 if not sch.success:
@@ -851,6 +851,7 @@ class UpdateMetadata(Pipeline):
             pipeline.utils.report.info("<dl>")
             for e in signatures:
                 source = e.attrib["{http://www.nlb.no/}metadata-source"]
+                source = source.replace("Quickbase Record@{} ".format(identifier), "")
                 value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
                 pipeline.utils.report.info("<dt>{}</dt>".format(source))
                 pipeline.utils.report.info("<dd>{}</dd>".format(value))

@@ -33,12 +33,12 @@ class InsertMetadata(Pipeline):
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
         
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
         
         
         # ---------- lag en kopi av EPUBen ----------
@@ -55,7 +55,7 @@ class InsertMetadata(Pipeline):
         updated = UpdateMetadata.update(self, temp_epub, publication_format=self.publication_format, insert=True)
         if isinstance(updated, bool) and updated == False:
             self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎"
-            return
+            return False
         
         self.utils.report.info("Boken ble oppdatert med format-spesifik metadata. Kopierer til {}-arkiv.".format(self.publication_format))
         
