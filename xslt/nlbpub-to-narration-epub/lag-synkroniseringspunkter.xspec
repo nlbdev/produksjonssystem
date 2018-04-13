@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:html="http://www.w3.org/1999/xhtml"
+    stylesheet="lag-synkroniseringspunkter.xsl">
+
+    <!-- 
+        (c) 2018 NLB
+        Per Sennels, 13.04.2018
+    -->
+
+    <x:scenario label="Etterfølgende p-elementer ...">
+
+        <x:context>
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <h1>En overskrift</h1>
+                <p>Et avsnitt</p>
+                <p>Et avsnitt</p>
+                <p>Et avsnitt</p>
+                <p>Et avsnitt</p>
+                <p>Et avsnitt</p>
+                <ol>
+                    <li>Et listepunkt</li>
+                    <li>Et annet listepunkt</li>
+                </ol>
+                <p>Et avsnitt</p>
+                <ukjent/>
+                <p>Et avsnitt</p>
+                <p>Et avsnitt</p>
+                <p>Et avsnitt</p>
+            </section>
+        </x:context>
+
+        <!-- Sjekke med Eivind om vi også skal wrappe enslige p-elementer -->
+        <x:expect label="... skal 'wrappes' sammen">
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <h1>En overskrift</h1>
+                <div class="synch-point-wrapper" id="...">
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                </div>
+                <ol>
+                    <li>Et listepunkt</li>
+                    <li>Et annet listepunkt</li>
+                </ol>
+                <div class="synch-point-wrapper" id="...">
+                    <p>Et avsnitt</p>
+                </div>
+                <ukjent/>
+                <div class="synch-point-wrapper" id="...">
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                </div>
+            </section>
+        </x:expect>
+
+    </x:scenario>
+
+</x:description>

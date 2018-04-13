@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:html="http://www.w3.org/1999/xhtml"
+    stylesheet="lag-fortsettelsesoverskrifter.xsl">
+    
+    
+    <!-- 
+        (c) 2018 NLB
+        Per Sennels, 13.04.2018
+    -->
+    
+    
+    <x:scenario label="Hvis det kommer andre elementer enn 'section' etter en 'section' ...">
+        
+        <x:context>
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <h1>En overskrift</h1>
+                <p>Et avsnitt</p>
+                <section>
+                    <h2>En overskift på lavere nivå</h2>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                </section>
+                <section>
+                    <h2>En annen overskift på lavere nivå</h2>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                </section>
+                <p>Et avsnitt som kommer etter "section"-elementet</p>
+                <p>Et avsnitt som kommer etter "section"-elementet</p>
+                <p>Et avsnitt som kommer etter "section"-elementet</p>
+            </section>
+        </x:context>
+        
+        <x:expect label="... så skal det settes inn en fortsettelsesoverskrift">
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <h1>En overskrift</h1>
+                <p>Et avsnitt</p>
+                <section>
+                    <h2>En overskift på lavere nivå</h2>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                </section>
+                <section>
+                    <h2>En annen overskift på lavere nivå</h2>
+                    <p>Et avsnitt</p>
+                    <p>Et avsnitt</p>
+                </section>
+                <section id="...">
+                    <h2 class="nlb-ekstra-informasjon" id="...">Fortsettelse på overskriften «En overskrift»:</h2>
+                    <p>Et avsnitt som kommer etter "section"-elementet</p>
+                    <p>Et avsnitt som kommer etter "section"-elementet</p>
+                    <p>Et avsnitt som kommer etter "section"-elementet</p>
+                </section>
+            </section>
+        </x:expect>
+
+    </x:scenario>
+    
+</x:description>

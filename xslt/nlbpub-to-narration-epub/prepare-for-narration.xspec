@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:html="http://www.w3.org/1999/xhtml"
+    stylesheet="prepare-for-narration.xsl">
+
+    <!-- 
+        (c) 2018 NLB
+        Per Sennels, 13.04.2018
+        
+        TODO: Legge til flere tester
+    -->
+    
+
+    <x:scenario label="Transformasjon av lister" pending="Transformasjon av lister er under testing, og skal foreløpig ikke brukes (komplekst innhold)">
+        <x:context>
+            <ol xmlns="http://www.w3.org/1999/xhtml">
+                <li><em>Dette</em> er Første punkt</li>
+                <li>Dette er neste pukt</li>
+                <li>
+                    <p>Dette er siste punkt.</p>
+                    <p>To setninger her.</p>
+                </li>
+            </ol>
+        </x:context>
+        <x:expect label="skal gi samme liste, men med ekstra informasjon">
+            <p xmlns="http://www.w3.org/1999/xhtml" class="nlb-ekstra-informasjon">Her følger en liste med tre punkter.</p>
+            <ol xmlns="http://www.w3.org/1999/xhtml" class="list-style-type-none"
+                style="list-style-type: none;">
+                <li><span class="nlb-ekstra-informasjon">1. punkt: </span><em>Dette</em> er Første punkt</li>
+                <li><span class="nlb-ekstra-informasjon">2. punkt: </span>Dette er neste pukt</li>
+                <li>
+                    <p class="nlb-ekstra-informasjon">3. punkt: </p>
+                    <p>Dette er siste punkt.</p>
+                    <p>To setninger her.</p>
+                </li>
+            </ol>
+            <p xmlns="http://www.w3.org/1999/xhtml" class="nlb-ekstra-informasjon">Liste slutt</p>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
