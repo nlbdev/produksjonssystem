@@ -52,8 +52,13 @@ class EpubToDtbookHTML(Pipeline):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
-
-
+        
+        if not UpdateMetadata.should_produce(self, epub, "XHTML"):
+            self.utils.report.info("{} skal ikke produseres som e-bok. Avbryter.".format(epub.identifier()))
+            self.utils.report.should_email = False
+            return True
+        
+        
         # ---------- lag en kopi av EPUBen ----------
 
         self.utils.report.info("Lager kopi av EPUB...")

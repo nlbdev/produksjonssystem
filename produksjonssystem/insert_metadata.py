@@ -40,6 +40,11 @@ class InsertMetadata(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
         
+        if not UpdateMetadata.should_produce(self, epub, self.publication_format):
+            self.utils.report.info("{} skal ikke produseres som {}. Avbryter.".format(epub.identifier(), self.publication_format))
+            self.utils.report.should_email = False
+            return True
+        
         
         # ---------- lag en kopi av EPUBen ----------
         

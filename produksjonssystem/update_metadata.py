@@ -857,6 +857,74 @@ class UpdateMetadata(Pipeline):
                 pipeline.utils.report.info("<dd>{}</dd>".format(value))
             pipeline.utils.report.info("<dl>")
     
+    @staticmethod
+    def should_produce(pipeline, epub, publication_format):
+        if not UpdateMetadata.update(pipeline, epub, publication_format=publication_format, insert=False):
+            pipeline.utils.report.warn("Klarte ikke å hente metadata: {}".format(epub.identifier()))
+            return False
+        
+        metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier())
+        rdf_path = os.path.join(metadata_dir, "metadata.rdf")
+        if not os.path.isfile(rdf_path):
+            pipeline.utils.report.debug("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
+            return False
+        
+        rdf = ElementTree.parse(rdf_path).getroot()
+        production_formats = rdf.xpath("//nlbprod:*[starts-with(local-name(),'format')]", namespaces=rdf.nsmap)
+        exists_in_quickbase = bool(production_formats)
+        production_formats = [f.xpath("local-name()") for f in production_formats if (f.text == "true" or "{http://schema.org/}name" in f.attrib and f.attrib["{http://schema.org/}name"] == "true")]
+        
+        exists_in_bibliofil = False
+        for i in rdf.xpath("//dc:identifier", namespaces=rdf.nsmap):
+            value = i.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in i.attrib else i.text
+            if epub.identifier() == value and "bibliofil" in i.attrib["{http://www.nlb.no/}metadata-source"].lower():
+                exists_in_bibliofil = True
+                break
+        
+        if not exists_in_quickbase and exists_in_bibliofil:
+            pipeline.utils.report.info("{} finnes i Bibliofil men ikke i Quickbase. Antar at den skal produseres som {}.".format(epub.identifier(), publication_format))
+            return True
+        
+        if publication_format == "Braille":
+            if [f for f in production_formats if f in [
+                "formatBraille",                  # Punktskrift
+                "formatBrailleClub",              # Punktklubb
+                "formatBraillePartialProduction", # Punktskrift delproduksjon
+                "formatNotes",                    # Noter
+                "formatTactilePrint",             # Taktil trykk
+            ]]:
+                return True
+        
+        elif publication_format == "DAISY 2.02":
+            if [f for f in production_formats if f in [
+                "formatDaisy202narrated",             # DAISY 2.02 Innlest Skjønn
+                "formatDaisy202narratedFulltext",     # DAISY 2.02 Innlest fulltekst
+                "formatDaisy202narratedStudent",      # DAISY 2.02 Innlest Studie
+                "formatDaisy202tts",                  # DAISY 2.02 TTS Skjønn
+                "formatDaisy202ttsStudent",           # DAISY 2.02 TTS Studie
+                "formatDaisy202wips",                 # DAISY 2.02 WIPS
+                "formatAudioCDMP3ExternalProduction", # Audio CD MP3 ekstern produksjon
+                "formatAudioCDWAVExternalProduction", # Audio CD WAV ekstern produksjon
+                "formatDaisy202externalProduction",   # DAISY 2.02 ekstern produksjon
+            ]]:
+                return True
+        
+        elif publication_format == "XHTML":
+            if [f for f in production_formats if f in [
+                "formatEbook",                   # E-bok
+                "formatEbookExternalProduction", # E-bok ekstern produksjon
+            ]]:
+                return True
+        
+        elif publication_format == "EPUB":
+            return True
+        
+        else:
+            pipeline.utils.report.warn("Ukjent format: {}. {} blir ikke produsert.".format(publication_format, epub.identifier()))
+            return False
+        
+        return False
+    
     def on_book_deleted(self):
         self.utils.report.should_email = False
     
