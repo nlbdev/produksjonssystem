@@ -559,7 +559,10 @@ class UpdateMetadata(Pipeline):
             if f.endswith(".xml"):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
-            if publication_format and UpdateMetadata.get_format_from_normarc(normarc_pipeline, marcxchange_path) not in [publication_format, "EPUB"]:
+            format_from_normarc, marc019b = UpdateMetadata.get_format_from_normarc(normarc_pipeline, marcxchange_path)
+            if not format_from_normarc:
+                normarc_pipeline.utils.report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0], marc019b))
+            if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
                 continue
             
             normarc_pipeline.utils.report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
@@ -795,28 +798,28 @@ class UpdateMetadata(Pipeline):
         xml = ElementTree.parse(marcxchange_path).getroot()
         nsmap = { 'marcxchange': 'info:lc/xmlns/marcxchange-v1' }
         marc019b = xml.xpath("//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()", namespaces=nsmap)
-        marc019b = marc019b[0] if marc019b else None
+        marc019b = marc019b[0] if marc019b else ""
         
         if not marc019b:
             pipeline.utils.report.debug("Fant ikke `*019$b` for {}".format(os.path.basename(marcxchange_path)))
-            return None
+            return None, marc019b
         
         split = marc019b.split(",")
         
         if [val for val in split if val in ['za','c']]:
-            return "Braille"
+            return "Braille", marc019b
         
         if [val for val in split if val in ['dc','dj']]:
-            return "DAISY 2.02"
+            return "DAISY 2.02", marc019b
         
         if [val for val in split if val in ['la']]:
-            return "XHTML"
+            return "XHTML", marc019b
         
         if [val for val in split if val in ['gt']]:
-            return "EPUB"
+            return "EPUB", marc019b
         
         pipeline.utils.report.warn("Ukjent format i `*019$b` for {}: {}".format(os.path.basename(marcxchange_path), marc019b))
-        return None
+        return None, marc019b
     
     @staticmethod
     def trigger_metadata_pipelines(pipeline, book_id, exclude=None):
