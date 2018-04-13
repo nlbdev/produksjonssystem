@@ -9,6 +9,7 @@ from lxml import etree as ElementTree
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
+from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -63,7 +64,8 @@ class NlbpubToPef(Pipeline):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer i HTML-fil.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
-        
+        epub_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='nlbprod:identifier.epub']")
+        epub_identifier = epub_identifier[0].attrib["content"] if epub_identifier and "content" in epub_identifier[0].attrib else None
         
         # ---------- konverter til PEF ----------
         
@@ -113,6 +115,8 @@ class NlbpubToPef(Pipeline):
             self.utils.report.info("Boken ble konvertert. Kopierer til PEF-arkiv.")
             
             archived_path = self.utils.filesystem.storeBook(pef_dir, identifier, subdir=braille_version)
+            if epub_identifier:
+                UpdateMetadata.add_production_info(self, epub_identifier, publication_format="Braille")
             self.utils.report.attachment(None, archived_path, "DEBUG")
             self.utils.report.info(identifier + " ble lagt til i arkivet under PEF/" + braille_version + ".")
         

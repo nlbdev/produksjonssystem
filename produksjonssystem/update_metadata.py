@@ -306,8 +306,8 @@ class UpdateMetadata(Pipeline):
             return False
         rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
-        qb_record = ElementTree.parse(rdf_path).getroot()
-        identifiers = qb_record.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=qb_record.nsmap)
+        rdf = ElementTree.parse(rdf_path).getroot()
+        identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         if not identifiers:
             pipeline.utils.report.warn("{} er ikke katalogisert i Quickbase".format(edition_identifier))
@@ -581,6 +581,7 @@ class UpdateMetadata(Pipeline):
                 normarc_pipeline.utils.report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: '{}'".format(signatureRegistration if signatureRegistration else "(ukjent)", UpdateMetadata.config["default_librarian"].addr_spec.lower()))
                 normarc_pipeline.utils.report.debug("Aktive bibliotekarer: {}".format(", ".join([addr.addr_spec.lower() for addr in UpdateMetadata.config["librarians"]])))
                 signatureRegistrationAddress = UpdateMetadata.config["default_librarian"]
+            UpdateMetadata.add_production_info(normarc_pipeline, epub.identifier(), publication_format=publication_format)
             normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],
                                                 UpdateMetadata.email_settings["sender"],
                                                 signatureRegistrationAddress,
@@ -828,6 +829,31 @@ class UpdateMetadata(Pipeline):
                 with open(os.path.join(Pipeline.dirs[pipeline_uid]["trigger"], book_id), "w") as triggerfile:
                     print("autotriggered", file=triggerfile)
                 pipeline.utils.report.info("Trigger: {}".format(pipeline_uid))
+    
+    @staticmethod
+    def add_production_info(pipeline, identifier, publication_format=""):
+        metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), identifier)
+        rdf_path = os.path.join(metadata_dir, "metadata.rdf")
+        if not os.path.isfile(rdf_path):
+            pipeline.utils.report.debug("Metadata om produksjonen finnes ikke: {}".format(identifier))
+            return
+        
+        rdf = ElementTree.parse(rdf_path).getroot()
+        
+        pipeline.utils.report.info("<h2>Signaturer</h2>")
+        signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]", namespaces=rdf.nsmap)
+        signaturesPublication = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/Book' and {}]/nlbprod:*[starts-with(local-name(),'signature')]".format("dc:format/text()='{}'".format(publication_format) if publication_format else 'true()'), namespaces=rdf.nsmap)
+        signatures = signaturesWork + signaturesPublication
+        if not signaturesWork and not signaturesPublication:
+            pipeline.utils.report.info("Fant ingen signaturer.")
+        else:
+            pipeline.utils.report.info("<dl>")
+            for e in signatures:
+                source = e.attrib["{http://www.nlb.no/}metadata-source"]
+                value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
+                pipeline.utils.report.info("<dt>{}</dt>".format(source))
+                pipeline.utils.report.info("<dd>{}</dd>".format(value))
+            pipeline.utils.report.info("<dl>")
     
     def on_book_deleted(self):
         self.utils.report.should_email = False

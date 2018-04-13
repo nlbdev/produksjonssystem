@@ -15,6 +15,8 @@ from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 
+from update_metadata import UpdateMetadata
+
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
@@ -160,6 +162,7 @@ class NlbpubToNarrationEpub(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til innlesingsklart EPUB-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(nlbpub.asFile(), nlbpub.identifier(), file_extension="epub", move=True)
+        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="DAISY 2.02")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i innlesingsklart EPUB-arkiv.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"

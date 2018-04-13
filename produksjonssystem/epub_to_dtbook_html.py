@@ -139,6 +139,7 @@ class EpubToDtbookHTML(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-til-HTML-arkiv.")
 
         archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
+        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
