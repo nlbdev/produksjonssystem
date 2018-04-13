@@ -560,7 +560,7 @@ class UpdateMetadata(Pipeline):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
             format_from_normarc, marc019b = UpdateMetadata.get_format_from_normarc(normarc_pipeline, marcxchange_path)
-            if not format_from_normarc:
+            if not format_from_normarc and marc019b:
                 normarc_pipeline.utils.report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0], marc019b))
             if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
                 continue
