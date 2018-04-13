@@ -37,6 +37,7 @@ class UpdateMetadata(Pipeline):
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
     min_update_interval = 60 * 60 * 24 # 1 day
+    max_update_interval = 60 * 30 # half hour
     max_metadata_emails_per_day = 5
     
     # if UpdateMetadata is not loaded, use a temporary directory
@@ -208,9 +209,9 @@ class UpdateMetadata(Pipeline):
                 except Exception:
                     logging.exception("[" + Report.thread_name() + "] Could not parse " + last_updated_path)
         
-        # Get updated metadata for a book, but only if the metadata is older than 5 minutes
+        # Get updated metadata for a book, but only if the metadata is older than max_update_interval minutes
         now = int(time.time())
-        if now - last_updated > 300 or force_update:
+        if now - last_updated > UpdateMetadata.max_update_interval or force_update:
             success = UpdateMetadata.get_metadata(pipeline, epub, publication_format=publication_format)
             if not success:
                 return False
