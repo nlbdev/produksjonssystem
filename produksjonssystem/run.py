@@ -15,6 +15,7 @@ from email.headerregistry import Address
 from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
 from epub_to_dtbook_braille import EpubToDtbookBraille
+from epub_to_dtbook_html import EpubToDtbookHTML
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
 from insert_metadata import *
@@ -23,7 +24,7 @@ from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_docx import NLBpubToDocx
-# from make_abstracts import Audio_Abstract
+#from make_abstracts import Audio_Abstract
 
 class Produksjonssystem():
 
@@ -93,6 +94,7 @@ class Produksjonssystem():
             "metadata": os.path.join(book_archive_dir, "metadata"),
             "dtbook_braille": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-punktskrift"),
             "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
+            "dtbook_html": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-HTML"),
             "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
             "docx": os.path.join(book_archive_dir, "distribusjonsformater/DOCX"),
             "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
@@ -104,7 +106,7 @@ class Produksjonssystem():
             "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dir, "utgave-inn/punktskrift"),
             "incoming_daisy": os.path.join(book_archive_dir, "utgave-inn/daisy202"),
-            # "abstracts": os.path.join(book_archive_dir, "utgave-ut/baksidetekst")
+            #"abstracts": os.path.join(book_archive_dir, "utgave-ut/baksidetekst")
         }
 
         # Define pipelines, input/output/report dirs, and email recipients
@@ -149,24 +151,24 @@ class Produksjonssystem():
             # TTS-lydbok
             [ EpubToDtbook(),                               "master",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          None,                  "reports", ["jostein"]],
-
+            [ EpubToDtbookHTML(),                           "master",              "dtbook_html",         "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             # DTBook for punktskrift
             [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",      "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],
 
             # lydutdrag
-            # [ Audio_Abstract(),              "incoming_daisy",          "abstracts",        "reports", ["espen"]],
+            #[ Audio_Abstract(),              "incoming_daisy",          "abstracts",        "reports", ["espen"]],
         ]
 
 
     # ---------------------------------------------------------------------------
     # Don't edit below this line if you only want to add/remove/modify a pipeline
     # ---------------------------------------------------------------------------
-    
+
     def info(self, text):
         logging.info(text)
         Slack.slack(text, None)
-    
+
     def run(self):
         try:
             self.info("Produksjonssystemet er startet")
@@ -175,7 +177,7 @@ class Produksjonssystem():
             self.info("En feil oppstod i produksjonssystemet: {}".format(str(e) if str(e) else "(ukjent)"))
         finally:
             self.info("Produksjonssystemet er stoppet")
-    
+
     def _run(self):
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -272,11 +274,11 @@ class Produksjonssystem():
 
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
-        
+
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
             thread.join()
-        
+
         self.info("Venter på at plotteren skal stoppe...")
         plotter.should_run = False
         graph_thread.join()
