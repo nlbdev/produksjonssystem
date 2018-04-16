@@ -858,7 +858,7 @@ class UpdateMetadata(Pipeline):
                 value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
                 pipeline.utils.report.info("<dt>{}</dt>".format(source))
                 pipeline.utils.report.info("<dd>{}</dd>".format(value))
-            pipeline.utils.report.info("<dl>")
+            pipeline.utils.report.info("</dl>")
     
     @staticmethod
     def should_produce(pipeline, epub, publication_format):
