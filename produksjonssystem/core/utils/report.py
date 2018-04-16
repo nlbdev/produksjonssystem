@@ -208,13 +208,14 @@ class Report():
             relpath = os.path.relpath(m["text"], self.pipeline.dir_base)
             if m["text"].startswith(self.reportDir()):
                 relpath = os.path.relpath(m["text"], self.reportDir())
-            attachments.append({
-                "title": relpath + ("/" if os.path.isdir(m["text"]) else ""),
-                "smb": smb,
-                "file": file,
-                "unc": unc,
-                "severity": m["severity"]
-            })
+            if not [a for a in attachments if a["unc"] == unc]:
+                attachments.append({
+                    "title": relpath + ("/" if os.path.isdir(m["text"]) else ""),
+                    "smb": smb,
+                    "file": file,
+                    "unc": unc,
+                    "severity": m["severity"]
+                })
         for attachment in attachments:
             # UNC links seems to be preserved when viewed in Outlook.
             # file: and smb: URIs are disallowed or removed.
