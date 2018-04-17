@@ -10,6 +10,7 @@ import logging
 from graphviz import Digraph
 from core.pipeline import Pipeline, DummyPipeline
 from core.utils.report import Report
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -22,6 +23,8 @@ class Plotter():
     
     pipelines = None # [ [pipeline,in,out,reports,[recipients,...], ...]
     report_dir = None
+    buffered_network_paths = {}
+    buffered_network_hosts = {}
     should_run = True
     
     def __init__(self, pipelines, report_dir):
@@ -61,16 +64,46 @@ class Plotter():
             book = pipeline[0].current_book_name()
             
             relpath_in = None
+            label_in = None
             if pipeline[0].dir_in and not pipeline[0].dir_base:
                 relpath_in = os.path.basename(os.path.dirname(pipeline[0].dir_in))
             elif pipeline[0].dir_in and pipeline[0].dir_base:
-                relpath_in = os.path.relpath(pipeline[0].dir_in, pipeline[0].dir_base)
+                base_path = Filesystem.get_base_path(pipeline[0].dir_in, pipeline[0].dir_base)
+                relpath_in = os.path.relpath(pipeline[0].dir_in, base_path)
+                if "master" in pipeline[0].dir_base and pipeline[0].dir_base["master"] == base_path:
+                    pass
+                else:
+                    if base_path not in self.buffered_network_paths:
+                        smb, file, unc = Filesystem.networkpath(base_path)
+                        host = Filesystem.get_host_from_url(smb)
+                        self.buffered_network_paths[base_path] = smb
+                        self.buffered_network_hosts[base_path] = host
+                    label_in = "( {} )".format(self.buffered_network_hosts[base_path])
+                    if not label_in:
+                        label_in = "( {} )".format(self.buffered_network_paths[base_path])
+            if relpath_in:
+                label_in = relpath_in + ("\n" + label_in if label_in else "")
             
             relpath_out = None
+            label_out = None
             if pipeline[0].dir_out and not pipeline[0].dir_base:
                 relpath_out = os.path.basename(os.path.dirname(pipeline[0].dir_out))
             elif pipeline[0].dir_out and pipeline[0].dir_base:
-                relpath_out = os.path.relpath(pipeline[0].dir_out, pipeline[0].dir_base)
+                base_path = Filesystem.get_base_path(pipeline[0].dir_out, pipeline[0].dir_base)
+                relpath_out = os.path.relpath(pipeline[0].dir_out, base_path)
+                if "master" in pipeline[0].dir_base and pipeline[0].dir_base["master"] == base_path:
+                    pass
+                else:
+                    if base_path not in self.buffered_network_paths:
+                        smb, file, unc = Filesystem.networkpath(base_path)
+                        host = Filesystem.get_host_from_url(smb)
+                        self.buffered_network_paths[base_path] = unc
+                        self.buffered_network_hosts[base_path] = host
+                    label_out = "( {} )".format(self.buffered_network_hosts[base_path])
+                    if not label_out:
+                        label_out = "( {} )".format(self.buffered_network_paths[base_path])
+            if relpath_out:
+                label_out = relpath_out + ("\n" + label_out if label_out else "")
             
             status = ""
             if pipeline[0]._shouldRun and not pipeline[0].running:
@@ -94,14 +127,14 @@ class Plotter():
             if not pipeline[0].running or isinstance(pipeline[0], DummyPipeline):
                 fillcolor = "white"
             dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
-            dot.node(pipeline_id, pipeline_label)
+            dot.node(pipeline_id, pipeline_label.replace("\\", "\\\\"))
             
             dot.attr("node", shape="folder", style="filled", fillcolor="wheat")
             if relpath_in:
-                dot.node(pipeline[1], relpath_in)
+                dot.node(pipeline[1], label_in.replace("\\", "\\\\"))
                 dot.edge(pipeline[1], pipeline_id)
             if relpath_out:
-                dot.node(pipeline[2], relpath_out)
+                dot.node(pipeline[2], label_out.replace("\\", "\\\\"))
                 dot.edge(pipeline_id, pipeline[2])
         
         dot.render(os.path.join(self.report_dir, name + "_"))

@@ -20,10 +20,8 @@ from produksjonssystem import run
 
 # Configure system
 environment = {
-    #"BOOK_ARCHIVE_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-archive"),
-    "BOOK_ARCHIVE_DIR": "/tmp/prodsys-archive",
+    "BOOK_ARCHIVE_DIRS": "master=/tmp/prodsys-archive audio=/tmp/prodsys-daisy202", # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "/tmp/prodsys-trigger",
-    #"TRIGGER_DIR": tempfile.mkdtemp(prefix="prodsys-", suffix="-triggerdir"),
     "REPORTS_DIR": "/tmp/prodsys-rapporter", # always the same, so that it's easier to view the dashboard(s)
     "DEBUG": "false",
     "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
@@ -31,16 +29,22 @@ environment = {
     "STOP_AFTER_FIRST_JOB": "true"
 }
 
+book_archive_dirs = {}
+for d in environment["BOOK_ARCHIVE_DIRS"].split(" "):
+    assert "=" in d
+    book_archive_dirs[d.split("=")[0]] = d.split("=")[1]
+
 print("")
 print("Dashboard: file://" + os.path.join(environment["REPORTS_DIR"], "dashboard.html"))
-print("Book archive: file://" + os.path.join(environment["BOOK_ARCHIVE_DIR"]))
+for d in book_archive_dirs:
+    print("Book archive \"{}\": file://{}".format(d, book_archive_dirs[d]))
 print("")
 
 BookID="558237"
 newBookID="356837"
 epubInnL_ID="406837"
 
-distPath=os.path.join(environment["BOOK_ARCHIVE_DIR"],'distribusjonsformater')
+distPath=os.path.join(book_archive_dirs["master"],'distribusjonsformater')
 DTBook_path=os.path.join(distPath,'DTBook',BookID)
 epubInnL_path=os.path.join(distPath,'EPUB-til-innlesing',epubInnL_ID+'.epub')
 DTBookToTts_path=os.path.join(distPath,'DTBook-til-talesyntese',BookID)
@@ -72,7 +76,7 @@ if not prodsys.wait_until_running():
     sys.exit(1)
 
 file_path = os.path.join(os.path.dirname(__file__),BookID+".epub")
-copyfile (file_path,os.path.join(environment["BOOK_ARCHIVE_DIR"], 'innkommende',BookID+".epub"))
+copyfile (file_path,os.path.join(book_archive_dirs["master"], 'innkommende',BookID+".epub"))
 
 success = 1;
 t=500;

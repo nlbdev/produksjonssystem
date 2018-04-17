@@ -101,8 +101,17 @@ class Pipeline():
         stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
         
         assert dir_reports != None and len(dir_reports) > 0 and os.path.exists(dir_reports), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
-        assert dir_base, "Base directory could not be determined"
+        assert isinstance(dir_base, str) or isinstance(dir_base, dict), "Base directories could not be determined"
         assert not stop_after_first_job or stop_after_first_job in [ "1", "true", "0", "false" ], "The environment variable STOP_AFTER_FIRST_JOB, if defined, must be \"true\"/\"false\" (or \"1\"/\"0\")."
+        
+        if isinstance(dir_base, str):
+            base_dirs = {}
+            for d in dir_base.split(" "):
+                assert "=" in d, "Base directories must be a space-separated list with name=path pairs. For instance: master=/media/archive. Note that paths can not contain space characters."
+                archive_name = d.split("=")[0]
+                archive_path = os.path.normpath(d.split("=")[1]) + "/"
+                base_dirs[archive_name] = archive_path
+            dir_base = base_dirs
         
         self._stopAfterFirstJob = False
         if stop_after_first_job in [ "true", "1" ]:
@@ -113,7 +122,7 @@ class Pipeline():
         if dir_out:
             self.dir_out = str(os.path.normpath(dir_out)) + '/'
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
-        self.dir_base = str(os.path.normpath(dir_base)) + '/'
+        self.dir_base = dir_base
         self.email_settings = email_settings
         self.config = config if config else {}
         

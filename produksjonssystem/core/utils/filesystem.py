@@ -11,6 +11,7 @@ import tempfile
 import threading
 import traceback
 import subprocess
+import urllib.parse
 import urllib.request
 
 from pathlib import Path
@@ -355,6 +356,23 @@ class Filesystem():
         file = re.sub("^smb:", "file:", smb)
         unc = re.sub("/", r"\\", re.sub("^smb:", "", smb))
         return smb, file, unc
+    
+    @staticmethod
+    def get_host_from_url(addr):
+        try:
+            addr = urllib.parse.urlparse(addr)
+            addr = socket.gethostbyaddr(addr.netloc.split(":")[0])
+            return addr[0]
+        except Exception:
+            return None
+    
+    @staticmethod
+    def get_base_path(path, base_dirs):
+        for d in base_dirs:
+            relpath = os.path.relpath(path, base_dirs[d])
+            if not relpath.startswith("../"):
+                return base_dirs[d]
+        return None
     
     # in case you want to override something
     @staticmethod

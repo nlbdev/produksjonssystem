@@ -28,7 +28,7 @@ from nlbpub_to_docx import NLBpubToDocx
 
 class Produksjonssystem():
 
-    book_archive_dir = None
+    book_archive_dirs = None
     email = None
     dirs = None
     pipelines = None
@@ -47,10 +47,18 @@ class Produksjonssystem():
             self.environment = {}
         Pipeline.environment = self.environment # Make environment available from pipelines
 
-        # Check that archive dir is defined
-        assert os.environ.get("BOOK_ARCHIVE_DIR")
-        book_archive_dir = str(os.path.normpath(os.environ.get("BOOK_ARCHIVE_DIR")))
-        self.book_archive_dir = book_archive_dir # for convenience; both method variable and instance variable
+        # Check that archive dirs is defined
+        assert os.environ.get("BOOK_ARCHIVE_DIRS"), "The book archives must be defined as a space separated list in the environment variable BOOK_ARCHIVE_DIRS (as name=path pairs)"
+        self.book_archive_dirs = {}
+        for d in os.environ.get("BOOK_ARCHIVE_DIRS").split(" "):
+            assert "=" in d, "Book archives must be specified as name=path. For instance: master=/media/archive. Note that paths can not contain spaces."
+            archive_name = d.split("=")[0]
+            archive_path = os.path.normpath(d.split("=")[1]) + "/"
+            self.book_archive_dirs[archive_name] = archive_path
+        
+        # for convenience; both method variable and instance variable so you don't have to
+        # write "self." all the time during initialization.
+        book_archive_dirs = self.book_archive_dirs
 
         # Configure email
         self.email = {
@@ -87,26 +95,26 @@ class Produksjonssystem():
 
         # Define directories
         self.dirs = {
-            "reports": os.getenv("REPORTS_DIR", os.path.join(book_archive_dir, "rapporter")),
-            "incoming": os.path.join(book_archive_dir, "innkommende"),
-            "master": os.path.join(book_archive_dir, "master/EPUB"),
-            "nlbpub": os.path.join(book_archive_dir, "master/NLBPUB"),
-            "metadata": os.path.join(book_archive_dir, "metadata"),
-            "dtbook_braille": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-punktskrift"),
-            "dtbook_tts": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-talesyntese"),
-            "dtbook_html": os.path.join(book_archive_dir, "distribusjonsformater/DTBook-til-HTML"),
-            "html": os.path.join(book_archive_dir, "distribusjonsformater/HTML"),
-            "docx": os.path.join(book_archive_dir, "distribusjonsformater/DOCX"),
-            "epub_narration": os.path.join(book_archive_dir, "distribusjonsformater/EPUB-til-innlesing"),
-            "ncc": os.path.join(book_archive_dir, "distribusjonsformater/NCC"),
-            "pef": os.path.join(book_archive_dir, "distribusjonsformater/PEF"),
-            "pub-ready-braille": os.path.join(book_archive_dir, "utgave-klargjort/punktskrift"),
-            "pub-in-epub": os.path.join(book_archive_dir, "utgave-inn/EPUB"),
-            "pub-in-audio": os.path.join(book_archive_dir, "utgave-inn/lydbok"),
-            "pub-in-ebook": os.path.join(book_archive_dir, "utgave-inn/e-tekst"),
-            "pub-in-braille": os.path.join(book_archive_dir, "utgave-inn/punktskrift"),
-            "incoming_daisy": os.path.join(book_archive_dir, "utgave-inn/daisy202"),
-            #"abstracts": os.path.join(book_archive_dir, "utgave-ut/baksidetekst")
+            "reports": os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")),
+            "incoming": os.path.join(book_archive_dirs["master"], "innkommende"),
+            "master": os.path.join(book_archive_dirs["master"], "master/EPUB"),
+            "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
+            "metadata": os.path.join(book_archive_dirs["master"], "metadata"),
+            "dtbook_braille": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-punktskrift"),
+            "dtbook_tts": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-til-talesyntese"),
+            "dtbook_html": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-til-HTML"),
+            "html": os.path.join(book_archive_dirs["master"], "distribusjonsformater/HTML"),
+            "docx": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DOCX"),
+            "epub_narration": os.path.join(book_archive_dirs["master"], "distribusjonsformater/EPUB-til-innlesing"),
+            "ncc": os.path.join(book_archive_dirs["master"], "distribusjonsformater/NCC"),
+            "pef": os.path.join(book_archive_dirs["master"], "distribusjonsformater/PEF"),
+            "pub-ready-braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift"),
+            "pub-in-epub": os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB"),
+            "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
+            "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
+            "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
+            "incoming_daisy": os.path.join(book_archive_dirs["master"], "utgave-inn/daisy202"),
+            #"abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/baksidetekst")
         }
 
         # Define pipelines, input/output/report dirs, and email recipients
@@ -187,12 +195,20 @@ class Produksjonssystem():
             logging.getLogger().setLevel(logging.INFO)
 
         # Make sure that directories are defined properly
+        for d in self.book_archive_dirs:
+            for a in self.book_archive_dirs:
+                if d == a:
+                    continue
+                d_norm = os.path.normpath(self.book_archive_dirs[d]) + "/"
+                a_norm = os.path.normpath(self.book_archive_dirs[a]) + "/"
+                assert not (a != d and a_norm == d_norm), "Two book archives must not be equal ({} == {})".format(self.book_archive_dirs[a], self.book_archive_dirs[d])
+                assert not (a != d and a_norm.startswith(d_norm) or d_norm.startswith(a_norm)), "Book archives can not contain eachother ({} contains or is contained by {})".format(self.book_archive_dirs[a], self.book_archive_dirs[d])
         for d in self.dirs:
             self.dirs[d] = os.path.normpath(self.dirs[d])
         for d in self.dirs:
             if not d == "reports":
-                assert self.dirs[d].startswith(self.book_archive_dir + "/"), "Directory \"" + d + "\" must be part of the book archive: " + self.dirs[d]
-            assert os.path.normpath(self.dirs[d]) != os.path.normpath(self.book_archive_dir), "The directory \"" + d + "\" must not be equal to the book archive dir: " + self.dirs[d]
+                assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d]
+            assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d]
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
 
         # Make sure that the pipelines are defined properly
@@ -232,7 +248,7 @@ class Produksjonssystem():
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
                                                           self.dirs[pipeline[3]],
                                                           email_settings,
-                                                          self.book_archive_dir,
+                                                          self.book_archive_dirs,
                                                           pipeline[5] if len(pipeline) >= 6 else {}
                                                          ))
             thread.setDaemon(True)
