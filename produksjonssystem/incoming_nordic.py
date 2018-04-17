@@ -15,6 +15,7 @@ from core.utils.epub import Epub
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
+from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -97,6 +98,7 @@ class IncomingNordic(Pipeline):
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
+        UpdateMetadata.add_production_info(self, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄"

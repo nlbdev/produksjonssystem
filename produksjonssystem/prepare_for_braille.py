@@ -12,6 +12,7 @@ from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 
 from core.pipeline import Pipeline
+from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -138,6 +139,7 @@ class PrepareForBraille(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til arkiv for punkt-klare HTML-filer.")
         
         archived_path = self.utils.filesystem.storeBook(html_dir, self.book["name"])
+        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="Braille")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(self.book["name"] + " ble lagt til i arkiv for punkt-klare HTML-filer.")
         self.utils.report.title = self.title + ": " + self.book["name"] + " ble konvertert 👍😄"

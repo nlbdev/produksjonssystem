@@ -152,6 +152,8 @@ class Produksjonssystem():
             [ EpubToDtbook(),                               "master",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          None,                  "reports", ["jostein"]],
             [ EpubToDtbookHTML(),                           "master",              "dtbook_html",         "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
+            [ DummyPipeline("Pipeline 1 og Ammars skript"), "dtbook_html",         None,                  "reports", ["jostein"]],
+            
             # DTBook for punktskrift
             [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",      "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],

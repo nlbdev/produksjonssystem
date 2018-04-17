@@ -37,6 +37,7 @@ class UpdateMetadata(Pipeline):
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     
     min_update_interval = 60 * 60 * 24 # 1 day
+    max_update_interval = 60 * 30 # half hour
     max_metadata_emails_per_day = 5
     
     # if UpdateMetadata is not loaded, use a temporary directory
@@ -208,9 +209,9 @@ class UpdateMetadata(Pipeline):
                 except Exception:
                     logging.exception("[" + Report.thread_name() + "] Could not parse " + last_updated_path)
         
-        # Get updated metadata for a book, but only if the metadata is older than 5 minutes
+        # Get updated metadata for a book, but only if the metadata is older than max_update_interval minutes
         now = int(time.time())
-        if now - last_updated > 300 or force_update:
+        if now - last_updated > UpdateMetadata.max_update_interval or force_update:
             success = UpdateMetadata.get_metadata(pipeline, epub, publication_format=publication_format)
             if not success:
                 return False
@@ -306,8 +307,8 @@ class UpdateMetadata(Pipeline):
             return False
         rdf_files.append('quickbase/' + os.path.basename(rdf_path))
         
-        qb_record = ElementTree.parse(rdf_path).getroot()
-        identifiers = qb_record.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=qb_record.nsmap)
+        rdf = ElementTree.parse(rdf_path).getroot()
+        identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
         identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
         if not identifiers:
             pipeline.utils.report.warn("{} er ikke katalogisert i Quickbase".format(edition_identifier))
@@ -558,7 +559,10 @@ class UpdateMetadata(Pipeline):
             if f.endswith(".xml"):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
-            if publication_format and UpdateMetadata.get_format_from_normarc(normarc_pipeline, marcxchange_path) not in [publication_format, "EPUB"]:
+            format_from_normarc, marc019b = UpdateMetadata.get_format_from_normarc(normarc_pipeline, marcxchange_path)
+            if not format_from_normarc and marc019b:
+                normarc_pipeline.utils.report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0], marc019b))
+            if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
                 continue
             
             normarc_pipeline.utils.report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
@@ -581,6 +585,7 @@ class UpdateMetadata(Pipeline):
                 normarc_pipeline.utils.report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: '{}'".format(signatureRegistration if signatureRegistration else "(ukjent)", UpdateMetadata.config["default_librarian"].addr_spec.lower()))
                 normarc_pipeline.utils.report.debug("Aktive bibliotekarer: {}".format(", ".join([addr.addr_spec.lower() for addr in UpdateMetadata.config["librarians"]])))
                 signatureRegistrationAddress = UpdateMetadata.config["default_librarian"]
+            UpdateMetadata.add_production_info(normarc_pipeline, epub.identifier(), publication_format=publication_format)
             normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],
                                                 UpdateMetadata.email_settings["sender"],
                                                 signatureRegistrationAddress,
@@ -601,7 +606,7 @@ class UpdateMetadata(Pipeline):
         
         for f in opf_metadata:
             if os.path.isfile(opf_metadata[f]):
-                pipeline.utils.report.info("Validerer ny OPF-metadata for " + (f if f else "åndsverk"))
+                pipeline.utils.report.info("Validerer OPF-metadata for " + (f if f else "åndsverk"))
                 sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-opf.sch"),
                                            source=opf_metadata[f])
                 if not sch.success:
@@ -609,7 +614,7 @@ class UpdateMetadata(Pipeline):
                     return False
             
             if os.path.isfile(html_metadata[f]):
-                pipeline.utils.report.info("Validerer ny HTML-metadata for " + (f if f else "åndsverk"))
+                pipeline.utils.report.info("Validerer HTML-metadata for " + (f if f else "åndsverk"))
                 sch = Schematron(pipeline, schematron=os.path.join(UpdateMetadata.xslt_dir, UpdateMetadata.uid, "validate-html-metadata.sch"),
                                            source=html_metadata[f])
                 if not sch.success:
@@ -793,28 +798,28 @@ class UpdateMetadata(Pipeline):
         xml = ElementTree.parse(marcxchange_path).getroot()
         nsmap = { 'marcxchange': 'info:lc/xmlns/marcxchange-v1' }
         marc019b = xml.xpath("//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()", namespaces=nsmap)
-        marc019b = marc019b[0] if marc019b else None
+        marc019b = marc019b[0] if marc019b else ""
         
         if not marc019b:
             pipeline.utils.report.debug("Fant ikke `*019$b` for {}".format(os.path.basename(marcxchange_path)))
-            return None
+            return None, marc019b
         
         split = marc019b.split(",")
         
         if [val for val in split if val in ['za','c']]:
-            return "Braille"
+            return "Braille", marc019b
         
         if [val for val in split if val in ['dc','dj']]:
-            return "DAISY 2.02"
+            return "DAISY 2.02", marc019b
         
         if [val for val in split if val in ['la']]:
-            return "XHTML"
+            return "XHTML", marc019b
         
         if [val for val in split if val in ['gt']]:
-            return "EPUB"
+            return "EPUB", marc019b
         
         pipeline.utils.report.warn("Ukjent format i `*019$b` for {}: {}".format(os.path.basename(marcxchange_path), marc019b))
-        return None
+        return None, marc019b
     
     @staticmethod
     def trigger_metadata_pipelines(pipeline, book_id, exclude=None):
@@ -828,6 +833,100 @@ class UpdateMetadata(Pipeline):
                 with open(os.path.join(Pipeline.dirs[pipeline_uid]["trigger"], book_id), "w") as triggerfile:
                     print("autotriggered", file=triggerfile)
                 pipeline.utils.report.info("Trigger: {}".format(pipeline_uid))
+    
+    @staticmethod
+    def add_production_info(pipeline, identifier, publication_format=""):
+        metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), identifier)
+        rdf_path = os.path.join(metadata_dir, "metadata.rdf")
+        if not os.path.isfile(rdf_path):
+            pipeline.utils.report.debug("Metadata om produksjonen finnes ikke: {}".format(identifier))
+            return
+        
+        rdf = ElementTree.parse(rdf_path).getroot()
+        
+        pipeline.utils.report.info("<h2>Signaturer</h2>")
+        signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]", namespaces=rdf.nsmap)
+        signaturesPublication = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/Book' and {}]/nlbprod:*[starts-with(local-name(),'signature')]".format("dc:format/text()='{}'".format(publication_format) if publication_format else 'true()'), namespaces=rdf.nsmap)
+        signatures = signaturesWork + signaturesPublication
+        if not signaturesWork and not signaturesPublication:
+            pipeline.utils.report.info("Fant ingen signaturer.")
+        else:
+            pipeline.utils.report.info("<dl>")
+            for e in signatures:
+                source = e.attrib["{http://www.nlb.no/}metadata-source"]
+                source = source.replace("Quickbase Record@{} ".format(identifier), "")
+                value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
+                pipeline.utils.report.info("<dt>{}</dt>".format(source))
+                pipeline.utils.report.info("<dd>{}</dd>".format(value))
+            pipeline.utils.report.info("</dl>")
+    
+    @staticmethod
+    def should_produce(pipeline, epub, publication_format):
+        if not UpdateMetadata.update(pipeline, epub, publication_format=publication_format, insert=False):
+            pipeline.utils.report.warn("Klarte ikke å hente metadata: {}".format(epub.identifier()))
+            return False
+        
+        metadata_dir = os.path.join(UpdateMetadata.get_metadata_dir(), epub.identifier())
+        rdf_path = os.path.join(metadata_dir, "metadata.rdf")
+        if not os.path.isfile(rdf_path):
+            pipeline.utils.report.debug("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
+            return False
+        
+        rdf = ElementTree.parse(rdf_path).getroot()
+        production_formats = rdf.xpath("//nlbprod:*[starts-with(local-name(),'format')]", namespaces=rdf.nsmap)
+        exists_in_quickbase = bool(production_formats)
+        production_formats = [f.xpath("local-name()") for f in production_formats if (f.text == "true" or "{http://schema.org/}name" in f.attrib and f.attrib["{http://schema.org/}name"] == "true")]
+        
+        exists_in_bibliofil = False
+        for i in rdf.xpath("//dc:identifier", namespaces=rdf.nsmap):
+            value = i.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in i.attrib else i.text
+            if epub.identifier() == value and "bibliofil" in i.attrib["{http://www.nlb.no/}metadata-source"].lower():
+                exists_in_bibliofil = True
+                break
+        
+        if not exists_in_quickbase and exists_in_bibliofil:
+            pipeline.utils.report.info("{} finnes i Bibliofil men ikke i Quickbase. Antar at den skal produseres som {}.".format(epub.identifier(), publication_format))
+            return True
+        
+        if publication_format == "Braille":
+            if [f for f in production_formats if f in [
+                "formatBraille",                  # Punktskrift
+                "formatBrailleClub",              # Punktklubb
+                "formatBraillePartialProduction", # Punktskrift delproduksjon
+                "formatNotes",                    # Noter
+                "formatTactilePrint",             # Taktil trykk
+            ]]:
+                return True
+        
+        elif publication_format == "DAISY 2.02":
+            if [f for f in production_formats if f in [
+                "formatDaisy202narrated",             # DAISY 2.02 Innlest Skjønn
+                "formatDaisy202narratedFulltext",     # DAISY 2.02 Innlest fulltekst
+                "formatDaisy202narratedStudent",      # DAISY 2.02 Innlest Studie
+                "formatDaisy202tts",                  # DAISY 2.02 TTS Skjønn
+                "formatDaisy202ttsStudent",           # DAISY 2.02 TTS Studie
+                "formatDaisy202wips",                 # DAISY 2.02 WIPS
+                "formatAudioCDMP3ExternalProduction", # Audio CD MP3 ekstern produksjon
+                "formatAudioCDWAVExternalProduction", # Audio CD WAV ekstern produksjon
+                "formatDaisy202externalProduction",   # DAISY 2.02 ekstern produksjon
+            ]]:
+                return True
+        
+        elif publication_format == "XHTML":
+            if [f for f in production_formats if f in [
+                "formatEbook",                   # E-bok
+                "formatEbookExternalProduction", # E-bok ekstern produksjon
+            ]]:
+                return True
+        
+        elif publication_format == "EPUB":
+            return True
+        
+        else:
+            pipeline.utils.report.warn("Ukjent format: {}. {} blir ikke produsert.".format(publication_format, epub.identifier()))
+            return False
+        
+        return False
     
     def on_book_deleted(self):
         self.utils.report.should_email = False

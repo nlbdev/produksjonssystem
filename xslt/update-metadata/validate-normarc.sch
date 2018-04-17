@@ -81,7 +81,7 @@
         </rule>
         
         <!-- Spesifikt for originalen -->
-        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
+        <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($isbn-missing) and not($issn-missing)]">
             <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">ISBN for originalen må være definert i *596$f</assert>
         </rule>
         <rule context="marcxchange:record[not($is-periodical)]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
@@ -89,7 +89,7 @@
         </rule>
         
         <!-- Spesifikt for bøker -->
-        <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($isbn-missing)]">
+        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
             <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a</assert>
         </rule>
         <rule context="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">
@@ -97,7 +97,7 @@
         </rule>
         
         <!-- Spesifikt for periodika -->
-        <rule context="marcxchange:record[$is-publication and $is-periodical and not($issn-missing)]">
+        <rule context="marcxchange:record[$is-publication and $is-periodical]">
             <assert test="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">ISSN for utgaven må være definert i *022$a</assert>
         </rule>
         <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
@@ -113,8 +113,8 @@
                                                | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
         
         <rule context="marcxchange:record[$identifier and $is-translated]">
-            <assert test="marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']">For oversatte utgaver må originalspråk være definert i *041$h.</assert>
-            <assert test="marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']">For oversatte utgaver må originaltittel være definert i *574$a.</assert>
+            <assert test="exists(marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']) or starts-with($identifier,'5')">For oversatte utgaver må originalspråk være definert i *041$h (med mindre boknummeret starter med "5").</assert>
+            <assert test="exists(marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']) or starts-with($identifier,'5')">For oversatte utgaver må originaltittel være definert i *574$a.</assert>
             <assert test="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text() = 'overs.'">For oversatte utgaver må det være definert en oversetter i *700 ($e må være "overs.").</assert>
         </rule>
     </pattern>

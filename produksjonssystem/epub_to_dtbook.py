@@ -52,6 +52,11 @@ class EpubToDtbook(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
         
+        if not UpdateMetadata.should_produce(self, epub, "DAISY 2.02"):
+            self.utils.report.info("{} skal ikke produseres som lydbok. Avbryter.".format(epub.identifier()))
+            self.utils.report.should_email = False
+            return True
+        
         
         # ---------- lag en kopi av EPUBen ----------
         
@@ -138,6 +143,7 @@ class EpubToDtbook(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-til-talesyntese-arkiv.")
         
         archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
+        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="DAISY 2.02")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"

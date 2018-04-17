@@ -145,6 +145,7 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.warn("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
+        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, os.path.join(NLBpubToDocx.dir_out,result_identifier), "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
