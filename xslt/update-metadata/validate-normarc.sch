@@ -81,7 +81,7 @@
         </rule>
         
         <!-- Spesifikt for originalen -->
-        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
+        <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($isbn-missing) and not($issn-missing)]">
             <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">ISBN for originalen må være definert i *596$f</assert>
         </rule>
         <rule context="marcxchange:record[not($is-periodical)]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
@@ -89,7 +89,7 @@
         </rule>
         
         <!-- Spesifikt for bøker -->
-        <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($isbn-missing)]">
+        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
             <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a</assert>
         </rule>
         <rule context="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">
@@ -97,7 +97,7 @@
         </rule>
         
         <!-- Spesifikt for periodika -->
-        <rule context="marcxchange:record[$is-publication and $is-periodical and not($issn-missing)]">
+        <rule context="marcxchange:record[$is-publication and $is-periodical]">
             <assert test="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">ISSN for utgaven må være definert i *022$a</assert>
         </rule>
         <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
