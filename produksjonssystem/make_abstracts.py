@@ -74,7 +74,9 @@ class Audio_Abstract(Pipeline):
             smildoc = ElementTree.parse(os.path.join(temp_absdir,smilFile)).getroot()
             mp3File = smildoc.xpath("string((//audio/@src)[1])")
             mp3File_start = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_Id))
-            mp3File_end = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-begin),'='),'s')".format(smilFile_Id))
+            mp3File_end = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_Id))
+            if mp3File_start == mp3File_end:
+                self.utils.report.error("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
             # Creates audio segment in milliseconds from start to end of the abstract file
             mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
             new_mp3=mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]

@@ -24,7 +24,7 @@ from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_docx import NLBpubToDocx
-#from make_abstracts import Audio_Abstract
+from make_abstracts import Audio_Abstract
 
 class Produksjonssystem():
 
@@ -113,8 +113,8 @@ class Produksjonssystem():
             "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
             "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
-            "incoming_daisy": os.path.join(book_archive_dirs["master"], "utgave-inn/daisy202"),
-            #"abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/baksidetekst")
+            "incoming_daisy": os.path.join(book_archive_dirs["share"], "daisy202"),
+            "abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/baksidetekst")
         }
 
         # Define pipelines, input/output/report dirs, and email recipients
@@ -167,7 +167,7 @@ class Produksjonssystem():
             [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],
 
             # lydutdrag
-            #[ Audio_Abstract(),              "incoming_daisy",          "abstracts",        "reports", ["espen"]],
+            [ Audio_Abstract(),              "incoming_daisy",          "abstracts",        "reports", ["espen"]],
         ]
 
 
