@@ -26,6 +26,10 @@ from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_docx import NLBpubToDocx
 from make_abstracts import Audio_Abstract
 
+if sys.version_info[0] != 3 or sys.version_info[1] < 5:
+    print("# This script requires Python version 3.5+")
+    sys.exit(1)
+
 class Produksjonssystem():
 
     book_archive_dirs = None
