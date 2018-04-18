@@ -55,7 +55,7 @@ class Produksjonssystem():
             archive_name = d.split("=")[0]
             archive_path = os.path.normpath(d.split("=")[1]) + "/"
             self.book_archive_dirs[archive_name] = archive_path
-        
+
         # for convenience; both method variable and instance variable so you don't have to
         # write "self." all the time during initialization.
         book_archive_dirs = self.book_archive_dirs
@@ -114,7 +114,7 @@ class Produksjonssystem():
             "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
             "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
-            "abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/baksidetekst")
+            "abstracts": os.path.join(book_archive_dirs["master"], "Lydsnutter")
         }
 
         # Define pipelines, input/output/report dirs, and email recipients
@@ -140,30 +140,30 @@ class Produksjonssystem():
 
             # EPUB
             [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
-            
+
             # e-bok
             [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
             [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","espen","jostein","olav"]],
             [ NLBpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
-            
+
             # punktskrift
             [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
             [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","karir"]],
             [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","karir"]],
-            
+
             # innlest lydbok
             [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
             [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
             [ DummyPipeline("Innlesing med Hindenburg"),    "epub_narration",      "daisy202",            "reports", ["jostein"]],
-            
+
             # TTS-lydbok
             [ EpubToDtbook(),                               "master",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          "daisy202",            "reports", ["jostein"]],
-            
+
             # e-bok basert på DTBook
             [ EpubToDtbookHTML(),                           "master",              "dtbook_html",         "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Pipeline 1 og Ammars skript"), "dtbook_html",         None,                  "reports", ["jostein"]],
-            
+
             # DTBook for punktskrift
             [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",      "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
             [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],
