@@ -48,7 +48,8 @@ class Audio_Abstract(Pipeline):
         temp_absdir = temp_absdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_absdir)
         temp_abs = Epub(self, temp_absdir)
-
+        back_cover=False
+        abstract_=False
         if not os.path.isfile(os.path.join(temp_absdir, "ncc.html")):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return
@@ -82,6 +83,7 @@ class Audio_Abstract(Pipeline):
             new_mp3=mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
             new_mp3.export(os.path.join(temp_absdir,"Baksidetekst.mp3"))
             self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
+            back_cover=True
         except Exception:
             self.utils.report.warn("Baksidetekst ikke funnet for " + audio_identifier)
 
@@ -111,7 +113,7 @@ class Audio_Abstract(Pipeline):
                 if (smilFile_abstract == several_smilFiles[int(number_of_smilfiles * 0.5+num)+1]):
                     smilFile_abstract_id = several_smilFiles_id[int(number_of_smilfiles * 0.5+num)+1]
 
-                mp3File_abstract_end = float(smildoc_abstract.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-begin),'='),'s')".format(smilFile_abstract_id)))
+                mp3File_abstract_end = float(smildoc_abstract.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_abstract_id)))
                 duration = mp3File_abstract_end - mp3File_abstract_start
                 num = num + 1
         except Exception:
@@ -143,25 +145,36 @@ class Audio_Abstract(Pipeline):
             final_mp3 = new_mp3_abstract.fade_out(3000)
             final_mp3.export(os.path.join(temp_absdir, "Lydutdrag.mp3"))
             self.utils.report.info("Lydutdrag eksportert fra: " + mp3File_abstract)
+            abstract_=True
         except Exception:
             self.utils.report.warn("Klarte ikke eksportere Lydutdrag.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
         # Deletes all files not Omslagstekst.mp3 in temp folder
-        for item in os.listdir(temp_absdir):
-            if not (item == "Baksidetekst.mp3"or item == "Lydutdrag.mp3"):
-                if os.path.isfile(os.path.join(temp_absdir, item)):
-                    os.remove(os.path.join(temp_absdir, item))
-                elif os.path.isdir(os.path.join(temp_absdir, item)):
-                    shutil.rmtree(os.path.join(temp_absdir, item), ignore_errors=True)
+        #for item in os.listdir(temp_absdir):
+        #    if not (item == "Baksidetekst.mp3"or item == "Lydutdrag.mp3"):
+        #        if os.path.isfile(os.path.join(temp_absdir, item)):
+        #            os.remove(os.path.join(temp_absdir, item))
+        #        elif os.path.isdir(os.path.join(temp_absdir, item)):
+        #            shutil.rmtree(os.path.join(temp_absdir, item), ignore_errors=True)
 
         # Copies tempfile to /utgave-ut/baksidetekst
         if (os.path.isfile(os.path.join(temp_absdir, "Lydutdrag.mp3")) or os.path.isfile(os.path.join(temp_absdir, "Baksidetekst.mp3"))):
             self.utils.report.info("Baksidetekst og eller lydutdrag funnet. Kopierer til Baksidetekst")
 
-            archived_path = self.utils.filesystem.storeBook(temp_absdir, audio_identifier)
-            self.utils.report.attachment(None, archived_path, "DEBUG")
+
+            os.makedirs(os.path.join(self.dir_out,"Lydutdrag"), mode=0o777, exist_ok=True)
+            os.makedirs(os.path.join(self.dir_out,"Baksidetekst"), mode=0o777, exist_ok=True)
+
+            if(abstract_):
+                shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Lydutdrag", audio_identifier+".mp3"))
+                self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄"
+            if(back_cover):
+                shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Baksidetekst", audio_identifier+".mp3"))
+                self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst ble eksportert 👍😄"
+            #archived_path = self.utils.filesystem.storeBook(temp_absdir, audio_identifier)
+            #self.utils.report.attachment(None, archived_path, "DEBUG")
             self.utils.report.info(audio_identifier + " ble lagt til i baksidetekst.")
-            self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst og eller lydutdrag ble eksportert 👍😄"
+            #self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst og eller lydutdrag ble eksportert 👍😄"
         else:
             self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ")
 
