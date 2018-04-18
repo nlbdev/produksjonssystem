@@ -106,8 +106,10 @@ class Plotter():
                 label_out = relpath_out + ("\n" + label_out if label_out else "")
             
             status = ""
+            start_text = ""
             if pipeline[0]._shouldRun and not pipeline[0].running:
                 status = "Starter..."
+                start_text = pipeline[0].start_text
             elif not pipeline[0]._shouldRun and pipeline[0].running:
                 status = "Stopper..."
             elif not pipeline[0].running and not isinstance(pipeline[0], DummyPipeline):

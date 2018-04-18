@@ -64,6 +64,7 @@ class Pipeline():
     # dynamic (reset on stop(), changes over time)
     _queue = None
     _md5 = None
+    start_text = ""
     
     # utility classes; reconfigured every time a book is processed to simplify function signatures
     utils = None
@@ -185,8 +186,13 @@ class Pipeline():
         self._dirInAvailable = True
         
         self._md5 = {}
-        for f in os.listdir(self.dir_in):
+        dir_list = os.listdir(self.dir_in)
+        md5_count = 0
+        self.start_text = "0 / {}".format(len(dir_list))
+        for f in dir_list:
             self._update_md5(f)
+            md5_count += 1
+            self.start_text = "{} / {}".format(md5_count, len(dir_list))
         
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread)
         self._bookMonitorThread.setDaemon(True)
