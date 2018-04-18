@@ -360,8 +360,10 @@ class Filesystem():
     @staticmethod
     def get_host_from_url(addr):
         try:
+            logging.info("Getting host from URL: {}".format(addr))
             addr = urllib.parse.urlparse(addr)
             addr = socket.gethostbyaddr(addr.netloc.split(":")[0])
+            logging.info("Host for URL is: {}".format(addr[0]))
             return addr[0]
         except Exception:
             return None
