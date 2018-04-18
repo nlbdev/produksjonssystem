@@ -64,7 +64,7 @@ class Plotter():
             book = pipeline[0].current_book_name()
             
             relpath_in = None
-            label_in = None
+            netpath_in = ""
             if pipeline[0].dir_in and not pipeline[0].dir_base:
                 relpath_in = os.path.basename(os.path.dirname(pipeline[0].dir_in))
             elif pipeline[0].dir_in and pipeline[0].dir_base:
@@ -78,14 +78,13 @@ class Plotter():
                         host = Filesystem.get_host_from_url(smb)
                         self.buffered_network_paths[base_path] = smb
                         self.buffered_network_hosts[base_path] = host
-                    label_in = "( {} )".format(self.buffered_network_hosts[base_path])
-                    if not label_in:
-                        label_in = "( {} )".format(self.buffered_network_paths[base_path])
-            if relpath_in:
-                label_in = relpath_in + ("\n" + label_in if label_in else "")
+                    netpath_in = self.buffered_network_hosts[base_path]
+                    if not netpath_in:
+                        netpath_in = self.buffered_network_paths[base_path]
+            label_in = "< <font point-size='16'>{}</font>{} >".format(relpath_in, "\n<br/><i>{}</i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
             
             relpath_out = None
-            label_out = None
+            netpath_out = ""
             if pipeline[0].dir_out and not pipeline[0].dir_base:
                 relpath_out = os.path.basename(os.path.dirname(pipeline[0].dir_out))
             elif pipeline[0].dir_out and pipeline[0].dir_base:
@@ -99,11 +98,10 @@ class Plotter():
                         host = Filesystem.get_host_from_url(smb)
                         self.buffered_network_paths[base_path] = unc
                         self.buffered_network_hosts[base_path] = host
-                    label_out = "( {} )".format(self.buffered_network_hosts[base_path])
-                    if not label_out:
-                        label_out = "( {} )".format(self.buffered_network_paths[base_path])
-            if relpath_out:
-                label_out = relpath_out + ("\n" + label_out if label_out else "")
+                    netpath_out = self.buffered_network_hosts[base_path]
+                    if not netpath_out:
+                        netpath_out = self.buffered_network_paths[base_path]
+            label_out = "< <font point-size='16'>{}</font>{} >".format(relpath_out, "\n<br/><i>{}</i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
             
             status = ""
             start_text = ""
@@ -121,7 +119,7 @@ class Plotter():
                 status = "Manuelt steg"
             else:
                 status = "Venter"
-            pipeline_label = title + "\n" + queue_string + "\n" + status
+            pipeline_label = "< <font point-size='18'>{}</font>{} >".format(title, "".join(["\n<br/><i>{}</i>".format(val) for val in [queue_string, start_text, status] if val]))
             
             fillcolor = "lightskyblue1"
             if book or queue_size:
@@ -133,10 +131,10 @@ class Plotter():
             
             dot.attr("node", shape="folder", style="filled", fillcolor="wheat")
             if relpath_in:
-                dot.node(pipeline[1], label_in.replace("\\", "\\\\"))
+                dot.node(pipeline[1], label_in)
                 dot.edge(pipeline[1], pipeline_id)
             if relpath_out:
-                dot.node(pipeline[2], label_out.replace("\\", "\\\\"))
+                dot.node(pipeline[2], label_out)
                 dot.edge(pipeline_id, pipeline[2])
         
         dot.render(os.path.join(self.report_dir, name + "_"))
