@@ -114,7 +114,7 @@ class Produksjonssystem():
             "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
             "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
-            "abstracts": os.path.join(book_archive_dirs["master"], "Lydsnutter")
+            "abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/lydsnutter")
         }
 
         # Define pipelines, input/output/report dirs, and email recipients
