@@ -321,7 +321,7 @@ class Produksjonssystem():
         assert stopfile, "TRIGGER_DIR must be defined"
         stopfile = os.path.join(stopfile, "stop")
         with open(stopfile, "w") as f:
-            print("stop", file=f)
+            f.write("stop")
 
 if __name__ == "__main__":
     produksjonssystem = Produksjonssystem()
