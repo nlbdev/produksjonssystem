@@ -824,7 +824,9 @@ class UpdateMetadata(Pipeline):
     @staticmethod
     def trigger_metadata_pipelines(pipeline, book_id, exclude=None):
         if not os.path.exists(os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], book_id)):
-            pipeline.utils.report.info("'{}' does not exist in '{}'; no downstream pipelines will be triggered".format(book_id, Pipeline.dirs[UpdateMetadata.uid]["out"].split(Pipeline.dirs[UpdateMetadata.uid]["base"])[-1]))
+            basepath = Filesystem.get_base_path(Pipeline.dirs[UpdateMetadata.uid]["out"], Pipeline.dirs[UpdateMetadata.uid]["base"])
+            relpath = os.path.relpath(Pipeline.dirs[UpdateMetadata.uid]["out"], basepath)
+            pipeline.utils.report.info("'{}' does not exist in '{}'; no downstream pipelines will be triggered".format(book_id, relpath))
             return  
         for pipeline_uid in Pipeline.dirs:
             if pipeline_uid == exclude:
