@@ -540,6 +540,11 @@ class UpdateMetadata(Pipeline):
         opf_metadata = {"": rdf_metadata.replace(".rdf",".opf")}
         html_metadata = {"": rdf_metadata.replace(".rdf",".html")}
         
+        if not os.path.isfile(rdf_metadata):
+            if not UpdateMetadata.get_metadata(pipeline, epub, publication_format=publication_format):
+                pipeline.utils.report("Could not retrieve metadata")
+                return False
+        
         for f in UpdateMetadata.formats:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
             if not publication_format or f == publication_format or f == "EPUB":
