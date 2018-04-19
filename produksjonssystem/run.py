@@ -194,6 +194,8 @@ class Produksjonssystem():
             self.info("Produksjonssystemet er stoppet")
 
     def _run(self):
+        assert os.getenv("CONFIG_FILE"), "CONFIG_FILE must be defined"
+        
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
         else:
@@ -250,9 +252,8 @@ class Produksjonssystem():
                 "sender": self.email["sender"],
                 "recipients": []
             }
+            if pipeline[0].uid in emailDoc:
             email_settings["recipients"].append(emailDoc[pipeline[0].uid])
-            #for s in pipeline[4]:
-            #    email_settings["recipients"].append(self.email["recipients"][s])
             thread = Thread(target=pipeline[0].run, args=(10,
                                                           self.dirs[pipeline[1]] if pipeline[1] else None,
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
