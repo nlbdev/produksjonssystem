@@ -4,8 +4,9 @@
 import os
 import sys
 import time
-import logging
 import yaml
+import logging
+import traceback
 from threading import Thread
 from core.plotter import Plotter
 from core.pipeline import Pipeline, DummyPipeline
@@ -190,6 +191,7 @@ class Produksjonssystem():
             self._run()
         except Exception as e:
             self.info("En feil oppstod i produksjonssystemet: {}".format(str(e) if str(e) else "(ukjent)"))
+            traceback.print_exc(e)
         finally:
             self.info("Produksjonssystemet er stoppet")
 
@@ -200,7 +202,7 @@ class Produksjonssystem():
             logging.getLogger().setLevel(logging.DEBUG)
         else:
             logging.getLogger().setLevel(logging.INFO)
-
+        
         # Make sure that directories are defined properly
         for d in self.book_archive_dirs:
             for a in self.book_archive_dirs:
@@ -253,7 +255,7 @@ class Produksjonssystem():
                 "recipients": []
             }
             if pipeline[0].uid in emailDoc:
-            email_settings["recipients"].append(emailDoc[pipeline[0].uid])
+                email_settings["recipients"].append(emailDoc[pipeline[0].uid])
             thread = Thread(target=pipeline[0].run, args=(10,
                                                           self.dirs[pipeline[1]] if pipeline[1] else None,
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
