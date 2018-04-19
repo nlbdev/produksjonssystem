@@ -73,14 +73,14 @@ class Plotter():
                 if "master" in pipeline[0].dir_base and pipeline[0].dir_base["master"] == base_path:
                     pass
                 else:
-                    if base_path not in self.buffered_network_paths:
-                        smb, file, unc = Filesystem.networkpath(base_path)
+                    if pipeline[0].dir_in not in self.buffered_network_paths:
+                        smb, file, unc = Filesystem.networkpath(pipeline[0].dir_in)
                         host = Filesystem.get_host_from_url(smb)
-                        self.buffered_network_paths[base_path] = smb
-                        self.buffered_network_hosts[base_path] = host
-                    netpath_in = self.buffered_network_hosts[base_path]
+                        self.buffered_network_paths[pipeline[0].dir_in] = smb
+                        self.buffered_network_hosts[pipeline[0].dir_in] = host
+                    netpath_in = self.buffered_network_hosts[pipeline[0].dir_in]
                     if not netpath_in:
-                        netpath_in = self.buffered_network_paths[base_path]
+                        netpath_in = self.buffered_network_paths[pipeline[0].dir_in]
             label_in = "< <font point-size='16'>{}</font>{} >".format(relpath_in, "\n<br/><i>{}</i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
             
             relpath_out = None
@@ -93,14 +93,14 @@ class Plotter():
                 if "master" in pipeline[0].dir_base and pipeline[0].dir_base["master"] == base_path:
                     pass
                 else:
-                    if base_path not in self.buffered_network_paths:
-                        smb, file, unc = Filesystem.networkpath(base_path)
+                    if pipeline[0].dir_out not in self.buffered_network_paths:
+                        smb, file, unc = Filesystem.networkpath(pipeline[0].dir_out)
                         host = Filesystem.get_host_from_url(smb)
-                        self.buffered_network_paths[base_path] = unc
-                        self.buffered_network_hosts[base_path] = host
-                    netpath_out = self.buffered_network_hosts[base_path]
+                        self.buffered_network_paths[pipeline[0].dir_out] = unc
+                        self.buffered_network_hosts[pipeline[0].dir_out] = host
+                    netpath_out = self.buffered_network_hosts[pipeline[0].dir_out]
                     if not netpath_out:
-                        netpath_out = self.buffered_network_paths[base_path]
+                        netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
             label_out = "< <font point-size='16'>{}</font>{} >".format(relpath_out, "\n<br/><i>{}</i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
             
             status = ""
