@@ -67,6 +67,7 @@ class UpdateMetadata(Pipeline):
     }
     
     queue = []
+    last_validation_results = {}
     
     throttle_metadata_emails = True # if enabled, will only send up to N automated metadata error emails per day, and only in working hours
     last_metadata_errors = [] # timestamps for last automated metadata updates
@@ -214,15 +215,23 @@ class UpdateMetadata(Pipeline):
         now = int(time.time())
         if now - last_updated > UpdateMetadata.max_update_interval or force_update:
             success = UpdateMetadata.get_metadata(pipeline, epub, publication_format=publication_format)
+            if epub.identifier() in UpdateMetadata.last_validation_results:
+                del UpdateMetadata.last_validation_results[epub.identifier()]
             if not success:
                 return False
-        elif not UpdateMetadata.validate_metadata(pipeline, epub, publication_format=publication_format):
-            return False
+        
+        # If metadata has changed; re-validate the metadata
+        if not epub.identifier() in UpdateMetadata.last_validation_results:
+            UpdateMetadata.last_validation_results[epub.identifier()] = UpdateMetadata.validate_metadata(pipeline, epub, publication_format=publication_format)
+        
+        if not UpdateMetadata.last_validation_results[epub.identifier()]:
+            return False # metadata is not valid
         
         if insert:
+            # Return whether or not insertion of metadata was successful
             return UpdateMetadata.insert_metadata(pipeline, epub, publication_format=publication_format)
         else:
-            return True
+            return True # metadata is valid
     
     @staticmethod
     def get_metadata(pipeline, epub, publication_format=""):
