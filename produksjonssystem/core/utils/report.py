@@ -121,27 +121,47 @@ class Report():
         assert message
         assert smtp
         assert sender
-        assert recipients
+        assert isinstance(recipients, str) or isinstance(recipients, list)
+        
+        # Build set of recipients as Address objects.
+        # Names are generated based on the email-address.
+        recipients = []
+        if isinstance(recipients, str):
+            recipients = [ recipients ]
+        _recipients = []
+        for r in recipients:
+            name = []
+            for n in r.split("@")[0].split("."):
+                name.extend(re.findall("[A-Z][^A-Z]*", n))
+            name = " ".join(name)
+            user = r.split("@")[0]
+            domain = r.split("@")[1]
+            _recipients.append(Address(name, user, domain))
+        recipients = tuple(_recipients)
         
         # 1. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
         msg['From'] = sender
-        msg['To'] = recipients if isinstance(recipients, Address) else tuple(recipients)
+        msg['To'] = recipients
         msg.set_content(message)
         
         # 2. send e-mail
-        if smtp["host"] and smtp["port"]:
-            with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
-                s.ehlo()
-                s.starttls()
-                if smtp["user"] and smtp["pass"]:
-                    s.login(smtp["user"], smtp["pass"])
-                else:
-                    logging.debug("[" + Report.thread_name() + "] email user/pass not configured")
-                s.send_message(msg)
+        if not msg["To"]:
+            logging.warn("[" + Report.thread_name() + "] Email with subject \"{}\" has no recipients".format(subject))
         else:
-            logging.warn("[" + Report.thread_name() + "] email host/port not configured")
+            logging.info("[" + Report.thread_name() + "] Sending email with subject \"{}\" to: {}".format(subject, ", ".join([str(a) for a in msg["To"]])))
+            if smtp["host"] and smtp["port"]:
+                with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
+                    s.ehlo()
+                    s.starttls()
+                    if smtp["user"] and smtp["pass"]:
+                        s.login(smtp["user"], smtp["pass"])
+                    else:
+                        logging.debug("[" + Report.thread_name() + "] email user/pass not configured")
+                    s.send_message(msg)
+            else:
+                logging.warn("[" + Report.thread_name() + "] email host/port not configured")
         
         Slack.slack(text=subject, attachments=None)
     
