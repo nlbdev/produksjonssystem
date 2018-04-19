@@ -175,8 +175,7 @@ class Pipeline():
         type(self).config = self.config
         
         if Filesystem.ismount(self.dir_in):
-            logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
-            return
+            logging.debug("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
         if not os.path.isdir(self.dir_in):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Will not start watching.")
             return
