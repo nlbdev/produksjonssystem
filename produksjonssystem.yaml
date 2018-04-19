@@ -1,0 +1,111 @@
+recipients:
+ - ammar.usama@nlb.no
+ - anya.hartmark@nlb.no
+ - eivind.haugen@nlb.no
+ - eli.frisvold@nlb.no
+ - eli.hafskjold@nlb.no
+ - espen.solhjem@nlb.no
+ - hanne.lillevold@nlb.no
+ - ingvild.aanesen@nlb.no
+ - jostein@nlb.no
+ - kari.gjolstadaas@nlb.no
+ - kari.kummeneje@nlb.no
+ - kari.rudjord@nlb.no
+ - mari.myksvoll@nlb.no
+ - olav.indergaard@nlb.no
+ - per.sennels@nlb.no
+ - roald.madland@nlb.no
+ - sobia.awan@nlb.no
+ - therese.solbjorg@nlb.no
+ - thomas.tsigaridas@nlb.no
+ - wenche.andresen@nlb.no
+
+incoming-nordic:
+   - ammar.usama@nlb.no
+   - jostein@nlb.no
+   - mari.myksvoll@nlb.no
+   - olav.indergaard@nlb.no
+   - sobia.awan@nlb.no
+   - thomas.tsigaridas@nlb.no
+
+nordic-epub-to-nlbpub:
+   - jostein@nlb.no
+   - olav.indergaard@nlb.no
+   - per.sennels@nlb.no
+
+update-metadata:
+   - jostein@nlb.no
+   - anya.hartmark@nlb.no
+   - eli.frisvold@nlb.no
+   - eli.hafskjold@nlb.no
+   - hanne.lillevold@nlb.no
+   - ingvild.aanesen@nlb.no
+   - kari.gjolstadaas@nlb.no
+   - kari.kummeneje@nlb.no
+   - therese.solbjorg@nlb.no
+   - wenche.andresen@nlb.no
+   - eli.hafskjold@nlb.no
+
+insert-metadata:
+  - jostein@nlb.no
+
+insert-metadata-daisy202:
+  - jostein@nlb.no
+
+nlbpub-to-narration-epub:
+  - eivind.haugen@nlb.no
+  - jostein@nlb.no
+  - per.sennels@nlb.no
+
+insert-metadata-xhtml:
+  - jostein@nlb.no
+
+nlbpub-to-html:
+  - ammar.usama@nlb.no
+  - espen.solhjem@nlb.no
+  - jostein@nlb.no
+  - olav.indergaard@nlb.no
+
+nlbpub-to-docx:
+  - espen.solhjem@nlb.no
+  - jostein@nlb.no
+
+insert-metadata-braille:
+  - jostein@nlb.no
+
+prepare-for-braille:
+  - ammar.usama@nlb.no
+  - jostein@nlb.no
+  - kari.rudjord@nlb.no
+
+nlbpub-to-pef:
+  - ammar.usama@nlb.no
+  - jostein@nlb.no
+  - kari.rudjord@nlb.no
+
+epub-to-dtbook:
+  - ammar.usama@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
+
+epub-to-dtbook-HTML:
+  - ammar.usama@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
+p
+epub-to-dtbook-braille:
+  - ammar.usama@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
+
+create-abstracts:
+  - espen.solhjem@nlb.no
