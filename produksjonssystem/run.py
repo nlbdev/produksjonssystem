@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import logging
+import yaml
 from threading import Thread
 from core.plotter import Plotter
 from core.pipeline import Pipeline, DummyPipeline
@@ -50,7 +51,6 @@ class Produksjonssystem():
         else:
             self.environment = {}
         Pipeline.environment = self.environment # Make environment available from pipelines
-
         # Check that archive dirs is defined
         assert os.environ.get("BOOK_ARCHIVE_DIRS"), "The book archives must be defined as a space separated list in the environment variable BOOK_ARCHIVE_DIRS (as name=path pairs)"
         self.book_archive_dirs = {}
@@ -176,7 +176,6 @@ class Produksjonssystem():
             [ Audio_Abstract(),                             "daisy202",            "abstracts",           "reports", ["espen"]],
         ]
 
-
     # ---------------------------------------------------------------------------
     # Don't edit below this line if you only want to add/remove/modify a pipeline
     # ---------------------------------------------------------------------------
@@ -241,14 +240,19 @@ class Produksjonssystem():
             logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s %(message)s")
 
         threads = []
+        file_name=os.environ.get("CONFIG_FILE")
+        with open(file_name, 'r') as f:
+            emailDoc = yaml.load(f)
+
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
                 "sender": self.email["sender"],
                 "recipients": []
             }
-            for s in pipeline[4]:
-                email_settings["recipients"].append(self.email["recipients"][s])
+            email_settings["recipients"].append(emailDoc[pipeline[0].uid])
+            #for s in pipeline[4]:
+            #    email_settings["recipients"].append(self.email["recipients"][s])
             thread = Thread(target=pipeline[0].run, args=(10,
                                                           self.dirs[pipeline[1]] if pipeline[1] else None,
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
@@ -256,11 +260,11 @@ class Produksjonssystem():
                                                           email_settings,
                                                           self.book_archive_dirs,
                                                           pipeline[5] if len(pipeline) >= 6 else {}
-                                                         ))
+                                                          ))
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
-
+            
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run)
         graph_thread.setDaemon(True)
