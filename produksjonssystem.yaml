@@ -1,53 +1,31 @@
-recipients:
- - ammar.usama@nlb.no
- - anya.hartmark@nlb.no
- - eivind.haugen@nlb.no
- - eli.frisvold@nlb.no
- - eli.hafskjold@nlb.no
- - espen.solhjem@nlb.no
- - hanne.lillevold@nlb.no
- - ingvild.aanesen@nlb.no
- - jostein@nlb.no
- - kari.gjolstadaas@nlb.no
- - kari.kummeneje@nlb.no
- - kari.rudjord@nlb.no
- - mari.myksvoll@nlb.no
- - olav.indergaard@nlb.no
- - per.sennels@nlb.no
- - roald.madland@nlb.no
- - sobia.awan@nlb.no
- - therese.solbjorg@nlb.no
- - thomas.tsigaridas@nlb.no
- - wenche.andresen@nlb.no
-
 incoming-nordic:
-   - ammar.usama@nlb.no
-   - jostein@nlb.no
-   - mari.myksvoll@nlb.no
-   - olav.indergaard@nlb.no
-   - sobia.awan@nlb.no
-   - thomas.tsigaridas@nlb.no
+  - ammar.usama@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
 
 nordic-epub-to-nlbpub:
-   - jostein@nlb.no
-   - olav.indergaard@nlb.no
-   - per.sennels@nlb.no
+  - jostein@nlb.no
+  - olav.indergaard@nlb.no
+  - per.sennels@nlb.no
 
 update-metadata:
-   - jostein@nlb.no
-   - anya.hartmark@nlb.no
-   - eli.frisvold@nlb.no
-   - eli.hafskjold@nlb.no
-   - hanne.lillevold@nlb.no
-   - ingvild.aanesen@nlb.no
-   - kari.gjolstadaas@nlb.no
-   - kari.kummeneje@nlb.no
-   - therese.solbjorg@nlb.no
-   - wenche.andresen@nlb.no
-   - eli.hafskjold@nlb.no
-
-insert-metadata:
   - jostein@nlb.no
+  - librarians:
+    - anya.hartmark@nlb.no
+    - eli.frisvold@nlb.no
+    - eli.hafskjold@nlb.no
+    - hanne.lillevold@nlb.no
+    - ingvild.aanesen@nlb.no
+    - kari.gjolstadaas@nlb.no
+    - kari.kummeneje@nlb.no
+    - therese.solbjorg@nlb.no
+    - wenche.andresen@nlb.no
+    - eli.hafskjold@nlb.no
+  - default_librarian:
+    - eli.hafskjold@nlb.no
 
 insert-metadata-daisy202:
   - jostein@nlb.no
@@ -58,6 +36,9 @@ nlbpub-to-narration-epub:
   - per.sennels@nlb.no
 
 insert-metadata-xhtml:
+  - jostein@nlb.no
+
+insert-metadata-epub:
   - jostein@nlb.no
 
 nlbpub-to-html:
@@ -109,3 +90,4 @@ epub-to-dtbook-braille:
 
 create-abstracts:
   - espen.solhjem@nlb.no
+  - jostein@nlb.no

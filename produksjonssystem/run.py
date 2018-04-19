@@ -73,29 +73,7 @@ class Produksjonssystem():
                 "user": os.getenv("MAIL_USERNAME"),
                 "pass": os.getenv("MAIL_PASSWORD")
             },
-            "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no"),
-            "recipients": {
-                "ammar":    Address("Ammar Usama",              "Ammar.Usama",       "nlb.no"),
-                "anya":     Address("Anya Bauer-Hartmark",      "Anya.Hartmark",     "nlb.no"),
-                "eivind":   Address("Eivind Haugen",            "Eivind.Haugen",     "nlb.no"),
-                "elif":     Address("Eli Frisvold",             "eli.frisvold",      "nlb.no"),
-                "elih":     Address("Eli Hafskjold",            "Eli.Hafskjold",     "nlb.no"),
-                "espen":    Address("Espen Solhjem",            "Espen.Solhjem",     "nlb.no"),
-                "hanne":    Address("Hanne Lillevold",          "hanne.lillevold",   "nlb.no"),
-                "ingvilda": Address("Ingvild Aanensen",         "ingvild.aanensen",  "nlb.no"),
-                "jostein":  Address("Jostein Austvik Jacobsen", "jostein",           "nlb.no"),
-                "kariga":   Address("Kari Gjølstad Aas",        "kari.gjolstadaas",  "nlb.no"),
-                "karik":    Address("Kari Kummeneje",           "Kari.Kummeneje",    "nlb.no"),
-                "karir":    Address("Kari Rudjord",             "Kari.Rudjord",      "nlb.no"),
-                "marim":    Address("Mari Myksvoll",            "Mari.Myksvoll",     "nlb.no"),
-                "olav":     Address("Olav Indergaard",          "Olav.Indergaard",   "nlb.no"),
-                "per":      Address("Per Sennels",              "Per.Sennels",       "nlb.no"),
-                "roald":    Address("Roald Madland",            "Roald.Madland",     "nlb.no"),
-                "sobia":    Address("Sobia Awan",               "Sobia.Awan",        "nlb.no"),
-                "therese":  Address("Therese Solbjorg",         "therese.solbjorg",  "nlb.no"),
-                "thomas":   Address("Thomas Tsigaridas",        "Thomas.Tsigaridas", "nlb.no"),
-                "wenche":   Address("Wenche Andresen",          "wenche.andresen",   "nlb.no"),
-            }
+            "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no")
         }
 
         # Define directories
@@ -122,59 +100,45 @@ class Produksjonssystem():
             "abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/lydsnutter")
         }
 
-        # Define pipelines, input/output/report dirs, and email recipients
+        # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [ IncomingNordic(),                             "incoming",            "master",              "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
-            [ NordicToNlbpub(),                             "master",              "nlbpub",              "reports", ["jostein","olav","per"]],
-            [ UpdateMetadata(),                             "metadata",            "nlbpub",              "reports", ["jostein"],
-                                                                                                                     {
-                                                                                                                        "librarians": [
-                                                                                                                            self.email["recipients"]["anya"],
-                                                                                                                            self.email["recipients"]["elif"],
-                                                                                                                            self.email["recipients"]["elih"],
-                                                                                                                            self.email["recipients"]["hanne"],
-                                                                                                                            self.email["recipients"]["ingvilda"],
-                                                                                                                            self.email["recipients"]["kariga"],
-                                                                                                                            self.email["recipients"]["karik"],
-                                                                                                                            self.email["recipients"]["therese"],
-                                                                                                                            self.email["recipients"]["wenche"],
-                                                                                                                        ],
-                                                                                                                        "default_librarian": self.email["recipients"]["elih"]
-                                                                                                                     }],
+            [ IncomingNordic(),                             "incoming",            "master"],
+            [ NordicToNlbpub(),                             "master",              "nlbpub"],
+            [ UpdateMetadata(),                             "metadata",            "nlbpub"],
 
             # EPUB
-            [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub",         "reports", ["jostein"]],
+            [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook",        "reports", ["jostein"]],
-            [ NlbpubToHtml(),                               "pub-in-ebook",        "html",                "reports", ["ammar","espen","jostein","olav"]],
-            [ NLBpubToDocx(),                               "pub-in-ebook",        "docx",                "reports", ["espen","jostein"]],
+            [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook"],
+            [ NlbpubToHtml(),                               "pub-in-ebook",        "html"],
+            [ NLBpubToDocx(),                               "pub-in-ebook",        "docx"],
 
             # punktskrift
-            [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille",      "reports", ["jostein"]],
-            [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille",   "reports", ["ammar","jostein","karir"]],
-            [ NlbpubToPef(),                                "pub-ready-braille",   "pef",                 "reports", ["ammar","jostein","karir"]],
+            [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille"],
+            [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille"],
+            [ NlbpubToPef(),                                "pub-ready-braille",   "pef"],
 
             # innlest lydbok
-            [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio",        "reports", ["jostein"]],
-            [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration",      "reports", ["eivind","jostein","per"]],
-            [ DummyPipeline("Innlesing med Hindenburg"),    "epub_narration",      "daisy202",            "reports", ["jostein"]],
+            [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio"],
+            [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration"],
+            [ DummyPipeline("Innlesing med Hindenburg"),    "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-            [ EpubToDtbook(),                               "master",              "dtbook_tts",          "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
-            [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          "daisy202",            "reports", ["jostein"]],
+            [ EpubToDtbook(),                               "master",              "dtbook_tts"],
+            [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
-            [ EpubToDtbookHTML(),                           "master",              "dtbook_html",         "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
-            [ DummyPipeline("Pipeline 1 og Ammars skript"), "dtbook_html",         None,                  "reports", ["jostein"]],
+            [ EpubToDtbookHTML(),                           "master",              "dtbook_html"],
+            [ DummyPipeline("Pipeline 1 og Ammars skript"), "dtbook_html",         None],
 
             # DTBook for punktskrift
-            [ EpubToDtbookBraille(),                        "master",              "dtbook_braille",      "reports", ["ammar","jostein","marim","olav","sobia","thomas"]],
-            [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None,                  "reports", ["jostein"]],
+            [ EpubToDtbookBraille(),                        "master",              "dtbook_braille"],
+            [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None],
 
             # lydutdrag
-            [ Audio_Abstract(),                             "daisy202",            "abstracts",           "reports", ["espen"]],
+            [ Audio_Abstract(),                             "daisy202",            "abstracts"],
         ]
 
     # ---------------------------------------------------------------------------
@@ -219,75 +183,75 @@ class Produksjonssystem():
                 assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d]
             assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d]
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
-
+        
         # Make sure that the pipelines are defined properly
         for pipeline in self.pipelines:
-            assert len(pipeline) == 5 or len(pipeline) == 6, "Pipeline declarations have five or six arguments (not " + len(pipeline) + ")"
+            assert len(pipeline) == 3, "Pipeline declarations have three arguments (not " + len(pipeline) + ")"
             assert isinstance(pipeline[0], Pipeline), "The first argument of a pipeline declaration must be a pipeline instance"
             assert pipeline[1] == None or isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string or None"
             assert pipeline[2] == None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
-            assert isinstance(pipeline[3], str), "The fourth argument of a pipeline declaration must be a string"
-            assert isinstance(pipeline[4], list), "The fifth argument of a pipeline declaration must be a list"
-            assert len(pipeline) <= 5 or isinstance(pipeline[5], dict), "The sixth argument of a pipelie, if present, must be a dict"
             assert pipeline[1] == None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
             assert pipeline[2] == None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
-            assert pipeline[3] in self.dirs, "The fourth argument of a pipeline declaration (\"" + str(pipeline[3]) + "\") must refer to a key in \"dirs\""
-            for recipient in pipeline[4]:
-                assert recipient in self.email["recipients"], "All list items in the fifth argument of a pipeline declaration (\"" + str(pipeline[4]) + "\") must refer to a key in \"email['recipients']\""
-
+        
         # Make directories
         for d in self.dirs:
             os.makedirs(self.dirs[d], exist_ok=True)
-
+        
         if os.environ.get("DEBUG", "1") == "1":
             time.sleep(1)
             logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s %(message)s")
-
+        
         threads = []
         file_name=os.environ.get("CONFIG_FILE")
         with open(file_name, 'r') as f:
             emailDoc = yaml.load(f)
-
+        
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
                 "sender": self.email["sender"],
                 "recipients": []
             }
+            pipeline_config = {}
             if pipeline[0].uid in emailDoc:
-                email_settings["recipients"].append(emailDoc[pipeline[0].uid])
+                for recipient in emailDoc[pipeline[0].uid]:
+                    if isinstance(recipient, str):
+                        email_settings["recipients"].append(recipient)
+                    elif isinstance(recipient, dict):
+                        for key in recipient:
+                            pipeline_config[key] = recipient[key]
             thread = Thread(target=pipeline[0].run, args=(10,
                                                           self.dirs[pipeline[1]] if pipeline[1] else None,
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
-                                                          self.dirs[pipeline[3]],
+                                                          self.dirs["reports"],
                                                           email_settings,
                                                           self.book_archive_dirs,
-                                                          pipeline[5] if len(pipeline) >= 6 else {}
+                                                          pipeline_config
                                                           ))
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
-            
+        
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run)
         graph_thread.setDaemon(True)
         graph_thread.start()
-
+        
         try:
             stopfile = os.getenv("TRIGGER_DIR")
             if stopfile:
                 stopfile = os.path.join(stopfile, "stop")
-
+            
             running = True
             while running:
                 time.sleep(1)
-
+                
                 if os.path.exists(stopfile):
                     self.info("Sender stoppsignal til alle pipelines...")
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
-
+                
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
                     for pipeline in self.pipelines:
@@ -299,17 +263,17 @@ class Produksjonssystem():
                         if not thread.isAlive():
                             running = False
                             break
-
+        
         except KeyboardInterrupt:
             pass
-
+        
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
-
+        
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
             thread.join()
-
+        
         self.info("Venter på at plotteren skal stoppe...")
         plotter.should_run = False
         graph_thread.join()
