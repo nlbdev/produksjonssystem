@@ -175,7 +175,7 @@ class Pipeline():
         type(self).config = self.config
         
         if Filesystem.ismount(self.dir_in):
-            logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+            logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
             return
         if not os.path.isdir(self.dir_in):
             logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Will not start watching.")
@@ -219,7 +219,16 @@ class Pipeline():
         self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings, dir_base, config)
         try:
             while self._shouldRun:
-                if not os.path.isdir(self.dir_in):
+                
+                is_mount = Filesystem.ismount(self.dir_in)
+                contains_books = False
+                if is_mount:
+                    for entry in os.scandir(self.dir_in):
+                        contains_books = True
+                        break
+                mount_is_mounted = not is_mount or contains_books
+                
+                if not os.path.isdir(self.dir_in) or not mount_is_mounted:
                     if self._dirInAvailable:
                         logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Stop watching...")
                         self.stop()
@@ -227,7 +236,7 @@ class Pipeline():
                     else:
                         logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is still not available...")
                         
-                if not self._dirInAvailable and os.path.isdir(self.dir_in):
+                if not self._dirInAvailable and os.path.isdir(self.dir_in) and mount_is_mounted:
                     logging.info("[" + Report.thread_name() + "] " + self.dir_in + " is available again. Start watching...")
                     self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
                 
