@@ -159,7 +159,8 @@ class UpdateMetadata(Pipeline):
                         self.logPipeline.utils.report.debug("Updating metadata for {}, since it's been a long time since last it was updated".format(book_id))
                         
                         epub = Epub(self.logPipeline, os.path.join(Pipeline.dirs[UpdateMetadata.uid]["out"], book_id))
-                        UpdateMetadata.get_metadata(self.logPipeline, epub)
+                        with UpdateMetadata.update_lock:
+                            UpdateMetadata.get_metadata(self.logPipeline, epub)
                         
                         now = int(time.time())
                         if not book_id in self.metadata:
