@@ -126,13 +126,13 @@ class NLBpubToDocx(Pipeline):
         shutil.copy(os.path.join(Xslt.xslt_dir, NlbpubToHtml.uid, "default.css"),
                     os.path.join(html_dir, "default.css"))
 
-        pathlib.Path(os.path.join(NLBpubToDocx.dir_out,result_identifier)).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(os.path.join(self.dir_out,result_identifier)).mkdir(parents=True, exist_ok=True)
 
         try:
             self.utils.report.info("Konverterer fra XHTML til DOCX...")
             process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
                                                 html_file,
-                                                os.path.join(NLBpubToDocx.dir_out,result_identifier,result_identifier + ".docx")])
+                                                os.path.join(self.dir_out,result_identifier,result_identifier + ".docx")])
                                                 #"--insert-blank-line"])
 
             self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
@@ -146,7 +146,7 @@ class NLBpubToDocx(Pipeline):
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
         UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
-        self.utils.report.attachment(None, os.path.join(NLBpubToDocx.dir_out,result_identifier), "DEBUG")
+        self.utils.report.attachment(None, os.path.join(self.dir_out,result_identifier), "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
 
