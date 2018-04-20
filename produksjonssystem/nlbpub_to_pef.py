@@ -115,10 +115,11 @@ class NlbpubToPef(Pipeline):
             self.utils.report.info("Boken ble konvertert. Kopierer til PEF-arkiv.")
             
             archived_path = self.utils.filesystem.storeBook(pef_dir, identifier, subdir=braille_version)
-            if epub_identifier:
-                UpdateMetadata.add_production_info(self, epub_identifier, publication_format="Braille")
             self.utils.report.attachment(None, archived_path, "DEBUG")
             self.utils.report.info(identifier + " ble lagt til i arkivet under PEF/" + braille_version + ".")
+        
+        if epub_identifier:
+            UpdateMetadata.add_production_info(self, epub_identifier, publication_format="Braille")
         
         self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄"
 
