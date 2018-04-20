@@ -53,11 +53,14 @@ class Audio_Abstract(Pipeline):
         if not os.path.isfile(os.path.join(temp_absdir, "ncc.html")):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return
-
+        #try:
         nccdoc = ElementTree.parse(os.path.join(temp_absdir,"ncc.html")).getroot()
+        #except Exception:
+        #    self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
         audio_identifier = ""
         audio_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
-        if(len(audio_identifier)>6): audio_identifier= self.book["name"][0:6]
+        audio_identifier=audio_identifier[0:6]
+        #if(len(audio_identifier)>6): audio_identifier= self.book["name"][0:6]
 
         if audio_identifier == (""):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
@@ -70,7 +73,7 @@ class Audio_Abstract(Pipeline):
         except Exception:
             self.utils.report.error("Det oppstod en feil for" + audio_identifier)
             return
-        #Back-cover
+        # Back-cover
         try:
             smildoc = ElementTree.parse(os.path.join(temp_absdir,smilFile)).getroot()
             mp3File = smildoc.xpath("string((//audio/@src)[1])")
@@ -164,19 +167,22 @@ class Audio_Abstract(Pipeline):
 
             os.makedirs(os.path.join(self.dir_out,"Lydutdrag"), mode=0o777, exist_ok=True)
             os.makedirs(os.path.join(self.dir_out,"Baksidetekst"), mode=0o777, exist_ok=True)
+            os.makedirs(os.path.join(self.dir_out,"Testlytt"), mode=0o777, exist_ok=True)
 
+            # If there is
             if(abstract_):
                 shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Lydutdrag", audio_identifier+".mp3"))
                 self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄"
-                self.utils.report.attachment(None, os.path.join(self.dir_out,audio_identifier), "DEBUG")
+                self.utils.report.attachment(None, os.path.join(self.dir_out,"Lydutdrag",audio_identifier+".mp3"), "DEBUG")
+                if not (back_cover):
+                    shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Testlytt", audio_identifier+".mp3"))
+                    self.utils.report.attachment(None, os.path.join(self.dir_out,"Testlytt",audio_identifier+".mp3"), "DEBUG")
             if(back_cover):
                 shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Baksidetekst", audio_identifier+".mp3"))
                 self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst ble eksportert 👍😄"
-                self.utils.report.attachment(None, os.path.join(self.dir_out,audio_identifier), "DEBUG")
-            #archived_path = self.utils.filesystem.storeBook(temp_absdir, audio_identifier)
-            #self.utils.report.attachment(None, archived_path, "DEBUG")
-            #self.utils.report.info(audio_identifier + " ble lagt til i baksidetekst.")
-            #self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst og eller lydutdrag ble eksportert 👍😄"
+                self.utils.report.attachment(None, os.path.join(self.dir_out,"Baksidetekst",audio_identifier+".mp3"), "DEBUG")
+                shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Testlytt", audio_identifier+".mp3"))
+                self.utils.report.attachment(None, os.path.join(self.dir_out,"Testlytt",audio_identifier+".mp3"), "DEBUG")
         else:
             self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ")
 
