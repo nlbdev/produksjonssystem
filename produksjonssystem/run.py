@@ -99,11 +99,10 @@ class Produksjonssystem():
             "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
             "abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/lydsnutter")
         }
-
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [ IncomingNordic(),                             "incoming",            "master"],
+            [ IncomingNordic(retry=True),                   "incoming",            "master"],
             [ NordicToNlbpub(),                             "master",              "nlbpub"],
             [ UpdateMetadata(),                             "metadata",            "nlbpub"],
 
@@ -161,12 +160,12 @@ class Produksjonssystem():
 
     def _run(self):
         assert os.getenv("CONFIG_FILE"), "CONFIG_FILE must be defined"
-        
+
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
         else:
             logging.getLogger().setLevel(logging.INFO)
-        
+
         # Make sure that directories are defined properly
         for d in self.book_archive_dirs:
             for a in self.book_archive_dirs:
@@ -183,7 +182,7 @@ class Produksjonssystem():
                 assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d]
             assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d]
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
-        
+
         # Make sure that the pipelines are defined properly
         for pipeline in self.pipelines:
             assert len(pipeline) == 3, "Pipeline declarations have three arguments (not " + len(pipeline) + ")"
@@ -192,20 +191,20 @@ class Produksjonssystem():
             assert pipeline[2] == None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
             assert pipeline[1] == None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
             assert pipeline[2] == None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
-        
+
         # Make directories
         for d in self.dirs:
             os.makedirs(self.dirs[d], exist_ok=True)
-        
+
         if os.environ.get("DEBUG", "1") == "1":
             time.sleep(1)
             logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s %(message)s")
-        
+
         threads = []
         file_name=os.environ.get("CONFIG_FILE")
         with open(file_name, 'r') as f:
             emailDoc = yaml.load(f)
-        
+
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
@@ -231,27 +230,27 @@ class Produksjonssystem():
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
-        
+
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run)
         graph_thread.setDaemon(True)
         graph_thread.start()
-        
+
         try:
             stopfile = os.getenv("TRIGGER_DIR")
             if stopfile:
                 stopfile = os.path.join(stopfile, "stop")
-            
+
             running = True
             while running:
                 time.sleep(1)
-                
+
                 if os.path.exists(stopfile):
                     self.info("Sender stoppsignal til alle pipelines...")
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
-                
+
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
                     for pipeline in self.pipelines:
@@ -263,17 +262,17 @@ class Produksjonssystem():
                         if not thread.isAlive():
                             running = False
                             break
-        
+
         except KeyboardInterrupt:
             pass
-        
+
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
-        
+
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
             thread.join()
-        
+
         self.info("Venter på at plotteren skal stoppe...")
         plotter.should_run = False
         graph_thread.join()
