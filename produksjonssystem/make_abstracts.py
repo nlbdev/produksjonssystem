@@ -29,6 +29,8 @@ class Audio_Abstract(Pipeline):
     title = "Hent ut lydutdrag"
 
     def on_book_deleted(self):
+        if(len(self.book["name"]) <= 6):
+            self.utils.report.should_email = False
         self.utils.report.info("Slettet lydbok i mappa: " + self.book['name'])
         self.utils.report.title = "Lydbok slettet: " + self.book['name']
 
@@ -48,14 +50,14 @@ class Audio_Abstract(Pipeline):
         temp_absdir = temp_absdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_absdir)
         temp_abs = Epub(self, temp_absdir)
-        back_cover=False
-        abstract_=False
+        back_cover = False
+        abstract_ = False
         if not os.path.isfile(os.path.join(temp_absdir, "ncc.html")):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return
-        #try:
-        nccdoc = ElementTree.parse(os.path.join(temp_absdir,"ncc.html")).getroot()
-        #except Exception:
+        # try:
+        nccdoc = ElementTree.parse(os.path.join(temp_absdir, "ncc.html")).getroot()
+        # except Exception:
         #    self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
         audio_identifier = ""
         audio_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
@@ -84,7 +86,7 @@ class Audio_Abstract(Pipeline):
             # Creates audio segment in milliseconds from start to end of the abstract file
             mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
             new_mp3=mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
-            new_mp3.export(os.path.join(temp_absdir,"Baksidetekst.mp3"))
+            new_mp3.export(os.path.join(temp_absdir, "Baksidetekst.mp3"))
             self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
             back_cover=True
         except Exception:
