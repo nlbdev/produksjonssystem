@@ -204,7 +204,10 @@ class Produksjonssystem():
         file_name=os.environ.get("CONFIG_FILE")
         with open(file_name, 'r') as f:
             emailDoc = yaml.load(f)
-
+        
+        # Make pipelines available from static methods in the Pipeline class
+        Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
+        
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],

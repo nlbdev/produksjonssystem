@@ -36,7 +36,8 @@ class Pipeline():
 
     _lock = RLock()
     _dir_trigger_obj = None # store TemporaryDirectory object in instance so that it's not cleaned up
-
+    pipelines = []
+    
     # The current book
     book = None
 
@@ -287,7 +288,18 @@ class Pipeline():
             logging.exception("[" + Report.thread_name() + "] An error occured while trying to extract the title of the book")
 
         return name
-
+    
+    @staticmethod
+    def directory_watchers_ready(directory):
+        if directory is None:
+            return True
+        
+        for p in Pipeline.pipelines:
+            if directory == p.dir_in and p._shouldRun and not p.running:
+                return False
+        
+        return True
+    
     def _add_book_to_queue(self, name, event_type):
         with self._lock:
             book_in_queue = False
@@ -441,6 +453,10 @@ class Pipeline():
             self.running = True
 
             try:
+                if not Pipeline.directory_watchers_ready(self.dir_out):
+                    time.sleep(10)
+                    continue
+                
                 if not os.path.isdir(self.dir_in):
                     # when base dir is not available we should stop watching the directory,
                     # this just catches a potential race condition

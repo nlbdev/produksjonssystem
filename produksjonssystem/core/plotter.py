@@ -129,11 +129,19 @@ class Plotter():
             dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
             dot.node(pipeline_id, pipeline_label.replace("\\", "\\\\"))
             
-            dot.attr("node", shape="folder", style="filled", fillcolor="wheat")
             if relpath_in:
+                fillcolor = "wheat"
+                if not Pipeline.directory_watchers_ready(pipeline[0].dir_in):
+                    fillcolor = "white"
+                dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[1], label_in)
                 dot.edge(pipeline[1], pipeline_id)
+            
             if relpath_out:
+                fillcolor = "wheat"
+                if not Pipeline.directory_watchers_ready(pipeline[0].dir_out):
+                    fillcolor = "white"
+                dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[2], label_out)
                 dot.edge(pipeline_id, pipeline[2])
         
