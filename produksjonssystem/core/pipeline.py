@@ -425,7 +425,7 @@ class Pipeline():
             self.running = True
             needs_update=False
             min_update_interval = 60 * 60 * 24 # 1 day
-            max_update_interval = 60 *60 # 1 hour
+            max_update_interval = 60 * 60 # 1 hour
 
             if not (datetime.date.today().weekday() <= 4):
                 time.sleep(max_update_interval)

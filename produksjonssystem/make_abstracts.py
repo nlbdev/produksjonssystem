@@ -61,6 +61,8 @@ class Audio_Abstract(Pipeline):
         # except Exception:
         #    self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
         audio_identifier = ""
+        audio_title = ""
+        audio_title = " (" + nccdoc.xpath("string(//*[@name='dc:title']/@content)") + ") "
         audio_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
         audio_identifier=audio_identifier[0:6]
         #if(len(audio_identifier)>6): audio_identifier= self.book["name"][0:6]
@@ -91,7 +93,7 @@ class Audio_Abstract(Pipeline):
             self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
             back_cover=True
         except Exception:
-            self.utils.report.warn("Baksidetekst ikke funnet for " + audio_identifier)
+            self.utils.report.warn("Baksidetekst ikke funnet for " + audio_identifier + audio_title)
 
         # creates abstract from ncc --> smil --> mp3
         several_smilFiles = []
@@ -102,7 +104,7 @@ class Audio_Abstract(Pipeline):
                 several_smilFiles.append(nccdoc.xpath("substring-before((//@href)[{0}],'#')".format(i+1)))
                 several_smilFiles_id.append(nccdoc.xpath("substring-after((//@href)[{0}],'#')".format(i+1)))
         except Exception:
-            self.utils.report.warn("Klarte ikke hente ut .smil filene for " + audio_identifier)
+            self.utils.report.warn("Klarte ikke hente ut .smil filene for " + audio_identifier + audio_title)
 
         timeout = time.time() + 60 * 2
         duration = 0
@@ -175,19 +177,19 @@ class Audio_Abstract(Pipeline):
             # If there is
             if(abstract_):
                 shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Lydutdrag", audio_identifier+".mp3"))
-                self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄"
+                self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
                 self.utils.report.attachment(None, os.path.join(self.dir_out,"Lydutdrag",audio_identifier+".mp3"), "DEBUG")
                 if not (back_cover):
                     shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Testlytt", audio_identifier+".mp3"))
                     self.utils.report.attachment(None, os.path.join(self.dir_out,"Testlytt",audio_identifier+".mp3"), "DEBUG")
             if(back_cover):
                 shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Baksidetekst", audio_identifier+".mp3"))
-                self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst ble eksportert 👍😄"
+                self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst ble eksportert 👍😄" + audio_title
                 self.utils.report.attachment(None, os.path.join(self.dir_out,"Baksidetekst",audio_identifier+".mp3"), "DEBUG")
                 shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Testlytt", audio_identifier+".mp3"))
                 self.utils.report.attachment(None, os.path.join(self.dir_out,"Testlytt",audio_identifier+".mp3"), "DEBUG")
         else:
-            self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ")
+            self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
 
 if __name__ == "__main__":
     Audio_Abstract().run()

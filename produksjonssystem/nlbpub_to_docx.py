@@ -45,6 +45,12 @@ class NLBpubToDocx(Pipeline):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
         epub = Epub(self, self.book["source"])
 
+        epubTitle = ""
+        try:
+            epubTitle = " (" + epub.meta("dc:title") + ") "
+        except Exception:
+            pass
+
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
@@ -78,7 +84,7 @@ class NLBpubToDocx(Pipeline):
         opf_path = temp_epub.opf_path()
         if not opf_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
         opf_path = os.path.join(temp_epubdir, opf_path)
         opf_xml = ElementTree.parse(opf_path).getroot()
@@ -87,12 +93,12 @@ class NLBpubToDocx(Pipeline):
         html_file = html_file[0] if html_file else None
         if not html_file:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
         html_file = os.path.join(os.path.dirname(opf_path), html_file)
         if not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
         temp_html_obj = tempfile.NamedTemporaryFile()
@@ -102,7 +108,7 @@ class NLBpubToDocx(Pipeline):
                           source=html_file,
                           target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
 
         html_dir = os.path.dirname(opf_path)
@@ -117,7 +123,7 @@ class NLBpubToDocx(Pipeline):
         result_identifier = result_identifier[0].attrib["content"] if result_identifier and "content" in result_identifier[0].attrib else None
         if not result_identifier:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer i ny HTML-fil.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
 
@@ -149,7 +155,7 @@ class NLBpubToDocx(Pipeline):
         UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, os.path.join(self.dir_out,result_identifier), "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
-        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
 
 
 if __name__ == "__main__":

@@ -49,15 +49,19 @@ class IncomingNordic(Pipeline):
 
     def on_book(self):
         epub = Epub(self, self.book["source"])
-
+        epubTitle = ""
+        try:
+            epubTitle = " (" + epub.meta("dc:title") + ") "
+        except Exception:
+            pass
         # sjekk at dette er en EPUB
         if not epub.isepub():
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
         self.utils.report.info("Validerer EPUB...")
@@ -71,7 +75,7 @@ class IncomingNordic(Pipeline):
 
         if dp2_job.status != "DONE":
             self.utils.report.error("Klarte ikke å validere boken")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
 
         try:
@@ -102,9 +106,8 @@ class IncomingNordic(Pipeline):
         UpdateMetadata.add_production_info(self, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
-        self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄"
+        self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
         self.utils.filesystem.deleteSource()
-
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB
         # - EPUB 3 Accessibility Checker på mottatt EPUB

@@ -44,6 +44,12 @@ class EpubToDtbookHTML(Pipeline):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
         epub = Epub(self, self.book["source"])
 
+        epubTitle = ""
+        try:
+            epubTitle = " (" + epub.meta("dc:title") + ") "
+        except Exception:
+            pass
+
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
@@ -53,13 +59,13 @@ class EpubToDtbookHTML(Pipeline):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
-        
+
         if not UpdateMetadata.should_produce(self, epub, "XHTML"):
             self.utils.report.info("{} skal ikke produseres som e-bok. Avbryter.".format(epub.identifier()))
             self.utils.report.should_email = False
             return True
-        
-        
+
+
         # ---------- lag en kopi av EPUBen ----------
 
         self.utils.report.info("Lager kopi av EPUB...")
@@ -74,7 +80,7 @@ class EpubToDtbookHTML(Pipeline):
         self.utils.report.info("Oppdaterer metadata...")
         updated = UpdateMetadata.update(self, nordic_epub, publication_format="XHTML")
         if isinstance(updated, bool) and updated == False:
-            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
 
 
@@ -97,7 +103,7 @@ class EpubToDtbookHTML(Pipeline):
 
         if dp2_job.status != "DONE":
             self.utils.report.error("Klarte ikke å konvertere boken")
-            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
 
         dtbook_dir = os.path.join(dp2_job.dir_output, "output-dir", nordic_epub.identifier())
@@ -105,12 +111,12 @@ class EpubToDtbookHTML(Pipeline):
 
         if not os.path.isdir(dtbook_dir):
             self.utils.report.error("Finner ikke den konverterte boken: " + dtbook_dir)
-            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
 
         if not os.path.isfile(dtbook_file):
             self.utils.report.error("Finner ikke den konverterte boken: " + dtbook_file)
-            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
 
 
@@ -148,7 +154,7 @@ class EpubToDtbookHTML(Pipeline):
         UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
-        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄"
+        self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
 
 
 if __name__ == "__main__":
