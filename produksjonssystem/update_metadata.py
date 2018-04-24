@@ -33,6 +33,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class UpdateMetadata(Pipeline):
     uid = "update-metadata"
     title = "Oppdater metadata"
+    labels = [ "Metadata" ]
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     

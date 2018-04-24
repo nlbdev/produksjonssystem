@@ -25,6 +25,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NLBpubToDocx(Pipeline):
     uid = "nlbpub-to-docx"
     title = "NLBPUB til DOCX"
+    labels = [ "e-bok" ]
 
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 

@@ -122,19 +122,23 @@ class Produksjonssystem():
             # innlest lydbok
             [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio"],
             [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration"],
-            [ DummyPipeline("Innlesing med Hindenburg"),    "epub_narration",      "daisy202"],
+            [ DummyPipeline("Innlesing med Hindenburg",
+                            labels=["Lydbok","Innlesing"]),   "epub_narration",      "daisy202"],
 
             # TTS-lydbok
             [ EpubToDtbook(),                               "master",              "dtbook_tts"],
-            [ DummyPipeline("Talesyntese i Pipeline 1"),    "dtbook_tts",          "daisy202"],
+            [ DummyPipeline("Talesyntese i Pipeline 1",
+                            labels=["Lydbok","Talesyntese"]), "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
             [ EpubToDtbookHTML(),                           "master",              "dtbook_html"],
-            [ DummyPipeline("Pipeline 1 og Ammars skript"), "dtbook_html",         None],
+            [ DummyPipeline("Pipeline 1 og Ammars skript",
+                            labels=["e-bok"]),                "dtbook_html",         None],
 
             # DTBook for punktskrift
             [ EpubToDtbookBraille(),                        "master",              "dtbook_braille"],
-            [ DummyPipeline("Punktskrift med NorBraille"),  "dtbook_braille",      None],
+            [ DummyPipeline("Punktskrift med NorBraille",
+                            labels=["Punktskrift"]),          "dtbook_braille",      None],
 
             # lydutdrag
             [ Audio_Abstract(),                             "daisy202",            "abstracts"],

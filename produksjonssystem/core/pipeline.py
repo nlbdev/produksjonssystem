@@ -593,18 +593,20 @@ class Pipeline():
 class DummyPipeline(Pipeline):
     uid = "dummy"
     title = "Dummy"
+    labels = []
     book = {}
 
     utils = None
     running = True
 
-    def __init__(self, title=None, uid=None, inherit_config_from=None):
+    def __init__(self, title=None, uid=None, inherit_config_from=None, labels=[]):
         if title:
             self.title = title
         if uid:
             self.uid = uid
         elif title:
             self.uid = "dummy_{}".format(re.sub(r'[^a-z0-9]', '', title.lower()))
+        self.labels = labels
         self.utils = DotMap()
         self.utils.report = DummyReport(self)
         self.utils.filesystem = Filesystem(self)

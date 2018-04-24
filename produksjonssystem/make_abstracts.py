@@ -27,9 +27,10 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class Audio_Abstract(Pipeline):
     uid = "create-abstracts"
     title = "Hent ut lydutdrag"
+    labels = [ "Lydbok", "Innlesing", "Talesyntese" ]
 
     def on_book_deleted(self):
-        if(len(self.book["name"]) <= 6):
+        if not(len(self.book["name"]) <= 6):
             self.utils.report.should_email = False
         self.utils.report.info("Slettet lydbok i mappa: " + self.book['name'])
         self.utils.report.title = "Lydbok slettet: " + self.book['name']

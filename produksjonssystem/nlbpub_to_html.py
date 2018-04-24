@@ -23,6 +23,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubToHtml(Pipeline):
     uid = "nlbpub-to-html"
     title = "NLBPUB til HTML"
+    labels = [ "e-bok" ]
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     

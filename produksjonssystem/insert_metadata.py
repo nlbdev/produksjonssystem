@@ -12,6 +12,7 @@ class InsertMetadata(Pipeline):
     # Ikke instansier denne klassen; bruk heller InsertMetadataEpub osv.
     uid = "insert-metadata"
     title = "Sett inn metadata"
+    labels = [ "Metadata" ]
     publication_format = None
     
     def on_book_deleted(self):
@@ -74,21 +75,25 @@ class InsertMetadata(Pipeline):
 class InsertMetadataEpub(InsertMetadata):
     uid = "insert-metadata-epub"
     title = "Sett inn metadata for EPUB"
+    labels = [ "EPUB", "Metadata" ]
     publication_format = "EPUB"
     
 class InsertMetadataDaisy202(InsertMetadata):
     uid = "insert-metadata-daisy202"
     title = "Sett inn metadata for lydbok"
+    labels = [ "Lydbok", "Innlesing", "Talesyntese", "Metadata" ]
     publication_format = "DAISY 2.02"
 
 class InsertMetadataXhtml(InsertMetadata):
     uid = "insert-metadata-xhtml"
     title = "Sett inn metadata for e-tekst"
+    labels = [ "e-bok", "Metadata" ]
     publication_format = "XHTML"
 
 class InsertMetadataBraille(InsertMetadata):
     uid = "insert-metadata-braille"
     title = "Sett inn metadata for punktskrift"
+    labels = [ "Punktskrift", "Metadata" ]
     publication_format = "Braille"
 
 #class InsertMetadataExternal(InsertMetadata):

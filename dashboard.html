@@ -22,13 +22,15 @@ img {
     max-width: 90vw;
 }
 
-h1 { font-size: 2.5vh; }
+h1 { font-size: 2.5vh; margin: 0.1em auto; }
+p#uid { font-size: 1.5vh; margin: 0.1em auto; }
 
 </style>
 </head>
 <body>
 
 <h1>NLBs produksjonssystem</h1>
+<p id="uid"></p>
 
 <figure>
 <img id="graph" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Diagram over NLBs produksjonssystem."/>
@@ -40,12 +42,17 @@ window.onload = function() {
     var image = document.getElementById("graph");
     var imageLoad = document.getElementById("graph-load");
     
-    imagefile = window.location.href.split("/")
-    imagefile = imagefile[imagefile.length-1]
-    imagefile = imagefile.split(".")
-    imagefile = imagefile[0] + ".png"
-    image.src = imagefile
-    imageLoad.src = imagefile
+    imagefile = window.location.href.split("/");
+    imagefile = imagefile[imagefile.length-1];
+    imagefile = imagefile.split(".");
+    imagefile.splice(-1,1);
+    imagefile = imagefile.join(".");
+    if (imagefile != "dashboard") {
+        document.getElementById("uid").textContent = imagefile;
+    }
+    imagefile = imagefile + ".png";
+    image.src = imagefile;
+    imageLoad.src = imagefile;
     
     function updateImage() {
         imageLoad.src = imageLoad.src.split("?")[0] + "?" + new Date().getTime();

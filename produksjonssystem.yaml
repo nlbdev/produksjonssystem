@@ -91,3 +91,36 @@ epub-to-dtbook-braille:
 create-abstracts:
   - espen.solhjem@nlb.no
   - jostein@nlb.no
+
+dummy_innlesingmedhindenburg:
+  - eivind.haugen@nlb.no
+  - espen.solhjem@nlb.no
+  - jostein@nlb.no
+  - per.sennels@nlb.no
+
+dummy_pipeline1ogammarsskript:
+  - ammar.usama@nlb.no
+  - espen.solhjem@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
+
+dummy_punktskriftmednorbraille:
+  - ammar.usama@nlb.no
+  - espen.solhjem@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
+
+dummy_talesynteseipipeline1:
+  - ammar.usama@nlb.no
+  - espen.solhjem@nlb.no
+  - jostein@nlb.no
+  - mari.myksvoll@nlb.no
+  - olav.indergaard@nlb.no
+  - sobia.awan@nlb.no
+  - thomas.tsigaridas@nlb.no
