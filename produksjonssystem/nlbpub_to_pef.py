@@ -18,6 +18,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubToPef(Pipeline):
     uid = "nlbpub-to-pef"
     title = "NLBPUB til PEF"
+    labels = [ "Punktskrift" ]
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

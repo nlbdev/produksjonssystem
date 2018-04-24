@@ -24,6 +24,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubToNarrationEpub(Pipeline):
     uid = "nlbpub-to-narration-epub"
     title = "NLBPUB til innlesingsklar EPUB"
+    labels = [ "Lydbok", "Innlesing" ]
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
     

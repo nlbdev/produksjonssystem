@@ -25,6 +25,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class EpubToDtbook(Pipeline):
     uid = "epub-to-dtbook"
     title = "EPUB til DTBook for talesyntese"
+    labels = [ "Lydbok", "Talesyntese", "Metadata" ]
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
