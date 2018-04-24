@@ -88,10 +88,10 @@ if prodsys_thread.is_alive():
     print("The tests timed out")
 
 # Check if folder is not empty
-if os.path.exists(DTBook_path):print("DTBook  is verified")
-else:
-    print("DTBook does not exist")
-    success = 0
+#if os.path.exists(DTBook_path):print("DTBook  is verified")
+#else:
+#    print("DTBook does not exist")
+#    success = 0
 
 if os.path.exists(DTBookToTts_path):print("DTBook til talesyntese  is verified")
 else:
