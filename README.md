@@ -82,31 +82,15 @@ source $HOME/config/set-env.sh
 
 ## Endre innstillinger for e-postvarsling
 
-### Definere en ny e-
+### Endre e-post instillinger
 
-Definer kortnavn, navn, og e-postadresse:
+/Fellesdokumenter/IKT/produksjonssystem.yaml
 
-```python
-email = {
-    #...
-    "recipients": {
-        #...
-        "kortnavn":   Address("Navn Navnesen", "Navn.Navnesen", "nlb.no"),
-    }
-}
+- Legg til eller fjern e-post til pipeline
+```yaml
+nordic-epub-to-nlbpub:
+  - Ola.Nordmann@nlb.no
 ```
-
-### Sett opp varsling på e-post:
-
-Legg til kortnavn på slutten av lista:
-
-```python
-pipelines = [
-    #...
-    [ NlbpubToFormat(), "nlbpub", "format", "reports", ["enperson","annenperson","kortnavn"]],
-]
-```
-
 ## Lage en ny pipeline
 
 ### Definer pipeline i `run.py`
@@ -122,8 +106,7 @@ dirs = {
 
 pipelines = [
     #...
-    [ NlbpubToFormat(), "nlbpub", "format", "reports", ["kortnavn"]],
-]
+    [ NlbpubToFormat(), "nlbpub", "format", "reports"],
 ```
 
 ### Implementer pipeline
@@ -164,13 +147,12 @@ if __name__ == "__main__":
 
 ## Calibre for ebook konvertering
 - `sudo apt-get install calibre`
-- Kan brukes til å konvertere mange ebok formater
+- Brukes til å konvertere ebok formater
 
 ## Teste system
 ### Automatisk sjekk av produksjonslinje
-- `cd ~/Desktop/produksjonssystem/test`
-- `chmod +x testProdsys.py`
-- `./testProdsys.py`
+- `cd ~/Desktop/produksjonssystem`
+- `python3 -m unittest tests.testProdsys.py`
 - Sjekker at alle utformater blir produsert i løpet av en spesifisert tid
 
 ### Installasjon av XSpec
