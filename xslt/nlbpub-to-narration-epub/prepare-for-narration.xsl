@@ -31,9 +31,10 @@
     <xsl:include href="cover.xsl"/>
 <!--    <xsl:include href="lister.xsl"/>-->
     <!--<xsl:include href="innleste-tabeller.xsl"/>-->
-<!--    <xsl:include href="tts-tabeller.xsl"/>-->
+   <!-- <xsl:include href="tts-tabeller.xsl"/>-->
    <!-- <xsl:include href="logg.xsl"/>-->
     <xsl:include href="ekstra-informasjon.xsl"/>
+    <xsl:include href="innleste-noter.xsl"/>
 
     <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
 

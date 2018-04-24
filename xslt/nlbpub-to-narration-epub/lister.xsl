@@ -37,7 +37,7 @@
     <xsl:template
         match="
             ol[not(some $a in ancestor::element()
-                satisfies fnk:epub-type($a/@epub:type, 'toc'))]">
+            satisfies fnk:epub-type($a/@epub:type, 'toc')) and not(some $li in li satisfies ($li/@class eq 'notebody' or fnk:epub-type($li/@epub:type,'footnote')))]">
 
         <xsl:variable name="er-rotliste" as="xs:boolean" select="not(exists(ancestor::ol))"/>
         <xsl:variable name="listepunkter-er-numeriske" as="xs:boolean"
@@ -197,7 +197,7 @@
         </p>
     </xsl:template>
 
-    <xsl:template match="li">
+    <xsl:template match="li[not(@class eq 'notebody' or fnk:epub-type(@epub:type,'footnote'))]">
         <xsl:param name="listens-listepunkter-er-numeriske" as="xs:boolean" select="false()"
             tunnel="yes"/>
 
