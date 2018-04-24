@@ -257,13 +257,16 @@
                     </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
+                    <!--
+                        20180423: Endret fra "n. punkt: " til "Punkt n: "
+                    -->
                     <xsl:choose>
                         <xsl:when test="$SPRÅK.en">
                             <xsl:value-of
-                                select="concat($listepunktets-posisjon, '. bullet point: ')"/>
+                                select="concat('Bullet point ',$listepunktets-posisjon, ': ')"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="concat($listepunktets-posisjon, '. punkt: ')"/>
+                            <xsl:value-of select="concat('Punkt ',$listepunktets-posisjon, ': ')"/>
                         </xsl:otherwise>
                     </xsl:choose>
 

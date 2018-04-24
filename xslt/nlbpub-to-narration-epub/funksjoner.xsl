@@ -37,6 +37,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
+    
     <xsl:function name="fnk:metadata-finnes" as="xs:boolean">
         <xsl:param name="navn" as="xs:string"/>
         <xsl:value-of select="exists($metadata[@name eq $navn])"/>

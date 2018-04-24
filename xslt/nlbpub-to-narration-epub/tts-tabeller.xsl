@@ -83,7 +83,7 @@ I tillegg legges følgende inn som "usynlig" informasjon, det vil si informasjon
             select="
                 every $t in $elementer-i-første-rad
                     satisfies local-name($t) eq 'th'"/>
-
+        <xsl:variable name="alle-th-er-i-første-rad" as="xs:boolean" select="count(descendant::tr[1]/th) eq count(descendant::th)"/>
         <!-- Legg inn et p-element før tabellen -->
         <p>
             <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
@@ -105,7 +105,16 @@ I tillegg legges følgende inn som "usynlig" informasjon, det vil si informasjon
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="$antall-rader"/>
-                            <xsl:text> rows.</xsl:text>
+                            <xsl:text> rows</xsl:text>
+                            <xsl:choose>
+                                <xsl:when test="$alle-th-er-i-første-rad and $bare-th-i-første-rad">
+                                    <!-- Vi har kolonneoverskrifter i tabellen -->
+                                    <xsl:text>, including one row with column headings.</xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text>.</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
@@ -126,7 +135,16 @@ I tillegg legges følgende inn som "usynlig" informasjon, det vil si informasjon
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="$antall-rader"/>
-                            <xsl:text> rader.</xsl:text>
+                            <xsl:text> rader</xsl:text>
+                            <xsl:choose>
+                                <xsl:when test="$alle-th-er-i-første-rad and $bare-th-i-første-rad">
+                                    <!-- Vi har kolonneoverskrifter i tabellen -->
+                                    <xsl:text>, inkludert ei rad med kolonneoverskrifter.</xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text>.</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
@@ -147,7 +165,16 @@ I tillegg legges følgende inn som "usynlig" informasjon, det vil si informasjon
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="$antall-rader"/>
-                            <xsl:text> rader.</xsl:text>
+                            <xsl:text> rader</xsl:text>
+                            <xsl:choose>
+                                <xsl:when test="$alle-th-er-i-første-rad and $bare-th-i-første-rad">
+                                    <!-- Vi har kolonneoverskrifter i tabellen -->
+                                    <xsl:text>, inkludert én rad med kolonneoverskrifter.</xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text>.</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:otherwise>
@@ -157,7 +184,7 @@ I tillegg legges følgende inn som "usynlig" informasjon, det vil si informasjon
         <!-- Så kommer selve tabellen, håndteres som alle andre elementer (men med tunnelparametre som kan plukkes opp der det passer) -->
         <xsl:next-match>
             <xsl:with-param name="alle-th-er-i-første-rad" as="xs:boolean" tunnel="yes"
-                select="count(descendant::tr[1]/th) eq count(descendant::th)"/>
+                select="$alle-th-er-i-første-rad"/>
             <xsl:with-param name="bare-th-i-første-rad" as="xs:boolean"
                 select="$bare-th-i-første-rad" tunnel="yes"/>
             <xsl:with-param name="antall-th-i-første-rad-er-lik-antall-kolonnner" as="xs:boolean"
@@ -328,13 +355,20 @@ I tillegg legges følgende inn som "usynlig" informasjon, det vil si informasjon
                     </xsl:if>
 
                     <!-- Skal vi trekke ned kolonneoverskrift? -->
+                    <!-- 
+                    20180423:   Kravet om ett ord i overskriften er byttet ut med et krav om maks 5 ord og maks 30 tegn
+                                Lagt inn krav om at det må være mer enn én kolonne (ellers er det ikke noe poeng)
+                    -->
                     <xsl:if
                         test="
-                            $alle-th-er-i-første-rad (: bare hvis det ikke finnes andre th enn de i første rad :)
+                            count($kolonneoverskrifter) ge 2 (: bare hvis det er mer enn én kolonne :)
+                            and $alle-th-er-i-første-rad (: bare hvis det ikke finnes andre th enn de i første rad :)
                             and $bare-th-i-første-rad (: bare hvis det ikke finnes annet enn th i første rad :)
                             and $antall-th-i-første-rad-er-lik-antall-kolonnner (: bare hvis det er én th per kolonne :)
                             and (every $e in $kolonneoverskrifter
-                                satisfies count(tokenize(normalize-space($e), '\s')) eq 1) (: bare hvis hver eneste kolonneoverskrift er ett ord :)
+                                satisfies count(tokenize(normalize-space($e), '\s')) le 5) (: bare hvis hver eneste kolonneoverskrift er maks fem ord ord :)
+                            and (every $e in $kolonneoverskrifter
+                                satisfies string-length(translate(normalize-space($e),' .,:;?+!%()=#$','')) le 30) (: bare hvis hver eneste kolonneoverskrift er maks 30 'normale' tegn :)
                             and (not(exists(@colspan)) or xs:integer(@colspan) eq 1) (: og bare hvis gjeldende celle ikke spenner over flere kolonner :)
                             ">
                         <xsl:variable name="cellenummer" as="xs:integer"

@@ -97,7 +97,6 @@
             <xsl:message>elementer: <xsl:value-of select="$aktuelle-elementer/local-name()"
                 /></xsl:message>-->
 
-            <xsl:comment>LAGER FO HER</xsl:comment>
             <section>
                 <xsl:copy-of select="@epub:type"/>
                 <xsl:attribute name="id" select="concat('nlb-fo-section-',generate-id())"></xsl:attribute>
