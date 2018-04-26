@@ -9,7 +9,6 @@ import subprocess
 import shutil
 import re
 import json
-import logging
 
 from core.utils.epub import Epub
 from core.utils.daisy_pipeline import DaisyPipelineJob
@@ -97,7 +96,6 @@ class IncomingNordic(Pipeline):
             self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + epub.identifier() + ", og prosessen ble derfor stoppet.")
 
         except Exception:
-            logging.exception("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
             self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
 
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")

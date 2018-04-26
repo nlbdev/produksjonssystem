@@ -93,7 +93,7 @@ class Filesystem():
                             attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
                             modified = max(modified, stat.st_mtime)
                 except FileNotFoundError as e:
-                    logging.exception("[" + str(threading.get_ident()) + "] " + Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
+                    logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
                     raise e
             
             if attributes:
@@ -103,7 +103,7 @@ class Filesystem():
         
         if expect and expect != md5 and md5 != Filesystem.last_reported_md5:
             Filesystem.last_reported_md5 = md5
-            text = "[" + str(threading.get_ident()) + "] MD5 changed for " + str(path) + " (was: {}, is: {}): ".format(expect, md5)
+            text = "MD5 changed for " + str(path) + " (was: {}, is: {}): ".format(expect, md5)
             logging.info(text + str(attributes)[:1000] + ("…" if len(str(attributes)) > 1000 else ""))
             logging.debug(text + str(attributes))
         

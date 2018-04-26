@@ -79,16 +79,16 @@ class UpdateMetadata(Pipeline):
         
         self.logPipeline = DummyPipeline(uid=self.uid + "-auto", title=self.title + " automatisk", inherit_config_from=UpdateMetadata)
         
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting to watch metadata...")
+        logging.info("Pipeline \"" + str(self.title) + "\" starting to watch metadata...")
         
         if not self.metadata:
             self.metadata = {}
         
-        self._metadataWatchThread = threading.Thread(target=self._watch_metadata_thread)
+        self._metadataWatchThread = threading.Thread(target=self._watch_metadata_thread, name="metadata watcher")
         self._metadataWatchThread.setDaemon(True)
         self._metadataWatchThread.start()
         
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching metadata (cache in " + self.dir_in + ")")
+        logging.info("Pipeline \"" + str(self.title) + "\" started watching metadata (cache in " + self.dir_in + ")")
         
     def stop(self, *args, **kwargs):
         super().stop(*args, **kwargs)
@@ -99,7 +99,7 @@ class UpdateMetadata(Pipeline):
         if self.logPipeline:
             self.logPipeline.stop()
         
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped watching metadata")
+        logging.info("Pipeline \"" + str(self.title) + "\" stopped watching metadata")
     
     def get_queue(self):
         return UpdateMetadata.queue
@@ -152,7 +152,7 @@ class UpdateMetadata(Pipeline):
                                 last = int(last_updated_file.readline().strip())
                                 last_updated = last
                             except Exception:
-                                logging.exception("[" + Report.thread_name() + "] Could not parse " + str(book_id) + "/last_updated")
+                                logging.exception("Could not parse " + str(book_id) + "/last_updated")
                     
                     if not last_updated or now - last_updated > self.min_update_interval:
                         needs_update = True
@@ -174,7 +174,7 @@ class UpdateMetadata(Pipeline):
                             last_updated_file.write(str(now))
                 
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] An error occured while checking for updates in metadata")
+                logging.exception("An error occured while checking for updates in metadata")
         
         self.running = False
     
@@ -210,7 +210,7 @@ class UpdateMetadata(Pipeline):
                     last = int(last_updated_file.readline().strip())
                     last_updated = last
                 except Exception:
-                    logging.exception("[" + Report.thread_name() + "] Could not parse " + last_updated_path)
+                    logging.exception("Could not parse " + last_updated_path)
         
         # Get updated metadata for a book, but only if the metadata is older than max_update_interval minutes
         now = int(time.time())

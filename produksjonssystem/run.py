@@ -6,6 +6,7 @@ import sys
 import time
 import yaml
 import logging
+import threading
 import traceback
 from threading import Thread
 from core.plotter import Plotter
@@ -42,7 +43,7 @@ class Produksjonssystem():
     emailDoc = []
 
     def __init__(self, environment=None):
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s")
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
 
         # Set environment variables (mainly useful when testing)
         if environment:
@@ -155,6 +156,7 @@ class Produksjonssystem():
 
     def run(self):
         try:
+            threading.main_thread().setName("main thread")
             self.info("Produksjonssystemet er startet")
             self._run()
         except Exception as e:
@@ -203,7 +205,7 @@ class Produksjonssystem():
 
         if os.environ.get("DEBUG", "1") == "1":
             time.sleep(1)
-            logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s %(message)s")
+            logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
 
         threads = []
         file_name=os.environ.get("CONFIG_FILE")
@@ -231,7 +233,8 @@ class Produksjonssystem():
                     elif isinstance(recipient, dict):
                         for key in recipient:
                             pipeline_config[key] = recipient[key]
-            thread = Thread(target=pipeline[0].run, args=(10,
+            thread = Thread(target=pipeline[0].run, name=pipeline[0].title,
+                                                    args=(10,
                                                           self.dirs[pipeline[1]] if pipeline[1] else None,
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
                                                           self.dirs["reports"],
@@ -247,9 +250,9 @@ class Produksjonssystem():
         self._configThread = Thread(target=self._config_thread)
         self._configThread.setDaemon(True)
         self._configThread.start()
-
+        
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
-        graph_thread = Thread(target=plotter.run)
+        graph_thread = Thread(target=plotter.run, name="graph")
         graph_thread.setDaemon(True)
         graph_thread.start()
 
@@ -267,7 +270,7 @@ class Produksjonssystem():
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
-
+                
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
                     for pipeline in self.pipelines:
@@ -279,28 +282,32 @@ class Produksjonssystem():
                         if not thread.isAlive():
                             running = False
                             break
-
         except KeyboardInterrupt:
             pass
-
+        
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
-
-
-
+        
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
+            thread.join(timeout=5)
+        for pipeline in self.pipelines:
+            if pipeline[0].running:
+                self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(pipeline[0].title, " (den behandler {})".format(pipeline[0].book["name"]) if pipeline[0].book else ""))
+            pipeline[0].stop(exit=True)
+        for thread in threads:
             thread.join()
-
+        
         self.info("Venter på at plotteren skal stoppe...")
+        time.sleep(5) # gi plotteren litt tid på slutten
         plotter.should_run = False
         graph_thread.join()
-
+        
         self.info("Venter på at konfigtråden skal stoppe...")
         self.shouldRun = False
-
+        
         #self._configThread.join()
-
+    
     def wait_until_running(self, timeout=60):
         start_time = time.time()
 

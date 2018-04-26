@@ -40,7 +40,7 @@ class Report():
             "attachment": []
         }
         self.pipeline = pipeline
-        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
+        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
     
     def reportDir(self):
         # Lag rapport-mappe
@@ -57,18 +57,18 @@ class Report():
     
     def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         if severity == "DEBUG":
-            logging.debug("[" + Report.thread_name(self.pipeline) + "] " + message)
+            logging.debug(message)
         elif severity == "INFO":
-            logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
+            logging.info(message)
         elif severity == "SUCCESS":
-            logging.info("[" + Report.thread_name(self.pipeline) + "] " + message)
+            logging.info(message)
         elif severity == "WARN":
-            logging.warn("[" + Report.thread_name(self.pipeline) + "] " + message)
+            logging.warn(message)
         elif severity == "ERROR":
-            logging.error("[" + Report.thread_name(self.pipeline) + "] " + message)
+            logging.error(message)
         else:
-            logging.warn("[" + Report.thread_name(self.pipeline) + "] Unknown message severity: " + str(severity))
-            logging.warn("[" + Report.thread_name(self.pipeline) + "] " + message)
+            logging.warn("Unknown message severity: " + str(severity))
+            logging.warn(message)
         
         lines = None
         if isinstance(message, list):
@@ -91,14 +91,6 @@ class Report():
         
         for line in lines:
             self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M:%S"), 'severity': severity, 'text': line })
-    
-    @staticmethod
-    def thread_name(pipeline=None):
-        if pipeline and pipeline.title:
-            return pipeline.title
-        if threading.get_ident() == threading.main_thread():
-            return "Main thread"
-        return str(threading.get_ident())
     
     def debug(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('DEBUG', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
@@ -148,9 +140,9 @@ class Report():
         
         # 2. send e-mail
         if not msg["To"]:
-            logging.warn("[" + Report.thread_name() + "] Email with subject \"{}\" has no recipients".format(subject))
+            logging.warn("Email with subject \"{}\" has no recipients".format(subject))
         else:
-            logging.info("[" + Report.thread_name() + "] Sending email with subject \"{}\" to: {}".format(subject, ", ".join([str(a) for a in msg["To"]])))
+            logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join([str(a) for a in msg["To"]])))
             if smtp["host"] and smtp["port"]:
                 with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                     s.ehlo()
@@ -158,10 +150,10 @@ class Report():
                     if smtp["user"] and smtp["pass"]:
                         s.login(smtp["user"], smtp["pass"])
                     else:
-                        logging.debug("[" + Report.thread_name() + "] email user/pass not configured")
+                        logging.debug("email user/pass not configured")
                     s.send_message(msg)
             else:
-                logging.warn("[" + Report.thread_name() + "] email host/port not configured")
+                logging.warn("email host/port not configured")
         
         Slack.slack(text=subject, attachments=None)
     
@@ -285,17 +277,17 @@ class Report():
                 if smtp["user"] and smtp["pass"]:
                     s.login(smtp["user"], smtp["pass"])
                 else:
-                    logging.debug("[" + Report.thread_name(self.pipeline) + "] email user/pass not configured")
+                    logging.debug("email user/pass not configured")
                 s.send_message(msg)
         else:
-            logging.warn("[" + Report.thread_name(self.pipeline) + "] email host/port not configured")
+            logging.warn("email host/port not configured")
         
         with open('/tmp/email.md', "w") as f:
             f.write(markdown_text)
-            logging.debug("[" + Report.thread_name(self.pipeline) + "] email markdown: /tmp/email.md")
+            logging.debug("email markdown: /tmp/email.md")
         with open('/tmp/email.html', "w") as f:
             f.write(markdown_html)  
-            logging.debug("[" + Report.thread_name(self.pipeline) + "] email html: /tmp/email.html")
+            logging.debug("email html: /tmp/email.html")
         
         # 5. send message to Slack
         slack_attachments = []
@@ -363,8 +355,8 @@ class DummyReport(Report):
     pipeline = None
     
     def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
-        logging.debug("[" + Report.thread_name(self.pipeline) + "] [" + str(severity) + "] " + str(message))
+        logging.debug("[" + str(severity) + "] " + str(message))
     
     def attachment(self, content, path, severity):
-        logging.debug("[" + Report.thread_name(self.pipeline) + "] attachment: " + (str(content)[:100]) + ("..." if len(str(content)) > 100 else "") + "|" + str(path) + "|" + str(severity))
+        logging.debug("attachment: " + (str(content)[:100]) + ("..." if len(str(content)) > 100 else "") + "|" + str(path) + "|" + str(severity))
     

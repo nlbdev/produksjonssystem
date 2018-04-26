@@ -3,7 +3,6 @@
 import os
 import re
 import time
-import logging
 import tempfile
 import subprocess
 
@@ -58,7 +57,6 @@ class Xslt():
             self.pipeline.utils.report.error(Xslt._i18n["The XSLT"] + " " + stylesheet + " " + Xslt._i18n["took too long time and was therefore stopped."])
             
         except Exception:
-            logging.exception("An error occured while running the XSLT (" + str(stylesheet) + ")")
             self.pipeline.utils.report.error("An error occured while running the XSLT (" + str(stylesheet) + ")")
     
     # in case you want to override something

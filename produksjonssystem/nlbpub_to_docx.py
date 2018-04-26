@@ -6,9 +6,9 @@ import re
 import sys
 import time
 import shutil
+import pathlib
 import tempfile
 import subprocess
-import pathlib
 
 from lxml import etree as ElementTree
 from datetime import datetime, timezone
@@ -148,7 +148,6 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.warn("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
 
         except Exception:
-            logging.exception("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
             self.utils.report.warn("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)

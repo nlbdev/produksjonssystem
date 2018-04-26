@@ -4,7 +4,6 @@ import os
 import re
 import time
 import psutil
-import logging
 import tempfile
 import subprocess
 
@@ -175,7 +174,6 @@ class DaisyPipelineJob():
                 self.status = None
                 
             except Exception:
-                logging.exception("An error occured while running the DAISY Pipeline 2 job (" + str(self.job_id) + ")")
                 self.pipeline.utils.report.error("An error occured while running the DAISY Pipeline 2 job (" + str(self.job_id) + ")")
                 
             finally:

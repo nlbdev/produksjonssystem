@@ -9,7 +9,6 @@ import logging
 
 from graphviz import Digraph
 from core.pipeline import Pipeline, DummyPipeline
-from core.utils.report import Report
 from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -155,7 +154,7 @@ class Plotter():
                 shutil.copyfile(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
                 break
             except Exception as e:
-                logging.debug("[" + Report.thread_name() + "]" + " Unable to copy plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
+                logging.debug(" Unable to copy plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
                 time.sleep(0.5)
                 if t == 0:
                     raise e
@@ -174,7 +173,7 @@ class Plotter():
                 try:
                     os.remove(path)
                 except Exception:
-                    logging.exception("[" + Report.thread_name() + "] " + "An error occurred while deleting existing HTML-file")
+                    logging.exception("An error occurred while deleting existing HTML-file")
 
         while self.should_run:
             time.sleep(1)
@@ -207,4 +206,4 @@ class Plotter():
                     self.plot(labels[l], l)
 
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + "An error occurred while generating plot")
+                logging.exception("An error occurred while generating plot")

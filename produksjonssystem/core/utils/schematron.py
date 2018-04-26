@@ -4,7 +4,6 @@ import os
 import re
 import lxml
 import time
-import logging
 import tempfile
 import subprocess
 
@@ -97,7 +96,6 @@ class Schematron():
                     return
             
         except Exception:
-            logging.exception("An error occured while running the Schematron (" + str(schematron) + ")")
             self.pipeline.utils.report.error("An error occured while running the Schematron (" + str(schematron) + ")")
     
     # in case you want to override something

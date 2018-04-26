@@ -22,17 +22,17 @@ class Slack():
             try:
                 auth = Slack._slack.auth.test()
                 if auth.successful:
-                    logging.info("[{}] Slack authorized as \"{}\" as part of the team \"{}\"".format(threading.get_ident(), auth.body.get("user"), auth.body.get("team")))
+                    logging.info("Slack authorized as \"{}\" as part of the team \"{}\"".format(auth.body.get("user"), auth.body.get("team")))
                     Slack._slack_authed = True
                 else:
-                    logging.warn("[{}] Failed to authorize to Slack".format(threading.get_ident()))
+                    logging.warn("Failed to authorize to Slack")
                     Slack._slack_authed = False
                 
             except Exception:
-                logging.exception("[{}] Failed to authorize to Slack".format(threading.get_ident()))
+                logging.exception("Failed to authorize to Slack")
                 Slack._slack_authed = False
         
         if Slack._slack_authed is not True:
-            logging.warn("[{}] Not authorized to send messages to Slack".format(threading.get_ident()))
+            logging.warn("Not authorized to send messages to Slack")
         
         Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)

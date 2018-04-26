@@ -86,7 +86,7 @@ class Pipeline():
         self.utils.filesystem = None
         self.retry = retry
         self._queue = []
-        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s %(message)s")
+        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
         super().__init__()
 
     def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -144,7 +144,7 @@ class Pipeline():
         Pipeline.dirs[self.uid]["base"] = self.dir_base
 
     def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" starting...")
+        logging.info("Pipeline \"" + str(self.title) + "\" starting...")
 
         # common code shared with DummyPipeline
         self.start_common(inactivity_timeout=inactivity_timeout,
@@ -165,7 +165,7 @@ class Pipeline():
                 if not os.path.exists(self.dir_trigger):
                     os.makedirs(self.dir_trigger)
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + "Could not create trigger directory: " + self.dir_trigger)
+                logging.exception("" + "Could not create trigger directory: " + self.dir_trigger)
         else:
             self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
             self.dir_trigger = self._dir_trigger_obj.name
@@ -181,9 +181,9 @@ class Pipeline():
         type(self).config = self.config
 
         if Filesystem.ismount(self.dir_in):
-            logging.debug("[" + Report.thread_name() + "] " + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+            logging.debug("" + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
         if not os.path.isdir(self.dir_in):
-            logging.error("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Will not start watching.")
+            logging.error("" + self.dir_in + " is not available. Will not start watching.")
             return
         self._inactivity_timeout = inactivity_timeout
 
@@ -199,20 +199,20 @@ class Pipeline():
             md5_count += 1
             self.start_text = "{} / {}".format(md5_count, len(dir_list))
 
-        self._bookMonitorThread = Thread(target=self._monitor_book_events_thread)
+        self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="book events for {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
         self._bookMonitorThread.start()
 
-        self._bookHandlerThread = Thread(target=self._handle_book_events_thread)
+        self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book handler for {}".format(self.uid))
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
 
         if (self.retry):
-            self._bookRetryThread = Thread(target=self._retry_books_incoming_thread)
+            self._bookRetryThread = Thread(target=self._retry_books_incoming_thread, name="book retryer for {}".format(self.uid))
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
-
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
+        
+        logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
 
     def stop(self, exit=False):
         self._dirInAvailable = False
@@ -225,7 +225,7 @@ class Pipeline():
         if self._bookHandlerThread and self._bookHandlerThread != threading.current_thread():
             self._bookHandlerThread.join()
         self._queue = []
-        logging.info("[" + Report.thread_name() + "] Pipeline \"" + str(self.title) + "\" stopped")
+        logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
     def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
         """
@@ -245,14 +245,14 @@ class Pipeline():
 
                 if not os.path.isdir(self.dir_in) or not mount_is_mounted:
                     if self._dirInAvailable:
-                        logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is not available. Stop watching...")
+                        logging.warn("" + self.dir_in + " is not available. Stop watching...")
                         self.stop()
 
                     else:
-                        logging.warn("[" + Report.thread_name() + "] " + self.dir_in + " is still not available...")
+                        logging.warn("" + self.dir_in + " is still not available...")
 
                 if not self._dirInAvailable and os.path.isdir(self.dir_in) and mount_is_mounted:
-                    logging.info("[" + Report.thread_name() + "] " + self.dir_in + " is available again. Start watching...")
+                    logging.info("" + self.dir_in + " is available again. Start watching...")
                     self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
 
                 time.sleep(1)
@@ -260,7 +260,7 @@ class Pipeline():
         except KeyboardInterrupt:
             pass
         self.stop()
-
+        
     def trigger(self, name, auto=True):
         path = os.path.join(self.dir_trigger, name)
         if auto:
@@ -285,7 +285,7 @@ class Pipeline():
                         name += ": " + title[:25] + ("…" if len(title) > 25 else "")
 
         except Exception:
-            logging.exception("[" + Report.thread_name() + "] An error occured while trying to extract the title of the book")
+            logging.exception("An error occured while trying to extract the title of the book")
 
         return name
     
@@ -317,7 +317,7 @@ class Pipeline():
                      'events': [ event_type ],
                      'last_event': int(time.time())
                 })
-                logging.debug("[" + Report.thread_name() + "] added book to queue: " + name)
+                logging.debug("added book to queue: " + name)
 
     def _update_md5(self, name):
         path = os.path.join(self.dir_in, name)
@@ -349,7 +349,7 @@ class Pipeline():
                                 self._md5[f]["modified"] = int(time.time())
                                 self._update_md5(f)
                                 self._add_book_to_queue(f, "modified")
-                                logging.debug("[" + Report.thread_name() + "] book modified (and was recently modified, might be in the middle of a copy operation): " + f)
+                                logging.debug("book modified (and was recently modified, might be in the middle of a copy operation): " + f)
 
                         time.sleep(0.1) # a small nap
                         continue
@@ -370,7 +370,7 @@ class Pipeline():
                                 os.remove(triggerfile)
                                 self._add_book_to_queue(f, "autotriggered" if autotriggered else "triggered")
                             except Exception:
-                                logging.exception("[" + Report.thread_name() + "] An error occured while trying to delete triggerfile: " + triggerfile)
+                                logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
 
                 if self.shouldHandleBooks:
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
@@ -379,20 +379,20 @@ class Pipeline():
                         if not f in self._md5:
                             self._update_md5(f)
                             self._add_book_to_queue(f, "created")
-                            logging.debug("[" + Report.thread_name() + "] book created: " + f)
+                            logging.debug("book created: " + f)
                             continue
 
                         shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=True, expect=self._md5[f]["shallow"] if f in self._md5 else None)
                         if shallow_md5 != self._md5[f]["shallow"]:
                             self._update_md5(f)
                             self._add_book_to_queue(f, "modified")
-                            logging.debug("[" + Report.thread_name() + "] book modified (top-level dir/file modified): " + f)
+                            logging.debug("book modified (top-level dir/file modified): " + f)
                             continue
 
                     deleted = [f for f in self._md5 if f not in dirlist]
                     for f in deleted:
                         self._add_book_to_queue(f, "deleted")
-                        logging.debug("[" + Report.thread_name() + "] book deleted: " + f)
+                        logging.debug("book deleted: " + f)
                         del self._md5[f]
                     if deleted:
                         continue
@@ -410,15 +410,15 @@ class Pipeline():
                                 self._md5[f]["modified"] = int(time.time())
                                 self._update_md5(f)
                                 self._add_book_to_queue(f, "modified")
-                                logging.debug("[" + Report.thread_name() + "] book modified: " + f)
+                                logging.debug("book modified: " + f)
 
 
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
+                logging.exception("" + Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
                 try:
                     Report.emailPlainText(Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""), traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                 except Exception:
-                    logging.exception("[" + Report.thread_name() + "] Could not e-mail exception")
+                    logging.exception("Could not e-mail exception")
 
     def _retry_books_incoming_thread(self):
         last_check = 0
@@ -477,7 +477,7 @@ class Pipeline():
                     books.extend(books_autotriggered)
 
                     if books:
-                        logging.info("[" + Report.thread_name() + "] queue: " + ", ".join([b["name"] for b in books][:5]) + (", ... ( " + str(len(books) - 5) + " more )" if len(books) > 5 else ""))
+                        logging.info("queue: " + ", ".join([b["name"] for b in books][:5]) + (", ... ( " + str(len(books) - 5) + " more )" if len(books) > 5 else ""))
 
                     self.book = None
                     if len(books):
@@ -513,29 +513,29 @@ class Pipeline():
                         except Exception:
                             self.utils.report.error("An error occured while handling the book")
                             self.utils.report.error(traceback.format_exc())
-                            logging.exception("[" + Report.thread_name() + "] An error occured while handling the book")
+                            logging.exception("An error occured while handling the book")
 
                         finally:
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
                             try:
                                 if self.utils.report.should_email:
-                                    logging.exception("[" + Report.thread_name() + "] Sending email")
+                                    logging.exception("Sending email")
                                     self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                                 else:
-                                    logging.exception("[" + Report.thread_name() + "] Not sending email")
+                                    logging.exception("Not sending email")
                             except Exception:
-                                logging.exception("[" + Report.thread_name() + "] An error occured while sending email")
+                                logging.exception("An error occured while sending email")
                             finally:
                                 logpath = self.utils.report.attachLog()
-                                logging.exception("[" + Report.thread_name() + "] Logfile: " + logpath)
+                                logging.exception("Logfile: " + logpath)
 
             except Exception:
-                logging.exception("[" + Report.thread_name() + "] " + Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
+                logging.exception("" + Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
                 try:
                     Report.emailPlainText(Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""), traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                 except Exception:
-                    logging.exception("[" + Report.thread_name() + "] Could not e-mail exception")
+                    logging.exception("Could not e-mail exception")
 
             finally:
                 time.sleep(1)
@@ -581,15 +581,15 @@ class Pipeline():
 
     # This should be overridden
     def on_book_created(self):
-        logging.info("[" + Report.thread_name() + "] Book created (unhandled book event): "+self.book['name'])
+        logging.info("Book created (unhandled book event): "+self.book['name'])
 
     # This should be overridden
     def on_book_modified(self):
-        logging.info("[" + Report.thread_name() + "] Book modified (unhandled book event): "+self.book['name'])
+        logging.info("Book modified (unhandled book event): "+self.book['name'])
 
     # This should be overridden
     def on_book_deleted(self):
-        logging.info("[" + Report.thread_name() + "] Book deleted (unhandled book event): "+self.book['name'])
+        logging.info("Book deleted (unhandled book event): "+self.book['name'])
 
 class DummyPipeline(Pipeline):
     uid = "dummy"
