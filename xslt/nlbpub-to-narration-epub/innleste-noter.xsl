@@ -13,11 +13,13 @@
     <!--
         Legger til teksten 'Note ' som ekstra informasjon for elementer som har epub:type "footnote"
         
+        2018-04-26: Det samme for alle elementer som har epub:type "noteref"
+        
         TODO:
         
             ** Sjekke om det finnes andre attributtverdier som skal medføre st slik tekst legges inn
     -->
-    <xsl:template match="*[fnk:epub-type(@epub:type,'footnote')]">
+    <xsl:template match="*[fnk:epub-type(@epub:type,'footnote') or fnk:epub-type(@epub:type,'noteref')]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
