@@ -66,6 +66,10 @@ class Pipeline():
     _shouldRun = True
     _stopAfterFirstJob = False
 
+    # static (shared by all pipelines)
+    _triggerDirThread = None
+    dir_triggers = None
+
     # dynamic (reset on stop(), changes over time)
     _queue = None
     _md5 = None
@@ -160,10 +164,12 @@ class Pipeline():
 
         self.dir_trigger = os.getenv("TRIGGER_DIR")
         if self.dir_trigger:
-            self.dir_trigger = os.path.join(self.dir_trigger, self.uid)
+            self.dir_trigger = os.path.join(self.dir_trigger, "pipelines", self.uid)
             try:
                 if not os.path.exists(self.dir_trigger):
                     os.makedirs(self.dir_trigger)
+                with open(os.path.join(self.dir_trigger, "_name"), "w") as namefile:
+                    namefile.write("{} # {}\n".format(self.uid, self.title))
             except Exception:
                 logging.exception("" + "Could not create trigger directory: " + self.dir_trigger)
         else:
@@ -211,6 +217,11 @@ class Pipeline():
             self._bookRetryThread = Thread(target=self._retry_books_incoming_thread, name="book retryer for {}".format(self.uid))
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
+        
+        if not Pipeline._triggerDirThread:
+            Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
+            Pipeline._triggerDirThread.setDaemon(True)
+            Pipeline._triggerDirThread.start()
         
         logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
 
@@ -335,6 +346,72 @@ class Pipeline():
             "modified": modified,
         }
 
+    @staticmethod
+    def _trigger_dir_thread():
+        trigger_dir = os.getenv("TRIGGER_DIR")
+        if not trigger_dir:
+            logging.info("TRIGGER_DIR not defined, won't be able to trigger directories")
+            return
+        else:
+            trigger_dir = os.path.join(trigger_dir, "dirs")
+        
+        dirs = None
+        while True:
+            time.sleep(5)
+            
+            ready = 0
+            for pipeline in Pipeline.pipelines:
+                if pipeline.running or pipeline._shouldRun and pipeline.dir_in:
+                    ready += 1
+            
+            if ready == 0:
+                logging.info("stopping dir trigger thread")
+                break
+            
+            if ready < len(Pipeline.pipelines):
+                # all pipelines are still not running; wait a bit...
+                continue
+            
+            if not dirs:
+                dirs = {}
+                for pipeline in Pipeline.pipelines:
+                    if not pipeline.dir_in:
+                        continue
+                    
+                    relpath = os.path.relpath(pipeline.dir_in, Filesystem.get_base_path(pipeline.dir_in, pipeline.dir_base))
+                    
+                    if ".." in relpath:
+                        continue
+                    
+                    if not relpath in dirs:
+                        dirs[relpath] = [ pipeline.uid ]
+                        os.makedirs(os.path.join(trigger_dir, relpath), exist_ok=True)
+                    else:
+                        dirs[relpath].append(pipeline.uid)
+            
+            for relpath in dirs:
+                path = os.path.join(trigger_dir, relpath)
+                if os.path.isdir(path):
+                    for name in os.listdir(path):
+                        if name == "_name":
+                            continue
+                        triggerfile = os.path.join(path, name)
+                        if os.path.isfile(triggerfile):
+                            autotriggered = False
+                            try:
+                                with open(triggerfile, "r") as tf:
+                                    first_line = tf.readline().strip()
+                                    if first_line == "autotriggered":
+                                        autotriggered = True
+                                os.remove(triggerfile)
+                                
+                            except Exception:
+                                logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
+                            
+                            for pipeline in Pipeline.pipelines:
+                                if pipeline.uid in dirs[relpath]:
+                                    pipeline.trigger(name, auto=autotriggered)
+    
     def _monitor_book_events_thread(self):
         while self._dirInAvailable and self._shouldRun:
             try:
@@ -359,6 +436,8 @@ class Pipeline():
                 # Note: triggering books are allowed even when self.shouldHandleBooks is False
                 if os.path.isdir(self.dir_trigger):
                     for f in os.listdir(self.dir_trigger):
+                        if f == "_name":
+                            continue
                         triggerfile = os.path.join(self.dir_trigger, f)
                         if os.path.isfile(triggerfile):
                             try:
