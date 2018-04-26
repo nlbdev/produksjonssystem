@@ -74,6 +74,7 @@ class Pipeline():
     # dynamic (reset on stop(), changes over time)
     _queue = None
     _md5 = None
+    threads = None
     progress_text = None
     progress_log = None
     progress_start = None
@@ -214,23 +215,29 @@ class Pipeline():
             self.progress_text = "{} / {}".format(md5_count, len(dir_list))
         self.progress_text = ""
         
+        self.threads = []
+        
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="book events for {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
         self._bookMonitorThread.start()
+        self.threads.append(self._bookMonitorThread)
 
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book handler for {}".format(self.uid))
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
+        self.threads.append(self._bookHandlerThread)
 
         if (self.retry):
             self._bookRetryThread = Thread(target=self._retry_books_incoming_thread, name="book retryer for {}".format(self.uid))
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
+            self.threads.append(self._bookRetryThread)
         
         if not Pipeline._triggerDirThread:
             Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
             Pipeline._triggerDirThread.setDaemon(True)
             Pipeline._triggerDirThread.start()
+            self.threads.append(Pipeline._triggerDirThread)
         
         logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
 
@@ -276,15 +283,19 @@ class Pipeline():
         self.stop()
         self._queue = []
         
-        threads = [
-            self._bookMonitorThread,
-            self._bookHandlerThread,
-            self._bookRetryThread,
-            Pipeline._triggerDirThread
-        ]
-        for thread in threads:
-            if thread and thread != threading.current_thread():
-                thread.join()
+        for thread in self.threads:
+            if thread:
+                logging.debug("joining {}".format(thread.name))
+                thread.join(timeout=60)
+        
+        is_alive = True
+        while is_alive:
+            is_alive = False
+            for thread in self.threads:
+                if thread and thread != threading.current_thread() and thread.is_alive():
+                    is_alive = True
+                    logging.info("Thread is still running: {}".format(thread.name))
+                    thread.join(timeout=60)
     
     def trigger(self, name, auto=True):
         path = os.path.join(self.dir_trigger, name)
@@ -558,8 +569,7 @@ class Pipeline():
         while self._dirInAvailable and self._shouldRun:
             time.sleep(5)
             
-            self.running = True
-            needs_update=False
+            needs_update = False
             max_update_interval = 60 * 60 # 1 hour
             
             if time.time() - last_check < max_update_interval:

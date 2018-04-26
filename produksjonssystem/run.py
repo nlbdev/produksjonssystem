@@ -290,18 +290,30 @@ class Produksjonssystem():
         
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
+            if thread:
+                logging.debug("joining {}".format(thread.name))
             thread.join(timeout=5)
-        for pipeline in self.pipelines:
-            if pipeline[0].running:
-                self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(pipeline[0].title, " (den behandler {})".format(pipeline[0].book["name"]) if pipeline[0].book else ""))
-            pipeline[0].stop(exit=True)
-        for thread in threads:
-            thread.join()
+        
+        is_alive = True
+        while is_alive:
+            is_alive = False
+            for thread in threads:
+                if thread and thread != threading.current_thread() and thread.is_alive():
+                    is_alive = True
+                    logging.info("Thread is still running: {}".format(thread.name))
+                    thread.join(timeout=5)
+            for pipeline in self.pipelines:
+                if pipeline[0].running:
+                    self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(pipeline[0].title, " ({} / {})".format(pipeline[0].book["name"], pipeline[0].get_progress()) if pipeline[0].book else ""))
         
         self.info("Venter på at plotteren skal stoppe...")
         time.sleep(5) # gi plotteren litt tid på slutten
         plotter.should_run = False
+        if graph_thread:
+            logging.debug("joining {}".format(graph_thread.name))
         graph_thread.join()
+        if graph_thread:
+            logging.debug("joined {}".format(graph_thread.name))
         
         self.info("Venter på at konfigtråden skal stoppe...")
         self.shouldRun = False
