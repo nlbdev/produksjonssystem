@@ -269,6 +269,8 @@ class Report():
         msg.set_content(markdown_text)
         msg.add_alternative(markdown_html, subtype="html")
         
+        logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join([r.addr_spec for r in list(msg['To'])])))
+        
         # 4. send e-mail
         if smtp["host"] and smtp["port"]:
             with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
