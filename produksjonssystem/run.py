@@ -247,7 +247,7 @@ class Produksjonssystem():
             threads.append(thread)
 
         self.shouldRun=True
-        self._configThread = Thread(target=self._config_thread)
+        self._configThread = Thread(target=self._config_thread, name="config")
         self._configThread.setDaemon(True)
         self._configThread.start()
         
@@ -317,8 +317,7 @@ class Produksjonssystem():
         
         self.info("Venter på at konfigtråden skal stoppe...")
         self.shouldRun = False
-        
-        #self._configThread.join()
+        self._configThread.join()
     
     def wait_until_running(self, timeout=60):
         start_time = time.time()
@@ -341,10 +340,16 @@ class Produksjonssystem():
             f.write("stop")
 
     def _config_thread(self):
-        fileName=os.environ.get("CONFIG_FILE")
-        emailDoc=""
+        fileName = os.environ.get("CONFIG_FILE")
+        emailDoc = ""
+        last_update = 0
         while(self.shouldRun):
-            time.sleep(300)
+            if time.time() - last_update < 300:
+                time.sleep(5)
+                continue
+            
+            last_update = time.time()
+            
             try:
                 with open(fileName, 'r') as f:
                     tempEmailDoc = yaml.load(f)
