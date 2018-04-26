@@ -102,23 +102,9 @@ class Plotter():
                         netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
             label_out = "< <font point-size='16'>{}</font>{} >".format(relpath_out, "\n<br/><i>{}</i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
 
-            status = ""
-            start_text = ""
-            if pipeline[0]._shouldRun and not pipeline[0].running:
-                status = "Starter..."
-                start_text = pipeline[0].start_text
-            elif not pipeline[0]._shouldRun and pipeline[0].running:
-                status = "Stopper..."
-            elif not pipeline[0].running and not isinstance(pipeline[0], DummyPipeline):
-                status = "Stoppet"
-                queue_string = ""
-            elif book:
-                status = str(book)
-            elif isinstance(pipeline[0], DummyPipeline):
-                status = "Manuelt steg"
-            else:
-                status = "Venter"
-            pipeline_label = "< <font point-size='18'>{}</font>{} >".format(title, "".join(["\n<br/><i>{}</i>".format(val) for val in [queue_string, start_text, status] if val]))
+            status = pipeline[0].get_status()
+            progress_text = pipeline[0].get_progress()
+            pipeline_label = "< <font point-size='18'>{}</font>{} >".format(title, "".join(["\n<br/><i>{}</i>".format(val) for val in [queue_string, progress_text, status] if val]))
 
             fillcolor = "lightskyblue1"
             if book or queue_size:

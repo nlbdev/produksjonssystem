@@ -4,6 +4,7 @@
 import os
 import re
 import sys
+import math
 import time
 import logging
 import tempfile
@@ -73,7 +74,9 @@ class Pipeline():
     # dynamic (reset on stop(), changes over time)
     _queue = None
     _md5 = None
-    start_text = ""
+    progress_text = None
+    progress_log = None
+    progress_start = None
 
     # utility classes; reconfigured every time a book is processed to simplify function signatures
     utils = None
@@ -136,7 +139,12 @@ class Pipeline():
         self.dir_base = dir_base
         self.email_settings = email_settings
         self.config = config if config else {}
-
+        
+        # progress variable for this pipeline instance
+        self.progress_text = ""
+        self.progress_log = []
+        self.progress_start = -1
+        
         # make dirs available from static contexts
         if not Pipeline.dirs:
             Pipeline.dirs = {}
@@ -199,12 +207,13 @@ class Pipeline():
         self._md5 = {}
         dir_list = os.listdir(self.dir_in)
         md5_count = 0
-        self.start_text = "0 / {}".format(len(dir_list))
+        self.progress_text = "0 / {}".format(len(dir_list))
         for f in dir_list:
             self._update_md5(f)
             md5_count += 1
-            self.start_text = "{} / {}".format(md5_count, len(dir_list))
-
+            self.progress_text = "{} / {}".format(md5_count, len(dir_list))
+        self.progress_text = ""
+        
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="book events for {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
         self._bookMonitorThread.start()
@@ -265,6 +274,7 @@ class Pipeline():
             pass
         
         self.stop()
+        self._queue = []
         
         threads = [
             self._bookMonitorThread,
@@ -303,6 +313,45 @@ class Pipeline():
             logging.exception("An error occured while trying to extract the title of the book")
 
         return name
+    
+    def get_status(self):
+        if self._shouldRun and not self.running:
+            return "Starter..."
+        elif not self._shouldRun and self.running:
+            return "Stopper..."
+        elif not self.running and not isinstance(self, DummyPipeline):
+            return "Stoppet"
+        elif self.book:
+            return str(self.current_book_name())
+        elif isinstance(self, DummyPipeline):
+            return "Manuelt steg"
+        else:
+            return "Venter"
+    
+    def get_progress(self):
+        # exactly 10 messages in log
+        if len(self.progress_log) > 10:
+            self.progress_log = self.progress_log[-10:]
+        while len(self.progress_log) < 10:
+            self.progress_log.append({"start": 0, "end": 60}) # assume that it will take 1 minute until we have actual measurements
+        
+        if self.progress_text:
+            return self.progress_text
+            
+        elif self.progress_start >= self.progress_log[-1]["end"]:
+            
+            average_duration = 0
+            for p in self.progress_log:
+                average_duration += p["end"] - p["start"]
+            average_duration /= 10
+            
+            duration = time.time() - self.progress_start
+            
+            percentage = math.floor((1 - math.exp(-duration/average_duration/2)) * 100)
+            return "{} %".format(percentage)
+            
+        else:
+            return ""
     
     @staticmethod
     def directory_watchers_ready(directory):
@@ -584,6 +633,8 @@ class Pipeline():
                         self.utils.filesystem = Filesystem(self)
 
                         try:
+                            self.progress_start = time.time()
+                            
                             if event == "created":
                                 self.on_book_created()
 
@@ -599,6 +650,8 @@ class Pipeline():
                             logging.exception("An error occured while handling the book")
 
                         finally:
+                            self.progress_log.append({"start": self.progress_start, "end": time.time()})
+                            
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
                             try:
