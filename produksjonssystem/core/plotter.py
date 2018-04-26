@@ -148,17 +148,18 @@ class Plotter():
         dot.render(os.path.join(self.report_dir, name + "_"))
 
         # there seems to be some race condition when doing this across a mounted network drive,
-        # so if we get a FileNotFoundError we just retry a few times and it should work.
+        # so if we get an exception we retry a few times and hope that it works.
+        # see: https://github.com/nlbdev/produksjonssystem/issues/81
         for t in reversed(range(10)):
             try:
-                os.rename(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+                shutil.copyfile(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
                 break
-            except FileNotFoundError as e:
-                logging.debug("[" + Report.thread_name() + "]" + " Unable to rename plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
+            except Exception as e:
+                logging.debug("[" + Report.thread_name() + "]" + " Unable to copy plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
                 time.sleep(0.5)
                 if t == 0:
                     raise e
-
+        
         dashboard_file = os.path.join(self.report_dir, name + ".html")
         if not os.path.isfile(dashboard_file):
             dashboard_template = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../dashboard.html'))
