@@ -39,6 +39,7 @@ class Produksjonssystem():
     dirs = None
     pipelines = None
     environment = None
+    emailDoc = []
 
     def __init__(self, environment=None):
         logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s")
@@ -206,12 +207,16 @@ class Produksjonssystem():
 
         threads = []
         file_name=os.environ.get("CONFIG_FILE")
+        emailDoc=""
         with open(file_name, 'r') as f:
-            emailDoc = yaml.load(f)
-        
+                try:
+                    emailDoc = yaml.load(f)
+                except Exception as e:
+                    self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
+
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
-        
+
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
@@ -237,6 +242,11 @@ class Produksjonssystem():
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
+
+        self.shouldRun=True
+        self._configThread = Thread(target=self._config_thread)
+        self._configThread.setDaemon(True)
+        self._configThread.start()
 
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run)
@@ -276,6 +286,8 @@ class Produksjonssystem():
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
 
+
+
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
             thread.join()
@@ -283,6 +295,11 @@ class Produksjonssystem():
         self.info("Venter på at plotteren skal stoppe...")
         plotter.should_run = False
         graph_thread.join()
+
+        self.info("Venter på at konfigtråden skal stoppe...")
+        self.shouldRun = False
+
+        #self._configThread.join()
 
     def wait_until_running(self, timeout=60):
         start_time = time.time()
@@ -303,6 +320,32 @@ class Produksjonssystem():
         stopfile = os.path.join(stopfile, "stop")
         with open(stopfile, "w") as f:
             f.write("stop")
+
+    def _config_thread(self):
+        fileName=os.environ.get("CONFIG_FILE")
+        emailDoc=""
+        while(self.shouldRun):
+            time.sleep(300)
+            try:
+                with open(fileName, 'r') as f:
+                    tempEmailDoc = yaml.load(f)
+                if tempEmailDoc != emailDoc:
+                    self.info("Oppdaterer konfig fra fil")
+                    emailDoc = tempEmailDoc
+                    for pipeline in self.pipelines:
+                        recipients = []
+                        pipeline_config = {}
+                        if pipeline[0].uid in emailDoc and emailDoc[pipeline[0].uid]:
+                            for recipient in emailDoc[pipeline[0].uid]:
+                                if isinstance(recipient, str):
+                                    recipients.append(recipient)
+                                elif isinstance(recipient, dict):
+                                    for key in recipient:
+                                        pipeline_config[key] = recipient[key]
+                        pipeline[0].email_settings["recipients"] = recipients
+                        pipeline[0].config = pipeline_config
+            except Exception as e:
+                self.info("En feil oppstod under lasting av konfigurasjonsfil. Sjekk syntaksen til" + fileName)
 
 if __name__ == "__main__":
     produksjonssystem = Produksjonssystem()
