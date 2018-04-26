@@ -44,7 +44,7 @@ class Filesystem():
         "$RECYCLE.BIN/", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
         ".LSOverride", "._*", ".DocumentRevisions-V100", ".fseventsd", ".Spotlight-V100", ".TemporaryItems",
         ".Trashes", ".VolumeIcon.icns", ".com.apple.timemachine.donotpresent", ".AppleDB", ".AppleDesktop",
-        "Network Trash Folder", "Temporary Items", ".apdisk"
+        "Network Trash Folder", "Temporary Items", ".apdisk", "Dolphin check log.txt"
     )
     
     def __init__(self, pipeline):
