@@ -108,6 +108,33 @@ class Report():
         self.add_message('ERROR', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
     
     @staticmethod
+    def emailStringsToAddresses(addresses):
+        # Build set of recipients as Address objects.
+        # Names are generated based on the email-address.
+        _addresses = []
+        if isinstance(addresses, Address):
+            return addresses
+        elif isinstance(addresses, str):
+            addresses = [ addresses ]
+        elif isinstance(addresses, tuple):
+            addresses = list(addresses)
+        
+        for a in addresses:
+            if isinstance(a, Address):
+                _addresses.append(a)
+                continue
+            name = []
+            for n in a.split("@")[0].split("."):
+                name.extend(re.findall("[A-Z]?[^A-Z]+", n))
+            name = [n[0].upper() + n[1:] for n in name]
+            name = " ".join(name)
+            user = a.split("@")[0]
+            domain = a.split("@")[1]
+            _addresses.append(Address(name, user, domain))
+        
+        return tuple(_addresses)
+    
+    @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients):
         assert subject
         assert message
@@ -115,27 +142,11 @@ class Report():
         assert sender
         assert isinstance(recipients, str) or isinstance(recipients, list)
         
-        # Build set of recipients as Address objects.
-        # Names are generated based on the email-address.
-        recipients = []
-        if isinstance(recipients, str):
-            recipients = [ recipients ]
-        _recipients = []
-        for r in recipients:
-            name = []
-            for n in r.split("@")[0].split("."):
-                name.extend(re.findall("[A-Z][^A-Z]*", n))
-            name = " ".join(name)
-            user = r.split("@")[0]
-            domain = r.split("@")[1]
-            _recipients.append(Address(name, user, domain))
-        recipients = tuple(_recipients)
-        
         # 1. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
-        msg['From'] = sender
-        msg['To'] = recipients
+        msg['From'] = Report.emailStringsToAddresses(sender)
+        msg['To'] = Report.emailStringsToAddresses(recipients)
         msg.set_content(message)
         
         # 2. send e-mail
@@ -264,12 +275,12 @@ class Report():
         # 3. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
-        msg['From'] = sender
-        msg['To'] = recipients if isinstance(recipients, Address) else tuple(recipients)
+        msg['From'] = Report.emailStringsToAddresses(sender)
+        msg['To'] = Report.emailStringsToAddresses(recipients)
         msg.set_content(markdown_text)
         msg.add_alternative(markdown_html, subtype="html")
         
-        logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join([r.addr_spec for r in list(msg['To'])])))
+        logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
         
         # 4. send e-mail
         if smtp["host"] and smtp["port"]:
