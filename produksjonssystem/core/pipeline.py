@@ -421,33 +421,34 @@ class Pipeline():
                     logging.exception("[" + Report.thread_name() + "] Could not e-mail exception")
 
     def _retry_books_incoming_thread(self):
+        last_check = 0
+        
         while self._dirInAvailable and self._shouldRun:
+            time.sleep(5)
+            
             self.running = True
             needs_update=False
-            min_update_interval = 60 * 60 * 24 # 1 day
             max_update_interval = 60 * 60 # 1 hour
 
+            if time.time() - last_check < max_update_interval:
+                continue
+            
             if not (datetime.date.today().weekday() <= 4):
-                time.sleep(max_update_interval)
+                continue
             if not (8 <= datetime.datetime.now().hour <= 15):
-                time.sleep(max_update_interval)
-            else:
-                needs_update = True
-
-            if (needs_update):
-                for filename in os.listdir(self.dir_in):
-                    if (os.path.isdir(os.path.join(self.dir_in,filename))):
-                        # If filename is a directory touch the first file in directory
-                        for file_in_dir in os.listdir(os.path.join(self.dir_in, filename)):
-                            if not (os.path.isdir(file_in_dir)):
-                                Path(os.path.join(self.dir_in, filename, os.path.join(self.dir_in, filename, file_in_dir))).touch()
-                                break
-                    else:
-                        # If it is a file touch file
-                        Path(os.path.join(self.dir_in, filename)).touch()
-
-            time.sleep(max_update_interval)
-
+                continue
+            
+            for filename in os.listdir(self.dir_in):
+                if (os.path.isdir(os.path.join(self.dir_in,filename))):
+                    # If filename is a directory touch the first file in directory
+                    for file_in_dir in os.listdir(os.path.join(self.dir_in, filename)):
+                        if not (os.path.isdir(file_in_dir)):
+                            Path(os.path.join(self.dir_in, filename, os.path.join(self.dir_in, filename, file_in_dir))).touch()
+                            break
+                else:
+                    # If it is a file touch file
+                    Path(os.path.join(self.dir_in, filename)).touch()
+    
     def _handle_book_events_thread(self):
         while self._dirInAvailable and self._shouldRun:
             self.running = True
