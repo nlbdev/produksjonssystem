@@ -11,5 +11,5 @@ export ORIGINAL_ISBN_CSV="$HOME/Desktop/original-isbn.csv"
 if [ -f "$HOME/Desktop/produksjonssystem.yaml" ]; then
     export CONFIG_FILE="$HOME/Desktop/produksjonssystem.yaml"
 else
-    export CONFIG_FILE="$DIR/produksjonssystem.yaml"
+    export CONFIG_FILE="$DIR/tests/produksjonssystem.yaml"
 fi
