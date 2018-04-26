@@ -65,7 +65,7 @@ class Pipeline():
     _dirInAvailable = False
     _shouldRun = True
     _stopAfterFirstJob = False
-
+    
     # static (shared by all pipelines)
     _triggerDirThread = None
     dir_triggers = None
@@ -175,7 +175,7 @@ class Pipeline():
         else:
             self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
             self.dir_trigger = self._dir_trigger_obj.name
-
+        
         # make trigger dir available from static contexts
         Pipeline.dirs[self.uid]["trigger"] = self.dir_trigger
 
@@ -229,13 +229,6 @@ class Pipeline():
         self._dirInAvailable = False
         if exit:
             self._shouldRun = False
-        if self._bookHandlerThread and self._bookHandlerThread != threading.current_thread():
-            self._bookHandlerThread.join()
-        if self._bookHandlerThread and self._bookHandlerThread != threading.current_thread():
-            self._bookHandlerThread.join()
-        if self._bookHandlerThread and self._bookHandlerThread != threading.current_thread():
-            self._bookHandlerThread.join()
-        self._queue = []
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
     def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -270,8 +263,19 @@ class Pipeline():
 
         except KeyboardInterrupt:
             pass
+        
         self.stop()
         
+        threads = [
+            self._bookMonitorThread,
+            self._bookHandlerThread,
+            self._bookRetryThread,
+            Pipeline._triggerDirThread
+        ]
+        for thread in threads:
+            if thread and thread != threading.current_thread():
+                thread.join()
+    
     def trigger(self, name, auto=True):
         path = os.path.join(self.dir_trigger, name)
         if auto:
@@ -345,7 +349,7 @@ class Pipeline():
             "deep_checked": int(time.time()),
             "modified": modified,
         }
-
+    
     @staticmethod
     def _trigger_dir_thread():
         trigger_dir = os.getenv("TRIGGER_DIR")
@@ -450,7 +454,7 @@ class Pipeline():
                                 self._add_book_to_queue(f, "autotriggered" if autotriggered else "triggered")
                             except Exception:
                                 logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
-
+                
                 if self.shouldHandleBooks:
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
@@ -508,7 +512,7 @@ class Pipeline():
             self.running = True
             needs_update=False
             max_update_interval = 60 * 60 # 1 hour
-
+            
             if time.time() - last_check < max_update_interval:
                 continue
             
