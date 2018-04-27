@@ -38,7 +38,7 @@ class Pipeline():
     _lock = RLock()
     _dir_trigger_obj = None # store TemporaryDirectory object in instance so that it's not cleaned up
     pipelines = []
-    
+
     # The current book
     book = None
 
@@ -66,7 +66,7 @@ class Pipeline():
     _dirInAvailable = False
     _shouldRun = True
     _stopAfterFirstJob = False
-    
+
     # static (shared by all pipelines)
     _triggerDirThread = None
     dir_triggers = None
@@ -140,12 +140,12 @@ class Pipeline():
         self.dir_base = dir_base
         self.email_settings = email_settings
         self.config = config if config else {}
-        
+
         # progress variable for this pipeline instance
         self.progress_text = ""
         self.progress_log = []
         self.progress_start = -1
-        
+
         # make dirs available from static contexts
         if not Pipeline.dirs:
             Pipeline.dirs = {}
@@ -184,7 +184,7 @@ class Pipeline():
         else:
             self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
             self.dir_trigger = self._dir_trigger_obj.name
-        
+
         # make trigger dir available from static contexts
         Pipeline.dirs[self.uid]["trigger"] = self.dir_trigger
 
@@ -214,9 +214,9 @@ class Pipeline():
             md5_count += 1
             self.progress_text = "{} / {}".format(md5_count, len(dir_list))
         self.progress_text = ""
-        
+
         self.threads = []
-        
+
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="book events for {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
         self._bookMonitorThread.start()
@@ -232,13 +232,13 @@ class Pipeline():
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
             self.threads.append(self._bookRetryThread)
-        
+
         if not Pipeline._triggerDirThread:
             Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
             Pipeline._triggerDirThread.setDaemon(True)
             Pipeline._triggerDirThread.start()
             self.threads.append(Pipeline._triggerDirThread)
-        
+
         logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
 
     def stop(self, exit=False):
@@ -279,15 +279,15 @@ class Pipeline():
 
         except KeyboardInterrupt:
             pass
-        
+
         self.stop()
         self._queue = []
-        
+
         for thread in self.threads:
             if thread:
                 logging.debug("joining {}".format(thread.name))
                 thread.join(timeout=60)
-        
+
         is_alive = True
         while is_alive:
             is_alive = False
@@ -296,7 +296,7 @@ class Pipeline():
                     is_alive = True
                     logging.info("Thread is still running: {}".format(thread.name))
                     thread.join(timeout=60)
-    
+
     def trigger(self, name, auto=True):
         path = os.path.join(self.dir_trigger, name)
         if auto:
@@ -324,7 +324,7 @@ class Pipeline():
             logging.exception("An error occured while trying to extract the title of the book")
 
         return name
-    
+
     def get_status(self):
         if self._shouldRun and not self.running:
             return "Starter..."
@@ -338,43 +338,43 @@ class Pipeline():
             return "Manuelt steg"
         else:
             return "Venter"
-    
+
     def get_progress(self):
         # exactly 10 messages in log
         if len(self.progress_log) > 10:
             self.progress_log = self.progress_log[-10:]
         while len(self.progress_log) < 10:
             self.progress_log.append({"start": 0, "end": 60}) # assume that it will take 1 minute until we have actual measurements
-        
+
         if self.progress_text:
             return self.progress_text
-            
+
         elif self.progress_start >= self.progress_log[-1]["end"]:
-            
+
             average_duration = 0
             for p in self.progress_log:
                 average_duration += p["end"] - p["start"]
             average_duration /= 10
-            
+
             duration = time.time() - self.progress_start
-            
+
             percentage = math.floor((1 - math.exp(-duration/average_duration/2)) * 100)
             return "{} %".format(percentage)
-            
+
         else:
             return ""
-    
+
     @staticmethod
     def directory_watchers_ready(directory):
         if directory is None:
             return True
-        
+
         for p in Pipeline.pipelines:
             if directory == p.dir_in and p._shouldRun and not p.running:
                 return False
-        
+
         return True
-    
+
     def _add_book_to_queue(self, name, event_type):
         with self._lock:
             book_in_queue = False
@@ -409,7 +409,7 @@ class Pipeline():
             "deep_checked": int(time.time()),
             "modified": modified,
         }
-    
+
     @staticmethod
     def _trigger_dir_thread():
         trigger_dir = os.getenv("TRIGGER_DIR")
@@ -418,41 +418,41 @@ class Pipeline():
             return
         else:
             trigger_dir = os.path.join(trigger_dir, "dirs")
-        
+
         dirs = None
         while True:
             time.sleep(5)
-            
+
             ready = 0
             for pipeline in Pipeline.pipelines:
                 if pipeline.running or pipeline._shouldRun and pipeline.dir_in:
                     ready += 1
-            
+
             if ready == 0:
                 logging.info("stopping dir trigger thread")
                 break
-            
+
             if ready < len(Pipeline.pipelines):
                 # all pipelines are still not running; wait a bit...
                 continue
-            
+
             if not dirs:
                 dirs = {}
                 for pipeline in Pipeline.pipelines:
                     if not pipeline.dir_in:
                         continue
-                    
+
                     relpath = os.path.relpath(pipeline.dir_in, Filesystem.get_base_path(pipeline.dir_in, pipeline.dir_base))
-                    
+
                     if ".." in relpath:
                         continue
-                    
+
                     if not relpath in dirs:
                         dirs[relpath] = [ pipeline.uid ]
                         os.makedirs(os.path.join(trigger_dir, relpath), exist_ok=True)
                     else:
                         dirs[relpath].append(pipeline.uid)
-            
+
             for relpath in dirs:
                 path = os.path.join(trigger_dir, relpath)
                 if os.path.isdir(path):
@@ -468,14 +468,14 @@ class Pipeline():
                                     if first_line == "autotriggered":
                                         autotriggered = True
                                 os.remove(triggerfile)
-                                
+
                             except Exception:
                                 logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
-                            
+
                             for pipeline in Pipeline.pipelines:
                                 if pipeline.uid in dirs[relpath]:
                                     pipeline.trigger(name, auto=autotriggered)
-    
+
     def _monitor_book_events_thread(self):
         while self._dirInAvailable and self._shouldRun:
             try:
@@ -514,7 +514,7 @@ class Pipeline():
                                 self._add_book_to_queue(f, "autotriggered" if autotriggered else "triggered")
                             except Exception:
                                 logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
-                
+
                 if self.shouldHandleBooks:
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
@@ -565,20 +565,22 @@ class Pipeline():
 
     def _retry_books_incoming_thread(self):
         last_check = 0
-        
+
         while self._dirInAvailable and self._shouldRun:
             time.sleep(5)
-            
+
             needs_update = False
             max_update_interval = 60 * 60 # 1 hour
-            
+
             if time.time() - last_check < max_update_interval:
                 continue
-            
+
             if not (datetime.date.today().weekday() <= 4):
                 continue
             if not (8 <= datetime.datetime.now().hour <= 15):
                 continue
+
+            last_check = time.time()
             
             for filename in os.listdir(self.dir_in):
                 if (os.path.isdir(os.path.join(self.dir_in,filename))):
@@ -590,7 +592,7 @@ class Pipeline():
                 else:
                     # If it is a file touch file
                     Path(os.path.join(self.dir_in, filename)).touch()
-    
+
     def _handle_book_events_thread(self):
         while self._dirInAvailable and self._shouldRun:
             self.running = True
@@ -599,7 +601,7 @@ class Pipeline():
                 if not Pipeline.directory_watchers_ready(self.dir_out):
                     time.sleep(10)
                     continue
-                
+
                 if not os.path.isdir(self.dir_in):
                     # when base dir is not available we should stop watching the directory,
                     # this just catches a potential race condition
@@ -644,7 +646,7 @@ class Pipeline():
 
                         try:
                             self.progress_start = time.time()
-                            
+
                             if event == "created":
                                 self.on_book_created()
 
@@ -661,7 +663,7 @@ class Pipeline():
 
                         finally:
                             self.progress_log.append({"start": self.progress_start, "end": time.time()})
-                            
+
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
                             try:
