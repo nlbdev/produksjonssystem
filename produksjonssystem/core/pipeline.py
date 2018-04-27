@@ -646,6 +646,7 @@ class Pipeline():
 
                         try:
                             self.progress_start = time.time()
+                            self.utils.report.debug("Started: {}".format(self.progress_start))
 
                             if event == "created":
                                 self.on_book_created()
@@ -662,7 +663,9 @@ class Pipeline():
                             logging.exception("An error occured while handling the book")
 
                         finally:
-                            self.progress_log.append({"start": self.progress_start, "end": time.time()})
+                            progress_end = time.time()
+                            self.progress_log.append({"start": self.progress_start, "end": progress_end})
+                            self.utils.report.debug("Finished: {}".format(progress_end))
 
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
