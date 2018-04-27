@@ -68,8 +68,9 @@ except: pass
 try:(rmtree(DOCX_path))
 except: pass
 
+threading.current_thread().setName("test thread")
 prodsys = run.Produksjonssystem(environment=environment)
-prodsys_thread = threading.Thread(target=prodsys.run)
+prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem")
 prodsys_thread.setDaemon(True)
 prodsys_thread.start()
 if not prodsys.wait_until_running():

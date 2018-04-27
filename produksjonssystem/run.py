@@ -43,7 +43,9 @@ class Produksjonssystem():
     emailDoc = []
 
     def __init__(self, environment=None):
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
+        logging.basicConfig(stream = sys.stdout,
+                            level = logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO,
+                            format = "%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 
         # Set environment variables (mainly useful when testing)
         if environment:
@@ -156,7 +158,6 @@ class Produksjonssystem():
 
     def run(self):
         try:
-            threading.main_thread().setName("main thread")
             self.info("Produksjonssystemet er startet")
             self._run()
         except Exception as e:
@@ -167,12 +168,12 @@ class Produksjonssystem():
 
     def _run(self):
         assert os.getenv("CONFIG_FILE"), "CONFIG_FILE must be defined"
-
+        
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
         else:
             logging.getLogger().setLevel(logging.INFO)
-
+        
         # Make sure that directories are defined properly
         for d in self.book_archive_dirs:
             for a in self.book_archive_dirs:
@@ -189,7 +190,7 @@ class Produksjonssystem():
                 assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d]
             assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d]
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
-
+        
         # Make sure that the pipelines are defined properly
         for pipeline in self.pipelines:
             assert len(pipeline) == 3, "Pipeline declarations have three arguments (not " + len(pipeline) + ")"
@@ -198,15 +199,11 @@ class Produksjonssystem():
             assert pipeline[2] == None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
             assert pipeline[1] == None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
             assert pipeline[2] == None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
-
+        
         # Make directories
         for d in self.dirs:
             os.makedirs(self.dirs[d], exist_ok=True)
-
-        if os.environ.get("DEBUG", "1") == "1":
-            time.sleep(1)
-            logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
-
+        
         threads = []
         file_name=os.environ.get("CONFIG_FILE")
         emailDoc=""
@@ -215,10 +212,10 @@ class Produksjonssystem():
                     emailDoc = yaml.load(f)
                 except Exception as e:
                     self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
-
+        
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
-
+        
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
@@ -233,7 +230,7 @@ class Produksjonssystem():
                     elif isinstance(recipient, dict):
                         for key in recipient:
                             pipeline_config[key] = recipient[key]
-            thread = Thread(target=pipeline[0].run, name=pipeline[0].title,
+            thread = Thread(target=pipeline[0].run, name=pipeline[0].uid,
                                                     args=(10,
                                                           self.dirs[pipeline[1]] if pipeline[1] else None,
                                                           self.dirs[pipeline[2]] if pipeline[2] else None,
@@ -372,5 +369,6 @@ class Produksjonssystem():
                 self.info("En feil oppstod under lasting av konfigurasjonsfil. Sjekk syntaksen til" + fileName)
 
 if __name__ == "__main__":
+    threading.current_thread().setName("main thread")
     produksjonssystem = Produksjonssystem()
     produksjonssystem.run()

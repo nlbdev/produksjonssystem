@@ -94,7 +94,6 @@ class Pipeline():
         self.utils.filesystem = None
         self.retry = retry
         self._queue = []
-        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
         super().__init__()
 
     def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -217,18 +216,18 @@ class Pipeline():
 
         self.threads = []
 
-        self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="book events for {}".format(self.uid))
+        self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
         self._bookMonitorThread.start()
         self.threads.append(self._bookMonitorThread)
 
-        self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book handler for {}".format(self.uid))
+        self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book in {}".format(self.uid))
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
         self.threads.append(self._bookHandlerThread)
 
         if (self.retry):
-            self._bookRetryThread = Thread(target=self._retry_books_incoming_thread, name="book retryer for {}".format(self.uid))
+            self._bookRetryThread = Thread(target=self._retry_books_incoming_thread, name="retry in {}".format(self.uid))
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
             self.threads.append(self._bookRetryThread)
