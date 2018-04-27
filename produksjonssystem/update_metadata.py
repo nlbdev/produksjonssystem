@@ -598,8 +598,11 @@ class UpdateMetadata(Pipeline):
                     if signatureRegistration == addr.lower():
                         signatureRegistrationAddress = addr
             if not signatureRegistrationAddress:
-                normarc_pipeline.utils.report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: '{}'".format(signatureRegistration if signatureRegistration else "(ukjent)", UpdateMetadata.config["default_librarian"].lower()))
-                normarc_pipeline.utils.report.debug("Aktive bibliotekarer: {}".format(", ".join([addr.lower() for addr in UpdateMetadata.config["librarians"]])))
+                normarc_pipeline.utils.report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: {}".format(
+                                                    signatureRegistration if signatureRegistration else "(ukjent)",
+                                                    ", ".join([addr.lower() for addr in UpdateMetadata.config["default_librarian"]])))
+                normarc_pipeline.utils.report.debug("Aktive bibliotekarer: {}".format(
+                                                    ", ".join([addr.lower() for addr in UpdateMetadata.config["librarians"]])))
                 signatureRegistrationAddress = UpdateMetadata.config["default_librarian"]
             UpdateMetadata.add_production_info(normarc_pipeline, epub.identifier(), publication_format=publication_format)
             normarc_pipeline.utils.report.email(UpdateMetadata.email_settings["smtp"],

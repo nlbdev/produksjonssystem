@@ -176,6 +176,9 @@ class Report():
         if not subject:
             subject = self.title if self.title else self.pipeline.title
         
+        if isinstance(recipients, str):
+            recipients = [ recipients ]
+        
         # 0. Create attachment with complete log (including DEBUG statements)
         self.attachLog()
         
