@@ -5,5 +5,6 @@ Markdown==2.6.11
 psutil==5.4.3
 pydub==0.21.0
 Pygments==2.2.0
+PyYAML==3.12
 requests==2.18.1
 slacker==0.9.60
