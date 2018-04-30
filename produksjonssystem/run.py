@@ -106,41 +106,41 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [ IncomingNordic(retry=True),                   "incoming",            "master"],
+            [ IncomingNordic(retry = True, retry_not_in_out = False),                   "incoming",            "master"],
             [ NordicToNlbpub(),                             "master",              "nlbpub"],
             [ UpdateMetadata(),                             "metadata",            "nlbpub"],
 
             # EPUB
-            [ InsertMetadataEpub(),                         "nlbpub",              "pub-in-epub"],
+            [ InsertMetadataEpub(retry_not_in_out = False),                         "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [ InsertMetadataXhtml(),                        "nlbpub",              "pub-in-ebook"],
+            [ InsertMetadataXhtml(retry_not_in_out = False),                        "nlbpub",              "pub-in-ebook"],
             [ NlbpubToHtml(),                               "pub-in-ebook",        "html"],
             [ NLBpubToDocx(),                               "pub-in-ebook",        "docx"],
 
             # punktskrift
-            [ InsertMetadataBraille(),                      "nlbpub",              "pub-in-braille"],
+            [ InsertMetadataBraille(retry_not_in_out = False),                      "nlbpub",              "pub-in-braille"],
             [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille"],
             [ NlbpubToPef(),                                "pub-ready-braille",   "pef"],
 
             # innlest lydbok
-            [ InsertMetadataDaisy202(),                     "nlbpub",              "pub-in-audio"],
-            [ NlbpubToNarrationEpub(),                      "pub-in-audio",        "epub_narration"],
+            [ InsertMetadataDaisy202(retry_not_in_out = False),                     "nlbpub",              "pub-in-audio"],
+            [ NlbpubToNarrationEpub(retry_not_in_out = False),                      "pub-in-audio",        "epub_narration"],
             [ DummyPipeline("Innlesing med Hindenburg",
                             labels=["Lydbok","Innlesing"]),   "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-            [ EpubToDtbook(),                               "master",              "dtbook_tts"],
+            [ EpubToDtbook(retry_not_in_out = False),                               "master",              "dtbook_tts"],
             [ DummyPipeline("Talesyntese i Pipeline 1",
                             labels=["Lydbok","Talesyntese"]), "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
-            [ EpubToDtbookHTML(),                           "master",              "dtbook_html"],
+            [ EpubToDtbookHTML(retry_not_in_out = False),                           "master",              "dtbook_html"],
             [ DummyPipeline("Pipeline 1 og Ammars skript",
                             labels=["e-bok"]),                "dtbook_html",         None],
 
             # DTBook for punktskrift
-            [ EpubToDtbookBraille(),                        "master",              "dtbook_braille"],
+            [ EpubToDtbookBraille(retry_not_in_out = False),                        "master",              "dtbook_braille"],
             [ DummyPipeline("Punktskrift med NorBraille",
                             labels=["Punktskrift"]),          "dtbook_braille",      None],
 
@@ -168,12 +168,12 @@ class Produksjonssystem():
 
     def _run(self):
         assert os.getenv("CONFIG_FILE"), "CONFIG_FILE must be defined"
-        
+
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
         else:
             logging.getLogger().setLevel(logging.INFO)
-        
+
         # Make sure that directories are defined properly
         for d in self.book_archive_dirs:
             for a in self.book_archive_dirs:
@@ -190,7 +190,7 @@ class Produksjonssystem():
                 assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d]
             assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d]
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
-        
+
         # Make sure that the pipelines are defined properly
         for pipeline in self.pipelines:
             assert len(pipeline) == 3, "Pipeline declarations have three arguments (not " + len(pipeline) + ")"
@@ -199,11 +199,11 @@ class Produksjonssystem():
             assert pipeline[2] == None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
             assert pipeline[1] == None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
             assert pipeline[2] == None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
-        
+
         # Make directories
         for d in self.dirs:
             os.makedirs(self.dirs[d], exist_ok=True)
-        
+
         threads = []
         file_name=os.environ.get("CONFIG_FILE")
         emailDoc=""
@@ -212,10 +212,10 @@ class Produksjonssystem():
                     emailDoc = yaml.load(f)
                 except Exception as e:
                     self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
-        
+
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
-        
+
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
@@ -247,7 +247,7 @@ class Produksjonssystem():
         self._configThread = Thread(target=self._config_thread, name="config")
         self._configThread.setDaemon(True)
         self._configThread.start()
-        
+
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run, name="graph")
         graph_thread.setDaemon(True)
@@ -267,7 +267,7 @@ class Produksjonssystem():
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
                         pipeline[0].stop(exit=True)
-                
+
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
                     for pipeline in self.pipelines:
@@ -281,16 +281,16 @@ class Produksjonssystem():
                             break
         except KeyboardInterrupt:
             pass
-        
+
         for pipeline in self.pipelines:
             pipeline[0].stop(exit=True)
-        
+
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
             if thread:
                 logging.debug("joining {}".format(thread.name))
             thread.join(timeout=5)
-        
+
         is_alive = True
         while is_alive:
             is_alive = False
@@ -302,7 +302,7 @@ class Produksjonssystem():
             for pipeline in self.pipelines:
                 if pipeline[0].running:
                     self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(pipeline[0].title, " ({} / {})".format(pipeline[0].book["name"], pipeline[0].get_progress()) if pipeline[0].book else ""))
-        
+
         self.info("Venter på at plotteren skal stoppe...")
         time.sleep(5) # gi plotteren litt tid på slutten
         plotter.should_run = False
@@ -311,11 +311,11 @@ class Produksjonssystem():
         graph_thread.join()
         if graph_thread:
             logging.debug("joined {}".format(graph_thread.name))
-        
+
         self.info("Venter på at konfigtråden skal stoppe...")
         self.shouldRun = False
         self._configThread.join()
-    
+
     def wait_until_running(self, timeout=60):
         start_time = time.time()
 
@@ -344,9 +344,9 @@ class Produksjonssystem():
             if time.time() - last_update < 300:
                 time.sleep(5)
                 continue
-            
+
             last_update = time.time()
-            
+
             try:
                 with open(fileName, 'r') as f:
                     tempEmailDoc = yaml.load(f)
