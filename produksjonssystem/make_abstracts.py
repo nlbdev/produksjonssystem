@@ -53,9 +53,12 @@ class Audio_Abstract(Pipeline):
         temp_abs = Epub(self, temp_absdir)
         back_cover = False
         abstract_ = False
+        if(self.book["name"].endswith(".txt")):
+            self.utils.report.should_email = False
+            return False
         if not os.path.isfile(os.path.join(temp_absdir, "ncc.html")):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
-            return
+            return False
         # try:
         nccdoc = ElementTree.parse(os.path.join(temp_absdir, "ncc.html")).getroot()
         # except Exception:
@@ -124,10 +127,10 @@ class Audio_Abstract(Pipeline):
                 mp3File_abstract_end = float(smildoc_abstract.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_abstract_id)))
                 duration = mp3File_abstract_end - mp3File_abstract_start
                 num = num + 1
+            mp3File_abstract = smildoc_abstract.xpath("string((//audio/@src)[1])")
         except Exception:
             self.utils.report.warn("Lydutdrag fra smilfiler feilet.")
 
-        mp3File_abstract = smildoc_abstract.xpath("string((//audio/@src)[1])")
         if (duration >= 75):
             mp3File_abstract_end = mp3File_abstract_start+75
 
