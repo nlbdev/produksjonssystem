@@ -12,6 +12,7 @@ import pathlib
 import sys
 import os
 import shutil
+import traceback
 from subprocess import call, check_call, check_output
 from pathlib import Path
 from pydub import AudioSegment
@@ -59,16 +60,19 @@ class Audio_Abstract(Pipeline):
         if not os.path.isfile(os.path.join(temp_absdir, "ncc.html")):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return False
-        # try:
-        nccdoc = ElementTree.parse(os.path.join(temp_absdir, "ncc.html")).getroot()
-        # except Exception:
-        #    self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
+        try:
+            nccdoc = ElementTree.parse(os.path.join(temp_absdir, "ncc.html")).getroot()
+        except Exception:
+            self.utils.report.error("Klarte ikke lese ncc fila. Sjekk loggen for detaljer. Avbryter...")
+            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
+            return False
+
         audio_identifier = ""
         audio_title = ""
         audio_title = " (" + nccdoc.xpath("string(//*[@name='dc:title']/@content)") + ") "
         audio_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
-        audio_identifier=audio_identifier[0:6]
-        #if(len(audio_identifier)>6): audio_identifier= self.book["name"][0:6]
+        audio_identifier = audio_identifier[0:6]
 
         if audio_identifier == (""):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
@@ -79,7 +83,8 @@ class Audio_Abstract(Pipeline):
             smilFile = nccdoc.xpath("substring-before(//*[text()='Bokomtale' or text()='Baksidetekst' or text()='Omslagstekst']/@href,'#')")
             smilFile_Id = nccdoc.xpath("substring-after(//*[text()='Bokomtale' or text()='Baksidetekst' or text()='Omslagstekst']/@href,'#')")
         except Exception:
-            self.utils.report.error("Det oppstod en feil for" + audio_identifier)
+            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.error("Det oppstod en feil for" + audio_identifier + " under lasting av smilfilene. Sjekk loggen for detaljer.")
             return
         # Back-cover
         try:
@@ -96,7 +101,8 @@ class Audio_Abstract(Pipeline):
             self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
             back_cover=True
         except Exception:
-            self.utils.report.warn("Baksidetekst ikke funnet for " + audio_identifier + audio_title)
+            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.warn("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
 
         # creates abstract from ncc --> smil --> mp3
         several_smilFiles = []
@@ -129,7 +135,8 @@ class Audio_Abstract(Pipeline):
                 num = num + 1
             mp3File_abstract = smildoc_abstract.xpath("string((//audio/@src)[1])")
         except Exception:
-            self.utils.report.warn("Lydutdrag fra smilfiler feilet.")
+            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.warn("Lydutdrag fra smilfiler feilet. Sjekk loggen for detaljer.")
 
         if (duration >= 75):
             mp3File_abstract_end = mp3File_abstract_start+75
@@ -147,7 +154,8 @@ class Audio_Abstract(Pipeline):
                                 mp3File_abstract_end = 75.0
                                 break
                 except Exception:
-                    self.utils.report.warn("Klarte ikke hente ut lydutdrag basert på mp3 filene i mappa.")
+                    self.utils.report.debug(traceback.format_exc())
+                    self.utils.report.warn("Klarte ikke hente ut lydutdrag basert på mp3 filene i mappa. Sjekk loggen for detaljer.")
 
         # Export abstract
         try:
@@ -172,12 +180,11 @@ class Audio_Abstract(Pipeline):
         if (os.path.isfile(os.path.join(temp_absdir, "Lydutdrag.mp3")) or os.path.isfile(os.path.join(temp_absdir, "Baksidetekst.mp3"))):
             self.utils.report.info("Baksidetekst og eller lydutdrag funnet. Kopierer til lydsnutter")
 
-
             os.makedirs(os.path.join(self.dir_out,"Lydutdrag"), mode=0o777, exist_ok=True)
             os.makedirs(os.path.join(self.dir_out,"Baksidetekst"), mode=0o777, exist_ok=True)
             os.makedirs(os.path.join(self.dir_out,"Testlytt"), mode=0o777, exist_ok=True)
 
-            # If there is
+            # Copy abstract and/or back cover to dir out.
             if(abstract_):
                 shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Lydutdrag", audio_identifier+".mp3"))
                 self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
