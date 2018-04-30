@@ -63,6 +63,7 @@ class Pipeline():
     _bookHandlerThread = None
     _bookRetryThread = None
     _bookMonitorThread = None
+    _bookRetryInNotOutThread = None
     _dirInAvailable = False
     _shouldRun = True
     _stopAfterFirstJob = False
@@ -88,12 +89,13 @@ class Pipeline():
     # should be overridden when extending this class
     title = None
 
-    def __init__(self, retry=False):
+    def __init__(self, retry=False, retry_not_in_out=True):
         self.utils = DotMap()
         self.utils.report = None
         self.utils.filesystem = None
         self.retry = retry
         self._queue = []
+        self.retry_not_in_out = retry_not_in_out
         super().__init__()
 
     def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -231,6 +233,12 @@ class Pipeline():
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
             self.threads.append(self._bookRetryThread)
+
+        #if (self.retry_not_in_out):
+        #    self._bookRetryInNotOutThread = Thread(target=self._retry_books_not_in_out_thread, name="book retryer for {}".format(self.uid))
+        #    self._bookRetryInNotOutThread.setDaemon(True)
+        #    self._bookRetryInNotOutThread.start()
+        #    self.threads.append(self._bookRetryInNotOutThread)
 
         if not Pipeline._triggerDirThread:
             Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
@@ -580,17 +588,49 @@ class Pipeline():
                 continue
 
             last_check = time.time()
-            
             for filename in os.listdir(self.dir_in):
-                if (os.path.isdir(os.path.join(self.dir_in,filename))):
-                    # If filename is a directory touch the first file in directory
-                    for file_in_dir in os.listdir(os.path.join(self.dir_in, filename)):
-                        if not (os.path.isdir(file_in_dir)):
-                            Path(os.path.join(self.dir_in, filename, os.path.join(self.dir_in, filename, file_in_dir))).touch()
-                            break
-                else:
-                    # If it is a file touch file
-                    Path(os.path.join(self.dir_in, filename)).touch()
+                self.trigger(filename)
+            #for filename in os.listdir(self.dir_in):
+            #    if (os.path.isdir(os.path.join(self.dir_in,filename))):
+            #        # If filename is a directory touch the first file in directory
+            #        for file_in_dir in os.listdir(os.path.join(self.dir_in, filename)):
+            #            if not (os.path.isdir(file_in_dir)):
+            #                Path(os.path.join(self.dir_in, filename, os.path.join(self.dir_in, filename, file_in_dir))).touch()
+            #                break
+            #    else:
+            #        # If it is a file touch file
+            #        Path(os.path.join(self.dir_in, filename)).touch()
+    def _retry_books_not_in_out_thread(self):
+        last_check = 0
+        while self._dirInAvailable and self._shouldRun:
+            time.sleep(5)
+            max_update_interval = 60 * 60
+
+            if time.time() - last_check < max_update_interval:
+                continue
+
+            if not (datetime.date.today().weekday() <= 4):
+                continue
+            if not (8 <= datetime.datetime.now().hour <= 15):
+                continue
+
+            last_check = time.time()
+
+            for fileName in os.listdir(self.dir_in):
+                file_exists=False
+                #print(fileName+str(os.listdir(self.dir_out)))
+                for dirOut in os.listdir(self.dir_out):
+                    if Path(dirOut).stem == Path(fileName).stem:
+                        file_exists=True
+                    elif os.path.isdir(os.path.join(self.dir_out, dirOut)):
+                        for fileInDirOut in os.listdir(os.path.join(self.dir_out, dirOut)):
+                            if Path(fileName).stem in Path(fileInDirOut).stem:
+                                file_exists=True
+
+                if not file_exists:
+                    #print(os.path.join(self.dir_in, fileName))
+                    logging.info(fileName + " finnes ikke i ut mappen. Trigger denne boken.")
+                    self.trigger(fileName)
 
     def _handle_book_events_thread(self):
         while self._dirInAvailable and self._shouldRun:
