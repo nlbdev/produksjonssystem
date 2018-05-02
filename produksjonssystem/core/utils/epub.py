@@ -22,6 +22,7 @@ class Epub():
     
     pipeline = None
     book_path = None
+    metadata = None
     _temp_obj = None
     
     uid = "core-utils-epub"
@@ -146,27 +147,29 @@ class Epub():
     
     def meta(self, name, default=None):
         """Read OPF metadata"""
-        opf = None
-        opf_path = self.opf_path()
-        
-        if os.path.isdir(self.book_path):
-            opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
+        if not self.metadata:
+            opf = None
+            opf_path = self.opf_path()
+            self.metadata = {}
             
-        else:
-            with zipfile.ZipFile(self.book_path, 'r') as archive:
-                opf = archive.read(opf_path)
-                opf = ElementTree.XML(opf)
+            if os.path.isdir(self.book_path):
+                opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
+                
+            else:
+                with zipfile.ZipFile(self.book_path, 'r') as archive:
+                    opf = archive.read(opf_path)
+                    opf = ElementTree.XML(opf)
+            
+            opf_metadata = opf.findall('{http://www.idpf.org/2007/opf}metadata')[0]
+            for m in opf_metadata.findall("*"):
+                if "refines" in m.attrib:
+                    continue
+                n = m.attrib["property"] if "property" in m.attrib else m.attrib["name"] if "name" in m.attrib else m.tag
+                n = n.replace("{http://purl.org/dc/elements/1.1/}", "dc:")
+                value = m.attrib["content"] if "content" in m.attrib else m.text
+                self.metadata[n] = value
         
-        metadata = opf.findall('{http://www.idpf.org/2007/opf}metadata')[0]
-        meta = metadata.findall("*")
-        for m in meta:
-            if "refines" in m.attrib:
-                continue
-            n = m.attrib["property"] if "property" in m.attrib else m.attrib["name"] if "name" in m.attrib else m.tag
-            n = n.replace("{http://purl.org/dc/elements/1.1/}", "dc:")
-            if n == name:
-                return m.attrib["content"] if "content" in m.attrib else m.text
-        return None
+        return self.metadata[name] if name in self.metadata else default
     
     @staticmethod
     def html_to_nav(pipeline, source, target):
