@@ -63,7 +63,8 @@ class Filesystem():
 
         # In addition to the path, we use these stat attributes:
         # st_mode: File mode: file type and file mode bits (permissions).
-        # st_size: Size of the file in bytes, if it is a regular file or a symbolic link. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
+        # st_size: Size of the file in bytes, if it is a regular file or a symbolic link.
+        #          The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
         # st_mtime: Time of most recent content modification expressed in seconds.
 
         modified = 0
@@ -71,27 +72,33 @@ class Filesystem():
             md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
 
         else:
-            if os.path.isfile(path):
+            if os.path.isfile(path) and not Filesystem.shutil_ignore_patterns(os.path.dirname(path), [ os.path.basename(path) ]):
                 stat = os.stat(path)
                 st_size = stat.st_size if os.path.isfile(path) else 0
                 st_mtime = round(stat.st_mtime)
                 attributes.extend([path, st_mtime, st_size, stat.st_mode])
                 modified = stat.st_mtime
 
-            if not shallow:
+            if not shallow or not modified:
                 try:
                     for dirPath, subdirList, fileList in os.walk(path):
                         fileList.sort()
                         subdirList.sort()
+                        ignore = Filesystem.shutil_ignore_patterns(dirPath, fileList + subdirList)
+                        for s in reversed(range(len(subdirList))):
+                            if subdirList[s] in ignore:
+                                del subdirList[s] # remove ignored folders in-place
                         for f in fileList:
-                            if f.endswith("dirmodified"):
-                                continue
+                            if f in ignore:
+                                continue # skip ignored files
                             filePath = os.path.join(dirPath, f)
                             stat = os.stat(filePath)
                             st_size = stat.st_size if os.path.isfile(path) else 0
                             st_mtime = round(stat.st_mtime)
                             attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
                             modified = max(modified, stat.st_mtime)
+                            if shallow:
+                                break
                 except FileNotFoundError as e:
                     logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
                     raise e
