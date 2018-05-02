@@ -21,7 +21,7 @@ class Filesystem():
     """Operations on files and directories"""
 
     pipeline = None
-    last_reported_md5 = None # avoid reporting change for same book multiple times
+    last_reported_md5 = None  # avoid reporting change for same book multiple times
 
     _i18n = {
         "Storing": "Lagrer",
@@ -54,7 +54,7 @@ class Filesystem():
     @staticmethod
     def file_content_md5(path):
         if not os.path.isfile(path):
-            return "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
+            return "d41d8cd98f00b204e9800998ecf8427e"  # MD5 of an empty string
 
         return hashlib.md5(open(path, 'rb').read()).hexdigest()
 
@@ -70,10 +70,10 @@ class Filesystem():
 
         modified = 0
         if not os.path.exists(path):
-            md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
+            md5 = "d41d8cd98f00b204e9800998ecf8427e"  # MD5 of an empty string
 
         else:
-            if os.path.isfile(path) and not Filesystem.shutil_ignore_patterns(os.path.dirname(path), [ os.path.basename(path) ]):
+            if os.path.isfile(path) and not Filesystem.shutil_ignore_patterns(os.path.dirname(path), [os.path.basename(path)]):
                 stat = os.stat(path)
                 st_size = stat.st_size if os.path.isfile(path) else 0
                 st_mtime = round(stat.st_mtime)
@@ -88,10 +88,10 @@ class Filesystem():
                         ignore = Filesystem.shutil_ignore_patterns(dirPath, fileList + subdirList)
                         for s in reversed(range(len(subdirList))):
                             if subdirList[s] in ignore:
-                                del subdirList[s] # remove ignored folders in-place
+                                del subdirList[s]  # remove ignored folders in-place
                         for f in fileList:
                             if f in ignore:
-                                continue # skip ignored files
+                                continue  # skip ignored files
                             filePath = os.path.join(dirPath, f)
                             stat = os.stat(filePath)
                             st_size = stat.st_size if os.path.isfile(path) else 0
@@ -107,7 +107,7 @@ class Filesystem():
             if attributes:
                 md5 = hashlib.md5(str(attributes).encode()).hexdigest()
             else:
-                md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
+                md5 = "d41d8cd98f00b204e9800998ecf8427e"  # MD5 of an empty string
 
         if expect and expect != md5 and md5 != Filesystem.last_reported_md5:
             Filesystem.last_reported_md5 = md5
@@ -243,31 +243,36 @@ class Filesystem():
         elif os.path.isfile(self.pipeline.book["source"]):
             os.remove(self.pipeline.book["source"])
 
-    def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
-        """Convenience method for subprocess.run, with our own defaults"""
+    def run(self, *args, cwd=None, **kwargs):
         if not cwd:
             cwd = self.pipeline.dir_in
 
-        self.pipeline.utils.report.debug(self._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
+        Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)
+
+    @staticmethod
+    def run_static(args, cwd, report, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
+        """Convenience method for subprocess.run, with our own defaults"""
+
+        report.debug(Filesystem._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
 
         completedProcess = None
         try:
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
 
-            self.pipeline.utils.report.debug("---- stdout: ----")
-            self.pipeline.utils.report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
-            self.pipeline.utils.report.debug("-----------------")
-            self.pipeline.utils.report.debug("---- stderr: ----")
-            self.pipeline.utils.report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
-            self.pipeline.utils.report.debug("-----------------")
+            report.debug("---- stdout: ----")
+            report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
+            report.debug("-----------------")
+            report.debug("---- stderr: ----")
+            report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
+            report.debug("-----------------")
 
         except subprocess.CalledProcessError as e:
-            self.pipeline.utils.report.debug("---- stdout: ----")
-            self.pipeline.utils.report.add_message(stdout_level, e.stdout.decode("utf-8").strip(), add_empty_line_between=True)
-            self.pipeline.utils.report.debug("-----------------")
-            self.pipeline.utils.report.debug("---- stderr: ----")
-            self.pipeline.utils.report.add_message(stderr_level, e.stderr.decode("utf-8").strip(), add_empty_line_between=True)
-            self.pipeline.utils.report.debug("-----------------")
+            report.debug("---- stdout: ----")
+            report.add_message(stdout_level, e.stdout.decode("utf-8").strip(), add_empty_line_between=True)
+            report.debug("-----------------")
+            report.debug("---- stderr: ----")
+            report.add_message(stderr_level, e.stderr.decode("utf-8").strip(), add_empty_line_between=True)
+            report.debug("-----------------")
             raise
 
         return completedProcess
