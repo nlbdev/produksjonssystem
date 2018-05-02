@@ -1,47 +1,64 @@
 # -*- coding: utf-8 -*-
 
-import tempfile
-import re
-import markdown
-import pygments # for markdown code highlighting
-import os
-import sys
-import smtplib
-import time
 import logging
+import os
+import re
+import smtplib
+import sys
+import tempfile
 import threading
-
+import time
 from datetime import datetime, timezone
-from email.message import EmailMessage
 from email.headerregistry import Address
+from email.message import EmailMessage
 from email.utils import make_msgid
+
+import markdown
+import pygments  # for markdown code highlighting
 
 from core.utils.filesystem import Filesystem
 from core.utils.slack import Slack
+from dotmap import DotMap
+
 
 class Report():
     """Logging and reporting"""
-    
+
     stdout_verbosity = 'INFO'
     pipeline = None
     title = None
     should_email = True
     _report_dir = None
     _messages = None
-    
+
     _i18n = {
         "Links": "Lenker",
         "none": "ingen"
     }
-    
-    def __init__(self, pipeline):
+
+    def __init__(self, pipeline, title=None, report_dir=None, dir_base=None, uid=None):
         self._messages = {
             "message": [],
             "attachment": []
         }
-        self.pipeline = pipeline
+        self.title = title
+        if pipeline:
+            self.pipeline = pipeline
+        else:
+            assert title, "title must be specified when pipeline is missing"
+            assert report_dir, "report_dir must be specified when pipeline is missing"
+            assert dir_base, "dir_base must be specified when pipeline is missing"
+            assert uid, "uid must be specified when pipeline is missing"
+
+            os.makedirs(report_dir, exist_ok=True)
+            self._report_dir = report_dir
+
+            self.pipeline = DotMap()
+            self.pipeline.book = {}
+            self.pipeline.uid = uid
+            self.pipeline.dir_base = dir_base
         logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
-    
+
     def reportDir(self):
         # Lag rapport-mappe
         if not self._report_dir:
@@ -51,10 +68,10 @@ class Report():
                 report_dir = os.path.join(report_dir, self.pipeline.book["name"], timestring + "-" + self.pipeline.uid)
             else:
                 report_dir = os.path.join(report_dir, self.pipeline.uid, timestring)
-            os.makedirs(report_dir)
+            os.makedirs(report_dir, exist_ok=True)
             self._report_dir = report_dir
         return self._report_dir
-    
+
     def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         if severity == "DEBUG":
             logging.debug(message)
@@ -69,16 +86,16 @@ class Report():
         else:
             logging.warn("Unknown message severity: " + str(severity))
             logging.warn(message)
-        
+
         lines = None
         if isinstance(message, list):
             lines = message
         else:
             lines = [ message ]
-        
+
         if message_type not in self._messages:
             self._messages[message_type] = []
-        
+
         lines = [l for line in lines for l in line.split("\n")]
         if add_empty_line_between:
             spaced_lines = []
@@ -88,25 +105,25 @@ class Report():
             lines = spaced_lines
         if add_empty_line_last:
             lines.append("")
-        
+
         for line in lines:
             self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M:%S"), 'severity': severity, 'text': line })
-    
+
     def debug(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('DEBUG', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
-    
+
     def info(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('INFO', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
-    
+
     def success(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('SUCCESS', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
-    
+
     def warn(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('WARN', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
-    
+
     def error(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('ERROR', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
-    
+
     @staticmethod
     def emailStringsToAddresses(addresses):
         # Build set of recipients as Address objects.
@@ -118,7 +135,7 @@ class Report():
             addresses = [ addresses ]
         elif isinstance(addresses, tuple):
             addresses = list(addresses)
-        
+
         for a in addresses:
             if isinstance(a, Address):
                 _addresses.append(a)
@@ -131,9 +148,9 @@ class Report():
             user = a.split("@")[0]
             domain = a.split("@")[1]
             _addresses.append(Address(name, user, domain))
-        
+
         return tuple(_addresses)
-    
+
     @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients):
         assert subject
@@ -141,14 +158,14 @@ class Report():
         assert smtp
         assert sender
         assert isinstance(recipients, str) or isinstance(recipients, list)
-        
+
         # 1. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
         msg['From'] = Report.emailStringsToAddresses(sender)
         msg['To'] = Report.emailStringsToAddresses(recipients)
         msg.set_content(message)
-        
+
         # 2. send e-mail
         if not msg["To"]:
             logging.warn("Email with subject \"{}\" has no recipients".format(subject))
@@ -165,23 +182,24 @@ class Report():
                     s.send_message(msg)
             else:
                 logging.warn("email host/port not configured")
-        
+
         Slack.slack(text=subject, attachments=None)
-    
+
     def email(self, smtp, sender, recipients, subject=None):
         assert smtp
         assert sender
         assert recipients
-        
+        assert self.title or self.pipeline and self.pipeline.title
+
         if not subject:
             subject = self.title if self.title else self.pipeline.title
-        
+
         if isinstance(recipients, str):
             recipients = [ recipients ]
-        
+
         # 0. Create attachment with complete log (including DEBUG statements)
         self.attachLog()
-        
+
         # Determine overall status
         status = "INFO"
         for message_type in self._messages:
@@ -193,8 +211,8 @@ class Report():
                     status = "WARN"
                 elif m["severity"] == "ERROR":
                     status = "ERROR"
-        
-        
+
+
         # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
         markdown_text = []
         for m in self._messages["message"]:
@@ -203,7 +221,7 @@ class Report():
         markdown_text.append("\n----\n")
         markdown_text.append("\n# "+self._i18n["Links"]+"\n")
         markdown_text.append("\n<ul style=\"list-style: none;\">")
-        
+
         # Pick icon and style for INFO-attachments
         attachment_styles = {
             "DEBUG": {
@@ -227,7 +245,7 @@ class Report():
                 "style": "background-color: #ffbfbf;"
             }
         }
-        
+
         attachments = []
         for m in self._messages["attachment"]:
             smb, file, unc = Filesystem.networkpath(m["text"])
@@ -260,7 +278,7 @@ class Report():
             markdown_text.append(li)
         markdown_text.append("</ul>\n")
         markdown_text = "\n".join(markdown_text)
-        
+
         # 2. parse string as Markdown and render as HTML
         markdown_html = markdown.markdown(markdown_text, extensions=['fenced_code', 'codehilite'])
         markdown_html = '''<!DOCTYPE html>
@@ -274,7 +292,7 @@ class Report():
 </body>
 </html>
 '''
-        
+
         # 3. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
@@ -282,9 +300,9 @@ class Report():
         msg['To'] = Report.emailStringsToAddresses(recipients)
         msg.set_content(markdown_text)
         msg.add_alternative(markdown_html, subtype="html")
-        
+
         logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
-        
+
         # 4. send e-mail
         if smtp["host"] and smtp["port"]:
             with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
@@ -297,14 +315,14 @@ class Report():
                 s.send_message(msg)
         else:
             logging.warn("email host/port not configured")
-        
+
         with open('/tmp/email.md', "w") as f:
             f.write(markdown_text)
             logging.debug("email markdown: /tmp/email.md")
         with open('/tmp/email.html', "w") as f:
-            f.write(markdown_html)  
+            f.write(markdown_html)
             logging.debug("email html: /tmp/email.html")
-        
+
         # 5. send message to Slack
         slack_attachments = []
         for attachment in attachments:
@@ -322,15 +340,15 @@ class Report():
                 "color": color
             })
         Slack.slack(text=subject, attachments=slack_attachments)
-    
+
     def attachLog(self):
         logpath = os.path.join(self.reportDir(), "log.txt")
         self.attachment([m["text"] for m in self._messages["message"]], logpath, "DEBUG")
         return logpath
-    
+
     def infoHtml(self, html, message_type="message"):
         """ wash the HTML before reporting it """
-        
+
         if isinstance(html, list):
             html = "\n".join(html)
         html = re.sub("^.*<body[^>]*>", "", html, flags=re.DOTALL)
@@ -338,15 +356,15 @@ class Report():
         html = re.sub("<script[^>]*(/>|>.*?</script>)", "", html, flags=re.DOTALL)
         html = "\n".join([line.strip() for line in html.split("\n")])
         self.info(html)
-    
+
     def attachment(self, content, path, severity):
         assert path and os.path.isabs(path), "Links must have an absolute path."
         assert not content or isinstance(content, list) or isinstance(content, str), "Attachment content must be a string or list when given."
-        
+
         if path in [m["text"] for m in self._messages["attachment"]]:
             self.debug("Skipping attachment; tried attaching same attachment twice: " + path)
             return
-        
+
         if content:
             if isinstance(content, list):
                 content = "\n".join(content)
@@ -362,17 +380,16 @@ class Report():
             self.warn(path, message_type="attachment", add_empty_line_last=False)
         else: # "ERROR"
             self.error(path, message_type="attachment", add_empty_line_last=False)
-    
+
     # in case you want to override something
     def translate(self, english_text, translated_text):
         self._i18n[english_text] = translated_text
 
 class DummyReport(Report):
     pipeline = None
-    
+
     def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         logging.debug("[" + str(severity) + "] " + str(message))
-    
+
     def attachment(self, content, path, severity):
         logging.debug("attachment: " + (str(content)[:100]) + ("..." if len(str(content)) > 100 else "") + "|" + str(path) + "|" + str(severity))
-    
