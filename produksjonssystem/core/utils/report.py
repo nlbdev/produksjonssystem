@@ -153,7 +153,7 @@ class Report():
         if not msg["To"]:
             logging.warn("Email with subject \"{}\" has no recipients".format(subject))
         else:
-            logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join([str(a) for a in msg["To"]])))
+            logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
             if smtp["host"] and smtp["port"]:
                 with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                     s.ehlo()
