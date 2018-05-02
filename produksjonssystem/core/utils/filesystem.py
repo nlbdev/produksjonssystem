@@ -214,6 +214,7 @@ class Filesystem():
                     os.remove(target)
             except (OSError, NotADirectoryError):
                 self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the file or folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
+                self.pipeline.utils.report.debug(traceback.format_exc())
                 raise
         if move:
             shutil.move(source, target)

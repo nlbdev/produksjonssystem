@@ -5,6 +5,7 @@ import re
 import time
 import psutil
 import tempfile
+import traceback
 import subprocess
 
 from threading import RLock
@@ -96,6 +97,7 @@ class DaisyPipelineJob():
                         ))
 
                     except subprocess.CalledProcessError:
+                        pipeline.utils.report.debug(traceback.format_exc())
                         pipeline.utils.report.error(DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"] + ".")
 
                 # Save PID for Pipeline 2 engine
@@ -197,6 +199,7 @@ class DaisyPipelineJob():
                 self.status = None
 
             except Exception:
+                self.pipeline.utils.report.debug(traceback.format_exc())
                 self.pipeline.utils.report.error("An error occured while running the DAISY Pipeline 2 job (" + str(self.job_id) + ")")
 
             finally:
@@ -205,6 +208,7 @@ class DaisyPipelineJob():
                         process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "delete", self.job_id])
                         self.pipeline.utils.report.debug(self.job_id + " was deleted")
                     except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
+                        self.pipeline.utils.report.debug(traceback.format_exc())
                         self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)
 
         else:

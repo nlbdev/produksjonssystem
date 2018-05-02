@@ -5,6 +5,7 @@ import re
 import lxml
 import time
 import tempfile
+import traceback
 import subprocess
 
 from lxml import etree as ElementTree
@@ -98,6 +99,7 @@ class Schematron():
         except Exception:
             self.pipeline.utils.report.error("An error occured while running the Schematron (" + str(schematron) + ")")
     
+            self.pipeline.utils.report.debug(traceback.format_exc())
     # in case you want to override something
     @staticmethod
     def translate(english_text, translated_text):

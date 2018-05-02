@@ -208,10 +208,11 @@ class Produksjonssystem():
         file_name=os.environ.get("CONFIG_FILE")
         emailDoc=""
         with open(file_name, 'r') as f:
-                try:
-                    emailDoc = yaml.load(f)
-                except Exception as e:
-                    self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
+            try:
+                emailDoc = yaml.load(f)
+            except Exception as e:
+                self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
+                traceback.print_exc(e)
 
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]

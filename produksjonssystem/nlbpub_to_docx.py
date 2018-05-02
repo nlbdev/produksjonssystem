@@ -149,6 +149,7 @@ class NLBpubToDocx(Pipeline):
 
         except Exception:
             self.utils.report.warn("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
+            traceback.print_exc(e)
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
         UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")

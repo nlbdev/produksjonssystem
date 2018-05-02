@@ -132,6 +132,7 @@ class Audio_Abstract(Pipeline):
                 several_smilFiles.append(nccdoc.xpath("substring-before((//@href)[{0}],'#')".format(i+1)))
                 several_smilFiles_id.append(nccdoc.xpath("substring-after((//@href)[{0}],'#')".format(i+1)))
         except Exception:
+            self.utils.report.debug(traceback.format_exc())
             self.utils.report.warn("Klarte ikke hente ut .smil filene for " + audio_identifier + audio_title)
 
         timeout = time.time() + 60 * 2
@@ -185,6 +186,7 @@ class Audio_Abstract(Pipeline):
             file_exists["abstracts"] = True
 
         except Exception:
+            self.utils.report.debug(traceback.format_exc())
             self.utils.report.warn("Klarte ikke eksportere Lydutdrag.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
         # Copies abstract and back cover to dir_out
