@@ -28,7 +28,13 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class Audio_Abstract(Pipeline):
     uid = "create-abstracts"
     title = "Hent ut lydutdrag"
-    labels = [ "Lydbok", "Innlesing", "Talesyntese" ]
+    labels = ["Lydbok", "Innlesing", "Talesyntese"]
+
+    parentdirs = {
+                  "abstracts": "Lydutdrag",
+                  "back-cover": "Baksidetekst",
+                  "test-audio": "Testlytt"
+                  }
 
     def on_book_deleted(self):
         if not(len(self.book["name"]) <= 6):
@@ -52,8 +58,13 @@ class Audio_Abstract(Pipeline):
         temp_absdir = temp_absdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_absdir)
         temp_abs = Epub(self, temp_absdir)
-        back_cover = False
-        abstract_ = False
+
+        file_exists = {
+                       "abstracts": False,
+                       "back-cover": False,
+                       "test-audio": False
+                      }
+
         if(self.book["name"].endswith(".txt")):
             self.utils.report.should_email = False
             return False
@@ -62,6 +73,7 @@ class Audio_Abstract(Pipeline):
             return False
         try:
             nccdoc = ElementTree.parse(os.path.join(temp_absdir, "ncc.html")).getroot()
+
         except Exception:
             self.utils.report.error("Klarte ikke lese ncc fila. Sjekk loggen for detaljer. Avbryter...")
             self.utils.report.debug(traceback.format_exc())
@@ -82,27 +94,34 @@ class Audio_Abstract(Pipeline):
         try:
             smilFile = nccdoc.xpath("substring-before(//*[text()='Bokomtale' or text()='Baksidetekst' or text()='Omslagstekst']/@href,'#')")
             smilFile_Id = nccdoc.xpath("substring-after(//*[text()='Bokomtale' or text()='Baksidetekst' or text()='Omslagstekst']/@href,'#')")
+
         except Exception:
             self.utils.report.debug(traceback.format_exc())
             self.utils.report.error("Det oppstod en feil for" + audio_identifier + " under lasting av smilfilene. Sjekk loggen for detaljer.")
             return
         # Back-cover
-        try:
-            smildoc = ElementTree.parse(os.path.join(temp_absdir,smilFile)).getroot()
-            mp3File = smildoc.xpath("string((//audio/@src)[1])")
-            mp3File_start = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_Id))
-            mp3File_end = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_Id))
-            if mp3File_start == mp3File_end:
-                self.utils.report.error("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
-            # Creates audio segment in milliseconds from start to end of the abstract file
-            mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
-            new_mp3=mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
-            new_mp3.export(os.path.join(temp_absdir, "Baksidetekst.mp3"))
-            self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
-            back_cover=True
-        except Exception:
-            self.utils.report.debug(traceback.format_exc())
-            self.utils.report.warn("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
+
+        if (smilFile != ""):
+            try:
+                smildoc = ElementTree.parse(os.path.join(temp_absdir, smilFile)).getroot()
+                mp3File = smildoc.xpath("string((//audio/@src)[1])")
+                mp3File_start = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_Id))
+                mp3File_end = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_Id))
+                if mp3File_start == mp3File_end:
+                    self.utils.report.error("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
+
+                # Creates audio segment in milliseconds from start to end of the abstract file
+                mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
+                new_mp3=mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
+                new_mp3.export(os.path.join(temp_absdir, "Baksidetekst.mp3"))
+                self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
+                file_exists["back-cover"] = True
+
+            except Exception:
+                self.utils.report.debug(traceback.format_exc())
+                self.utils.report.warn("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
+        else:
+            self.utils.report.warn("Baksidetekst ikke funnet for " + audio_identifier)
 
         # creates abstract from ncc --> smil --> mp3
         several_smilFiles = []
@@ -123,7 +142,6 @@ class Audio_Abstract(Pipeline):
                 smilFile_abstract = several_smilFiles[int(number_of_smilfiles * 0.5+num)]
                 smilFile_abstract_id = several_smilFiles_id[int(number_of_smilfiles * 0.5+num)]
                 smildoc_abstract = ElementTree.parse(os.path.join(temp_absdir, smilFile_abstract)).getroot()
-
 
                 mp3File_abstract_start = float(smildoc_abstract.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_abstract_id)))
 
@@ -164,40 +182,33 @@ class Audio_Abstract(Pipeline):
             final_mp3 = new_mp3_abstract.fade_out(3000)
             final_mp3.export(os.path.join(temp_absdir, "Lydutdrag.mp3"))
             self.utils.report.info("Lydutdrag eksportert fra: " + mp3File_abstract)
-            abstract_=True
+            file_exists["abstracts"] = True
+
         except Exception:
             self.utils.report.warn("Klarte ikke eksportere Lydutdrag.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
-        # Deletes all files not Omslagstekst.mp3 in temp folder
-        #for item in os.listdir(temp_absdir):
-        #    if not (item == "Baksidetekst.mp3"or item == "Lydutdrag.mp3"):
-        #        if os.path.isfile(os.path.join(temp_absdir, item)):
-        #            os.remove(os.path.join(temp_absdir, item))
-        #        elif os.path.isdir(os.path.join(temp_absdir, item)):
-        #            shutil.rmtree(os.path.join(temp_absdir, item), ignore_errors=True)
-
-        # Copies tempfile to /utgave-ut/baksidetekst
+        # Copies abstract and back cover to dir_out
         if (os.path.isfile(os.path.join(temp_absdir, "Lydutdrag.mp3")) or os.path.isfile(os.path.join(temp_absdir, "Baksidetekst.mp3"))):
-            self.utils.report.info("Baksidetekst og eller lydutdrag funnet. Kopierer til lydsnutter")
 
-            os.makedirs(os.path.join(self.dir_out,"Lydutdrag"), mode=0o777, exist_ok=True)
-            os.makedirs(os.path.join(self.dir_out,"Baksidetekst"), mode=0o777, exist_ok=True)
-            os.makedirs(os.path.join(self.dir_out,"Testlytt"), mode=0o777, exist_ok=True)
+            if (file_exists["back-cover"]):
+                shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(temp_absdir, "Testlytt.mp3"))
+                file_exists["test-audio"] = True
+                if (self.parentdirs["abstracts"]):
+                    self.utils.report.info("Baksidetekst og lydutdrag funnet. Kopierer til lydsnutter")
+                else:
+                    self.utils.report.info("Baksidetekst funnet. Kopierer til lydsnutter")
+            elif (self.parentdirs["abstracts"]):
+                shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(temp_absdir, "Testlytt.mp3"))
+                file_exists["test-audio"]=True
+                self.utils.report.info("Lydutdrag funnet. Kopierer til lydsnutter")
 
-            # Copy abstract and/or back cover to dir out.
-            if(abstract_):
-                shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Lydutdrag", audio_identifier+".mp3"))
-                self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
-                self.utils.report.attachment(None, os.path.join(self.dir_out,"Lydutdrag",audio_identifier+".mp3"), "DEBUG")
-                if not (back_cover):
-                    shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(self.dir_out,"Testlytt", audio_identifier+".mp3"))
-                    self.utils.report.attachment(None, os.path.join(self.dir_out,"Testlytt",audio_identifier+".mp3"), "DEBUG")
-            if(back_cover):
-                shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Baksidetekst", audio_identifier+".mp3"))
-                self.utils.report.title = self.title + ": " + audio_identifier + " baksidetekst ble eksportert 👍😄" + audio_title
-                self.utils.report.attachment(None, os.path.join(self.dir_out,"Baksidetekst",audio_identifier+".mp3"), "DEBUG")
-                shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(self.dir_out,"Testlytt", audio_identifier+".mp3"))
-                self.utils.report.attachment(None, os.path.join(self.dir_out,"Testlytt",audio_identifier+".mp3"), "DEBUG")
+
+            for key in self.parentdirs:
+                if(file_exists[key]):
+                    archived_path = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3") , audio_identifier, parentdir = self.parentdirs[key], file_extension="mp3")
+                    self.utils.report.attachment(None, archived_path, "DEBUG")
+
+            self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
         else:
             self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
 
