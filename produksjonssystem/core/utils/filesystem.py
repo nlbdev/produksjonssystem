@@ -18,10 +18,10 @@ from pathlib import Path
 
 class Filesystem():
     """Operations on files and directories"""
-    
+
     pipeline = None
     last_reported_md5 = None # avoid reporting change for same book multiple times
-    
+
     _i18n = {
         "Storing": "Lagrer",
         "in": "i",
@@ -38,7 +38,7 @@ class Filesystem():
         "Maybe someone has a file or folder open on their computer?": "Kanskje noen har en fil eller mappe åpen på datamaskinen sin?",
         "A file or folder could not be found. Did someone delete it maybe?": "Filen eller mappen ble ikke funnet. Kanskje noen slettet den?"
     }
-    
+
     shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
         "Thumbs.db", "*.swp", "ehthumbs.db", "ehthumbs_vista.db", "*.stackdump", "Desktop.ini", "desktop.ini",
         "$RECYCLE.BIN/", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
@@ -46,17 +46,17 @@ class Filesystem():
         ".Trashes", ".VolumeIcon.icns", ".com.apple.timemachine.donotpresent", ".AppleDB", ".AppleDesktop",
         "Network Trash Folder", "Temporary Items", ".apdisk", "Dolphin check log.txt"
     )
-    
+
     def __init__(self, pipeline):
         self.pipeline = pipeline
-    
+
     @staticmethod
     def file_content_md5(path):
         if not os.path.isfile(path):
             return "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
-        
+
         return hashlib.md5(open(path, 'rb').read()).hexdigest()
-    
+
     @staticmethod
     def path_md5(path, shallow, expect=None):
         attributes = []
@@ -65,11 +65,11 @@ class Filesystem():
         # st_mode: File mode: file type and file mode bits (permissions).
         # st_size: Size of the file in bytes, if it is a regular file or a symbolic link. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.
         # st_mtime: Time of most recent content modification expressed in seconds.
-        
+
         modified = 0
         if not os.path.exists(path):
             md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
-        
+
         else:
             if os.path.isfile(path):
                 stat = os.stat(path)
@@ -95,32 +95,32 @@ class Filesystem():
                 except FileNotFoundError as e:
                     logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
                     raise e
-            
+
             if attributes:
                 md5 = hashlib.md5(str(attributes).encode()).hexdigest()
             else:
                 md5 = "d41d8cd98f00b204e9800998ecf8427e" # MD5 of an empty string
-        
+
         if expect and expect != md5 and md5 != Filesystem.last_reported_md5:
             Filesystem.last_reported_md5 = md5
             text = "MD5 changed for " + str(path) + " (was: {}, is: {}): ".format(expect, md5)
             logging.info(text + str(attributes)[:1000] + ("…" if len(str(attributes)) > 1000 else ""))
             logging.debug(text + str(attributes))
-        
+
         return md5, modified
-    
+
     def copytree(self, src, dst):
         assert os.path.isdir(src)
-        
+
         if not os.path.exists(dst):
             return shutil.copytree(src, dst, ignore=Filesystem.shutil_ignore_patterns)
-        
+
         src_list = os.listdir(src)
         dst_list = os.listdir(dst)
         src_list.sort()
         dst_list.sort()
         ignore = Filesystem.shutil_ignore_patterns(src, src_list)
-        
+
         for item in src_list:
             src_subpath = os.path.join(src, item)
             dst_subpath = os.path.join(dst, item)
@@ -139,7 +139,7 @@ class Filesystem():
                             self.pipeline.utils.report.error(Filesystem._i18n["Unable to replace file with newer version"] + ": " + dst_subpath)
                     else:
                         shutil.copy(src_subpath, dst_subpath)
-        
+
         # Report files and folders that could not be removed and were not supposed to be replaced
         for item in dst_list:
             dst_subpath = os.path.join(dst, item)
@@ -151,9 +151,9 @@ class Filesystem():
                     message += Filesystem._i18n["file"]
                 message += " " + Filesystem._i18n["that should no longer exist"] + ": " + dst_subpath
                 self.pipeline.utils.report.error(message)
-        
+
         return dst
-    
+
     def copy(self, source, destination):
         """Copy the `source` file or directory to the `destination`"""
         assert source, "Filesystem.copy(): source must be specified"
@@ -183,8 +183,8 @@ class Filesystem():
                     raise
         else:
             shutil.copy(source, destination)
-    
-    def storeBook(self, source, book_id, move=False, subdir=None, dir_out=None, file_extension=None):
+
+    def storeBook(self, source, book_id, move=False, parentdir=None , subdir=None, dir_out=None, file_extension=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
         assert book_id
@@ -194,10 +194,14 @@ class Filesystem():
         assert not "/" in book_id
         assert not subdir or not ".." in subdir
         assert not subdir or not "/" in subdir
+        assert not parentdir or not ".." in parentdir
+        assert not parentdir or not "/" in parentdir
         if not dir_out:
             dir_out = self.pipeline.dir_out
         if subdir:
             dir_out = os.path.join(dir_out, subdir)
+        if parentdir:
+            dir_out = os.path.join(dir_out, parentdir)
         target = os.path.join(dir_out, book_id)
         if os.path.isfile(source) and file_extension:
             target += "." + str(file_extension)
@@ -215,39 +219,39 @@ class Filesystem():
             shutil.move(source, target)
         else:
             self.copy(source, target)
-        
+
         if os.path.isdir(target):
             # update modification time for directory
             f = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=target).name
             Path(f).touch()
             os.remove(f)
-        
+
         return target
-    
+
     def deleteSource(self):
         if os.path.isdir(self.pipeline.book["source"]):
             shutil.rmtree(self.pipeline.book["source"])
         elif os.path.isfile(self.pipeline.book["source"]):
             os.remove(self.pipeline.book["source"])
-    
+
     def run(self, args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, cwd=None, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
         """Convenience method for subprocess.run, with our own defaults"""
         if not cwd:
             cwd = self.pipeline.dir_in
-        
+
         self.pipeline.utils.report.debug(self._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
-        
+
         completedProcess = None
         try:
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
-            
+
             self.pipeline.utils.report.debug("---- stdout: ----")
             self.pipeline.utils.report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
             self.pipeline.utils.report.debug("---- stderr: ----")
             self.pipeline.utils.report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
-            
+
         except subprocess.CalledProcessError as e:
             self.pipeline.utils.report.debug("---- stdout: ----")
             self.pipeline.utils.report.add_message(stdout_level, e.stdout.decode("utf-8").strip(), add_empty_line_between=True)
@@ -256,9 +260,9 @@ class Filesystem():
             self.pipeline.utils.report.add_message(stderr_level, e.stderr.decode("utf-8").strip(), add_empty_line_between=True)
             self.pipeline.utils.report.debug("-----------------")
             raise
-        
+
         return completedProcess
-    
+
     def zip(self, directory, file):
         """Zip the contents of `dir`"""
         assert directory, "zip: directory must be specified: "+str(directory)
@@ -271,20 +275,20 @@ class Filesystem():
                 relative = str(f.relative_to(dirpath))
                 self.pipeline.utils.report.debug("zipping: " + relative)
                 archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
-    
+
     def unzip(self, archive, target):
         """Unzip the contents of `archive`, as `dir`"""
         assert archive, "unzip: archive must be specified: "+str(archive)
         assert os.path.exists(archive), "unzip: archive must exist: "+archive
         assert target, "unzip: target must be specified: "+str(target)
         assert os.path.isdir(target) or not os.path.exists(target), "unzip: if target exists, it must be a directory: "+target
-        
+
         if not os.path.exists(target):
             os.makedirs(target)
-        
+
         if os.path.isdir(archive):
             self.copy(archive, target)
-            
+
         else:
             with zipfile.ZipFile(archive, "r") as zip_ref:
                 try:
@@ -293,7 +297,7 @@ class Filesystem():
                     self.pipeline.utils.report.error(Epub._i18n["Problem reading ZIP file. Did someone modify or delete it maybe?"])
                     self.pipeline.utils.report.debug(traceback.format_exc())
                     raise e
-            
+
             # ensure that permissions are correct
             os.chmod(target, 0o777)
             for root, dirs, files in os.walk(target):
@@ -301,15 +305,15 @@ class Filesystem():
                     os.chmod(os.path.join(root, d), 0o777)
                 for f in files:
                     os.chmod(os.path.join(root, f), 0o666)
-    
+
     @staticmethod
     def ismount(path):
         return True if Filesystem.getdevice(path) else False
-    
+
     @staticmethod
     def getdevice(path):
         path = os.path.normpath(path)
-        
+
         with open('/proc/mounts','r') as f:
             for line in f.readlines():
                 l = line.split()
@@ -317,46 +321,46 @@ class Filesystem():
                     #l[0] = "//x.x.x.x/sharename/optionalsubpath"
                     #l[1] = "/mount/point"
                     return re.sub("^//", "smb://", l[0])
-        
+
         x_dir = os.getenv("XDG_RUNTIME_DIR")
         if x_dir:
             for mount in [os.path.join(x_dir, "gvfs", m) for m in os.listdir(os.path.join(x_dir, "gvfs"))]:
                 if mount == path:
                     # path == "$XDG_RUNTIME_DIR/gvfs/smb-share:server=x.x.x.x,share=sharename"
                     return re.sub(",share=", "/", re.sub("^smb-share:server=", "smb://", os.path.basename(path)))
-        
+
         return None
-    
+
     @staticmethod
     def networkpath(path):
         path = os.path.normpath(path)
         if path == ".":
             path = ""
-        
+
         levels = path.split(os.path.sep)
         possible_mount_points = ["/".join(levels[:i+1]) for i in range(len(levels))][1:]
         possible_mount_points.reverse()
-        
+
         smb = None
         for possible_mount_point in possible_mount_points:
             smb = Filesystem.getdevice(possible_mount_point)
             if smb:
                 smb = smb + path[len(possible_mount_point):]
                 break
-        
+
         if not smb:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))
             localhost = s.getsockname()[0]
             s.close()
             smb = "smb://" + localhost + path
-        
+
         smb = re.sub("^(smb:/+[^/]+).*", "\\1", smb) + urllib.request.pathname2url(re.sub("^smb:/+[^/]+/*(/.*)$", "\\1", smb))
-        
+
         file = re.sub("^smb:", "file:", smb)
         unc = re.sub("/", r"\\", re.sub("^smb:", "", smb))
         return smb, file, unc
-    
+
     @staticmethod
     def get_host_from_url(addr):
         try:
@@ -367,7 +371,7 @@ class Filesystem():
             return addr[0]
         except Exception:
             return None
-    
+
     @staticmethod
     def get_base_path(path, base_dirs):
         for d in base_dirs:
@@ -375,9 +379,8 @@ class Filesystem():
             if not relpath.startswith("../"):
                 return base_dirs[d]
         return None
-    
+
     # in case you want to override something
     @staticmethod
     def translate(english_text, translated_text):
         Filesystem._i18n[english_text] = translated_text
-    
