@@ -48,6 +48,7 @@ class Pipeline():
     dir_reports = None
     dir_trigger = None
     dir_base = None
+    parentdirs = {}
 
     # This one is meant for use in static contexts (Pipeline.dirs[uid][in|out|reports|trigger])
     dirs = None
@@ -171,6 +172,9 @@ class Pipeline():
 
         assert self.dir_in != None and len(self.dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
         assert self.dir_out != None and len(self.dir_out) > 0 and os.path.exists(self.dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
+
+        for p in self.parentdirs:
+            os.makedirs(os.path.join(self.dir_out, self.parentdirs[p]), exist_ok=True)
 
         self.dir_trigger = os.getenv("TRIGGER_DIR")
         if self.dir_trigger:
@@ -575,9 +579,7 @@ class Pipeline():
 
         while self._dirInAvailable and self._shouldRun:
             time.sleep(5)
-
-            needs_update = False
-            max_update_interval = 60 * 60 # 1 hour
+            max_update_interval = 60 * 60  # 1 hour
 
             if time.time() - last_check < max_update_interval:
                 continue
@@ -600,6 +602,7 @@ class Pipeline():
             #    else:
             #        # If it is a file touch file
             #        Path(os.path.join(self.dir_in, filename)).touch()
+
     def _retry_books_not_in_out_thread(self):
         last_check = 0
         while self._dirInAvailable and self._shouldRun:
@@ -617,15 +620,27 @@ class Pipeline():
             last_check = time.time()
 
             for fileName in os.listdir(self.dir_in):
-                file_exists=False
-                #print(fileName+str(os.listdir(self.dir_out)))
-                for dirOut in os.listdir(self.dir_out):
-                    if Path(dirOut).stem == Path(fileName).stem:
-                        file_exists=True
-                    elif os.path.isdir(os.path.join(self.dir_out, dirOut)):
-                        for fileInDirOut in os.listdir(os.path.join(self.dir_out, dirOut)):
-                            if Path(fileName).stem in Path(fileInDirOut).stem:
-                                file_exists=True
+                file_exists = False
+                try:
+                    if self.parentdirs:
+                        for key in self.parentdirs:
+                            for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
+                                if Path(fileInDirOut).stem[:6] == Path(fileName).stem[:6]:
+                                    file_exists = True
+                    else:
+                        for fileInOut in os.listdir(self.dir_out):
+                            if Path(fileInOut).stem[:6] == Path(fileName).stem[:6]:
+                                file_exists = True
+                except Exception:
+                    logging.info("Retry not it out tråden feilet under søking av filer i ut mappa for: "+ self.title)
+
+                #for dirOut in os.listdir(self.dir_out):
+                #    if Path(dirOut).stem == Path(fileName).stem:
+                #        file_exists=True
+                #    elif os.path.isdir(os.path.join(self.dir_out, dirOut)):
+                #        for fileInDirOut in os.listdir(os.path.join(self.dir_out, dirOut)):
+                #            if Path(fileName).stem in Path(fileInDirOut).stem:
+                #                file_exists=True
 
                 if not file_exists:
                     #print(os.path.join(self.dir_in, fileName))
