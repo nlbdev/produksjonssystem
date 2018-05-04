@@ -121,7 +121,7 @@ class Produksjonssystem():
             # punktskrift
             [ InsertMetadataBraille(retry_not_in_out = False),                      "nlbpub",              "pub-in-braille"],
             [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille"],
-            [ NlbpubToPef(),                                "pub-ready-braille",   "pef"],
+            [ NlbpubToPef(retry_not_in_out = False),                                "pub-ready-braille",   "pef"],
 
             # innlest lydbok
             [ InsertMetadataDaisy202(retry_not_in_out = False),                     "nlbpub",              "pub-in-audio"],
@@ -341,6 +341,7 @@ class Produksjonssystem():
         emailDoc = ""
         last_update = 0
         while(self.shouldRun):
+
             if time.time() - last_update < 300:
                 time.sleep(5)
                 continue
@@ -351,11 +352,14 @@ class Produksjonssystem():
                 with open(fileName, 'r') as f:
                     tempEmailDoc = yaml.load(f)
                 if tempEmailDoc != emailDoc:
-                    self.info("Oppdaterer konfig fra fil")
+                    if emailDoc != "":
+                        self.info("Oppdaterer konfig fra fil")
                     emailDoc = tempEmailDoc
+
                     for pipeline in self.pipelines:
                         recipients = []
                         pipeline_config = {}
+
                         if pipeline[0].uid in emailDoc and emailDoc[pipeline[0].uid]:
                             for recipient in emailDoc[pipeline[0].uid]:
                                 if isinstance(recipient, str):
@@ -363,10 +367,23 @@ class Produksjonssystem():
                                 elif isinstance(recipient, dict):
                                     for key in recipient:
                                         pipeline_config[key] = recipient[key]
+                        old_recipients = pipeline[0].email_settings["recipients"]
+
+                        if (len(old_recipients) > len(recipients)):
+                            self.info("Systemet har oppdatert mottakere for: {}" .format(pipeline[0].uid))
+                            delta = (yaml.dump(list(set(old_recipients)-set(recipients)), default_flow_style=False))
+                            self.info("Fjernet mottakere: \n {}".format(delta))
+                        elif (len(old_recipients) < len(recipients)):
+                            self.info("Systemet har oppdatert mottakere for: {}" .format(pipeline[0].uid))
+                            delta = (yaml.dump(list(set(recipients)-set(old_recipients)), default_flow_style=False))
+                            self.info("Lagt til mottakere: \n {}".format(delta))
+
                         pipeline[0].email_settings["recipients"] = recipients
                         pipeline[0].config = pipeline_config
+
             except Exception as e:
                 self.info("En feil oppstod under lasting av konfigurasjonsfil. Sjekk syntaksen til" + fileName)
+                self.info(traceback.format_exc())
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
