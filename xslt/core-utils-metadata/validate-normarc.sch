@@ -87,6 +87,9 @@
         <rule context="marcxchange:record[not($is-periodical)]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
             <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISBN i *596$f kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
         </rule>
+        <rule context="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
+            <report test="contains(lower-case(text()), 'originalutgaven') or contains(lower-case(text()), 'mangler')">Teksten "Originalutgavens ISBN/ISSN mangler" skal stå i *598$a, ikke i *596$f.</report>
+        </rule>
         
         <!-- Spesifikt for bøker -->
         <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
