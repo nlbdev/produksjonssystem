@@ -208,8 +208,8 @@ class Produksjonssystem():
             os.makedirs(self.dirs[d], exist_ok=True)
 
         threads = []
-        file_name=os.environ.get("CONFIG_FILE")
-        emailDoc=""
+        file_name = os.environ.get("CONFIG_FILE")
+        emailDoc = ""
         with open(file_name, 'r') as f:
             try:
                 emailDoc = yaml.load(f)
@@ -235,19 +235,19 @@ class Produksjonssystem():
                         for key in recipient:
                             pipeline_config[key] = recipient[key]
             thread = Thread(target=pipeline[0].run, name=pipeline[0].uid,
-                                                    args=(10,
-                                                          self.dirs[pipeline[1]] if pipeline[1] else None,
-                                                          self.dirs[pipeline[2]] if pipeline[2] else None,
-                                                          self.dirs["reports"],
-                                                          email_settings,
-                                                          self.book_archive_dirs,
-                                                          pipeline_config
-                                                          ))
+                            args=(10,
+                                  self.dirs[pipeline[1]] if pipeline[1] else None,
+                                  self.dirs[pipeline[2]] if pipeline[2] else None,
+                                  self.dirs["reports"],
+                                  email_settings,
+                                  self.book_archive_dirs,
+                                  pipeline_config
+                                  ))
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
 
-        self.shouldRun=True
+        self.shouldRun = True
         self._configThread = Thread(target=self._config_thread, name="config")
         self._configThread.setDaemon(True)
         self._configThread.start()
@@ -305,7 +305,9 @@ class Produksjonssystem():
                     thread.join(timeout=5)
             for pipeline in self.pipelines:
                 if pipeline[0].running:
-                    self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(pipeline[0].title, " ({} / {})".format(pipeline[0].book["name"], pipeline[0].get_progress()) if pipeline[0].book else ""))
+                    self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(
+                        pipeline[0].title,
+                        " ({} / {})".format(pipeline[0].book["name"], pipeline[0].get_progress()) if pipeline[0].book else ""))
 
         self.info("Venter på at plotteren skal stoppe...")
         time.sleep(5)  # gi plotteren litt tid på slutten
