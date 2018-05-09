@@ -8,10 +8,8 @@
 import os
 from shutil import copyfile
 from shutil import rmtree
-import time
 import sys
 import threading
-import tempfile
 import logging
 
 # import produksjonssystem from relative directory
@@ -30,6 +28,8 @@ logging.getLogger().addHandler(fileHandler)
 test_results_file = os.path.join(project_root, "test-results.txt")
 if os.path.exists(test_results_file):
     os.remove(test_results_file)
+
+
 def result(name, status):
     text = "{}: {}".format("SUCCESS" if status else "FAILED ", name)
     print(text)
@@ -80,21 +80,6 @@ HTML_path = os.path.join(distPath, 'HTML', newBookID)
 PEF_path = os.path.join(distPath, 'PEF/fullskrift', BookID)
 DOCX_path = os.path.join(distPath, 'DOCX', newBookID)
 
-
-#This script tests if epub files goes through produksjonssystem successfully
-try:(rmtree(DTBook_path))
-except: pass
-try:(rmtree(DTBookToTts_path))
-except: pass
-try:(os.remove(epubInnL_path))
-except: pass
-try:(rmtree(HTML_path))
-except: pass
-try:(rmtree(PEF_path))
-except: pass
-try:(rmtree(DOCX_path))
-except: pass
-
 threading.current_thread().setName("test thread")
 prodsys = run.Produksjonssystem(environment=environment)
 prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem")
@@ -104,45 +89,44 @@ if not prodsys.wait_until_running():
     logging.error("Timed out when starting system")
     sys.exit(1)
 
-file_path = os.path.join(os.path.dirname(__file__),BookID+".epub")
-copyfile (file_path,os.path.join(book_archive_dirs["master"], 'innkommende',BookID+".epub"))
+file_path = os.path.join(os.path.dirname(__file__), BookID + ".epub")
+copyfile(file_path, os.path.join(book_archive_dirs["master"], 'innkommende', BookID + ".epub"))
 
-success = 1;
-t=500;
+success = 1
+t = 500
 
-logging.info("Starting test of NLB production system. Verifies distribution formats for " +BookID+".epub in {0} seconds \n".format(t))
+logging.info("Starting test of NLB production system. Verifies distribution formats for " + BookID + ".epub in {0} seconds \n".format(t))
 
 prodsys_thread.join(timeout=10)
 if prodsys_thread.is_alive():
     logging.error("The tests timed out ({} seconds)".format(t))
 
-# Check if folder is not empty
-#if os.path.exists(DTBook_path):result("DTBook is verified", True)
-#else:
-#    result("DTBook does not exist", False)
-#    success = 0
-
-if os.path.exists(DTBookToTts_path):result("DTBook til talesyntese  is verified", True)
+if os.path.exists(DTBookToTts_path):
+    result("DTBook til talesyntese  is verified", True)
 else:
     result("DTBook til talesyntese does not exist", False)
     success = 0
 
-if os.path.exists(epubInnL_path):result("Epub til innlesing  is verified", True)
+if os.path.exists(epubInnL_path):
+    result("Epub til innlesing  is verified", True)
 else:
     result("Epub til innlesing does not exist", False)
     success = 0
 
-if os.path.exists(HTML_path):result("HTML  is verified", True)
+if os.path.exists(HTML_path):
+    result("HTML  is verified", True)
 else:
     result("HTML does not exist", False)
     success = 0
 
-if os.path.exists(DOCX_path):result("DOCX  is verified", True)
+if os.path.exists(DOCX_path):
+    result("DOCX  is verified", True)
 else:
     result("DOCX does not exist", False)
     success = 0
 
-if os.path.exists(PEF_path):result("PEF fullskrift  is verified", True)
+if os.path.exists(PEF_path):
+    result("PEF fullskrift  is verified", True)
 else:
     result("PEF fullskrift does not exist", False)
     success = 0
