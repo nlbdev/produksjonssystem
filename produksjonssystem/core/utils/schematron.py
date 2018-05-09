@@ -93,7 +93,7 @@ class Schematron():
                 html_report_obj = tempfile.NamedTemporaryFile()
                 html_report = temp_xml_1_obj.name
                 report.debug("Creating HTML report for Schematron validation ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
-                xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"), source=temp_xml_report, target=self.html_report)
+                xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"), source=temp_xml_report, target=html_report)
                 if not xslt.success:
                     return
 
