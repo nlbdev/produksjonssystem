@@ -19,13 +19,14 @@ sys.path.insert(0, prodsys_path)
 from produksjonssystem import run
 
 # send log to test.log
-fileHandler = logging.FileHandler("{0}/{1}.log".format(project_root, "test"))
+target_path = os.path.join(project_root, "target")
+fileHandler = logging.FileHandler("{0}/{1}.log".format(target_path, "test"))
 logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 fileHandler.setFormatter(logFormatter)
 logging.getLogger().addHandler(fileHandler)
 
 # store results in test-results.txt
-test_results_file = os.path.join(project_root, "test-results.txt")
+test_results_file = os.path.join(target_path, "test-results.txt")
 if os.path.exists(test_results_file):
     os.remove(test_results_file)
 
@@ -38,7 +39,6 @@ def result(name, status):
 
 
 # Configure system
-target_path = os.path.join(project_root, "target")
 if os.path.exists(target_path):
     rmtree(target_path)
 environment = {

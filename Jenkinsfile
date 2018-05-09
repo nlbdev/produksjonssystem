@@ -25,7 +25,7 @@ pipeline {
     
     post {
         always {
-            archiveArtifacts artifacts: "test.log"
+            archiveArtifacts artifacts: "target/test.log"
             archiveArtifacts artifacts: "target/**/log.txt"
             cleanWs()
         }
