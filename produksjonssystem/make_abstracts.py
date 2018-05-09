@@ -31,9 +31,9 @@ class Audio_Abstract(Pipeline):
     labels = ["Lydbok", "Innlesing", "Talesyntese"]
 
     parentdirs = {
-                  "abstracts": "Lydutdrag",
-                  "back-cover": "Baksidetekst",
-                  "test-audio": "Testlytt"
+                  "abstracts": "excerpt",
+                  "back-cover": "back-cover",
+                  "test-audio": "sample"
                   }
 
     def on_book_deleted(self):

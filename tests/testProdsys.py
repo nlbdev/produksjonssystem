@@ -20,7 +20,7 @@ from produksjonssystem import run
 
 # Configure system
 environment = {
-    "BOOK_ARCHIVE_DIRS": "master=/tmp/prodsys-archive share=/tmp/prodsys-daisy202", # space separated => spaces not allowed in paths
+    "BOOK_ARCHIVE_DIRS": "master=/tmp/prodsys-archive share=/tmp/prodsys-daisy202 distribution=/tmp/prodsys-distribution", # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "/tmp/prodsys-trigger",
     "REPORTS_DIR": "/tmp/prodsys-rapporter", # always the same, so that it's easier to view the dashboard(s)
     "DEBUG": "false",

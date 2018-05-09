@@ -101,7 +101,7 @@ class Produksjonssystem():
             "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
             "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
             "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
-            "abstracts": os.path.join(book_archive_dirs["master"], "utgave-ut/lydsnutter")
+            "abstracts": os.path.join(book_archive_dirs["distribution"], "www/abstracts")
         }
         # Define pipelines and input/output/report dirs
         self.pipelines = [
