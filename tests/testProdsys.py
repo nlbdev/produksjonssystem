@@ -38,7 +38,7 @@ def result(name, status):
 
 
 # Configure system
-target_path = os.path.join(prodsys_path, "target")
+target_path = os.path.join(project_root, "target")
 if os.path.exists(target_path):
     rmtree(target_path)
 environment = {
