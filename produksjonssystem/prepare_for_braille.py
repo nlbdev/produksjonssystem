@@ -22,6 +22,7 @@ class PrepareForBraille(Pipeline):
     uid = "prepare-for-braille"
     title = "Klargjør for punktskrift"
     labels = [ "Punktskrift" ]
+    publication_format = "Braille"
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

@@ -24,6 +24,7 @@ class IncomingNordic(Pipeline):
     uid = "incoming-nordic"
     title = "Validering av Nordisk EPUB 3"
     labels = [ "EPUB" ]
+    publication_format = None
 
     ace_cli = None
 

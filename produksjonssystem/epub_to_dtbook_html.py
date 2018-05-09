@@ -27,6 +27,7 @@ class EpubToDtbookHTML(Pipeline):
     uid = "epub-to-dtbook-HTML"
     title = "Epub til DTBook for ebok"
     labels = [ "e-bok", "Metadata" ]
+    publication_format = "XHTML"
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

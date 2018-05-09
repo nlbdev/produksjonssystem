@@ -26,6 +26,7 @@ class NLBpubToDocx(Pipeline):
     uid = "nlbpub-to-docx"
     title = "NLBPUB til DOCX"
     labels = [ "e-bok" ]
+    publication_format = "XHTML"
 
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 

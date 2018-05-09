@@ -25,6 +25,7 @@ class NlbpubToNarrationEpub(Pipeline):
     uid = "nlbpub-to-narration-epub"
     title = "NLBPUB til innlesingsklar EPUB"
     labels = [ "Lydbok", "Innlesing" ]
+    publication_format = "DAISY 2.02"
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 

@@ -20,7 +20,8 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class Audio_Abstract(Pipeline):
     uid = "create-abstracts"
     title = "Hent ut lydutdrag"
-    labels = ["Lydbok", "Innlesing", "Talesyntese"]
+    labels = [ "Lydbok", "Innlesing", "Talesyntese" ]
+    publication_format = "DAISY 2.02"
 
     parentdirs = {
                   "abstracts": "excerpt",

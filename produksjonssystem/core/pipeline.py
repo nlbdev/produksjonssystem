@@ -88,7 +88,10 @@ class Pipeline():
     email_settings = None
 
     # should be overridden when extending this class
+    uid = None
     title = None
+    labels = []
+    publication_format = None
 
     def __init__(self, retry=False, retry_not_in_out=True):
         self.utils = DotMap()
@@ -805,6 +808,7 @@ class DummyPipeline(Pipeline):
     uid = "dummy"
     title = "Dummy"
     labels = []
+    publication_format = None
     book = {}
 
     utils = None

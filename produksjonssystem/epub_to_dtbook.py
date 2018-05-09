@@ -26,6 +26,7 @@ class EpubToDtbook(Pipeline):
     uid = "epub-to-dtbook"
     title = "EPUB til DTBook for talesyntese"
     labels = [ "Lydbok", "Talesyntese", "Metadata" ]
+    publication_format = "DAISY 2.02"
     
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

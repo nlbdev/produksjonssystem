@@ -19,7 +19,8 @@ class NlbpubToPef(Pipeline):
     uid = "nlbpub-to-pef"
     title = "NLBPUB til PEF"
     labels = [ "Punktskrift" ]
-
+    publication_format = "Braille"
+    
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " HTML-kilde slettet: " + self.book['name']

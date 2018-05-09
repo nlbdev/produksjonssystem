@@ -26,6 +26,7 @@ class NordicToNlbpub(Pipeline):
     uid = "nordic-epub-to-nlbpub"
     title = "Nordisk EPUB til NLBPUB"
     labels = [ "EPUB", "Lydbok", "Innlesing", "Talesyntese", "Punktskrift", "e-bok" ]
+    publication_format = None
     
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 
