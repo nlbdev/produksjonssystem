@@ -358,6 +358,9 @@ class Produksjonssystem():
                     emailDoc = tempEmailDoc
 
                     for pipeline in self.pipelines:
+                        if not pipeline[0].running:
+                            continue
+
                         recipients = []
                         pipeline_config = {}
 
@@ -368,7 +371,7 @@ class Produksjonssystem():
                                 elif isinstance(recipient, dict):
                                     for key in recipient:
                                         pipeline_config[key] = recipient[key]
-                        old_recipients = pipeline[0].email_settings["recipients"]
+                        old_recipients = pipeline[0].email_settings["recipients"] if "recipients" in pipeline[0].email_settings else []
 
                         if (len(old_recipients) > len(recipients)):
                             self.info("Systemet har oppdatert mottakere for: {}" .format(pipeline[0].uid))
