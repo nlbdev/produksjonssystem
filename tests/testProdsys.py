@@ -18,9 +18,17 @@ prodsys_path = os.path.join(project_root, "produksjonssystem")
 sys.path.insert(0, prodsys_path)
 from produksjonssystem import run
 
-# send log to test.log
+# make target directory
 target_path = os.path.join(project_root, "target")
-fileHandler = logging.FileHandler("{0}/{1}.log".format(target_path, "test"))
+if os.path.exists(target_path):
+    rmtree(target_path)
+os.makedirs(target_path)
+
+# send log to test.log
+logfile = "{0}/{1}.log".format(target_path, "test")
+if os.path.exists(logfile):
+    os.remove(logfile)
+fileHandler = logging.FileHandler(logfile)
 logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 fileHandler.setFormatter(logFormatter)
 logging.getLogger().addHandler(fileHandler)
@@ -39,8 +47,6 @@ def result(name, status):
 
 
 # Configure system
-if os.path.exists(target_path):
-    rmtree(target_path)
 environment = {
     "BOOK_ARCHIVE_DIRS": " ".join([
         "master={}/prodsys-archive".format(target_path),
@@ -97,7 +103,7 @@ t = 500
 
 logging.info("Starting test of NLB production system. Verifies distribution formats for " + BookID + ".epub in {0} seconds \n".format(t))
 
-prodsys_thread.join(timeout=10)
+prodsys_thread.join(timeout=t)
 if prodsys_thread.is_alive():
     logging.error("The tests timed out ({} seconds)".format(t))
 
