@@ -2,19 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 import sys
 import time
 import shutil
 import tempfile
-import subprocess
-import pathlib
-import sys
-import os
-import shutil
 import traceback
-from subprocess import call, check_call, check_output
-from pathlib import Path
 from pydub import AudioSegment
 from lxml import etree as ElementTree
 from core.pipeline import Pipeline
@@ -52,12 +44,10 @@ class Audio_Abstract(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        audio_book = Epub(self, self.book["source"])
 
         temp_absdir_obj = tempfile.TemporaryDirectory()
         temp_absdir = temp_absdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_absdir)
-        temp_abs = Epub(self, temp_absdir)
 
         file_exists = {
                        "abstracts": False,
@@ -112,7 +102,7 @@ class Audio_Abstract(Pipeline):
 
                 # Creates audio segment in milliseconds from start to end of the abstract file
                 mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
-                new_mp3=mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
+                new_mp3 = mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
                 new_mp3.export(os.path.join(temp_absdir, "Baksidetekst.mp3"))
                 self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
                 file_exists["back-cover"] = True
@@ -201,18 +191,18 @@ class Audio_Abstract(Pipeline):
                     self.utils.report.info("Baksidetekst funnet. Kopierer til lydsnutter")
             elif (self.parentdirs["abstracts"]):
                 shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(temp_absdir, "Testlytt.mp3"))
-                file_exists["test-audio"]=True
+                file_exists["test-audio"] = True
                 self.utils.report.info("Lydutdrag funnet. Kopierer til lydsnutter")
-
 
             for key in self.parentdirs:
                 if(file_exists[key]):
-                    archived_path = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3") , audio_identifier, parentdir = self.parentdirs[key], file_extension="mp3")
+                    archived_path = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"), audio_identifier, parentdir=self.parentdirs[key], file_extension="mp3")
                     self.utils.report.attachment(None, archived_path, "DEBUG")
 
             self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
         else:
             self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
+
 
 if __name__ == "__main__":
     Audio_Abstract().run()

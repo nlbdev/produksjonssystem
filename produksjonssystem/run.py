@@ -21,7 +21,7 @@ from epub_to_dtbook_braille import EpubToDtbookBraille
 from epub_to_dtbook_html import EpubToDtbookHTML
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
-from insert_metadata import *
+from insert_metadata import InsertMetadataEpub, InsertMetadataDaisy202, InsertMetadataXhtml, InsertMetadataBraille
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
@@ -33,6 +33,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class Produksjonssystem():
 
     book_archive_dirs = None
@@ -43,9 +44,9 @@ class Produksjonssystem():
     emailDoc = []
 
     def __init__(self, environment=None):
-        logging.basicConfig(stream = sys.stdout,
-                            level = logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO,
-                            format = "%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+        logging.basicConfig(stream=sys.stdout,
+                            level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO,
+                            format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 
         # Set environment variables (mainly useful when testing)
         if environment:
@@ -55,7 +56,7 @@ class Produksjonssystem():
             self.environment = environment
         else:
             self.environment = {}
-        Pipeline.environment = self.environment # Make environment available from pipelines
+        Pipeline.environment = self.environment  # Make environment available from pipelines
         # Check that archive dirs is defined
         assert os.environ.get("BOOK_ARCHIVE_DIRS"), "The book archives must be defined as a space separated list in the environment variable BOOK_ARCHIVE_DIRS (as name=path pairs)"
         self.book_archive_dirs = {}
@@ -106,46 +107,47 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [ IncomingNordic(retry = True, retry_not_in_out = False),                   "incoming",            "master"],
-            [ NordicToNlbpub(),                             "master",              "nlbpub"],
-            [ UpdateMetadata(),                             "metadata",            "nlbpub"],
+            [IncomingNordic(retry=True,
+                            retry_not_in_out=False),          "incoming",            "master"],
+            [NordicToNlbpub(),                                "master",              "nlbpub"],
+            [UpdateMetadata(),                                "metadata",            "nlbpub"],
 
             # EPUB
-            [ InsertMetadataEpub(retry_not_in_out = False),                         "nlbpub",              "pub-in-epub"],
+            [InsertMetadataEpub(retry_not_in_out=False),      "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [ InsertMetadataXhtml(retry_not_in_out = False),                        "nlbpub",              "pub-in-ebook"],
-            [ NlbpubToHtml(),                               "pub-in-ebook",        "html"],
-            [ NLBpubToDocx(),                               "pub-in-ebook",        "docx"],
+            [InsertMetadataXhtml(retry_not_in_out=False),     "nlbpub",              "pub-in-ebook"],
+            [NlbpubToHtml(),                                  "pub-in-ebook",        "html"],
+            [NLBpubToDocx(),                                  "pub-in-ebook",        "docx"],
 
             # punktskrift
-            [ InsertMetadataBraille(retry_not_in_out = False),                      "nlbpub",              "pub-in-braille"],
-            [ PrepareForBraille(),                          "pub-in-braille",      "pub-ready-braille"],
-            [ NlbpubToPef(retry_not_in_out = False),                                "pub-ready-braille",   "pef"],
+            [InsertMetadataBraille(retry_not_in_out=False),   "nlbpub",              "pub-in-braille"],
+            [PrepareForBraille(),                             "pub-in-braille",      "pub-ready-braille"],
+            [NlbpubToPef(retry_not_in_out=False),             "pub-ready-braille",   "pef"],
 
             # innlest lydbok
-            [ InsertMetadataDaisy202(retry_not_in_out = False),                     "nlbpub",              "pub-in-audio"],
-            [ NlbpubToNarrationEpub(retry_not_in_out = False),                      "pub-in-audio",        "epub_narration"],
-            [ DummyPipeline("Innlesing med Hindenburg",
-                            labels=["Lydbok","Innlesing"]),   "epub_narration",      "daisy202"],
+            [InsertMetadataDaisy202(retry_not_in_out=False),  "nlbpub",              "pub-in-audio"],
+            [NlbpubToNarrationEpub(retry_not_in_out=False),   "pub-in-audio",        "epub_narration"],
+            [DummyPipeline("Innlesing med Hindenburg",
+                           labels=["Lydbok", "Innlesing"]),   "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-            [ EpubToDtbook(retry_not_in_out = False),                               "master",              "dtbook_tts"],
-            [ DummyPipeline("Talesyntese i Pipeline 1",
-                            labels=["Lydbok","Talesyntese"]), "dtbook_tts",          "daisy202"],
+            [EpubToDtbook(retry_not_in_out=False),            "master",              "dtbook_tts"],
+            [DummyPipeline("Talesyntese i Pipeline 1",
+                           labels=["Lydbok", "Talesyntese"]), "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
-            [ EpubToDtbookHTML(retry_not_in_out = False),                           "master",              "dtbook_html"],
-            [ DummyPipeline("Pipeline 1 og Ammars skript",
-                            labels=["e-bok"]),                "dtbook_html",         None],
+            [EpubToDtbookHTML(retry_not_in_out=False),        "master",              "dtbook_html"],
+            [DummyPipeline("Pipeline 1 og Ammars skript",
+                           labels=["e-bok"]),                 "dtbook_html",         None],
 
             # DTBook for punktskrift
-            [ EpubToDtbookBraille(retry_not_in_out = False),                        "master",              "dtbook_braille"],
-            [ DummyPipeline("Punktskrift med NorBraille",
-                            labels=["Punktskrift"]),          "dtbook_braille",      None],
+            [EpubToDtbookBraille(retry_not_in_out=False),     "master",              "dtbook_braille"],
+            [DummyPipeline("Punktskrift med NorBraille",
+                           labels=["Punktskrift"]),           "dtbook_braille",      None],
 
             # lydutdrag
-            [ Audio_Abstract(),                             "daisy202",            "abstracts"],
+            [Audio_Abstract(),                                "daisy202",            "abstracts"],
         ]
 
     # ---------------------------------------------------------------------------
@@ -195,10 +197,10 @@ class Produksjonssystem():
         for pipeline in self.pipelines:
             assert len(pipeline) == 3, "Pipeline declarations have three arguments (not " + len(pipeline) + ")"
             assert isinstance(pipeline[0], Pipeline), "The first argument of a pipeline declaration must be a pipeline instance"
-            assert pipeline[1] == None or isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string or None"
-            assert pipeline[2] == None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
-            assert pipeline[1] == None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
-            assert pipeline[2] == None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
+            assert pipeline[1] is None or isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string or None"
+            assert pipeline[2] is None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
+            assert pipeline[1] is None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
+            assert pipeline[2] is None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
 
         # Make directories
         for d in self.dirs:
@@ -305,7 +307,7 @@ class Produksjonssystem():
                     self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(pipeline[0].title, " ({} / {})".format(pipeline[0].book["name"], pipeline[0].get_progress()) if pipeline[0].book else ""))
 
         self.info("Venter på at plotteren skal stoppe...")
-        time.sleep(5) # gi plotteren litt tid på slutten
+        time.sleep(5)  # gi plotteren litt tid på slutten
         plotter.should_run = False
         if graph_thread:
             logging.debug("joining {}".format(graph_thread.name))
@@ -388,6 +390,7 @@ class Produksjonssystem():
             except Exception as e:
                 self.info("En feil oppstod under lasting av konfigurasjonsfil. Sjekk syntaksen til" + fileName)
                 self.info(traceback.format_exc())
+
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
