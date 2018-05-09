@@ -2,11 +2,11 @@
 
 pipeline {
     agent any
-    
+
     options {
         skipDefaultCheckout()
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -15,26 +15,26 @@ pipeline {
                 checkout scm
             }
         }
-        
+
         stage('Test') {
             steps {
-                sh 'python3 -m unittest tests.testProdsys.py'
+                sh './test.sh'
             }
         }
     }
-    
+
     post {
         always {
             archiveArtifacts artifacts: "target/test.log"
             archiveArtifacts artifacts: "target/**/log.txt"
             cleanWs()
         }
-        
+
         failure {
             sh 'slack-cli -d teknisk -f test-result.txt || true'
             sh 'echo "Build failed: \"$JOB_NAME [$BUILD_NUMBER]\"" | slack-cli -d teknisk || true'
         }
-        
+
         success {
             sh 'echo "Build successful: \"$JOB_NAME [$BUILD_NUMBER]\"" | slack-cli -d teknisk || true'
         }
