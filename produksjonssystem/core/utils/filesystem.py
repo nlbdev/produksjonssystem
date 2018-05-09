@@ -248,7 +248,7 @@ class Filesystem():
         if not cwd:
             cwd = self.pipeline.dir_in
 
-        Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)
+        return Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)
 
     @staticmethod
     def run_static(args, cwd, report, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
@@ -260,21 +260,16 @@ class Filesystem():
         try:
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
 
-            report.debug("---- stdout: ----")
-            report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
-            report.debug("-----------------")
-            report.debug("---- stderr: ----")
-            report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
-            report.debug("-----------------")
-
         except subprocess.CalledProcessError as e:
-            report.debug("---- stdout: ----")
-            report.add_message(stdout_level, e.stdout.decode("utf-8").strip(), add_empty_line_between=True)
-            report.debug("-----------------")
-            report.debug("---- stderr: ----")
-            report.add_message(stderr_level, e.stderr.decode("utf-8").strip(), add_empty_line_between=True)
-            report.debug("-----------------")
-            raise
+            report.error(traceback.format_exc())
+            completedProcess = e
+
+        report.debug("---- stdout: ----")
+        report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
+        report.debug("-----------------")
+        report.debug("---- stderr: ----")
+        report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
+        report.debug("-----------------")
 
         return completedProcess
 
