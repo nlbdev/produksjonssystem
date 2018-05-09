@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/nlbdev/normarc.git
+	branch = master
+	commit = 8a9fc064eb4cc5fd668db1f2f8659599fdeb6e39
+	parent = 38dad166cd4ddd30e6287178e650047e72407886
+	cmdver = 0.3.1
