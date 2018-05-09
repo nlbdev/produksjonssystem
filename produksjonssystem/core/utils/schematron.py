@@ -14,7 +14,7 @@ class Schematron():
     uid = "core-utils-schematron"
     schematron_dir = os.path.join(Xslt.xslt_dir, uid, "schematron/trunk/schematron/code")
 
-    def __init__(self, pipeline=None, schematron=None, source=None, report=None, cwd=None):
+    def __init__(self, pipeline=None, schematron=None, source=None, report=None, cwd=None, attach_report=True):
         assert pipeline or report and cwd
         assert schematron and "/" in schematron and os.path.isfile(schematron)
         assert source and "/" in source and os.path.isfile(source)
@@ -89,11 +89,29 @@ class Schematron():
                         e += 1
 
             # Create HTML report
-            if report and "/" in report:
+            if temp_xml_report and "/" in temp_xml_report:
+                html_report_obj = tempfile.NamedTemporaryFile()
+                html_report = temp_xml_1_obj.name
                 report.debug("Creating HTML report for Schematron validation ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
-                xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"), source=temp_xml_report, target=report)
+                xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"), source=temp_xml_report, target=self.html_report)
                 if not xslt.success:
                     return
+
+                if attach_report:
+                    schematron_report_dir = os.path.join(report.reportDir(), "schematron")
+                    os.makedirs(schematron_report_dir, exist_ok=True)
+                    name = ".".join(os.path.basename(schematron).split(".")[:-1])
+                    available_path = os.path.join(schematron_report_dir, "{}.html".format(name))
+                    if os.path.exists(available_path):
+                        for i in range(2, 1000):
+                            available_path = os.path.join(schematron_report_dir, "{}-{}.html".format(name, i))
+                    if os.path.exists(available_path):
+                        report.warn("Could not find available report filename")
+                    else:
+                        with open(html_report, 'r') as result_report:
+                            report.attachment(result_report.readlines(),
+                                              os.path.join(report.reportDir(), "schematron", "validate-dtbook.html"),
+                                              "SUCCESS" if self.success else "ERROR")
 
         except Exception:
             report.debug(traceback.format_exc())
