@@ -7,18 +7,18 @@ import sys
 import math
 import time
 import logging
+import datetime
 import tempfile
 import traceback
-import datetime
 import threading
 
+from dotmap import DotMap
 from pathlib import Path
 from threading import Thread, RLock
-from dotmap import DotMap
 
+from core.utils.epub import Epub
 from core.utils.report import Report, DummyReport
 from core.utils.filesystem import Filesystem
-from core.utils.epub import Epub
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")

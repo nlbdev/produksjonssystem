@@ -17,17 +17,18 @@ from email.headerregistry import Address
 # Import pipelines
 from nlbpub_to_pef import NlbpubToPef
 from epub_to_dtbook import EpubToDtbook
-from epub_to_dtbook_braille import EpubToDtbookBraille
-from epub_to_dtbook_html import EpubToDtbookHTML
+from make_abstracts import Audio_Abstract
+from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
 from insert_metadata import InsertMetadataEpub, InsertMetadataDaisy202, InsertMetadataXhtml, InsertMetadataBraille
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
+from epub_to_dtbook_html import EpubToDtbookHTML
 from prepare_for_braille import PrepareForBraille
+from epub_to_dtbook_braille import EpubToDtbookBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
-from nlbpub_to_docx import NLBpubToDocx
-from make_abstracts import Audio_Abstract
+
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")

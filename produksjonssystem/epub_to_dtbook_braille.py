@@ -12,12 +12,12 @@ import subprocess
 from lxml import etree as ElementTree
 from datetime import datetime, timezone
 from core.pipeline import Pipeline
+from epub_to_dtbook import EpubToDtbook
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from update_metadata import UpdateMetadata
 from core.utils.schematron import Schematron
 from core.utils.daisy_pipeline import DaisyPipelineJob
-from epub_to_dtbook import EpubToDtbook
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")

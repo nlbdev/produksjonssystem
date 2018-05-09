@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import os
 import re
-import smtplib
 import sys
+import time
+import logging
+import smtplib
+import markdown
+import pygments # for markdown code highlighting
 import tempfile
 import threading
-import time
-from datetime import datetime, timezone
-from email.headerregistry import Address
-from email.message import EmailMessage
-from email.utils import make_msgid
 
-import markdown
-import pygments  # for markdown code highlighting
-
-from core.utils.filesystem import Filesystem
-from core.utils.slack import Slack
 from dotmap import DotMap
+from datetime import datetime, timezone
+from email.utils import make_msgid
+from email.message import EmailMessage
+from core.utils.slack import Slack
+from email.headerregistry import Address
+from core.utils.filesystem import Filesystem
 
 
 class Report():
