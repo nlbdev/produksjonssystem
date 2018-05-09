@@ -36,11 +36,19 @@ def result(name, status):
     with open(test_results_file, 'a') as f:
         f.write(text + "\n")
 
+
 # Configure system
+target_path = os.path.join(prodsys_path, "target")
+if os.path.exists(target_path):
+    rmtree(target_path)
 environment = {
-    "BOOK_ARCHIVE_DIRS": "master=/tmp/prodsys-archive share=/tmp/prodsys-daisy202 distribution=/tmp/prodsys-distribution", # space separated => spaces not allowed in paths
-    "TRIGGER_DIR": "/tmp/prodsys-trigger",
-    "REPORTS_DIR": "/tmp/prodsys-rapporter", # always the same, so that it's easier to view the dashboard(s)
+    "BOOK_ARCHIVE_DIRS": " ".join([
+        "master={}/prodsys-archive".format(target_path),
+        "share={}/prodsys-daisy202".format(target_path),
+        "distribution={}/prodsys-distribution".format(target_path)
+    ]),  # space separated => spaces not allowed in paths
+    "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
+    "REPORTS_DIR": "/tmp/prodsys-rapporter".format(target_path),  # always the same, so that it's easier to view the dashboard(s)
     "DEBUG": "false",
     "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
     "CONFIG_FILE": os.path.join(os.path.dirname(__file__), "produksjonssystem.yaml"),
