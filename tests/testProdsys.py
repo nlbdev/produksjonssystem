@@ -11,6 +11,7 @@ from shutil import rmtree
 import sys
 import threading
 import logging
+import time
 
 # import produksjonssystem from relative directory
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -87,25 +88,39 @@ PEF_path = os.path.join(distPath, 'PEF/fullskrift', BookID)
 DOCX_path = os.path.join(distPath, 'DOCX', newBookID)
 
 threading.current_thread().setName("test thread")
+print("Initializing the system...")
 prodsys = run.Produksjonssystem(environment=environment)
 prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem")
 prodsys_thread.setDaemon(True)
+print("Starting the system...")
 prodsys_thread.start()
-if not prodsys.wait_until_running():
-    logging.error("Timed out when starting system")
+if prodsys.wait_until_running():
+    print("The system is initialized and started.")
+else:
+    print("Timed out when starting system")
     sys.exit(1)
 
 file_path = os.path.join(os.path.dirname(__file__), BookID + ".epub")
 copyfile(file_path, os.path.join(book_archive_dirs["master"], 'innkommende', BookID + ".epub"))
 
+for pipeline in prodsys.pipelines:
+    if pipeline[0].uid == "create-abstracts":
+        print("abstracts pipeline are not connected to the rest of the system. see: https://github.com/nlbdev/produksjonssystem/issues/99")
+        pipeline[0].stop(exit=True)
+
 success = 1
 t = 500
 
-logging.info("Starting test of NLB production system. Verifies distribution formats for " + BookID + ".epub in {0} seconds \n".format(t))
+print("Starting test of NLB production system. Verifies distribution formats for " + BookID + ".epub in {0} seconds \n".format(t))
 
+start_time = int(time.time())
 prodsys_thread.join(timeout=t)
+end_time = int(time.time())
+
 if prodsys_thread.is_alive():
-    logging.error("The tests timed out ({} seconds)".format(t))
+    print("The tests timed out after {} seconds".format(t))
+else:
+    print("The tests finished after {} seconds".format(end_time - start_time))
 
 if os.path.exists(DTBookToTts_path):
     result("DTBook til talesyntese  is verified", True)
@@ -138,8 +153,8 @@ else:
     success = 0
 
 if (success):
-    logging.info("Tests succeeded")
+    print("Tests succeeded")
     sys.exit(0)
 else:
-    logging.error("Tests failed")
+    print("Tests failed")
     sys.exit(1)
