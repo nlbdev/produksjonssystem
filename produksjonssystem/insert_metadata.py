@@ -4,7 +4,7 @@
 import tempfile
 
 from core.utils.epub import Epub
-from update_metadata import UpdateMetadata
+from core.utils.metadata import Metadata
 
 from core.pipeline import Pipeline
 
@@ -47,7 +47,7 @@ class InsertMetadata(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
-        if not UpdateMetadata.should_produce(self, epub, self.publication_format):
+        if not Metadata.should_produce(self, epub, self.publication_format):
             self.utils.report.info("{} skal ikke produseres som {}. Avbryter.".format(epub.identifier(), self.publication_format))
             self.utils.report.should_email = False
             return True
@@ -64,7 +64,7 @@ class InsertMetadata(Pipeline):
         # ---------- oppdater metadata ----------
 
         self.utils.report.info("Oppdaterer metadata...")
-        updated = UpdateMetadata.update(self, temp_epub, publication_format=self.publication_format, insert=True)
+        updated = Metadata.update(self, temp_epub, publication_format=self.publication_format, insert=True)
         if isinstance(updated, bool) and updated == False:
             self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
@@ -72,7 +72,6 @@ class InsertMetadata(Pipeline):
         self.utils.report.info("Boken ble oppdatert med format-spesifik metadata. Kopierer til {}-arkiv.".format(self.publication_format))
 
         archived_path = self.utils.filesystem.storeBook(temp_epub.asDir(), epub.identifier())
-        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format=self.publication_format)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(temp_epub.identifier() + " ble lagt til i arkivet.")
 

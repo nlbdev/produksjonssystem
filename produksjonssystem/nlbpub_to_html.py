@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -25,7 +24,7 @@ class NlbpubToHtml(Pipeline):
     title = "NLBPUB til HTML"
     labels = [ "e-bok" ]
     publication_format = "XHTML"
-    
+
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 
     def on_book_deleted(self):
@@ -157,7 +156,6 @@ class NlbpubToHtml(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til HTML-arkiv.")
 
         archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
-        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i HTML-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle

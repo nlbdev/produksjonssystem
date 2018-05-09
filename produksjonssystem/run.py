@@ -9,6 +9,7 @@ import logging
 import threading
 import traceback
 from threading import Thread
+from core.config import Config
 from core.plotter import Plotter
 from core.pipeline import Pipeline, DummyPipeline
 from core.utils.slack import Slack
@@ -82,13 +83,17 @@ class Produksjonssystem():
             "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no")
         }
 
+        # Special directories
+        Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
+        Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
+
         # Define directories
         self.dirs = {
-            "reports": os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")),
+            "reports": Config.get("reports_dir"),
+            "metadata": Config.get("metadata_dir"),
             "incoming": os.path.join(book_archive_dirs["master"], "innkommende"),
             "master": os.path.join(book_archive_dirs["master"], "master/EPUB"),
             "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
-            "metadata": os.path.join(book_archive_dirs["master"], "metadata"),
             "dtbook_braille": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-punktskrift"),
             "dtbook_tts": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-til-talesyntese"),
             "dtbook_html": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-til-HTML"),

@@ -16,7 +16,6 @@ from core.pipeline import Pipeline
 from nlbpub_to_html import NlbpubToHtml
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -69,15 +68,6 @@ class NLBpubToDocx(Pipeline):
         temp_epubdir = temp_epubdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
-
-
-        # ---------- oppdater metadata ----------
-
-        #self.utils.report.info("Oppdaterer metadata...")
-        #updated = UpdateMetadata.update(self, temp_epub, publication_format="XHTML")
-        #if isinstance(updated, bool) and updated == False:
-        #    self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎"
-        #    return
 
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
@@ -153,7 +143,6 @@ class NLBpubToDocx(Pipeline):
             traceback.print_exc(e)
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)
-        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, os.path.join(self.dir_out,result_identifier), "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle

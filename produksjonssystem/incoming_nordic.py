@@ -11,10 +11,10 @@ import re
 import json
 
 from core.utils.epub import Epub
+from core.utils.metadata import Metadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
-from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -97,12 +97,12 @@ class IncomingNordic(Pipeline):
             self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + epub.identifier() + ", og prosessen ble derfor stoppet.")
 
         except Exception:
+            self.utils.report.debug(traceback.format_exc())
             self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
 
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
 
         archived_path = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
-        UpdateMetadata.add_production_info(self, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle

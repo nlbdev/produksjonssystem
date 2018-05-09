@@ -6,6 +6,7 @@ import re
 import sys
 import math
 import time
+import inspect
 import logging
 import datetime
 import tempfile
@@ -18,6 +19,7 @@ from threading import Thread, RLock
 
 from core.utils.epub import Epub
 from core.utils.report import Report, DummyReport
+from core.utils.metadata import Metadata
 from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -725,6 +727,13 @@ class Pipeline():
                             logging.exception("An error occured while handling the book")
 
                         finally:
+                            try:
+                                Metadata.add_production_info(self.utils.report, self.book_identifier(), self.publication_format)
+                            except Exception:
+                                self.utils.report.error("An error occured while retrieving production info")
+                                self.utils.report.error(traceback.format_exc())
+                                logging.exception("An error occured while retrieving production info")
+
                             progress_end = time.time()
                             self.progress_log.append({"start": self.progress_start, "end": progress_end})
                             self.utils.report.debug("Finished: {}".format(progress_end))
@@ -792,6 +801,26 @@ class Pipeline():
     def translate(english_text, translated_text):
         Pipeline._i18n[english_text] = translated_text
 
+    # This can be overridden if the identifier can not be retrieved from the EPUB dc:identifier
+    # or from the top-level directory or file name
+    def book_identifier(self):
+        epub = Epub(self, self.book["source"])
+
+        # Hvis dette ikke er en EPUB; bruk filnavnet / mappenavnet
+        if not epub.isepub():
+            return re.sub("\.[^\.]*$", "", self.book["name"])
+        else:
+            return epub.identifier()
+
+    # This can be overridden if the title can not be retrieved from the EPUB dc:title
+    def book_title(self):
+        epub = Epub(self, self.book["source"])
+
+        if epub.isepub():
+            return epub.meta("dc:title")
+        else:
+            return None
+
     # This should be overridden
     def on_book_created(self):
         logging.info("Book created (unhandled book event): "+self.book['name'])
@@ -828,7 +857,8 @@ class DummyPipeline(Pipeline):
         self._shouldRun = False
 
         if inherit_config_from:
-            assert issubclass(inherit_config_from, Pipeline)
+            assert (inspect.isclass(inherit_config_from) and issubclass(inherit_config_from, Pipeline) or
+                    not inspect.isclass(inherit_config_from) and issubclass(type(inherit_config_from), Pipeline))
             self.dir_in = inherit_config_from.dir_in
             self.dir_out = inherit_config_from.dir_out
             self.dir_reports = inherit_config_from.dir_reports

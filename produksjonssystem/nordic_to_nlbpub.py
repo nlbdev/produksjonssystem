@@ -13,7 +13,7 @@ from lxml import etree as ElementTree
 from datetime import datetime, timezone
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-from update_metadata import UpdateMetadata
+from core.utils.metadata import Metadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
@@ -122,7 +122,6 @@ class NordicToNlbpub(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
 
         archived_path = self.utils.filesystem.storeBook(nlbpub.asDir(), epub.identifier())
-        UpdateMetadata.add_production_info(self, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i NLBPUB-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle

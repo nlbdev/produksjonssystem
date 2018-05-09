@@ -144,7 +144,7 @@ class Plotter():
                 time.sleep(0.5)
                 if t == 0:
                     raise e
-        
+
         dashboard_file = os.path.join(self.report_dir, name + ".html")
         if not os.path.isfile(dashboard_file):
             dashboard_template = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../dashboard.html'))
@@ -166,7 +166,7 @@ class Plotter():
             try:
                 # Main dashboard
                 self.plot([p[0].uid for p in self.pipelines], "dashboard")
-                
+
                 # Dashboard for steps
                 for p in self.pipelines:
                     self.plot([p[0].uid], p[0].uid)

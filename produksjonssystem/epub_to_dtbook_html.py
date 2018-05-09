@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-from update_metadata import UpdateMetadata
+from core.utils.metadata import Metadata
 from core.utils.schematron import Schematron
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from epub_to_dtbook import EpubToDtbook
@@ -61,7 +61,7 @@ class EpubToDtbookHTML(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
-        if not UpdateMetadata.should_produce(self, epub, "XHTML"):
+        if not Metadata.should_produce(self, epub, "XHTML"):
             self.utils.report.info("{} skal ikke produseres som e-bok. Avbryter.".format(epub.identifier()))
             self.utils.report.should_email = False
             return True
@@ -79,7 +79,7 @@ class EpubToDtbookHTML(Pipeline):
         # ---------- oppdater metadata ----------
 
         self.utils.report.info("Oppdaterer metadata...")
-        updated = UpdateMetadata.update(self, nordic_epub, publication_format="XHTML")
+        updated = Metadata.update(self, nordic_epub, publication_format="XHTML")
         if isinstance(updated, bool) and updated == False:
             self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
@@ -152,7 +152,6 @@ class EpubToDtbookHTML(Pipeline):
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-til-HTML-arkiv.")
 
         archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
-        UpdateMetadata.add_production_info(self, epub.identifier(), publication_format="XHTML")
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
