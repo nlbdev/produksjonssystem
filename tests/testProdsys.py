@@ -12,11 +12,29 @@ import time
 import sys
 import threading
 import tempfile
+import logging
 
 # import produksjonssystem from relative directory
-prodsys_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "produksjonssystem"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+prodsys_path = os.path.join(project_root, "produksjonssystem")
 sys.path.insert(0, prodsys_path)
 from produksjonssystem import run
+
+# send log to test.log
+fileHandler = logging.FileHandler("{0}/{1}.log".format(project_root, "test"))
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+fileHandler.setFormatter(logFormatter)
+logging.getLogger().addHandler(fileHandler)
+
+# store results in test-results.txt
+test_results_file = os.path.join(project_root, "test-results.txt")
+if os.path.exists(test_results_file):
+    os.remove(test_results_file)
+def result(name, status):
+    text = "{}: {}".format("SUCCESS" if status else "FAILED ", name)
+    print(text)
+    with open(test_results_file, 'a') as f:
+        f.write(text + "\n")
 
 # Configure system
 environment = {
@@ -35,23 +53,24 @@ for d in environment["BOOK_ARCHIVE_DIRS"].split(" "):
     assert "=" in d
     book_archive_dirs[d.split("=")[0]] = d.split("=")[1]
 
+# print statements only goes to stdout, not to log file
 print("")
 print("Dashboard: file://" + os.path.join(environment["REPORTS_DIR"], "dashboard.html"))
 for d in book_archive_dirs:
     print("Book archive \"{}\": file://{}".format(d, book_archive_dirs[d]))
 print("")
 
-BookID="558237"
-newBookID="356837"
-epubInnL_ID="406837"
+BookID = "558237"
+newBookID = "356837"
+epubInnL_ID = "406837"
 
-distPath=os.path.join(book_archive_dirs["master"],'distribusjonsformater')
-DTBook_path=os.path.join(distPath,'DTBook',BookID)
-epubInnL_path=os.path.join(distPath,'EPUB-til-innlesing',epubInnL_ID+'.epub')
-DTBookToTts_path=os.path.join(distPath,'DTBook-til-talesyntese',BookID)
-HTML_path=os.path.join(distPath,'HTML',newBookID)
-PEF_path=os.path.join(distPath,'PEF/fullskrift',BookID)
-DOCX_path=os.path.join(distPath,'DOCX',newBookID)
+distPath = os.path.join(book_archive_dirs["master"], 'distribusjonsformater')
+DTBook_path = os.path.join(distPath, 'DTBook', BookID)
+epubInnL_path = os.path.join(distPath, 'EPUB-til-innlesing', epubInnL_ID+'.epub')
+DTBookToTts_path = os.path.join(distPath, 'DTBook-til-talesyntese', BookID)
+HTML_path = os.path.join(distPath, 'HTML', newBookID)
+PEF_path = os.path.join(distPath, 'PEF/fullskrift', BookID)
+DOCX_path = os.path.join(distPath, 'DOCX', newBookID)
 
 
 #This script tests if epub files goes through produksjonssystem successfully
@@ -74,7 +93,7 @@ prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem")
 prodsys_thread.setDaemon(True)
 prodsys_thread.start()
 if not prodsys.wait_until_running():
-    print("Timed out when starting system")
+    logging.error("Timed out when starting system")
     sys.exit(1)
 
 file_path = os.path.join(os.path.dirname(__file__),BookID+".epub")
@@ -83,46 +102,46 @@ copyfile (file_path,os.path.join(book_archive_dirs["master"], 'innkommende',Book
 success = 1;
 t=500;
 
-print("Starting test of NLB production system. Verifyes distribution formats for " +BookID+".epub in {0} seconds \n".format(t))
+logging.info("Starting test of NLB production system. Verifies distribution formats for " +BookID+".epub in {0} seconds \n".format(t))
 
-prodsys_thread.join(timeout=t)
+prodsys_thread.join(timeout=10)
 if prodsys_thread.is_alive():
-    print("The tests timed out")
+    logging.error("The tests timed out ({} seconds)".format(t))
 
 # Check if folder is not empty
-#if os.path.exists(DTBook_path):print("DTBook  is verified")
+#if os.path.exists(DTBook_path):result("DTBook is verified", True)
 #else:
-#    print("DTBook does not exist")
+#    result("DTBook does not exist", False)
 #    success = 0
 
-if os.path.exists(DTBookToTts_path):print("DTBook til talesyntese  is verified")
+if os.path.exists(DTBookToTts_path):result("DTBook til talesyntese  is verified", True)
 else:
-    print("DTBook til talesyntese does not exist")
+    result("DTBook til talesyntese does not exist", False)
     success = 0
 
-if os.path.exists(epubInnL_path):print("Epub til innlesing  is verified")
+if os.path.exists(epubInnL_path):result("Epub til innlesing  is verified", True)
 else:
-    print("Epub til innlesing does not exist")
+    result("Epub til innlesing does not exist", False)
     success = 0
 
-if os.path.exists(HTML_path):print("HTML  is verified")
+if os.path.exists(HTML_path):result("HTML  is verified", True)
 else:
-    print("HTML does not exist")
+    result("HTML does not exist", False)
     success = 0
 
-if os.path.exists(DOCX_path):print("DOCX  is verified")
+if os.path.exists(DOCX_path):result("DOCX  is verified", True)
 else:
-    print("DOCX does not exist")
+    result("DOCX does not exist", False)
     success = 0
 
-if os.path.exists(PEF_path):print("PEF fullskrift  is verified")
+if os.path.exists(PEF_path):result("PEF fullskrift  is verified", True)
 else:
-    print("PEF fullskrift does not exist")
+    result("PEF fullskrift does not exist", False)
     success = 0
 
 if (success):
-    print("The test was completed in less than {0} seconds".format(t))
+    logging.info("Tests succeeded")
     sys.exit(0)
 else:
-    print ("\nThe test was not completed in {0} seconds".format(t))
+    logging.error("Tests failed")
     sys.exit(1)
