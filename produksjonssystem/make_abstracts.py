@@ -10,7 +10,6 @@ import traceback
 from pydub import AudioSegment
 from lxml import etree as ElementTree
 from core.pipeline import Pipeline
-from core.utils.epub import Epub
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -104,7 +103,7 @@ class Audio_Abstract(Pipeline):
                 # Creates audio segment in milliseconds from start to end of the abstract file
                 mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
                 new_mp3 = mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
-                new_mp3.export(os.path.join(temp_absdir, "Baksidetekst.mp3"))
+                new_mp3.export(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3"))
                 self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
                 file_exists["back-cover"] = True
 
@@ -172,28 +171,28 @@ class Audio_Abstract(Pipeline):
             mp3_abstract = AudioSegment.from_mp3(os.path.join(temp_absdir, mp3File_abstract))
             new_mp3_abstract = mp3_abstract[mp3File_abstract_start*1000:mp3File_abstract_end*1000]
             final_mp3 = new_mp3_abstract.fade_out(3000)
-            final_mp3.export(os.path.join(temp_absdir, "Lydutdrag.mp3"))
+            final_mp3.export(os.path.join(temp_absdir, self.parentdirs["abstracts"]+".mp3"))
             self.utils.report.info("Lydutdrag eksportert fra: " + mp3File_abstract)
             file_exists["abstracts"] = True
 
         except Exception:
             self.utils.report.debug(traceback.format_exc())
-            self.utils.report.warn("Klarte ikke eksportere Lydutdrag.mp3. Har du ffmpeg kodeken for .mp3 filer?")
+            self.utils.report.warn("Klarte ikke eksportere excerpt.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
         # Copies abstract and back cover to dir_out
-        if (os.path.isfile(os.path.join(temp_absdir, "Lydutdrag.mp3")) or os.path.isfile(os.path.join(temp_absdir, "Baksidetekst.mp3"))):
+        if (os.path.isfile(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3")) or os.path.isfile(os.path.join(temp_absdir, self.parentdirs["abstracts"]+".mp3"))):
 
             if (file_exists["back-cover"]):
-                shutil.copy(os.path.join(temp_absdir, "Baksidetekst.mp3"), os.path.join(temp_absdir, "Testlytt.mp3"))
+                shutil.copy(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3"), os.path.join(temp_absdir, self.parentdirs["test-audio"]+".mp3"))
                 file_exists["test-audio"] = True
                 if (self.parentdirs["abstracts"]):
-                    self.utils.report.info("Baksidetekst og lydutdrag funnet. Kopierer til lydsnutter")
+                    self.utils.report.info("Baksidetekst og lydutdrag funnet. Kopierer til {}.mp3".format(self.parentdirs["test-audio"]))
                 else:
-                    self.utils.report.info("Baksidetekst funnet. Kopierer til lydsnutter")
+                    self.utils.report.info("Baksidetekst funnet. Kopierer til {}.mp3".format(self.parentdirs["test-audio"]))
             elif (self.parentdirs["abstracts"]):
-                shutil.copy(os.path.join(temp_absdir, "Lydutdrag.mp3"), os.path.join(temp_absdir, "Testlytt.mp3"))
+                shutil.copy(os.path.join(temp_absdir, self.parentdirs["abstracts"]+".mp3"), os.path.join(temp_absdir, self.parentdirs["test-audio"]+".mp3"))
                 file_exists["test-audio"] = True
-                self.utils.report.info("Lydutdrag funnet. Kopierer til lydsnutter")
+                self.utils.report.info("Lydutdrag funnet. Kopierer til " + self.parentdirs["test-audio"])
 
             for key in self.parentdirs:
                 if(file_exists[key]):
