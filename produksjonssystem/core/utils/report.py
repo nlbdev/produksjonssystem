@@ -211,6 +211,10 @@ class Report():
                 elif m["severity"] == "ERROR":
                     status = "ERROR"
 
+        if status=="ERROR":
+            for key in self.pipeline.common_config["administrators"]:
+                if key not in recipients:
+                    recipients.append(key)
 
         # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
         markdown_text = []
