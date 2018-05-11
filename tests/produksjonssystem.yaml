@@ -1,3 +1,11 @@
+common:
+ - administrators:
+   - Ammar@nlb.no
+   - Espen@nlb.no
+   - Jostein@nlb.no
+   - Olav@nlb.no
+   - Per@nlb.no
+
 incoming-nordic:
   - ammar.usama@nlb.no
   - jostein@nlb.no
