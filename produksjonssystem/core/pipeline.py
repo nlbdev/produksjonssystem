@@ -58,7 +58,7 @@ class Pipeline():
     # Other configuration
     config = None    # instance config
     environment = {} # global config
-
+    common_config = None
     # constants (set during instantiation)
     running = False
     shouldHandleBooks = True
@@ -807,7 +807,7 @@ class Pipeline():
         epub = Epub(self, self.book["source"])
 
         # Hvis dette ikke er en EPUB; bruk filnavnet / mappenavnet
-        if not epub.isepub():
+        if not epub.isepub(report_errors=False):
             return re.sub("\.[^\.]*$", "", self.book["name"])
         else:
             return epub.identifier()
@@ -816,7 +816,7 @@ class Pipeline():
     def book_title(self):
         epub = Epub(self, self.book["source"])
 
-        if epub.isepub():
+        if epub.isepub(report_errors=False):
             return epub.meta("dc:title")
         else:
             return None
