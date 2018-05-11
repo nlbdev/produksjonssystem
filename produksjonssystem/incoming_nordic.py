@@ -6,6 +6,7 @@ import os
 import tempfile
 import time
 import subprocess
+import traceback
 import shutil
 import re
 import json
