@@ -213,17 +213,20 @@ class Produksjonssystem():
             os.makedirs(self.dirs[d], exist_ok=True)
 
         threads = []
-        file_name = os.environ.get("CONFIG_FILE")
-        emailDoc = ""
+        file_name=os.environ.get("CONFIG_FILE")
+        self.emailDoc=""
         with open(file_name, 'r') as f:
-            try:
-                emailDoc = yaml.load(f)
-            except Exception as e:
-                self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
-                traceback.print_exc(e)
+                try:
+                    self.emailDoc = yaml.load(f)
+                except Exception as e:
+                    self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
+                    traceback.print_exc(e)
 
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
+
+        for common_key in self.emailDoc["common"]:
+            Pipeline.common_config = common_key
 
         for pipeline in self.pipelines:
             email_settings = {
@@ -232,8 +235,8 @@ class Produksjonssystem():
                 "recipients": []
             }
             pipeline_config = {}
-            if pipeline[0].uid in emailDoc:
-                for recipient in emailDoc[pipeline[0].uid]:
+            if pipeline[0].uid in self.emailDoc:
+                for recipient in self.emailDoc[pipeline[0].uid]:
                     if isinstance(recipient, str):
                         email_settings["recipients"].append(recipient)
                     elif isinstance(recipient, dict):
@@ -347,25 +350,34 @@ class Produksjonssystem():
         with open(stopfile, "w") as f:
             f.write("stop")
 
+
     def _config_thread(self):
         fileName = os.environ.get("CONFIG_FILE")
-        emailDoc = ""
         last_update = 0
         while(self.shouldRun):
 
             if time.time() - last_update < 300:
                 time.sleep(5)
                 continue
-
             last_update = time.time()
 
             try:
                 with open(fileName, 'r') as f:
                     tempEmailDoc = yaml.load(f)
-                if tempEmailDoc != emailDoc:
-                    if emailDoc != "":
-                        self.info("Oppdaterer konfig fra fil")
-                    emailDoc = tempEmailDoc
+                if tempEmailDoc != self.emailDoc:
+                    self.info("Oppdaterer konfig fra fil")
+
+                    try:
+                        for tempkey in tempEmailDoc:
+                            changes = self.find_diff(tempEmailDoc, self.emailDoc, tempkey)
+                            if not changes == "":
+                                self.info(changes)
+                    except Exception:
+                        pass
+
+                    self.emailDoc = tempEmailDoc
+                    for common_key in self.emailDoc["common"]:
+                        Pipeline.common_config = common_key
 
                     for pipeline in self.pipelines:
                         if not pipeline[0].running:
@@ -374,31 +386,49 @@ class Produksjonssystem():
                         recipients = []
                         pipeline_config = {}
 
-                        if pipeline[0].uid in emailDoc and emailDoc[pipeline[0].uid]:
-                            for recipient in emailDoc[pipeline[0].uid]:
+                        if pipeline[0].uid in self.emailDoc and self.emailDoc[pipeline[0].uid]:
+                            for recipient in self.emailDoc[pipeline[0].uid]:
                                 if isinstance(recipient, str):
                                     recipients.append(recipient)
                                 elif isinstance(recipient, dict):
                                     for key in recipient:
                                         pipeline_config[key] = recipient[key]
-                        old_recipients = pipeline[0].email_settings["recipients"] if "recipients" in pipeline[0].email_settings else []
-
-                        if (len(old_recipients) > len(recipients)):
-                            self.info("Systemet har oppdatert mottakere for: {}" .format(pipeline[0].uid))
-                            delta = (yaml.dump(list(set(old_recipients)-set(recipients)), default_flow_style=False))
-                            self.info("Fjernet mottakere: \n {}".format(delta))
-                        elif (len(old_recipients) < len(recipients)):
-                            self.info("Systemet har oppdatert mottakere for: {}" .format(pipeline[0].uid))
-                            delta = (yaml.dump(list(set(recipients)-set(old_recipients)), default_flow_style=False))
-                            self.info("Lagt til mottakere: \n {}".format(delta))
 
                         pipeline[0].email_settings["recipients"] = recipients
                         pipeline[0].config = pipeline_config
 
-            except Exception as e:
+            except Exception:
                 self.info("En feil oppstod under lasting av konfigurasjonsfil. Sjekk syntaksen til" + fileName)
                 self.info(traceback.format_exc())
 
+    def find_diff(self, new_config, old_config, tempkey):
+        for temp2key in new_config[tempkey]:
+            if isinstance(temp2key, str):
+
+                if len(new_config[tempkey]) > len(old_config[tempkey]):
+                    delta = (yaml.dump(list(set(new_config[tempkey])-set(old_config[tempkey])), default_flow_style=False))
+                    return ("Følgende mottakere ble lagt til i {} : \n{}" .format(tempkey, delta))
+
+                if len(new_config[tempkey]) < len(old_config[tempkey]):
+                    delta = (yaml.dump(list(set(old_config[tempkey])-set(new_config[tempkey])), default_flow_style=False))
+                    return ("Følgende mottakere ble fjernet i {} : \n{}" .format(tempkey, delta))
+
+            elif isinstance(temp2key, dict):
+                for i in range(0, len(new_config[tempkey])):
+                    if isinstance(new_config[tempkey][i], dict):
+
+                     for item in new_config[tempkey][i]:
+                        tempset_new = set(new_config[tempkey][i][item])
+                        tempset_old = set(old_config[tempkey][i][item])
+
+                        if (len(tempset_new) > len(tempset_old)):
+                            delta = (yaml.dump(list(tempset_new-tempset_old), default_flow_style=False))
+                            return ("Følgende mottakere ble lagt til i {}: {} : \n{}" .format(tempkey, item, delta))
+
+                        elif (len(tempset_new) < len(tempset_old)):
+                            delta = (yaml.dump(list(tempset_old-tempset_new), default_flow_style=False))
+                            return ("Følgende mottakere ble fjernet i {}: {} : \n{}" .format(tempkey, item, delta))
+        return ""
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
