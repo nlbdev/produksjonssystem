@@ -44,6 +44,7 @@ class Produksjonssystem():
     pipelines = None
     environment = None
     emailDoc = []
+    common_config = {}
 
     def __init__(self, environment=None):
         logging.basicConfig(stream=sys.stdout,
@@ -225,8 +226,10 @@ class Produksjonssystem():
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
 
-        for common_key in self.emailDoc["common"]:
-            Pipeline.common_config = common_key
+        for common in self.emailDoc["common"]:
+            for common_key in common:
+                self.common_config[common_key] = common[common_key]
+        Pipeline.common_config = self.common_config
 
         for pipeline in self.pipelines:
             email_settings = {
@@ -376,8 +379,11 @@ class Produksjonssystem():
                         pass
 
                     self.emailDoc = tempEmailDoc
-                    for common_key in self.emailDoc["common"]:
-                        Pipeline.common_config = common_key
+
+                    for common in self.emailDoc["common"]:
+                        for common_key in common:
+                            self.common_config[common_key] = common[common_key]
+                    Pipeline.common_config = self.common_config
 
                     for pipeline in self.pipelines:
                         if not pipeline[0].running:
@@ -402,8 +408,8 @@ class Produksjonssystem():
                 self.info(traceback.format_exc())
 
     def find_diff(self, new_config, old_config, tempkey):
-        for temp2key in new_config[tempkey]:
-            if isinstance(temp2key, str):
+        for key_in_config in new_config[tempkey]:
+            if isinstance(key_in_config, str):
 
                 if len(new_config[tempkey]) > len(old_config[tempkey]):
                     delta = (yaml.dump(list(set(new_config[tempkey])-set(old_config[tempkey])), default_flow_style=False))
@@ -413,7 +419,7 @@ class Produksjonssystem():
                     delta = (yaml.dump(list(set(old_config[tempkey])-set(new_config[tempkey])), default_flow_style=False))
                     return ("Følgende mottakere ble fjernet i {} : \n{}" .format(tempkey, delta))
 
-            elif isinstance(temp2key, dict):
+            elif isinstance(key_in_config, dict):
                 for i in range(0, len(new_config[tempkey])):
                     if isinstance(new_config[tempkey][i], dict):
 

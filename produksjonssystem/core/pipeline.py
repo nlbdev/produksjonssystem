@@ -58,7 +58,7 @@ class Pipeline():
     # Other configuration
     config = None    # instance config
     environment = {} # global config
-    common_config = None
+    common_config = {}
     # constants (set during instantiation)
     running = False
     shouldHandleBooks = True
