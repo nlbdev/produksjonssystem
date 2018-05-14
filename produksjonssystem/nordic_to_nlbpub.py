@@ -58,7 +58,7 @@ class NordicToNlbpub(Pipeline):
 
         html_dir_obj = tempfile.TemporaryDirectory()
         html_dir = html_dir_obj.name
-        html_file = os.path.join(html_dir, epub.identifier() + ".xml")
+        html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
         temp_html_file_obj = tempfile.NamedTemporaryFile()
         temp_html_file = temp_html_file_obj.name
 
