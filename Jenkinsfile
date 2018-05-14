@@ -31,7 +31,7 @@ pipeline {
         }
 
         failure {
-            sh 'slack-cli -d teknisk -f test-result.txt || true'
+            sh 'slack-cli -d teknisk -f target/test-result.txt || true'
             sh 'echo "Build failed: \"$JOB_NAME [$BUILD_NUMBER]\"" | slack-cli -d teknisk || true'
         }
 
