@@ -63,7 +63,7 @@ class Report():
         if not self._report_dir:
             report_dir = os.path.join(self.pipeline.dir_reports, "logs")
             timestring = datetime.now(timezone.utc).strftime("%F_%H-%M-%S.") + str(round((time.time() % 1) * 1000)).zfill(3)
-            if "name" in self.pipeline.book:
+            if self.pipeline and self.pipeline.book and "name" in self.pipeline.book:
                 report_dir = os.path.join(report_dir, self.pipeline.book["name"], timestring + "-" + self.pipeline.uid)
             else:
                 report_dir = os.path.join(report_dir, self.pipeline.uid, timestring)
