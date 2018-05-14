@@ -804,6 +804,9 @@ class Pipeline():
     # This can be overridden if the identifier can not be retrieved from the EPUB dc:identifier
     # or from the top-level directory or file name
     def book_identifier(self):
+        if not os.path.exists(self.book["source"]):
+            return re.sub("\.[^\.]*$", "", self.book["name"])
+
         epub = Epub(self, self.book["source"])
 
         # Hvis dette ikke er en EPUB; bruk filnavnet / mappenavnet
