@@ -125,6 +125,7 @@ class EpubToDtbookHTML(Pipeline):
 
         temp_dtbook_obj = tempfile.NamedTemporaryFile()
         temp_dtbook = temp_dtbook_obj.name
+        nordic_epub.refresh_metadata()
         self.utils.report.debug("dtbook-cleanup.xsl")
         self.utils.report.debug("    source = " + dtbook_file)
         self.utils.report.debug("    target = " + temp_dtbook)

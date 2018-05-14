@@ -8,11 +8,12 @@ from core.utils.metadata import Metadata
 
 from core.pipeline import Pipeline
 
+
 class InsertMetadata(Pipeline):
     # Ikke instansier denne klassen; bruk heller InsertMetadataEpub osv.
     uid = "insert-metadata"
     title = "Sett inn metadata"
-    labels = [ "Metadata" ]
+    labels = ["Metadata"]
     publication_format = None
 
     def on_book_deleted(self):
@@ -52,22 +53,18 @@ class InsertMetadata(Pipeline):
             self.utils.report.should_email = False
             return True
 
-
-        # ---------- lag en kopi av EPUBen ----------
-
+        self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
 
-
-        # ---------- oppdater metadata ----------
-
         self.utils.report.info("Oppdaterer metadata...")
         updated = Metadata.update(self, temp_epub, publication_format=self.publication_format, insert=True)
-        if isinstance(updated, bool) and updated == False:
+        if isinstance(updated, bool) and updated is False:
             self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
+        temp_epub.refresh_metadata()
 
         self.utils.report.info("Boken ble oppdatert med format-spesifik metadata. Kopierer til {}-arkiv.".format(self.publication_format))
 
@@ -77,29 +74,34 @@ class InsertMetadata(Pipeline):
 
         self.utils.report.title = "{}: {} har fått {}-spesifikk metadata 👍😄 {}".format(self.title, epub.identifier(), self.publication_format, epubTitle)
 
+
 class InsertMetadataEpub(InsertMetadata):
     uid = "insert-metadata-epub"
     title = "Sett inn metadata for EPUB"
-    labels = [ "EPUB", "Metadata" ]
+    labels = ["EPUB", "Metadata"]
     publication_format = "EPUB"
+
 
 class InsertMetadataDaisy202(InsertMetadata):
     uid = "insert-metadata-daisy202"
     title = "Sett inn metadata for lydbok"
-    labels = [ "Lydbok", "Innlesing", "Talesyntese", "Metadata" ]
+    labels = ["Lydbok", "Innlesing", "Talesyntese", "Metadata"]
     publication_format = "DAISY 2.02"
+
 
 class InsertMetadataXhtml(InsertMetadata):
     uid = "insert-metadata-xhtml"
     title = "Sett inn metadata for e-tekst"
-    labels = [ "e-bok", "Metadata" ]
+    labels = ["e-bok", "Metadata"]
     publication_format = "XHTML"
+
 
 class InsertMetadataBraille(InsertMetadata):
     uid = "insert-metadata-braille"
     title = "Sett inn metadata for punktskrift"
-    labels = [ "Punktskrift", "Metadata" ]
+    labels = ["Punktskrift", "Metadata"]
     publication_format = "Braille"
+
 
 #class InsertMetadataExternal(InsertMetadata):
 #    uid = "insert-metadata-external"

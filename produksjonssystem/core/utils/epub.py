@@ -13,40 +13,40 @@ from core.utils.xslt import Xslt
 
 class Epub():
     """Methods for working with EPUB files/filesets"""
-    
+
     _i18n = {
         "does not exist": "eksisterer ikke",
         "cannot validate EPUB": "kan ikke validere EPUB",
         "the file does not end with \".epub\" or \".zip\"": "filen slutter ikke med \".epub\" eller \".zip\""
     }
-    
+
     pipeline = None
     book_path = None
     metadata = None
     _temp_obj = None
-    
+
     uid = "core-utils-epub"
-    
+
     def __init__(self, pipeline, book_path):
         assert os.path.exists(book_path), "'{}' must exist".format(book_path)
         self.pipeline = pipeline
         self.book_path = book_path
-    
+
     def asFile(self):
         """Return the epub as a zip file and with file extension "epub"."""
-        
+
         # file
         if os.path.isfile(self.book_path):
             return self.book_path
-        
+
         # directory
         else:
             if not self._temp_obj:
                 self._temp_obj = tempfile.TemporaryDirectory()
-            
+
             book_id = self.meta("dc:identifier")
             file = os.path.join(self._temp_obj.name, book_id + ".epub")
-            
+
             dirpath = pathlib.Path(self.book_path)
             filepath = pathlib.Path(file)
             with zipfile.ZipFile(file, 'w') as archive:
@@ -63,103 +63,103 @@ class Epub():
                         continue
                     self.pipeline.utils.report.debug("zipping: " + relative)
                     archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
-            
+
             return file
-        
+
     def asDir(self):
         # file
         if os.path.isfile(self.book_path):
             if not self._temp_obj:
                 self._temp_obj = tempfile.TemporaryDirectory()
-            
+
             self.pipeline.utils.filesystem.unzip(self.book_path, self._temp_obj.name)
             return self._temp_obj.name
-        
+
         # directory
         else:
             return self.book_path
-    
+
     def isepub(self, report_errors=True):
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if os.path.isdir(self.book_path) and not os.path.isfile(os.path.join(self.book_path, "EPUB/package.opf")):
             if report_errors:
                 self.pipeline.utils.report.error(os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
             return False
-        
+
         elif os.path.isfile(self.book_path):
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 if not "mimetype" in [item.filename for item in archive.filelist]:
                     if report_errors:
                         self.pipeline.utils.report.warn("No 'mimetype' file in ZIP; this is not an EPUB: " + self.book_path)
                     return False
-                
+
                 mimetype = archive.read("mimetype").decode("utf-8")
                 if not mimetype.startswith("application/epub+zip"):
                     if report_errors:
                         self.pipeline.utils.report.warn("The 'mimetype' file does not start with the text 'application/epub+zip'; this is not an EPUB: " + self.book_path)
                     return False
-                
+
                 if not "META-INF/container.xml" in [item.filename for item in archive.filelist]:
                     if report_errors:
                         self.pipeline.utils.report.warn("No 'META-INF/container.xml' file in ZIP; this is not an EPUB: " + self.book_path)
                     return False
-        
+
         return True
-    
+
     def opf_path(self):
         container = None
-        
+
         if os.path.isdir(self.book_path):
             container = ElementTree.parse(os.path.join(self.book_path, "META-INF/container.xml")).getroot()
-            
+
         else:
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 container = archive.read("META-INF/container.xml")
                 container = ElementTree.XML(container)
-        
+
         rootfiles = container.findall('{urn:oasis:names:tc:opendocument:xmlns:container}rootfiles')[0]
         rootfile = rootfiles.findall('{urn:oasis:names:tc:opendocument:xmlns:container}rootfile')[0]
         opf = rootfile.attrib["full-path"]
         return opf
-    
+
     def nav_path(self):
         opf = None
         opf_path = self.opf_path()
-        
+
         if os.path.isdir(self.book_path):
             opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
-            
+
         else:
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 opf = archive.read(opf_path)
                 opf = ElementTree.XML(opf)
-        
+
         manifest = opf.findall('{http://www.idpf.org/2007/opf}manifest')[0]
         items = manifest.findall("*")
         for item in items:
             if "properties" in item.attrib and "nav" in re.split(r'\s+', item.attrib["properties"]):
                 return os.path.join(os.path.dirname(opf_path), item.attrib["href"])
-        
+
         return None
-    
+
     def identifier(self, default=None):
         return self.meta("dc:identifier")
-    
+
     def meta(self, name, default=None):
         """Read OPF metadata"""
         if not self.metadata:
             opf = None
             opf_path = self.opf_path()
             self.metadata = {}
-            
+
             if os.path.isdir(self.book_path):
                 opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
-                
+
             else:
                 with zipfile.ZipFile(self.book_path, 'r') as archive:
                     opf = archive.read(opf_path)
                     opf = ElementTree.XML(opf)
-            
+
             opf_metadata = opf.findall('{http://www.idpf.org/2007/opf}metadata')[0]
             for m in opf_metadata.findall("*"):
                 if "refines" in m.attrib:
@@ -168,36 +168,39 @@ class Epub():
                 n = n.replace("{http://purl.org/dc/elements/1.1/}", "dc:")
                 value = m.attrib["content"] if "content" in m.attrib else m.text
                 self.metadata[n] = value
-        
+
         return self.metadata[name] if name in self.metadata else default
-    
+
+    def refresh_metadata(self):
+        self.metadata = None
+
     @staticmethod
     def html_to_nav(pipeline, source, target):
         xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-nav.xsl"),
                               source=source,
                               target=target)
         return xslt
-    
+
     @staticmethod
     def html_to_opf(pipeline, source, target):
         xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-opf.xsl"),
                               source=source,
                               target=target)
         return xslt
-    
+
     @staticmethod
     def from_html(pipeline, dir_in, dir_out):
         assert os.path.isdir(dir_in)
         assert os.path.isdir(dir_out) or not os.path.exists(dir_out)
-        
+
         epub_dir = os.path.join(dir_out, "EPUB")
         meta_dir = os.path.join(dir_out, "META-INF")
         os.makedirs(epub_dir)
         os.makedirs(meta_dir)
-        
+
         # copy dir_in to dir_out/EPUB
         pipeline.utils.filesystem.copytree(dir_in, epub_dir)
-        
+
         # find html file
         html_file = None
         for root, dirs, files in os.walk(dir_out):
@@ -206,7 +209,7 @@ class Epub():
                     html_file = os.path.join(root, f)
         assert html_file, "There must be a file with the file extension '.xhtml' in the HTML fileset."
         html_file_relative = os.path.relpath(html_file, dir_out)
-        
+
         # create dir_out/EPUB/package.opf based on input html (xslt)
         temp_opf_obj = tempfile.NamedTemporaryFile()
         temp_opf = temp_opf_obj.name
@@ -233,24 +236,24 @@ class Epub():
             opf.write("        <itemref idref=\"{}\" id=\"itemref_1\"/>\n".format(contentref))
             opf.write("    </spine>\n")
             opf.write("</package>\n")
-        
+
         if not contentref:
             pipeline.utils.report.info("Could not find content file...")
             return None
-        
+
         xslt = Epub.html_to_opf(pipeline, temp_opf, os.path.join(epub_dir, "package.opf"))
         if not xslt.success:
             return None
-        
+
         # create dir_out/EPUB/nav.xhtml based on input html (xslt)
         xslt = Epub.html_to_nav(pipeline, html_file, os.path.join(epub_dir, "nav.xhtml"))
         if not xslt.success:
             return None
-        
+
         # add boilerplate dir_out/mediatype
         with open(os.path.join(dir_out, "mimetype"), "w") as mimetype:
             mimetype.write("application/epub+zip")
-        
+
         # add boilerplate dir_out/META-INF/container.xml
         with open(os.path.join(meta_dir, "container.xml"), "w") as container:
             container.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
@@ -259,14 +262,14 @@ class Epub():
             container.write("        <rootfile full-path=\"EPUB/package.opf\" media-type=\"application/oebps-package+xml\"/>\n")
             container.write("    </rootfiles>\n")
             container.write("</container>\n")
-        
+
         return Epub(pipeline, dir_out)
-    
+
     # in case you want to override something
     @staticmethod
     def translate(english_text, translated_text):
         Epub._i18n[english_text] = translated_text
-    
+
     file_extensions = {
         "xml":       "application/xml",
         "xhtml":     "application/xhtml+xml",
