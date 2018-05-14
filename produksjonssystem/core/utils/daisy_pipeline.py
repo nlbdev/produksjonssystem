@@ -130,17 +130,20 @@ class DaisyPipelineJob():
 
     def __init__(self, pipeline, script, arguments):
         self.pipeline = pipeline
+        self.script = script
+        self.arguments = arguments
 
+    def __enter__(self):
         DaisyPipelineJob.init_environment()
 
         self._dir_output_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-daisy-pipeline-output")
         self.dir_output = self._dir_output_obj.name
 
-        if DaisyPipelineJob.start_engine(pipeline):
+        if DaisyPipelineJob.start_engine(self.pipeline):
             try:
-                command = [DaisyPipelineJob.dp2_cli, script]
-                for arg in arguments:
-                    command.extend(["--" + arg, arguments[arg]])
+                command = [DaisyPipelineJob.dp2_cli, self.script]
+                for arg in self.arguments:
+                    command.extend(["--" + arg, self.arguments[arg]])
                 command.extend(["--background"])
 
                 self.pipeline.utils.report.debug("Posting job")
@@ -202,17 +205,19 @@ class DaisyPipelineJob():
                 self.pipeline.utils.report.debug(traceback.format_exc())
                 self.pipeline.utils.report.error("An error occured while running the DAISY Pipeline 2 job (" + str(self.job_id) + ")")
 
-            finally:
-                if self.job_id:
-                    try:
-                        process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "delete", self.job_id])
-                        self.pipeline.utils.report.debug(self.job_id + " was deleted")
-                    except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
-                        self.pipeline.utils.report.debug(traceback.format_exc())
-                        self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)
-
         else:
             self.pipeline.utils.report.error("DAISY Pipeline 2 is not running.")
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.job_id:
+            try:
+                process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "delete", self.job_id])
+                self.pipeline.utils.report.debug(self.job_id + " was deleted")
+            except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
+                self.pipeline.utils.report.debug(traceback.format_exc())
+                self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)
 
     @staticmethod
     def list_processes():

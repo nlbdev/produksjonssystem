@@ -3,16 +3,11 @@
 
 import sys
 import os
-import tempfile
-import time
 import subprocess
 import traceback
-import shutil
-import re
 import json
 
 from core.utils.epub import Epub
-from core.utils.metadata import Metadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
@@ -66,18 +61,18 @@ class IncomingNordic(Pipeline):
             return
 
         self.utils.report.info("Validerer EPUB...")
-        dp2_job = DaisyPipelineJob(self, "nordic-epub3-validate", { "epub": epub.asFile() })
+        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": epub.asFile()}) as dp2_job:
 
-        # get validation report
-        report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
-        if os.path.isfile(report_file):
-            with open(report_file, 'r') as result_report:
-                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+            # get validation report
+            report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
+            if os.path.isfile(report_file):
+                with open(report_file, 'r') as result_report:
+                    self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
 
-        if dp2_job.status != "DONE":
-            self.utils.report.error("Klarte ikke å validere boken")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            if dp2_job.status != "DONE":
+                self.utils.report.error("Klarte ikke å validere boken")
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return
 
         try:
             self.utils.report.info("Genererer ACE-rapport...")

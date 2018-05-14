@@ -2,18 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 import sys
-import time
 import shutil
 import tempfile
-import subprocess
 
-from lxml import etree as ElementTree
-from datetime import datetime, timezone
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-from core.utils.metadata import Metadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
@@ -27,7 +21,7 @@ class NordicToNlbpub(Pipeline):
     title = "Nordisk EPUB til NLBPUB"
     labels = [ "EPUB", "Lydbok", "Innlesing", "Talesyntese", "Punktskrift", "e-bok" ]
     publication_format = None
-    
+
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 
     def on_book_deleted(self):
@@ -62,65 +56,63 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
 
-        # ---------- convert from nordic epub to nordic html ----------
-
-        html_dir = None
-        html_file = None
+        html_dir_obj = tempfile.TemporaryDirectory()
+        html_dir = html_dir_obj.name
+        html_file = os.path.join(html_dir, epub.identifier() + ".xml")
+        temp_html_file_obj = tempfile.NamedTemporaryFile()
+        temp_html_file = temp_html_file_obj.name
 
         self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-        dp2_job_epub3_to_html = DaisyPipelineJob(self, "nordic-epub3-to-html", { "epub": epub.asFile(), "fail-on-error": "true" })
+        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": epub.asFile(), "fail-on-error": "true"}) as dp2_job:
 
-        # get conversion report
-        report_file = os.path.join(dp2_job_epub3_to_html.dir_output, "html-report/report.xhtml")
-        if os.path.isfile(report_file):
-            with open(report_file, 'r') as result_report:
-                self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job_epub3_to_html.status == "DONE" else "ERROR")
+            # get conversion report
+            report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
+            if os.path.isfile(report_file):
+                with open(report_file, 'r') as result_report:
+                    self.utils.report.attachment(result_report.readlines(),
+                                                 os.path.join(self.utils.report.reportDir(), "report.html"),
+                                                 "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
 
-        if dp2_job_epub3_to_html.status != "DONE":
-            self.utils.report.error("Klarte ikke å konvertere boken")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            if dp2_job.status != "DONE":
+                self.utils.report.error("Klarte ikke å konvertere boken")
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return
 
-        html_dir = os.path.join(dp2_job_epub3_to_html.dir_output, "output-dir", epub.identifier())
-        html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
+            dp2_html_dir = os.path.join(dp2_job.dir_output, "output-dir", epub.identifier())
+            dp2_html_file = os.path.join(dp2_job.dir_output, "output-dir", epub.identifier(), epub.identifier() + ".xhtml")
 
-        if not os.path.isdir(html_dir):
-            self.utils.report.info("Finner ikke den konverterte boken. Kanskje filnavnet er forskjellig fra IDen?")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            if not os.path.isdir(dp2_html_dir):
+                self.utils.report.error("Finner ikke den konverterte boken: {}".format(dp2_html_dir))
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return False
 
+            if not os.path.isfile(dp2_html_file):
+                self.utils.report.error("Finner ikke den konverterte boken: {}".format(dp2_html_file))
+                self.utils.report.info("Kanskje filnavnet er forskjellig fra IDen?")
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return False
 
-        # ---------- clean up nordic html ----------
+            self.utils.filesystem.copy(dp2_html_dir, html_dir)
 
-        clean_html_obj = tempfile.NamedTemporaryFile()
-        clean_html = clean_html_obj.name
-
+        self.utils.report.info("Rydder opp i nordisk HTML")
         xslt = Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
-                          source=html_file,
-                          target=clean_html)
+                    source=html_file,
+                    target=temp_html_file)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
-
-        shutil.copy(clean_html, html_file)
-
-
-        # ---------- convert from html to generic epub ----------
+        shutil.copy(temp_html_file, html_file)
 
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
         nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
         nlbpub_tempdir = nlbpub_tempdir_obj.name
 
         nlbpub = Epub.from_html(self, html_dir, nlbpub_tempdir)
-        if nlbpub == None:
+        if nlbpub is None:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
 
-
-        # ---------- save EPUB ----------
-
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
-
         archived_path = self.utils.filesystem.storeBook(nlbpub.asDir(), epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i NLBPUB-arkivet.")
