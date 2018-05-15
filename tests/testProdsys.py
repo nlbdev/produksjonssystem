@@ -8,11 +8,13 @@
 import os
 import re
 from shutil import copyfile
+from shutil import copytree
 from shutil import rmtree
 import sys
 import threading
 import logging
 import time
+import glob
 
 # import produksjonssystem from relative directory
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -90,30 +92,30 @@ else:
     print("Timed out when starting system")
     sys.exit(1)
 
-identifiers = ["558237", "115437", "221437", "356837", "406837"]
+audio_identifier = "624328"
+identifiers = ["558237", "115437", "221437", "356837", "406837", "624328"]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
 copyfile(file_path, os.path.join(prodsys.dirs["incoming"], os.path.basename(file_path)))
 
-for pipeline in prodsys.pipelines:
-    if pipeline[0].uid == "create-abstracts":
-        print("abstracts pipeline are not connected to the rest of the system. see: https://github.com/nlbdev/produksjonssystem/issues/99")
-        pipeline[0].stop(exit=True)
+audio_path = os.path.join(os.path.dirname(__file__), audio_identifier)
+copytree(audio_path, os.path.join(book_archive_dirs["share"], "daisy202", audio_identifier))
 
 expect_dirs = {}
 for pipeline in prodsys.pipelines:
-    if (not pipeline[0].uid in ["update-metadata", "create-abstracts"]
+    if (not pipeline[0].uid in ["update-metadata"]
        and not isinstance(pipeline[0], DummyPipeline)
        and pipeline[2]):
         expect_dirs[pipeline[0].uid] = {
             "title": pipeline[0].title,
             "dir": pipeline[0].dir_out,
+            "parentdirs": pipeline[0].parentdirs,
             "status": None
         }
 
-success = 1
-t = 500
+t = 1000
 
-print("Starting test of NLB production system. Verifies distribution formats for " + os.path.basename(file_path) + " in {0} seconds \n".format(t))
+print("Starting test of NLB production system. Verifies distribution formats for {} and daisy202: {} in {} seconds \n"
+      .format(os.path.basename(file_path), audio_identifier, t))
 
 
 def check_dirs(last_run=False):
@@ -129,6 +131,11 @@ def check_dirs(last_run=False):
         for identifier in identifiers:
             if os.path.isdir(os.path.join(expect_dir, identifier)):
                 expect_dirs[uid]["status"] = True
+
+            if not expect_dirs[uid]["parentdirs"] == {}:
+                for key in expect_dirs[uid]["parentdirs"]:
+                    if glob.glob(os.path.join(expect_dir, expect_dirs[uid]["parentdirs"][key], identifier)+".*"):
+                        expect_dirs[uid]["status"] = True
 
             file = os.listdir(expect_dir)
             file = re.sub(r'\.[^.]*$', '', file[0]) if file else None
