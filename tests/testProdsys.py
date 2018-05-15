@@ -162,7 +162,7 @@ end_time = int(time.time())
 success = check_dirs(last_run=True)
 
 if prodsys_thread.is_alive():
-    print("The tests timed out after {} seconds".format(t))
+    print("The tests timed out after {} seconds".format(end_time - start_time))
 else:
     print("The tests finished after {} seconds".format(end_time - start_time))
 
