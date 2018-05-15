@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE smil PUBLIC "-//W3C//DTD SMIL 1.0//EN" "http://www.w3.org/TR/REC-SMIL/SMIL10.dtd" []>
+<smil>
+   <head>
+      <meta name="ncc:generator" content="DMFC z3986-2005 to Daisy 2.02 (smil2smil v0.2)" />
+      <meta name="dc:format" content="Daisy 2.02" />
+      <meta name="dc:identifier" content="624328180514" />
+      <meta name="dc:title" content="Porsgrunns Dagblad, mandag 14. mai 2018" />
+      <meta name="ncc:totalElapsedTime" content="0:00:00" />
+      <meta name="ncc:timeInThisSmil" content="0:00:05" />
+      <layout>
+         <region id="txtView" />
+      </layout>
+   </head>
+   <body>
+      <seq dur="5.493s">
+         <par endsync="last" id="tcp1">
+            <text id="text1" src="content.html#dtb1" />
+            <audio src="speechgen0001.mp3" id="audd1e10" clip-begin="npt=0.000s" clip-end="npt=5.493s" />
+         </par>
+      </seq>
+   </body>
+</smil>

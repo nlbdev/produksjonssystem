@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE smil PUBLIC "-//W3C//DTD SMIL 1.0//EN" "http://www.w3.org/TR/REC-SMIL/SMIL10.dtd" []>
+<smil>
+   <head>
+      <meta name="ncc:generator" content="DMFC z3986-2005 to Daisy 2.02 (smil2smil v0.2)" />
+      <meta name="dc:format" content="Daisy 2.02" />
+      <meta name="dc:identifier" content="624328180514" />
+      <meta name="title" content="Om NLBs lydutgave av Porsgrunns Dagblad" />
+      <meta name="dc:title" content="Porsgrunns Dagblad, mandag 14. mai 2018" />
+      <meta name="ncc:totalElapsedTime" content="0:00:05" />
+      <meta name="ncc:timeInThisSmil" content="0:00:36" />
+      <layout>
+         <region id="txtView" />
+      </layout>
+   </head>
+   <body>
+      <seq dur="36.082s">
+         <par endsync="last" id="tcp2">
+            <text id="text2" src="content.html#dtb2" />
+            <audio src="speechgen0002.mp3" id="audd8e10" clip-begin="npt=0.000s" clip-end="npt=6.696s" />
+         </par>
+         <par endsync="last" id="tcp3">
+            <text id="text3" src="content.html#dtb3" />
+            <audio src="speechgen0002.mp3" id="audd8e13" clip-begin="npt=6.696s" clip-end="npt=17.350s" />
+         </par>
+         <par endsync="last" id="tcp4">
+            <text id="text4" src="content.html#dtb4" />
+            <audio src="speechgen0002.mp3" id="audd8e16" clip-begin="npt=17.350s" clip-end="npt=28.772s" />
+         </par>
+         <par endsync="last" id="tcp5">
+            <text id="text5" src="content.html#dtb5" />
+            <audio src="speechgen0002.mp3" id="audd8e19" clip-begin="npt=28.772s" clip-end="npt=35.853s" />
+         </par>
+         <par endsync="last" id="tcp6">
+            <text id="text6" src="content.html#dtb6" />
+            <audio src="speechgen0002.mp3" id="audd8e22" clip-begin="npt=35.853s" clip-end="npt=36.082s" />
+         </par>
+      </seq>
+   </body>
+</smil>
