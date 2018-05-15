@@ -101,7 +101,7 @@ class Audio_Abstract(Pipeline):
                     self.utils.report.error("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
 
                 # Creates audio segment in milliseconds from start to end of the abstract file
-                mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir,mp3File))
+                mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir, mp3File))
                 new_mp3 = mp3[float(mp3File_start)*1000:float(mp3File_end)*1000]
                 new_mp3.export(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3"))
                 self.utils.report.info("Baksidetekst eksportert fra: "+mp3File)
@@ -152,16 +152,23 @@ class Audio_Abstract(Pipeline):
 
         # As a last resort, just use an mp3 of sufficient length
 
-        if (duration < 50):
+        if (duration < 20):
                 try:
+
                     for item in os.listdir(temp_absdir):
                         if (item.endswith(".mp3")):
                             try_mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir, item))
-                            if (len(try_mp3) > 120000):
+
+                            if (len(try_mp3)/1000 > duration):
                                 mp3File_abstract = item
-                                mp3File_abstract_start = 0.0
-                                mp3File_abstract_end = 75.0
-                                break
+                                mp3File_abstract_start = 0
+                                mp3File_abstract_end = len(try_mp3)/1000
+                                duration = mp3File_abstract_end
+
+                                if (duration > 75):
+                                    mp3File_abstract_start = 0.0
+                                    mp3File_abstract_end = 75.0
+                                    break
                 except Exception:
                     self.utils.report.debug(traceback.format_exc())
                     self.utils.report.warn("Klarte ikke hente ut lydutdrag basert på mp3 filene i mappa. Sjekk loggen for detaljer.")
