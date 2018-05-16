@@ -325,7 +325,7 @@ class Pipeline():
             with open(os.path.join(self.dir_trigger, name), "w") as triggerfile:
                 triggerfile.write("autotriggered")
         else:
-            Path(path).touch()
+            Filesystem.touch(path)
             with self._md5_lock:
                 if name not in self._md5:
                     self._update_md5(name)
@@ -619,16 +619,6 @@ class Pipeline():
             last_check = time.time()
             for filename in os.listdir(self.dir_in):
                 self.trigger(filename)
-            #for filename in os.listdir(self.dir_in):
-            #    if (os.path.isdir(os.path.join(self.dir_in,filename))):
-            #        # If filename is a directory touch the first file in directory
-            #        for file_in_dir in os.listdir(os.path.join(self.dir_in, filename)):
-            #            if not (os.path.isdir(file_in_dir)):
-            #                Path(os.path.join(self.dir_in, filename, os.path.join(self.dir_in, filename, file_in_dir))).touch()
-            #                break
-            #    else:
-            #        # If it is a file touch file
-            #        Path(os.path.join(self.dir_in, filename)).touch()
 
     def _retry_books_not_in_out_thread(self):
         last_check = 0

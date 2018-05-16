@@ -118,6 +118,47 @@ class Filesystem():
 
         return md5, modified
 
+    @staticmethod
+    def touch(self, path):
+        """ Touch a file, or the first file in a directory """
+        try:
+            if os.path.isfile(path):
+                # Update the modification time for the file
+                Path(path).touch()
+                return
+
+            elif os.path.isdir(path):
+                # Update modification time for the directory itself
+                Path(path).touch()
+
+                # Update modification time for the directory itself (Mounted Samba filesystems)
+                f_obj = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=path)
+                Path(f.name).touch()
+                os.remove(f.name)
+                del f_obj
+
+                # Update modification time for the first file in the directory
+                for dirPath, subdirList, fileList in os.walk(path):
+                    fileList.sort()
+                    subdirList.sort()
+                    ignore = Filesystem.shutil_ignore_patterns(dirPath, fileList + subdirList)
+                    for s in reversed(range(len(subdirList))):
+                        if subdirList[s] in ignore:
+                            del subdirList[s]  # remove ignored folders in-place
+                    for f in fileList:
+                        if f in ignore:
+                            continue  # skip ignored files
+                        filePath = os.path.join(dirPath, f)
+                        Path(filePath).touch()
+                        return
+
+            else:
+                logging.warn("Path does not refer to a file or a directory: {}".format(path))
+
+        except FileNotFoundError as e:
+            logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
+            raise e
+
     def copytree(self, src, dst):
         assert os.path.isdir(src)
 
@@ -230,11 +271,7 @@ class Filesystem():
         else:
             self.copy(source, target)
 
-        if os.path.isdir(target):
-            # update modification time for directory
-            f = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=target).name
-            Path(f).touch()
-            os.remove(f)
+        Filesystem.touch(target)
 
         return target
 
