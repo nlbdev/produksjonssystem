@@ -31,7 +31,7 @@
     <xsl:include href="cover.xsl"/>
 <!--    <xsl:include href="lister.xsl"/>-->
     <!--<xsl:include href="innleste-tabeller.xsl"/>-->
-   <!-- <xsl:include href="tts-tabeller.xsl"/>-->
+<!--    <xsl:include href="tts-tabeller.xsl"/>-->
    <!-- <xsl:include href="logg.xsl"/>-->
     <xsl:include href="ekstra-informasjon.xsl"/>
     <xsl:include href="innleste-noter.xsl"/>
@@ -101,11 +101,11 @@
         <!-- Rydder opp litt i metadata, blant annet fjerner en del som ikke lenger er nødvendige -->
         <xsl:choose>
             <xsl:when
-                test="@name eq 'dc:identifier' and exists(//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'])">
+                test="@name eq 'dc:identifier' and exists($metadata[@name eq 'nlbprod:identifier.daisy202.fulltext'])">
                 <xsl:copy>
                     <xsl:copy-of select="@name"/>
                     <xsl:copy-of
-                        select="//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"/>
+                        select="$metadata[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"/>
                     <!--                    <xsl:attribute name="content" select="//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"></xsl:attribute>-->
                 </xsl:copy>
             </xsl:when>
