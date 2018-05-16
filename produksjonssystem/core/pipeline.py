@@ -13,6 +13,7 @@ import tempfile
 import traceback
 import threading
 
+from copy import deepcopy
 from dotmap import DotMap
 from pathlib import Path
 from threading import Thread, RLock
@@ -37,7 +38,9 @@ class Pipeline():
         "An error occured while checking for book events": "En feil oppstod ved håndtering av bokhendelse"
     }
 
-    _lock = RLock()
+    _queue_lock = RLock()
+    _md5_lock = RLock()
+
     _dir_trigger_obj = None # store TemporaryDirectory object in instance so that it's not cleaned up
     pipelines = []
 
@@ -100,7 +103,8 @@ class Pipeline():
         self.utils.report = None
         self.utils.filesystem = None
         self.retry = retry
-        self._queue = []
+        with self._queue_lock:
+            self._queue = []
         self.retry_not_in_out = retry_not_in_out
         super().__init__()
 
@@ -215,7 +219,8 @@ class Pipeline():
         self.shouldHandleBooks = True
         self._dirInAvailable = True
 
-        self._md5 = {}
+        with self._md5_lock:
+            self._md5 = {}
         dir_list = os.listdir(self.dir_in)
         md5_count = 0
         self.progress_text = "0 / {}".format(len(dir_list))
@@ -297,7 +302,8 @@ class Pipeline():
             pass
 
         self.stop()
-        self._queue = []
+        with self._queue_lock:
+            self._queue = []
 
         for thread in self.threads:
             if thread:
@@ -320,9 +326,15 @@ class Pipeline():
                 triggerfile.write("autotriggered")
         else:
             Path(path).touch()
+            with self._md5_lock:
+                if name not in self._md5:
+                    self._update_md5(name)
+                else:
+                    self._md5[name]["modified"] = time.time()
 
     def get_queue(self):
-        return self._queue
+        with self._queue_lock:
+            return deepcopy(self._queue)
 
     def current_book_name(self):
         name = self.book["name"] if self.book else ""
@@ -392,7 +404,7 @@ class Pipeline():
         return True
 
     def _add_book_to_queue(self, name, event_type):
-        with self._lock:
+        with self._queue_lock:
             book_in_queue = False
             for item in self._queue:
                 if item['name'] == name:
@@ -415,16 +427,17 @@ class Pipeline():
 
         assert not "/" in name
 
-        shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True, expect=self._md5[name]["shallow"] if name in self._md5 else None)
-        deep_md5, modified = Filesystem.path_md5(path=path, shallow=False, expect=self._md5[name]["deep"] if name in self._md5 else None)
-        modified = max(modified if modified else 0, self._md5[name]["modified"] if name in self._md5 else 0)
-        self._md5[name] = {
-            "shallow": shallow_md5,
-            "shallow_checked": int(time.time()),
-            "deep": deep_md5,
-            "deep_checked": int(time.time()),
-            "modified": modified,
-        }
+        with self._md5_lock:
+            shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True, expect=self._md5[name]["shallow"] if name in self._md5 else None)
+            deep_md5, modified = Filesystem.path_md5(path=path, shallow=False, expect=self._md5[name]["deep"] if name in self._md5 else None)
+            modified = max(modified if modified else 0, self._md5[name]["modified"] if name in self._md5 else 0)
+            self._md5[name] = {
+                "shallow": shallow_md5,
+                "shallow_checked": int(time.time()),
+                "deep": deep_md5,
+                "deep_checked": int(time.time()),
+                "modified": modified,
+            }
 
     @staticmethod
     def _trigger_dir_thread():
@@ -497,21 +510,22 @@ class Pipeline():
             try:
                 if self.shouldHandleBooks:
                     # books that are recently changed (check often in case of new file changes)
-                    recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
-                    if recently_changed:
-                        for f in recently_changed:
-                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
-                            self._md5[f]["deep_checked"] = int(time.time())
-                            if deep_md5 != self._md5[f]["deep"]:
-                                self._md5[f]["modified"] = int(time.time())
-                                self._update_md5(f)
-                                self._add_book_to_queue(f, "modified")
-                                logging.debug("book modified (and was recently modified, might be in the middle of a copy operation): " + f)
+                    with self._md5_lock:
+                        recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
+                        if recently_changed:
+                            for f in recently_changed:
+                                deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
+                                self._md5[f]["deep_checked"] = int(time.time())
+                                if deep_md5 != self._md5[f]["deep"]:
+                                    self._md5[f]["modified"] = int(time.time())
+                                    self._update_md5(f)
+                                    self._add_book_to_queue(f, "modified")
+                                    logging.debug("book modified (and was recently modified, might be in the middle of a copy operation): " + f)
 
-                        time.sleep(0.1) # a small nap
-                        continue
+                            time.sleep(0.1)  # a small nap
+                            continue
 
-                time.sleep(1) # unless anything has recently changed, give the system time to breathe between each iteration
+                time.sleep(1)  # unless anything has recently changed, give the system time to breathe between each iteration
 
                 # Note: triggering books are allowed even when self.shouldHandleBooks is False
                 if os.path.isdir(self.dir_trigger):
@@ -535,42 +549,50 @@ class Pipeline():
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
-                        if not f in self._md5:
-                            self._update_md5(f)
-                            self._add_book_to_queue(f, "created")
-                            logging.debug("book created: " + f)
-                            continue
+                        with self._md5_lock:
+                            if not f in self._md5:
+                                self._update_md5(f)
+                                self._add_book_to_queue(f, "created")
+                                logging.debug("book created: " + f)
+                                continue
 
-                        shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=True, expect=self._md5[f]["shallow"] if f in self._md5 else None)
-                        if shallow_md5 != self._md5[f]["shallow"]:
-                            self._update_md5(f)
-                            self._add_book_to_queue(f, "modified")
-                            logging.debug("book modified (top-level dir/file modified): " + f)
-                            continue
-
-                    deleted = [f for f in self._md5 if f not in dirlist]
-                    for f in deleted:
-                        self._add_book_to_queue(f, "deleted")
-                        logging.debug("book deleted: " + f)
-                        del self._md5[f]
-                    if deleted:
-                        continue
-
-                    # do a deep check (size/time etc. of files in subdirectories) of up to 10 books that haven't been checked in a while
-                    long_time_since_checked = sorted([{ "name": f, "md5": self._md5[f]} for f in self._md5 if time.time() - self._md5[f]["modified"] > self._inactivity_timeout], key=lambda f: f["md5"]["deep_checked"])
-                    for b in long_time_since_checked[:10]:
-                        f = b["name"]
-                        deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False, expect=self._md5[f]["deep"] if f in self._md5 else None)
-                        if not f in self._md5:
-                            self._update_md5(f)
-                        else:
-                            self._md5[f]["deep_checked"] = int(time.time())
-                            if deep_md5 != self._md5[f]["deep"]:
-                                self._md5[f]["modified"] = int(time.time())
+                            shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
+                                                                 shallow=True,
+                                                                 expect=self._md5[f]["shallow"] if f in self._md5 else None)
+                            if shallow_md5 != self._md5[f]["shallow"]:
                                 self._update_md5(f)
                                 self._add_book_to_queue(f, "modified")
-                                logging.debug("book modified: " + f)
+                                logging.debug("book modified (top-level dir/file modified): " + f)
+                                continue
 
+                    with self._md5_lock:
+                        deleted = [f for f in self._md5 if f not in dirlist]
+                        for f in deleted:
+                            self._add_book_to_queue(f, "deleted")
+                            logging.debug("book deleted: " + f)
+                            del self._md5[f]
+                        if deleted:
+                            continue
+
+                    # do a deep check (size/time etc. of files in subdirectories) of up to 10 books that haven't been checked in a while
+                    with self._md5_lock:
+                        long_time_since_checked = sorted([{"name": f, "md5": self._md5[f]} for f in self._md5
+                                                          if time.time() - self._md5[f]["modified"] > self._inactivity_timeout],
+                                                         key=lambda f: f["md5"]["deep_checked"])
+                        for b in long_time_since_checked[:10]:
+                            f = b["name"]
+                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
+                                                              shallow=False,
+                                                              expect=self._md5[f]["deep"] if f in self._md5 else None)
+                            if f not in self._md5:
+                                self._update_md5(f)
+                            else:
+                                self._md5[f]["deep_checked"] = int(time.time())
+                                if deep_md5 != self._md5[f]["deep"]:
+                                    self._md5[f]["modified"] = int(time.time())
+                                    self._update_md5(f)
+                                    self._add_book_to_queue(f, "modified")
+                                    logging.debug("book modified: " + f)
 
             except Exception:
                 logging.exception("" + Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
@@ -669,7 +691,7 @@ class Pipeline():
 
                 self.book = None
 
-                with self._lock:
+                with self._queue_lock:
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
                     books = sorted(books, key=lambda b: b["last_event"], reverse=True) # process recently modified books first
 
