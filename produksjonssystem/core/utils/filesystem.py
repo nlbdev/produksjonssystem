@@ -133,9 +133,10 @@ class Filesystem():
 
                 # Update modification time for the directory itself (Mounted Samba filesystems)
                 f_obj = tempfile.NamedTemporaryFile(suffix="-dirmodified", dir=path)
-                Path(f.name).touch()
-                os.remove(f.name)
-                del f_obj
+                Path(f_obj.name).touch()
+                # Fikk en feilmelding her, tror det er fordi tempfilen blir slettet uansett
+                # os.remove(f_obj.name)
+                # del f_obj
 
                 # Update modification time for the first file in the directory
                 for dirPath, subdirList, fileList in os.walk(path):
@@ -271,7 +272,7 @@ class Filesystem():
         else:
             self.copy(source, target)
 
-        Filesystem.touch(target)
+        Filesystem.touch(self, target)
 
         return target
 
