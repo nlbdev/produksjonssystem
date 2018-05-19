@@ -22,7 +22,11 @@ class Xslt():
     @staticmethod
     def init_environment():
         DaisyPipelineJob.init_environment()
-        Xslt.saxon_jar = os.path.join(DaisyPipelineJob.dp2_home, "system/framework/org.daisy.libs.saxon-he-9.5.1.5.jar")
+        for dirPath, subdirList, fileList in os.walk(DaisyPipelineJob.dp2_home):
+            for file in fileList:
+                if file.endswith(".jar") and "saxon-he" in file:
+                    Xslt.saxon_jar = os.path.join(dirPath, file)
+                    break
 
     def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}, template=None, stdout_level="INFO", stderr_level="INFO", report=None, cwd=None):
         assert pipeline or cwd and report
