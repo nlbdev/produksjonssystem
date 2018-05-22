@@ -114,47 +114,46 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [IncomingNordic(retry=True,
-                            retry_not_in_out=False),          "incoming",            "master"],
-            [NordicToNlbpub(),                                "master",              "nlbpub"],
+            [IncomingNordic(retry_all=True),                  "incoming",            "master"],
+            [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
             [UpdateMetadata(),                                "metadata",            "nlbpub"],
 
             # EPUB
-            [InsertMetadataEpub(retry_not_in_out=False),      "nlbpub",              "pub-in-epub"],
+            [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [InsertMetadataXhtml(retry_not_in_out=False),     "nlbpub",              "pub-in-ebook"],
-            [NlbpubToHtml(),                                  "pub-in-ebook",        "html"],
-            [NLBpubToDocx(),                                  "pub-in-ebook",        "docx"],
+            [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
+            [NlbpubToHtml(retry_missing=True),                "pub-in-ebook",        "html"],
+            [NLBpubToDocx(retry_missing=True),                "pub-in-ebook",        "docx"],
 
             # punktskrift
-            [InsertMetadataBraille(retry_not_in_out=False),   "nlbpub",              "pub-in-braille"],
-            [PrepareForBraille(),                             "pub-in-braille",      "pub-ready-braille"],
-            [NlbpubToPef(retry_not_in_out=False),             "pub-ready-braille",   "pef"],
+            [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
+            [PrepareForBraille(retry_missing=True),           "pub-in-braille",      "pub-ready-braille"],
+            [NlbpubToPef(retry_missing=True),                 "pub-ready-braille",   "pef"],
 
             # innlest lydbok
-            [InsertMetadataDaisy202(retry_not_in_out=False),  "nlbpub",              "pub-in-audio"],
-            [NlbpubToNarrationEpub(retry_not_in_out=False),   "pub-in-audio",        "epub_narration"],
+            [InsertMetadataDaisy202(),                        "nlbpub",              "pub-in-audio"],
+            [NlbpubToNarrationEpub(retry_missing=True),       "pub-in-audio",        "epub_narration"],
             [DummyPipeline("Innlesing med Hindenburg",
                            labels=["Lydbok", "Innlesing"]),   "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-            [EpubToDtbook(retry_not_in_out=False),            "master",              "dtbook_tts"],
+            [EpubToDtbook(),                                  "master",              "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok", "Talesyntese"]), "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
-            [EpubToDtbookHTML(retry_not_in_out=False),        "master",              "dtbook_html"],
+            [EpubToDtbookHTML(),                              "master",              "dtbook_html"],
             [DummyPipeline("Pipeline 1 og Ammars skript",
                            labels=["e-bok"]),                 "dtbook_html",         None],
 
             # DTBook for punktskrift
-            [EpubToDtbookBraille(retry_not_in_out=False),     "master",              "dtbook_braille"],
+            [EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
             [DummyPipeline("Punktskrift med NorBraille",
                            labels=["Punktskrift"]),           "dtbook_braille",      None],
 
             # lydutdrag
-            [Audio_Abstract(),                                "daisy202",            "abstracts"],
+            [Audio_Abstract(retry_missing=True),              "daisy202",            "abstracts"],
         ]
 
     # ---------------------------------------------------------------------------

@@ -41,7 +41,7 @@ class Pipeline():
     _queue_lock = RLock()
     _md5_lock = RLock()
 
-    _dir_trigger_obj = None # store TemporaryDirectory object in instance so that it's not cleaned up
+    _dir_trigger_obj = None  # store TemporaryDirectory object in instance so that it's not cleaned up
     pipelines = []
 
     # The current book
@@ -98,14 +98,14 @@ class Pipeline():
     labels = []
     publication_format = None
 
-    def __init__(self, retry=False, retry_not_in_out=True):
+    def __init__(self, retry_all=False, retry_missing=False):
         self.utils = DotMap()
         self.utils.report = None
         self.utils.filesystem = None
-        self.retry = retry
+        self.retry_all = retry_all
+        self.retry_missing = retry_missing
         with self._queue_lock:
             self._queue = []
-        self.retry_not_in_out = retry_not_in_out
         super().__init__()
 
     def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -242,17 +242,17 @@ class Pipeline():
         self._bookHandlerThread.start()
         self.threads.append(self._bookHandlerThread)
 
-        if (self.retry):
-            self._bookRetryThread = Thread(target=self._retry_books_incoming_thread, name="retry in {}".format(self.uid))
+        if (self.retry_all):
+            self._bookRetryThread = Thread(target=self._retry_all_books_thread, name="retry all for {}".format(self.uid))
             self._bookRetryThread.setDaemon(True)
             self._bookRetryThread.start()
             self.threads.append(self._bookRetryThread)
 
-        #if (self.retry_not_in_out):
-        #    self._bookRetryInNotOutThread = Thread(target=self._retry_books_not_in_out_thread, name="book retryer for {}".format(self.uid))
-        #    self._bookRetryInNotOutThread.setDaemon(True)
-        #    self._bookRetryInNotOutThread.start()
-        #    self.threads.append(self._bookRetryInNotOutThread)
+        if (self.retry_missing):
+            self._bookRetryInNotOutThread = Thread(target=self._retry_missing_books_thread, name="retry missing for {}".format(self.uid))
+            self._bookRetryInNotOutThread.setDaemon(True)
+            self._bookRetryInNotOutThread.start()
+            self.threads.append(self._bookRetryInNotOutThread)
 
         if not Pipeline._triggerDirThread:
             Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
@@ -609,7 +609,7 @@ class Pipeline():
                 except Exception:
                     logging.exception("Could not e-mail exception")
 
-    def _retry_books_incoming_thread(self):
+    def _retry_all_books_thread(self):
         last_check = 0
 
         while self._dirInAvailable and self._shouldRun:
@@ -628,7 +628,7 @@ class Pipeline():
             for filename in os.listdir(self.dir_in):
                 self.trigger(filename)
 
-    def _retry_books_not_in_out_thread(self):
+    def _retry_missing_books_thread(self):
         last_check = 0
         while self._dirInAvailable and self._shouldRun:
             time.sleep(5)
@@ -657,7 +657,7 @@ class Pipeline():
                             if Path(fileInOut).stem[:6] == Path(fileName).stem[:6]:
                                 file_exists = True
                 except Exception:
-                    logging.info("Retry not it out tråden feilet under søking av filer i ut mappa for: "+ self.title)
+                    logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: "+ self.title)
 
                 #for dirOut in os.listdir(self.dir_out):
                 #    if Path(dirOut).stem == Path(fileName).stem:
@@ -669,7 +669,7 @@ class Pipeline():
 
                 if not file_exists:
                     #print(os.path.join(self.dir_in, fileName))
-                    logging.info(fileName + " finnes ikke i ut mappen. Trigger denne boken.")
+                    logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
                     self.trigger(fileName)
 
     def _handle_book_events_thread(self):
