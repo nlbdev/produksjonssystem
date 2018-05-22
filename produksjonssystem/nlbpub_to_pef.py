@@ -70,19 +70,19 @@ class NlbpubToPef(Pipeline):
 
         braille_arguments = {
             "fullskrift": {
-                "html": html_file,
+                "source": html_file,
                 "braille-standard": "(dots:6)(grade:0)",
                 "line-spacing": "single",
                 "duplex": "true"
             },
             "kortskrift": {
-                "html": html_file,
+                "source": html_file,
                 "braille-standard": "(dots:6)(grade:2)",
                 "line-spacing": "single",
                 "duplex": "true"
             },
             "lesetrening": {
-                "html": html_file,
+                "source": html_file,
                 "braille-standard": "(dots:6)(grade:0)",
                 "line-spacing": "double",
                 "duplex": "false"
