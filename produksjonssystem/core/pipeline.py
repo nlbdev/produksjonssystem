@@ -550,6 +550,9 @@ class Pipeline():
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
+                        if not (self._dirInAvailable and self._shouldRun):
+                            break  # break loop if we're shutting down the system
+
                         with self._md5_lock:
                             if not os.path.exists(os.path.join(self.dir_in, f)):
                                 # iterating over all books can take a lot of time,
@@ -589,6 +592,9 @@ class Pipeline():
                                                           if time.time() - self._md5[f]["modified"] > self._inactivity_timeout],
                                                          key=lambda f: f["md5"]["deep_checked"])
                         for b in long_time_since_checked[:10]:
+                            if not (self._dirInAvailable and self._shouldRun):
+                                break  # break loop if we're shutting down the system
+
                             f = b["name"]
                             deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
                                                               shallow=False,
