@@ -47,7 +47,7 @@ class Audio_Abstract(Pipeline):
 
         temp_absdir_obj = tempfile.TemporaryDirectory()
         temp_absdir = temp_absdir_obj.name
-            self.utils.filesystem.copy(self.book["source"], temp_absdir)
+        self.utils.filesystem.copy(self.book["source"], temp_absdir)
 
         file_exists = {
                        "abstracts": False,
