@@ -40,22 +40,22 @@ class Schematron():
             temp_xml_report_obj = tempfile.NamedTemporaryFile()
             temp_xml_report = temp_xml_report_obj.name
 
-            report.debug("Compiling schematron ({} + {}): iso_dsdl_include.xsl".format(os.path.basename(schematron), os.path.basename(source)))
+            report.debug("Compiling schematron ({} + {}): {}".format("iso_dsdl_include.xsl", os.path.basename(schematron), os.path.basename(temp_xml_1)))
             xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(self.schematron_dir, "iso_dsdl_include.xsl"),    source=schematron, target=temp_xml_1,      stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
 
-            report.debug("Compiling schematron ({} + {}): iso_abstract_expand.xsl".format(os.path.basename(schematron), os.path.basename(source)))
+            report.debug("Compiling schematron ({} + {}): {}".format("iso_abstract_expand.xsl", os.path.basename(schematron), os.path.basename(temp_xml_2)))
             xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(self.schematron_dir, "iso_abstract_expand.xsl"), source=temp_xml_1, target=temp_xml_2,      stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
 
-            report.debug("Compiling schematron ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
+            report.debug("Compiling schematron ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(schematron), os.path.basename(temp_xml_3)))
             xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(self.schematron_dir, "iso_svrl_for_xslt2.xsl"),  source=temp_xml_2, target=temp_xml_3,      stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
 
-            report.debug("Validating against compiled Schematron ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
+            report.debug("Validating against compiled Schematron ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(source), os.path.basename(temp_xml_report)))
             xslt = Xslt(report=report, cwd=cwd, stylesheet=temp_xml_3,                                                   source=source,     target=temp_xml_report, stdout_level="DEBUG", stderr_level="DEBUG")
             if not xslt.success:
                 return
@@ -92,7 +92,7 @@ class Schematron():
             if temp_xml_report and "/" in temp_xml_report:
                 html_report_obj = tempfile.NamedTemporaryFile()
                 html_report = temp_xml_1_obj.name
-                report.debug("Creating HTML report for Schematron validation ({} + {}): iso_svrl_for_xslt2.xsl".format(os.path.basename(schematron), os.path.basename(source)))
+                report.debug("Creating HTML report for Schematron validation ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(temp_xml_report), os.path.basename(html_report)))
                 xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"), source=temp_xml_report, target=html_report)
                 if not xslt.success:
                     return
@@ -104,13 +104,13 @@ class Schematron():
                     available_path = os.path.join(schematron_report_dir, "{}.html".format(name))
                     if os.path.exists(available_path):
                         for i in range(2, 1000):
-                            available_path = os.path.join(schematron_report_dir, "{}-{}.html".format(name, i))
+                            available_path = os.path.join(schematron_report_dir, "{}-{}.html".format(name, i))  # assumes we won't have move than 1000 reports
                     if os.path.exists(available_path):
                         report.warn("Could not find available report filename")
                     else:
                         with open(html_report, 'r') as result_report:
                             report.attachment(result_report.readlines(),
-                                              os.path.join(report.reportDir(), "schematron", "validate-dtbook.html"),
+                                              available_path,
                                               "SUCCESS" if self.success else "ERROR")
 
         except Exception:
