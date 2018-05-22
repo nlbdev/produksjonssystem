@@ -60,7 +60,7 @@ class Pipeline():
 
     # Other configuration
     config = None    # instance config
-    environment = {} # global config
+    environment = {}  # global config
     common_config = {}
     # constants (set during instantiation)
     running = False
@@ -85,6 +85,7 @@ class Pipeline():
     progress_text = None
     progress_log = None
     progress_start = None
+    expected_processing_time = 60  # can be overridden in each pipeline
 
     # utility classes; reconfigured every time a book is processed to simplify function signatures
     utils = None
@@ -372,7 +373,7 @@ class Pipeline():
         if len(self.progress_log) > 10:
             self.progress_log = self.progress_log[-10:]
         while len(self.progress_log) < 10:
-            self.progress_log.append({"start": 0, "end": 60}) # assume that it will take 1 minute until we have actual measurements
+            self.progress_log.append({"start": 0, "end": self.expected_processing_time})
 
         if self.progress_text:
             return self.progress_text

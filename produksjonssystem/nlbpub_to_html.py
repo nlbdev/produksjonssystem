@@ -24,6 +24,7 @@ class NlbpubToHtml(Pipeline):
     title = "NLBPUB til HTML"
     labels = [ "e-bok" ]
     publication_format = "XHTML"
+    expected_processing_time = 8
 
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 

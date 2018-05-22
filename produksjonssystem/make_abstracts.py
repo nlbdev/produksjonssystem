@@ -21,6 +21,7 @@ class Audio_Abstract(Pipeline):
     title = "Hent ut lydutdrag"
     labels = [ "Lydbok", "Innlesing", "Talesyntese" ]
     publication_format = "DAISY 2.02"
+    expected_processing_time = 3
 
     parentdirs = {
                   "abstracts": "excerpt",

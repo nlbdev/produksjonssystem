@@ -25,7 +25,8 @@ class NlbpubToNarrationEpub(Pipeline):
     title = "NLBPUB til innlesingsklar EPUB"
     labels = [ "Lydbok", "Innlesing" ]
     publication_format = "DAISY 2.02"
-    
+    expected_processing_time = 4
+
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 
     def on_book_deleted(self):
