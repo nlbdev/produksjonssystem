@@ -47,7 +47,7 @@ class Audio_Abstract(Pipeline):
 
         temp_absdir_obj = tempfile.TemporaryDirectory()
         temp_absdir = temp_absdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_absdir)
+            self.utils.filesystem.copy(self.book["source"], temp_absdir)
 
         file_exists = {
                        "abstracts": False,
@@ -55,9 +55,6 @@ class Audio_Abstract(Pipeline):
                        "test-audio": False
                       }
 
-        if(self.book["name"].endswith(".txt")):
-            self.utils.report.should_email = False
-            return False
         if not os.path.isfile(os.path.join(temp_absdir, "ncc.html")):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return False
@@ -111,7 +108,7 @@ class Audio_Abstract(Pipeline):
                 self.utils.report.debug(traceback.format_exc())
                 self.utils.report.warn("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
         else:
-            self.utils.report.warn("Baksidetekst ikke funnet for " + audio_identifier)
+            self.utils.report.info("Baksidetekst ikke funnet for " + audio_identifier)
 
         # creates abstract from ncc --> smil --> mp3
         several_smilFiles = []
