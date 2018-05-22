@@ -550,6 +550,14 @@ class Pipeline():
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
                         with self._md5_lock:
+                            if not os.path.exists(os.path.join(self.dir_in, f)):
+                                # iterating over all books can take a lot of time,
+                                # and the book may have been deleted by the time we get to it.
+                                self._add_book_to_queue(f, "deleted")
+                                logging.debug("book deleted: " + f)
+                                del self._md5[f]
+                                continue
+
                             if not f in self._md5:
                                 self._update_md5(f)
                                 self._add_book_to_queue(f, "created")
