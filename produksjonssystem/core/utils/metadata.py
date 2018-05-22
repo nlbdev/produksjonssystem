@@ -184,7 +184,6 @@ class Metadata:
 
         # ========== Collect metadata from sources ==========
 
-        #traceback.print_stack()
         pipeline.utils.report.debug("nlbpub-opf-to-rdf.xsl")
         rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
         pipeline.utils.report.debug("    source = " + opf_path)
@@ -537,12 +536,6 @@ class Metadata:
         # Kopier Bibliofil-metadata-rapporten inn i samme rapport som resten av konverteringen
         for message_type in normarc_report._messages:
             for message in normarc_report._messages[message_type]:
-                if message_type == "attachment" and os.path.exists(message["text"]):
-                    new_attachment = os.path.join(normarc_report_dir, os.path.basename(message["text"]))
-                    os.makedirs(os.path.dirname(new_attachment), exist_ok=True)
-                    if message["text"] != new_attachment:
-                        shutil.copy(message["text"], new_attachment)
-                        message["text"] = new_attachment
                 pipeline.utils.report._messages[message_type].append(message)
 
         if not normarc_success:
