@@ -813,7 +813,7 @@ class Pipeline():
             event = "created"
         elif "deleted" in book["events"]:
             event = "deleted"
-        elif "autotriggered" in book["events"]:
+        elif "autotriggered" in book["events"] and len(set(book["events"])) == 1:
             event = "autotriggered"
         elif "triggered" in book["events"]:
             event = "triggered"
