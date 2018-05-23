@@ -38,6 +38,8 @@ class Metadata:
         },
         "bibliofil": {}
     }
+    original_isbn = None
+    original_isbn_last_update = 0
 
     queue = []
     last_validation_results = {}
@@ -84,6 +86,110 @@ class Metadata:
             ret = Metadata._validate_metadata(*args, **kwargs)
             Metadata.queue = []
         return ret
+
+    @staticmethod
+    def get_identifiers(pipeline, epub_edition_identifier):
+        edition_identifier = epub_edition_identifier
+        pub_identifier = edition_identifier
+        if len(pub_identifier) > 6:
+            pub_identifier = pub_identifier[:6]
+
+        edition_identifiers = [edition_identifier]
+        publication_identifiers = [pub_identifier]
+        edition_identifiers, publication_identifiers = Metadata.get_quickbase_identifiers(pipeline, edition_identifiers, publication_identifiers)
+        edition_identifiers, publication_identifiers = Metadata.get_bibliofil_identifiers(pipeline, edition_identifiers, publication_identifiers)
+
+        return sorted(edition_identifiers), sorted(publication_identifiers)
+
+    @staticmethod
+    def get_quickbase_identifiers(pipeline, edition_identifiers, publication_identifiers):
+        quickbase_edition_identifiers = []
+        for edition_identifier in edition_identifiers:
+            metadata_dir = os.path.join(Metadata.get_metadata_dir(), edition_identifier)
+            rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+            if os.path.isfile(rdf_path):
+                rdf = ElementTree.parse(rdf_path).getroot()
+                identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
+                identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
+                quickbase_edition_identifiers.extend(identifiers)
+                if not identifiers:
+                    pipeline.utils.report.warn("{} er ikke katalogisert i Quickbase".format(edition_identifier))
+            else:
+                pipeline.utils.report.warn("Finner ikke lokal metadata for {}.".format(edition_identifier))
+
+        edition_identifiers = sorted(set(edition_identifiers + quickbase_edition_identifiers))
+        publication_identifiers = sorted(set([i[:6] for i in edition_identifiers if len(i) >= 6]))
+        return edition_identifiers, publication_identifiers
+
+    @staticmethod
+    def get_bibliofil_identifiers(pipeline, edition_identifiers, publication_identifiers):
+        # Find book IDs with the same ISBN in *596$f (input is "bookId,isbn" CSV dump)
+        Metadata.original_isbn_csv = str(os.path.normpath(os.environ.get("ORIGINAL_ISBN_CSV"))) if os.environ.get("ORIGINAL_ISBN_CSV") else None
+        if not Metadata.original_isbn or time.time() - Metadata.original_isbn_last_update > 600:
+            pipeline.utils.report.debug("Oppdaterer oversikt over ISBN fra {}...".format(Metadata.original_isbn_csv))
+            Metadata.original_isbn_last_update = time.time()
+            Metadata.original_isbn = {}
+            if Metadata.original_isbn_csv and os.path.isfile(Metadata.original_isbn_csv):
+                with open(Metadata.original_isbn_csv) as f:
+                    for line in f:
+                        line_split = line.split(",")
+                        if len(line_split) == 1:
+                            pipeline.utils.report.warn("'{}' mangler ISBN og format".format(line_split[0]))
+                            continue
+                        elif len(line_split) == 2:
+                            pipeline.utils.report.warn("'{}' ({}) mangler format".format(line_split[0], line_split[1]))
+                            continue
+                        b = line_split[0]                             # book id
+                        i = line_split[1].strip()                     # isbn
+                        i_normalized = re.sub(r"[^\d]", "", i)
+                        f = sorted(list(set(line_split[2].split())))  # formats
+                        fmt = " ".join(f)
+                        if i_normalized not in Metadata.original_isbn:
+                            Metadata.original_isbn[i_normalized] = {"pretty": i, "books": {}}
+
+                        for old_fmt in Metadata.original_isbn[i_normalized]["books"]:
+                            if len([val for val in old_fmt.split() if val in f]):
+                                # same format; rename dict key
+                                f = sorted(list(set(f + [b])))
+                                fmt = " ".join(f)
+                                if fmt in Metadata.original_isbn[i_normalized]["books"]:
+                                    Metadata.original_isbn[i_normalized]["books"][old_fmt] += Metadata.original_isbn[i_normalized]["books"][fmt]
+                                Metadata.original_isbn[i_normalized]["books"][fmt] = Metadata.original_isbn[i_normalized]["books"].pop(old_fmt)
+
+                        if fmt not in Metadata.original_isbn[i_normalized]["books"]:
+                            Metadata.original_isbn[i_normalized]["books"][fmt] = []
+                        Metadata.original_isbn[i_normalized]["books"][fmt].append(b)
+                        Metadata.original_isbn[i_normalized]["books"][fmt] = sorted(list(set(Metadata.original_isbn[i_normalized]["books"][fmt])))
+        if not Metadata.original_isbn_csv or not os.path.isfile(Metadata.original_isbn_csv):
+            pipeline.utils.report.warn("Finner ikke liste over boknummer og ISBN fra `*596$f` (\"{}\")".format(Metadata.original_isbn_csv))
+            return edition_identifiers, publication_identifiers
+
+        pipeline.utils.report.debug("Leter etter bøker med samme ISBN som {} i {}...".format("/".join(edition_identifiers), Metadata.original_isbn_csv))
+        for i in Metadata.original_isbn:
+            data = Metadata.original_isbn[i]
+            match = True in [bool(set(edition_identifiers) & set(data["books"][book_format])) or
+                             bool(set(publication_identifiers) & set(data["books"][book_format]))
+                             for book_format in data["books"]]
+            if not match:
+                continue
+            for fmt in data["books"]:
+                if len(data["books"][fmt]) > 1:
+                    ignored = [val for val in data["books"][fmt] if val not in edition_identifiers and val not in publication_identifiers]
+                    pipeline.utils.report.warn("Det er flere bøker med samme original-ISBN/ISSN og samme format: {}".format(", ".join(data["books"][fmt])))
+                    if len(ignored):
+                        pipeline.utils.report.warn("Følgende bøker blir ikke behandlet: {}".format(", ".join(ignored)))
+                    continue
+                else:
+                    fmt_bookid = data["books"][fmt][0]
+                    if fmt_bookid not in publication_identifiers and fmt_bookid not in edition_identifiers:
+                        pipeline.utils.report.info("{} har samme ISBN/ISSN i `*596$f` som {}".format(fmt_bookid,
+                                                                                                     ("en av: " if len(edition_identifiers) > 2 else "") +
+                                                                                                     "/".join(edition_identifiers)))
+                        pipeline.utils.report.info("Legger til {} som utgave".format(fmt_bookid))
+                        edition_identifiers.append(fmt_bookid)
+                        publication_identifiers.append(fmt_bookid[:6])
+
+        return sorted(set(edition_identifiers)), sorted(set(publication_identifiers))
 
     @staticmethod
     def _update(pipeline, epub, publication_format="", insert=True, force_update=False):
@@ -215,68 +321,8 @@ class Metadata:
             return False
         rdf_files.append('quickbase/' + os.path.basename(rdf_path))
 
-        rdf = ElementTree.parse(rdf_path).getroot()
-        identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
-        identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
-        if not identifiers:
-            pipeline.utils.report.warn("{} er ikke katalogisert i Quickbase".format(edition_identifier))
-
-        identifiers.append(edition_identifier)
-
-        # Find book IDs with the same ISBN in *596$f (input is "bookId,isbn" CSV dump)
-        original_isbn = {}
-        original_isbn_csv = str(os.path.normpath(os.environ.get("ORIGINAL_ISBN_CSV"))) if os.environ.get("ORIGINAL_ISBN_CSV") else None
-        if original_isbn_csv and os.path.isfile(original_isbn_csv):
-            pipeline.utils.report.debug("Leter etter bøker med samme ISBN som {} i {}...".format(edition_identifier, original_isbn_csv))
-            with open(original_isbn_csv) as f:
-                for line in f:
-                    line_split = line.split(",")
-                    if len(line_split) == 1:
-                        pipeline.utils.report.warn("'{}' mangler ISBN og format".format(line_split[0]))
-                        continue
-                    elif len(line_split) == 2:
-                        pipeline.utils.report.warn("'{}' ({}) mangler format".format(line_split[0], line_split[1]))
-                        continue
-                    b = line_split[0]                            # book id
-                    i = line_split[1].strip()                    # isbn
-                    i_normalized = re.sub(r"[^\d]", "", i)
-                    f = sorted(list(set(line_split[2].split()))) # formats
-                    fmt = " ".join(f)
-                    if i_normalized not in original_isbn:
-                        original_isbn[i_normalized] = { "pretty": i, "books": {} }
-
-                    for old_fmt in original_isbn[i_normalized]["books"]:
-                        if len([val for val in old_fmt.split() if val in f]):
-                            # same format; rename dict key
-                            f = sorted(list(set(f + [b])))
-                            fmt = " ".join(f)
-                            if fmt in original_isbn[i_normalized]["books"]:
-                                original_isbn[i_normalized]["books"][old_fmt] += original_isbn[i_normalized]["books"][fmt]
-                            original_isbn[i_normalized]["books"][fmt] = original_isbn[i_normalized]["books"].pop(old_fmt)
-
-                    if fmt not in original_isbn[i_normalized]["books"]:
-                        original_isbn[i_normalized]["books"][fmt] = []
-                    original_isbn[i_normalized]["books"][fmt].append(b)
-                    original_isbn[i_normalized]["books"][fmt] = sorted(list(set(original_isbn[i_normalized]["books"][fmt])))
-        else:
-            pipeline.utils.report.warn("Finner ikke liste over boknummer og ISBN fra `*596$f` (\"{}\")".format(original_isbn_csv))
-        for i in original_isbn:
-            data = original_isbn[i]
-            match = True in [edition_identifier in data["books"][fmt] or pub_identifier in data["books"][fmt] for fmt in data["books"]]
-            if not match:
-                continue
-            for fmt in data["books"]:
-                if len(data["books"][fmt]) > 1:
-                    ignored = [val for val in data["books"][fmt] if val not in identifiers]
-                    pipeline.utils.report.warn("Det er flere bøker med samme original-ISBN/ISSN og samme format: {}".format(", ".join(data["books"][fmt])))
-                    if len(ignored):
-                        pipeline.utils.report.warn("Følgende bøker blir ikke behandlet: {}".format(", ".join(ignored)))
-                    continue
-                else:
-                    fmt_bookid = data["books"][fmt][0]
-                    if not fmt_bookid in identifiers:
-                        pipeline.utils.report.info("{} har samme ISBN/ISSN i `*596$f` som {}; legger til {} som utgave".format(fmt_bookid, edition_identifier, fmt_bookid))
-                        identifiers.append(fmt_bookid)
+        identifiers, publication_identifiers = Metadata.get_quickbase_identifiers(pipeline, [edition_identifier], [pub_identifier])
+        identifiers, publication_identifiers = Metadata.get_bibliofil_identifiers(pipeline, identifiers, publication_identifiers)
 
         for format_edition_identifier in identifiers:
             format_pub_identifier = format_edition_identifier
