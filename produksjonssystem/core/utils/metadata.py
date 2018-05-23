@@ -8,7 +8,6 @@ import datetime
 import requests
 import tempfile
 import threading
-import traceback
 
 from lxml import etree as ElementTree
 from core.config import Config
@@ -18,17 +17,18 @@ from core.utils.report import Report
 from core.utils.filesystem import Filesystem
 from core.utils.schematron import Schematron
 
+
 class Metadata:
     uid = "core-utils-metadata"
     title = "Metadata"
 
-    formats = ["EPUB", "DAISY 2.02", "XHTML", "Braille"] # values used in dc:format
+    formats = ["EPUB", "DAISY 2.02", "XHTML", "Braille"]  # values used in dc:format
 
-    max_update_interval = 60 * 30 # half hour
+    max_update_interval = 60 * 30  # half hour
     max_metadata_emails_per_day = 5
 
-    quickbase_record_id_rows = [ "13", "20", "24", "28", "31", "32", "38" ]
-    quickbase_isbn_id_rows = [ "7" ]
+    quickbase_record_id_rows = ["13", "20", "24", "28", "31", "32", "38"]
+    quickbase_isbn_id_rows = ["7"]
     sources = {
         "quickbase": {
             "records": "/opt/quickbase/records.xml",
@@ -43,7 +43,7 @@ class Metadata:
 
     queue = []
     last_validation_results = {}
-    last_metadata_errors = [] # timestamps for last automated metadata updates
+    last_metadata_errors = []  # timestamps for last automated metadata updates
     metadata_tempdir_obj = None
 
     update_lock = threading.RLock()
@@ -52,7 +52,7 @@ class Metadata:
     def get_metadata_dir():
         if not Config.get("metadata_dir"):
             Metadata.metadata_tempdir_obj = tempfile.TemporaryDirectory(prefix="metadata-")
-            pipeline.utils.report.info("Using temporary directory for metadata: " + Metadata.metadata_tempdir_obj.name)
+            logging.info("Using temporary directory for metadata: " + Metadata.metadata_tempdir_obj.name)
             Config.set("metadata_dir", Metadata.metadata_tempdir_obj.name)
 
         return Config.get("metadata_dir")
@@ -201,9 +201,9 @@ class Metadata:
         queue_book = {}
         queue_book["name"] = epub.identifier()
         queue_book["source"] = os.path.join(Metadata.get_metadata_dir(), queue_book["name"])
-        queue_book["events"] = [ "autotriggered" ]
+        queue_book["events"] = ["autotriggered"]
         queue_book["last_event"] = int(time.time())
-        Metadata.queue = [ queue_book ]
+        Metadata.queue = [queue_book]
 
         last_updated = 0
         last_updated_path = os.path.join(Metadata.get_metadata_dir(), epub.identifier(), "last_updated")
@@ -229,13 +229,13 @@ class Metadata:
             Metadata.last_validation_results[epub.identifier()] = Metadata.validate_metadata(pipeline, epub, publication_format=publication_format)
 
         if not Metadata.last_validation_results[epub.identifier()]:
-            return False # metadata is not valid
+            return False  # metadata is not valid
 
         if insert:
             # Return whether or not insertion of metadata was successful
             return Metadata.insert_metadata(pipeline, epub, publication_format=publication_format)
         else:
-            return True # metadata is valid
+            return True  # metadata is valid
 
     @staticmethod
     def _get_metadata(pipeline, epub, publication_format=""):
@@ -245,7 +245,7 @@ class Metadata:
 
         # get path to OPF in EPUB (unzip if necessary)
         opf = epub.opf_path()
-        opf_obj = None # if tempfile is needed
+        opf_obj = None  # if tempfile is needed
         if os.path.isdir(epub.book_path):
             opf = os.path.join(epub.book_path, opf)
         else:
@@ -294,10 +294,11 @@ class Metadata:
         rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
         pipeline.utils.report.debug("    source = " + opf_path)
         pipeline.utils.report.debug("    target = " + rdf_path)
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "nlbpub-opf-to-rdf.xsl"),
-                              source=opf_path,
-                              target=rdf_path,
-                              parameters={ "include-source-reference": "true" })
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "nlbpub-opf-to-rdf.xsl"),
+                    source=opf_path,
+                    target=rdf_path,
+                    parameters={"include-source-reference": "true"})
         if not xslt.success:
             return False
         rdf_files.append('epub/' + os.path.basename(rdf_path))
@@ -310,13 +311,14 @@ class Metadata:
         success = Metadata.get_quickbase_record(pipeline, edition_identifier, os.path.join(metadata_dir, 'quickbase/record.xml'))
         if not success:
             return False
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-record-to-rdf.xsl"),
-                              source=os.path.join(metadata_dir, 'quickbase/record.xml'),
-                              target=os.path.join(metadata_dir, 'quickbase/record.html'),
-                              parameters={
-                                "rdf-xml-path": rdf_path,
-                                "include-source-reference": "true"
-                              })
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-record-to-rdf.xsl"),
+                    source=os.path.join(metadata_dir, 'quickbase/record.xml'),
+                    target=os.path.join(metadata_dir, 'quickbase/record.html'),
+                    parameters={
+                      "rdf-xml-path": rdf_path,
+                      "include-source-reference": "true"
+                    })
         if not xslt.success:
             return False
         rdf_files.append('quickbase/' + os.path.basename(rdf_path))
@@ -338,24 +340,26 @@ class Metadata:
             pipeline.utils.report.debug("    source = " + marcxchange_path)
             pipeline.utils.report.debug("    target = " + current_opf_path)
             Metadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
-            xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
-                                  source=marcxchange_path,
-                                  target=current_opf_path,
-                                  parameters={
-                                    "nested": "true",
-                                    "include-source-reference": "true",
-                                    "identifier": format_edition_identifier
-                                  })
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
+                        source=marcxchange_path,
+                        target=current_opf_path,
+                        parameters={
+                          "nested": "true",
+                          "include-source-reference": "true",
+                          "identifier": format_edition_identifier
+                        })
             if not xslt.success:
                 return False
             pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
             pipeline.utils.report.debug("    source = " + current_opf_path)
             pipeline.utils.report.debug("    target = " + html_path)
             pipeline.utils.report.debug("    rdf    = " + rdf_path)
-            xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/bibliofil-to-rdf.xsl"),
-                                  source=current_opf_path,
-                                  target=html_path,
-                                  parameters={ "rdf-xml-path": rdf_path })
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/bibliofil-to-rdf.xsl"),
+                        source=current_opf_path,
+                        target=html_path,
+                        parameters={"rdf-xml-path": rdf_path})
             if not xslt.success:
                 return False
             rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
@@ -365,43 +369,45 @@ class Metadata:
             pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
             pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'))
             pipeline.utils.report.debug("    rdf    = " + rdf_path)
-            success = Metadata.get_quickbase_isbn(pipeline, format_edition_identifier, os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
+            success = Metadata.get_quickbase_isbn(pipeline, format_edition_identifier,
+                                                  os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
             if not success:
                 return False
-            xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-isbn-to-rdf.xsl"),
-                                  source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'),
-                                  target=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'),
-                                  parameters={
-                                    "rdf-xml-path": rdf_path,
-                                    "include-source-reference": "true"
-                                  })
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-isbn-to-rdf.xsl"),
+                        source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'),
+                        target=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'),
+                        parameters={
+                            "rdf-xml-path": rdf_path,
+                            "include-source-reference": "true"
+                        })
             if not xslt.success:
                 return False
             rdf_files.append('quickbase/' + os.path.basename(rdf_path))
 
-
         # ========== Combine metadata ==========
 
         rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
-        opf_metadata = {"": rdf_metadata.replace(".rdf",".opf")}
-        html_metadata = {"": rdf_metadata.replace(".rdf",".html")}
+        opf_metadata = {"": rdf_metadata.replace(".rdf", ".opf")}
+        html_metadata = {"": rdf_metadata.replace(".rdf", ".html")}
 
         for f in Metadata.formats:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
             opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
-            html_metadata[f] = opf_metadata[f].replace(".opf",".html")
+            html_metadata[f] = opf_metadata[f].replace(".opf", ".html")
 
         pipeline.utils.report.debug("rdf-join.xsl")
         pipeline.utils.report.debug("    metadata-dir = " + metadata_dir + "/")
         pipeline.utils.report.debug("    rdf-files    = " + " ".join(rdf_files))
         pipeline.utils.report.debug("    target       = " + rdf_metadata)
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-join.xsl"),
-                              template="main",
-                              target=rdf_metadata,
-                              parameters={
-                                  "metadata-dir": metadata_dir + "/",
-                                  "rdf-files": " ".join(rdf_files)
-                              })
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-join.xsl"),
+                    template="main",
+                    target=rdf_metadata,
+                    parameters={
+                        "metadata-dir": metadata_dir + "/",
+                        "rdf-files": " ".join(rdf_files)
+                    })
         if not xslt.success:
             return False
 
@@ -410,13 +416,14 @@ class Metadata:
             pipeline.utils.report.debug("rdf-to-opf.xsl")
             pipeline.utils.report.debug("    source = " + rdf_metadata)
             pipeline.utils.report.debug("    target = " + opf_metadata[f])
-            xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-to-opf.xsl"),
-                                  source=rdf_metadata,
-                                  target=opf_metadata[f],
-                                  parameters={
-                                      "format": f,
-                                      "update-identifier": "true"
-                                  })
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-to-opf.xsl"),
+                        source=rdf_metadata,
+                        target=opf_metadata[f],
+                        parameters={
+                            "format": f,
+                            "update-identifier": "true"
+                        })
 
             if not xslt.success:
                 xslt_success = False
@@ -432,9 +439,10 @@ class Metadata:
             pipeline.utils.report.debug("opf-to-html.xsl")
             pipeline.utils.report.debug("    source = " + opf_metadata[f])
             pipeline.utils.report.debug("    target = " + html_metadata[f])
-            xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "opf-to-html.xsl"),
-                                  source=opf_metadata[f],
-                                  target=html_metadata[f])
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "opf-to-html.xsl"),
+                        source=opf_metadata[f],
+                        target=html_metadata[f])
             if not xslt.success:
                 xslt_success = False
 
@@ -445,7 +453,6 @@ class Metadata:
 
         if not Metadata.validate_metadata(pipeline, epub, publication_format=publication_format):
             return False
-
 
         # ========== Trigger conversions if necessary ==========
 
@@ -472,7 +479,6 @@ class Metadata:
 
     @staticmethod
     def trigger_metadata_pipelines(pipeline, book_id, exclude=None):
-        triggerfiles = []
         archive_dirs = {}
 
         for pipeline_uid in pipeline.dirs:
@@ -481,7 +487,7 @@ class Metadata:
                 basepath = Filesystem.get_base_path(archive_dir, pipeline.dirs[pipeline_uid]["base"])
                 relpath = os.path.relpath(pipeline.dirs[pipeline_uid]["out"], basepath)
 
-                if not archive_dir in archive_dirs:
+                if archive_dir not in archive_dirs:
                     archive_dirs[archive_dir] = relpath
 
         for archive_dir in archive_dirs.keys():
@@ -496,7 +502,7 @@ class Metadata:
                 continue
             if pipeline.dirs[pipeline_uid]["in"] in archive_dirs:
                 with open(os.path.join(pipeline.dirs[pipeline_uid]["trigger"], book_id), "w") as triggerfile:
-                    print("autotriggered", file=triggerfile)
+                    triggerfile.write("autotriggered")
                 pipeline.utils.report.info("Trigger: {}".format(pipeline_uid))
 
     @staticmethod
@@ -505,13 +511,14 @@ class Metadata:
             pipeline.utils.report.error("Can only update metadata in EPUBs")
             return False
 
-        assert not publication_format or publication_format in Metadata.formats, "Format for validating metadata, when specified, must be one of: {}".format(", ".join(Metadata.formats))
+        assert not publication_format or publication_format in Metadata.formats, "Format for validating metadata, when specified, must be one of: {}".format(
+            ", ".join(Metadata.formats))
 
         metadata_dir = os.path.join(Metadata.get_metadata_dir(), epub.identifier())
 
         rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
-        opf_metadata = {"": rdf_metadata.replace(".rdf",".opf")}
-        html_metadata = {"": rdf_metadata.replace(".rdf",".html")}
+        opf_metadata = {"": rdf_metadata.replace(".rdf", ".opf")}
+        html_metadata = {"": rdf_metadata.replace(".rdf", ".html")}
 
         if not os.path.isfile(rdf_metadata):
             if not Metadata.get_metadata(pipeline, epub, publication_format=publication_format):
@@ -522,21 +529,23 @@ class Metadata:
             format_id = re.sub(r"[^a-z0-9]", "", f.lower())
             if not publication_format or f == publication_format or f == "EPUB":
                 opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
-                html_metadata[f] = opf_metadata[f].replace(".opf",".html")
+                html_metadata[f] = opf_metadata[f].replace(".opf", ".html")
 
         # Lag separat rapport/e-post for Bibliofil-metadata
         normarc_report_dir = os.path.join(pipeline.utils.report.reportDir(), "normarc")
-        normarc_report = Report(None, title=Metadata.title,
-                                      report_dir=normarc_report_dir,
-                                      dir_base=pipeline.dir_base,
-                                      uid=Metadata.uid)
+        normarc_report = Report(None,
+                                title=Metadata.title,
+                                report_dir=normarc_report_dir,
+                                dir_base=pipeline.dir_base,
+                                uid=Metadata.uid)
 
         signatureRegistration = ElementTree.parse(rdf_metadata).getroot()
         nsmap = {
             'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
             'nlbprod': 'http://www.nlb.no/production'
         }
-        signatureRegistration = signatureRegistration.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:signatureRegistration/text()", namespaces=nsmap)
+        signatureRegistration = signatureRegistration.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']" +
+                                                            "/nlbprod:signatureRegistration/text()", namespaces=nsmap)
         signatureRegistration = signatureRegistration[0].lower() if signatureRegistration else None
         normarc_report.info("*Ansvarlig for katalogisering*: {}".format(signatureRegistration if signatureRegistration else "(ukjent)"))
 
@@ -587,9 +596,9 @@ class Metadata:
         if not normarc_success:
             Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
             normarc_report.email(pipeline.email_settings["smtp"],
-                                                pipeline.email_settings["sender"],
-                                                signatureRegistrationAddress,
-                                                subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
+                                 pipeline.email_settings["sender"],
+                                 signatureRegistrationAddress,
+                                 subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
             pipeline.utils.report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
                                        ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
             return False
@@ -626,7 +635,8 @@ class Metadata:
             pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
             return False
 
-        assert publication_format == "" or publication_format in Metadata.formats, "Format for updating metadata, when specified, must be one of: {}".format(", ".join(Metadata.formats))
+        assert publication_format == "" or publication_format in Metadata.formats, "Format for updating metadata, when specified, must be one of: {}".format(
+            ", ".join(Metadata.formats))
 
         # ========== Update metadata in EPUB ==========
 
@@ -634,7 +644,7 @@ class Metadata:
 
         format_id = re.sub(r"[^a-z0-9]", "", publication_format.lower())
         opf_metadata = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
-        html_metadata = opf_metadata.replace(".opf",".html")
+        html_metadata = opf_metadata.replace(".opf", ".html")
 
         if not os.path.exists(opf_metadata) or not os.path.exists(html_metadata):
             pipeline.utils.report.error("Finner ikke metadata for formatet \"{}\".".format(publication_format))
@@ -649,13 +659,14 @@ class Metadata:
         pipeline.utils.report.debug("    source       = " + opf_path)
         pipeline.utils.report.debug("    target       = " + updated_file)
         pipeline.utils.report.debug("    opf_metadata = " + opf_metadata)
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "update-opf.xsl"),
-                              source=opf_path,
-                              target=updated_file,
-                              parameters={
-                                "opf_metadata": opf_metadata,
-                                "modified": dcterms_modified
-                              })
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "update-opf.xsl"),
+                    source=opf_path,
+                    target=updated_file,
+                    parameters={
+                        "opf_metadata": opf_metadata,
+                        "modified": dcterms_modified
+                    })
         if not xslt.success:
             return False
 
@@ -667,7 +678,7 @@ class Metadata:
         new_modified = xml.xpath("/*/*[local-name()='metadata']/*[@property='dcterms:modified'][1]/text()")
         new_modified = new_modified[0] if new_modified else None
 
-        ## Check that the new metadata is usable
+        # Check that the new metadata is usable
         new_identifier = xml.xpath("/*/*[local-name()='metadata']/*[local-name()='identifier' and not(@refines)][1]/text()")
         new_identifier = new_identifier[0] if new_identifier else None
         if not new_identifier:
@@ -696,13 +707,14 @@ class Metadata:
             pipeline.utils.report.debug("    source    = " + html_path)
             pipeline.utils.report.debug("    target    = " + updated_file)
             pipeline.utils.report.debug("    html_head = " + html_metadata)
-            xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "update-html.xsl"),
-                                  source=html_path,
-                                  target=updated_file,
-                                  parameters={
-                                    "html_head": html_metadata,
-                                    "modified": dcterms_modified
-                                  })
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "update-html.xsl"),
+                        source=html_path,
+                        target=updated_file,
+                        parameters={
+                            "html_head": html_metadata,
+                            "modified": dcterms_modified
+                        })
             if not xslt.success:
                 return False
 
@@ -746,10 +758,11 @@ class Metadata:
         #     32: Tilvekstnummer e-bok
         #     38: Tilvekstnummer ekstern produksjon
 
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-get.xsl"),
-                              source=Metadata.sources["quickbase"]["records"],
-                              target=target,
-                              parameters={ "book-id-rows": str.join(" ", Metadata.quickbase_record_id_rows), "book-id": book_id })
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-get.xsl"),
+                    source=Metadata.sources["quickbase"]["records"],
+                    target=target,
+                    parameters={"book-id-rows": str.join(" ", Metadata.quickbase_record_id_rows), "book-id": book_id})
         return xslt.success
 
     @staticmethod
@@ -759,10 +772,11 @@ class Metadata:
         # Book id rows:
         #     7: "Tilvekstnummer"
 
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-get.xsl"),
-                              source=Metadata.sources["quickbase"]["isbn"],
-                              target=target,
-                              parameters={ "book-id-rows": str.join(" ", Metadata.quickbase_isbn_id_rows), "book-id": book_id })
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-get.xsl"),
+                    source=Metadata.sources["quickbase"]["isbn"],
+                    target=target,
+                    parameters={"book-id-rows": str.join(" ", Metadata.quickbase_isbn_id_rows), "book-id": book_id})
         return xslt.success
 
     @staticmethod
@@ -777,7 +791,7 @@ class Metadata:
     @staticmethod
     def get_format_from_normarc(report, marcxchange_path):
         xml = ElementTree.parse(marcxchange_path).getroot()
-        nsmap = { 'marcxchange': 'info:lc/xmlns/marcxchange-v1' }
+        nsmap = {'marcxchange': 'info:lc/xmlns/marcxchange-v1'}
         marc019b = xml.xpath("//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()", namespaces=nsmap)
         marc019b = marc019b[0] if marc019b else ""
 
@@ -787,10 +801,10 @@ class Metadata:
 
         split = marc019b.split(",")
 
-        if [val for val in split if val in ['za','c']]:
+        if [val for val in split if val in ['za', 'c']]:
             return "Braille", marc019b
 
-        if [val for val in split if val in ['dc','dj']]:
+        if [val for val in split if val in ['dc', 'dj']]:
             return "DAISY 2.02", marc019b
 
         if [val for val in split if val in ['la']]:
@@ -813,8 +827,10 @@ class Metadata:
         rdf = ElementTree.parse(rdf_path).getroot()
 
         report.info("<h2>Signaturer</h2>")
-        signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]", namespaces=rdf.nsmap)
-        signaturesPublication = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/Book' and {}]/nlbprod:*[starts-with(local-name(),'signature')]".format("dc:format/text()='{}'".format(publication_format) if publication_format else 'true()'), namespaces=rdf.nsmap)
+        signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]",
+                                   namespaces=rdf.nsmap)
+        signaturesPublication = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/Book' and {}]/nlbprod:*[starts-with(local-name(),'signature')]"
+                                          .format("dc:format/text()='{}'".format(publication_format) if publication_format else 'true()'), namespaces=rdf.nsmap)
         signatures = signaturesWork + signaturesPublication
         if not signaturesWork and not signaturesPublication:
             report.info("Fant ingen signaturer.")
@@ -851,7 +867,8 @@ class Metadata:
         rdf = ElementTree.parse(rdf_path).getroot()
         production_formats = rdf.xpath("//nlbprod:*[starts-with(local-name(),'format')]", namespaces=rdf.nsmap)
         exists_in_quickbase = bool(production_formats)
-        production_formats = [f.xpath("local-name()") for f in production_formats if (f.text == "true" or "{http://schema.org/}name" in f.attrib and f.attrib["{http://schema.org/}name"] == "true")]
+        production_formats = [f.xpath("local-name()") for f in production_formats
+                              if (f.text == "true" or "{http://schema.org/}name" in f.attrib and f.attrib["{http://schema.org/}name"] == "true")]
 
         exists_in_bibliofil = False
         for i in rdf.xpath("//dc:identifier", namespaces=rdf.nsmap):
@@ -861,37 +878,38 @@ class Metadata:
                 break
 
         if not exists_in_quickbase and exists_in_bibliofil:
-            pipeline.utils.report.info("{} finnes i Bibliofil men ikke i Quickbase. Antar at den skal produseres som {}.".format(epub.identifier(), publication_format))
+            pipeline.utils.report.info("{} finnes i Bibliofil men ikke i Quickbase. Antar at den skal produseres som {}."
+                                       .format(epub.identifier(), publication_format))
             return True
 
         if publication_format == "Braille":
             if [f for f in production_formats if f in [
-                "formatBraille",                  # Punktskrift
-                "formatBrailleClub",              # Punktklubb
-                "formatBraillePartialProduction", # Punktskrift delproduksjon
-                "formatNotes",                    # Noter
-                "formatTactilePrint",             # Taktil trykk
+                "formatBraille",                   # Punktskrift
+                "formatBrailleClub",               # Punktklubb
+                "formatBraillePartialProduction",  # Punktskrift delproduksjon
+                "formatNotes",                     # Noter
+                "formatTactilePrint",              # Taktil trykk
             ]]:
                 return True
 
         elif publication_format == "DAISY 2.02":
             if [f for f in production_formats if f in [
-                "formatDaisy202narrated",             # DAISY 2.02 Innlest Skjønn
-                "formatDaisy202narratedFulltext",     # DAISY 2.02 Innlest fulltekst
-                "formatDaisy202narratedStudent",      # DAISY 2.02 Innlest Studie
-                "formatDaisy202tts",                  # DAISY 2.02 TTS Skjønn
-                "formatDaisy202ttsStudent",           # DAISY 2.02 TTS Studie
-                "formatDaisy202wips",                 # DAISY 2.02 WIPS
-                "formatAudioCDMP3ExternalProduction", # Audio CD MP3 ekstern produksjon
-                "formatAudioCDWAVExternalProduction", # Audio CD WAV ekstern produksjon
-                "formatDaisy202externalProduction",   # DAISY 2.02 ekstern produksjon
+                "formatDaisy202narrated",              # DAISY 2.02 Innlest Skjønn
+                "formatDaisy202narratedFulltext",      # DAISY 2.02 Innlest fulltekst
+                "formatDaisy202narratedStudent",       # DAISY 2.02 Innlest Studie
+                "formatDaisy202tts",                   # DAISY 2.02 TTS Skjønn
+                "formatDaisy202ttsStudent",            # DAISY 2.02 TTS Studie
+                "formatDaisy202wips",                  # DAISY 2.02 WIPS
+                "formatAudioCDMP3ExternalProduction",  # Audio CD MP3 ekstern produksjon
+                "formatAudioCDWAVExternalProduction",  # Audio CD WAV ekstern produksjon
+                "formatDaisy202externalProduction",    # DAISY 2.02 ekstern produksjon
             ]]:
                 return True
 
         elif publication_format == "XHTML":
             if [f for f in production_formats if f in [
-                "formatEbook",                   # E-bok
-                "formatEbookExternalProduction", # E-bok ekstern produksjon
+                "formatEbook",                    # E-bok
+                "formatEbookExternalProduction",  # E-bok ekstern produksjon
             ]]:
                 return True
 
