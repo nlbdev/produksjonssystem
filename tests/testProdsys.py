@@ -159,6 +159,9 @@ while prodsys_thread.is_alive() and t > 0:
     check_dirs()
 end_time = int(time.time())
 
+if t <= 0:
+    print("--- timeout ---")
+
 success = check_dirs(last_run=True)
 
 if prodsys_thread.is_alive():
