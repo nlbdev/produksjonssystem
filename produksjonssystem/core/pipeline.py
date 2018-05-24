@@ -228,6 +228,8 @@ class Pipeline():
         md5_count = 0
         self.progress_text = "0 / {}".format(len(dir_list))
         for f in dir_list:
+            if not (self._dirInAvailable and self._shouldRun):
+                return  # break loop if we're shutting down the system
             self._update_md5(f)
             md5_count += 1
             self.progress_text = "{} / {}".format(md5_count, len(dir_list))
@@ -635,6 +637,8 @@ class Pipeline():
 
             last_check = time.time()
             for filename in os.listdir(self.dir_in):
+                if not (self._dirInAvailable and self._shouldRun):
+                    break  # break loop if we're shutting down the system
                 self.trigger(filename)
 
     def _retry_missing_books_thread(self):
@@ -654,16 +658,25 @@ class Pipeline():
             last_check = time.time()
 
             for fileName in os.listdir(self.dir_in):
+                if not (self._dirInAvailable and self._shouldRun):
+                    break  # break loop if we're shutting down the system
+
                 file_exists = False
                 try:
                     if self.parentdirs:
                         for key in self.parentdirs:
                             for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
+                                if not (self._dirInAvailable and self._shouldRun):
+                                    break  # break loop if we're shutting down the system
+
                                 if Path(fileInDirOut).stem[:6] == Path(fileName).stem[:6]:
                                     file_exists = True
                                     break
                     else:
                         for fileInOut in os.listdir(self.dir_out):
+                            if not (self._dirInAvailable and self._shouldRun):
+                                break  # break loop if we're shutting down the system
+
                             if Path(fileInOut).stem[:6] == Path(fileName).stem[:6]:
                                 file_exists = True
                                 break
