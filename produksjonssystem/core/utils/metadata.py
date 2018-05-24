@@ -47,7 +47,7 @@ class Metadata:
     last_metadata_errors = []  # timestamps for last automated metadata updates
     metadata_tempdir_obj = None
 
-    update_lock = threading.RLock()
+    _update_lock = threading.RLock()
 
     @staticmethod
     def get_metadata_dir():
@@ -63,7 +63,7 @@ class Metadata:
         # Only update one book at a time, to avoid potentially overwriting metadata while it's being used
 
         ret = False
-        with Metadata.update_lock:
+        with Metadata._update_lock:
             ret = Metadata._update(*args, **kwargs)
             Metadata.queue = []
         return ret
@@ -73,7 +73,7 @@ class Metadata:
         # Only get metadata from one book at a time, to avoid potentially overwriting metadata while it's being used
 
         ret = False
-        with Metadata.update_lock:
+        with Metadata._update_lock:
             ret = Metadata._get_metadata(*args, **kwargs)
             Metadata.queue = []
         return ret
@@ -83,7 +83,7 @@ class Metadata:
         # Only get metadata from one book at a time, to avoid potentially overwriting metadata while it's being used
 
         ret = False
-        with Metadata.update_lock:
+        with Metadata._update_lock:
             ret = Metadata._validate_metadata(*args, **kwargs)
             Metadata.queue = []
         return ret
