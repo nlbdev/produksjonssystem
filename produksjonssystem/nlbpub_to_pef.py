@@ -82,12 +82,12 @@ class NlbpubToPef(Pipeline):
                 "line-spacing": "single",
                 "duplex": "true"
             },
-            "lesetrening": {
-                "source": html_file,
-                "braille-standard": "(dots:6)(grade:0)",
-                "line-spacing": "double",
-                "duplex": "false"
-            }
+            #"lesetrening": {
+            #    "source": html_file,
+            #    "braille-standard": "(dots:6)(grade:0)",
+            #    "line-spacing": "double",
+            #    "duplex": "false"
+            #}
         }
         pef_tempdir_objects = {}
         for braille_version in braille_arguments:

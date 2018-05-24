@@ -24,9 +24,24 @@ Anbefaler:
 
 - installer java 8 JDK: `sudo apt install openjdk-8-jdk`
 
-- last ned og unzip DAISY Pipeline 2 fra `https://daisy.github.io/pipeline` til `~/Desktop/daisy-pipeline`
-    - rediger `etc/system.properties` og endre update url til `http://repo.nlb.no/pipeline/`
-    - kjør: `updater/pipeline-updater -service="http://repo.nlb.no/pipeline/" -install-dir=$HOME/Desktop/daisy-pipeline/ -descriptor=$HOME/Desktop/daisy-pipeline/etc/releaseDescriptor.xml -version=current`
+- installer DAISY Pipeline 2
+    - last ned og unzip DAISY Pipeline 2 fra http://repo.nlb.no/pipeline/pipeline2_minimal.zip til `~/Desktop/daisy-pipeline`
+    - i `etc/system.properties`, sett `org.daisy.pipeline.procs` til 4 for å kunne kjøre flere jobber på en gang (valgfritt)
+    - kjør: `updater/linux/pipeline-updater -service="http://repo.nlb.no/pipeline/" -install-dir=$HOME/Desktop/daisy-pipeline/ -descriptor=$HOME/Desktop/daisy-pipeline/etc/releaseDescriptor.xml -version=current -force`
+    - opprett `cli/config.yml` med følgende innhold:
+        ```
+        host: http://localhost
+        port: 8181
+        ws_path: ws
+        ws_timeup: 25
+        exec_line: ../bin/pipeline2
+        local: true
+        client_key: clientid
+        client_secret: supersecret
+        timeout: 60
+        debug: false
+        starting: true
+        ```
 
 - installer ACE:
     - `sudo apt install nodejs npm`
