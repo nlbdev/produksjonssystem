@@ -38,8 +38,8 @@ class Pipeline():
         "An error occured while checking for book events": "En feil oppstod ved håndtering av bokhendelse"
     }
 
-    _queue_lock = RLock()
-    _md5_lock = RLock()
+    _queue_lock = None
+    _md5_lock = None
 
     _dir_trigger_obj = None  # store TemporaryDirectory object in instance so that it's not cleaned up
     pipelines = []
@@ -105,6 +105,8 @@ class Pipeline():
         self.utils.filesystem = None
         self.retry_all = retry_all
         self.retry_missing = retry_missing
+        self._queue_lock = RLock()
+        self._md5_lock = RLock()
         with self._queue_lock:
             self._queue = []
         super().__init__()
@@ -880,6 +882,8 @@ class DummyPipeline(Pipeline):
         self.utils = DotMap()
         self.utils.report = DummyReport(self)
         self.utils.filesystem = Filesystem(self)
+        self._queue_lock = RLock()
+        self._md5_lock = RLock()
         self._shouldRun = False
 
         if inherit_config_from:
