@@ -222,6 +222,8 @@ class Pipeline():
         self.shouldHandleBooks = True
         self._dirInAvailable = True
 
+        self.threads = []
+
         with self._md5_lock:
             self._md5 = {}
         dir_list = os.listdir(self.dir_in)
@@ -229,13 +231,13 @@ class Pipeline():
         self.progress_text = "0 / {}".format(len(dir_list))
         for f in dir_list:
             if not (self._dirInAvailable and self._shouldRun):
+                with self._md5_lock:
+                    self._md5 = {}
                 return  # break loop if we're shutting down the system
             self._update_md5(f)
             md5_count += 1
             self.progress_text = "{} / {}".format(md5_count, len(dir_list))
         self.progress_text = ""
-
-        self.threads = []
 
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
