@@ -659,23 +659,19 @@ class Pipeline():
                             for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
                                 if Path(fileInDirOut).stem[:6] == Path(fileName).stem[:6]:
                                     file_exists = True
+                                    break
                     else:
                         for fileInOut in os.listdir(self.dir_out):
                             if Path(fileInOut).stem[:6] == Path(fileName).stem[:6]:
                                 file_exists = True
-                except Exception:
-                    logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: "+ self.title)
+                                break
+                    if file_exists:
+                        break
 
-                #for dirOut in os.listdir(self.dir_out):
-                #    if Path(dirOut).stem == Path(fileName).stem:
-                #        file_exists=True
-                #    elif os.path.isdir(os.path.join(self.dir_out, dirOut)):
-                #        for fileInDirOut in os.listdir(os.path.join(self.dir_out, dirOut)):
-                #            if Path(fileName).stem in Path(fileInDirOut).stem:
-                #                file_exists=True
+                except Exception:
+                    logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
 
                 if not file_exists:
-                    #print(os.path.join(self.dir_in, fileName))
                     logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
                     self.trigger(fileName)
 
