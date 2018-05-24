@@ -22,6 +22,12 @@ class NlbpubToPef(Pipeline):
     publication_format = "Braille"
     expected_processing_time = 1192
 
+    parentdirs = {
+                  "fullskrift": "fullskrift",
+                  "kortskrift": "kortskrift",
+                  "lesetrening": "lesetrening"
+                  }
+
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " HTML-kilde slettet: " + self.book['name']
@@ -122,7 +128,7 @@ class NlbpubToPef(Pipeline):
 
         self.utils.report.info("Kopierer til PEF-arkiv.")
         for braille_version in pef_tempdir_objects:
-            archived_path = self.utils.filesystem.storeBook(pef_tempdir_objects[braille_version].name, identifier, subdir=braille_version)
+            archived_path = self.utils.filesystem.storeBook(pef_tempdir_objects[braille_version].name, identifier, parentdir=self.parentdirs[braille_version])
             self.utils.report.attachment(None, archived_path, "DEBUG")
             self.utils.report.info(identifier + " ble lagt til i arkivet under PEF/" + braille_version + ".")
 
