@@ -329,10 +329,10 @@ class Pipeline():
     def trigger(self, name, auto=True):
         path = os.path.join(self.dir_trigger, name)
         if auto:
-            with open(os.path.join(self.dir_trigger, name), "w") as triggerfile:
+            with open(path, "w") as triggerfile:
                 triggerfile.write("autotriggered")
         else:
-            Filesystem.touch(path)
+            Path(path).touch()
             with self._md5_lock:
                 if name not in self._md5:
                     self._update_md5(name)
