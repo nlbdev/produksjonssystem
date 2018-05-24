@@ -822,37 +822,46 @@ class Metadata:
     def add_production_info(report, identifier, publication_format=""):
         metadata_dir = os.path.join(Metadata.get_metadata_dir(), identifier)
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
-        if not os.path.isfile(rdf_path):
-            report.debug("Metadata om produksjonen finnes ikke: {}".format(identifier))
-            return False
-
-        rdf = ElementTree.parse(rdf_path).getroot()
+        rdf = ElementTree.parse(rdf_path).getroot() if os.path.isfile(rdf_path) else None
 
         report.info("<h2>Signaturer</h2>")
-        signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]",
-                                   namespaces=rdf.nsmap)
-        signaturesPublication = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/Book' and {}]/nlbprod:*[starts-with(local-name(),'signature')]"
-                                          .format("dc:format/text()='{}'".format(publication_format) if publication_format else 'true()'), namespaces=rdf.nsmap)
-        signatures = signaturesWork + signaturesPublication
-        if not signaturesWork and not signaturesPublication:
-            report.info("Fant ingen signaturer.")
+        if rdf is not None:
+            signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]",
+                                       namespaces=rdf.nsmap)
+            signaturesPublication = rdf.xpath(
+                "/*/*[rdf:type/@rdf:resource='http://schema.org/Book' and {}]/nlbprod:*[starts-with(local-name(),'signature')]"
+                .format("dc:format/text()='{}'".format(publication_format) if publication_format else 'true()'), namespaces=rdf.nsmap)
+            signatures = signaturesWork + signaturesPublication
+            if not signaturesWork and not signaturesPublication:
+                report.info("Fant ingen signaturer.")
+            else:
+                report.info("<dl>")
+                for e in signatures:
+                    source = e.attrib["{http://www.nlb.no/}metadata-source"]
+                    source = source.replace("Quickbase Record@{} ".format(identifier), "")
+                    value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
+                    report.info("<dt>{}</dt>".format(source))
+                    report.info("<dd>{}</dd>".format(value))
+                report.info("</dl>")
         else:
-            report.info("<dl>")
-            for e in signatures:
-                source = e.attrib["{http://www.nlb.no/}metadata-source"]
-                source = source.replace("Quickbase Record@{} ".format(identifier), "")
-                value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
-                report.info("<dt>{}</dt>".format(source))
-                report.info("<dd>{}</dd>".format(value))
-            report.info("</dl>")
+            report.info("Metadata om produksjonen er ikke tilgjengelig: {}".format(identifier))
 
-        # TODO:
-        # Her bør det stå i tillegg noe sånt som:
-        #
-        # Boknummer:
-        # - Braille: 111111 (finnes ikke i Bibliofil)
-        # - Braille: 111112
-        # - XHTML: 311111
+        report.info("<h2>Lenker til katalogposter</h2>")
+        edition_identifiers, publication_identifiers = Metadata.get_identifiers(report, identifier)
+        identifiers = list(set(edition_identifiers + publication_identifiers))
+        bibliofil_url = "https://websok.nlb.no/cgi-bin/websok?tnr="
+        report.info("<ul>")
+        for i in sorted(identifiers):
+            report.info("<li><a href=\"{}{}\">{}</a></li>".format(bibliofil_url, i[:6], i))
+            # TODO: Her bør det i tillegg stå:
+            # - format
+            # - hvorvidt boken er katalogisert i Bibliofil
+            # - kanskje også en lenke til Quickbase-oppføringen
+        report.info("</ul>")
+        if identifier.startswith("5") and len(identifiers) == 1:
+            report.warn("Finner ingen tilhørende boknummer.")
+        elif len(identifiers) == 1:
+            report.info("Andre boknummer er ikke tilgjengelig.")
 
     @staticmethod
     def should_produce(pipeline, epub, publication_format):
