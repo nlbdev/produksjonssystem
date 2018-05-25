@@ -123,13 +123,13 @@ class Produksjonssystem():
 
             # e-bok
             [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
-            [NlbpubToHtml(),                "pub-in-ebook",        "html"],
-            [NLBpubToDocx(),                "pub-in-ebook",        "docx"],
+            [NlbpubToHtml(retry_missing=True),                "pub-in-ebook",        "html"],
+            [NLBpubToDocx(retry_missing=True),                "pub-in-ebook",        "docx"],
 
             # punktskrift
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
             [PrepareForBraille(retry_missing=True),           "pub-in-braille",      "pub-ready-braille"],
-            [NlbpubToPef(),                 "pub-ready-braille",   "pef"],
+            [NlbpubToPef(retry_missing=True),                 "pub-ready-braille",   "pef"],
 
             # innlest lydbok
             [InsertMetadataDaisy202(),                        "nlbpub",              "pub-in-audio"],
