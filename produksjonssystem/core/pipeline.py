@@ -660,30 +660,42 @@ class Pipeline():
             last_check = time.time()
 
             for fileName in os.listdir(self.dir_in):
+
                 if not (self._dirInAvailable and self._shouldRun):
                     break  # break loop if we're shutting down the system
+                file_name = Path(fileName).stem
+                edition = [file_name]
 
+                # if input file is an epub (starts with 5), find all possible identifiers
+                try:
+                    if file_name.startswith("5"):
+                        self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + file_name + " retry")
+                        edition, publication = Metadata.get_identifiers(self.pipelineDummy.utils.report, file_name)
+                        edition = list(set(edition) | set(publication))
+                except Exception:
+                    logging.info("Metadata feilet under get_identifiers for file_name")
+                # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
                 file_exists = False
+
                 try:
                     if self.parentdirs:
                         for key in self.parentdirs:
                             for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
+
                                 if not (self._dirInAvailable and self._shouldRun):
                                     break  # break loop if we're shutting down the system
-
-                                if Path(fileInDirOut).stem[:6] == Path(fileName).stem[:6]:
+                                if Path(fileInDirOut).stem in edition:
                                     file_exists = True
                                     break
                     else:
                         for fileInOut in os.listdir(self.dir_out):
+
                             if not (self._dirInAvailable and self._shouldRun):
                                 break  # break loop if we're shutting down the system
-
-                            if Path(fileInOut).stem[:6] == Path(fileName).stem[:6]:
+                            if Path(fileInOut).stem in edition:
                                 file_exists = True
                                 break
-                    if file_exists:
-                        break
+
 
                 except Exception:
                     logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
