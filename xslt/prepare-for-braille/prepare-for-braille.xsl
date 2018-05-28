@@ -4,7 +4,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output method="html" include-content-type="no"/>
+    <xsl:output method="xhtml" include-content-type="no"/>
     
     <xsl:template match="@* | node()">
         <xsl:copy>
