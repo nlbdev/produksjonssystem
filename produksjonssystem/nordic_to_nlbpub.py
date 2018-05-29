@@ -57,14 +57,42 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
 
-        html_dir_obj = tempfile.TemporaryDirectory()
-        html_dir = html_dir_obj.name
-        html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
         temp_html_file_obj = tempfile.NamedTemporaryFile()
         temp_html_file = temp_html_file_obj.name
 
+        self.utils.report.info("Lager en kopi av EPUBen")
+        temp_epubdir_obj = tempfile.TemporaryDirectory()
+        temp_epubdir = temp_epubdir_obj.name
+        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
+        temp_epub = Epub(self, temp_epubdir)
+
+        self.utils.report.info("Rydder opp i nordisk EPUB")
+        nav_path = temp_epub.nav_path()
+        for root, dirs, files in os.walk(temp_epubdir):
+            for f in files:
+                file = os.path.join(root, f)
+                if not file.endswith(".xhtml"):
+                    continue
+                if file == nav_path:
+                    continue
+
+                xslt = Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
+                            source=file,
+                            target=temp_html_file)
+                if not xslt.success:
+                    self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                    return
+                shutil.copy(temp_html_file, file)
+
+        html_dir_obj = tempfile.TemporaryDirectory()
+        html_dir = html_dir_obj.name
+        html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
+
+        self.utils.report.info("Zipper oppdatert versjon av EPUBen...")
+        temp_epub.asFile(rebuild=True)
+
         self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": epub.asFile(), "fail-on-error": "true"}) as dp2_job:
+        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": temp_epub.asFile(), "fail-on-error": "true"}) as dp2_job:
 
             # get conversion report
             report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")

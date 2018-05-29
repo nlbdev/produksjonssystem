@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:html="http://www.w3.org/1999/xhtml"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="nordic-cleanup-epub.xsl">
+    
+    <x:scenario label="Fix URLs">
+        <x:context>
+            <div>
+                <a href="http://www.merckmanuals.com/professional /index.html">http://www.merckmanuals.com/professional /index.html</a>
+                <a href="http://www.ed.gov/inits/commissions boards/whspecialeducation /index.html">Other text</a>
+                <a href="http://www.ldonline.org/article/learning_disabilitiesJn_English Janguage_learners.htm">Other text</a>
+                <a href="http://www.uv.uio.no/isp/om/jonasprisen/Last revised">http://www.uv.uio.no/isp/om/jonasprisen/Last revised</a>
+                <a href="http://www.nlb.no/">NLB</a>
+            </div>
+        </x:context>
+
+        <x:expect label="URLs should be fixed appropriately">
+            <div>
+                <a href="http://www.merckmanuals.com/professional/index.html">http://www.merckmanuals.com/professional/index.html</a>
+                <a href="http://www.ed.gov/inits/commissionsboards/whspecialeducation/index.html">Other text</a>
+                <a href="http://www.ldonline.org/article/learning_disabilitiesJn_EnglishJanguage_learners.htm">Other text</a>
+                <a href="http://www.uv.uio.no/isp/om/jonasprisen/">http://www.uv.uio.no/isp/om/jonasprisen/</a>
+                <a href="http://www.nlb.no/">NLB</a>
+            </div>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
