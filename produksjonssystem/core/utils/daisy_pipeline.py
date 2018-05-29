@@ -45,10 +45,9 @@ class DaisyPipelineJob():
                 retries -= 1
                 procs = DaisyPipelineJob.list_processes()
                 if DaisyPipelineJob.pid:
-                    pipeline.utils.report.debug("found PID")
                     procs = [p for p in procs if p.pid != DaisyPipelineJob.pid]  # keep DaisyPipelineJob.pid
-                if len(procs) > 1:
-                    pipeline.utils.report.debug("found more than one process")
+                if len(procs) > 0:
+                    pipeline.utils.report.debug("found at least one unexpected Pipeline 2 instance")
                     for p in procs:
                         try:
                             p.terminate()
