@@ -21,63 +21,88 @@ class Epub():
     }
 
     pipeline = None
-    book_path = None
     metadata = None
-    _temp_obj = None
+    book_path = None
+    book_path_file = None
+    book_path_dir = None
+    _temp_obj_file = None
+    _temp_obj_dir = None
 
     uid = "core-utils-epub"
 
     def __init__(self, pipeline, book_path):
         assert os.path.exists(book_path), "'{}' must exist".format(book_path)
+        assert os.path.isfile(book_path) or os.path.isdir(book_path), "'{}' must be either a file or a directory".format(book_path)
         self.pipeline = pipeline
         self.book_path = book_path
 
-    def asFile(self):
+    def asFile(self, rebuild=False):
         """Return the epub as a zip file and with file extension "epub"."""
 
-        # file
-        if os.path.isfile(self.book_path):
-            return self.book_path
+        # optionally discard existing build to force a rebuild
+        if rebuild:
+            self.book_path_file = None
+            self._temp_obj_file = None
 
-        # directory
+        # return existing build if present
+        if self.book_path_file:
+            return self.book_path_file
+
+        # If the source is a file, and there's no unzipped version of the EPUB,
+        # then simply use the source file.
+        if os.path.isfile(self.book_path) and not self.book_path_dir:
+            self.book_path_file = self.book_path
+            return self.book_path_file
+
+        # Determine which directory to use as input for zipping
+        dirpath = None
+        if self.book_path_dir:
+            # prefer the already unzipped version, as this may contain changes
+            dirpath = pathlib.Path(self.book_path_dir)
         else:
-            if not self._temp_obj:
-                self._temp_obj = tempfile.TemporaryDirectory()
-
-            book_id = self.meta("dc:identifier")
-            file = os.path.join(self._temp_obj.name, book_id + ".epub")
-
+            # use the source directory if there's no unzipped version present
             dirpath = pathlib.Path(self.book_path)
-            filepath = pathlib.Path(file)
-            with zipfile.ZipFile(file, 'w') as archive:
-                mimetype = dirpath / 'mimetype'
-                if not os.path.isfile(str(mimetype)):
-                    with open(str(mimetype), "w") as f:
-                        self.pipeline.utils.report.debug("creating mimetype file")
-                        f.write("application/epub+zip")
-                self.pipeline.utils.report.debug("zipping: mimetype")
-                archive.write(str(mimetype), 'mimetype', compress_type=zipfile.ZIP_STORED)
-                for f in dirpath.rglob('*'):
-                    relative = str(f.relative_to(dirpath))
-                    if relative == "mimetype":
-                        continue
-                    self.pipeline.utils.report.debug("zipping: " + relative)
-                    archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
 
-            return file
+        # create the temporary directory for the file
+        if not self._temp_obj_file:
+            self._temp_obj_file = tempfile.TemporaryDirectory()
+
+        # zip directory according to the EPUB OCF specification
+        file = os.path.join(self._temp_obj_file.name, self.identifier() + ".epub")
+        with zipfile.ZipFile(file, 'w') as archive:
+            mimetype = dirpath / 'mimetype'
+            if not os.path.isfile(str(mimetype)):
+                with open(str(mimetype), "w") as f:
+                    self.pipeline.utils.report.debug("creating mimetype file")
+                    f.write("application/epub+zip")
+            self.pipeline.utils.report.debug("zipping: mimetype")
+            archive.write(str(mimetype), 'mimetype', compress_type=zipfile.ZIP_STORED)
+            for f in dirpath.rglob('*'):
+                relative = str(f.relative_to(dirpath))
+                if relative == "mimetype":
+                    continue
+                self.pipeline.utils.report.debug("zipping: " + relative)
+                archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
+
+        return file
 
     def asDir(self):
-        # file
-        if os.path.isfile(self.book_path):
-            if not self._temp_obj:
-                self._temp_obj = tempfile.TemporaryDirectory()
+        # return existing directory if present
+        if self.book_path_dir:
+            return self.book_path_dir
 
-            self.pipeline.utils.filesystem.unzip(self.book_path, self._temp_obj.name)
-            return self._temp_obj.name
+        # if the source path is a directory; use the source directory
+        if os.path.isdir(self.book_path):
+            self.book_path_dir = self.book_path
+            return self.book_path_dir
 
-        # directory
+        # otherwise unzip the source file to a temporary directory,
+        # and use that one instead
         else:
-            return self.book_path
+            self._temp_obj_dir = tempfile.TemporaryDirectory()
+            self.book_path_dir = self._temp_obj_dir.name
+            self.pipeline.utils.filesystem.unzip(self.book_path, self.book_path_dir)
+            return self.book_path_dir
 
     def isepub(self, report_errors=True):
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
