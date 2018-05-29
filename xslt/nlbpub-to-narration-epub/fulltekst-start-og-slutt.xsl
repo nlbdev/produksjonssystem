@@ -664,7 +664,14 @@
                         <xsl:text>Det er mulig å navigere i lydboka på </xsl:text>
                         <xsl:value-of
                             select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
-                        <xsl:text> overskriftsnivå</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="$STRUKTUR.dybde eq 1">
+                                <xsl:text> overskriftsnivå</xsl:text>        
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:text> overskriftsnivåer</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
                         <xsl:if test="$STRUKTUR.har-sidetall">
                             <xsl:text> og på sidetall</xsl:text>
                         </xsl:if>

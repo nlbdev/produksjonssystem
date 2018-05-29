@@ -40,16 +40,20 @@
 
     <!-- Brukes bare for kjøring på lokal PC -->
     <!--<xsl:variable name="ID" as="xs:string"
-        select="replace(document-uri(/), '^.+/(.+?)\.xhtml$', '$1')"/>
+        select="replace(document-uri(/), '^.+/(.+?)-temp01\.xhtml$', '$1')"/>
     <xsl:variable name="metadata.url" as="xs:string"
-        select="concat(replace(document-uri(.), '^(.+/Arkiv/).+$', '$1'), 'metadata/', $ID, '/metadata-daisy202.html')"/>-->
-
+        select="concat(replace(document-uri(.), '^(.+/produksjonssystemet/).+$', '$1'), 'Arkiv/metadata/', $ID, '/metadata-daisy202.html')"/>-->
+    
     <xsl:template match="/">
         <xsl:message>prepare-for-narration.xsl (1.1.0 / 2018-04-11)</xsl:message>
 
-        <!--<xsl:message>
+       <!-- <xsl:message>
             <xsl:text>* ID: </xsl:text>
             <xsl:value-of select="$ID"/>
+        </xsl:message>
+        <xsl:message>
+            <xsl:text>* doc url: </xsl:text>
+            <xsl:value-of select="document-uri(.)"/>
         </xsl:message>
         <xsl:message>
             <xsl:text>* Henter metadata fra </xsl:text>
