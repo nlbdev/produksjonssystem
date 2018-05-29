@@ -789,6 +789,7 @@ class Pipeline():
                             progress_end = time.time()
                             self.progress_log.append({"start": self.progress_start, "end": progress_end})
                             self.utils.report.debug("Finished: {}".format(progress_end))
+                            self.utils.report.debug("Total time: {}".format(progress_end - self.progress_start))
 
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
