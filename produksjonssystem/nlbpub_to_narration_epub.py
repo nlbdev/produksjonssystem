@@ -96,6 +96,18 @@ class NlbpubToNarrationEpub(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
 
+        self.utils.report.info("Fjerner elementer som ikke skal være med i lydboka...")
+        self.utils.report.debug("ta-vekk-innhold.xsl")
+        self.utils.report.debug("    source = " + html_file)
+        self.utils.report.debug("    target = " + temp_html)
+        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "ta-vekk-innhold.xsl"),
+                          source=html_file,
+                          target=temp_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return
+        shutil.copy(temp_html, html_file)
+
         self.utils.report.info("Tilpasser innhold for innlesing...")
         self.utils.report.debug("prepare-for-narration.xsl")
         self.utils.report.debug("    source = " + html_file)
