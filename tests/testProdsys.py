@@ -95,7 +95,7 @@ else:
 audio_identifier = "624328"
 identifiers = ["558237", "115437", "221437", "356837", "406837", "624328"]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
-copyfile(file_path, os.path.join(prodsys.dirs["incoming"], os.path.basename(file_path)))
+copyfile(file_path, os.path.join(prodsys.dirs["incoming-nordic"], os.path.basename(file_path)))
 
 audio_path = os.path.join(os.path.dirname(__file__), audio_identifier)
 copytree(audio_path, os.path.join(book_archive_dirs["share"], "daisy202", audio_identifier))

@@ -92,17 +92,17 @@ class Produksjonssystem():
         self.dirs = {
             "reports": Config.get("reports_dir"),
             "metadata": Config.get("metadata_dir"),
-            "incoming": os.path.join(book_archive_dirs["master"], "innkommende"),
+            "incoming-nordic": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
+            "nordic": os.path.join(book_archive_dirs["master"], "kilde-inn/nordisk"),
             "master": os.path.join(book_archive_dirs["master"], "master/EPUB"),
             "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
-            "dtbook_braille": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-punktskrift"),
-            "dtbook_tts": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-til-talesyntese"),
-            "dtbook_html": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DTBook-til-HTML"),
-            "html": os.path.join(book_archive_dirs["master"], "distribusjonsformater/HTML"),
-            "docx": os.path.join(book_archive_dirs["master"], "distribusjonsformater/DOCX"),
-            "epub_narration": os.path.join(book_archive_dirs["master"], "distribusjonsformater/EPUB-til-innlesing"),
-            "ncc": os.path.join(book_archive_dirs["master"], "distribusjonsformater/NCC"),
-            "pef": os.path.join(book_archive_dirs["master"], "distribusjonsformater/PEF"),
+            "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
+            "dtbook_tts": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese"),
+            "dtbook_html": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML"),
+            "html": os.path.join(book_archive_dirs["master"], "utgave-ut/HTML"),
+            "docx": os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX"),
+            "epub_narration": os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing"),
+            "pef": os.path.join(book_archive_dirs["master"], "utgave-ut/PEF"),
             "pub-ready-braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift"),
             "pub-in-epub": os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB"),
             "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
@@ -114,7 +114,7 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [IncomingNordic(retry_all=True),                  "incoming",            "master"],
+            [IncomingNordic(retry_all=True),                  "incoming-nordic",     "master"],
             [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
             [UpdateMetadata(),                                "metadata",            "nlbpub"],
 
