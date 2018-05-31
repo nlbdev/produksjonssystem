@@ -92,7 +92,7 @@ class Produksjonssystem():
         self.dirs = {
             "reports": Config.get("reports_dir"),
             "metadata": Config.get("metadata_dir"),
-            "incoming-nordic": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
+            "incoming": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
             "nordic": os.path.join(book_archive_dirs["master"], "kilde-inn/nordisk"),
             "master": os.path.join(book_archive_dirs["master"], "master/EPUB"),
             "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
@@ -114,7 +114,7 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak
-            [IncomingNordic(retry_all=True),                  "incoming-nordic",     "master"],
+            [IncomingNordic(retry_all=True),                  "incoming",            "master"],
             [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
             [UpdateMetadata(),                                "metadata",            "nlbpub"],
 
