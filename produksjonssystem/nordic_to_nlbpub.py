@@ -6,6 +6,7 @@ import sys
 import shutil
 import tempfile
 
+from lxml import etree as ElementTree
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.daisy_pipeline import DaisyPipelineJob
@@ -16,10 +17,11 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class NordicToNlbpub(Pipeline):
     uid = "nordic-epub-to-nlbpub"
     title = "Nordisk EPUB til NLBPUB"
-    labels = [ "EPUB", "Lydbok", "Innlesing", "Talesyntese", "Punktskrift", "e-bok" ]
+    labels = ["EPUB", "Lydbok", "Innlesing", "Talesyntese", "Punktskrift", "e-bok"]
     publication_format = None
     expected_processing_time = 686
 
@@ -91,24 +93,58 @@ class NordicToNlbpub(Pipeline):
         self.utils.report.info("Zipper oppdatert versjon av EPUBen...")
         temp_epub.asFile(rebuild=True)
 
-        self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": temp_epub.asFile(), "fail-on-error": "true"}) as dp2_job:
+        self.utils.report.info("Validerer Nordisk EPUB 3...")
+        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": temp_epub.asFile()}) as dp2_job_epub_validate:
+            epub_validate_status = None
+            if dp2_job_epub_validate.status == "DONE":
+                epub_validate_status = "SUCCESS"
+            elif dp2_job_epub_validate.status in ["VALIDATION_FAIL", "FAIL"]:
+                epub_validate_status = "WARN"
+            else:
+                epub_validate_status = "ERROR"
+
+            report_file = os.path.join(dp2_job_epub_validate.dir_output, "html-report/report.xhtml")
+
+            if epub_validate_status == "WARN":
+                report_doc = ElementTree.parse(report_file)
+                errors = [e.xpath('.//text()[normalize-space()]')[0] for e in report_doc.xpath('//*[@class="error"]')]
+                for error in errors:
+                    if (bool(error) and (
+                            error.startswith("[opf") or
+                            error.startswith("[nordic_nav") or
+                            error.startswith("[nordic_opf"))):
+                        continue  # ignorer disse feilmeldingene; de forsvinner når vi konverterer til XHTML5
+
+                    else:
+                        epub_validate_status = "ERROR"
+                        self.utils.report.error(error)
 
             # get conversion report
-            report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
             if os.path.isfile(report_file):
                 with open(report_file, 'r') as result_report:
                     self.utils.report.attachment(result_report.readlines(),
-                                                 os.path.join(self.utils.report.reportDir(), "report.html"),
-                                                 "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+                                                 os.path.join(self.utils.report.reportDir(), "report-epub.html"),
+                                                 epub_validate_status)
 
-            if dp2_job.status != "DONE":
+            if epub_validate_status == "ERROR":
+                self.utils.report.error("Klarte ikke å validere boken")
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return
+
+            if epub_validate_status == "WARN":
+                self.utils.report.warn("EPUBen er ikke valid, men vi fortsetter alikevel.")
+
+        self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
+        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": temp_epub.asFile(), "fail-on-error": "false"}) as dp2_job_convert:
+            convert_status = "SUCCESS" if dp2_job_convert.status == "DONE" else "ERROR"
+
+            if convert_status != "SUCCESS":
                 self.utils.report.error("Klarte ikke å konvertere boken")
                 self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
                 return
 
-            dp2_html_dir = os.path.join(dp2_job.dir_output, "output-dir", epub.identifier())
-            dp2_html_file = os.path.join(dp2_job.dir_output, "output-dir", epub.identifier(), epub.identifier() + ".xhtml")
+            dp2_html_dir = os.path.join(dp2_job_convert.dir_output, "output-dir", epub.identifier())
+            dp2_html_file = os.path.join(dp2_job_convert.dir_output, "output-dir", epub.identifier(), epub.identifier() + ".xhtml")
 
             if not os.path.isdir(dp2_html_dir):
                 self.utils.report.error("Finner ikke den konverterte boken: {}".format(dp2_html_dir))
@@ -120,6 +156,23 @@ class NordicToNlbpub(Pipeline):
                 self.utils.report.info("Kanskje filnavnet er forskjellig fra IDen?")
                 self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
                 return False
+
+            self.utils.report.info("Validerer Nordisk HTML 5...")
+            with DaisyPipelineJob(self, "nordic-html-validate", {"html": dp2_html_file}) as dp2_job_html_validate:
+                html_validate_status = "SUCCESS" if dp2_job_html_validate.status == "DONE" else "ERROR"
+
+                # get conversion report
+                report_file = os.path.join(dp2_job_html_validate.dir_output, "html-report/report.xhtml")
+                if os.path.isfile(report_file):
+                    with open(report_file, 'r') as result_report:
+                        self.utils.report.attachment(result_report.readlines(),
+                                                     os.path.join(self.utils.report.reportDir(), "report-html.html"),
+                                                     html_validate_status)
+
+                if html_validate_status == "ERROR":
+                    self.utils.report.error("Klarte ikke å validere HTML-versjonen av boken")
+                    self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                    return
 
             self.utils.filesystem.copy(dp2_html_dir, html_dir)
 
