@@ -133,7 +133,7 @@ class Produksjonssystem():
 
             # innlest lydbok
             [InsertMetadataDaisy202(),                        "nlbpub",              "pub-in-audio"],
-            [NlbpubToNarrationEpub(),       "pub-in-audio",        "epub_narration"],
+            [NlbpubToNarrationEpub(retry_missing=True),       "pub-in-audio",        "epub_narration"],
             [DummyPipeline("Innlesing med Hindenburg",
                            labels=["Lydbok", "Innlesing"]),   "epub_narration",      "daisy202"],
 
