@@ -90,7 +90,7 @@ class Report():
         if isinstance(message, list):
             lines = message
         else:
-            lines = [ message ]
+            lines = [message]
 
         if message_type not in self._messages:
             self._messages[message_type] = []
@@ -106,7 +106,7 @@ class Report():
             lines.append("")
 
         for line in lines:
-            self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M:%S"), 'severity': severity, 'text': line })
+            self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M%S"), 'severity': severity, 'text': line, 'time_seconds': (time.time())})
 
     def debug(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('DEBUG', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
@@ -346,7 +346,16 @@ class Report():
 
     def attachLog(self):
         logpath = os.path.join(self.reportDir(), "log.txt")
-        self.attachment([m["text"] for m in self._messages["message"]], logpath, "DEBUG")
+        attach = []
+        start_time = 0
+        for m in self._messages["message"]:
+            if start_time == 0:
+                start_time = m["time_seconds"]
+            if m["text"] == "":
+                attach.append(m["text"])
+            else:
+                attach.append(str(round(m["time_seconds"] - start_time, 4)) + " " + m["text"])
+        self.attachment(attach, logpath, "DEBUG")
         return logpath
 
     def infoHtml(self, html, message_type="message"):

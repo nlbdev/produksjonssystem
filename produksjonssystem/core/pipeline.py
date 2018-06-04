@@ -761,7 +761,7 @@ class Pipeline():
                         self.utils.filesystem = Filesystem(self)
 
                         try:
-                            self.progress_start = time.time()
+                            self.progress_start = time.strftime("%Y-%m-%d %H:%M%S")
                             self.utils.report.debug("Started: {}".format(self.progress_start))
 
                             if event == "created":
@@ -786,10 +786,10 @@ class Pipeline():
                                 self.utils.report.error(traceback.format_exc())
                                 logging.exception("An error occured while retrieving production info")
 
-                            progress_end = time.time()
+                            progress_end = time.strftime("%Y-%m-%d %H:%M%S")
                             self.progress_log.append({"start": self.progress_start, "end": progress_end})
                             self.utils.report.debug("Finished: {}".format(progress_end))
-                            self.utils.report.debug("Total time: {}".format(progress_end - self.progress_start))
+                            #self.utils.report.debug("Total time: {}".format(progress_end - self.progress_start))
 
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
