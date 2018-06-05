@@ -762,7 +762,7 @@ class Pipeline():
 
                         try:
                             self.progress_start = time.time()
-                            self.utils.report.debug("Started: {}".format(self.progress_start))
+                            self.utils.report.debug("Started: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
                             if event == "created":
                                 self.on_book_created()
@@ -788,7 +788,7 @@ class Pipeline():
 
                             progress_end = time.time()
                             self.progress_log.append({"start": self.progress_start, "end": progress_end})
-                            self.utils.report.debug("Finished: {}".format(progress_end))
+                            self.utils.report.debug("Finished: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
