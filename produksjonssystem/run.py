@@ -179,8 +179,6 @@ class Produksjonssystem():
 
         if "debug" in sys.argv:
             logging.getLogger().setLevel(logging.DEBUG)
-        else:
-            logging.getLogger().setLevel(logging.INFO)
 
         # Make sure that directories are defined properly
         for d in self.book_archive_dirs:

@@ -37,6 +37,7 @@ fileHandler = logging.FileHandler(logfile)
 logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 fileHandler.setFormatter(logFormatter)
 logging.getLogger().addHandler(fileHandler)
+logging.getLogger().setLevel(logging.DEBUG)
 
 # store results in test-results.txt
 test_results_file = os.path.join(target_path, "test-results.txt")
