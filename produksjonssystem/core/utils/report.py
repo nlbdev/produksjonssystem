@@ -354,7 +354,8 @@ class Report():
             if m["text"] == "":
                 attach.append(m["text"])
             else:
-                attach.append(str(round(m["time_seconds"] - start_time, 4)) + " " + m["text"])
+                duration = "{0:.4f}".format(m["time_seconds"] - start_time)
+                attach.append("[{}s] {}" .format(duration, m["text"]))
         self.attachment(attach, logpath, "DEBUG")
         return logpath
 
