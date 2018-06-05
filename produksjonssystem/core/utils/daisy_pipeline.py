@@ -37,6 +37,26 @@ class DaisyPipelineJob():
     start_lock = TimeoutLock()
 
     @staticmethod
+    def stop_engine(pipeline):
+        procs = DaisyPipelineJob.list_processes()
+        for p in procs:
+            try:
+                p.terminate()
+            except psutil._exceptions.NoSuchProcess:
+                pass
+        gone, alive = psutil.wait_procs(procs,
+                                        timeout=10,
+                                        callback=lambda p: pipeline.utils.report.warn("Pipeline 2 process {} terminated with exit code {}".format(
+                                            p,
+                                            p.returncode
+                                        )))
+        if len(alive) > 0:
+            pipeline.utils.report.warn("Killing {} remaining Pipeline 2 processes that didn't terminate".format(len(alive)))
+        for p in alive:
+            p.kill()
+        DaisyPipelineJob.pid = None
+
+    @staticmethod
     def start_engine(pipeline, retries=10):
         running = False
         with DaisyPipelineJob.start_lock.acquire_timeout(300) as locked:
@@ -162,13 +182,16 @@ class DaisyPipelineJob():
                 assert self.job_id, "Could not find the DAISY Pipeline 2 job ID"
 
                 self.status = "IDLE"
-                started = time.time()
-                timeout = 3600
-                while self.status in ["IDLE", "RUNNING"] and time.time() - started < timeout:
+                idle_start = time.time()
+                running_start = time.time()
+                idle_timeout = 3600
+                running_timeout = 3600
+                while (self.status == "IDLE" and time.time() - idle_start < idle_timeout
+                        or self.status == "RUNNING" and time.time() - running_start < running_timeout):
                     time.sleep(5)
 
                     if self.status == "IDLE":
-                        started = time.time()
+                        running_start = time.time()
 
                     # get job status
                     self.pipeline.utils.report.debug("Getting job status")
@@ -180,10 +203,12 @@ class DaisyPipelineJob():
                             self.status = m.group(1)
                             break
 
-                    assert self.status, "Could not find job status for the DAISY Pipeline 2 job: " + self.job_id
                     self.pipeline.utils.report.debug("Pipeline 2 status: " + self.status)
 
-                if time.time() - started >= timeout:
+                if (self.status is "IDLE" and time.time() - idle_start >= idle_timeout
+                        or self.status is "RUNNING" and time.time() - running_start >= running_timeout):
+                    self.pipeline.utils.report.warn("Pipeline 2 job timed out. Stopping Pipeline 2 engine.")
+                    DaisyPipelineJob.stop_engine(self.pipeline)
                     raise subprocess.TimeoutExpired(self.status)
 
                 # get job log (the run method will log stdout/stderr as debug output)
@@ -208,7 +233,7 @@ class DaisyPipelineJob():
                 self.pipeline.utils.report.error("An error occured while running the DAISY Pipeline 2 job (" + str(self.job_id) + ")")
 
         else:
-            self.pipeline.utils.report.error("DAISY Pipeline 2 is not running.")
+            self.pipeline.utils.report.error("Could not start DAISY Pipeline 2.")
 
         return self
 
