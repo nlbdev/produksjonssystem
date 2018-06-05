@@ -8,7 +8,7 @@ import tempfile
 import traceback
 import subprocess
 
-from threading import RLock
+from core.utils.timeout_lock import TimeoutLock
 
 
 class DaisyPipelineJob():
@@ -34,58 +34,41 @@ class DaisyPipelineJob():
     status = None
     pid = None
 
-    start_lock = RLock()
+    start_lock = TimeoutLock()
 
     @staticmethod
     def start_engine(pipeline, retries=10):
         running = False
-        with DaisyPipelineJob.start_lock:
-            pipeline.utils.report.debug("---------- aquired DP2 start lock ----------")
-            while not running and retries > 0:
-                retries -= 1
-                procs = DaisyPipelineJob.list_processes()
-                if DaisyPipelineJob.pid:
-                    procs = [p for p in procs if p.pid != DaisyPipelineJob.pid]  # keep DaisyPipelineJob.pid
-                if len(procs) > 0:
-                    pipeline.utils.report.debug("found at least one unexpected Pipeline 2 instance")
-                    for p in procs:
-                        try:
-                            p.terminate()
-                        except psutil._exceptions.NoSuchProcess:
-                            pass
-                    gone, alive = psutil.wait_procs(procs,
-                                                    timeout=10,
-                                                    callback=lambda p: pipeline.utils.report.warn("Pipeline 2 process {} terminated with exit code {}".format(
-                                                        p,
-                                                        p.returncode
-                                                    )))
-                    if len(alive) > 0:
-                        pipeline.utils.report.warn("Killing {} remaining Pipeline 2 processes that didn't terminate".format(len(alive)))
-                    for p in alive:
-                        p.kill()
+        with DaisyPipelineJob.start_lock.acquire_timeout(300) as locked:
+            if locked:
+                pipeline.utils.report.debug("acquired DP2 start lock")
+                while not running and retries > 0:
+                    retries -= 1
+                    procs = DaisyPipelineJob.list_processes()
+                    if DaisyPipelineJob.pid:
+                        procs = [p for p in procs if p.pid != DaisyPipelineJob.pid]  # keep DaisyPipelineJob.pid
+                    if len(procs) > 0:
+                        pipeline.utils.report.debug("found at least one unexpected Pipeline 2 instance")
+                        for p in procs:
+                            try:
+                                p.terminate()
+                            except psutil._exceptions.NoSuchProcess:
+                                pass
+                        gone, alive = psutil.wait_procs(procs,
+                                                        timeout=10,
+                                                        callback=lambda p: pipeline.utils.report.warn("Pipeline 2 process {} terminated with exit code {}".format(
+                                                            p,
+                                                            p.returncode
+                                                        )))
+                        if len(alive) > 0:
+                            pipeline.utils.report.warn("Killing {} remaining Pipeline 2 processes that didn't terminate".format(len(alive)))
+                        for p in alive:
+                            p.kill()
 
-                procs = DaisyPipelineJob.list_processes()
-                running = len(procs) == 1
-                if len(procs) == 0:
-                    pipeline.utils.report.debug("no running DP2 process")
-                    try:
-                        # start engine if it's not started already
-                        pipeline.utils.report.info("Starting Pipeline 2 engine...")
-                        pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True)
-
-                    except subprocess.TimeoutExpired:
-                        pipeline.utils.report.info("{} {}".format(
-                            DaisyPipelineJob._i18n["Starting Pipeline 2"],
-                            DaisyPipelineJob._i18n["took too long time and was therefore stopped."]
-                        ))
-
-                    except subprocess.CalledProcessError:
-                        pipeline.utils.report.debug(traceback.format_exc())
-                        pipeline.utils.report.warn("{}. {}".format(
-                            DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"],
-                            DaisyPipelineJob._i18n["Let's wait a few seconds and try again..."]
-                        ))
-                        time.sleep(10)
+                    procs = DaisyPipelineJob.list_processes()
+                    running = len(procs) == 1
+                    if len(procs) == 0:
+                        pipeline.utils.report.debug("no running DP2 process")
                         try:
                             # start engine if it's not started already
                             pipeline.utils.report.info("Starting Pipeline 2 engine...")
@@ -99,21 +82,42 @@ class DaisyPipelineJob():
 
                         except subprocess.CalledProcessError:
                             pipeline.utils.report.debug(traceback.format_exc())
-                            pipeline.utils.report.error(DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"] + ".")
+                            pipeline.utils.report.warn("{}. {}".format(
+                                DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"],
+                                DaisyPipelineJob._i18n["Let's wait a few seconds and try again..."]
+                            ))
+                            time.sleep(10)
+                            try:
+                                # start engine if it's not started already
+                                pipeline.utils.report.info("Starting Pipeline 2 engine...")
+                                pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True)
 
-                    # Save PID for Pipeline 2 engine
-                    procs = DaisyPipelineJob.list_processes()
-                    if procs:
-                        pipeline.utils.report.debug("found newly started process")
-                        DaisyPipelineJob.pid = procs[0].pid
-                        running = True
-                    else:
-                        pipeline.utils.report.debug("newly started process not found")
+                            except subprocess.TimeoutExpired:
+                                pipeline.utils.report.info("{} {}".format(
+                                    DaisyPipelineJob._i18n["Starting Pipeline 2"],
+                                    DaisyPipelineJob._i18n["took too long time and was therefore stopped."]
+                                ))
 
-                    time.sleep(5)  # Wait a few seconds after starting Pipeline 2 before releasing the lock
+                            except subprocess.CalledProcessError:
+                                pipeline.utils.report.debug(traceback.format_exc())
+                                pipeline.utils.report.error(DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"] + ".")
 
-            pipeline.utils.report.debug("---------- releasing DP2 start lock ----------")
-            return running
+                        # Save PID for Pipeline 2 engine
+                        procs = DaisyPipelineJob.list_processes()
+                        if procs:
+                            pipeline.utils.report.debug("found newly started process")
+                            DaisyPipelineJob.pid = procs[0].pid
+                            running = True
+                        else:
+                            pipeline.utils.report.debug("newly started process not found")
+
+                        time.sleep(5)  # Wait a few seconds after starting Pipeline 2 before releasing the lock
+
+                pipeline.utils.report.debug("releasing DP2 start lock")
+                return running
+
+            else:
+                pipeline.utils.report.debug("unable to acquire DP2 start lock")
 
         return False
 
