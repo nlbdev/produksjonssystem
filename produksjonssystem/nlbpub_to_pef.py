@@ -82,12 +82,12 @@ class NlbpubToPef(Pipeline):
                 "line-spacing": "single",
                 "duplex": "true"
             },
-            "kortskrift": {
-                "source": html_file,
-                "braille-standard": "(dots:6)(grade:2)",
-                "line-spacing": "single",
-                "duplex": "true"
-            },
+            #"kortskrift": {
+            #    "source": html_file,
+            #    "braille-standard": "(dots:6)(grade:2)",
+            #    "line-spacing": "single",
+            #    "duplex": "true"
+            #},
             #"lesetrening": {
             #    "source": html_file,
             #    "braille-standard": "(dots:6)(grade:0)",
