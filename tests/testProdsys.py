@@ -130,12 +130,15 @@ def check_dirs(last_run=False):
             success = success and expect_dirs[uid]["status"]
             continue
         for identifier in identifiers:
-            if os.path.isdir(os.path.join(expect_dir, identifier)):
+            if os.path.exists(os.path.join(expect_dir, identifier)):
                 expect_dirs[uid]["status"] = True
 
             if not expect_dirs[uid]["parentdirs"] == {}:
                 for key in expect_dirs[uid]["parentdirs"]:
-                    if glob.glob(os.path.join(expect_dir, expect_dirs[uid]["parentdirs"][key], identifier)+".*"):
+                    expect_parentdir = os.path.join(expect_dir, expect_dirs[uid]["parentdirs"][key])
+                    if os.path.exists(os.path.join(expect_parentdir, identifier)):
+                        expect_dirs[uid]["status"] = True
+                    if glob.glob(os.path.join(expect_parentdir, identifier)+".*"):
                         expect_dirs[uid]["status"] = True
 
             file = os.listdir(expect_dir)
