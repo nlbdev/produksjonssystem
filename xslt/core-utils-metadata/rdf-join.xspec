@@ -1854,4 +1854,61 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Braille extent - bibliofil overriding quickbase">
+        <x:call template="main-testable">
+            <x:param name="descriptions">
+                <rdf:Description rdf:about="urn:isbn:9788202484347" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
+                    <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <dc:format.extent.pages>962</dc:format.extent.pages>
+                    <dc:format.extent.volumes>16</dc:format.extent.volumes>
+                    <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <dc:format.extent.pages>1000</dc:format.extent.pages>
+                    <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                    <dc:identifier>115437</dc:identifier>
+                </rdf:Description>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="The result should be as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:9788202484347">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <dc:identifier>115437</dc:identifier>
+                    <dc:format.extent.pages>1000</dc:format.extent.pages>
+                    <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
+                    <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

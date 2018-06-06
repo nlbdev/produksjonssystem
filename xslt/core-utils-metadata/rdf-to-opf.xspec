@@ -912,4 +912,100 @@
     </metadata></x:expect>
     </x:scenario>
     
+    <x:scenario label="Braille extent - default format">
+        <x:call template="test">
+            <x:param name="format" select="''"/>
+            <x:param name="update-identifier" select="true()"/>
+            <x:param name="context">
+                <rdf:RDF>
+                    <rdf:Description rdf:about="urn:isbn:9788202484347">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                    </rdf:Description>
+                    
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <dc:identifier>115437</dc:identifier>
+                        <dc:format>Braille</dc:format>
+                        <dc:format.extent.pages>1000</dc:format.extent.pages>
+                        <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
+                    </rdf:Description>
+                    
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <dc:identifier>558237</dc:identifier>
+                        <dc:format>EPUB</dc:format>
+                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
+                        <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
+                    </rdf:Description>
+                </rdf:RDF>
+            </x:param>
+        </x:call>
+            
+        <x:expect label="Should be as expected" xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production">
+        <!-- Boknummer for EPUB-utgaven -->
+        <dc:identifier id="pub-id">558237</dc:identifier>
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.braille">115437</meta>
+        <meta property="nlbprod:identifier.epub">558237</meta>
+        
+        <!-- Metadata for åndsverket -->
+        <dc:format>EPUB</dc:format>
+
+    </metadata></x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Braille extent - braille format">
+        <x:call template="test">
+            <x:param name="format" select="'Braille'"/>
+            <x:param name="update-identifier" select="true()"/>
+            <x:param name="context">
+                <rdf:RDF>
+                    <rdf:Description rdf:about="urn:isbn:9788202484347">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                    </rdf:Description>
+                    
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <dc:identifier>115437</dc:identifier>
+                        <dc:format>Braille</dc:format>
+                        <dc:format.extent.pages>1000</dc:format.extent.pages>
+                        <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
+                    </rdf:Description>
+                    
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <dc:identifier>558237</dc:identifier>
+                        <dc:format>EPUB</dc:format>
+                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
+                        <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
+                    </rdf:Description>
+                </rdf:RDF>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected" xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production dc: http://purl.org/dc/elements/1.1/">
+        <!-- Boknummer for Braille-utgaven -->
+        <dc:identifier id="pub-id">115437</dc:identifier>
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.braille">115437</meta>
+        <meta property="nlbprod:identifier.epub">558237</meta>
+        
+        <!-- Metadata for åndsverket og Braille-utgaven -->
+        <dc:format>Braille</dc:format>
+        <meta property="dc:format.extent.pages">1000</meta>
+        <meta property="dc:format.extent.volumes">20</meta>
+
+    </metadata></x:expect>
+    </x:scenario>
+    
 </x:description>

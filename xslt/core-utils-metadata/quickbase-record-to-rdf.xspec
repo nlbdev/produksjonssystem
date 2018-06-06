@@ -906,10 +906,10 @@
                                 <dd property="nlbprod:formatBrailleClub">false</dd>
                                 <dt title="nlbprod:openLinespacing"/>
                                 <dd property="nlbprod:openLinespacing">false</dd>
-                                <dt title="nlbprod:braillePages"/>
-                                <dd property="nlbprod:braillePages">962</dd>
-                                <dt title="nlbprod:volumes"/>
-                                <dd property="nlbprod:volumes">16</dd>
+                                <dt title="dc:format.extent.pages"/>
+                                <dd property="dc:format.extent.pages">962</dd>
+                                <dt title="dc:format.extent.volumes"/>
+                                <dd property="dc:format.extent.volumes">16</dd>
                                 <dt title="nlbprod:identifier.braille"/>
                                 <dd property="nlbprod:identifier.braille">115437</dd>
                                 <dt title="nlbprod:nlbIsbnBraille"/>
@@ -1150,8 +1150,8 @@
                         <nlbprod:formatNotes>false</nlbprod:formatNotes>
                         <nlbprod:formatBrailleClub>false</nlbprod:formatBrailleClub>
                         <nlbprod:openLinespacing>false</nlbprod:openLinespacing>
-                        <nlbprod:braillePages>962</nlbprod:braillePages>
-                        <nlbprod:volumes>16</nlbprod:volumes>
+                        <dc:format.extent.pages>962</dc:format.extent.pages>
+                        <dc:format.extent.volumes>16</dc:format.extent.volumes>
                         <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                         <nlbprod:nlbIsbnBraille>978-82-16-24250-6</nlbprod:nlbIsbnBraille>
                         <nlbprod:formatBraille>true</nlbprod:formatBraille>
@@ -1193,6 +1193,48 @@
                         <nlbprod:formatAudioCDMP3ExternalProduction>false</nlbprod:formatAudioCDMP3ExternalProduction>
                         <nlbprod:formatOtherExternalProduction>false</nlbprod:formatOtherExternalProduction>
                         <nlbprod:externalProductionProductionComplete>false</nlbprod:externalProductionProductionComplete>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Braille extent">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="269" field_type="text" base_type="text"/>
+                            <field id="270" field_type="text" base_type="text"/>
+                        </fields>
+                        <records>
+                            <record rid="8185">
+                                <f id="13">558237</f>
+                                <f id="28">115437</f>
+                                <f id="431">978-82-02-48434-7</f>
+                                
+                                <f id="269">962</f>
+                                <f id="270">16</f>
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:about="urn:isbn:9788202484347">...</rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">...</rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <dc:format.extent.pages>962</dc:format.extent.pages>
+                        <dc:format.extent.volumes>16</dc:format.extent.volumes>
+                        <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                     </rdf:Description>
                 </rdf:RDF>
             </_>

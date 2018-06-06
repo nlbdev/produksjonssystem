@@ -1274,7 +1274,7 @@ section dl {
     <xsl:template match="f[@id='269']">
         <!-- "Punktsider" -->
         <!-- String -->
-        <dd property="nlbprod:braillePages" _type-id="braille">
+        <dd property="dc:format.extent.pages" _type-id="braille">
             <xsl:value-of select="."/>
         </dd>
     </xsl:template>
@@ -1282,7 +1282,7 @@ section dl {
     <xsl:template match="f[@id='270']">
         <!-- "Hefter" -->
         <!-- String -->
-        <dd property="nlbprod:volumes" _type-id="braille">
+        <dd property="dc:format.extent.volumes" _type-id="braille">
             <xsl:value-of select="."/>
         </dd>
     </xsl:template>
