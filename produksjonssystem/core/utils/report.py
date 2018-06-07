@@ -71,7 +71,7 @@ class Report():
             self._report_dir = report_dir
         return self._report_dir
 
-    def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+    def add_message(self, severity, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
         if severity == "DEBUG":
             logging.debug(message)
         elif severity == "INFO":
@@ -105,23 +105,27 @@ class Report():
         if add_empty_line_last:
             lines.append("")
 
+        if preformatted == True:
+            lines = [message]
+
         for line in lines:
-            self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M%S"), 'severity': severity, 'text': line, 'time_seconds': (time.time())})
+            self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M:%S"), 'severity': severity, 'text': line, 'time_seconds': (time.time()), 'preformatted': preformatted})
 
-    def debug(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('DEBUG', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+    def debug(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('DEBUG', message=message, message_type=message_type, preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
-    def info(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('INFO', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+    def info(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('INFO', message=message, message_type=message_type, preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
-    def success(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('SUCCESS', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+    def success(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('SUCCESS', message=message, message_type=message_type, preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
-    def warn(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('WARN', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+    def warn(self, message, message_type="message", preformatted=False,add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('WARN', message=message, message_type=message_type,  preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
-    def error(self, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('ERROR', message=message, message_type=message_type, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+    def error(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('ERROR', message=message, message_type=message_type,  preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+
 
     @staticmethod
     def emailStringsToAddresses(addresses):
@@ -211,7 +215,8 @@ class Report():
                 elif m["severity"] == "ERROR":
                     status = "ERROR"
 
-        if status=="ERROR":
+
+        if status == "ERROR":
             for key in self.pipeline.common_config["administrators"]:
                 if key not in recipients:
                     recipients.append(key)
@@ -219,7 +224,9 @@ class Report():
         # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
         markdown_text = []
         for m in self._messages["message"]:
-            if m['severity'] != 'DEBUG':
+            if m['preformatted'] == True:
+                markdown_text.append("<pre>{}</pre>".format(m['text']))
+            elif m['severity'] != 'DEBUG':
                 markdown_text.append(m['text'])
         markdown_text.append("\n----\n")
         markdown_text.append("\n# "+self._i18n["Links"]+"\n")
@@ -401,7 +408,7 @@ class Report():
 class DummyReport(Report):
     pipeline = None
 
-    def add_message(self, severity, message, message_type="message", add_empty_line_last=True, add_empty_line_between=False):
+    def add_message(self, severity, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
         logging.debug("[" + str(severity) + "] " + str(message))
 
     def attachment(self, content, path, severity):
