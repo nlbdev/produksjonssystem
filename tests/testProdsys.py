@@ -37,7 +37,6 @@ fileHandler = logging.FileHandler(logfile)
 logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 fileHandler.setFormatter(logFormatter)
 logging.getLogger().addHandler(fileHandler)
-logging.getLogger().setLevel(logging.DEBUG)
 
 # store results in test-results.txt
 test_results_file = os.path.join(target_path, "test-results.txt")
@@ -61,7 +60,7 @@ environment = {
     ]),  # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
     "REPORTS_DIR": "/tmp/prodsys-rapporter".format(target_path),  # always the same, so that it's easier to view the dashboard(s)
-    "DEBUG": "false",
+    "DEBUG": "true",
     "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
     "CONFIG_FILE": os.path.join(os.path.dirname(__file__), "produksjonssystem.yaml"),
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
@@ -83,7 +82,7 @@ print("")
 threading.current_thread().setName("test thread")
 print("Initializing the system...")
 prodsys = run.Produksjonssystem(environment=environment)
-prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem")
+prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem", kwargs={"debug": True})
 prodsys_thread.setDaemon(True)
 print("Starting the system...")
 prodsys_thread.start()

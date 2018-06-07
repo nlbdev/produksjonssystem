@@ -164,10 +164,15 @@ class Produksjonssystem():
         logging.info(text)
         Slack.slack(text, None)
 
-    def run(self):
+    def run(self, debug=False):
         try:
-            self.info("Produksjonssystemet er startet")
+            if debug:
+                logging.getLogger().setLevel(logging.DEBUG)
+            else:
+                logging.getLogger().setLevel(logging.INFO)
+            self.info("Starter produksjonssystemet...")
             self._run()
+            self.info("Produksjonssystemet er startet")
         except Exception as e:
             self.info("En feil oppstod i produksjonssystemet: {}".format(str(e) if str(e) else "(ukjent)"))
             traceback.print_exc(e)
@@ -176,9 +181,6 @@ class Produksjonssystem():
 
     def _run(self):
         assert os.getenv("CONFIG_FILE"), "CONFIG_FILE must be defined"
-
-        if "debug" in sys.argv:
-            logging.getLogger().setLevel(logging.DEBUG)
 
         # Make sure that directories are defined properly
         for d in self.book_archive_dirs:
@@ -435,5 +437,6 @@ class Produksjonssystem():
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
+    debug = "debug" in sys.argv
     produksjonssystem = Produksjonssystem()
-    produksjonssystem.run()
+    produksjonssystem.run(debug=debug)
