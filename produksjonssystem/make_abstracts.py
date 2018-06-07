@@ -64,7 +64,7 @@ class Audio_Abstract(Pipeline):
 
         except Exception:
             self.utils.report.error("Klarte ikke lese ncc fila. Sjekk loggen for detaljer. Avbryter...")
-            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.info(traceback.format_exc(), preformatted=True)
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
             return False
 
@@ -84,7 +84,7 @@ class Audio_Abstract(Pipeline):
             smilFile_Id = nccdoc.xpath("substring-after(//*[text()='Bokomtale' or text()='Baksidetekst' or text()='Omslagstekst']/@href,'#')")
 
         except Exception:
-            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
             self.utils.report.error("Det oppstod en feil for" + audio_identifier + " under lasting av smilfilene. Sjekk loggen for detaljer.")
             return
         # Back-cover
@@ -106,7 +106,7 @@ class Audio_Abstract(Pipeline):
                 file_exists["back-cover"] = True
 
             except Exception:
-                self.utils.report.debug(traceback.format_exc())
+                self.utils.report.debug(traceback.format_exc(), preformatted=True)
                 self.utils.report.warn("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
         else:
             self.utils.report.info("Baksidetekst ikke funnet for " + audio_identifier)
@@ -120,7 +120,7 @@ class Audio_Abstract(Pipeline):
                 several_smilFiles.append(nccdoc.xpath("substring-before((//@href)[{0}],'#')".format(i+1)))
                 several_smilFiles_id.append(nccdoc.xpath("substring-after((//@href)[{0}],'#')".format(i+1)))
         except Exception:
-            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.info(traceback.format_exc(), preformatted=True)
             self.utils.report.warn("Klarte ikke hente ut .smil filene for " + audio_identifier + audio_title)
 
         timeout = time.time() + 60 * 2
@@ -142,7 +142,7 @@ class Audio_Abstract(Pipeline):
                 num = num + 1
             mp3File_abstract = smildoc_abstract.xpath("string((//audio/@src)[1])")
         except Exception:
-            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
             self.utils.report.warn("Lydutdrag fra smilfiler feilet. Sjekk loggen for detaljer.")
 
         if (duration >= 75):
@@ -168,7 +168,7 @@ class Audio_Abstract(Pipeline):
                                     mp3File_abstract_end = 75.0
                                     break
                 except Exception:
-                    self.utils.report.debug(traceback.format_exc())
+                    self.utils.report.debug(traceback.format_exc(), preformatted=True)
                     self.utils.report.warn("Klarte ikke hente ut lydutdrag basert på mp3 filene i mappa. Sjekk loggen for detaljer.")
 
         # Export abstract
@@ -181,7 +181,7 @@ class Audio_Abstract(Pipeline):
             file_exists["abstracts"] = True
 
         except Exception:
-            self.utils.report.debug(traceback.format_exc())
+            self.utils.report.info(traceback.format_exc(), preformatted=True)
             self.utils.report.warn("Klarte ikke eksportere excerpt.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
         # Copies abstract and back cover to dir_out

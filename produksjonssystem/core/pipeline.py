@@ -775,7 +775,7 @@ class Pipeline():
 
                         except Exception:
                             self.utils.report.error("An error occured while handling the book")
-                            self.utils.report.error(traceback.format_exc())
+                            self.utils.report.error(traceback.format_exc(), preformatted=True)
                             logging.exception("An error occured while handling the book")
 
                         finally:
@@ -783,7 +783,7 @@ class Pipeline():
                                 Metadata.add_production_info(self.utils.report, self.book_identifier(), self.publication_format)
                             except Exception:
                                 self.utils.report.error("An error occured while retrieving production info")
-                                self.utils.report.error(traceback.format_exc())
+                                self.utils.report.error(traceback.format_exc(), preformatted=True)
                                 logging.exception("An error occured while retrieving production info")
 
                             progress_end = time.time()

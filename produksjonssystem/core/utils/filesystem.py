@@ -258,7 +258,7 @@ class Filesystem():
                     os.remove(target)
             except (OSError, NotADirectoryError):
                 self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the file or folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
-                self.pipeline.utils.report.debug(traceback.format_exc())
+                self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                 raise
         if move:
             shutil.move(source, target)
@@ -292,7 +292,7 @@ class Filesystem():
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
 
         except subprocess.CalledProcessError as e:
-            report.error(traceback.format_exc())
+            report.error(traceback.format_exc(), preformatted=True)
             completedProcess = e
 
         report.debug("---- stdout: ----")
@@ -336,7 +336,7 @@ class Filesystem():
                     zip_ref.extractall(target)
                 except EOFError as e:
                     self.pipeline.utils.report.error(Epub._i18n["Problem reading ZIP file. Did someone modify or delete it maybe?"])
-                    self.pipeline.utils.report.debug(traceback.format_exc())
+                    self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                     raise e
 
             # ensure that permissions are correct

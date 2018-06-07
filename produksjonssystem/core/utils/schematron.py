@@ -116,7 +116,7 @@ class Schematron():
                                               "SUCCESS" if self.success else "ERROR")
 
         except Exception:
-            report.debug(traceback.format_exc())
+            report.debug(traceback.format_exc(), preformatted=True)
             report.error("An error occured while running the Schematron (" + str(schematron) + ")")
 
     # in case you want to override something
