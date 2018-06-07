@@ -79,6 +79,11 @@ class IncomingNordic(Pipeline):
             self.utils.report.info("Genererer ACE-rapport...")
             ace_dir = os.path.join(self.utils.report.reportDir(), "accessibility-report")
             process = self.utils.filesystem.run([IncomingNordic.ace_cli, "-o", ace_dir, epub.asFile()])
+            if process.returncode == 0:
+                self.utils.report.info("ACE-rapporten ble generert.")
+            else:
+                self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
+                self.utils.report.debug(traceback.format_stack())
 
             # attach report
             ace_status = None
@@ -94,8 +99,8 @@ class IncomingNordic(Pipeline):
             self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + epub.identifier() + ", og prosessen ble derfor stoppet.")
 
         except Exception:
-            self.utils.report.debug(traceback.format_exc(), preformatted=True)
             self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
 
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
 

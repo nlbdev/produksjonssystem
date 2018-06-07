@@ -133,14 +133,17 @@ class NLBpubToDocx(Pipeline):
                                                 html_file,
                                                 os.path.join(self.dir_out,result_identifier,result_identifier + ".docx")])
                                                 #"--insert-blank-line"])
-
-            self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
+            if process.returncode == 0:
+                self.utils.report.info("Boken ble konvertert. Kopierer til DOCX-arkiv.")
+            else:
+                self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
+                self.pipeline.utils.report.debug(traceback.format_stack())
 
         except subprocess.TimeoutExpired as e:
-            self.utils.report.warn("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
+            self.utils.report.error("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
 
         except Exception:
-            self.utils.report.warn("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
+            self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
             self.utils.report.info(traceback.format_exc(), preformatted=True)
 
         #archived_path = self.utils.filesystem.storeBook(html_dir, result_identifier)

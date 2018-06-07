@@ -56,8 +56,8 @@ class Xslt():
                 command.append(param + "=" + parameters[param])
 
             report.debug("Running XSLT")
-            Filesystem.run_static(command, cwd, report, stdout_level=stdout_level, stderr_level=stderr_level)
-            self.success = True
+            process = Filesystem.run_static(command, cwd, report, stdout_level=stdout_level, stderr_level=stderr_level)
+            self.success = process.returncode == 0
 
         except subprocess.TimeoutExpired:
             report.error(Xslt._i18n["The XSLT"] + " " + stylesheet + " " + Xslt._i18n["took too long time and was therefore stopped."])
