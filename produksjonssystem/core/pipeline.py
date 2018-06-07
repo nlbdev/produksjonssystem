@@ -647,7 +647,7 @@ class Pipeline():
         last_check = 0
         while self._dirInAvailable and self._shouldRun:
             time.sleep(5)
-            max_update_interval = 60 * 60
+            max_update_interval = 60 * 60 * 4
 
             if time.time() - last_check < max_update_interval:
                 continue
