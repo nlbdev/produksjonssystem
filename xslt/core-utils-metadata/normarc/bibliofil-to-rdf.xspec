@@ -45,4 +45,26 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Braille double line spacing and single sided printing">
+        <x:context>
+            <opf:metadata>
+                <opf:meta name="dc:format.linespacing" content="double"/>
+                <opf:meta name="dc:format.printing" content="single-sided"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                    <dc:format.linespacing>double</dc:format.linespacing>
+                    <dc:format.printing>single-sided</dc:format.printing>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

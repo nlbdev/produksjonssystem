@@ -1254,7 +1254,17 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='594']">
-        <!-- Karakteristikk (fulltekst/lettlest/musikk/...) - se emneordprosjektet -->
+        <!-- Karakteristikk -->
+        <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:choose>
+                <xsl:when test="text() = 'Åpen linjeavstand' or text() = 'Dobbel linjeavstand'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.linespacing'"/><xsl:with-param name="value" select="'double'"/></xsl:call-template>
+                </xsl:when>
+                <xsl:when test="text() = 'Enkeltsidig trykk'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.printing'"/><xsl:with-param name="value" select="'single-sided'"/></xsl:call-template>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='596']">

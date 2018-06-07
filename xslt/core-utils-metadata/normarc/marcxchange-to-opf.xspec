@@ -691,5 +691,23 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Braille double line spacing and single sided printing">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="594" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Åpen linjeavstand</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Enkeltsidig trykk</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Lettlest</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="dc:format.linespacing">double</meta>
+                <meta property="dc:format.printing">single-sided</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>
