@@ -93,7 +93,7 @@
 
     <xsl:template match="@* | node()" priority="-5" mode="#all">
         <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@* | node()"/>
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:copy>
     </xsl:template>
 
