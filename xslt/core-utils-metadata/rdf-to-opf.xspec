@@ -912,7 +912,7 @@
     </metadata></x:expect>
     </x:scenario>
     
-    <x:scenario label="Braille extent - default format">
+    <x:scenario label="Braille extent and format - default format">
         <x:call template="test">
             <x:param name="format" select="''"/>
             <x:param name="update-identifier" select="true()"/>
@@ -928,6 +928,8 @@
                         <dc:format>Braille</dc:format>
                         <dc:format.extent.pages>1000</dc:format.extent.pages>
                         <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                        <dc:format.linespacing>double</dc:format.linespacing>
+                        <dc:format.printing>single-sided</dc:format.printing>
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                     </rdf:Description>
@@ -959,7 +961,7 @@
     </metadata></x:expect>
     </x:scenario>
     
-    <x:scenario label="Braille extent - braille format">
+    <x:scenario label="Braille extent and format - braille format">
         <x:call template="test">
             <x:param name="format" select="'Braille'"/>
             <x:param name="update-identifier" select="true()"/>
@@ -975,6 +977,8 @@
                         <dc:format>Braille</dc:format>
                         <dc:format.extent.pages>1000</dc:format.extent.pages>
                         <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                        <dc:format.linespacing>double</dc:format.linespacing>
+                        <dc:format.printing>single-sided</dc:format.printing>
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                     </rdf:Description>
@@ -1004,6 +1008,8 @@
         <dc:format>Braille</dc:format>
         <meta property="dc:format.extent.pages">1000</meta>
         <meta property="dc:format.extent.volumes">20</meta>
+        <meta property="dc:format.linespacing">double</meta>
+        <meta property="dc:format.printing">single-sided</meta>
 
     </metadata></x:expect>
     </x:scenario>

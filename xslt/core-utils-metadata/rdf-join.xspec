@@ -1854,7 +1854,7 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Braille extent - bibliofil overriding quickbase">
+    <x:scenario label="Braille extent and format - bibliofil overriding quickbase">
         <x:call template="main-testable">
             <x:param name="descriptions">
                 <rdf:Description rdf:about="urn:isbn:9788202484347" _source="quickbase">
@@ -1873,6 +1873,7 @@
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <dc:format.extent.pages>962</dc:format.extent.pages>
                     <dc:format.extent.volumes>16</dc:format.extent.volumes>
+                    <dc:format.linespacing>double</dc:format.linespacing>
                     <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                 </rdf:Description>
                 
@@ -1881,6 +1882,7 @@
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <dc:format.extent.pages>1000</dc:format.extent.pages>
                     <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                    <dc:format.printing>single-sided</dc:format.printing>
                     <dc:identifier>115437</dc:identifier>
                 </rdf:Description>
             </x:param>
@@ -1897,6 +1899,8 @@
                     <dc:identifier>115437</dc:identifier>
                     <dc:format.extent.pages>1000</dc:format.extent.pages>
                     <dc:format.extent.volumes>20</dc:format.extent.volumes>
+                    <dc:format.linespacing>double</dc:format.linespacing>
+                    <dc:format.printing>single-sided</dc:format.printing>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                 </rdf:Description>
