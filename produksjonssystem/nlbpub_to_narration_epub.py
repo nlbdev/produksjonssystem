@@ -8,6 +8,7 @@ import time
 import shutil
 import tempfile
 import subprocess
+import traceback
 
 from lxml import etree as ElementTree
 from datetime import datetime, timezone
@@ -147,11 +148,12 @@ class NlbpubToNarrationEpub(Pipeline):
 
 
         # ---------- hent nytt filnavn fra OPF (det endrer seg basert på boknummer) ----------
-
-        xml = ElementTree.parse(opf_path).getroot()
-        new_html_file = xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
-        new_html_file = os.path.join(os.path.dirname(opf_path), new_html_file[0]) if new_html_file else None
-        if not new_html_file:
+        try:
+            xml = ElementTree.parse(opf_path).getroot()
+            new_html_file = xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
+            new_html_file = os.path.join(os.path.dirname(opf_path), new_html_file[0]) if new_html_file else None
+        except Exception:
+            self.utils.report.info(traceback.format_exc(), preformatted=True)
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
