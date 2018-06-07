@@ -37,7 +37,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+
     <xsl:function name="fnk:metadata-finnes" as="xs:boolean">
         <xsl:param name="navn" as="xs:string"/>
         <xsl:value-of select="exists($metadata[@name eq $navn])"/>
@@ -65,33 +65,37 @@
             <xsl:otherwise>
                 <xsl:choose>
                     <xsl:when test="fnk:metadata-finnes($navn)">
-                        <xsl:for-each select="$metadata[@name eq $navn]">
-                            <xsl:choose>
-                                <xsl:when test="$normaliser-navn">
-                                    <xsl:value-of select="fnk:normaliser-forfatternavn(@content)"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:value-of select="@content"/>
-                                </xsl:otherwise>
-                            </xsl:choose>
+                        <xsl:variable name="tmp" as="xs:string+">
+                            <xsl:for-each select="$metadata[@name eq $navn]">
+                                <xsl:choose>
+                                    <xsl:when test="$normaliser-navn">
+                                        <xsl:value-of
+                                            select="fnk:normaliser-forfatternavn(@content)"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="@content"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
 
-                            <xsl:choose>
-                                <xsl:when test="position() eq last() - 1">
-                                    <xsl:choose>
-                                        <xsl:when test="$SPRÅK.en">
-                                            <xsl:text> and </xsl:text>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:text> og </xsl:text>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:when>
-                                <xsl:when test="position() eq last()"/>
-                                <xsl:otherwise>
-                                    <xsl:text>, </xsl:text>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
+                                <xsl:choose>
+                                    <xsl:when test="position() eq last() - 1">
+                                        <xsl:choose>
+                                            <xsl:when test="$SPRÅK.en">
+                                                <xsl:text> and </xsl:text>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <xsl:text> og </xsl:text>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                    </xsl:when>
+                                    <xsl:when test="position() eq last()"/>
+                                    <xsl:otherwise>
+                                        <xsl:text>, </xsl:text>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:for-each>
+                        </xsl:variable>
+                        <xsl:value-of select="string-join($tmp,'')"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="concat('[MANGLER FORVENTET METADATA: ', $navn, ']')"/>
@@ -138,9 +142,9 @@
                     satisfies $a eq $type"
         />
     </xsl:function>
-    
+
     <xsl:function name="fnk:lag-stor-førstebokstav" as="xs:string">
-        <xsl:param name="tekst" as="xs:string"></xsl:param>
+        <xsl:param name="tekst" as="xs:string"/>
         <xsl:choose>
             <xsl:when test="normalize-space($tekst) eq ''">
                 <xsl:value-of select="$tekst"/>
@@ -149,13 +153,13 @@
                 <xsl:value-of select="upper-case($tekst)"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:variable name="første-bokstav" as="xs:string" select="substring($tekst,1,1)"/>
-                <xsl:variable name="resten" as="xs:string" select="substring($tekst,2)"/>
-                <xsl:value-of select="concat(upper-case($første-bokstav),$resten)"/>
+                <xsl:variable name="første-bokstav" as="xs:string" select="substring($tekst, 1, 1)"/>
+                <xsl:variable name="resten" as="xs:string" select="substring($tekst, 2)"/>
+                <xsl:value-of select="concat(upper-case($første-bokstav), $resten)"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+
     <xsl:function name="fnk:tall-til-tallord" as="xs:string">
         <xsl:param name="tall" as="xs:integer"/>
         <xsl:param name="intetkjønn" as="xs:boolean"/>
