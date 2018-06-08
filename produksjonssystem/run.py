@@ -172,7 +172,6 @@ class Produksjonssystem():
                 logging.getLogger().setLevel(logging.INFO)
             self.info("Starter produksjonssystemet...")
             self._run()
-            self.info("Produksjonssystemet er startet")
         except Exception as e:
             self.info("En feil oppstod i produksjonssystemet: {}".format(str(e) if str(e) else "(ukjent)"))
             traceback.print_exc(e)
@@ -266,6 +265,8 @@ class Produksjonssystem():
         graph_thread = Thread(target=plotter.run, name="graph")
         graph_thread.setDaemon(True)
         graph_thread.start()
+
+        self.info("Produksjonssystemet er startet")
 
         try:
             stopfile = os.getenv("TRIGGER_DIR")
