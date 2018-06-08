@@ -24,8 +24,7 @@ class NlbpubToPef(Pipeline):
 
     parentdirs = {
                   "fullskrift": "fullskrift",
-                  "kortskrift": "kortskrift",
-                  "lesetrening": "lesetrening"
+                  "kortskrift": "kortskrift"
                   }
 
     def on_book_deleted(self):
@@ -62,6 +61,17 @@ class NlbpubToPef(Pipeline):
         html_xml = ElementTree.parse(html_file).getroot()
         identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
 
+        line_spacing = "single"
+        duplex = "true"
+        for e in html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:format.linespacing']"):
+            if "double" == e.attrib["content"]:
+                line_spacing = "double"
+        for e in html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:format.printing']"):
+            if "single-sided" == e.attrib["content"]:
+                duplex = "false"
+        self.utils.report.info("Linjeavstand: {}".format("åpen" if line_spacing == "double" else "enkel"))
+        self.utils.report.info("Trykk: {}".format("enkeltsidig" if duplex == "false" else "dobbeltsidig"))
+
         bookTitle = ""
         bookTitle = " (" + html_xml.xpath("string(/*/*[local-name()='head']/*[local-name()='title']/text())") + ") "
 
@@ -79,20 +89,14 @@ class NlbpubToPef(Pipeline):
             "fullskrift": {
                 "source": html_file,
                 "braille-standard": "(dots:6)(grade:0)",
-                "line-spacing": "single",
-                "duplex": "true"
+                "line-spacing": line_spacing,
+                "duplex": duplex
             },
             #"kortskrift": {
             #    "source": html_file,
             #    "braille-standard": "(dots:6)(grade:2)",
-            #    "line-spacing": "single",
-            #    "duplex": "true"
-            #},
-            #"lesetrening": {
-            #    "source": html_file,
-            #    "braille-standard": "(dots:6)(grade:0)",
-            #    "line-spacing": "double",
-            #    "duplex": "false"
+            #    "line-spacing": line_spacing,
+            #    "duplex": duplex
             #}
         }
         pef_tempdir_objects = {}
