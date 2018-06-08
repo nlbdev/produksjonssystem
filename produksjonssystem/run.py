@@ -86,6 +86,7 @@ class Produksjonssystem():
         }
 
         # Special directories
+        Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
@@ -95,7 +96,7 @@ class Produksjonssystem():
             "metadata": Config.get("metadata_dir"),
             "incoming": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
             "nordic": os.path.join(book_archive_dirs["master"], "kilde-inn/nordisk"),
-            "master": os.path.join(book_archive_dirs["master"], "master/EPUB"),
+            "master": Config.get("master_dir"),
             "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
         #    "nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
             "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
