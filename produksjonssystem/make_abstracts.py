@@ -63,10 +63,8 @@ class Audio_Abstract(Pipeline):
             nccdoc = ElementTree.parse(os.path.join(temp_absdir, "ncc.html")).getroot()
 
         except Exception:
-            self.utils.report.error("Klarte ikke lese ncc fila. Sjekk loggen for detaljer. Avbryter...")
-            self.utils.report.info(traceback.format_exc(), preformatted=True)
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet. 😭👎. ncc.html er invalid"
-            return False
+            self.utils.report.info("Klarte ikke lese ncc fila. Sjekk loggen for detaljer.")
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
 
         audio_identifier = ""
         audio_title = ""
@@ -96,7 +94,7 @@ class Audio_Abstract(Pipeline):
                 mp3File_start = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_Id))
                 mp3File_end = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_Id))
                 if mp3File_start == mp3File_end:
-                    self.utils.report.error("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
+                    self.utils.report.info("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
 
                 # Creates audio segment in milliseconds from start to end of the abstract file
                 mp3 = AudioSegment.from_mp3(os.path.join(temp_absdir, mp3File))
@@ -107,7 +105,7 @@ class Audio_Abstract(Pipeline):
 
             except Exception:
                 self.utils.report.debug(traceback.format_exc(), preformatted=True)
-                self.utils.report.warn("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
+                self.utils.report.info("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
         else:
             self.utils.report.info("Baksidetekst ikke funnet for " + audio_identifier)
 
@@ -121,7 +119,7 @@ class Audio_Abstract(Pipeline):
                 several_smilFiles_id.append(nccdoc.xpath("substring-after((//@href)[{0}],'#')".format(i+1)))
         except Exception:
             self.utils.report.info(traceback.format_exc(), preformatted=True)
-            self.utils.report.warn("Klarte ikke hente ut .smil filene for " + audio_identifier + audio_title)
+            self.utils.report.info("Klarte ikke hente ut .smil filene for " + audio_identifier + audio_title)
 
         timeout = time.time() + 60 * 2
         duration = 0
@@ -142,8 +140,8 @@ class Audio_Abstract(Pipeline):
                 num = num + 1
             mp3File_abstract = smildoc_abstract.xpath("string((//audio/@src)[1])")
         except Exception:
-            self.utils.report.debug(traceback.format_exc(), preformatted=True)
-            self.utils.report.warn("Lydutdrag fra smilfiler feilet. Sjekk loggen for detaljer.")
+            self.utils.report.info(traceback.format_exc(), preformatted=True)
+            self.utils.report.info("Lydutdrag fra smilfiler feilet.")
 
         if (duration >= 75):
             mp3File_abstract_end = mp3File_abstract_start+75
@@ -169,7 +167,7 @@ class Audio_Abstract(Pipeline):
                                     break
                 except Exception:
                     self.utils.report.debug(traceback.format_exc(), preformatted=True)
-                    self.utils.report.warn("Klarte ikke hente ut lydutdrag basert på mp3 filene i mappa. Sjekk loggen for detaljer.")
+                    self.utils.report.info("Klarte ikke hente ut lydutdrag basert på mp3 filene i mappa. Sjekk loggen for detaljer.")
 
         # Export abstract
         try:
@@ -182,7 +180,7 @@ class Audio_Abstract(Pipeline):
 
         except Exception:
             self.utils.report.info(traceback.format_exc(), preformatted=True)
-            self.utils.report.warn("Klarte ikke eksportere excerpt.mp3. Har du ffmpeg kodeken for .mp3 filer?")
+            self.utils.report.error("Klarte ikke eksportere excerpt.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
         # Copies abstract and back cover to dir_out
         if (os.path.isfile(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3")) or os.path.isfile(os.path.join(temp_absdir, self.parentdirs["abstracts"]+".mp3"))):
