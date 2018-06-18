@@ -70,7 +70,7 @@ class Pipeline():
     _bookRetryThread = None
     _bookMonitorThread = None
     _bookRetryInNotOutThread = None
-    _dirInAvailable = False
+    _dirsAvailable = False
     _shouldRun = True
     _stopAfterFirstJob = False
 
@@ -220,7 +220,7 @@ class Pipeline():
         self._inactivity_timeout = inactivity_timeout
 
         self.shouldHandleBooks = True
-        self._dirInAvailable = True
+        self._dirsAvailable = True
 
         self.threads = []
 
@@ -230,7 +230,7 @@ class Pipeline():
         md5_count = 0
         self.progress_text = "0 / {}".format(len(dir_list))
         for f in dir_list:
-            if not (self._dirInAvailable and self._shouldRun):
+            if not (self._dirsAvailable and self._shouldRun):
                 with self._md5_lock:
                     self._md5 = {}
                 return  # break loop if we're shutting down the system
@@ -270,9 +270,23 @@ class Pipeline():
         logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
 
     def stop(self, exit=False):
-        self._dirInAvailable = False
+        self._dirsAvailable = False
+
+        # Remove autotriggered books, as these may have mistakenly been added
+        # because of a network station becoming unavailable.
+        with self._queue_lock:
+            new_queue = []
+            for book in self._queue:
+                if len([e for e in book["events"] if e != "autotriggered"]):
+                    # at least one event that is not "autotriggered"
+                    new_queue.append(book)
+            if len(new_queue) < self._queue:
+                logging.info("Removed {} autotriggered books from the queue.".format(len(self._queue) - len(new_queue)))
+                self._queue = new_queue
+
         if exit:
             self._shouldRun = False
+
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
     def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
@@ -283,24 +297,34 @@ class Pipeline():
         try:
             while self._shouldRun:
 
-                is_mount = Filesystem.ismount(self.dir_in)
-                contains_books = False
-                if is_mount:
-                    for entry in os.scandir(self.dir_in):
-                        contains_books = True
-                        break
-                mount_is_mounted = not is_mount or contains_books
+                available = {
+                    self.dir_in: False,
+                    self.dir_out: False
+                }
+                for dir in available:
+                    is_mount = Filesystem.ismount(dir)
+                    contains_books = False
+                    if is_mount:
+                        for entry in os.scandir(dir):
+                            contains_books = True
+                            break
+                    mount_is_mounted = not is_mount or contains_books
+                    available[dir] = os.path.isdir(self.dir_in) and mount_is_mounted
 
-                if not os.path.isdir(self.dir_in) or not mount_is_mounted:
-                    if self._dirInAvailable:
-                        logging.warn("" + self.dir_in + " is not available. Stop watching...")
+                if False in [available[dir] for dir in available]:
+                    if self._dirsAvailable:
+                        for dir in [d for d in available if not available[d]]:
+                            logging.warning("{} is not available. Stop watching...".format(dir))
                         self.stop()
 
                     else:
-                        logging.warn("" + self.dir_in + " is still not available...")
+                        for dir in [d for d in available if not available[d]]:
+                            logging.warning("{} is still not available...".format(dir))
 
-                if not self._dirInAvailable and os.path.isdir(self.dir_in) and mount_is_mounted:
-                    logging.info("" + self.dir_in + " is available again. Start watching...")
+                if not self._dirsAvailable and os.path.isdir(self.dir_in) and mount_is_mounted:
+                    logging.info("All directories are available again. Start watching...")
+                    for dir in [d for d in available if not available[d]]:
+                        logging.debug("Available: {}".format(dir))
                     self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
 
                 time.sleep(1)
@@ -513,7 +537,7 @@ class Pipeline():
                                     pipeline.trigger(name, auto=autotriggered)
 
     def _monitor_book_events_thread(self):
-        while self._dirInAvailable and self._shouldRun:
+        while self._dirsAvailable and self._shouldRun:
             try:
                 if self.shouldHandleBooks:
                     # books that are recently changed (check often in case of new file changes)
@@ -556,7 +580,7 @@ class Pipeline():
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
-                        if not (self._dirInAvailable and self._shouldRun):
+                        if not (self._dirsAvailable and self._shouldRun):
                             break  # break loop if we're shutting down the system
 
                         with self._md5_lock:
@@ -598,7 +622,7 @@ class Pipeline():
                                                           if time.time() - self._md5[f]["modified"] > self._inactivity_timeout],
                                                          key=lambda f: f["md5"]["deep_checked"])
                         for b in long_time_since_checked[:10]:
-                            if not (self._dirInAvailable and self._shouldRun):
+                            if not (self._dirsAvailable and self._shouldRun):
                                 break  # break loop if we're shutting down the system
 
                             f = b["name"]
@@ -625,7 +649,7 @@ class Pipeline():
     def _retry_all_books_thread(self):
         last_check = 0
 
-        while self._dirInAvailable and self._shouldRun:
+        while self._dirsAvailable and self._shouldRun:
             time.sleep(5)
             max_update_interval = 60 * 60  # 1 hour
 
@@ -639,13 +663,13 @@ class Pipeline():
 
             last_check = time.time()
             for filename in os.listdir(self.dir_in):
-                if not (self._dirInAvailable and self._shouldRun):
+                if not (self._dirsAvailable and self._shouldRun):
                     break  # break loop if we're shutting down the system
                 self.trigger(filename)
 
     def _retry_missing_books_thread(self):
         last_check = 0
-        while self._dirInAvailable and self._shouldRun:
+        while self._dirsAvailable and self._shouldRun:
             time.sleep(5)
             max_update_interval = 60 * 60 * 4
 
@@ -661,7 +685,7 @@ class Pipeline():
 
             for fileName in os.listdir(self.dir_in):
 
-                if not (self._dirInAvailable and self._shouldRun):
+                if not (self._dirsAvailable and self._shouldRun):
                     break  # break loop if we're shutting down the system
                 file_name = Path(fileName).stem
                 edition = [file_name]
@@ -682,7 +706,7 @@ class Pipeline():
                         for key in self.parentdirs:
                             for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
 
-                                if not (self._dirInAvailable and self._shouldRun):
+                                if not (self._dirsAvailable and self._shouldRun):
                                     break  # break loop if we're shutting down the system
                                 if Path(fileInDirOut).stem in edition:
                                     file_exists = True
@@ -690,7 +714,7 @@ class Pipeline():
                     else:
                         for fileInOut in os.listdir(self.dir_out):
 
-                            if not (self._dirInAvailable and self._shouldRun):
+                            if not (self._dirsAvailable and self._shouldRun):
                                 break  # break loop if we're shutting down the system
                             if Path(fileInOut).stem in edition:
                                 file_exists = True
@@ -705,7 +729,7 @@ class Pipeline():
                     self.trigger(fileName)
 
     def _handle_book_events_thread(self):
-        while self._dirInAvailable and self._shouldRun:
+        while self._dirsAvailable and self._shouldRun:
             self.running = True
 
             try:
