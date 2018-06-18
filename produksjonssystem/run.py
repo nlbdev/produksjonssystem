@@ -29,6 +29,7 @@ from epub_to_dtbook_html import EpubToDtbookHTML
 from prepare_for_braille import PrepareForBraille
 from epub_to_dtbook_braille import EpubToDtbookBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
+from nlbpub_previous import NlbpubPrevious
 
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -96,6 +97,7 @@ class Produksjonssystem():
             "nordic": os.path.join(book_archive_dirs["master"], "kilde-inn/nordisk"),
             "master": os.path.join(book_archive_dirs["master"], "master/EPUB"),
             "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
+        #    "nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
             "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
             "dtbook_tts": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese"),
             "dtbook_html": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML"),
@@ -117,10 +119,10 @@ class Produksjonssystem():
             [IncomingNordic(retry_all=True),                  "incoming",            "master"],
             [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
             [UpdateMetadata(),                                "metadata",            "nlbpub"],
+        #    [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
 
             # EPUB
             [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
-
             # e-bok
             [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
             [NlbpubToHtml(retry_missing=True),                "pub-in-ebook",        "html"],
