@@ -27,7 +27,12 @@ class IncomingNordic(Pipeline):
 
     @staticmethod
     def init_environment():
-        IncomingNordic.ace_cli = Pipeline.environment["ACE_CLI"] if "ACE_CLI" in Pipeline.environment else "/usr/bin/ace"
+        if "ACE_CLI" in Pipeline.environment:
+            IncomingNordic.ace_cli = Pipeline.environment["ACE_CLI"]
+        elif os.path.exists("/usr/bin/ace"):
+            IncomingNordic.ace_cli = "/usr/bin/ace"
+        else:
+            IncomingNordic.ace_cli = "ace"
 
     def __init__(self, *args, **kwargs):
         IncomingNordic.init_environment()
