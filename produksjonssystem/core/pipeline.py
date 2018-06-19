@@ -280,7 +280,7 @@ class Pipeline():
                 if len([e for e in book["events"] if e != "autotriggered"]):
                     # at least one event that is not "autotriggered"
                     new_queue.append(book)
-            if len(new_queue) < self._queue:
+            if len(new_queue) < len(self._queue):
                 logging.info("Removed {} autotriggered books from the queue.".format(len(self._queue) - len(new_queue)))
                 self._queue = new_queue
 
