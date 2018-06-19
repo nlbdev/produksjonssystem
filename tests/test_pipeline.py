@@ -37,6 +37,7 @@ class PipelineTest(unittest.TestCase):
         print("TEST: tearDown")
         time.sleep(2)
         self.pipeline.stop()
+        self.pipeline.join()
         time.sleep(2)
     
     def test_file(self):

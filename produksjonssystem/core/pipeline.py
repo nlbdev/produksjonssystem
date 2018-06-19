@@ -333,6 +333,9 @@ class Pipeline():
             pass
 
         self.stop()
+        self.join()
+
+    def join(self):
         with self._queue_lock:
             self._queue = []
 
