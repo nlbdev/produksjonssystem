@@ -177,7 +177,7 @@ class Produksjonssystem():
             self._run()
         except Exception as e:
             self.info("En feil oppstod i produksjonssystemet: {}".format(str(e) if str(e) else "(ukjent)"))
-            traceback.print_exc(e)
+            logging.exception("En feil oppstod i produksjonssystemet")
         finally:
             self.info("Produksjonssystemet er stoppet")
 
