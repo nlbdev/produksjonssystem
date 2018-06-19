@@ -76,7 +76,6 @@ class Pipeline():
 
     # static (shared by all pipelines)
     _triggerDirThread = None
-    dir_triggers = None
 
     # dynamic (reset on stop(), changes over time)
     _queue = None
@@ -121,7 +120,7 @@ class Pipeline():
         if not email_settings:
             email_settings = {
                 "smtp": {},
-                "sender": None,
+                "sender": "prodsys@example.org",
                 "recipients": []
             }
         if not dir_base:
@@ -550,7 +549,8 @@ class Pipeline():
                 if self.shouldHandleBooks:
                     # books that are recently changed (check often in case of new file changes)
                     with self._md5_lock:
-                        recently_changed = [f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout]
+                        recently_changed = sorted([f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout],
+                                                  key=lambda rc: self._md5[rc]["modified"])
                         if recently_changed:
                             for f in recently_changed:
                                 deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
@@ -600,7 +600,7 @@ class Pipeline():
                                 del self._md5[f]
                                 continue
 
-                            if not f in self._md5:
+                            if f not in self._md5:
                                 self._update_md5(f)
                                 self._add_book_to_queue(f, "created")
                                 logging.debug("book created: " + f)
