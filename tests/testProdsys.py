@@ -24,7 +24,7 @@ from produksjonssystem import run
 from core.pipeline import DummyPipeline
 
 # make target directory
-target_path = os.path.join(project_root, "target")
+target_path = os.path.join(project_root, "target", "system")
 if os.path.exists(target_path):
     rmtree(target_path)
 os.makedirs(target_path)

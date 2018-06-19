@@ -19,11 +19,11 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 class PipelineTest(unittest.TestCase):
-    target = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target')
+    target = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target', 'unittest')
     dir_base = {"master": target}
-    dir_in = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target/in')
-    dir_out = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target/out')
-    dir_reports = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'target/reports')
+    dir_in = os.path.join(target, 'in')
+    dir_out = os.path.join(target, 'out')
+    dir_reports = os.path.join(target, 'reports')
     pipeline = None
 
     def setUp(self):
@@ -45,6 +45,7 @@ class PipelineTest(unittest.TestCase):
         self.pipeline.stop()
         self.pipeline.join()
         time.sleep(2)
+        shutil.rmtree(self.target)
         #logging.getLogger().setLevel(logging.INFO)
 
     def test_file(self):
