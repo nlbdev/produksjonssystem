@@ -8,8 +8,10 @@ target
 *.swp
 
 #XSpec
-*-result.html
-*-result.xml
-xspec/*.xsl
+**/xspec/*-result.html
+**/xspec/*-result.xml
+**/xspec/*.xsl
+xslt/**/*-result.html
+xslt/**/*-result.xml
 
 xslt/core-utils-epub/xspec/

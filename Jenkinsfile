@@ -18,6 +18,7 @@ pipeline {
 
         stage('Test') {
             steps {
+                sh './test_xspec.sh'
                 sh './test_unit.sh'
                 sh './test_system.sh'
             }
@@ -26,7 +27,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: "target/test.log"
+            archiveArtifacts artifacts: "target/**/*.log"
             archiveArtifacts artifacts: "target/**/log.txt"
             cleanWs()
         }
