@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/xspec/xspec.git
+	branch = master
+	commit = 6e46603d5aa8406987dad00cab63bf5db841ab9e
+	parent = a91a5ba0b2b92d99dfe95b26e9a94ba5e44a9268
+	cmdver = 0.3.1
