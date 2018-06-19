@@ -18,7 +18,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh './test.sh'
+                sh './test_unit.sh'
+                sh './test_system.sh'
             }
         }
     }
