@@ -156,10 +156,10 @@ class Report():
 
     @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients):
-        assert subject
-        assert message
-        assert smtp
-        assert sender
+        assert isinstance(subject, str)
+        assert isinstance(message, str)
+        assert isinstance(smtp, dict)
+        assert isinstance(sender, str)
         assert isinstance(recipients, str) or isinstance(recipients, list)
 
         # 1. build e-mail
@@ -174,7 +174,7 @@ class Report():
             logging.warning("Email with subject \"{}\" has no recipients".format(subject))
         else:
             logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
-            if smtp["host"] and smtp["port"]:
+            if "host" in smtp and "port" in smtp:
                 with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                     s.ehlo()
                     s.starttls()
@@ -189,10 +189,10 @@ class Report():
         Slack.slack(text=subject, attachments=None)
 
     def email(self, smtp, sender, recipients, subject=None):
-        assert smtp
-        assert sender
-        assert recipients
-        assert self.title or self.pipeline and self.pipeline.title
+        assert isinstance(smtp, dict)
+        assert isinstance(sender, str)
+        assert isinstance(recipients, str) or isinstance(recipients, list)
+        assert isinstance(self.title, str) or self.pipeline and isinstance(self.pipeline.title, str)
 
         if not subject:
             subject = self.title if self.title else self.pipeline.title
@@ -314,7 +314,7 @@ class Report():
         logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
 
         # 4. send e-mail
-        if smtp["host"] and smtp["port"]:
+        if "host" in smtp and "port" in smtp:
             with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                 s.ehlo()
                 s.starttls()
