@@ -79,12 +79,12 @@ class Report():
         elif severity == "SUCCESS":
             logging.info(message)
         elif severity == "WARN":
-            logging.warn(message)
+            logging.warning(message)
         elif severity == "ERROR":
             logging.error(message)
         else:
-            logging.warn("Unknown message severity: " + str(severity))
-            logging.warn(message)
+            logging.warning("Unknown message severity: " + str(severity))
+            logging.warning(message)
 
         lines = None
         if isinstance(message, list):
@@ -171,7 +171,7 @@ class Report():
 
         # 2. send e-mail
         if not msg["To"]:
-            logging.warn("Email with subject \"{}\" has no recipients".format(subject))
+            logging.warning("Email with subject \"{}\" has no recipients".format(subject))
         else:
             logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
             if smtp["host"] and smtp["port"]:
@@ -184,7 +184,7 @@ class Report():
                         logging.debug("email user/pass not configured")
                     s.send_message(msg)
             else:
-                logging.warn("email host/port not configured")
+                logging.warning("email host/port not configured")
 
         Slack.slack(text=subject, attachments=None)
 
@@ -324,7 +324,7 @@ class Report():
                     logging.debug("email user/pass not configured")
                 s.send_message(msg)
         else:
-            logging.warn("email host/port not configured")
+            logging.warning("email host/port not configured")
 
         with open('/tmp/email.md', "w") as f:
             f.write(markdown_text)

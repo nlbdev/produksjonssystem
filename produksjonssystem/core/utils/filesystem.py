@@ -151,7 +151,7 @@ class Filesystem():
                         return
 
             else:
-                logging.warn("Path does not refer to a file or a directory: {}".format(path))
+                logging.warning("Path does not refer to a file or a directory: {}".format(path))
 
         except FileNotFoundError as e:
             logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
