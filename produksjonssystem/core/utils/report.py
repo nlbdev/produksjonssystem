@@ -290,7 +290,7 @@ class Report():
         markdown_text = "\n".join(markdown_text)
 
         # 2. parse string as Markdown and render as HTML
-        markdown_html = markdown.markdown(markdown_text, extensions=['fenced_code', 'codehilite'])
+        markdown_html = markdown.markdown(markdown_text, extensions=['markdown.extensions.fenced_code', 'markdown.extensions.codehilite'])
         markdown_html = '''<!DOCTYPE html>
 <html>
 <head>
