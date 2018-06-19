@@ -344,6 +344,9 @@ class Pipeline():
                 logging.debug("joining {}".format(thread.name))
                 thread.join(timeout=60)
 
+        if self._dir_trigger_obj:
+            self._dir_trigger_obj.cleanup()
+
         is_alive = True
         while is_alive:
             is_alive = False
@@ -475,12 +478,12 @@ class Pipeline():
 
     @staticmethod
     def _trigger_dir_thread():
+        _trigger_dir_obj = None
         trigger_dir = os.getenv("TRIGGER_DIR")
         if not trigger_dir:
-            logging.info("TRIGGER_DIR not defined, won't be able to trigger directories")
-            return
-        else:
-            trigger_dir = os.path.join(trigger_dir, "dirs")
+            _trigger_dir_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-dirs")
+            trigger_dir = _trigger_dir_obj.name
+        trigger_dir = os.path.join(trigger_dir, "dirs")
 
         dirs = None
         while True:
@@ -538,6 +541,8 @@ class Pipeline():
                             for pipeline in Pipeline.pipelines:
                                 if pipeline.uid in dirs[relpath]:
                                     pipeline.trigger(name, auto=autotriggered)
+        if _trigger_dir_obj:
+            _trigger_dir_obj.cleanup()
 
     def _monitor_book_events_thread(self):
         while self._dirsAvailable and self._shouldRun:
