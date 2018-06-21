@@ -7,13 +7,11 @@ import time
 import logging
 import smtplib
 import markdown
-import pygments # for markdown code highlighting
+import pygments  # for markdown code highlighting
 import tempfile
-import threading
 
 from dotmap import DotMap
 from datetime import datetime, timezone
-from email.utils import make_msgid
 from email.message import EmailMessage
 from core.utils.slack import Slack
 from email.headerregistry import Address
@@ -105,27 +103,35 @@ class Report():
         if add_empty_line_last:
             lines.append("")
 
-        if preformatted == True:
+        if preformatted is True:
             lines = [message]
 
         for line in lines:
-            self._messages[message_type].append({ 'time': time.strftime("%Y-%m-%d %H:%M:%S"), 'severity': severity, 'text': line, 'time_seconds': (time.time()), 'preformatted': preformatted})
+            self._messages[message_type].append({'time': time.strftime("%Y-%m-%d %H:%M:%S"),
+                                                 'severity': severity,
+                                                 'text': line,
+                                                 'time_seconds': (time.time()),
+                                                 'preformatted': preformatted})
 
     def debug(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('DEBUG', message=message, message_type=message_type, preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+        self.add_message('DEBUG', message=message, message_type=message_type, preformatted=preformatted,
+                         add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
     def info(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('INFO', message=message, message_type=message_type, preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+        self.add_message('INFO', message=message, message_type=message_type, preformatted=preformatted,
+                         add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
     def success(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('SUCCESS', message=message, message_type=message_type, preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+        self.add_message('SUCCESS', message=message, message_type=message_type, preformatted=preformatted,
+                         add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
-    def warn(self, message, message_type="message", preformatted=False,add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('WARN', message=message, message_type=message_type,  preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+    def warn(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+        self.add_message('WARN', message=message, message_type=message_type,  preformatted=preformatted,
+                         add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
     def error(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
-        self.add_message('ERROR', message=message, message_type=message_type,  preformatted=preformatted, add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
-
+        self.add_message('ERROR', message=message, message_type=message_type,  preformatted=preformatted,
+                         add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
     @staticmethod
     def emailStringsToAddresses(addresses):
@@ -135,7 +141,7 @@ class Report():
         if isinstance(addresses, Address):
             return addresses
         elif isinstance(addresses, str):
-            addresses = [ addresses ]
+            addresses = [addresses]
         elif isinstance(addresses, tuple):
             addresses = list(addresses)
 
@@ -189,72 +195,11 @@ class Report():
         Slack.slack(text=subject, attachments=None)
 
     def email(self, smtp, sender, recipients, subject=None):
-        assert isinstance(smtp, dict)
-        assert isinstance(sender, str)
-        assert isinstance(recipients, str) or isinstance(recipients, list)
-        assert isinstance(self.title, str) or self.pipeline and isinstance(self.pipeline.title, str)
-
         if not subject:
             subject = self.title if self.title else self.pipeline.title
 
-        if isinstance(recipients, str):
-            recipients = [ recipients ]
-
         # 0. Create attachment with complete log (including DEBUG statements)
         self.attachLog()
-
-        # Determine overall status
-        status = "INFO"
-        for message_type in self._messages:
-            for m in self._messages[message_type]:
-
-                if m["severity"] == "SUCCESS" and status in [ "INFO" ]:
-                    status = "SUCCESS"
-                elif m["severity"] == "WARN" and status in [ "INFO", "SUCCESS" ]:
-                    status = "WARN"
-                elif m["severity"] == "ERROR":
-                    status = "ERROR"
-
-
-        if status == "ERROR":
-            for key in self.pipeline.common_config["administrators"]:
-                if key not in recipients:
-                    recipients.append(key)
-
-        # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
-        markdown_text = []
-        for m in self._messages["message"]:
-            if m['preformatted'] == True:
-                markdown_text.append("<pre>{}</pre>".format(m['text']))
-            elif m['severity'] != 'DEBUG':
-                markdown_text.append(m['text'])
-        markdown_text.append("\n----\n")
-        markdown_text.append("\n# "+self._i18n["Links"]+"\n")
-        markdown_text.append("\n<ul style=\"list-style: none;\">")
-
-        # Pick icon and style for INFO-attachments
-        attachment_styles = {
-            "DEBUG": {
-                "icon": "🗎",
-                "style": ""
-            },
-            "INFO": {
-                "icon": "🛈",
-                "style": ""
-            },
-            "SUCCESS": {
-                "icon": "😄",
-                "style": "background-color: #bfffbf;"
-            },
-            "WARN": {
-                "icon": "😟",
-                "style": "background-color: #ffffbf;"
-            },
-            "ERROR": {
-                "icon": "😭",
-                "style": "background-color: #ffbfbf;"
-            }
-        }
 
         attachments = []
         for m in self._messages["attachment"]:
@@ -271,27 +216,89 @@ class Report():
                     "unc": unc,
                     "severity": m["severity"]
                 })
-        for attachment in attachments:
-            # UNC links seems to be preserved when viewed in Outlook.
-            # file: and smb: URIs are disallowed or removed.
-            # So these links will only work in Windows.
-            # If we need this to work cross-platform, we would have
-            # to map the network share paths to a web server so that
-            # the transfers go through http:. This could maybe be mapped
-            # using environment variables.
-            li = "<li>"
-            li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
-            li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
-            li += "<a href=\"" + attachment["unc"] + "\">" + attachment["title"] + "</a></sup>"
-            li += "</span>"
-            li += "</li>"
-            markdown_text.append(li)
-        markdown_text.append("</ul>\n")
-        markdown_text = "\n".join(markdown_text)
 
-        # 2. parse string as Markdown and render as HTML
-        markdown_html = markdown.markdown(markdown_text, extensions=['markdown.extensions.fenced_code', 'markdown.extensions.codehilite'])
-        markdown_html = '''<!DOCTYPE html>
+        # Determine overall status
+        status = "INFO"
+        for message_type in self._messages:
+            for m in self._messages[message_type]:
+
+                if m["severity"] == "SUCCESS" and status in ["INFO"]:
+                    status = "SUCCESS"
+                elif m["severity"] == "WARN" and status in ["INFO", "SUCCESS"]:
+                    status = "WARN"
+                elif m["severity"] == "ERROR":
+                    status = "ERROR"
+
+        try:
+            assert isinstance(smtp, dict), "smtp must be a dict"
+            assert isinstance(sender, str), "sender must be a str"
+            assert isinstance(recipients, str) or isinstance(recipients, list), "recipients must be a str or list"
+            assert isinstance(self.title, str) or self.pipeline and isinstance(self.pipeline.title, str), "title or pipeline.title must be a str"
+
+            if isinstance(recipients, str):
+                recipients = [recipients]
+
+            if status == "ERROR":
+                for key in self.pipeline.common_config["administrators"]:
+                    if key not in recipients:
+                        recipients.append(key)
+
+            # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
+            markdown_text = []
+            for m in self._messages["message"]:
+                if m['preformatted'] is True:
+                    markdown_text.append("<pre>{}</pre>".format(m['text']))
+                elif m['severity'] != 'DEBUG':
+                    markdown_text.append(m['text'])
+            markdown_text.append("\n----\n")
+            markdown_text.append("\n# "+self._i18n["Links"]+"\n")
+            markdown_text.append("\n<ul style=\"list-style: none;\">")
+
+            # Pick icon and style for INFO-attachments
+            attachment_styles = {
+                "DEBUG": {
+                    "icon": "🗎",
+                    "style": ""
+                },
+                "INFO": {
+                    "icon": "🛈",
+                    "style": ""
+                },
+                "SUCCESS": {
+                    "icon": "😄",
+                    "style": "background-color: #bfffbf;"
+                },
+                "WARN": {
+                    "icon": "😟",
+                    "style": "background-color: #ffffbf;"
+                },
+                "ERROR": {
+                    "icon": "😭",
+                    "style": "background-color: #ffbfbf;"
+                }
+            }
+
+            for attachment in attachments:
+                # UNC links seems to be preserved when viewed in Outlook.
+                # file: and smb: URIs are disallowed or removed.
+                # So these links will only work in Windows.
+                # If we need this to work cross-platform, we would have
+                # to map the network share paths to a web server so that
+                # the transfers go through http:. This could maybe be mapped
+                # using environment variables.
+                li = "<li>"
+                li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
+                li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
+                li += "<a href=\"" + attachment["unc"] + "\">" + attachment["title"] + "</a></sup>"
+                li += "</span>"
+                li += "</li>"
+                markdown_text.append(li)
+            markdown_text.append("</ul>\n")
+            markdown_text = "\n".join(markdown_text)
+
+            # 2. parse string as Markdown and render as HTML
+            markdown_html = markdown.markdown(markdown_text, extensions=['markdown.extensions.fenced_code', 'markdown.extensions.codehilite'])
+            markdown_html = '''<!DOCTYPE html>
 <html>
 <head>
 <meta charset=\"utf-8\"/>
@@ -303,35 +310,40 @@ class Report():
 </html>
 '''
 
-        # 3. build e-mail
-        msg = EmailMessage()
-        msg['Subject'] = subject
-        msg['From'] = Report.emailStringsToAddresses(sender)
-        msg['To'] = Report.emailStringsToAddresses(recipients)
-        msg.set_content(markdown_text)
-        msg.add_alternative(markdown_html, subtype="html")
+            # 3. build e-mail
+            msg = EmailMessage()
+            msg['Subject'] = subject
+            msg['From'] = Report.emailStringsToAddresses(sender)
+            msg['To'] = Report.emailStringsToAddresses(recipients)
+            msg.set_content(markdown_text)
+            msg.add_alternative(markdown_html, subtype="html")
 
-        logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
+            logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
 
-        # 4. send e-mail
-        if "host" in smtp and "port" in smtp:
-            with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
-                s.ehlo()
-                s.starttls()
-                if smtp["user"] and smtp["pass"]:
-                    s.login(smtp["user"], smtp["pass"])
-                else:
-                    logging.debug("email user/pass not configured")
-                s.send_message(msg)
-        else:
-            logging.warning("email host/port not configured")
+            # 4. send e-mail
+            if "host" in smtp and "port" in smtp:
+                with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
+                    s.ehlo()
+                    s.starttls()
+                    if smtp["user"] and smtp["pass"]:
+                        s.login(smtp["user"], smtp["pass"])
+                    else:
+                        logging.debug("email user/pass not configured")
+                    s.send_message(msg)
+            else:
+                logging.warning("email host/port not configured")
 
-        with open('/tmp/email.md', "w") as f:
-            f.write(markdown_text)
-            logging.debug("email markdown: /tmp/email.md")
-        with open('/tmp/email.html', "w") as f:
-            f.write(markdown_html)
-            logging.debug("email html: /tmp/email.html")
+            temp_md_obj = tempfile.NamedTemporaryFile(suffix=".md")
+            temp_html_obj = tempfile.NamedTemporaryFile(suffix=".html")
+            with open(temp_md_obj.name, "w") as f:
+                f.write(markdown_text)
+                logging.debug("email markdown: {}".format(temp_md_obj.name))
+            with open(temp_html_obj.md, "w") as f:
+                f.write(markdown_html)
+                logging.debug("email html: {}".format(temp_html_obj.name))
+
+        except AssertionError as e:
+            logging.error(str(e))
 
         # 5. send message to Slack
         slack_attachments = []
@@ -398,12 +410,13 @@ class Report():
             self.success(path, message_type="attachment", add_empty_line_last=False)
         elif severity == "WARN":
             self.warn(path, message_type="attachment", add_empty_line_last=False)
-        else: # "ERROR"
+        else:  # "ERROR"
             self.error(path, message_type="attachment", add_empty_line_last=False)
 
     # in case you want to override something
     def translate(self, english_text, translated_text):
         self._i18n[english_text] = translated_text
+
 
 class DummyReport(Report):
     pipeline = None
