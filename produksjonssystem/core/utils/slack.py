@@ -34,5 +34,7 @@ class Slack():
 
         if Slack._slack_authed is not True:
             logging.warning("Not authorized to send messages to Slack")
+            logging.warning("Tried to send message to {}: {}".format(Slack._slack_channel, text))
 
-        Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)
+        else:
+            Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)
