@@ -72,13 +72,6 @@ for d in environment["BOOK_ARCHIVE_DIRS"].split(" "):
     assert "=" in d
     book_archive_dirs[d.split("=")[0]] = d.split("=")[1]
 
-# print statements only goes to stdout, not to log file
-print("")
-print("Dashboard: file://" + os.path.join(environment["REPORTS_DIR"], "dashboard.html"))
-for d in book_archive_dirs:
-    print("Book archive \"{}\": file://{}".format(d, book_archive_dirs[d]))
-print("")
-
 threading.current_thread().setName("test thread")
 print("Initializing the system...")
 prodsys = run.Produksjonssystem(environment=environment)

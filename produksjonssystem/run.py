@@ -210,6 +210,13 @@ class Produksjonssystem():
             assert pipeline[1] is None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
             assert pipeline[2] is None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
 
+        # Some useful output to stdout before starting everything else
+        print("")
+        print("Dashboard: file://" + os.path.join(Config.get("reports_dir"), "dashboard.html"))
+        for d in self.book_archive_dirs:
+            print("Book archive \"{}\": file://{}".format(d, self.book_archive_dirs[d]))
+        print("")
+
         # Make directories
         for d in self.dirs:
             os.makedirs(self.dirs[d], exist_ok=True)
