@@ -15,16 +15,17 @@ konverteringer.
 
 Anbefaler:
 
-- GitKraken med GitHub-innlogging
+- [GitKraken](https://www.gitkraken.com/) med GitHub-innlogging
 - Lag en snarvei til bokarkivet på skrivebordet: `ln --symbolic /tmp/book-archive /home/$USER/Desktop/book-archive`
-- oXygen for XML-filer
-- For eksempel atom.io for redigering av Python-filer
+- [oXygen](https://www.oxygenxml.com/) for XML-filer
+- For eksempel [atom.io](https://atom.io/) for redigering av Python-filer
 
 ## Installasjon
 
 - installer java 8 JDK: `sudo apt install openjdk-8-jdk`
 
 - installer DAISY Pipeline 2
+    - Hvis du ikke har en mappe som heter "Desktop" i hjemmemappen, kjør: `ln --symbolic $HOME/Skrivebord Desktop`
     - last ned og unzip DAISY Pipeline 2 fra http://repo.nlb.no/pipeline/pipeline2_minimal.zip til `~/Desktop/daisy-pipeline`
     - i `etc/system.properties`, sett `org.daisy.pipeline.procs` til 4 for å kunne kjøre flere jobber på en gang (valgfritt)
     - kjør: `updater/linux/pipeline-updater -service="http://repo.nlb.no/pipeline/" -install-dir=$HOME/Desktop/daisy-pipeline/ -descriptor=$HOME/Desktop/daisy-pipeline/etc/releaseDescriptor.xml -version=current -force`
@@ -48,6 +49,9 @@ Anbefaler:
     - `sudo npm install @daisy/ace -g`
     - hvis ikke `/usr/bin/ace` finnes: `sudo ln --symoblic /usr/local/bin/ace /usr/bin/ace`
 
+- installer Calibre:
+    - `sudo apt-get install calibre`
+
 - installer og konfigurer quickbase-dump-skript:
     - `sudo apt install git maven`
     - `sudo mkdir /opt/quickbase`
@@ -63,10 +67,12 @@ Anbefaler:
 
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
+    - `sudo apt install python3 python3-pip python3-dev`
+    - `sudo apt install graphviz` # for plotting
+    - `sudo apt install ffmpeg libavcodec-extra` # for lydutdrag
     - `pip3 install -r requirements.txt`
-    - `sudo apt install graphviz`
 
-## Konfigurasion
+## Konfigurasjon
 
 `~/config/set-env.sh`:
 
@@ -89,17 +95,21 @@ source $HOME/config/set-env.sh
 
 - for å oppdatere quickbase-database (gjør innimellom, eller etter behov for nyere bøker):
     - `/opt/quickbase/get-latest.sh`
-
-- `cd ~/Desktop/produksjonssystem`
-- sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (gjerne legg til dette i `.bashrc`, så slipper du å skrive det hver gang)
-- start systemet: `./produksjonssystem/run.py`
-- stopp systemet: CTRL+C eller `touch /tmp/trigger-produksjonssystem/stop`
+- `cd ~/Desktop/produksjonssystem` (eventuelt hold musa over "produksjonssystem" øverst til venstre i GitKraken for å se hvor du har lagret produksjonssystemet)
+- For å kjøre tester:
+  - `./test.sh`
+- For å starte produksjonssystemet:
+  - sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (gjerne legg til dette i `.bashrc`, så slipper du å skrive det hver gang)
+    - `set-test-env.sh` definerer blant annet at bokarkivet skal ligge i en midlertidig mappe kalt `/tmp/book-archive`.
+      En liste med lenke til dashboard'et samt bokarkiv-mappene som brukes, vises i terminalvinduet når man starter produksjonssystemet.
+  - start systemet: `./produksjonssystem/run.py`
+  - stopp systemet: CTRL+C eller `touch /tmp/trigger-produksjonssystem/stop`
 
 ## Endre innstillinger for e-postvarsling
 
 ### Endre e-post instillinger
 
-/Fellesdokumenter/IKT/produksjonssystem.yaml
+E-postadresser defineres i 'produksjonssystem.yaml' (definert med miljøvariabelen `CONFIG_FILE` i `set-test-env.sh`):
 
 - Legg til eller fjern e-post til pipeline
 ```yaml
@@ -160,27 +170,18 @@ if __name__ == "__main__":
 
 ```
 
-## Calibre for ebook konvertering
-- `sudo apt-get install calibre`
-- Brukes til å konvertere ebok formater
-
 ## Teste system
-### Automatisk sjekk av produksjonslinje
-- `cd ~/Desktop/produksjonssystem`
-- `python3 -m unittest tests.testProdsys.py`
-- Sjekker at alle utformater blir produsert i løpet av en spesifisert tid
 
-### Installasjon av XSpec
-- Klon XSpec: git clone for eksempel på Desktop `https://github.com/expath/xspec.git`
-- Last ned Saxon HE `https://sourceforge.net/projects/saxon/files/Saxon-HE/9.8/`
-- `~/.bashrc` (legg til på slutten):
-```bash
-export PATH="$PATH:/home/DER-XSpec-ER/xspec/bin"
-export SAXON_CP=/home/DER-SAXON-ER/saxon9he.jar
+For å kjøre alle testene:
+
 ```
-- Husk å gjøre XSpec.sh kjørbar
+./test.sh
+```
 
-### For å kjøre XSpec testene i produksjonssystemet
-- `cd ~/Desktop/produksjonssystem/xslt`
-- chmod +x xspexTest.sh
-- ./xspecTesh.sh
+Eventuelt kan man teste hele systemet, kjøre alle XSpec-testene, eller alle Python unit test'ene som følger:
+
+```
+./test_system.py
+./test_xspec.py
+./test_unit.py
+```
