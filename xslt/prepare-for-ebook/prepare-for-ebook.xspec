@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="prepare-for-ebook.xsl">
+    
+    <x:scenario label="Metadata">
+        <x:context function="metadata" xml:space="preserve">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Valg og velgere</title> <!-- Bibliofil@115437 *245$a -->
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="description" content="Fra forlaget omtale: Stortingsvalget i 2013 var et historisk valg. Men var valget egentlig et uttrykk for et politisk systemskifte blant velgerne? Har velgerne beveget seg mot høyre, eller er det andre forklaringer på valgresultatet i 2013? I denne boken foretar vi en systematisk analyse av norsk velgeratferd med utgangspunkt i valget i 2013."/> <!-- Bibliofil@356837 *520$a -->
+        
+        <!-- Boknummer for XHTML-utgaven -->
+        <meta name="dc:identifier" content="356837"/> <!-- Bibliofil@356837 *001 -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta name="nlbprod:identifier.braille" content="115437"/> <!-- Quickbase Record@558237 Tilvekstnummer Punktskrift -->
+        <meta name="nlbprod:isbn.braille" content="978-82-16-24250-6"/> <!-- Bibliofil@115437 *020$a -->
+        <meta name="nlbprod:identifier.daisy202.fulltext" content="406837"/> <!-- Quickbase Record@558237 Reservert tilvekstnummerserie (4XXXX) -->
+        <meta name="nlbprod:isbn.daisy202.fulltext" content="978-82-16-22610-0"/> <!-- Bibliofil@221437 *020$a -->
+        <meta name="nlbprod:identifier.daisy202.student" content="221437"/> <!-- Quickbase Record@558237 Tilvekstnummer DAISY 2.02 Studielitteratur -->
+        <meta name="nlbprod:isbn.daisy202.student" content="978-82-16-22610-0"/> <!-- Bibliofil@221437 *020$a -->
+        <meta name="nlbprod:identifier.ebook" content="356837"/> <!-- Quickbase Record@558237 Tilvekstnummer e-bok -->
+        <meta name="nlbprod:isbn.ebook" content="978-82-16-22611-7"/> <!-- Bibliofil@356837 *020$a -->
+        <meta name="nlbprod:identifier.epub" content="558237"/> <!-- Quickbase Record@558237 Tilvekstnummer EPUB -->
+        
+        <!-- Metadata for åndsverket og XHTML-utgaven -->
+        <meta name="dc:title.subTitle" content="en studie av stortingsvalget 2013"/> <!-- Bibliofil@356837 *245$b -->
+        <meta name="dc:language" content="nb-NO"/> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:contributor" content="Aalberg, Toril"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Aardal, Bernt"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Bergh, Johannes"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Berglund, Frode"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Jenssen, Anders Todal"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Karlsen, Rune"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Rasch, Bjørn Erik"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor.editor" content="Aardal, Bernt"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor.editor" content="Bergh, Johannes"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor.narrator" content="NLB"/> <!-- Bibliofil@115437 *511$a -->
+        <meta name="dc:format" content="XHTML"/> <!-- Bibliofil@356837 *019$b -->
+        <meta name="dc:format.extent.pages.original" content="280"/> <!-- Bibliofil@115437 *596$e -->
+        <meta name="dc:format.other" content="Downloadable file"/> <!-- Bibliofil@356837 *019$b -->
+        <meta name="dc:format.other" content="E-books"/> <!-- Bibliofil@356837 *019$b -->
+        <meta name="dc:publisher" content="Norsk lyd- og blindeskriftbibliotek"/> <!-- Bibliofil@356837 *260$b -->
+        <meta name="dc:publisher.location" content="Oslo"/> <!-- Bibliofil@356837 *260$a -->
+        <meta name="dc:publisher.location.original" content="Oslo"/> <!-- Bibliofil@115437 *596$a -->
+        <meta name="dc:publisher.original" content="Cappelen Damm"/> <!-- Bibliofil@115437 *596$b -->
+        <meta name="dc:date.available" content="2016-01-18"/> <!-- Bibliofil@356837 *592$a -->
+        <meta name="dc:date.issued" content="2016"/> <!-- Bibliofil@356837 *260$c -->
+        <meta name="dc:date.issued.original" content="2015"/> <!-- Bibliofil@115437 *596$c -->
+        <meta name="dc:source" content="urn:isbn:9788202484347"/> <!-- Bibliofil@115437 *596$f -->
+        <meta name="dc:subject.dewey" content="324.9481"/> <!-- Bibliofil@356837 *082$a -->
+        <meta name="dc:subject.keyword" content="Stortingsvalg"/> <!-- Bibliofil@356837 *650 -->
+        <meta name="dc:subject.keyword" content="Valg"/> <!-- Bibliofil@356837 *650 -->
+        <meta name="dc:type.genre" content="Non-biography"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="dc:type.genre" content="Non-fiction"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="dc:type.genre" content="textbook"/> <!-- Bibliofil@356837 *850$a -->
+        <meta name="schema:isbn" content="978-82-02-48434-7"/> <!-- Bibliofil@115437 *596$f -->
+        <meta name="schema:bookEdition" content="1"/> <!-- Bibliofil@115437 *245 -->
+        <meta name="schema:bookEdition.original" content="1"/> <!-- Bibliofil@115437 *596 -->
+        <meta name="schema:audience" content="Adult"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="schema:audience" content="Student"/> <!-- Bibliofil@356837 *850$a -->
+        <meta name="schema:library" content="NLB"/> <!-- Bibliofil@356837 *850$a -->
+        <meta name="schema:typicalAgeRange" content="17-"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="nordic:guidelines" content="2015-1"/> <!-- EPUB -->
+        <meta name="nordic:supplier" content="Net Systems Informatics (I) Pvt. Ltd."/> <!-- EPUB -->
+    
+        <meta name="dcterms:modified" content="2018-06-22T11:00:13Z"/>
+    </head>
+        </x:context>
+
+        <x:expect label="result" xml:space="preserve">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Valg og velgere</title> <!-- Bibliofil@115437 *245$a -->
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="description" content="Fra forlaget omtale: Stortingsvalget i 2013 var et historisk valg. Men var valget egentlig et uttrykk for et politisk systemskifte blant velgerne? Har velgerne beveget seg mot høyre, eller er det andre forklaringer på valgresultatet i 2013? I denne boken foretar vi en systematisk analyse av norsk velgeratferd med utgangspunkt i valget i 2013."/> <!-- Bibliofil@356837 *520$a -->
+        
+        <!-- Boknummer for XHTML-utgaven -->
+        <meta name="dc:identifier" content="356837"/> <!-- Bibliofil@356837 *001 -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta name="nlbprod:identifier.braille" content="115437"/> <!-- Quickbase Record@558237 Tilvekstnummer Punktskrift -->
+        <meta name="nlbprod:isbn.braille" content="978-82-16-24250-6"/> <!-- Bibliofil@115437 *020$a -->
+        <meta name="nlbprod:identifier.daisy202.fulltext" content="406837"/> <!-- Quickbase Record@558237 Reservert tilvekstnummerserie (4XXXX) -->
+        <meta name="nlbprod:isbn.daisy202.fulltext" content="978-82-16-22610-0"/> <!-- Bibliofil@221437 *020$a -->
+        <meta name="nlbprod:identifier.daisy202.student" content="221437"/> <!-- Quickbase Record@558237 Tilvekstnummer DAISY 2.02 Studielitteratur -->
+        <meta name="nlbprod:isbn.daisy202.student" content="978-82-16-22610-0"/> <!-- Bibliofil@221437 *020$a -->
+        <meta name="nlbprod:identifier.ebook" content="356837"/> <!-- Quickbase Record@558237 Tilvekstnummer e-bok -->
+        <meta name="nlbprod:isbn.ebook" content="978-82-16-22611-7"/> <!-- Bibliofil@356837 *020$a -->
+        <meta name="nlbprod:identifier.epub" content="558237"/> <!-- Quickbase Record@558237 Tilvekstnummer EPUB -->
+        
+        <!-- Metadata for åndsverket og XHTML-utgaven -->
+        <meta name="dc:title.subTitle" content="en studie av stortingsvalget 2013"/> <!-- Bibliofil@356837 *245$b -->
+        <meta name="dc:language" content="nb-NO"/> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:contributor" content="Aalberg, Toril"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Aardal, Bernt"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Bergh, Johannes"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Berglund, Frode"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Jenssen, Anders Todal"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Karlsen, Rune"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor" content="Rasch, Bjørn Erik"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor.editor" content="Aardal, Bernt"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor.editor" content="Bergh, Johannes"/> <!-- Bibliofil@115437 *700 -->
+        <meta name="dc:contributor.narrator" content="NLB"/> <!-- Bibliofil@115437 *511$a -->
+        <meta name="dc:format" content="XHTML"/> <!-- Bibliofil@356837 *019$b -->
+        <meta name="dc:format.extent.pages.original" content="280"/> <!-- Bibliofil@115437 *596$e -->
+        <meta name="dc:format.other" content="Downloadable file"/> <!-- Bibliofil@356837 *019$b -->
+        <meta name="dc:format.other" content="E-books"/> <!-- Bibliofil@356837 *019$b -->
+        <meta name="dc:publisher" content="Norsk lyd- og blindeskriftbibliotek"/> <!-- Bibliofil@356837 *260$b -->
+        <meta name="dc:publisher.location" content="Oslo"/> <!-- Bibliofil@356837 *260$a -->
+        <meta name="dc:publisher.location.original" content="Oslo"/> <!-- Bibliofil@115437 *596$a -->
+        <meta name="dc:publisher.original" content="Cappelen Damm"/> <!-- Bibliofil@115437 *596$b -->
+        <meta name="dc:date.available" content="2016-01-18"/> <!-- Bibliofil@356837 *592$a -->
+        <meta name="dc:date.issued" content="2016"/> <!-- Bibliofil@356837 *260$c -->
+        <meta name="dc:date.issued.original" content="2015"/> <!-- Bibliofil@115437 *596$c -->
+        <meta name="dc:source" content="urn:isbn:9788202484347"/> <!-- Bibliofil@115437 *596$f -->
+        <meta name="dc:subject.dewey" content="324.9481"/> <!-- Bibliofil@356837 *082$a -->
+        <meta name="dc:subject.keyword" content="Stortingsvalg"/> <!-- Bibliofil@356837 *650 -->
+        <meta name="dc:subject.keyword" content="Valg"/> <!-- Bibliofil@356837 *650 -->
+        <meta name="dc:type.genre" content="Non-biography"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="dc:type.genre" content="Non-fiction"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="dc:type.genre" content="textbook"/> <!-- Bibliofil@356837 *850$a -->
+        <meta name="schema:isbn" content="978-82-02-48434-7"/> <!-- Bibliofil@115437 *596$f -->
+        <meta name="schema:bookEdition" content="1"/> <!-- Bibliofil@115437 *245 -->
+        <meta name="schema:bookEdition.original" content="1"/> <!-- Bibliofil@115437 *596 -->
+        <meta name="schema:audience" content="Adult"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="schema:audience" content="Student"/> <!-- Bibliofil@356837 *850$a -->
+        <meta name="schema:library" content="NLB"/> <!-- Bibliofil@356837 *850$a -->
+        <meta name="schema:typicalAgeRange" content="17-"/> <!-- Bibliofil@356837 *008 -->
+        <meta name="nordic:guidelines" content="2015-1"/> <!-- EPUB -->
+        <meta name="nordic:supplier" content="Net Systems Informatics (I) Pvt. Ltd."/> <!-- EPUB -->
+    
+        <meta name="dcterms:modified" content="..."/>
+        <link rel="stylesheet" type="text/css" href="default.css"/>
+    </head>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="pagebreak">
+        <x:context>
+            <section>
+                <div epub:type="pagebreak" title="3" xml:lang="no"/>
+                <span epub:type="pagebreak" title="3" xml:lang="no"/>
+                <div epub:type="pagebreak" title="3" xml:lang="en"/>
+                <span epub:type="pagebreak" title="3" xml:lang="en"/>
+            </section>
+        </x:context>
+        
+        <x:expect label="result">
+            <section>
+               <div epub:type="pagebreak" xml:lang="no">Side 3</div>
+               <span epub:type="pagebreak" xml:lang="no">Side 3</span>
+               <div epub:type="pagebreak" xml:lang="en">Page 3</div>
+               <span epub:type="pagebreak" xml:lang="en">Page 3</span>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

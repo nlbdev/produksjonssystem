@@ -4,13 +4,10 @@
 import os
 import re
 import sys
-import time
 import shutil
 import tempfile
-import subprocess
 
 from lxml import etree as ElementTree
-from datetime import datetime, timezone
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
@@ -19,14 +16,13 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class NlbpubToHtml(Pipeline):
     uid = "nlbpub-to-html"
     title = "NLBPUB til HTML"
-    labels = [ "e-bok" ]
+    labels = ["e-bok"]
     publication_format = "XHTML"
     expected_processing_time = 8
-
-    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -60,14 +56,12 @@ class NlbpubToHtml(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
 
-
         # ---------- lag en kopi av EPUBen ----------
 
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
-
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 
@@ -94,15 +88,15 @@ class NlbpubToHtml(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
 
-        self.utils.report.info("Tilpasser innhold for e-tekst...")
-        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "prepare-for-html.xsl"),
-                          source=html_file,
-                          target=temp_html)
+        self.utils.report.info("Ferdigstiller HTML-fil...")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToHtml.uid, "finalize-html.xsl"),
+                    source=html_file,
+                    target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
         shutil.copy(temp_html, html_file)
-
 
         # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
 
@@ -116,18 +110,11 @@ class NlbpubToHtml(Pipeline):
 
         shutil.copy(html_file, temp_html)
         os.remove(html_file)
-        html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html") # Bruk html istedenfor xhtml når det ikke er en EPUB
+        html_file = os.path.join(os.path.dirname(html_file), result_identifier + ".html")  # Bruk html istedenfor xhtml når det ikke er en EPUB
         shutil.copy(temp_html, html_file)
         # TODO: sett inn HTML5 doctype: <!DOCTYPE html>
 
         html_dir = os.path.dirname(opf_path)
-
-        shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "NLB_logo.jpg"),
-                    os.path.join(html_dir, "NLB_logo.jpg"))
-
-        shutil.copy(os.path.join(NlbpubToHtml.xslt_dir, NlbpubToHtml.uid, "default.css"),
-                    os.path.join(html_dir, "default.css"))
-
 
         # ---------- slett EPUB-spesifikke filer ----------
 
@@ -144,13 +131,12 @@ class NlbpubToHtml(Pipeline):
                 elif item.attrib["media-type"] == "application/smil+xml":
                     delete = True
 
-            if not delete or not "href" in item.attrib:
+            if not delete or "href" not in item.attrib:
                 continue
 
             fullpath = os.path.join(os.path.dirname(opf_path), item.attrib["href"])
             os.remove(fullpath)
         os.remove(opf_path)
-
 
         # ---------- lagre HTML-filsett ----------
 

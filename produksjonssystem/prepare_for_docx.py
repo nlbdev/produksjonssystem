@@ -3,31 +3,33 @@
 
 import os
 import sys
+import shutil
 import tempfile
 import traceback
 import subprocess
 
 from lxml import etree as ElementTree
 from core.pipeline import Pipeline
+from nlbpub_to_html import NlbpubToHtml
 from core.utils.epub import Epub
+from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
 
-class NLBpubToDocx(Pipeline):
-    uid = "nlbpub-to-docx"
-    title = "NLBPUB til DOCX"
+class PrepareForDocx(Pipeline):
+    uid = "prepare-for-docx"
+    title = "Klargjør for DOCX"
     labels = ["e-bok"]
     publication_format = "XHTML"
-    expected_processing_time = 43
-
-    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
+    expected_processing_time = 8
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
-        self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+        self.utils.report.title = self.title + " EPUB slettet: " + self.book['name']
+        self.utils.report.should_email = False
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
@@ -64,6 +66,8 @@ class NLBpubToDocx(Pipeline):
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
 
+        # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
+
         opf_path = temp_epub.opf_path()
         if not opf_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
@@ -78,47 +82,30 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
-        html_file = os.path.join(os.path.dirname(opf_path), html_file)
+        html_dir = os.path.dirname(opf_path)
+        html_file = os.path.join(html_dir, html_file)
         if not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
-        # ---------- konverter HTML-fila til DOCX ----------
+        temp_html_obj = tempfile.NamedTemporaryFile()
+        temp_html = temp_html_obj.name
 
-        temp_docxdir_obj = tempfile.TemporaryDirectory()
-        temp_docxdir = temp_docxdir_obj.name
-
-        try:
-            self.utils.report.info("Konverterer fra XHTML til DOCX...")
-            process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
-                                                html_file,
-                                                os.path.join(temp_docxdir, epub.identifier() + ".docx")])
-                                                #"--insert-blank-line"])
-            if process.returncode == 0:
-                self.utils.report.info("Boken ble konvertert.")
-            else:
-                self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
-                self.pipeline.utils.report.debug(traceback.format_stack())
-                self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-                return
-
-        except subprocess.TimeoutExpired as e:
-            self.utils.report.error("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForDocx.uid, "prepare-for-docx.xsl"),
+                    source=html_file,
+                    target=temp_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
+        shutil.copy(temp_html, html_file)
 
-        except Exception:
-            self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
-            self.utils.report.info(traceback.format_exc(), preformatted=True)
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
-
-        archived_path = self.utils.filesystem.storeBook(temp_docxdir, epub.identifier())
+        archived_path = self.utils.filesystem.storeBook(temp_epubdir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
+        self.utils.report.info(epub.identifier() + " ble lagt til i 'klargjort for DOCX'-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
 
 
 if __name__ == "__main__":
-    NLBpubToDocx().run()
+    PrepareForDocx().run()

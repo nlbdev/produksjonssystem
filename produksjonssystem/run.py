@@ -25,6 +25,8 @@ from incoming_nordic import IncomingNordic
 from insert_metadata import InsertMetadataEpub, InsertMetadataDaisy202, InsertMetadataXhtml, InsertMetadataBraille
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
+from prepare_for_docx import PrepareForDocx
+from prepare_for_ebook import PrepareForEbook
 from epub_to_dtbook_html import EpubToDtbookHTML
 from prepare_for_braille import PrepareForBraille
 from epub_to_dtbook_braille import EpubToDtbookBraille
@@ -107,6 +109,8 @@ class Produksjonssystem():
             "epub_narration": os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing"),
             "pef": os.path.join(book_archive_dirs["master"], "utgave-ut/PEF"),
             "pub-ready-braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift"),
+            "pub-ready-ebook": os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok"),
+            "pub-ready-docx": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX"),
             "pub-in-epub": os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB"),
             "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
             "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
@@ -124,10 +128,13 @@ class Produksjonssystem():
 
             # EPUB
             [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
+
             # e-bok
             [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
-            [NlbpubToHtml(retry_missing=True),                "pub-in-ebook",        "html"],
-            [NLBpubToDocx(retry_missing=True),                "pub-in-ebook",        "docx"],
+            [PrepareForEbook(retry_missing=True),             "pub-in-ebook",        "pub-ready-ebook"],
+            [PrepareForDocx(retry_missing=True),              "pub-ready-ebook",     "pub-ready-docx"],
+            [NlbpubToHtml(retry_missing=True),                "pub-ready-ebook",     "html"],
+            [NLBpubToDocx(retry_missing=True),                "pub-ready-docx",      "docx"],
 
             # punktskrift
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
