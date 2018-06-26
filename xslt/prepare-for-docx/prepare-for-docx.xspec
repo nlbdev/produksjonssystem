@@ -5,7 +5,7 @@
                stylesheet="prepare-for-docx.xsl">
     
     <x:scenario label="Headline markers">
-        <x:context function="metadata">
+        <x:context>
             <div>
                 <h1>Overskrift nivå 1</h1>
                 <h2>Overskrift nivå 2</h2>
@@ -18,12 +18,12 @@
         
         <x:expect label="result">
             <div>
-                <h1>x Overskrift nivå 1</h1>
-                <h2>xx Overskrift nivå 2</h2>
-                <h3>xxx Overskrift nivå 3</h3>
-                <h4>xxxx Overskrift nivå 4</h4>
-                <h5>xxxxx Overskrift nivå 5</h5>
-                <h6>xxxxxx Overskrift nivå 6</h6>
+                <h1>xxx1 Overskrift nivå 1</h1>
+                <h2>xxx2 Overskrift nivå 2</h2>
+                <h3>xxx3 Overskrift nivå 3</h3>
+                <h4>xxx4 Overskrift nivå 4</h4>
+                <h5>xxx5 Overskrift nivå 5</h5>
+                <h6>xxx6 Overskrift nivå 6</h6>
             </div>
         </x:expect>
     </x:scenario>
