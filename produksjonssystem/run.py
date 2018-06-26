@@ -162,18 +162,16 @@ class Produksjonssystem():
                 }
             }
         ]
+        # also make dirs available from static contexts
+        Pipeline.dirs_ranked = self.dirs_ranked
 
-        # Make a key/value copy of dirs_ranked for convenience
+        # Make a key/value version of dirs_ranked for convenience
         self.dirs = {
             "reports": Config.get("reports_dir")
         }
         for rank in self.dirs_ranked:
             for dir in rank["dirs"]:
                 self.dirs[dir] = rank["dirs"][dir]
-
-        # also make dirs available from static contexts
-        Pipeline.dirs_ranked = self.dirs_ranked
-        Pipeline.dirs = self.dirs
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [

@@ -27,6 +27,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class Pipeline():
     """
     Base class for creating pipelines.
@@ -55,8 +56,9 @@ class Pipeline():
     dir_base = None
     parentdirs = {}
 
-    # This one is meant for use in static contexts (Pipeline.dirs[uid][in|out|reports|trigger])
-    dirs = None
+    # These ones are meant for use in static contexts
+    dirs = None  # dirs are built in Pipeline.start_common: Pipeline.dirs[uid][in|out|reports|trigger]
+    dirs_ranked = None  # dirs_ranked are built by the coordinator thread (i.e. Produksjonssystem in run.py)
 
     # Other configuration
     config = None    # instance config
