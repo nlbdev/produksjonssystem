@@ -63,8 +63,12 @@ class InsertMetadata(Pipeline):
         self.utils.report.info("Oppdaterer metadata...")
         updated = Metadata.update(self, temp_epub, publication_format=self.publication_format, insert=True)
         if isinstance(updated, bool) and updated is False:
-            self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎" + epubTitle
-            return False
+            library = epub.meta("schema:library")
+            if library is not None and library.lower() == "statped":
+                self.utils.report.warn("Klarte ikke å oppdatere metadata, men boken tilhører Statped så vi fortsetter alikevel")
+            else:
+                self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎" + epubTitle
+                return False
         temp_epub.refresh_metadata()
 
         self.utils.report.info("Boken ble oppdatert med format-spesifik metadata. Kopierer til {}-arkiv.".format(self.publication_format))

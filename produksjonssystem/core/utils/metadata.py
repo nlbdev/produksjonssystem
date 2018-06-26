@@ -866,8 +866,15 @@ class Metadata:
     @staticmethod
     def should_produce(pipeline, epub, publication_format):
         if not Metadata.update(pipeline, epub, publication_format=publication_format, insert=False):
-            pipeline.utils.report.warn("Klarte ikke å hente metadata: {}".format(epub.identifier()))
-            return False
+            library = epub.meta("schema:library")
+            if library is None or library.lower() != "statped":
+                pipeline.utils.report.warn("Klarte ikke å hente metadata: {}".format(epub.identifier()))
+                return False
+
+        library = epub.meta("schema:library")
+        if library is not None and library.lower() == "statped":
+            pipeline.utils.report.info("Alle Statped-bøker skal produseres i alle formater")
+            return True
 
         metadata_dir = os.path.join(Metadata.get_metadata_dir(), epub.identifier())
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
