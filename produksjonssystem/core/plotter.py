@@ -107,8 +107,8 @@ class Plotter():
                     netpath_in = self.buffered_network_hosts[pipeline[0].dir_in]
                     if not netpath_in:
                         netpath_in = self.buffered_network_paths[pipeline[0].dir_in]
-            label_in = "< <font point-size='16'>{}</font>{} >".format(relpath_in,
-                                                                      "\n<br/><i>{}</i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
+            label_in = "< <font point-size='24'>{}</font>{} >".format(relpath_in,
+                                                                      "\n<br/><i><font point-size='20'>{}</font></i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
 
             relpath_out = None
             netpath_out = ""
@@ -135,8 +135,8 @@ class Plotter():
                     netpath_out = self.buffered_network_hosts[pipeline[0].dir_out]
                     if not netpath_out:
                         netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
-            label_out = "< <font point-size='16'>{}</font>{} >".format(relpath_out,
-                                                                       "\n<br/><i>{}</i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
+            label_out = "< <font point-size='24'>{}</font>{} >".format(relpath_out,
+                                                                       "\n<br/><i><font point-size='20'>{}</font></i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
 
             if rank_out:
                 node_ranks[rank_out].append(pipeline_id)
@@ -149,8 +149,8 @@ class Plotter():
 
             status = pipeline[0].get_status()
             progress_text = pipeline[0].get_progress()
-            pipeline_label = "< <font point-size='18'>{}</font>{} >".format(title,
-                                                                            "".join(["\n<br/><i>{}</i>".format(val) for val in [queue_string,
+            pipeline_label = "< <font point-size='26'>{}</font>{} >".format(title,
+                                                                            "".join(["\n<br/><i><font point-size='22'>{}</font></i>".format(val) for val in [queue_string,
                                                                                                                                 progress_text,
                                                                                                                                 status] if val]))
 
@@ -185,7 +185,7 @@ class Plotter():
 
             if node_ranks[rank]:
                 subgraph.attr("node", shape="none", style="filled", fillcolor="white")
-                subgraph.node("_ranklabel_" + rank, "< <font point-size='24'>{}</font> >".format(" <br/>".join(str(self.rank_name(rank)).split(" "))))
+                subgraph.node("_ranklabel_" + rank, "< <i><font point-size='28'>{}</font></i> >".format(" <br/>".join(str(self.rank_name(rank)).split(" "))))
 
             for dir in node_ranks[rank]:
                 subgraph.node(dir)
