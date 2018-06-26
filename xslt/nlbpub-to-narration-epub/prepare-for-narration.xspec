@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
-    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:html="http://www.w3.org/1999/xhtml"
-    stylesheet="prepare-for-narration.xsl">
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:html="http://www.w3.org/1999/xhtml"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="prepare-for-narration.xsl">
 
     <!-- 
         (c) 2018 NLB
@@ -9,7 +11,6 @@
         
         TODO: Legge til flere tester
     -->
-    
 
     <x:scenario label="Transformasjon av lister" pending="Transformasjon av lister er under testing, og skal foreløpig ikke brukes (komplekst innhold)">
         <x:context>
@@ -36,6 +37,18 @@
             </ol>
             <p xmlns="http://www.w3.org/1999/xhtml" class="nlb-ekstra-informasjon">Liste slutt</p>
         </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Regression test for https://github.com/nlbdev/produksjonssystem/issues/115">
+        <x:context>
+            <div>
+                <p><a epub:type="noteref" class="noteref" href="#fnt3-1">**</a></p>
+                <aside epub:type="note" class="notebody" id="fnt3-1">
+                    <p>** Bdonfzhexnr qå 1-vlzaonztvmwå.</p>
+                </aside>
+            </div>
+        </x:context>
+        <x:expect label="result" test="exists(/*)"/>
     </x:scenario>
     
 </x:description>

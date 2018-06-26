@@ -56,7 +56,7 @@
             <!-- Hvordan notereferansen håndteres er avhengig av om noten skal flyttes eller ikke og av om det er samsvar mellom referansetekst og start på noten -->
 
             <!-- Rydde opp i, og forenkle dette -->
-            <xsl:choose>
+            <!--<xsl:choose> Kommentert ut grunnet https://github.com/nlbdev/produksjonssystem/issues/115: current() må vaskes hvis den skal være en del av regexen
                 <xsl:when
                     test="
                         fnk:noten-skal-flyttes($noten)
@@ -64,19 +64,19 @@
                         normalize-space(string($noten)),
                         concat('^', normalize-space(current()), '\s\p{Lu}')
                         )">
-                    <!-- Noten skal flyttes, og det er samavar, så legg inn "Note ", men dropp notereferansen, ettersom noten begynner med samme tegn -->
+                    <!-\- Noten skal flyttes, og det er samsvar, så legg inn "Note ", men dropp notereferansen, ettersom noten begynner med samme tegn -\->
                     <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
                         <xsl:with-param name="informasjon" as="xs:string" select="'Note '"/>
                     </xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
-                    <!-- Ikke flytting eller ikke samsvar, så legg inn "Note " etterfulgt av referanse -->
+                    <!-\- Ikke flytting eller ikke samsvar, så legg inn "Note " etterfulgt av referanse -\->
                     <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
                         <xsl:with-param name="informasjon" as="xs:string" select="'Note '"/>
                     </xsl:call-template>
                     <xsl:apply-templates/>
                 </xsl:otherwise>
-            </xsl:choose>
+            </xsl:choose>-->
 
             <!-- Sjekker om noten skal flyttes til rette etter referansen -->
             <xsl:if test="fnk:noten-skal-flyttes($noten)">
@@ -184,7 +184,7 @@
 
     <xsl:function name="fnk:noten-skal-flyttes" as="xs:boolean">
         <xsl:param name="noten" as="element()"/>
-
+        
         <xsl:choose>
             <xsl:when
                 test="
