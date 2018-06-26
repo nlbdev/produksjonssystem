@@ -93,31 +93,88 @@ class Produksjonssystem():
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
         # Define directories
+        self.dirs_ranked = [
+            {
+                "id": "incoming",
+                "name": "Mottak",
+                "dirs": {
+                    "incoming": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
+                }
+            },
+            {
+                "id": "source-in",
+                "name": "Ubehandlet kildefil",
+                "dirs": {}
+            },
+            {
+                "id": "source-out",
+                "name": "Behandlet kildefil",
+                "dirs": {}
+            },
+            {
+                "id": "master",
+                "name": "Grunnlagsfil",
+                "dirs": {
+                    "master": Config.get("master_dir"),
+                    "metadata": Config.get("metadata_dir"),
+                    "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
+                    #"nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
+                }
+            },
+            {
+                "id": "publication-in",
+                "name": "Format-spesifikk metadata",
+                "dirs": {
+                    "pub-in-epub": os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB"),
+                    "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
+                    "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
+                    "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
+                }
+            },
+            {
+                "id": "publication-ready",
+                "name": "Klar for produksjon",
+                "dirs": {
+                    "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
+                    "dtbook_tts": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese"),
+                    "dtbook_html": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML"),
+                    "epub_narration": os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing"),
+                    "pub-ready-braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift"),
+                    "pub-ready-ebook": os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok"),
+                    "pub-ready-docx": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX"),
+                }
+            },
+            {
+                "id": "publication-out",
+                "name": "Ferdig produsert",
+                "dirs": {
+                    "html": os.path.join(book_archive_dirs["master"], "utgave-ut/HTML"),
+                    "docx": os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX"),
+                    "pef": os.path.join(book_archive_dirs["master"], "utgave-ut/PEF"),
+                    "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
+                }
+            },
+            {
+                "id": "distribution",
+                "name": "Klar til distribusjon",
+                "dirs": {
+                    "abstracts": os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+                }
+            }
+        ]
+
+        # Make a key/value copy of dirs_ranked for convenience
         self.dirs = {
-            "reports": Config.get("reports_dir"),
-            "metadata": Config.get("metadata_dir"),
-            "incoming": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
-            "nordic": os.path.join(book_archive_dirs["master"], "kilde-inn/nordisk"),
-            "master": Config.get("master_dir"),
-            "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
-        #    "nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
-            "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
-            "dtbook_tts": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese"),
-            "dtbook_html": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML"),
-            "html": os.path.join(book_archive_dirs["master"], "utgave-ut/HTML"),
-            "docx": os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX"),
-            "epub_narration": os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing"),
-            "pef": os.path.join(book_archive_dirs["master"], "utgave-ut/PEF"),
-            "pub-ready-braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift"),
-            "pub-ready-ebook": os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok"),
-            "pub-ready-docx": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX"),
-            "pub-in-epub": os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB"),
-            "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
-            "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
-            "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
-            "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
-            "abstracts": os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+            "reports": Config.get("reports_dir")
         }
+        for rank in self.dirs_ranked:
+            for dir in rank["dirs"]:
+                self.dirs[dir] = rank["dirs"][dir]
+
+        # also make dirs available from static contexts
+        Pipeline.dirs_ranked = self.dirs_ranked
+        Pipeline.dirs = self.dirs
+
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak

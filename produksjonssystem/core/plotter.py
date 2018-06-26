@@ -15,12 +15,13 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class Plotter():
     """
     Generates a HTML page displaying the current state of the system, for use on dashboards.
     """
 
-    pipelines = None # [ [pipeline,in,out,reports,[recipients,...], ...]
+    pipelines = None  # [ [pipeline,in,out,reports,[recipients,...], ...]
     report_dir = None
     buffered_network_paths = {}
     buffered_network_hosts = {}
@@ -30,8 +31,27 @@ class Plotter():
         self.pipelines = pipelines
         self.report_dir = report_dir
 
+    def rank_name(self, rank_id):
+        for rank in Pipeline.dirs_ranked:
+            if rank["id"] == rank_id:
+                return rank["name"]
+        return None
+
+    def next_rank(self, rank_id):
+        use_next = False
+        for rank in Pipeline.dirs_ranked:
+            if use_next:
+                return rank["id"]
+            elif rank["id"] == rank_id:
+                use_next = True
+        return None
+
     def plot(self, uids, name):
         dot = Digraph(name="Produksjonssystem", format="png")
+
+        node_ranks = {}
+        for rank in Pipeline.dirs_ranked:
+            node_ranks[rank["id"]] = []
 
         for pipeline in self.pipelines:
             if not pipeline[0].uid in uids:
@@ -64,6 +84,13 @@ class Plotter():
 
             relpath_in = None
             netpath_in = ""
+            rank_in = None
+            if pipeline[0].dir_in:
+                for rank in Pipeline.dirs_ranked:
+                    for dir in rank["dirs"]:
+                        if os.path.normpath(pipeline[0].dir_in) == os.path.normpath(rank["dirs"][dir]):
+                            rank_in = rank["id"]
+                            break
             if pipeline[0].dir_in and not pipeline[0].dir_base:
                 relpath_in = os.path.basename(os.path.dirname(pipeline[0].dir_in))
             elif pipeline[0].dir_in and pipeline[0].dir_base:
@@ -80,10 +107,18 @@ class Plotter():
                     netpath_in = self.buffered_network_hosts[pipeline[0].dir_in]
                     if not netpath_in:
                         netpath_in = self.buffered_network_paths[pipeline[0].dir_in]
-            label_in = "< <font point-size='16'>{}</font>{} >".format(relpath_in, "\n<br/><i>{}</i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
+            label_in = "< <font point-size='16'>{}</font>{} >".format(relpath_in,
+                                                                      "\n<br/><i>{}</i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
 
             relpath_out = None
             netpath_out = ""
+            rank_out = None
+            if pipeline[0].dir_out:
+                for rank in Pipeline.dirs_ranked:
+                    for dir in rank["dirs"]:
+                        if os.path.normpath(pipeline[0].dir_out) == os.path.normpath(rank["dirs"][dir]):
+                            rank_out = rank["id"]
+                            break
             if pipeline[0].dir_out and not pipeline[0].dir_base:
                 relpath_out = os.path.basename(os.path.dirname(pipeline[0].dir_out))
             elif pipeline[0].dir_out and pipeline[0].dir_base:
@@ -100,11 +135,24 @@ class Plotter():
                     netpath_out = self.buffered_network_hosts[pipeline[0].dir_out]
                     if not netpath_out:
                         netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
-            label_out = "< <font point-size='16'>{}</font>{} >".format(relpath_out, "\n<br/><i>{}</i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
+            label_out = "< <font point-size='16'>{}</font>{} >".format(relpath_out,
+                                                                       "\n<br/><i>{}</i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
+
+            if rank_out:
+                node_ranks[rank_out].append(pipeline_id)
+            elif rank_in:
+                next_rank = self.next_rank(rank_in)
+                if next_rank:
+                    node_ranks[next_rank].append(pipeline_id)
+                else:
+                    node_ranks[rank_in].append(pipeline_id)
 
             status = pipeline[0].get_status()
             progress_text = pipeline[0].get_progress()
-            pipeline_label = "< <font point-size='18'>{}</font>{} >".format(title, "".join(["\n<br/><i>{}</i>".format(val) for val in [queue_string, progress_text, status] if val]))
+            pipeline_label = "< <font point-size='18'>{}</font>{} >".format(title,
+                                                                            "".join(["\n<br/><i>{}</i>".format(val) for val in [queue_string,
+                                                                                                                                progress_text,
+                                                                                                                                status] if val]))
 
             fillcolor = "lightskyblue1"
             if book or queue_size:
@@ -121,6 +169,7 @@ class Plotter():
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[1], label_in)
                 dot.edge(pipeline[1], pipeline_id)
+                node_ranks[rank_in].append(pipeline[1])
 
             if relpath_out:
                 fillcolor = "wheat"
@@ -129,6 +178,19 @@ class Plotter():
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[2], label_out)
                 dot.edge(pipeline_id, pipeline[2])
+                node_ranks[rank_out].append(pipeline[2])
+
+        for rank in node_ranks:
+            subgraph = Digraph("cluster_" + rank, graph_attr={"style": "dotted"})
+
+            if node_ranks[rank]:
+                subgraph.attr("node", shape="none", style="filled", fillcolor="white")
+                subgraph.node("_ranklabel_" + rank, "< <font point-size='24'>{}</font> >".format(" <br/>".join(str(self.rank_name(rank)).split(" "))))
+
+            for dir in node_ranks[rank]:
+                subgraph.node(dir)
+
+            dot.subgraph(subgraph)
 
         dot.render(os.path.join(self.report_dir, name + "_"))
 
