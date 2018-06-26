@@ -224,6 +224,7 @@ class Metadata:
             if epub.identifier() in Metadata.last_validation_results:
                 del Metadata.last_validation_results[epub.identifier()]
             if not success:
+                pipeline.utils.report.error("Klarte ikke å hente metadata")
                 return False
 
         # If metadata has changed; re-validate the metadata
@@ -231,6 +232,7 @@ class Metadata:
             Metadata.last_validation_results[epub.identifier()] = Metadata.validate_metadata(pipeline, epub, publication_format=publication_format)
 
         if not Metadata.last_validation_results[epub.identifier()]:
+            pipeline.utils.report.error("Metadata er ikke valide")
             return False  # metadata is not valid
 
         if insert:
@@ -670,6 +672,7 @@ class Metadata:
                         "modified": dcterms_modified
                     })
         if not xslt.success:
+            pipeline.utils.report.error("Klarte ikke å oppdatere OPF")
             return False
 
         xml = ElementTree.parse(opf_path).getroot()
@@ -718,6 +721,7 @@ class Metadata:
                             "modified": dcterms_modified
                         })
             if not xslt.success:
+                pipeline.utils.report.error("Klarte ikke å oppdatere HTML")
                 return False
 
             xml = ElementTree.parse(html_path).getroot()
