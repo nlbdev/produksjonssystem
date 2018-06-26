@@ -121,31 +121,39 @@ def check_dirs(last_run=False):
         if expect_dirs[uid]["status"] is not None:
             success = success and expect_dirs[uid]["status"]
             continue
+        identifier_found = False
         for identifier in identifiers:
             if os.path.exists(os.path.join(expect_dir, identifier)):
-                expect_dirs[uid]["status"] = True
+                identifier_found = True
+                break
 
             if not expect_dirs[uid]["parentdirs"] == {}:
                 for key in expect_dirs[uid]["parentdirs"]:
                     expect_parentdir = os.path.join(expect_dir, expect_dirs[uid]["parentdirs"][key])
                     if os.path.exists(os.path.join(expect_parentdir, identifier)):
-                        expect_dirs[uid]["status"] = True
+                        identifier_found = True
+                        break
                     if glob.glob(os.path.join(expect_parentdir, identifier)+".*"):
-                        expect_dirs[uid]["status"] = True
+                        identifier_found = True
+                        break
 
             file = os.listdir(expect_dir)
             file = re.sub(r'\.[^.]*$', '', file[0]) if file else None
             if file and file == identifier:
-                expect_dirs[uid]["status"] = True
-
-            if expect_dirs[uid]["status"] is True:
-                result(expect_dirs[uid]["title"], True)
+                identifier_found = True
                 break
+
+        if expect_dirs[uid]["status"] is None:
+            if identifier_found:
+                expect_dirs[uid]["status"] = True
+                result(expect_dirs[uid]["title"], True)
 
             elif last_run:
+                expect_dirs[uid]["status"] = False
                 result(expect_dirs[uid]["title"], False)
                 success = False
-                break
+
+    return success
 
 
 start_time = int(time.time())
