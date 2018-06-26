@@ -338,7 +338,7 @@ class Report():
             with open(temp_md_obj.name, "w") as f:
                 f.write(markdown_text)
                 logging.debug("email markdown: {}".format(temp_md_obj.name))
-            with open(temp_html_obj.md, "w") as f:
+            with open(temp_html_obj.name, "w") as f:
                 f.write(markdown_html)
                 logging.debug("email html: {}".format(temp_html_obj.name))
 
