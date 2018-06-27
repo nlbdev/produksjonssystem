@@ -40,14 +40,15 @@ class IncomingNordic(Pipeline):
 
     def on_book_deleted(self):
         self.utils.report.should_email = False
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: "+self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: "+self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         epub = Epub(self, self.book["source"])
@@ -114,6 +115,7 @@ class IncomingNordic(Pipeline):
         self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
         self.utils.filesystem.deleteSource()
+        return True
         # TODO:
         # - self.utils.epubCheck på mottatt EPUB
         # - EPUB 3 Accessibility Checker på mottatt EPUB

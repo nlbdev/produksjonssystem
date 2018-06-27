@@ -33,14 +33,15 @@ class NlbpubToNarrationEpub(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -55,12 +56,12 @@ class NlbpubToNarrationEpub(Pipeline):
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
 
         # ---------- lag en kopi av EPUBen ----------
@@ -77,7 +78,7 @@ class NlbpubToNarrationEpub(Pipeline):
         if not opf_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
         opf_path = os.path.join(narration_epubdir, opf_path)
 
         xml = ElementTree.parse(opf_path).getroot()
@@ -86,13 +87,13 @@ class NlbpubToNarrationEpub(Pipeline):
         if not html_file:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         html_file = os.path.join(os.path.dirname(opf_path), html_file)
         if not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
@@ -106,7 +107,7 @@ class NlbpubToNarrationEpub(Pipeline):
                           target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
         shutil.copy(temp_html, html_file)
 
         self.utils.report.info("Tilpasser innhold for innlesing...")
@@ -118,7 +119,7 @@ class NlbpubToNarrationEpub(Pipeline):
                           target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
         shutil.copy(temp_html, html_file)
 
         self.utils.report.info("Lager synkroniseringspunkter...")
@@ -130,7 +131,7 @@ class NlbpubToNarrationEpub(Pipeline):
                           target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
         shutil.copy(temp_html, html_file)
 
 
@@ -142,7 +143,7 @@ class NlbpubToNarrationEpub(Pipeline):
         xslt = Epub.html_to_opf(self, opf_path, temp_opf)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         shutil.copy(temp_opf, opf_path)
 
@@ -156,7 +157,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.info(traceback.format_exc(), preformatted=True)
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         if html_file != new_html_file:
             shutil.copy(html_file, new_html_file)
@@ -170,13 +171,13 @@ class NlbpubToNarrationEpub(Pipeline):
         if not nav_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne navigasjonsfila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
         nav_path = os.path.join(narration_epubdir, nav_path)
 
         xslt = Epub.html_to_nav(self, html_file, nav_path)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
 
 
         # ---------- save EPUB ----------
@@ -187,6 +188,7 @@ class NlbpubToNarrationEpub(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i innlesingsklart EPUB-arkiv.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
+        return True
 
 
 if __name__ == "__main__":

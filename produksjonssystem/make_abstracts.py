@@ -34,14 +34,15 @@ class Audio_Abstract(Pipeline):
             self.utils.report.should_email = False
         self.utils.report.info("Slettet lydbok i mappa: " + self.book['name'])
         self.utils.report.title = "Lydbok slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret lydbok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny lydbok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -84,7 +85,7 @@ class Audio_Abstract(Pipeline):
         except Exception:
             self.utils.report.debug(traceback.format_exc(), preformatted=True)
             self.utils.report.error("Det oppstod en feil for" + audio_identifier + " under lasting av smilfilene. Sjekk loggen for detaljer.")
-            return
+            return False
         # Back-cover
 
         if (smilFile != ""):
@@ -205,6 +206,9 @@ class Audio_Abstract(Pipeline):
             self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
         else:
             self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
+            return False
+
+        return True
 
 
 if __name__ == "__main__":

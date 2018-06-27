@@ -30,14 +30,15 @@ class NordicToNlbpub(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -52,12 +53,12 @@ class NordicToNlbpub(Pipeline):
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         temp_html_file_obj = tempfile.NamedTemporaryFile()
         temp_html_file = temp_html_file_obj.name
@@ -83,7 +84,7 @@ class NordicToNlbpub(Pipeline):
                             target=temp_html_file)
                 if not xslt.success:
                     self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                    return
+                    return False
                 shutil.copy(temp_html_file, file)
 
         html_dir_obj = tempfile.TemporaryDirectory()
@@ -129,7 +130,7 @@ class NordicToNlbpub(Pipeline):
             if epub_validate_status == "ERROR":
                 self.utils.report.error("Klarte ikke å validere boken")
                 self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                return
+                return False
 
             if epub_validate_status == "WARN":
                 self.utils.report.warn("EPUBen er ikke valid, men vi fortsetter alikevel.")
@@ -141,7 +142,7 @@ class NordicToNlbpub(Pipeline):
             if convert_status != "SUCCESS":
                 self.utils.report.error("Klarte ikke å konvertere boken")
                 self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                return
+                return False
 
             dp2_html_dir = os.path.join(dp2_job_convert.dir_output, "output-dir", epub.identifier())
             dp2_html_file = os.path.join(dp2_job_convert.dir_output, "output-dir", epub.identifier(), epub.identifier() + ".xhtml")
@@ -172,7 +173,7 @@ class NordicToNlbpub(Pipeline):
                 if html_validate_status == "ERROR":
                     self.utils.report.error("Klarte ikke å validere HTML-versjonen av boken")
                     self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                    return
+                    return False
 
             self.utils.filesystem.copy(dp2_html_dir, html_dir)
 
@@ -182,7 +183,7 @@ class NordicToNlbpub(Pipeline):
                     target=temp_html_file)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
         shutil.copy(temp_html_file, html_file)
 
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
@@ -192,13 +193,14 @@ class NordicToNlbpub(Pipeline):
         nlbpub = Epub.from_html(self, html_dir, nlbpub_tempdir)
         if nlbpub is None:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
         archived_path = self.utils.filesystem.storeBook(nlbpub.asDir(), epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i NLBPUB-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
+        return True
 
 
 if __name__ == "__main__":

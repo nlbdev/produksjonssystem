@@ -30,14 +30,15 @@ class NlbpubToPef(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " HTML-kilde slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -56,7 +57,7 @@ class NlbpubToPef(Pipeline):
         if not html_file or not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne en HTML-fil.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         html_xml = ElementTree.parse(html_file).getroot()
         identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
@@ -79,7 +80,7 @@ class NlbpubToPef(Pipeline):
         if not identifier:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer i HTML-fil.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
         epub_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='nlbprod:identifier.epub']")
         epub_identifier = epub_identifier[0].attrib["content"] if epub_identifier and "content" in epub_identifier[0].attrib else None
 
@@ -117,14 +118,14 @@ class NlbpubToPef(Pipeline):
                 if dp2_job.status != "DONE":
                     self.utils.report.info("Klarte ikke å konvertere boken")
                     self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
-                    return
+                    return False
 
                 dp2_pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
 
                 if not os.path.isdir(dp2_pef_dir):
                     self.utils.report.info("Finner ikke den konverterte boken.")
                     self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
-                    return
+                    return False
 
                 self.utils.filesystem.copy(dp2_pef_dir, pef_tempdir_objects[braille_version].name)
 
@@ -137,6 +138,7 @@ class NlbpubToPef(Pipeline):
             self.utils.report.info(identifier + " ble lagt til i arkivet under PEF/" + braille_version + ".")
 
         self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄" + bookTitle
+        return True
 
 
 if __name__ == "__main__":

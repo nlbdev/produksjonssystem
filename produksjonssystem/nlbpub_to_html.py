@@ -146,6 +146,7 @@ class NlbpubToHtml(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i HTML-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
+        return True
 
 
 if __name__ == "__main__":

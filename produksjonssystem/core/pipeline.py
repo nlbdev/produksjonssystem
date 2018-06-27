@@ -793,19 +793,20 @@ class Pipeline():
                         # configure utils before processing book
                         self.utils.report = Report(self)
                         self.utils.filesystem = Filesystem(self)
+                        result = None
 
                         try:
                             self.progress_start = time.time()
                             self.utils.report.debug("Started: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
                             if event == "created":
-                                self.on_book_created()
+                                result = self.on_book_created()
 
                             elif event == "deleted":
-                                self.on_book_deleted()
+                                result = self.on_book_deleted()
 
                             else:
-                                self.on_book_modified()
+                                result = self.on_book_modified()
 
                         except Exception:
                             self.utils.report.error("An error occured while handling the book")
@@ -819,6 +820,14 @@ class Pipeline():
                                 self.utils.report.error("An error occured while retrieving production info")
                                 self.utils.report.error(traceback.format_exc(), preformatted=True)
                                 logging.exception("An error occured while retrieving production info")
+
+                            if self.utils.report.title is None:
+                                book_title = self.book_title()
+                                book_title = " ({})".format(book_title) if book_title else ""
+                                if result is True:
+                                    self.utils.report.title = self.title + ": " + self.book["name"] + " lyktes 👍😄" + book_title
+                                else:
+                                    self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + book_title
 
                             progress_end = time.time()
                             self.progress_log.append({"start": self.progress_start, "end": progress_end})

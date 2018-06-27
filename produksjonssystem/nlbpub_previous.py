@@ -25,14 +25,15 @@ class NlbpubPrevious(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -47,12 +48,12 @@ class NlbpubPrevious(Pipeline):
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
@@ -91,6 +92,7 @@ class NlbpubPrevious(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i NLBPUB-previous-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble kopiert 👍😄" + epubTitle
+        return True
 
     def dirs_equal(self, dir1, dir2):
         """

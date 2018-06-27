@@ -28,14 +28,15 @@ class PrepareForBraille(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -55,7 +56,7 @@ class PrepareForBraille(Pipeline):
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
 
         # ---------- lag en kopi av EPUBen ----------
@@ -72,7 +73,7 @@ class PrepareForBraille(Pipeline):
         if not opf_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
         opf_path = os.path.join(temp_epubdir, opf_path)
         opf_xml = ElementTree.parse(opf_path).getroot()
 
@@ -81,12 +82,12 @@ class PrepareForBraille(Pipeline):
         if not html_file:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
         html_file = os.path.join(os.path.dirname(opf_path), html_file)
         if not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
@@ -97,7 +98,7 @@ class PrepareForBraille(Pipeline):
                           target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
         shutil.copy(temp_html, html_file)
 
 
@@ -109,7 +110,7 @@ class PrepareForBraille(Pipeline):
         if not result_identifier:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer i ny HTML-fil.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         shutil.copy(html_file, temp_html)
         os.remove(html_file)
@@ -151,6 +152,7 @@ class PrepareForBraille(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(self.book["name"] + " ble lagt til i arkiv for punkt-klare HTML-filer.")
         self.utils.report.title = self.title + ": " + self.book["name"] + " ble konvertert 👍😄" + epubTitle
+        return True
 
 
 if __name__ == "__main__":

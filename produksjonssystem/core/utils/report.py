@@ -42,7 +42,6 @@ class Report():
         if pipeline:
             self.pipeline = pipeline
         else:
-            assert title, "title must be specified when pipeline is missing"
             assert report_dir, "report_dir must be specified when pipeline is missing"
             assert dir_base, "dir_base must be specified when pipeline is missing"
             assert uid, "uid must be specified when pipeline is missing"
@@ -196,6 +195,7 @@ class Report():
 
     def email(self, smtp, sender, recipients, subject=None):
         if not subject:
+            assert isinstance(self.title, str) or self.pipeline is not None, "either title or pipeline must be specified when subject is missing"
             subject = self.title if self.title else self.pipeline.title
 
         # 0. Create attachment with complete log (including DEBUG statements)

@@ -144,6 +144,7 @@ class UpdateMetadata(Pipeline):
 
     def on_book_deleted(self):
         self.utils.report.should_email = False
+        return True
 
     def on_book_modified(self):
         if "triggered" not in self.book["events"]:
@@ -159,8 +160,11 @@ class UpdateMetadata(Pipeline):
         if Metadata.update(self, epub, insert=False, force_update=True):
             Metadata.trigger_metadata_pipelines(self, self.book["name"])
 
+        return True
+
     def on_book_created(self):
         self.utils.report.should_email = False
+        return True
 
 if __name__ == "__main__":
     UpdateMetadata().run()

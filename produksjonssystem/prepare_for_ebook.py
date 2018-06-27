@@ -26,14 +26,15 @@ class PrepareForEbook(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " EPUB slettet: " + self.book['name']
+        return True
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book_created(self):
         self.utils.report.info("Ny bok i mappa: " + self.book['name'])
-        self.on_book()
+        return self.on_book()
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
@@ -48,12 +49,12 @@ class PrepareForEbook(Pipeline):
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
-            return
+            return False
 
         # ---------- lag en kopi av EPUBen ----------
 
@@ -68,7 +69,7 @@ class PrepareForEbook(Pipeline):
         if not opf_path:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
         opf_path = os.path.join(temp_epubdir, opf_path)
         opf_xml = ElementTree.parse(opf_path).getroot()
 
@@ -77,13 +78,13 @@ class PrepareForEbook(Pipeline):
         if not html_file:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
         html_dir = os.path.dirname(opf_path)
         html_file = os.path.join(html_dir, html_file)
         if not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
-            return
+            return False
 
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
@@ -95,7 +96,7 @@ class PrepareForEbook(Pipeline):
                     target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return
+            return False
         shutil.copy(temp_html, html_file)
 
         # Use library-specific logo and stylesheet if available
@@ -119,6 +120,7 @@ class PrepareForEbook(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i HTML-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
+        return True
 
 
 if __name__ == "__main__":
