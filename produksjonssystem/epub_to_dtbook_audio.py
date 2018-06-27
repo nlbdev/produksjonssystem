@@ -18,8 +18,8 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 
-class EpubToDtbook(Pipeline):
-    uid = "epub-to-dtbook"
+class EpubToDtbookAudio(Pipeline):
+    uid = "epub-to-dtbook-audio"
     title = "EPUB til DTBook for talesyntese"
     labels = ["Lydbok", "Talesyntese", "Metadata"]
     publication_format = "DAISY 2.02"
@@ -118,7 +118,7 @@ class EpubToDtbook(Pipeline):
         self.utils.report.debug("dtbook-cleanup.xsl")
         self.utils.report.debug("    source = " + dtbook_file)
         self.utils.report.debug("    target = " + temp_dtbook_file)
-        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbook.uid, "dtbook-cleanup.xsl"),
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "dtbook-cleanup.xsl"),
                     source=dtbook_file,
                     target=temp_dtbook_file)
         if not xslt.success:
@@ -126,7 +126,7 @@ class EpubToDtbook(Pipeline):
         shutil.copy(temp_dtbook_file, dtbook_file)
 
         self.utils.report.info("Validerer DTBook")
-        sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbook.uid, "validate-dtbook.sch"), source=dtbook_file)
+        sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "validate-dtbook.sch"), source=dtbook_file)
         if not sch.success:
             self.utils.report.error("Validering av DTBook feilet")
             return False

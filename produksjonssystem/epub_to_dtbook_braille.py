@@ -7,10 +7,10 @@ import shutil
 import tempfile
 
 from core.pipeline import Pipeline
-from epub_to_dtbook import EpubToDtbook
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.metadata import Metadata
+from epub_to_dtbook_audio import EpubToDtbookAudio
 from core.utils.schematron import Schematron
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
@@ -113,7 +113,7 @@ class EpubToDtbookBraille(Pipeline):
         self.utils.report.debug("dtbook-cleanup.xsl")
         self.utils.report.debug("    source = " + dtbook_file)
         self.utils.report.debug("    target = " + temp_dtbook_file)
-        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbook.uid, "dtbook-cleanup.xsl"),
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "dtbook-cleanup.xsl"),
                     source=dtbook_file,
                     target=temp_dtbook_file)
         if not xslt.success:
@@ -121,7 +121,7 @@ class EpubToDtbookBraille(Pipeline):
         shutil.copy(temp_dtbook_file, dtbook_file)
 
         self.utils.report.info("Validerer DTBook")
-        sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbook.uid, "validate-dtbook.sch"), source=dtbook_file)
+        sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "validate-dtbook.sch"), source=dtbook_file)
         if not sch.success:
             self.utils.report.error("Validering av DTBook feilet")
             return False

@@ -17,21 +17,21 @@ from email.headerregistry import Address
 
 # Import pipelines
 from nlbpub_to_pef import NlbpubToPef
-from epub_to_dtbook import EpubToDtbook
 from make_abstracts import Audio_Abstract
 from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
 from incoming_nordic import IncomingNordic
 from insert_metadata import InsertMetadataEpub, InsertMetadataDaisy202, InsertMetadataXhtml, InsertMetadataBraille
+from nlbpub_previous import NlbpubPrevious
 from update_metadata import UpdateMetadata
 from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_docx import PrepareForDocx
 from prepare_for_ebook import PrepareForEbook
 from epub_to_dtbook_html import EpubToDtbookHTML
 from prepare_for_braille import PrepareForBraille
+from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
-from nlbpub_previous import NlbpubPrevious
 
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -203,7 +203,7 @@ class Produksjonssystem():
                            labels=["Lydbok", "Innlesing"]),   "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-            [EpubToDtbook(),                                  "master",              "dtbook_tts"],
+            [EpubToDtbookAudio(),                             "master",              "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok", "Talesyntese"]), "dtbook_tts",          "daisy202"],
 
