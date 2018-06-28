@@ -102,8 +102,9 @@ class PrepareForEbook(Pipeline):
         # Use library-specific logo and stylesheet if available
 
         library = temp_epub.meta("schema:library")
-        logo = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}_logo.png".format(library.upper()))
-        stylesheet = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}.css".format(library.upper()))
+        library = library.upper() if library else library
+        logo = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}_logo.png".format(library))
+        stylesheet = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}.css".format(library))
 
         if os.path.isfile(logo):
             shutil.copy(logo, os.path.join(html_dir, os.path.basename(logo)))
