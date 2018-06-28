@@ -164,13 +164,13 @@ class Report():
         assert isinstance(subject, str)
         assert isinstance(message, str)
         assert isinstance(smtp, dict)
-        assert isinstance(sender, str)
+        assert isinstance(sender, str) or isinstance(sender, Address)
         assert isinstance(recipients, str) or isinstance(recipients, list)
 
         # 1. build e-mail
         msg = EmailMessage()
         msg['Subject'] = subject
-        msg['From'] = Report.emailStringsToAddresses(sender)
+        msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
         msg['To'] = Report.emailStringsToAddresses(recipients)
         msg.set_content(message)
 
@@ -231,7 +231,7 @@ class Report():
 
         try:
             assert isinstance(smtp, dict), "smtp must be a dict"
-            assert isinstance(sender, str), "sender must be a str"
+            assert isinstance(sender, str) or isinstance(sender, Address), "sender must be a str or Address"
             assert isinstance(recipients, str) or isinstance(recipients, list), "recipients must be a str or list"
             assert isinstance(self.title, str) or self.pipeline and isinstance(self.pipeline.title, str), "title or pipeline.title must be a str"
 
@@ -313,7 +313,7 @@ class Report():
             # 3. build e-mail
             msg = EmailMessage()
             msg['Subject'] = subject
-            msg['From'] = Report.emailStringsToAddresses(sender)
+            msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
             msg['To'] = Report.emailStringsToAddresses(recipients)
             msg.set_content(markdown_text)
             msg.add_alternative(markdown_html, subtype="html")
