@@ -78,14 +78,17 @@ class Produksjonssystem():
 
         # Configure email
         self.email = {
-            "smtp": {
-                "host": os.getenv("MAIL_SERVER"),
-                "port": os.getenv("MAIL_PORT"),
-                "user": os.getenv("MAIL_USERNAME"),
-                "pass": os.getenv("MAIL_PASSWORD")
-            },
+            "smtp": {},
             "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no")
         }
+        if os.environ.get("MAIL_SERVER", None):
+            self.email["smtp"]["host"] = os.environ.get("MAIL_SERVER", None)
+        if os.environ.get("MAIL_PORT", None):
+            self.email["smtp"]["port"] = os.environ.get("MAIL_PORT", None)
+        if os.environ.get("MAIL_USERNAME", None):
+            self.email["smtp"]["user"] = os.environ.get("MAIL_USERNAME", None)
+        if os.environ.get("MAIL_PASSWORD", None):
+            self.email["smtp"]["pass"] = os.environ.get("MAIL_PASSWORD", None)
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))

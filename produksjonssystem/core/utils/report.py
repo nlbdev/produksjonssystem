@@ -322,7 +322,9 @@ class Report():
 
             # 4. send e-mail
             if "host" in smtp and "port" in smtp:
-                with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
+                smtp_server = "{}:{}".format(smtp["host"], smtp["port"])
+                logging.info("SMTP server: {}".format(smtp_server))
+                with smtplib.SMTP(smtp_server) as s:
                     s.ehlo()
                     s.starttls()
                     if smtp["user"] and smtp["pass"]:
