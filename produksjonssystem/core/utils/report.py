@@ -183,7 +183,7 @@ class Report():
                 with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                     s.ehlo()
                     s.starttls()
-                    if smtp["user"] and smtp["pass"]:
+                    if "user" in smtp and "pass" in smtp:
                         s.login(smtp["user"], smtp["pass"])
                     else:
                         logging.debug("email user/pass not configured")
@@ -327,7 +327,7 @@ class Report():
                 with smtplib.SMTP(smtp_server) as s:
                     s.ehlo()
                     s.starttls()
-                    if smtp["user"] and smtp["pass"]:
+                    if "user" in smtp and "pass" in smtp:
                         s.login(smtp["user"], smtp["pass"])
                     else:
                         logging.debug("email user/pass not configured")
