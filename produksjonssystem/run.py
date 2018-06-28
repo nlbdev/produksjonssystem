@@ -17,6 +17,7 @@ from email.headerregistry import Address
 
 # Import pipelines
 from nlbpub_to_pef import NlbpubToPef
+from html_to_dtbook import HtmlToDtbook
 from make_abstracts import Audio_Abstract
 from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
@@ -138,6 +139,7 @@ class Produksjonssystem():
                 "id": "publication-ready",
                 "name": "Klar for produksjon",
                 "dirs": {
+                    "dtbook": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook"),
                     "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
                     "dtbook_tts": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese"),
                     "dtbook_html": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML"),
@@ -178,14 +180,17 @@ class Produksjonssystem():
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
-            # Mottak
+            # Mottak, nordic guidelines 2015-1
             [IncomingNordic(retry_all=True),                  "incoming",            "master"],
             [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
+
+            # Grunnlagsfiler
             [UpdateMetadata(),                                "metadata",            "nlbpub"],
-        #    [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
+            # [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
+            [HtmlToDtbook(),                                  "nlbpub",              "dtbook"],
 
             # EPUB
-            [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
+            # [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
 
             # e-bok
             [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
