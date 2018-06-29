@@ -122,4 +122,10 @@
         </rule>
     </pattern>
     
+    <pattern>
+        <rule context="marcxchange:record[$identifier]">
+            <assert test="exists(marcxchange:datafield[@tag='850']/marcxchange:subfield[@code='a'])">Avdeling / bibliotek mangler. Dette må være definert i *850$a.</assert>
+        </rule>
+    </pattern>
+    
 </schema>
