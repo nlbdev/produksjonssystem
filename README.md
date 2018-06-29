@@ -5,6 +5,7 @@ Python-skript for å sette opp et produksjonssystem
 basert på overvåking av mapper og automatiske
 konverteringer.
 
+![Animasjon som viser produksjonssystemet](dashboard-demo.gif)
 
 ## Øvrig dokumentasjon
 
