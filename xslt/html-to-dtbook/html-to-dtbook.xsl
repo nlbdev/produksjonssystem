@@ -6,8 +6,6 @@
     <xsl:import href="numeral-conversion.xsl"/>
     <xsl:import href="epub3-vocab.xsl"/>
     
-    <xsl:param name="allow-links" select="false()"/>
-
     <xsl:output indent="yes" exclude-result-prefixes="#all" doctype-public="-//NISO//DTD dtbook 2005-3//EN" doctype-system="http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd"/>
 
     <!--
@@ -190,9 +188,7 @@
 
     <xsl:template match="html:body">
         <book>
-            <xsl:if test="(html:section | html:article)[f:types(.)=('cover','frontmatter')] or *[not(self::html:section)]">
-                <xsl:call-template name="f:frontmatter"/>
-            </xsl:if>
+            <xsl:call-template name="f:frontmatter"/>
             <xsl:if test="(html:section | html:article)[f:types(.)=('bodymatter') or not(f:types(.)=('cover','frontmatter','bodymatter','backmatter'))]">
                 <xsl:call-template name="f:bodymatter"/>
             </xsl:if>
@@ -204,11 +200,16 @@
     </xsl:template>
 
     <xsl:template name="f:frontmatter">
-        <xsl:call-template name="f:copy-preceding-comments"/>
         <frontmatter>
-            <xsl:for-each select="html:header">
-                <xsl:call-template name="f:copy-preceding-comments"/>
-                <xsl:apply-templates select="node()"/>
+            <xsl:for-each select="../html:head/html:title[1]/text()">
+                <doctitle>
+                    <xsl:value-of select="."/>
+                </doctitle>
+            </xsl:for-each>
+            <xsl:for-each select="../html:head/html:meta[@name='dc:creator']/@content">
+                <docauthor>
+                    <xsl:value-of select="."/>
+                </docauthor>
             </xsl:for-each>
             <xsl:apply-templates select="(html:section | html:article)[f:types(.)=('cover','frontmatter')]"/>
         </frontmatter>
@@ -532,11 +533,28 @@
         </xsl:call-template>
     </xsl:template>
 
-    <!-- <a> is not allowed in nordic DTBook. Replacing with span. -->
     <xsl:template match="html:a">
+        <xsl:variable name="a" select="." as="element()"/>
         <xsl:choose>
-            <xsl:when test="html:span[f:classes(.) = 'lic']">
-                <xsl:apply-templates select="node()"/>
+            <xsl:when test="exists(node())">
+                <xsl:for-each-group select="node()" group-adjacent="not(self::html:span and f:classes(.) = 'lic')">
+                    <xsl:choose>
+                        <xsl:when test="current-grouping-key()">
+                            <xsl:variable name="exclude-id" select="exists(current-group()[1]/(preceding-sibling::* | preceding-sibling::text()[normalize-space(.)]))" as="xs:boolean"/>
+                            
+                            <xsl:for-each select="$a">
+                                <xsl:call-template name="f:a">
+                                    <xsl:with-param name="children" select="current-group()"/>
+                                    <xsl:with-param name="except-classes" select="'lic'" tunnel="yes"/>
+                                    <xsl:with-param name="except" select="if ($exclude-id) then 'id' else ()" tunnel="yes"/>
+                                </xsl:call-template>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="current-group()"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each-group>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:call-template name="f:a"/>
@@ -545,52 +563,34 @@
     </xsl:template>
     <xsl:template name="f:a">
         <xsl:param name="children" select="node()"/>
-        <xsl:choose>
-            <xsl:when test="$allow-links">
-                <a>
-                    <xsl:call-template name="f:attlist.a"/>
-                    <xsl:apply-templates select="$children"/>
-                </a>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:message select="'&lt;a&gt; is not allowed in nordic DTBook. Replacing with span and a &quot;a&quot; class.'"/>
-                <span>
-                    <xsl:call-template name="f:attlist.a"/>
-                    <xsl:apply-templates select="$children"/>
-                </span>
-            </xsl:otherwise>
-        </xsl:choose>
+        <a>
+            <xsl:call-template name="f:attlist.a"/>
+            <xsl:apply-templates select="$children"/>
+        </a>
     </xsl:template>
 
-    <!-- <a> is not allowed in nordic DTBook. Replacing with span and a "a" class. -->
     <xsl:template name="f:attlist.a">
 
         <xsl:call-template name="f:attrs">
-            <!--<xsl:with-param name="classes" select="'a'" tunnel="yes"/>-->
-
-            <!--
-            <!-\- Preserve @target as class attribute. Assumes that only characters that are valid for class names are used. -\->
-            <xsl:with-param name="classes" select="('a', if (@target) then concat('target-',replace(@target,'_','-')) else ())" tunnel="yes"/>
+            <!-- Preserve @target as class attribute. Assumes that only characters that are valid for class names are used. -->
+            <xsl:with-param name="classes" select="if (@target) then concat('target-',@target) else ()" tunnel="yes"/>
             <xsl:with-param name="except-classes" select="for $rev in (f:classes(.)[matches(.,'^rev-')]) return $rev" tunnel="yes"/>
-            -->
         </xsl:call-template>
 
-        <xsl:if test="$allow-links">
-            <xsl:copy-of select="@type|@href|@hreflang|@rel|@accesskey|@tabindex"/>
-            <!-- @download and @media is dropped - they don't have a good equivalent in DTBook -->
+        <xsl:copy-of select="@type|@href|@hreflang|@rel|@accesskey|@tabindex"/>
+        <!-- @download and @media is dropped - they don't have a good equivalent in DTBook -->
 
-            <xsl:choose>
-                <xsl:when test="@target='_blank' or matches(@href,'^(\w+:|/)')">
-                    <xsl:attribute name="external" select="'true'"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:attribute name="external" select="'false'"/>
-                </xsl:otherwise>
-            </xsl:choose>
+        <xsl:choose>
+            <xsl:when test="@target='_blank' or matches(@href,'^(\w+:|/)')">
+                <xsl:attribute name="external" select="'true'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:attribute name="external" select="'false'"/>
+            </xsl:otherwise>
+        </xsl:choose>
 
-            <!--<xsl:if test="f:classes(.)[matches(.,'^rev-')]">
-                <xsl:attribute name="rev" select="replace((f:classes(.)[matches(.,'^rev-')])[1],'^rev-','')"/>
-            </xsl:if>-->
+        <xsl:if test="f:classes(.)[matches(.,'^rev-')]">
+            <xsl:attribute name="rev" select="replace((f:classes(.)[matches(.,'^rev-')])[1],'^rev-','')"/>
         </xsl:if>
 
     </xsl:template>
@@ -905,16 +905,7 @@
     <xsl:template name="f:attlist.img">
         <xsl:param name="all-ids" tunnel="yes" select=".//@id"/>
         <xsl:call-template name="f:attrs"/>
-        <xsl:attribute name="src" select="replace(@src,'^images/','')"/>
-        <xsl:choose>
-            <xsl:when test="@alt='image' and (ancestor-or-self::*/(@xml:lang|@lang))[last()]='sv'">
-                <xsl:attribute name="alt" select="'illustration'"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:copy-of select="@alt"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:copy-of select="@longdesc|@height|@width"/>
+        <xsl:copy-of select="@src|@alt|@longdesc|@height|@width"/>
         <xsl:if test="not(@id)">
             <xsl:attribute name="id" select="f:generate-pretty-id(.,$all-ids)"/>
         </xsl:if>
@@ -967,32 +958,6 @@
     </xsl:template>
 
     <xsl:template match="html:hr"/>
-
-    <xsl:template match="html:h1[f:types(.)='fulltitle' and parent::html:header[parent::html:body]]">
-        <doctitle>
-            <xsl:call-template name="f:attlist.doctitle"/>
-            <xsl:apply-templates select="node()"/>
-        </doctitle>
-    </xsl:template>
-
-    <xsl:template name="f:attlist.doctitle">
-        <xsl:call-template name="f:attrs">
-            <xsl:with-param name="except-classes" select="('fulltitle','title')" tunnel="yes"/>
-        </xsl:call-template>
-    </xsl:template>
-
-    <xsl:template match="html:*[f:types(.)='z3998:author' and parent::html:header[parent::html:body]]">
-        <docauthor>
-            <xsl:call-template name="f:attlist.docauthor"/>
-            <xsl:apply-templates select="node()"/>
-        </docauthor>
-    </xsl:template>
-
-    <xsl:template name="f:attlist.docauthor">
-        <xsl:call-template name="f:attrs">
-            <xsl:with-param name="except-classes" select="('author','docauthor')" tunnel="yes"/>
-        </xsl:call-template>
-    </xsl:template>
 
     <!-- <covertitle> is not allowed in nordic DTBook. Using p instead. -->
     <xsl:template match="html:*[f:types(.)='covertitle' and parent::html:header[parent::html:body]]">
@@ -1093,14 +1058,6 @@
 
     <xsl:template match="html:ol | html:ul">
         <xsl:choose>
-            <xsl:when test="parent::html:section[f:types(.)='toc' and not(ancestor::html:section | ancestor::html:article)]">
-                <list>
-                    <xsl:call-template name="f:attlist.list">
-                        <xsl:with-param name="classes" select="'toc'" tunnel="yes"/>
-                    </xsl:call-template>
-                    <xsl:apply-templates select="node()"/>
-                </list>
-            </xsl:when>
             <xsl:when test="f:types(.)=('rearnotes','footnotes') or html:li/f:types(.)=('rearnote','footnote')">
                 <xsl:apply-templates select="node()"/>
             </xsl:when>
@@ -1115,106 +1072,33 @@
 
     <xsl:template name="f:attlist.list">
         <!-- Only 'pl' is allowed in nordic DTBook, markers will be inlined. A generic script would set type to ul or ol (i.e. select="local-name()"). -->
-        <xsl:attribute name="type" select="'pl'"/>
+        <xsl:attribute name="type" select="if (f:classes(.) = 'list-style-type-none') then 'pl' else local-name()"/>
         <xsl:call-template name="f:attrs"/>
-        <!--
-        list is always preformatted so enum and start is not included in the result
         <xsl:copy-of select="@start"/>
         <xsl:if test="@type">
             <xsl:attribute name="enum" select="@type"/>
         </xsl:if>
-        -->
         <xsl:attribute name="depth" select="count(ancestor::html:li[not(f:types(.)=('rearnote','footnote'))])+1"/>
     </xsl:template>
 
-    <!-- Only 'pl' is allowed in nordic DTBook; prepend markers ("• " for ul, "1. " for numbered, etc) to all list items. -->
     <xsl:template match="html:li">
         <li>
             <xsl:call-template name="f:attlist.li"/>
-
-            <xsl:variable name="is-block-except-list" select="if ((html:p | html:dl | html:div | html:blockquote | html:table | html:address | html:section | html:aside)) then true() else false()"/>
-
-            <xsl:variable name="marker">
-                <xsl:choose>
-                    <xsl:when test="parent::html:*/f:classes(.)='list-style-type-none'"/>
-                    <xsl:when test="(ancestor::html:section[1], ancestor::html:body)[1][f:types(.)='toc']"/>
-                    <xsl:when test="parent::html:ul">
-                        <xsl:value-of select="'• '"/>
-                    </xsl:when>
-                    <xsl:when test="parent::html:ol[not(@type) or @type='1']">
-                        <xsl:variable name="value" select="f:li-value(.)"/>
-                        <xsl:value-of select="concat($value,'. ')"/>
-                    </xsl:when>
-                    <xsl:when test="parent::html:ol[@type=('a','A')]">
-                        <xsl:variable name="value" select="f:li-value(.)"/>
-                        <xsl:variable name="alpha" select="f:numeric-decimal-to-alpha($value)"/>
-                        <xsl:value-of select="concat(if (parent::html:ol/@type='a') then lower-case($alpha) else upper-case($alpha),'. ')"/>
-                    </xsl:when>
-                    <xsl:when test="parent::html:ol[@type=('i','I')]">
-                        <xsl:variable name="value" select="f:li-value(.)"/>
-                        <xsl:variable name="roman" select="pf:numeric-decimal-to-roman($value)"/>
-                        <xsl:value-of select="concat(if (parent::html:ol/@type='i') then lower-case($roman) else upper-case($roman),'. ')"/>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:variable>
-
-            <xsl:choose>
-                <xsl:when test="$is-block-except-list and string-length($marker)">
-                    <xsl:choose>
-                        <xsl:when test="*[1] intersect html:p">
-                            <xsl:for-each select="*[1]">
-                                <p>
-                                    <xsl:call-template name="f:attlist.p"/>
-                                    <xsl:value-of select="$marker"/>
-                                    <xsl:apply-templates select="node()"/>
-                                </p>
-                            </xsl:for-each>
-                            <xsl:apply-templates select="node() except *[1]"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <p>
-                                <xsl:value-of select="$marker"/>
-                            </p>
-                            <xsl:apply-templates select="node()"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:when test="$is-block-except-list">
-                    <xsl:apply-templates select="node()"/>
-                </xsl:when>
-                <xsl:when test="(html:ol or html:ul)">
-                    <xsl:for-each-group select="node() except text()[not(normalize-space())]"
-                        group-adjacent="not(self::html:ol or self::html:ul or self::html:a[html:span[f:classes(.)='lic']] or self::html:span[f:classes(.)='lic'])">
-                        <xsl:choose>
-                            <xsl:when test="current-grouping-key()">
-                                <lic>
-                                    <xsl:if test="position()=1 and string-length($marker)">
-                                        <xsl:value-of select="$marker"/>
-                                    </xsl:if>
-                                    <xsl:apply-templates select="current-group()"/>
-                                </lic>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:if test="position()=1 and string-length($marker)">
-                                    <lic>
-                                        <xsl:value-of select="$marker"/>
-                                    </lic>
-                                </xsl:if>
-                                <xsl:apply-templates select="current-group()"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:for-each-group>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="$marker"/>
-                    <xsl:apply-templates select="node()"/>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:apply-templates select="node()"/>
         </li>
     </xsl:template>
-
     <xsl:template name="f:attlist.li">
         <xsl:call-template name="f:attrs"/>
+        
+        <xsl:variable name="value" select="f:li-value(.)" as="xs:integer"/>
+        <xsl:choose>
+            <xsl:when test="exists(@value)">
+                <xsl:attribute name="value" select="$value"/>
+            </xsl:when>
+            <xsl:when test="exists(preceding-sibling::html:li) and not($value = preceding-sibling::html:li[1]/f:li-value(.) + 1)">
+                <xsl:attribute name="value" select="$value"/>
+            </xsl:when>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="html:span[f:classes(.)='lic']">

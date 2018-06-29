@@ -418,6 +418,7 @@
         </x:context>
         <x:expect label="the bodymatter sections should become level1 elements">
             <dtbook:book>
+                <dtbook:frontmatter/>
                 <dtbook:bodymatter>
                     <!-- COMMENT #1 -->
                     <dtbook:level1>
@@ -450,6 +451,7 @@
         </x:context>
         <x:expect label="the backmatter sections should become level1 elements">
             <dtbook:book>
+                <dtbook:frontmatter/>
                 <dtbook:rearmatter>
                     <!-- COMMENT #1 -->
                     <dtbook:level1>
@@ -624,10 +626,6 @@
     <x:scenario label="when processing a element with an epub:type of z3998:author">
         <x:context>
             <html:body>
-                <html:header>
-                    <html:h1 epub:type="fulltitle" class="title">Document Title</html:h1>
-                    <html:p epub:type="z3998:author" class="docauthor">Document Author</html:p>
-                </html:header>
                 <html:section>
                     <html:h1>Chapter Title</html:h1>
                     <html:section epub:type="z3998:verse">
@@ -643,12 +641,9 @@
                 </html:section>
             </html:body>
         </x:context>
-        <x:expect label="the resulting element should be a author element, or docauthor if the docauthor class is present">
+        <x:expect label="the resulting element should be an author element">
             <dtbook:book>
-                <dtbook:frontmatter>
-                    <dtbook:doctitle>Document Title</dtbook:doctitle>
-                    <dtbook:docauthor>Document Author</dtbook:docauthor>
-                </dtbook:frontmatter>
+                <dtbook:frontmatter/>
                 <dtbook:bodymatter>
                     <dtbook:level1>
                         <dtbook:h1>Chapter Title</dtbook:h1>
@@ -711,8 +706,8 @@
         <x:expect label="any render-* class should become a 'render' attribute and any images that reference the prodnote should be referenced by id in the prodnotes imgref attribute">
             <dtbook:div>
                 <dtbook:prodnote render="optional" id="prodnote" imgref="img1 img2"/>
-                <dtbook:img longdesc="#prodnote" src="img.jpg#" id="img1"/>
-                <dtbook:img longdesc="#prodnote" src="img.jpg#" id="img2"/>
+                <dtbook:img longdesc="#prodnote" src="images/img.jpg#" id="img1"/>
+                <dtbook:img longdesc="#prodnote" src="images/img.jpg#" id="img2"/>
             </dtbook:div>
         </x:expect>
     </x:scenario>
@@ -904,25 +899,19 @@
         <x:context>
             <html:a id="id"/>
         </x:context>
-        <x:expect label="the resulting element should be a span by default">
-            <dtbook:span id="id"/>
+        <x:expect label="the resulting element should be a a element">
+            <dtbook:a id="id" external="false"/>
         </x:expect>
     </x:scenario>
 
     <!-- attlist.a -->
     <x:scenario label="when processing the a element attributes">
         <x:context>
-            <html:a id="a-id" class="external-true rev-chapter myclass" target="_blank" type="text/plain" href="http://example.net/LICENSE.txt" hreflang="en" rel="license" accesskey="x" tabindex="-1"
-                >TEXT</html:a>
+            <html:a id="a-id" class="rev-chapter myclass" target="_blank" type="text/plain" href="http://example.net/LICENSE.txt" hreflang="en" rel="license" accesskey="x" tabindex="-1">TEXT</html:a>
         </x:context>
-        <x:expect label="the id are preserved but the rest of the attributes are dropped">
-            <dtbook:span id="a-id" class="external-true rev-chapter myclass">TEXT</dtbook:span>
+        <x:expect label="any rev-* classes are converted to attributes, the target attribute are converted to a class, the download and media attributes are dropped, and the rest of the attributes are copied over as is">
+            <dtbook:a id="a-id" class="target-_blank myclass" external="true" type="text/plain" href="http://example.net/LICENSE.txt" hreflang="en" rel="license" rev="chapter" accesskey="x" tabindex="-1">TEXT</dtbook:a>
         </x:expect>
-        <!--<x:expect
-            label="any external-* and rev-* classes are converted to attributes, the target attribute are converted to a class, the download and media attributes are dropped, and the rest of the attributes are copied over as is">
-            <dtbook:a class="target-\-blank myclass" external="true" type="text/plain" href="http://example.net/LICENSE.txt" hreflang="en" rel="license" rev="chapter" accesskey="x" tabindex="-1"
-                >TEXT</dtbook:a>
-        </x:expect>-->
     </x:scenario>
 
     <!-- em -->
@@ -1236,7 +1225,7 @@
             <html:img src="images/img.jpg"/>
         </x:context>
         <x:expect label="the resulting element should be a img">
-            <dtbook:img src="img.jpg" id="..."/>
+            <dtbook:img src="images/img.jpg" id="..."/>
         </x:expect>
     </x:scenario>
 
@@ -1246,7 +1235,7 @@
             <html:img src="images/img.jpg#target" alt="alt text" longdesc="#image-description" height="100" width="100"/>
         </x:context>
         <x:expect label="the resulting element should be a img">
-            <dtbook:img src="img.jpg#target" alt="alt text" longdesc="#image-description" height="100" width="100" id="..."/>
+            <dtbook:img src="images/img.jpg#target" alt="alt text" longdesc="#image-description" height="100" width="100" id="..."/>
         </x:expect>
     </x:scenario>
 
@@ -1268,7 +1257,7 @@
             </x:context>
             <x:expect label="the resulting element should be a imggroup">
                 <dtbook:imggroup>
-                    <dtbook:img src="image.jpg" id="..."/>
+                    <dtbook:img src="images/image.jpg" id="..."/>
                 </dtbook:imggroup>
             </x:expect>
         </x:scenario>
@@ -1282,7 +1271,7 @@
             </x:context>
             <x:expect label="the image figure should be unwrapped">
                 <dtbook:imggroup>
-                    <dtbook:img src="image.jpg" id="..."/>
+                    <dtbook:img src="images/image.jpg" id="..."/>
                 </dtbook:imggroup>
             </x:expect>
         </x:scenario>
@@ -1302,7 +1291,7 @@
             <x:expect label="the resulting element should be a figure">
                 <dtbook:imggroup>
                     <dtbook:prodnote render="optional" id="prodnote1" imgref="img1"/>
-                    <dtbook:img src="img.jpg" id="img1" longdesc="#prodnote1"/>
+                    <dtbook:img src="images/img.jpg" id="img1" longdesc="#prodnote1"/>
                     <dtbook:caption>
                         <dtbook:p/>
                     </dtbook:caption>
@@ -1343,22 +1332,22 @@
             </x:context>
             <x:expect label="the resulting element should be a figure">
                 <dtbook:imggroup>
-                    <dtbook:img src="img.jpg" id="img1" longdesc="#prodnote1"/>
+                    <dtbook:img src="images/img.jpg" id="img1" longdesc="#prodnote1"/>
                     <dtbook:caption id="caption1">
                         <dtbook:p/>
                     </dtbook:caption>
                     <dtbook:prodnote render="optional" id="prodnote1" imgref="img1"/>
-                    <dtbook:img src="img.jpg" id="img2"/>
+                    <dtbook:img src="images/img.jpg" id="img2"/>
                     <dtbook:caption id="caption2">
                         <dtbook:p/>
                         <dtbook:p/>
                     </dtbook:caption>
-                    <dtbook:img src="img.jpg" id="img3"/>
-                    <dtbook:img src="img.jpg" id="img4"/>
+                    <dtbook:img src="images/img.jpg" id="img3"/>
+                    <dtbook:img src="images/img.jpg" id="img4"/>
                     <dtbook:caption id="caption4">
                         <dtbook:p/>
                     </dtbook:caption>
-                    <dtbook:img src="img.jpg" id="img5"/>
+                    <dtbook:img src="images/img.jpg" id="img5"/>
                 </dtbook:imggroup>
             </x:expect>
         </x:scenario>
@@ -1401,14 +1390,14 @@
             </x:context>
             <x:expect label="the nested figures should be unwrapped properly">
                 <dtbook:imggroup>
-                    <dtbook:img src="img.jpg" id="img1" longdesc="#prodnote1" alt="image"/>
+                    <dtbook:img src="images/img.jpg" id="img1" longdesc="#prodnote1" alt="image"/>
                     <dtbook:caption>
                         <dtbook:prodnote id="prodnote1" imgref="img1" render="optional"/>
                         <dtbook:div id="caption1">
                             <dtbook:p/>
                         </dtbook:div>
                     </dtbook:caption>
-                    <dtbook:img src="img.jpg" id="img2" alt="image"/>
+                    <dtbook:img src="images/img.jpg" id="img2" alt="image"/>
                     <dtbook:caption>
                         <dtbook:div id="caption2">
                             <dtbook:p/>
@@ -1417,12 +1406,12 @@
                             <dtbook:p/>
                         </dtbook:div>
                     </dtbook:caption>
-                    <dtbook:img src="img.jpg" id="img3" alt="image"/>
-                    <dtbook:img src="img.jpg" id="img4" alt="image"/>
+                    <dtbook:img src="images/img.jpg" id="img3" alt="image"/>
+                    <dtbook:img src="images/img.jpg" id="img4" alt="image"/>
                     <dtbook:caption id="caption4">
                         <dtbook:p/>
                     </dtbook:caption>
-                    <dtbook:img src="img.jpg" id="img5" alt="image"/>
+                    <dtbook:img src="images/img.jpg" id="img5" alt="image"/>
                 </dtbook:imggroup>
             </x:expect>
         </x:scenario>
@@ -1495,41 +1484,26 @@
     </x:scenario>
 
     <!-- doctitle -->
-    <x:scenario label="when processing a h1 element">
-        <x:scenario label="with an epub:type of 'fulltitle' as the first child of the body/header element">
-            <x:context>
-                <html:body>
-                    <html:header>
-                        <html:h1 epub:type="fulltitle">DOCTITLE</html:h1>
-                    </html:header>
-                </html:body>
-            </x:context>
-            <x:expect label="the resulting element should be a doctitle">
+    <x:scenario label="when processing a title element">
+        <x:context>
+            <html:html>
+                <html:head>
+                    <html:title>Title</html:title>
+                </html:head>
+                <html:body/>
+            </html:html>
+        </x:context>
+        <x:expect label="a doctitle element should be generated based on the title element">
+            <dtbook:dtbook version="2005-3">
+                <dtbook:head>...<dtbook:meta name="dc:Title" content="Title"/>
+                </dtbook:head>
                 <dtbook:book>
                     <dtbook:frontmatter>
-                        <dtbook:doctitle>DOCTITLE</dtbook:doctitle>
+                        <dtbook:doctitle>Title</dtbook:doctitle>
                     </dtbook:frontmatter>
                 </dtbook:book>
-            </x:expect>
-        </x:scenario>
-        <x:scenario label="with an epub:type of 'fulltitle' contained in the top-level 'titlepage'">
-            <x:context>
-                <html:body>
-                    <html:section epub:type="frontmatter titlepage">
-                        <html:h1 epub:type="fulltitle">H1</html:h1>
-                    </html:section>
-                </html:body>
-            </x:context>
-            <x:expect label="the resulting element should be a h1 inside a level1 titlepage">
-                <dtbook:book>
-                    <dtbook:frontmatter>
-                        <dtbook:level1 class="titlepage">
-                            <dtbook:h1 class="fulltitle">H1</dtbook:h1>
-                        </dtbook:level1>
-                    </dtbook:frontmatter>
-                </dtbook:book>
-            </x:expect>
-        </x:scenario>
+            </dtbook:dtbook>
+        </x:expect>
     </x:scenario>
 
     <!-- attlist.doctitle -->
@@ -1551,22 +1525,6 @@
                         <dtbook:level1 class="titlepage">
                             <dtbook:p class="author">AUTHOR</dtbook:p>
                         </dtbook:level1>
-                    </dtbook:frontmatter>
-                </dtbook:book>
-            </x:expect>
-        </x:scenario>
-        <x:scenario label="contained in the top-level header element">
-            <x:context>
-                <html:body>
-                    <html:header>
-                        <html:p epub:type="z3998:author" class="docauthor">DOCAUTHOR</html:p>
-                    </html:header>
-                </html:body>
-            </x:context>
-            <x:expect label="the resulting element should become a docauthor">
-                <dtbook:book>
-                    <dtbook:frontmatter>
-                        <dtbook:docauthor>DOCAUTHOR</dtbook:docauthor>
                     </dtbook:frontmatter>
                 </dtbook:book>
             </x:expect>
@@ -1619,9 +1577,6 @@
     <x:scenario label="when processing the h1-h6 elements">
         <x:context>
             <html:body>
-                <html:header>
-                    <html:h1 epub:type="fulltitle">h1</html:h1>
-                </html:header>
                 <html:section epub:type="frontmatter">
                     <html:h1>h1</html:h1>
                     <html:section>
@@ -1656,7 +1611,6 @@
         <x:expect label="the resulting element should be h1-h6 elements">
             <dtbook:book>
                 <dtbook:frontmatter>
-                    <dtbook:doctitle>h1</dtbook:doctitle>
                     <dtbook:level1>
                         <dtbook:h1>h1</dtbook:h1>
                         <dtbook:level2>
@@ -1809,8 +1763,8 @@
         <x:context>
             <html:ul/>
         </x:context>
-        <x:expect label="the resulting element should be a preordered list (only preformatted lists are allowed in nordic dtbook)">
-            <dtbook:list type="pl" depth="1"/>
+        <x:expect label="the resulting element should be an unordered list">
+            <dtbook:list type="ul" depth="1"/>
         </x:expect>
     </x:scenario>
 
@@ -1819,8 +1773,8 @@
         <x:context>
             <html:ol/>
         </x:context>
-        <x:expect label="the resulting element should be a preordered list (only preformatted lists are allowed in nordic dtbook)">
-            <dtbook:list type="pl" depth="1"/>
+        <x:expect label="the resulting element should be an ordered list">
+            <dtbook:list type="ol" depth="1"/>
         </x:expect>
     </x:scenario>
 
@@ -1837,14 +1791,12 @@
                 </html:li>
             </html:ol>
         </x:context>
-        <x:expect label="the start and type attributes should be dropped, a depth attribute should be added and the type attribute should be set to 'pl'">
-            <dtbook:list depth="1" type="pl">
+        <x:expect label="the start attribute should be copied, the type attribute should be renamed, a depth attribute should be added and a new type attribute should be set">
+            <dtbook:list depth="1" type="ol" start="3" enum="1">
                 <dtbook:li>
-                    <dtbook:lic>3. </dtbook:lic>
-                    <dtbook:list depth="2" type="pl">
+                    <dtbook:list depth="2" type="ul">
                         <dtbook:li>
-                            <dtbook:lic>• </dtbook:lic>
-                            <dtbook:list depth="3" type="pl"/>
+                            <dtbook:list depth="3" type="ul" start="7" enum="i"/>
                         </dtbook:li>
                     </dtbook:list>
                 </dtbook:li>
@@ -1872,11 +1824,11 @@
                     </html:li>
                 </html:ul>
             </x:context>
-            <x:expect label="the ul should become list, bullets should be added to text or block content as necessary">
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li id="li_814"><dtbook:p>• TEXT1 <dtbook:em>TEXT2</dtbook:em> TEXT3</dtbook:p>
-                        <dtbook:list type="pl" id="list_213" depth="2">
-                            <dtbook:li id="li_815">• TEXT4 <dtbook:em>TEXT5 </dtbook:em> TEXT6</dtbook:li>
+            <x:expect label="the ul should become list">
+                <dtbook:list type="ul" depth="1">
+                    <dtbook:li id="li_814"><dtbook:p>TEXT1 <dtbook:em>TEXT2</dtbook:em> TEXT3</dtbook:p>
+                        <dtbook:list type="ul" id="list_213" depth="2">
+                            <dtbook:li id="li_815">TEXT4 <dtbook:em>TEXT5 </dtbook:em> TEXT6</dtbook:li>
                         </dtbook:list>
                     </dtbook:li>
                 </dtbook:list>
@@ -1895,16 +1847,16 @@
                     <html:li>TEXT9</html:li>
                 </html:ol>
             </x:context>
-            <x:expect label="the ul should become list, bullets should be added to text or block content as necessary">
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li id="li_814"><dtbook:p>1. TEXT1 <dtbook:em>TEXT2</dtbook:em> TEXT3</dtbook:p>
-                        <dtbook:list type="pl" id="list_213" depth="2">
-                            <dtbook:li id="li_815">1. TEXT4 <dtbook:em>TEXT5 </dtbook:em> TEXT6</dtbook:li>
+            <x:expect label="the ul should become list">
+                <dtbook:list type="ol" depth="1">
+                    <dtbook:li id="li_814"><dtbook:p>TEXT1 <dtbook:em>TEXT2</dtbook:em> TEXT3</dtbook:p>
+                        <dtbook:list type="ol" id="list_213" depth="2">
+                            <dtbook:li id="li_815">TEXT4 <dtbook:em>TEXT5 </dtbook:em> TEXT6</dtbook:li>
                         </dtbook:list>
                     </dtbook:li>
-                    <dtbook:li>2. TEXT7</dtbook:li>
-                    <dtbook:li>9. TEXT8</dtbook:li>
-                    <dtbook:li>10. TEXT9</dtbook:li>
+                    <dtbook:li>TEXT7</dtbook:li>
+                    <dtbook:li value="9">TEXT8</dtbook:li>
+                    <dtbook:li>TEXT9</dtbook:li>
                 </dtbook:list>
             </x:expect>
         </x:scenario>
@@ -1923,65 +1875,18 @@
                     <html:li>TEXT9</html:li>
                 </html:ol>
             </x:context>
-            <x:expect label="the ul should become list, bullets should be added to text or block content as necessary, and the inline content should be wrapped in a lic">
-                <dtbook:list type="pl" depth="1">
+            <x:expect label="the ul should become list">
+                <dtbook:list type="ol" depth="1">
                     <dtbook:li id="li_814">
-                        <dtbook:lic>1. <dtbook:span>TEXT1</dtbook:span>
-                            <dtbook:em>TEXT2</dtbook:em>
-                        </dtbook:lic>
-                        <dtbook:list type="pl" id="list_213" depth="2">
-                            <dtbook:li id="li_815">1. TEXT4 <dtbook:em>TEXT5 </dtbook:em> TEXT6</dtbook:li>
+                        <dtbook:span>TEXT1</dtbook:span>
+                        <dtbook:em>TEXT2</dtbook:em>
+                        <dtbook:list type="ol" id="list_213" depth="2">
+                            <dtbook:li id="li_815">TEXT4 <dtbook:em>TEXT5 </dtbook:em> TEXT6</dtbook:li>
                         </dtbook:list>
                     </dtbook:li>
-                    <dtbook:li>2. TEXT7</dtbook:li>
-                    <dtbook:li>9. TEXT8</dtbook:li>
-                    <dtbook:li>10. TEXT9</dtbook:li>
-                </dtbook:list>
-            </x:expect>
-        </x:scenario>
-        <x:scenario label="with ol and different marker types (roman numerals, letters, numbers)">
-            <x:context>
-                <html:ol type="1">
-                    <html:li>ONE</html:li>
-                    <html:li>TWO</html:li>
-                </html:ol>
-                <html:ol type="a">
-                    <html:li>ONE</html:li>
-                    <html:li>TWO</html:li>
-                </html:ol>
-                <html:ol type="A">
-                    <html:li>ONE</html:li>
-                    <html:li>TWO</html:li>
-                </html:ol>
-                <html:ol type="i">
-                    <html:li>ONE</html:li>
-                    <html:li>TWO</html:li>
-                </html:ol>
-                <html:ol type="I">
-                    <html:li>ONE</html:li>
-                    <html:li>TWO</html:li>
-                </html:ol>
-            </x:context>
-            <x:expect label="the list items should be prefixed with the right type of marker">
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li>1. ONE</dtbook:li>
-                    <dtbook:li>2. TWO</dtbook:li>
-                </dtbook:list>
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li>a. ONE</dtbook:li>
-                    <dtbook:li>b. TWO</dtbook:li>
-                </dtbook:list>
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li>A. ONE</dtbook:li>
-                    <dtbook:li>B. TWO</dtbook:li>
-                </dtbook:list>
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li>i. ONE</dtbook:li>
-                    <dtbook:li>ii. TWO</dtbook:li>
-                </dtbook:list>
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li>I. ONE</dtbook:li>
-                    <dtbook:li>II. TWO</dtbook:li>
+                    <dtbook:li>TEXT7</dtbook:li>
+                    <dtbook:li value="9">TEXT8</dtbook:li>
+                    <dtbook:li>TEXT9</dtbook:li>
                 </dtbook:list>
             </x:expect>
         </x:scenario>
@@ -1995,11 +1900,11 @@
                 </html:ol>
             </x:context>
             <x:expect label="the result should be 10, 9, 5, 4">
-                <dtbook:list type="pl" depth="1">
-                    <dtbook:li>10. ONE</dtbook:li>
-                    <dtbook:li>9. TWO</dtbook:li>
-                    <dtbook:li>5. THREE</dtbook:li>
-                    <dtbook:li>4. FOUR</dtbook:li>
+                <dtbook:list type="ol" depth="1" start="10">
+                    <dtbook:li>ONE</dtbook:li>
+                    <dtbook:li value="9">TWO</dtbook:li>
+                    <dtbook:li value="5">THREE</dtbook:li>
+                    <dtbook:li value="4">FOUR</dtbook:li>
                 </dtbook:list>
             </x:expect>
         </x:scenario>
@@ -2340,6 +2245,7 @@
         </x:context>
         <x:expect label="then the section should map to a 'bodymatter'-level1">
             <dtbook:book>
+                <dtbook:frontmatter/>
                 <dtbook:bodymatter>
                     <dtbook:level1>
                         <dtbook:p/>
@@ -2364,6 +2270,7 @@
         </x:context>
         <x:expect label="there should not be a level2 before the level1 heading">
             <dtbook:book>
+                <dtbook:frontmatter/>
                 <dtbook:bodymatter>
                     <dtbook:level1>
                         <dtbook:pagenum id="page-26" page="normal">26</dtbook:pagenum>
@@ -2417,65 +2324,6 @@
                 </dtbook:tr>
             </dtbook:table>
         </x:expect>
-    </x:scenario>
-
-    <x:scenario label="github issue #30; make images in swedish books have alt='illustration'">
-        <x:scenario label="when there's no conflicting ancestor language">
-            <x:context>
-                <html:img src="images/img.jpg" lang="en" alt="image"/>
-                <html:img src="images/img.jpg" lang="sv" alt="image"/>
-                <html:img src="images/img.jpg" lang="no" alt="image"/>
-                <html:img src="images/img.jpg" xml:lang="en" alt="image"/>
-                <html:img src="images/img.jpg" xml:lang="sv" alt="image"/>
-                <html:img src="images/img.jpg" xml:lang="no" alt="image"/>
-            </x:context>
-            <x:expect label="the resulting element should be a img">
-                <dtbook:img src="..." id="..." xml:lang="en" alt="image"/>
-                <dtbook:img src="..." id="..." xml:lang="sv" alt="illustration"/>
-                <dtbook:img src="..." id="..." xml:lang="no" alt="image"/>
-                <dtbook:img src="..." id="..." xml:lang="en" alt="image"/>
-                <dtbook:img src="..." id="..." xml:lang="sv" alt="illustration"/>
-                <dtbook:img src="..." id="..." xml:lang="no" alt="image"/>
-            </x:expect>
-        </x:scenario>
-        <x:scenario label="when there's a conflicting ancestor language">
-            <x:context>
-                <html:div xml:lang="en">
-                    <html:img src="images/img.jpg" xml:lang="sv" alt="image"/>
-                    <html:img src="images/img.jpg" lang="sv" alt="image"/>
-                </html:div>
-                <html:div lang="en">
-                    <html:img src="images/img.jpg" xml:lang="sv" alt="image"/>
-                    <html:img src="images/img.jpg" lang="sv" alt="image"/>
-                </html:div>
-                <html:div xml:lang="sv">
-                    <html:img src="images/img.jpg" xml:lang="en" alt="image"/>
-                    <html:img src="images/img.jpg" lang="en" alt="image"/>
-                </html:div>
-                <html:div lang="sv">
-                    <html:img src="images/img.jpg" xml:lang="en" alt="image"/>
-                    <html:img src="images/img.jpg" lang="en" alt="image"/>
-                </html:div>
-            </x:context>
-            <x:expect label="the closest ancestor or self xml:lang should be used">
-                <dtbook:div xml:lang="en">
-                    <dtbook:img src="..." id="..." xml:lang="sv" alt="illustration"/>
-                    <dtbook:img src="..." id="..." xml:lang="sv" alt="illustration"/>
-                </dtbook:div>
-                <dtbook:div xml:lang="en">
-                    <dtbook:img src="..." id="..." xml:lang="sv" alt="illustration"/>
-                    <dtbook:img src="..." id="..." xml:lang="sv" alt="illustration"/>
-                </dtbook:div>
-                <dtbook:div xml:lang="sv">
-                    <dtbook:img src="..." id="..." xml:lang="en" alt="image"/>
-                    <dtbook:img src="..." id="..." xml:lang="en" alt="image"/>
-                </dtbook:div>
-                <dtbook:div xml:lang="sv">
-                    <dtbook:img src="..." id="..." xml:lang="en" alt="image"/>
-                    <dtbook:img src="..." id="..." xml:lang="en" alt="image"/>
-                </dtbook:div>
-            </x:expect>
-        </x:scenario>
     </x:scenario>
 
     <x:scenario label="Make sure the p class 'indented' is preserved during conversion to DTBook #73">
@@ -2537,15 +2385,15 @@
                 <dtbook:li><dtbook:strong>Procentandel minskande arter</dtbook:strong> 46%</dtbook:li>
                 <dtbook:li><dtbook:strong>Sommarhalvåret</dtbook:strong>
                     <dtbook:imggroup>
-                        <dtbook:img src="img01.jpg" alt="image" id="..."/>
+                        <dtbook:img src="images/img01.jpg" alt="image" id="..."/>
                     </dtbook:imggroup> (vissa arter kan sällsynt övervintra)</dtbook:li>
                 <dtbook:li><dtbook:strong>Hela året</dtbook:strong>
                     <dtbook:imggroup>
-                        <dtbook:img src="img02.jpg" alt="image" id="..."/>
+                        <dtbook:img src="images/img02.jpg" alt="image" id="..."/>
                     </dtbook:imggroup></dtbook:li>
                 <dtbook:li><dtbook:strong>Vinterhalvåret</dtbook:strong>
                     <dtbook:imggroup>
-                        <dtbook:img src="img03.jpg" alt="image" id="..."/>
+                        <dtbook:img src="images/img03.jpg" alt="image" id="..."/>
                     </dtbook:imggroup></dtbook:li>
                 <dtbook:li><dtbook:strong>ökande bestånd</dtbook:strong> ↗</dtbook:li>
                 <dtbook:li><dtbook:strong>minskande bestånd</dtbook:strong> ↘</dtbook:li>
@@ -2570,13 +2418,13 @@
         <x:context>
             <html:ol class="list-style-type-none">
                 <html:li>
-                    <html:a id="id1" href="mtm06350-1.xhtml#d130172e14">
+                    <html:a id="id1" href="mtm06350-1.xhtml#a">
                         <html:span class="lic">Chapter 1</html:span>
                         <html:span class="lic">1</html:span>
                     </html:a>
                 </html:li>
                 <html:li>
-                    <html:a id="id2" href="mtm06350-1.xhtml#d130172e14">
+                    <html:a id="id2" href="mtm06350-1.xhtml#b">
                         <html:span class="lic">Chapter 2</html:span>
                         <html:span class="lic">2</html:span>
                     </html:a>
@@ -2588,14 +2436,14 @@
                     </html:ol>
                 </html:li>
                 <html:li>
-                    <html:a id="id3" href="mtm06350-1.xhtml#d130172e14">
+                    <html:a id="id3" href="mtm06350-1.xhtml#c">
                         <html:span class="lic">Chapter 3</html:span>
                         <html:span>non-lic</html:span>
                     </html:a>
                     <html:span>span with no block sibling (except lic)</html:span>
                 </html:li>
                 <html:li>
-                    <html:a id="id4" href="mtm06350-1.xhtml#d130172e14">
+                    <html:a id="id4" href="mtm06350-1.xhtml#d">
                         <html:span class="lic">Chapter 4</html:span>
                         <html:span>non-lic</html:span>
                     </html:a>
@@ -2623,15 +2471,19 @@
             <dtbook:list type="pl" depth="1">
                 <dtbook:li>
                     <dtbook:lic>
-                        <dtbook:span id="id1">Chapter 1</dtbook:span>
+                        <dtbook:a href="mtm06350-1.xhtml#a" external="false" id="id1">Chapter 1</dtbook:a>
                     </dtbook:lic>
-                    <dtbook:lic>1</dtbook:lic>
+                    <dtbook:lic>
+                        <dtbook:a href="mtm06350-1.xhtml#a" external="false">1</dtbook:a>
+                    </dtbook:lic>
                 </dtbook:li>
                 <dtbook:li>
                     <dtbook:lic>
-                        <dtbook:span id="id2">Chapter 2</dtbook:span>
+                        <dtbook:a href="mtm06350-1.xhtml#b" external="false" id="id2">Chapter 2</dtbook:a>
                     </dtbook:lic>
-                    <dtbook:lic>2</dtbook:lic>
+                    <dtbook:lic>
+                        <dtbook:a href="mtm06350-1.xhtml#b" external="false">2</dtbook:a>
+                    </dtbook:lic>
                     <dtbook:list type="pl" depth="2">
                         <dtbook:li>
                             <dtbook:lic>Chapter 2.1</dtbook:lic>
@@ -2641,20 +2493,18 @@
                 </dtbook:li>
                 <dtbook:li>
                     <dtbook:lic>
-                        <dtbook:span id="id3">Chapter 3</dtbook:span>
+                        <dtbook:a href="mtm06350-1.xhtml#c" external="false" id="id3">Chapter 3</dtbook:a>
                     </dtbook:lic>
-                    <dtbook:span>non-lic</dtbook:span>
+                    <dtbook:a href="mtm06350-1.xhtml#c" external="false"><dtbook:span>non-lic</dtbook:span></dtbook:a>
                     <dtbook:span>span with no block sibling (except lic)</dtbook:span>
                 </dtbook:li>
                 <dtbook:li>
                     <dtbook:lic>
-                        <dtbook:span id="id4">Chapter 4</dtbook:span>
+                        <dtbook:a href="mtm06350-1.xhtml#d" external="false" id="id4">Chapter 4</dtbook:a>
                     </dtbook:lic>
-                    <dtbook:span>non-lic</dtbook:span>
-                    <dtbook:lic>
-                        <dtbook:span>span 1</dtbook:span>
-                        <dtbook:span>span 2</dtbook:span>
-                    </dtbook:lic>
+                    <dtbook:a href="mtm06350-1.xhtml#d" external="false"><dtbook:span>non-lic</dtbook:span></dtbook:a>
+                    <dtbook:span>span 1</dtbook:span>
+                    <dtbook:span>span 2</dtbook:span>
                     <dtbook:list type="pl" depth="2">
                         <dtbook:li>
                             <dtbook:lic>Chapter 4.1</dtbook:lic>
@@ -2664,13 +2514,11 @@
                 </dtbook:li>
                 <dtbook:li>
                     <dtbook:lic>
-                        <dtbook:span id="id5">lic in a</dtbook:span>
+                        <dtbook:a href="#" external="false" id="id5">lic in a</dtbook:a>
                     </dtbook:lic>
                     <dtbook:lic>lic outside a</dtbook:lic>
-                    <dtbook:lic>
-                        <dtbook:span>span 1</dtbook:span>
-                        <dtbook:span>span 2</dtbook:span>
-                    </dtbook:lic>
+                    <dtbook:span>span 1</dtbook:span>
+                    <dtbook:span>span 2</dtbook:span>
                     <dtbook:list type="pl" depth="2"/>
                 </dtbook:li>
             </dtbook:list>
@@ -2958,20 +2806,19 @@
     </x:scenario>
 
     <x:scenario label="a typical table of contents">
-        <!-- NOTE: we'll let list-style-type: none be implied for the special case of tocs (i.e. no numbers or bullets will be added even though the list-style-type-none class is not present) -->
         <x:context>
             <html:section epub:type="frontmatter toc">
                 <html:div epub:type="pagebreak" class="page-normal" title="3"/>
                 <html:h1>Table of Contents</html:h1>
                 <html:ol>
                     <html:li>
-                        <html:a href="#">
+                        <html:a href="#a">
                             <html:span class="lic">Chapter 1</html:span>
                             <html:span class="lic">5</html:span>
                         </html:a>
                     </html:li>
                     <html:li>
-                        <html:a href="#">
+                        <html:a href="#b">
                             <html:span class="lic">Chapter 2</html:span>
                             <html:span class="lic">42</html:span>
                         </html:a>
@@ -2983,14 +2830,14 @@
             <dtbook:level1 class="toc">
                 <dtbook:pagenum page="normal">3</dtbook:pagenum>
                 <dtbook:h1>Table of Contents</dtbook:h1>
-                <dtbook:list type="pl" depth="1" class="toc">
+                <dtbook:list type="ol" depth="1">
                     <dtbook:li>
-                        <dtbook:lic>Chapter 1</dtbook:lic>
-                        <dtbook:lic>5</dtbook:lic>
+                        <dtbook:lic><dtbook:a href="#a" external="false">Chapter 1</dtbook:a></dtbook:lic>
+                        <dtbook:lic><dtbook:a href="#a" external="false">5</dtbook:a></dtbook:lic>
                     </dtbook:li>
                     <dtbook:li>
-                        <dtbook:lic>Chapter 2</dtbook:lic>
-                        <dtbook:lic>42</dtbook:lic>
+                        <dtbook:lic><dtbook:a href="#b" external="false">Chapter 2</dtbook:a></dtbook:lic>
+                        <dtbook:lic><dtbook:a href="#b" external="false">42</dtbook:a></dtbook:lic>
                     </dtbook:li>
                 </dtbook:list>
             </dtbook:level1>
@@ -3040,33 +2887,50 @@
         </x:context>
         <x:expect label="should not use bullets or numbering">
             <dtbook:level1 class="toc">
-                <dtbook:list type="pl" depth="1" class="toc tocList">
+                <dtbook:list type="ol" class="tocList" depth="1">
                     <dtbook:li>
-                        <dtbook:span><dtbook:span>Span without lic class</dtbook:span></dtbook:span>
-                    </dtbook:li>
-                    <dtbook:li>
-                        <dtbook:lic>spans with</dtbook:lic>
-                        <dtbook:lic>lic class</dtbook:lic>
+                        <dtbook:a href="#" external="false">
+                            <dtbook:span>Span without lic class</dtbook:span>
+                        </dtbook:a>
                     </dtbook:li>
                     <dtbook:li>
                         <dtbook:lic>
-                            <dtbook:span>
-                                <dtbook:span>Span without lic class</dtbook:span>
-                            </dtbook:span>
+                            <dtbook:a href="#" external="false">spans with</dtbook:a>
                         </dtbook:lic>
-                        <dtbook:list class="tocList" type="pl" depth="2">
+                        <dtbook:lic>
+                            <dtbook:a href="#" external="false">lic class</dtbook:a>
+                        </dtbook:lic>
+                    </dtbook:li>
+                    <dtbook:li>
+                        <dtbook:a href="#" external="false">
+                            <dtbook:span>Span without lic class</dtbook:span>
+                        </dtbook:a>
+                        <dtbook:list type="ol" class="tocList" depth="2">
                             <dtbook:li>FOO</dtbook:li>
                         </dtbook:list>
                     </dtbook:li>
                     <dtbook:li>
-                        <dtbook:lic><dtbook:strong>1 Funktionen</dtbook:strong></dtbook:lic>
-                        <dtbook:list class="tocList" type="pl" depth="2">
+                        <dtbook:lic>
+                            <dtbook:a href="ET10581-05-chapter-1.xhtml#chap1-1" external="false">
+                                <dtbook:strong>1 Funktionen</dtbook:strong>
+                            </dtbook:a>
+                        </dtbook:lic>
+                        <dtbook:list type="ol" class="tocList" depth="2">
                             <dtbook:li>
-                                <dtbook:lic><dtbook:strong>1a</dtbook:strong> Geraden</dtbook:lic>
-                                <dtbook:lic><dtbook:strong>4</dtbook:strong></dtbook:lic>
+                                <dtbook:lic>
+                                    <dtbook:a href="ET10581-05-chapter-1.xhtml#chap1-2" external="false">
+                                        <dtbook:strong>1a</dtbook:strong> Geraden</dtbook:a>
+                                </dtbook:lic>
+                                <dtbook:lic>
+                                    <dtbook:a href="ET10581-05-chapter-1.xhtml#chap1-2" external="false">
+                                        <dtbook:strong>4</dtbook:strong>
+                                    </dtbook:a>
+                                </dtbook:lic>
                             </dtbook:li>
                             <dtbook:li>
-                                <dtbook:span><dtbook:strong>1b</dtbook:strong> Lineare und nicht lineare Funktionen <dtbook:strong>8</dtbook:strong></dtbook:span>
+                                <dtbook:a href="ET10581-05-chapter-1.xhtml#chap1-4" external="false">
+                                    <dtbook:strong>1b</dtbook:strong> Lineare und nicht lineare Funktionen <dtbook:strong>8</dtbook:strong>
+                                </dtbook:a>
                             </dtbook:li>
                         </dtbook:list>
                     </dtbook:li>
@@ -3124,82 +2988,84 @@
 
     <x:scenario label="pagebreaks in toc should not become lic">
         <x:context>
-            <html:li>
-                <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
-                    <html:span class="lic">Järnvägen krymper tid och rum</html:span>
-                    <html:span class="lic">45</html:span>
+            <html:ul>
+                <html:li>
+                    <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
+                        <html:span class="lic">Järnvägen krymper tid och rum</html:span>
+                        <html:span class="lic">45</html:span>
+                        <html:span id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
+                    </html:a>
+                </html:li>
+                <html:li>
+                    <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
+                        <html:span class="lic">Järnvägen krymper tid och rum</html:span>
+                        <html:span class="lic">45</html:span>
+                    </html:a>
                     <html:span id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
-                </html:a>
-            </html:li>
-            <html:li>
-                <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
-                    <html:span class="lic">Järnvägen krymper tid och rum</html:span>
-                    <html:span class="lic">45</html:span>
-                </html:a>
-                <html:span id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
-            </html:li>
-            <html:li>
-                <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
-                    <html:span class="lic">Järnvägen krymper tid och rum</html:span>
-                    <html:span class="lic">45</html:span>
-                </html:a>
-                <html:span id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
-                <html:ul class="list-style-type-none">
-                    <html:li/>
-                </html:ul>
-            </html:li>
-            <html:li>
-                <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
-                    <html:span class="lic">Järnvägen krymper tid och rum</html:span>
-                    <html:span class="lic">45</html:span>
-                </html:a>
-                <html:div id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
-            </html:li>
-            <html:li>
-                <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
-                    <html:span class="lic">Järnvägen krymper tid och rum</html:span>
-                    <html:span class="lic">45</html:span>
-                </html:a>
-                <html:div id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
-                <html:ul class="list-style-type-none">
-                    <html:li/>
-                </html:ul>
-            </html:li>
+                </html:li>
+                <html:li>
+                    <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
+                        <html:span class="lic">Järnvägen krymper tid och rum</html:span>
+                        <html:span class="lic">45</html:span>
+                    </html:a>
+                    <html:span id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
+                    <html:ul class="list-style-type-none">
+                        <html:li/>
+                    </html:ul>
+                </html:li>
+                <html:li>
+                    <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
+                        <html:span class="lic">Järnvägen krymper tid och rum</html:span>
+                        <html:span class="lic">45</html:span>
+                    </html:a>
+                    <html:div id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
+                </html:li>
+                <html:li>
+                    <html:a href="DTB17055-008-chapter.xhtml#h2_0083">
+                        <html:span class="lic">Järnvägen krymper tid och rum</html:span>
+                        <html:span class="lic">45</html:span>
+                    </html:a>
+                    <html:div id="page-6" class="page-normal" epub:type="pagebreak" title="6"/>
+                    <html:ul class="list-style-type-none">
+                        <html:li/>
+                    </html:ul>
+                </html:li>
+            </html:ul>
         </x:context>
         <x:expect label="the pagebreaks should become pagenums">
-            <dtbook:li>
-                <dtbook:lic>Järnvägen krymper tid och rum</dtbook:lic>
-                <dtbook:lic>45</dtbook:lic>
-                <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
-            </dtbook:li>
-            <dtbook:li>
-                <dtbook:lic>Järnvägen krymper tid och rum</dtbook:lic>
-                <dtbook:lic>45</dtbook:lic>
-                <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
-            </dtbook:li>
-            <dtbook:li>
-                <dtbook:lic>Järnvägen krymper tid och rum</dtbook:lic>
-                <dtbook:lic>45</dtbook:lic>
-                <dtbook:lic>
+            <dtbook:list type="ul" depth="1">
+                <dtbook:li>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">Järnvägen krymper tid och rum</dtbook:a></dtbook:lic>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">45</dtbook:a></dtbook:lic>
+                    <dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083"><dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum></dtbook:a>
+                </dtbook:li>
+                <dtbook:li>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">Järnvägen krymper tid och rum</dtbook:a></dtbook:lic>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">45</dtbook:a></dtbook:lic>
                     <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
-                </dtbook:lic>
-                <dtbook:list type="pl" depth="2">
-                    <dtbook:li/>
-                </dtbook:list>
-            </dtbook:li>
-            <dtbook:li>
-                <dtbook:lic>Järnvägen krymper tid och rum</dtbook:lic>
-                <dtbook:lic>45</dtbook:lic>
-                <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
-            </dtbook:li>
-            <dtbook:li>
-                <dtbook:lic>Järnvägen krymper tid och rum</dtbook:lic>
-                <dtbook:lic>45</dtbook:lic>
-                <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
-                <dtbook:list type="pl" depth="2">
-                    <dtbook:li/>
-                </dtbook:list>
-            </dtbook:li>
+                </dtbook:li>
+                <dtbook:li>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">Järnvägen krymper tid och rum</dtbook:a></dtbook:lic>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">45</dtbook:a></dtbook:lic>
+                    <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
+                    <dtbook:list type="pl" depth="2">
+                        <dtbook:li/>
+                    </dtbook:list>
+                </dtbook:li>
+                <dtbook:li>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">Järnvägen krymper tid och rum</dtbook:a></dtbook:lic>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">45</dtbook:a></dtbook:lic>
+                    <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
+                </dtbook:li>
+                <dtbook:li>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">Järnvägen krymper tid och rum</dtbook:a></dtbook:lic>
+                    <dtbook:lic><dtbook:a external="false" href="DTB17055-008-chapter.xhtml#h2_0083">45</dtbook:a></dtbook:lic>
+                    <dtbook:pagenum id="page-6" page="normal">6</dtbook:pagenum>
+                    <dtbook:list type="pl" depth="2">
+                        <dtbook:li/>
+                    </dtbook:list>
+                </dtbook:li>
+            </dtbook:list>
         </x:expect>
     </x:scenario>
 
@@ -3322,71 +3188,71 @@
             <dtbook:div id="image-tests">
                 <dtbook:div>
                     <!-- image in block context - with placeholder alt text: -->
-                    <dtbook:img id="image-tests-img-1" src="valentin.jpg" alt="image"/>
+                    <dtbook:img id="image-tests-img-1" src="images/valentin.jpg" alt="image"/>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in inline context - with placeholder alt text: -->
                     <dtbook:p>
-                        <dtbook:img id="image-tests-img-2" src="valentin.jpg" alt="image"/>
+                        <dtbook:img id="image-tests-img-2" src="images/valentin.jpg" alt="image"/>
                     </dtbook:p>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in figure - with placeholder alt text: -->
                     <dtbook:imggroup id="image-tests-figure-1">
-                        <dtbook:img id="image-tests-img-3" src="valentin.jpg" alt="image"/>
+                        <dtbook:img id="image-tests-img-3" src="images/valentin.jpg" alt="image"/>
                     </dtbook:imggroup>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in image series figure - with placeholder alt text: -->
                     <dtbook:imggroup id="image-tests-figure-2">
-                        <dtbook:img id="image-tests-img-4" src="valentin.jpg" alt="image"/>
-                        <dtbook:img id="image-tests-img-5" src="valentin.jpg" alt="image"/>
+                        <dtbook:img id="image-tests-img-4" src="images/valentin.jpg" alt="image"/>
+                        <dtbook:img id="image-tests-img-5" src="images/valentin.jpg" alt="image"/>
                     </dtbook:imggroup>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in block context - decorative: -->
-                    <dtbook:img id="image-tests-img-6" src="valentin.jpg" alt=""/>
+                    <dtbook:img id="image-tests-img-6" src="images/valentin.jpg" alt=""/>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in inline context - decorative: -->
                     <dtbook:p>
-                        <dtbook:img id="image-tests-img-7" src="valentin.jpg" alt=""/>
+                        <dtbook:img id="image-tests-img-7" src="images/valentin.jpg" alt=""/>
                     </dtbook:p>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in figure - decorative (should not be allowed/valid): -->
                     <dtbook:imggroup id="image-tests-figure-5">
-                        <dtbook:img id="image-tests-img-8" src="valentin.jpg" alt=""/>
+                        <dtbook:img id="image-tests-img-8" src="images/valentin.jpg" alt=""/>
                     </dtbook:imggroup>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in image series figure - decorative (should not be allowed/valid): -->
                     <dtbook:imggroup id="image-tests-figure-6">
-                        <dtbook:img id="image-tests-img-9" src="valentin.jpg" alt=""/>
-                        <dtbook:img id="image-tests-img-10" src="valentin.jpg" alt=""/>
+                        <dtbook:img id="image-tests-img-9" src="images/valentin.jpg" alt=""/>
+                        <dtbook:img id="image-tests-img-10" src="images/valentin.jpg" alt=""/>
                     </dtbook:imggroup>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in block context - with custom alt text: -->
-                    <dtbook:img id="image-tests-img-11" src="valentin.jpg" alt="中国文字"/>
+                    <dtbook:img id="image-tests-img-11" src="images/valentin.jpg" alt="中国文字"/>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in inline context - with custom alt text: -->
                     <dtbook:p>
-                        <dtbook:img id="image-tests-img-12" src="valentin.jpg" alt="中国文字"/>
+                        <dtbook:img id="image-tests-img-12" src="images/valentin.jpg" alt="中国文字"/>
                     </dtbook:p>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in figure - with custom alt text: -->
                     <dtbook:imggroup id="image-tests-figure-8">
-                        <dtbook:img id="image-tests-img-13" src="valentin.jpg" alt="中国文字"/>
+                        <dtbook:img id="image-tests-img-13" src="images/valentin.jpg" alt="中国文字"/>
                     </dtbook:imggroup>
                 </dtbook:div>
                 <dtbook:div>
                     <!-- image in image series figure - with custom alt text: -->
                     <dtbook:imggroup id="image-tests-figure-9">
-                        <dtbook:img id="image-tests-img-14" src="valentin.jpg" alt="中国文字"/>
-                        <dtbook:img id="image-tests-img-15" src="valentin.jpg" alt="中国文字"/>
+                        <dtbook:img id="image-tests-img-14" src="images/valentin.jpg" alt="中国文字"/>
+                        <dtbook:img id="image-tests-img-15" src="images/valentin.jpg" alt="中国文字"/>
                     </dtbook:imggroup>
                 </dtbook:div>
             </dtbook:div>
