@@ -195,7 +195,7 @@ class Produksjonssystem():
             # e-bok
             [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
             [PrepareForEbook(retry_missing=True),             "pub-in-ebook",        "pub-ready-ebook"],
-            [PrepareForDocx(retry_missing=True),              "pub-ready-ebook",     "pub-ready-docx"],
+            [PrepareForDocx(retry_missing=True),              "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToHtml(retry_missing=True),                "pub-ready-ebook",     "html"],
             [NLBpubToDocx(retry_missing=True),                "pub-ready-docx",      "docx"],
 
