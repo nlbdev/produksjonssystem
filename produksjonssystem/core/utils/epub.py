@@ -2,14 +2,13 @@
 
 import os
 import re
-import shutil
 import pathlib
 import zipfile
 import tempfile
-import traceback
 
 from lxml import etree as ElementTree
 from core.utils.xslt import Xslt
+
 
 class Epub():
     """Methods for working with EPUB files/filesets"""
@@ -108,13 +107,14 @@ class Epub():
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if os.path.isdir(self.book_path) and not os.path.isfile(os.path.join(self.book_path, "EPUB/package.opf")):
             if report_errors:
-                self.pipeline.utils.report.error(os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
+                self.pipeline.utils.report.error(
+                    os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
             return False
 
         elif os.path.isfile(self.book_path):
             try:
                 with zipfile.ZipFile(self.book_path, 'r') as archive:
-                    if not "mimetype" in [item.filename for item in archive.filelist]:
+                    if "mimetype" not in [item.filename for item in archive.filelist]:
                         if report_errors:
                             self.pipeline.utils.report.warn("No 'mimetype' file in ZIP; this is not an EPUB: " + self.book_path)
                         return False
@@ -122,15 +122,16 @@ class Epub():
                     mimetype = archive.read("mimetype").decode("utf-8")
                     if not mimetype.startswith("application/epub+zip"):
                         if report_errors:
-                            self.pipeline.utils.report.warn("The 'mimetype' file does not start with the text 'application/epub+zip'; this is not an EPUB: " + self.book_path)
+                            self.pipeline.utils.report.warn(
+                                "The 'mimetype' file does not start with the text 'application/epub+zip'; this is not an EPUB: " + self.book_path)
                         return False
 
-                    if not "META-INF/container.xml" in [item.filename for item in archive.filelist]:
+                    if "META-INF/container.xml" not in [item.filename for item in archive.filelist]:
                         if report_errors:
                             self.pipeline.utils.report.warn("No 'META-INF/container.xml' file in ZIP; this is not an EPUB: " + self.book_path)
                         return False
 
-            except zipfile.BadZipfile as e:
+            except zipfile.BadZipfile:
                 if report_errors:
                     self.pipeline.utils.report.warn("The book is a file, but not a ZIP file. This is not an EPUB: " + self.book_path)
                 return False
@@ -207,16 +208,18 @@ class Epub():
 
     @staticmethod
     def html_to_nav(pipeline, source, target):
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-nav.xsl"),
-                              source=source,
-                              target=target)
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-nav.xsl"),
+                    source=source,
+                    target=target)
         return xslt
 
     @staticmethod
     def html_to_opf(pipeline, source, target):
-        xslt = Xslt(pipeline, stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-opf.xsl"),
-                              source=source,
-                              target=target)
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "html-to-opf.xsl"),
+                    source=source,
+                    target=target)
         return xslt
 
     @staticmethod
@@ -239,7 +242,6 @@ class Epub():
                 if f.endswith("xhtml"):
                     html_file = os.path.join(root, f)
         assert html_file, "There must be a file with the file extension '.xhtml' in the HTML fileset."
-        html_file_relative = os.path.relpath(html_file, dir_out)
 
         # create dir_out/EPUB/package.opf based on input html (xslt)
         temp_opf_obj = tempfile.NamedTemporaryFile()
@@ -400,7 +402,7 @@ class Epub():
         "hqx":       "application/mac-binhex40",
         "doc":       "application/msword",
         "dot":       "application/msword",
-        "*" :        "application/octet-stream",
+        "*":         "application/octet-stream",
         "bin":       "application/octet-stream",
         "class":     "application/octet-stream",
         "dms":       "application/octet-stream",
@@ -469,7 +471,6 @@ class Epub():
         "scd":       "application/x-msschedule",
         "trm":       "application/x-msterminal",
         "wri":       "application/x-mswrite",
-        "cdf":       "application/x-netcdf",
         "nc":        "application/x-netcdf",
         "pma":       "application/x-perfmon",
         "pmc":       "application/x-perfmon",
