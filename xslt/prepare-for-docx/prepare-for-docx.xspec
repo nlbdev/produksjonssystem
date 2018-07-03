@@ -276,6 +276,14 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="remove titlepage and colophon">
+        <x:context>
+            <section epub:type="frontmatter titlepage"/>
+            <section epub:type="frontmatter colophon"/>
+        </x:context>
+        <x:expect label="the titlepage and colophon should be removed"/>
+    </x:scenario>
+    
     <x:scenario label="move toc to the start">
         <x:context>
             <body>

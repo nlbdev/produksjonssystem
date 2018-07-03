@@ -192,6 +192,9 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="section[f:types(.) = 'titlepage']"/>
+    <xsl:template match="section[f:types(.) = 'colophon']"/>
+    
     <xsl:function name="f:types">
         <xsl:param name="element" as="element()"/>
         <xsl:sequence select="tokenize($element/@epub:type,'\s+')"/>
