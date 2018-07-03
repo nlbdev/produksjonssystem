@@ -93,4 +93,76 @@
             </section>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Page numbers">
+        <x:context>
+            <section>
+                <section>
+                    <div epub:type="pagebreak" title="1"></div>
+                    <h1>En overskrift.<span epub:type="pagebreak" title="2"></span></h1>
+                    <div epub:type="pagebreak" title="3"></div>
+                    <div epub:type="pagebreak">4</div>
+                    
+                    <!-- avsnitt -->
+                    <p>En setning
+                        <span epub:type="pagebreak" title="5"></span>
+                        med <em>linjeskift
+                        <span epub:type="pagebreak">6</span>
+                        inni</em> seg.
+                        <span epub:type="pagebreak" title="7"></span></p>
+                    
+                    <!-- liste -->
+                    <ol>
+                        <li><span epub:type="pagebreak" title="8"></span></li>
+                    </ol>
+                    
+                    <!-- tabell -->
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><span epub:type="pagebreak" title="9"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+        </x:context>
+        
+        <x:expect>
+            <section>
+                <section>
+                    <div epub:type="pagebreak" title="1">--- 1 til 9</div>
+                    <div epub:type="pagebreak" title="2">--- 2 til 9</div>
+                    <h1>xxx1 En overskrift.</h1>
+                    <div epub:type="pagebreak" title="3">--- 3 til 9</div>
+                    <div epub:type="pagebreak" title="4">--- 4 til 9</div>
+                    
+                    <!-- avsnitt -->
+                    <div epub:type="pagebreak" title="5">--- 5 til 9</div>
+                    <div epub:type="pagebreak" title="6">--- 6 til 9</div>
+                    <div epub:type="pagebreak" title="7">--- 7 til 9</div>
+                    <p>En setning
+                        
+                        med <em>linjeskift
+                        
+                        inni</em> seg.
+                        </p>
+                    
+                    <!-- liste -->
+                    <ol>
+                        <li><div epub:type="pagebreak" title="8">--- 8 til 9</div></li>
+                    </ol>
+                    
+                    <!-- tabell -->
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><div epub:type="pagebreak" title="9">--- 9 til 9</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+        </x:expect>
+    </x:scenario>
 </x:description>
