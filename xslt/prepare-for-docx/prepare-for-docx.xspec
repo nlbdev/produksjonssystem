@@ -28,4 +28,69 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Table of contents">
+        <x:context>
+            <section epub:type="frontmatter toc" id="level1_4">
+                <h1 id="h1_3">INNHOLD</h1>
+                <ol>
+                    <li><a href="#h1_4"><span class="lic">Del 1 <strong>Samfunnsfag og vitenskapelige tenkemåter</strong></span></a>
+                        <ol>
+                            <li><a href="#h2_1"><span class="lic"><strong>Kapittel 1 Samfunnsfag og vitenskapelige tenkemåter</strong></span> <span class="lic">10</span></a>
+                                <ol>
+                                    <li><a href="#h3_1"><span class="lic"><strong>Om fagenes egenart</strong></span> <span class="lic">12</span></a> 
+                                        <ol>
+                                            <li><a href="#h4_1"><span class="lic">Sosiologi</span> <span class="lic">12</span></a> </li>
+                                            <li><a href="#h4_2"><span class="lic">Sosialantropologi</span> <span class="lic">15</span></a> </li>
+                                        </ol></li>
+                                    <li><a href="#h3_2"><span class="lic"><strong>Perspektiver</strong></span> <span class="lic">16</span></a> 
+                                        <ol>
+                                            <li><a href="#h4_3"><span class="lic">1 Konfliktperspektivet</span> <span class="lic">17</span></a> </li>
+                                            <li><a href="#h4_4"><span class="lic">2 Harmoniperspektivet</span> <span class="lic">17</span></a> </li>
+                                            <li><a href="#h4_5"><span class="lic">3 Handlingsperspektivet</span> <span class="lic">18</span></a> </li>
+                                        </ol></li>
+                                </ol></li>
+                        </ol></li>
+                    <li><a href="#h1_5"><span class="lic">Del 2 <strong>Sosialisering</strong></span></a>
+                        <ol>
+                            <li><a href="#h2_3"><span class="lic"><strong>Kapittel 3 Hva er et samfunn?</strong></span> <span class="lic">54</span></a>
+                            </li>
+                        </ol>
+                    </li>
+                    <li><a href="#h1_9"><span class="lic"><strong>Sentrale begreper</strong></span> <span class="lic">279</span></a> </li>
+                </ol>
+            </section>
+        </x:context>
+        
+        <x:expect>
+            <section epub:type="frontmatter toc" id="level1_4">
+                <ol>
+                    <li><a href="#statped_merknad">xxx1 Merknad</a></li>
+                    <li>xxx1 <a href="#h1_4"><span class="lic">Del 1 <strong>Samfunnsfag og vitenskapelige tenkemåter</strong></span></a>
+                        <ol>
+                            <li>xxx2 <a href="#h2_1"><span class="lic"><strong>Kapittel 1 Samfunnsfag og vitenskapelige tenkemåter</strong></span> <span class="lic">10</span></a>
+                                <ol>
+                                    <li>xxx3 <a href="#h3_1"><span class="lic"><strong>Om fagenes egenart</strong></span> <span class="lic">12</span></a> 
+                                        <ol>
+                                            <li>xxx4 <a href="#h4_1"><span class="lic">Sosiologi</span> <span class="lic">12</span></a> </li>
+                                            <li>xxx4 <a href="#h4_2"><span class="lic">Sosialantropologi</span> <span class="lic">15</span></a> </li>
+                                        </ol></li>
+                                    <li>xxx3 <a href="#h3_2"><span class="lic"><strong>Perspektiver</strong></span> <span class="lic">16</span></a> 
+                                        <ol>
+                                            <li>xxx4 <a href="#h4_3"><span class="lic">1 Konfliktperspektivet</span> <span class="lic">17</span></a> </li>
+                                            <li>xxx4 <a href="#h4_4"><span class="lic">2 Harmoniperspektivet</span> <span class="lic">17</span></a> </li>
+                                            <li>xxx4 <a href="#h4_5"><span class="lic">3 Handlingsperspektivet</span> <span class="lic">18</span></a> </li>
+                                        </ol></li>
+                                </ol></li>
+                        </ol></li>
+                    <li>xxx1 <a href="#h1_5"><span class="lic">Del 2 <strong>Sosialisering</strong></span></a>
+                        <ol>
+                            <li>xxx2 <a href="#h2_3"><span class="lic"><strong>Kapittel 3 Hva er et samfunn?</strong></span> <span class="lic">54</span></a>
+                            </li>
+                        </ol>
+                    </li>
+                    <li>xxx1 <a href="#h1_9"><span class="lic"><strong>Sentrale begreper</strong></span> <span class="lic">279</span></a> </li>
+                </ol>
+            </section>
+        </x:expect>
+    </x:scenario>
 </x:description>

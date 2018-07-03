@@ -93,9 +93,12 @@ class NLBpubToDocx(Pipeline):
         try:
             self.utils.report.info("Konverterer fra XHTML til DOCX...")
             process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
-                                                html_file,
-                                                os.path.join(temp_docxdir, epub.identifier() + ".docx")])
-                                                #"--insert-blank-line"])
+                                                 html_file,
+                                                 os.path.join(temp_docxdir, epub.identifier() + ".docx"),
+                                                 "--no-chapters-in-toc",
+                                                 "--toc-threshold=0",
+                                                 "--docx-page-size=a4",
+                                                 "--insert-blank-line"])
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
             else:
@@ -104,7 +107,7 @@ class NLBpubToDocx(Pipeline):
                 self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
                 return False
 
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired:
             self.utils.report.error("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
