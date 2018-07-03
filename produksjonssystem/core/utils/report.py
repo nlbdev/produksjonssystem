@@ -239,6 +239,8 @@ class Report():
                 recipients = [recipients]
 
             if status == "ERROR":
+                if "administrators" not in self.pipeline.common_config:
+                    self.pipeline.common_config["administrators"] = []
                 for key in self.pipeline.common_config["administrators"]:
                     if key not in recipients:
                         recipients.append(key)

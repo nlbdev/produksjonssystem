@@ -580,6 +580,8 @@ class Metadata:
         signatureRegistrationAddress = None
         if not normarc_success:
             Metadata.last_metadata_errors.append(int(time.time()))
+            if "librarians" not in pipeline.common_config:
+                pipeline.common_config = []
             if signatureRegistration:
                 for addr in pipeline.common_config["librarians"]:
                     if signatureRegistration == addr.lower():
