@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:dcterms="http://purl.org/dc/terms/"
+               xmlns="http://www.idpf.org/2007/opf"
+               stylesheet="nordic-cleanup-opf.xsl">
+    
+    <x:scenario label="Fix identifiers">
+        <x:context>
+            <metadata>
+                <dc:identifier>123456</dc:identifier>
+                <dc:identifier>DTB123456</dc:identifier>
+                <dc:identifier>NLB123456</dc:identifier>
+                <dc:identifier>MTM123456</dc:identifier>
+                <dc:identifier>TEST123456</dc:identifier>
+            </metadata>
+        </x:context>
+
+        <x:expect label="the identifier should be fixed">
+            <metadata>
+                <dc:identifier>123456</dc:identifier>
+                <dc:identifier>123456</dc:identifier>
+                <dc:identifier>123456</dc:identifier>
+                <dc:identifier>123456</dc:identifier>
+                <dc:identifier>TEST123456</dc:identifier>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

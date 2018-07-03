@@ -26,4 +26,26 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Fix identifiers">
+        <x:context>
+            <div>
+                <meta name="dc:identifier" content="123456"/>
+                <meta name="dc:identifier" content="DTB123456"/>
+                <meta name="dc:identifier" content="NLB123456"/>
+                <meta name="dc:identifier" content="MTM123456"/>
+                <meta name="dc:identifier" content="TEST123456"/>
+            </div>
+        </x:context>
+        
+        <x:expect label="the identifiers should be fixed">
+            <div>
+                <meta name="dc:identifier" content="123456"/>
+                <meta name="dc:identifier" content="123456"/>
+                <meta name="dc:identifier" content="123456"/>
+                <meta name="dc:identifier" content="123456"/>
+                <meta name="dc:identifier" content="TEST123456"/>
+            </div>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

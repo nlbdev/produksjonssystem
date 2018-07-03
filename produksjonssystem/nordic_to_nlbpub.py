@@ -63,6 +63,9 @@ class NordicToNlbpub(Pipeline):
         temp_html_file_obj = tempfile.NamedTemporaryFile()
         temp_html_file = temp_html_file_obj.name
 
+        temp_opf_file_obj = tempfile.NamedTemporaryFile()
+        temp_opf_file = temp_opf_file_obj.name
+
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
@@ -79,13 +82,24 @@ class NordicToNlbpub(Pipeline):
                 if file == nav_path:
                     continue
 
-                xslt = Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
+                xslt = Xslt(self,
+                            stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
                             source=file,
                             target=temp_html_file)
                 if not xslt.success:
                     self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
                     return False
                 shutil.copy(temp_html_file, file)
+
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
+                    source=os.path.join(temp_epubdir, temp_epub.opf_path()),
+                    target=temp_opf_file)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_opf_file, os.path.join(temp_epubdir, temp_epub.opf_path()))
+        temp_epub.refresh_metadata()
 
         html_dir_obj = tempfile.TemporaryDirectory()
         html_dir = html_dir_obj.name
