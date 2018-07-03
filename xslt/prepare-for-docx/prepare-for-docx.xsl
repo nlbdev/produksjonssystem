@@ -92,6 +92,13 @@
         
         <xsl:next-match/>
     </xsl:template>
+    
+    <xsl:template match="img">
+        <xsl:if test="string-length(@alt) gt 0">
+            <p><xsl:value-of select="@alt"/></p>
+        </xsl:if>
+    </xsl:template>
+    
     <xsl:template match="section[f:types(.) = 'toc']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>

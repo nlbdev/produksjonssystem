@@ -165,4 +165,22 @@
             </section>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Remove images">
+        <x:context>
+            <div>
+                <img/>
+                <img alt=""/>
+                <img alt="image"/>
+                <img alt="God beskrivelse"/>
+            </div>
+        </x:context>
+        
+        <x:expect label="removed image; optionally replace with alt text">
+            <div>
+                <p>image</p>
+                <p>God beskrivelse</p>
+            </div>
+        </x:expect>
+    </x:scenario>
 </x:description>
