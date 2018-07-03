@@ -126,6 +126,72 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="body">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            
+            <xsl:variable name="title" select="/*/head/title/text()"/>
+            <xsl:variable name="language" select="/*/head/meta[@name='dc:language']/@content"/>
+            <xsl:variable name="authors" select="for $author in (/*/head/meta[@name='dc:creator']/@content) return replace($author, '^(.*), *(.*)$', '$2 $1')"/>
+            <xsl:variable name="publisher-original" select="/*/head/meta[@name='dc:publisher.original']/@content"/>
+            <xsl:variable name="publisher" select="/*/head/meta[@name='dc:publisher']/@content"/>
+            <xsl:variable name="publisher-location" select="/*/head/meta[@name='dc:publisher.location']/@content"/>
+            <xsl:variable name="issued" select="/*/head/meta[@name='dc:date.issued']/@content"/>
+            <xsl:variable name="issued-original" select="/*/head/meta[@name='dc:issued.original']/@content"/>
+            <xsl:variable name="edition-original" select="/*/head/meta[@name='schema:bookEdition.original']/@content"/>
+            <xsl:variable name="pagebreaks" select="(//div | //span)[f:types(.) = 'pagebreak']"/>
+            <xsl:variable name="first-page" select="if ($pagebreaks[1]/@title) then $pagebreaks[1]/@title else $pagebreaks[1]/text()"/>
+            <xsl:variable name="last-page" select="if ($pagebreaks[last()]/@title) then $pagebreaks[last()]/@title else $pagebreaks[last()]/text()"/>
+            <xsl:variable name="isbn" select="/*/head/meta[@name='schema:isbn']/@content"/>
+            
+            <p>
+                <xsl:value-of select="$title"/>
+                <xsl:if test="$language">
+                    <xsl:value-of select="if ($language) then concat(' - ', $language) else ''"/>
+                </xsl:if>
+                <br/>
+                
+                <xsl:value-of select="if ($first-page) then concat('(s. ', $first-page, '-', $last-page, ')') else ''"/>
+                <xsl:choose>
+                    <xsl:when test="count($authors) gt 1">
+                        <xsl:text> - </xsl:text>
+                        <xsl:value-of select="string-join($authors[position() lt last()], ', ')"/>
+                        <xsl:text> og </xsl:text>
+                        <xsl:value-of select="$authors[last()]"/>
+                    </xsl:when>
+                    <xsl:when test="$authors">
+                        <xsl:text> - </xsl:text>
+                        <xsl:value-of select="$authors"/>
+                    </xsl:when>
+                </xsl:choose>
+                <br/>
+                
+                <xsl:value-of select="$publisher-original"/>
+                <xsl:value-of select="if ($issued-original) then concat(' ', $issued-original) else ''"/>
+                <xsl:value-of select="if ($edition-original) then concat(' - ', $edition-original, if (matches($edition-original, '^\d+\.?')) then '.utg.' else '') else ''"/>
+                <xsl:value-of select="if ($isbn) then concat(' - ISBN: ', $isbn) else ''"/>
+            </p>
+            
+            <p>Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre.
+               Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller
+               medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>
+               
+               <xsl:value-of select="$publisher-location"/>
+               <xsl:value-of select="if ($issued) then concat(' ', $issued) else ''"/>
+               <xsl:value-of select="if ($publisher) then concat(', ', $publisher) else ''"/>
+               <xsl:value-of select="'.'"/>
+            </p>
+            
+            <section>
+                <h1>xxx1 Merknad</h1>
+                <p>TODO</p>
+            </section>
+            
+            <xsl:apply-templates select="section[f:types(.) = 'toc']"/>
+            <xsl:apply-templates select="* except section[f:types(.) = 'toc']"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:function name="f:types">
         <xsl:param name="element" as="element()"/>
         <xsl:sequence select="tokenize($element/@epub:type,'\s+')"/>

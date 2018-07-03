@@ -183,4 +183,117 @@
             </div>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Insert boilerplate text">
+        <x:context>
+            <html>
+                <head>
+                    <meta charset="UTF-8" />
+                    <title>Mangfold</title>
+                    <meta name="dc:identifier" content="562230" />
+                    <meta name="viewport" content="width=device-width" />
+                    <meta name="nordic:guidelines" content="2015-1" />
+                    <meta name="nordic:supplier" content="AEL Data" />
+                    <meta name="dc:language" content="no" />
+                    <meta name="dc:format" content="EPUB3" />
+                    <meta name="dc:creator" content="Westersjø, Martin" />
+                    <meta name="dc:creator" content="Kval, Karl-Eirik" />
+                    <meta name="dc:creator" content="Andreassen, Odd Gunnar" />
+                    <meta name="dc:creator" content="Henningsen, Rune" />
+                    <meta name="dc:date" content="2018-01-13" />
+                    <meta name="dc:publisher" content="Statped læringsressurser og teknologiutvikling" />
+                    <meta name="schema:isbn" content="978-82-02-37172-2"/>
+                    <meta name="dc:publisher.location" content="Oslo"/>
+                    <meta name="dc:date.issued" content="2018"/>
+                    <meta name="dc:date.issued.original" content="2012"/>
+                    <meta name="schema:bookEdition.original" content="1"/>
+                    <meta name="dc:publisher.original" content="Cappelen Damm"/>
+                    <meta name="dc:source" content="urn:isbn:9788200000000" />
+                    <meta name="schema:library" content="Statped" />
+                    <meta name="dcterms:modified" content="2018-07-03T12:41:47+00:00" />
+                </head>
+                <body>
+                    <section>
+                        <p>Første kapittel.</p>
+                        <div epub:type="pagebreak" title="4"></div>
+                        <div epub:type="pagebreak" title="10"></div>
+                        <div epub:type="pagebreak" title="298"></div>
+                    </section>
+                    <section>
+                        <p>Andre kapittel.</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="boilerplate text should be inserted">
+            <html>
+                <head>
+                    <meta charset="UTF-8" />
+                    <title>Mangfold</title>
+                    <meta name="dc:identifier" content="562230" />
+                    <meta name="viewport" content="width=device-width" />
+                    <meta name="nordic:guidelines" content="2015-1" />
+                    <meta name="nordic:supplier" content="AEL Data" />
+                    <meta name="dc:language" content="no" />
+                    <meta name="dc:format" content="EPUB3" />
+                    <meta name="dc:creator" content="Westersjø, Martin" />
+                    <meta name="dc:creator" content="Kval, Karl-Eirik" />
+                    <meta name="dc:creator" content="Andreassen, Odd Gunnar" />
+                    <meta name="dc:creator" content="Henningsen, Rune" />
+                    <meta name="dc:date" content="2018-01-13" />
+                    <meta name="dc:publisher" content="Statped læringsressurser og teknologiutvikling" />
+                    <meta name="schema:isbn" content="978-82-02-37172-2"/>
+                    <meta name="dc:publisher.location" content="Oslo"/>
+                    <meta name="dc:date.issued" content="2018"/>
+                    <meta name="dc:date.issued.original" content="2012"/>
+                    <meta name="schema:bookEdition.original" content="1"/>
+                    <meta name="dc:publisher.original" content="Cappelen Damm"/>
+                    <meta name="dc:source" content="urn:isbn:9788200000000" />
+                    <meta name="schema:library" content="Statped" />
+                    <meta name="dcterms:modified" content="2018-07-03T12:41:47+00:00" />
+                </head>
+                <body>
+                    <p>Mangfold - no<br/>(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br />Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
+                    <p>Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre.
+               Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller
+               medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br />Oslo 2018, Statped læringsressurser og teknologiutvikling.</p>
+                    <section>
+                        <h1>xxx1 Merknad</h1>
+                        <p>TODO</p>
+                    </section>
+                    <section>
+                        <p>Første kapittel.</p>
+                        <div epub:type="pagebreak" title="4">--- 4 til 298</div>
+                        <div epub:type="pagebreak" title="10">--- 10 til 298</div>
+                        <div epub:type="pagebreak" title="298">--- 298 til 298</div>
+                    </section>
+                    <section>
+                        <p>Andre kapittel.</p>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="move toc to the start">
+        <x:context>
+            <body>
+                <section epub:type="frontmatter foreword"/>
+                <section epub:type="frontmatter toc"/>
+                <section epub:type="bodymatter chapter"/>
+            </body>
+        </x:context>
+        <x:expect label="the toc should be moved">
+            <body>
+                <p>...</p>
+                <p>...</p>
+                <section>...</section>
+                <section epub:type="frontmatter toc"/>
+                <section epub:type="frontmatter foreword"/>
+                <section epub:type="bodymatter chapter"/>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
