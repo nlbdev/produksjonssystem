@@ -210,7 +210,7 @@ class NordicToNlbpub(Pipeline):
             return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
-        archived_path = self.utils.filesystem.storeBook(nlbpub.asDir(), epub.identifier())
+        archived_path = self.utils.filesystem.storeBook(nlbpub.asDir(), temp_epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(epub.identifier() + " ble lagt til i NLBPUB-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
