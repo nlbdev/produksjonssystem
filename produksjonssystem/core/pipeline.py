@@ -46,6 +46,8 @@ class Pipeline():
 
     # The current book
     book = None
+    book_title_cached = None
+    book_identifier_cached = None
 
     # Directories
     dir_in = None
@@ -919,25 +921,28 @@ class Pipeline():
     # This can be overridden if the identifier can not be retrieved from the EPUB dc:identifier
     # or from the top-level directory or file name
     def book_identifier(self):
-        if not os.path.exists(self.book["source"]):
-            return re.sub("\.[^\.]*$", "", self.book["name"])
+        if os.path.exists(self.book["source"]):
+            epub = Epub(self, self.book["source"])
 
-        epub = Epub(self, self.book["source"])
+            # Hvis dette ikke er en EPUB; bruk filnavnet / mappenavnet
+            if not epub.isepub(report_errors=False):
+                self.book_identifier_cached = re.sub("\.[^\.]*$", "", self.book["name"])
+            else:
+                self.book_identifier_cached = epub.identifier()
 
-        # Hvis dette ikke er en EPUB; bruk filnavnet / mappenavnet
-        if not epub.isepub(report_errors=False):
-            return re.sub("\.[^\.]*$", "", self.book["name"])
-        else:
-            return epub.identifier()
+        elif not self.book_identifier_cached:
+                self.book_identifier_cached = re.sub("\.[^\.]*$", "", self.book["name"])
+
+        return self.book_identifier_cached
 
     # This can be overridden if the title can not be retrieved from the EPUB dc:title
     def book_title(self):
-        epub = Epub(self, self.book["source"])
+        if os.path.exists(self.book["source"]):
+            epub = Epub(self, self.book["source"])
+            if epub.isepub(report_errors=False):
+                self.book_title_cached = epub.meta("dc:title")
 
-        if epub.isepub(report_errors=False):
-            return epub.meta("dc:title")
-        else:
-            return None
+        return self.book_title_cached
 
     # This should be overridden
     def on_book_created(self):
