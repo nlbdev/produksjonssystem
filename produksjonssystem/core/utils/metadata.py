@@ -580,19 +580,17 @@ class Metadata:
         signatureRegistrationAddress = None
         if not normarc_success:
             Metadata.last_metadata_errors.append(int(time.time()))
-            if "librarians" not in pipeline.common_config:
-                pipeline.common_config = []
             if signatureRegistration:
-                for addr in pipeline.common_config["librarians"]:
+                for addr in Config.get("librarians", default=[]):
                     if signatureRegistration == addr.lower():
                         signatureRegistrationAddress = addr
             if not signatureRegistrationAddress:
                 normarc_report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: {}".format(
                                                     signatureRegistration if signatureRegistration else "(ukjent)",
-                                                    ", ".join([addr.lower() for addr in pipeline.common_config["default_librarian"]])))
+                                                    ", ".join([addr.lower() for addr in Config.get("default_librarian", default=[])])))
                 normarc_report.debug("Aktive bibliotekarer: {}".format(
-                                                    ", ".join([addr.lower() for addr in pipeline.common_config["librarians"]])))
-                signatureRegistrationAddress = pipeline.common_config["default_librarian"]
+                                                    ", ".join([addr.lower() for addr in Config.get("librarians", default=[])])))
+                signatureRegistrationAddress = Config.get("default_librarian", default=[])
 
         # Kopier Bibliofil-metadata-rapporten inn i samme rapport som resten av konverteringen
         for message_type in normarc_report._messages:

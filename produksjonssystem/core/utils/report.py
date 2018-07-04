@@ -12,6 +12,7 @@ import tempfile
 
 from dotmap import DotMap
 from datetime import datetime, timezone
+from core.config import Config
 from email.message import EmailMessage
 from core.utils.slack import Slack
 from email.headerregistry import Address
@@ -239,9 +240,7 @@ class Report():
                 recipients = [recipients]
 
             if status == "ERROR":
-                if "administrators" not in self.pipeline.common_config:
-                    self.pipeline.common_config["administrators"] = []
-                for key in self.pipeline.common_config["administrators"]:
+                for key in Config.get("administrators", default=[]):
                     if key not in recipients:
                         recipients.append(key)
 

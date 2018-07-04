@@ -48,7 +48,6 @@ class Produksjonssystem():
     pipelines = None
     environment = None
     emailDoc = []
-    common_config = {}
 
     def __init__(self, environment=None):
         logging.basicConfig(stream=sys.stdout,
@@ -306,8 +305,7 @@ class Produksjonssystem():
 
         for common in self.emailDoc["common"]:
             for common_key in common:
-                self.common_config[common_key] = common[common_key]
-        Pipeline.common_config = self.common_config
+                Config.set(common_key, common[common_key])
 
         for pipeline in self.pipelines:
             email_settings = {
@@ -462,8 +460,7 @@ class Produksjonssystem():
 
                     for common in self.emailDoc["common"]:
                         for common_key in common:
-                            self.common_config[common_key] = common[common_key]
-                    Pipeline.common_config = self.common_config
+                            Config.set(common_key, common[common_key])
 
                     for pipeline in self.pipelines:
                         if not pipeline[0].running:
