@@ -3,10 +3,9 @@
 
 import tempfile
 
+from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
-
-from core.pipeline import Pipeline
 
 
 class InsertMetadata(Pipeline):

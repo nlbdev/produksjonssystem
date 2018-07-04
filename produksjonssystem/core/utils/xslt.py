@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import traceback
 import subprocess
+import traceback
 
-from core.utils.filesystem import Filesystem
 from core.utils.daisy_pipeline import DaisyPipelineJob
+from core.utils.filesystem import Filesystem
 
 
 class Xslt():
@@ -28,7 +28,17 @@ class Xslt():
                     Xslt.saxon_jar = os.path.join(dirPath, file)
                     break
 
-    def __init__(self, pipeline=None, stylesheet=None, source=None, target=None, parameters={}, template=None, stdout_level="INFO", stderr_level="INFO", report=None, cwd=None):
+    def __init__(self,
+                 pipeline=None,
+                 stylesheet=None,
+                 source=None,
+                 target=None,
+                 parameters={},
+                 template=None,
+                 stdout_level="INFO",
+                 stderr_level="INFO",
+                 report=None,
+                 cwd=None):
         assert pipeline or cwd and report
         assert stylesheet
         assert source or template

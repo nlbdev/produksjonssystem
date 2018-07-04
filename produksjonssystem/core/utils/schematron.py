@@ -5,6 +5,7 @@ import tempfile
 import traceback
 
 from lxml import etree as ElementTree
+
 from core.utils.xslt import Xslt
 
 
@@ -41,22 +42,49 @@ class Schematron():
             temp_xml_report = temp_xml_report_obj.name
 
             report.debug("Compiling schematron ({} + {}): {}".format("iso_dsdl_include.xsl", os.path.basename(schematron), os.path.basename(temp_xml_1)))
-            xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(self.schematron_dir, "iso_dsdl_include.xsl"),    source=schematron, target=temp_xml_1,      stdout_level="DEBUG", stderr_level="DEBUG")
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=os.path.join(self.schematron_dir, "iso_dsdl_include.xsl"),
+                        source=schematron,
+                        target=temp_xml_1,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
             if not xslt.success:
                 return
 
             report.debug("Compiling schematron ({} + {}): {}".format("iso_abstract_expand.xsl", os.path.basename(schematron), os.path.basename(temp_xml_2)))
-            xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(self.schematron_dir, "iso_abstract_expand.xsl"), source=temp_xml_1, target=temp_xml_2,      stdout_level="DEBUG", stderr_level="DEBUG")
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=os.path.join(self.schematron_dir, "iso_abstract_expand.xsl"),
+                        source=temp_xml_1,
+                        target=temp_xml_2,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
             if not xslt.success:
                 return
 
             report.debug("Compiling schematron ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(schematron), os.path.basename(temp_xml_3)))
-            xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(self.schematron_dir, "iso_svrl_for_xslt2.xsl"),  source=temp_xml_2, target=temp_xml_3,      stdout_level="DEBUG", stderr_level="DEBUG")
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=os.path.join(self.schematron_dir, "iso_svrl_for_xslt2.xsl"),
+                        source=temp_xml_2,
+                        target=temp_xml_3,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
             if not xslt.success:
                 return
 
-            report.debug("Validating against compiled Schematron ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(source), os.path.basename(temp_xml_report)))
-            xslt = Xslt(report=report, cwd=cwd, stylesheet=temp_xml_3,                                                   source=source,     target=temp_xml_report, stdout_level="DEBUG", stderr_level="DEBUG")
+            report.debug("Validating against compiled Schematron ({} + {}): {}".format(
+                "iso_svrl_for_xslt2.xsl",
+                os.path.basename(source),
+                os.path.basename(temp_xml_report)))
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=temp_xml_3,
+                        source=source,
+                        target=temp_xml_report,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
             if not xslt.success:
                 return
 
@@ -84,16 +112,22 @@ class Schematron():
 
                         if e < max_errors:
                             report.error((pattern_title + ": " if pattern_title else "") + text)
-                        report.debug((pattern_title + ": " if pattern_title else "") + text + (" ({})".format(location) if location else "") + (" ({})".format(test) if test else ""))
+                        report.debug((pattern_title + ": " if pattern_title else "") + text + (" ({})".format(location) if location else "") +
+                                     (" ({})".format(test) if test else ""))
 
                         e += 1
 
             # Create HTML report
             if temp_xml_report and "/" in temp_xml_report:
                 html_report_obj = tempfile.NamedTemporaryFile()
-                html_report = temp_xml_1_obj.name
-                report.debug("Creating HTML report for Schematron validation ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(temp_xml_report), os.path.basename(html_report)))
-                xslt = Xslt(report=report, cwd=cwd, stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"), source=temp_xml_report, target=html_report)
+                html_report = html_report_obj.name
+                report.debug("Creating HTML report for Schematron validation ({} + {}): {}".format(
+                    "iso_svrl_for_xslt2.xsl", os.path.basename(temp_xml_report), os.path.basename(html_report)))
+                xslt = Xslt(report=report,
+                            cwd=cwd,
+                            stylesheet=os.path.join(Xslt.xslt_dir, Schematron.uid, "svrl-to-html.xsl"),
+                            source=temp_xml_report,
+                            target=html_report)
                 if not xslt.success:
                     return
 

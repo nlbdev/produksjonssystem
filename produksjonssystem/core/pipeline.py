@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import datetime
+import inspect
+import logging
+import math
 import os
 import re
 import sys
-import math
-import time
-import inspect
-import logging
-import datetime
 import tempfile
-import traceback
 import threading
-
+import time
+import traceback
 from copy import deepcopy
-from dotmap import DotMap
 from pathlib import Path
-from threading import Thread, RLock
+from threading import RLock, Thread
 
 from core.utils.epub import Epub
-from core.utils.report import Report, DummyReport
-from core.utils.metadata import Metadata
 from core.utils.filesystem import Filesystem
+from core.utils.metadata import Metadata
+from core.utils.report import DummyReport, Report
+from dotmap import DotMap
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -130,21 +129,29 @@ class Pipeline():
 
         stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
 
-        assert dir_reports != None and len(dir_reports) > 0 and os.path.exists(dir_reports), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
+        assert (
+            dir_reports is not None and len(dir_reports) > 0 and os.path.exists(dir_reports)
+            ), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
         assert isinstance(dir_base, str) or isinstance(dir_base, dict), "Base directories could not be determined"
-        assert not stop_after_first_job or stop_after_first_job in [ "1", "true", "0", "false" ], "The environment variable STOP_AFTER_FIRST_JOB, if defined, must be \"true\"/\"false\" (or \"1\"/\"0\")."
+        assert (
+            not stop_after_first_job or stop_after_first_job in ["1", "true", "0", "false"]
+            ), "The environment variable STOP_AFTER_FIRST_JOB, if defined, must be \"true\"/\"false\" (or \"1\"/\"0\")."
 
         if isinstance(dir_base, str):
             base_dirs = {}
             for d in dir_base.split(" "):
-                assert "=" in d, "Base directories must be a space-separated list with name=path pairs. For instance: master=/media/archive. Note that paths can not contain space characters."
+                assert "=" in d, (
+                    "Base directories must be a space-separated list with name=path pairs. " +
+                    "For instance: master=/media/archive. " +
+                    "Note that paths can not contain space characters."
+                    )
                 archive_name = d.split("=")[0]
                 archive_path = os.path.normpath(d.split("=")[1]) + "/"
                 base_dirs[archive_name] = archive_path
             dir_base = base_dirs
 
         self._stopAfterFirstJob = False
-        if stop_after_first_job in [ "true", "1" ]:
+        if stop_after_first_job in ["true", "1"]:
             self._stopAfterFirstJob = True
 
         if dir_in:
@@ -164,7 +171,7 @@ class Pipeline():
         # make dirs available from static contexts
         if not Pipeline.dirs:
             Pipeline.dirs = {}
-        if not self.uid in Pipeline.dirs:
+        if self.uid not in Pipeline.dirs:
             Pipeline.dirs[self.uid] = {}
         Pipeline.dirs[self.uid]["in"] = self.dir_in
         Pipeline.dirs[self.uid]["out"] = self.dir_out
@@ -183,8 +190,12 @@ class Pipeline():
                           dir_base=dir_base,
                           config=config)
 
-        assert self.dir_in != None and len(self.dir_in) > 0, "The environment variable DIR_IN must be specified, and must point to a directory."
-        assert self.dir_out != None and len(self.dir_out) > 0 and os.path.exists(self.dir_out), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
+        assert (
+            self.dir_in is not None and len(self.dir_in) > 0
+            ), "The environment variable DIR_IN must be specified, and must point to a directory."
+        assert (
+            self.dir_out is not None and len(self.dir_out) > 0 and os.path.exists(self.dir_out)
+            ), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
 
         for p in self.parentdirs:
             os.makedirs(os.path.join(self.dir_out, self.parentdirs[p]), exist_ok=True)
@@ -214,9 +225,12 @@ class Pipeline():
         type(self).config = self.config
 
         if Filesystem.ismount(self.dir_in):
-            logging.debug("" + self.dir_in + " is the root of a mounted filesystem. Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+            logging.debug(self.dir_in +
+                          " is the root of a mounted filesystem. " +
+                          "Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
         if not os.path.isdir(self.dir_in):
-            logging.error("" + self.dir_in + " is not available. Will not start watching.")
+            logging.error(self.dir_in +
+                          " is not available. Will not start watching.")
             return
         self._inactivity_timeout = inactivity_timeout
 
@@ -455,7 +469,7 @@ class Pipeline():
                 self._queue.append({
                      'name': name,
                      'source': os.path.join(self.dir_in, name),
-                     'events': [ event_type ],
+                     'events': [event_type],
                      'last_event': int(time.time())
                 })
                 logging.debug("added book to queue: " + name)
@@ -463,7 +477,7 @@ class Pipeline():
     def _update_md5(self, name):
         path = os.path.join(self.dir_in, name)
 
-        assert not "/" in name
+        assert "/" not in name
 
         with self._md5_lock:
             shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True, expect=self._md5[name]["shallow"] if name in self._md5 else None)
@@ -514,8 +528,8 @@ class Pipeline():
                     if ".." in relpath:
                         continue
 
-                    if not relpath in dirs:
-                        dirs[relpath] = [ pipeline.uid ]
+                    if relpath not in dirs:
+                        dirs[relpath] = [pipeline.uid]
                         os.makedirs(os.path.join(trigger_dir, relpath), exist_ok=True)
                     else:
                         dirs[relpath].append(pipeline.uid)
@@ -650,9 +664,12 @@ class Pipeline():
                                     logging.debug("book modified: " + f)
 
             except Exception:
-                logging.exception("" + Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
+                logging.exception(Pipeline._i18n["An error occured while monitoring of"] + " " +
+                                  str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
                 try:
-                    Report.emailPlainText(Pipeline._i18n["An error occured while monitoring of"] + " " + str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""), traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                    Report.emailPlainText(Pipeline._i18n["An error occured while monitoring of"] + " " +
+                                          str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""),
+                                          traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                 except Exception:
                     logging.exception("Could not e-mail exception")
 
@@ -730,7 +747,6 @@ class Pipeline():
                                 file_exists = True
                                 break
 
-
                 except Exception:
                     logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
 
@@ -757,16 +773,17 @@ class Pipeline():
 
                 with self._queue_lock:
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
-                    books = sorted(books, key=lambda b: b["last_event"], reverse=True) # process recently modified books first
+                    books = sorted(books, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
 
                     # process books that were started manually first (manual trigger or book modification)
                     books_autotriggered = [b for b in books if "autotriggered" in b["events"]]
-                    books_manual = [b for b in books if not "autotriggered" in b["events"]]
+                    books_manual = [b for b in books if "autotriggered" not in b["events"]]
                     books = books_manual
                     books.extend(books_autotriggered)
 
                     if books:
-                        logging.info("queue: " + ", ".join([b["name"] for b in books][:5]) + (", ... ( " + str(len(books) - 5) + " more )" if len(books) > 5 else ""))
+                        logging.info("queue: " + ", ".join(
+                            [b["name"] for b in books][:5]) + (", ... ( " + str(len(books) - 5) + " more )" if len(books) > 5 else ""))
 
                     self.book = None
                     if len(books):
@@ -784,7 +801,7 @@ class Pipeline():
                         pass
 
                     # source directory or file should be ignored
-                    elif Filesystem.shutil_ignore_patterns(os.path.dirname(self.book["source"]), [ os.path.basename(self.book["source"]) ]):
+                    elif Filesystem.shutil_ignore_patterns(os.path.dirname(self.book["source"]), [os.path.basename(self.book["source"])]):
                         logging.info("Ignoring book: {}".format(self.book["source"]))
                         pass
 
@@ -848,9 +865,12 @@ class Pipeline():
                                 logging.exception("Logfile: " + logpath)
 
             except Exception:
-                logging.exception("" + Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
+                logging.exception(Pipeline._i18n["An error occured while checking for book events"] +
+                                  (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
                 try:
-                    Report.emailPlainText(Pipeline._i18n["An error occured while checking for book events"] + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""), traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                    Report.emailPlainText(Pipeline._i18n["An error occured while checking for book events"] +
+                                          (": " + str(self.book["name"]) if self.book and "name" in self.book else ""),
+                                          traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                 except Exception:
                     logging.exception("Could not e-mail exception")
 
@@ -931,6 +951,7 @@ class Pipeline():
     def on_book_deleted(self):
         logging.info("Book deleted (unhandled book event): "+self.book['name'])
 
+
 class DummyPipeline(Pipeline):
     uid = "dummy"
     title = "Dummy"
@@ -999,6 +1020,7 @@ class DummyPipeline(Pipeline):
 
     def on_book_created(self):
         self.utils.report.should_email = False
+
 
 if __name__ == '__main__':
     args = sys.argv[1:]

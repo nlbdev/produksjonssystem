@@ -2,29 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
-import sys
-import time
 import shutil
+import sys
 import tempfile
-import subprocess
 import traceback
 
 from lxml import etree as ElementTree
-from datetime import datetime, timezone
+
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
-from core.utils.metadata import Metadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class NlbpubToNarrationEpub(Pipeline):
     uid = "nlbpub-to-narration-epub"
     title = "NLBPUB til innlesingsklar EPUB"
-    labels = [ "Lydbok", "Innlesing" ]
+    labels = ["Lydbok", "Innlesing"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 4
 
@@ -63,14 +60,12 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
-
         # ---------- lag en kopi av EPUBen ----------
 
         narration_epubdir_obj = tempfile.TemporaryDirectory()
         narration_epubdir = narration_epubdir_obj.name
         self.utils.filesystem.copy(self.book["source"], narration_epubdir)
         nlbpub = Epub(self, narration_epubdir)
-
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 
@@ -102,9 +97,10 @@ class NlbpubToNarrationEpub(Pipeline):
         self.utils.report.debug("ta-vekk-innhold.xsl")
         self.utils.report.debug("    source = " + html_file)
         self.utils.report.debug("    target = " + temp_html)
-        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "ta-vekk-innhold.xsl"),
-                          source=html_file,
-                          target=temp_html)
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "ta-vekk-innhold.xsl"),
+                    source=html_file,
+                    target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
@@ -114,9 +110,10 @@ class NlbpubToNarrationEpub(Pipeline):
         self.utils.report.debug("prepare-for-narration.xsl")
         self.utils.report.debug("    source = " + html_file)
         self.utils.report.debug("    target = " + temp_html)
-        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "prepare-for-narration.xsl"),
-                          source=html_file,
-                          target=temp_html)
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "prepare-for-narration.xsl"),
+                    source=html_file,
+                    target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
@@ -126,14 +123,14 @@ class NlbpubToNarrationEpub(Pipeline):
         self.utils.report.debug("lag-synkroniseringspunkter.xsl")
         self.utils.report.debug("    source = " + html_file)
         self.utils.report.debug("    target = " + temp_html)
-        xslt = Xslt(self, stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "lag-synkroniseringspunkter.xsl"),
-                          source=html_file,
-                          target=temp_html)
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "lag-synkroniseringspunkter.xsl"),
+                    source=html_file,
+                    target=temp_html)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
-
 
         # ---------- erstatt metadata i OPF med metadata fra HTML ----------
 
@@ -146,7 +143,6 @@ class NlbpubToNarrationEpub(Pipeline):
             return False
 
         shutil.copy(temp_opf, opf_path)
-
 
         # ---------- hent nytt filnavn fra OPF (det endrer seg basert på boknummer) ----------
         try:
@@ -164,7 +160,6 @@ class NlbpubToNarrationEpub(Pipeline):
             os.remove(html_file)
             html_file = new_html_file
 
-
         # ---------- lag nav.xhtml på nytt ----------
 
         nav_path = nlbpub.nav_path()
@@ -178,7 +173,6 @@ class NlbpubToNarrationEpub(Pipeline):
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
-
 
         # ---------- save EPUB ----------
 

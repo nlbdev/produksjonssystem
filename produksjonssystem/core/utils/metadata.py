@@ -1,21 +1,22 @@
+import datetime
+import logging
 import os
 import re
-import time
 import shutil
-import logging
-import zipfile
-import datetime
-import requests
 import tempfile
 import threading
+import time
+import zipfile
 
+import requests
 from lxml import etree as ElementTree
+
 from core.config import Config
 from core.utils.epub import Epub
-from core.utils.xslt import Xslt
-from core.utils.report import Report
 from core.utils.filesystem import Filesystem
+from core.utils.report import Report
 from core.utils.schematron import Schematron
+from core.utils.xslt import Xslt
 
 
 class Metadata:
@@ -184,9 +185,10 @@ class Metadata:
                     else:
                         fmt_bookid = data["books"][fmt][0]
                         if fmt_bookid not in publication_identifiers and fmt_bookid not in edition_identifiers:
-                            report.info("{} har samme ISBN/ISSN i `*596$f` som {}".format(fmt_bookid,
-                                                                                                         ("en av: " if len(edition_identifiers) > 2 else "") +
-                                                                                                         "/".join(edition_identifiers)))
+                            report.info("{} har samme ISBN/ISSN i `*596$f` som {}".format(
+                                fmt_bookid,
+                                ("en av: " if len(edition_identifiers) > 2 else "") +
+                                "/".join(edition_identifiers)))
                             report.info("Legger til {} som utgave".format(fmt_bookid))
                             edition_identifiers.append(fmt_bookid)
                             publication_identifiers.append(fmt_bookid[:6])

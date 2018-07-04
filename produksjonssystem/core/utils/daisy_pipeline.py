@@ -2,12 +2,12 @@
 
 import os
 import re
-import time
-import psutil
-import tempfile
-import traceback
 import subprocess
+import tempfile
+import time
+import traceback
 
+import psutil
 from core.utils.timeout_lock import TimeoutLock
 
 
@@ -299,7 +299,11 @@ class DaisyPipelineJob():
         for proc in psutil.process_iter(attrs=[]):
             try:
                 cmdline = " ".join(proc.cmdline())
-                if "java" in cmdline and "daisy-pipeline" in cmdline and "felix.jar" in cmdline and "org.apache.felix.main.Main" in cmdline and "webui" not in cmdline:
+                if ("java" in cmdline and
+                        "daisy-pipeline" in cmdline and
+                        "felix.jar" in cmdline and
+                        "org.apache.felix.main.Main" in cmdline and
+                        "webui" not in cmdline):
                     procs.append(proc)
             except psutil.NoSuchProcess:
                 # Process does not exist anymore; ignore

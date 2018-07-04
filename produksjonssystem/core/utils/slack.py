@@ -1,8 +1,8 @@
-import os
 import logging
-import threading
+import os
 
 from slacker import Slacker
+
 
 class Slack():
 

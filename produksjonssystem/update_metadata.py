@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import datetime
+import logging
 import os
 import sys
-import time
-import logging
-import datetime
 import threading
+import time
 
-from core.pipeline import Pipeline, DummyPipeline
+from core.pipeline import DummyPipeline, Pipeline
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
 

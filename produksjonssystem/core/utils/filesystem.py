@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import hashlib
+import logging
 import os
 import re
 import shutil
 import socket
-import hashlib
-import logging
-import zipfile
+import subprocess
 import tempfile
 import threading
 import traceback
-import subprocess
 import urllib.parse
 import urllib.request
-
+import zipfile
 from pathlib import Path
 
 

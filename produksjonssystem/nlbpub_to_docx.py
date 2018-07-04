@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
 import sys
 import tempfile
 import traceback
-import subprocess
 
 from lxml import etree as ElementTree
+
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 

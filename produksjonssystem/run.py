@@ -1,39 +1,40 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
 import os
 import sys
-import time
-import yaml
-import logging
 import threading
+import time
 import traceback
-from threading import Thread
-from core.config import Config
-from core.plotter import Plotter
-from core.pipeline import Pipeline, DummyPipeline
-from core.utils.slack import Slack
 from email.headerregistry import Address
+from threading import Thread
 
-# Import pipelines
-from nlbpub_to_pef import NlbpubToPef
-from html_to_dtbook import HtmlToDtbook
-from make_abstracts import Audio_Abstract
-from nlbpub_to_docx import NLBpubToDocx
-from nlbpub_to_html import NlbpubToHtml
-from incoming_nordic import IncomingNordic
-from insert_metadata import InsertMetadataEpub, InsertMetadataDaisy202, InsertMetadataXhtml, InsertMetadataBraille
-from nlbpub_previous import NlbpubPrevious
-from update_metadata import UpdateMetadata
-from nordic_to_nlbpub import NordicToNlbpub
-from prepare_for_docx import PrepareForDocx
-from prepare_for_ebook import PrepareForEbook
-from epub_to_dtbook_html import EpubToDtbookHTML
-from prepare_for_braille import PrepareForBraille
+import yaml
+
+from core.config import Config
+from core.pipeline import DummyPipeline, Pipeline
+from core.plotter import Plotter
+from core.utils.slack import Slack
 from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
+from epub_to_dtbook_html import EpubToDtbookHTML
+from html_to_dtbook import HtmlToDtbook
+from incoming_nordic import IncomingNordic
+from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
+                             InsertMetadataXhtml)
+from make_abstracts import Audio_Abstract
+from nlbpub_previous import NlbpubPrevious
+from nlbpub_to_docx import NLBpubToDocx
+from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
-
+# Import pipelines
+from nlbpub_to_pef import NlbpubToPef
+from nordic_to_nlbpub import NordicToNlbpub
+from prepare_for_braille import PrepareForBraille
+from prepare_for_docx import PrepareForDocx
+from prepare_for_ebook import PrepareForEbook
+from update_metadata import UpdateMetadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")

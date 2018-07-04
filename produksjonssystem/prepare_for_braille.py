@@ -3,16 +3,16 @@
 
 import os
 import re
-import sys
 import shutil
+import sys
 import tempfile
 
 from lxml import etree as ElementTree
-from core.utils.epub import Epub
-from core.utils.xslt import Xslt
-from core.utils.metadata import Metadata
 
 from core.pipeline import Pipeline
+from core.utils.epub import Epub
+from core.utils.metadata import Metadata
+from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")

@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
+import json
 import os
 import subprocess
+import sys
 import traceback
-import json
-
-from core.utils.epub import Epub
-from core.utils.daisy_pipeline import DaisyPipelineJob
 
 from core.pipeline import Pipeline
+#from core.utils.compare_with_reference import CompareWithReference
+from core.utils.daisy_pipeline import DaisyPipelineJob
+from core.utils.epub import Epub
+from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class IncomingNordic(Pipeline):
     uid = "incoming-nordic"
     title = "Validering av Nordisk EPUB 3"
-    labels = [ "EPUB" ]
+    labels = ["EPUB"]
     publication_format = None
     expected_processing_time = 414
 
@@ -74,7 +76,9 @@ class IncomingNordic(Pipeline):
             report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
             if os.path.isfile(report_file):
                 with open(report_file, 'r') as result_report:
-                    self.utils.report.attachment(result_report.readlines(), os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+                    self.utils.report.attachment(result_report.readlines(),
+                                                 os.path.join(self.utils.report.reportDir(), "report.html"),
+                                                 "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
 
             if dp2_job.status != "DONE":
                 self.utils.report.error("Klarte ikke å validere boken")
@@ -101,7 +105,7 @@ class IncomingNordic(Pipeline):
                 ace_status = "WARN"
             self.utils.report.attachment(None, os.path.join(ace_dir, "report.html"), ace_status)
 
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired:
             self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + epub.identifier() + ", og prosessen ble derfor stoppet.")
 
         except Exception:
@@ -116,21 +120,6 @@ class IncomingNordic(Pipeline):
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
         self.utils.filesystem.deleteSource()
         return True
-        # TODO:
-        # - self.utils.epubCheck på mottatt EPUB
-        # - EPUB 3 Accessibility Checker på mottatt EPUB
-        # - separat pipeline(?):
-        #   - Konverter til NLBPUB
-        #       if self.utils.epub.meta(book_dir, "nordic:guidelines") == "2015-1":
-        #           nordic-epub3-to-nlbpub (= preprocessing + epub-to-nlbpub ?)
-        #       else:
-        #           epub-to-nlbpub
-        #   - self.utils.epubCheck på NLBPUB
-        #   - EPUB 3 Accessibility Checker på NLBPUB
-        # - separat pipeline: EPUB til DTBook
-        # - separat pipeline: EPUB til HTML
-        # - separat pipeline: EPUB til innlesnings-EPUB
-        # - separat pipeline: Zippet versjon av EPUB-master
 
 
 if __name__ == "__main__":

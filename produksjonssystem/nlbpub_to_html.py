@@ -3,11 +3,12 @@
 
 import os
 import re
-import sys
 import shutil
+import sys
 import tempfile
 
 from lxml import etree as ElementTree
+
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt

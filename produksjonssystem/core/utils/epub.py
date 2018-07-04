@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 import pathlib
-import zipfile
+import re
 import tempfile
+import zipfile
 
 from lxml import etree as ElementTree
+
 from core.utils.xslt import Xslt
 
 

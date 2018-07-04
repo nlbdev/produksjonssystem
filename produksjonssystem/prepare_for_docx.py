@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import shutil
+import sys
 import tempfile
-import traceback
-import subprocess
 
 from lxml import etree as ElementTree
+
 from core.pipeline import Pipeline
-from nlbpub_to_html import NlbpubToHtml
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 

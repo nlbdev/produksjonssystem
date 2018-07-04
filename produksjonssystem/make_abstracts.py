@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-import time
 import shutil
+import sys
 import tempfile
+import time
 import traceback
-from pydub import AudioSegment
+
 from lxml import etree as ElementTree
+
 from core.pipeline import Pipeline
+from pydub import AudioSegment
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -19,7 +21,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class Audio_Abstract(Pipeline):
     uid = "create-abstracts"
     title = "Hent ut lydutdrag"
-    labels = [ "Lydbok", "Innlesing", "Talesyntese" ]
+    labels = ["Lydbok", "Innlesing", "Talesyntese"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 3
 
@@ -92,8 +94,10 @@ class Audio_Abstract(Pipeline):
             try:
                 smildoc = ElementTree.parse(os.path.join(temp_absdir, smilFile)).getroot()
                 mp3File = smildoc.xpath("string((//audio/@src)[1])")
-                mp3File_start = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_Id))
-                mp3File_end = smildoc.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_Id))
+                mp3File_start = smildoc.xpath(
+                    "substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_Id))
+                mp3File_end = smildoc.xpath(
+                    "substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_Id))
                 if mp3File_start == mp3File_end:
                     self.utils.report.info("Klarte ikke å bestemme start-/slutt-tid for baksidetekst")
 
@@ -131,12 +135,14 @@ class Audio_Abstract(Pipeline):
                 smilFile_abstract_id = several_smilFiles_id[int(number_of_smilfiles * 0.5+num)]
                 smildoc_abstract = ElementTree.parse(os.path.join(temp_absdir, smilFile_abstract)).getroot()
 
-                mp3File_abstract_start = float(smildoc_abstract.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_abstract_id)))
+                mp3File_abstract_start = float(smildoc_abstract.xpath(
+                    "substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[1]/@clip-begin),'='),'s')".format(smilFile_abstract_id)))
 
                 if (smilFile_abstract == several_smilFiles[int(number_of_smilfiles * 0.5+num)+1]):
                     smilFile_abstract_id = several_smilFiles_id[int(number_of_smilfiles * 0.5+num)+1]
 
-                mp3File_abstract_end = float(smildoc_abstract.xpath("substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_abstract_id)))
+                mp3File_abstract_end = float(smildoc_abstract.xpath(
+                    "substring-before(substring-after(((//par[@id='{0}' or text/@id='{0}']//audio)[last()]/@clip-end),'='),'s')".format(smilFile_abstract_id)))
                 duration = mp3File_abstract_end - mp3File_abstract_start
                 num = num + 1
             mp3File_abstract = smildoc_abstract.xpath("string((//audio/@src)[1])")
@@ -184,7 +190,8 @@ class Audio_Abstract(Pipeline):
             self.utils.report.error("Klarte ikke eksportere excerpt.mp3. Har du ffmpeg kodeken for .mp3 filer?")
 
         # Copies abstract and back cover to dir_out
-        if (os.path.isfile(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3")) or os.path.isfile(os.path.join(temp_absdir, self.parentdirs["abstracts"]+".mp3"))):
+        if (os.path.isfile(os.path.join(temp_absdir, self.parentdirs["back-cover"] + ".mp3")) or
+                os.path.isfile(os.path.join(temp_absdir, self.parentdirs["abstracts"] + ".mp3"))):
 
             if (file_exists["back-cover"]):
                 shutil.copy(os.path.join(temp_absdir, self.parentdirs["back-cover"]+".mp3"), os.path.join(temp_absdir, self.parentdirs["test-audio"]+".mp3"))
@@ -200,7 +207,10 @@ class Audio_Abstract(Pipeline):
 
             for key in self.parentdirs:
                 if(file_exists[key]):
-                    archived_path = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"), audio_identifier, parentdir=self.parentdirs[key], file_extension="mp3")
+                    archived_path = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"),
+                                                                    audio_identifier,
+                                                                    parentdir=self.parentdirs[key],
+                                                                    file_extension="mp3")
                     self.utils.report.attachment(None, archived_path, "DEBUG")
 
             self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
