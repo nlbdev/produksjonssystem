@@ -8,7 +8,7 @@ import sys
 import traceback
 
 from core.pipeline import Pipeline
-#from core.utils.compare_with_reference import CompareWithReference
+from core.utils.compare_with_reference import CompareWithReference
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
@@ -69,7 +69,7 @@ class IncomingNordic(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
-        self.utils.report.info("Validerer EPUB...")
+        self.utils.report.info("Validerer EPUB med epubcheck og nordiske retningslinjer...")
         with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": epub.asFile()}) as dp2_job:
 
             # get validation report
@@ -110,6 +110,24 @@ class IncomingNordic(Pipeline):
 
         except Exception:
             self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
+
+        spine = epub.spine()
+        try:
+            self.utils.report.info("Sammenligner innholdet med referansefilen")
+            html_paths = []
+            for item in spine:
+                html_paths.append(os.path.join(epub.asDir(), os.path.dirname(epub.opf_path()), item["href"]))
+
+            reference = CompareWithReference(pipeline=self,
+                                             reference=os.path.join(Xslt.xslt_dir, IncomingNordic.uid, "reference-files", "nordic.xhtml"),
+                                             source=html_paths)
+
+            if not reference.success:
+                self.utils.report.warn("Validering av HTML i henhold til referansefil feilet")
+
+        except Exception:
+            self.utils.report.warn("En feil oppstod ved produksjon av referansefil-rapporten for " + epub.identifier())
             self.utils.report.debug(traceback.format_exc(), preformatted=True)
 
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
