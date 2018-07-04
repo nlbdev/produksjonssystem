@@ -178,6 +178,33 @@ class Epub():
     def identifier(self, default=None):
         return self.meta("dc:identifier")
 
+    def spine(self):
+        opf = None
+        opf_path = self.opf_path()
+
+        if os.path.isdir(self.book_path):
+            opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
+
+        else:
+            with zipfile.ZipFile(self.book_path, 'r') as archive:
+                opf = archive.read(opf_path)
+                opf = ElementTree.XML(opf)
+
+        ns = {"opf": "http://www.idpf.org/2007/opf"}
+        itemrefs = opf.xpath("//opf:spine/opf:itemref", namespaces=ns)
+        spine = []
+        for itemref in itemrefs:
+            item = opf.xpath("//opf:manifest/opf:item[@id = '{}']".format(itemref.attrib["idref"]), namespaces=ns)
+            data = {}
+            for a in itemref.attrib:
+                data[a] = itemref.attrib[a]
+            for a in item[0].attrib:
+                data[a] = item[0].attrib[a]
+            del data["idref"]
+            spine.append(data)
+
+        return spine
+
     def meta(self, name, default=None):
         """Read OPF metadata"""
         if not self.metadata:
