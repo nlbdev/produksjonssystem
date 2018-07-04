@@ -39,16 +39,15 @@ class Xslt():
                  stderr_level="INFO",
                  report=None,
                  cwd=None):
-        assert pipeline or cwd and report
+        assert pipeline or report
         assert stylesheet
         assert source or template
-        assert target
 
         if not report:
             report = pipeline.utils.report
 
         if not cwd:
-            cwd = report.pipeline.dir_in
+            cwd = report.pipeline.dir_out
 
         self.success = False
 
@@ -61,7 +60,8 @@ class Xslt():
             else:
                 command.append("-it:" + template)
             command.append("-xsl:" + stylesheet)
-            command.append("-o:" + target)
+            if target:
+                command.append("-o:" + target)
             for param in parameters:
                 command.append(param + "=" + parameters[param])
 

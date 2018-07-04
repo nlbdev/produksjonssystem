@@ -142,8 +142,9 @@ class Schematron():
                             if not os.path.exists(available_path):
                                 break
                     if os.path.exists(available_path):
-                        report.warn("Could not find available report filename")
+                        report.warn("Klarte ikke å finne et tilgjengelig filnavn for rapporten")
                     else:
+                        report.debug("Lagrer rapport som {}".format(available_path))
                         with open(html_report, 'r') as result_report:
                             report.attachment(result_report.readlines(),
                                               available_path,
