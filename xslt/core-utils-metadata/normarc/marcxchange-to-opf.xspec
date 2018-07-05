@@ -709,5 +709,49 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Default library for 5xx-books should be NLB">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:controlfield tag="001">500000</marcxchange:controlfield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect>
+            <metadata>
+                <dc:identifier id="pub-id">500000</dc:identifier>
+                <meta property="library">NLB</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="The default library should not be used if *850$a is defined">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:controlfield tag="001">500000</marcxchange:controlfield>
+                <marcxchange:datafield tag="850" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">StatPed</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect>
+            <metadata>
+                <dc:identifier id="pub-id">500000</dc:identifier>
+                <meta property="library">StatPed</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="There should be no default library for books other than 5xx-books">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:controlfield tag="001">000000</marcxchange:controlfield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect>
+            <metadata>
+                <dc:identifier id="pub-id">000000</dc:identifier>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>
