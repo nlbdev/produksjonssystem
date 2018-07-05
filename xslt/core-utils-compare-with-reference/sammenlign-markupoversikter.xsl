@@ -105,7 +105,6 @@
                     <xsl:value-of select="count($avviksliste/avvik)"/>
                     <xsl:text> former for avvik i markupen. Se egen rapport.</xsl:text>
                 </xsl:message>
-                <xsl:call-template name="generer-rapport"/>
 
             </xsl:when>
             <xsl:otherwise>
@@ -117,6 +116,8 @@
                 </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
+        
+        <xsl:call-template name="generer-rapport"/>
     </xsl:template>
 
     <xsl:template name="generer-rapport">
@@ -141,123 +142,128 @@
                     <p>
                         <xsl:text>  Det er </xsl:text>
                         <xsl:value-of select="count($avviksliste/avvik)"/>
-                        <xsl:text> former for avvik i markupen. Listen under gir </xsl:text>
-                        <em>XPath</em>
-                        <xsl:text>-uttrykk for å finne disse avvikende elementene.</xsl:text>
+                        <xsl:text> former for avvik i markupen.</xsl:text>
+                        <xsl:if test="exists($avviksliste/avvik)">
+                            <xsl:text> Listen under gir </xsl:text>
+                            <em>XPath</em>
+                            <xsl:text>-uttrykk for å finne disse avvikende elementene.</xsl:text>
+                        </xsl:if>
                     </p>
-                    <p>
-                        <xsl:text>Du kan åpne filen </xsl:text>
-                        <strong><xsl:value-of select="$navnA"/></strong>
-                        <xsl:text> (</xsl:text>
-                        <xsl:value-of select="$moA/elementhierarki/@basert-på"/>
-                        <xsl:text>) </xsl:text>
-                        <xsl:text> i XML-editoren </xsl:text>
-                        <em>Oxygen</em>
-                        <xsl:text>, og deretter kopiere ett og ett av uttrykkene under over i </xsl:text>
-                        <em>Xpath/XQuery Builder</em>
-                        <xsl:text> i </xsl:text>
-                        <em>Oxygen</em>
-                        <xsl:text> for å finne disse elementene.</xsl:text>
-                    </p>
-                    <ol id="errors">
-                        <xsl:for-each select="$avviksliste/avvik">
-                            <li class="error" style="padding-bottom:1ex;">
-                                <!--<xsl:value-of select="."/>
-                                <hr/>-->
-                                <code style="color:rgb(00,0,250);font-weight:bold;">
-                                    <xsl:analyze-string select="current()" regex="\[(.+?)\]">
-                                        <xsl:matching-substring>
-                                            <!-- Her håndterer vi class-attributtet -->
-                                            <span style="color:rgb(130,130,130);">
-                                                <xsl:text>[</xsl:text>
-                                            </span>
-                                            <span style="color:rgb(0,0,0);">
-                                                <xsl:text>@class</xsl:text>
-                                            </span>
-                                            <span style="color:rgb(130,130,130);">
-                                                <xsl:text> eq &apos;</xsl:text>
-                                            </span>
-                                            <span style="color:rgb(180,30,30);">
-                                                <xsl:value-of select="regex-group(1)"/>
-                                            </span>
-                                            <span style="color:rgb(130,130,130);">
-                                                <xsl:text>&apos;]</xsl:text>
-                                            </span>
-                                        </xsl:matching-substring>
-                                        <xsl:non-matching-substring>
-                                            <!-- Og her håndterer vi resten, som må analyseres ytterligere for å håndtere epub:type -->
-                                            <xsl:analyze-string select="." regex="\((.+?)\)">
-                                                <xsl:matching-substring>
-                                                    <xsl:choose>
-                                                        <xsl:when test="count(tokenize(normalize-space(regex-group(1)), '\s')) eq 1">
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>[</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(0,0,0);">
-                                                                <xsl:text>@epub:type</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text> eq &apos;</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(20,120,20);">
-                                                                <xsl:value-of select="normalize-space(regex-group(1))"/>
-                                                            </span>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>&apos;]</xsl:text>
-                                                            </span>
-                                                        </xsl:when>
-                                                        <xsl:otherwise>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>[</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(0,0,0);">
-                                                                <xsl:text>@epub:type</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>]</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>[every $type in tokenize(normalize-space(</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(0,0,0);">
-                                                                <xsl:text>@epub:type</xsl:text>
-                                                            </span>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>),'\s') satisfies $type = (</xsl:text>
-                                                            </span>
-                                                            <xsl:for-each
-                                                                select="tokenize(normalize-space(regex-group(1)), '\s')">
+                    <xsl:if test="exists($avviksliste/avvik)">
+                        <p>
+                            <xsl:text>Du kan åpne filen </xsl:text>
+                            <strong><xsl:value-of select="$navnA"/></strong>
+                            <xsl:text> (</xsl:text>
+                            <xsl:value-of select="$moA/elementhierarki/@basert-på"/>
+                            <xsl:text>) </xsl:text>
+                            <xsl:text> i XML-editoren </xsl:text>
+                            <em>Oxygen</em>
+                            <xsl:text>, og deretter kopiere ett og ett av uttrykkene under over i </xsl:text>
+                            <em>Xpath/XQuery Builder</em>
+                            <xsl:text> i </xsl:text>
+                            <em>Oxygen</em>
+                            <xsl:text> for å finne disse elementene.</xsl:text>
+                        </p>
+                        <ol id="errors">
+                            <xsl:for-each select="$avviksliste/avvik">
+                                <li class="error" style="padding-bottom:1ex;">
+                                    <!--<xsl:value-of select="."/>
+                                        <hr/>-->
+                                    <code style="color:rgb(00,0,250);font-weight:bold;">
+                                        <xsl:analyze-string select="current()" regex="\[(.+?)\]">
+                                            <xsl:matching-substring>
+                                                <!-- Her håndterer vi class-attributtet -->
+                                                <span style="color:rgb(130,130,130);">
+                                                    <xsl:text>[</xsl:text>
+                                                </span>
+                                                <span style="color:rgb(0,0,0);">
+                                                    <xsl:text>@class</xsl:text>
+                                                </span>
+                                                <span style="color:rgb(130,130,130);">
+                                                    <xsl:text> eq &apos;</xsl:text>
+                                                </span>
+                                                <span style="color:rgb(180,30,30);">
+                                                    <xsl:value-of select="regex-group(1)"/>
+                                                </span>
+                                                <span style="color:rgb(130,130,130);">
+                                                    <xsl:text>&apos;]</xsl:text>
+                                                </span>
+                                            </xsl:matching-substring>
+                                            <xsl:non-matching-substring>
+                                                <!-- Og her håndterer vi resten, som må analyseres ytterligere for å håndtere epub:type -->
+                                                <xsl:analyze-string select="." regex="\((.+?)\)">
+                                                    <xsl:matching-substring>
+                                                        <xsl:choose>
+                                                            <xsl:when test="count(tokenize(normalize-space(regex-group(1)), '\s')) eq 1">
                                                                 <span style="color:rgb(130,130,130);">
-                                                                    <xsl:text>&apos;</xsl:text>
+                                                                    <xsl:text>[</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(0,0,0);">
+                                                                    <xsl:text>@epub:type</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(130,130,130);">
+                                                                    <xsl:text> eq &apos;</xsl:text>
                                                                 </span>
                                                                 <span style="color:rgb(20,120,20);">
-                                                                    <xsl:value-of select="."/>
+                                                                    <xsl:value-of select="normalize-space(regex-group(1))"/>
                                                                 </span>
                                                                 <span style="color:rgb(130,130,130);">
-                                                                    <xsl:text>&apos;</xsl:text>
-                                                                    <xsl:if test="position() lt last()">
-                                                                        <xsl:text>, </xsl:text>
-                                                                    </xsl:if>
+                                                                    <xsl:text>&apos;]</xsl:text>
                                                                 </span>
-                                                                
-                                                            </xsl:for-each>
-                                                            <span style="color:rgb(130,130,130);">
-                                                                <xsl:text>)]</xsl:text>
-                                                            </span>
-                                                        </xsl:otherwise>
-                                                    </xsl:choose>
-                                                </xsl:matching-substring>
-                                                <xsl:non-matching-substring>
-                                                    <!-- Og her er resten -->
-                                                    <xsl:value-of select="."/>
-                                                </xsl:non-matching-substring>
-                                            </xsl:analyze-string>
-                                        </xsl:non-matching-substring>
-                                    </xsl:analyze-string>
-                                </code>
-                            </li>
-                        </xsl:for-each>
-                    </ol>
+                                                            </xsl:when>
+                                                            <xsl:otherwise>
+                                                                <span style="color:rgb(130,130,130);">
+                                                                    <xsl:text>[</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(0,0,0);">
+                                                                    <xsl:text>@epub:type</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(130,130,130);">
+                                                                    <xsl:text>]</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(130,130,130);">
+                                                                    <xsl:text>[every $type in tokenize(normalize-space(</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(0,0,0);">
+                                                                    <xsl:text>@epub:type</xsl:text>
+                                                                </span>
+                                                                <span style="color:rgb(130,130,130);">
+                                                                    <xsl:text>),'\s') satisfies $type = (</xsl:text>
+                                                                </span>
+                                                                <xsl:for-each
+                                                                    select="tokenize(normalize-space(regex-group(1)), '\s')">
+                                                                    <span style="color:rgb(130,130,130);">
+                                                                        <xsl:text>&apos;</xsl:text>
+                                                                    </span>
+                                                                    <span style="color:rgb(20,120,20);">
+                                                                        <xsl:value-of select="."/>
+                                                                    </span>
+                                                                    <span style="color:rgb(130,130,130);">
+                                                                        <xsl:text>&apos;</xsl:text>
+                                                                        <xsl:if test="position() lt last()">
+                                                                            <xsl:text>, </xsl:text>
+                                                                        </xsl:if>
+                                                                    </span>
+                                                                    
+                                                                </xsl:for-each>
+                                                                <span style="color:rgb(130,130,130);">
+                                                                    <xsl:text>)]</xsl:text>
+                                                                </span>
+                                                            </xsl:otherwise>
+                                                        </xsl:choose>
+                                                    </xsl:matching-substring>
+                                                    <xsl:non-matching-substring>
+                                                        <!-- Og her er resten -->
+                                                        <xsl:value-of select="."/>
+                                                    </xsl:non-matching-substring>
+                                                </xsl:analyze-string>
+                                            </xsl:non-matching-substring>
+                                        </xsl:analyze-string>
+                                    </code>
+                                </li>
+                            </xsl:for-each>
+                        </ol>
+                    </xsl:if>
                 </body>
             </html>
 
