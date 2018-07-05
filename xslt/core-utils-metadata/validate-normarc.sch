@@ -122,10 +122,10 @@
         </rule>
     </pattern>
     
-    <!--<pattern>
-        <rule context="marcxchange:record[$identifier]">
-            <assert test="exists(marcxchange:datafield[@tag='850']/marcxchange:subfield[@code='a'])">Avdeling / bibliotek mangler. Dette må være definert i *850$a.</assert>
+    <pattern>
+        <rule context="marcxchange:record[not(starts-with($identifier,'5'))]">
+            <assert test="exists(marcxchange:datafield[@tag='850']/marcxchange:subfield[@code='a'])">Avdeling / bibliotek mangler. Dette må være definert i *850$a (med mindre boknummeret starter med "5").</assert>
         </rule>
-    </pattern>-->
+    </pattern>
     
 </schema>
