@@ -121,7 +121,7 @@
     </xsl:template>
 
     <xsl:template name="generer-rapport">
-        <xsl:result-document href="{if ($rapport) then $rapport else concat('markupoversikt', $navnA.kort, '-vs-', $navnB.kort, '.html')}"
+        <xsl:result-document href="{if ($rapport) then $rapport else concat('markupoversikt/', $navnA.kort, '-vs-', $navnB.kort, '.html')}"
             format="xhtml-filer">
             <html xml:lang="no" lang="no" xmlns="http://www.w3.org/1999/xhtml">
                 <head>

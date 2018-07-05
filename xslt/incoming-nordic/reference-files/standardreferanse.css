@@ -1,0 +1,24 @@
+body {
+    margin:2ex 3% 2ex 3%;
+    background-color:rgb(240,255,255);
+}
+
+p {
+    border:1px solid rgb(220,220,220);
+}
+
+li {border:1pt solid rgb(120,120,220);}
+
+td {
+    border:2pt solid rgb(0,155,100);
+}
+
+th {
+    border:1pt solid rgb(255,255,200);
+    background-color:rgb(40,55,55);
+    color:rgb(255,255,200);
+}
+
+img {
+    width:15mm;
+}
