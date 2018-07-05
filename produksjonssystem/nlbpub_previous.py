@@ -22,7 +22,7 @@ class NlbpubPrevious(Pipeline):
     title = "NLBPUB tidligere versjoner"
     labels = ["EPUB"]
     publication_format = None
-    expected_processing_time = 10
+    expected_processing_time = 5
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -72,6 +72,15 @@ class NlbpubPrevious(Pipeline):
         deleted = "deleted.yml"
         changes_made = False
 
+        # Overview of deleted files and changelog history
+        deleted_path = os.path.join(self.dir_out, epub.identifier(), deleted)
+        changelog_path = os.path.join(self.dir_out, epub.identifier(), changelog)
+        if os.path.isfile(deleted_path):
+            with open(deleted_path, 'r') as f:
+                deleted_doc = yaml.load(f) or {}
+        else:
+            deleted_doc = {}
+
         # Dictfiles contains the most recent version of each file, can save this in a yaml file, like newest_files.yml
         for (path, subdir_list, file_list) in walk(os.path.join(self.dir_out, epub.identifier())):
             for file_name in file_list:
@@ -84,7 +93,6 @@ class NlbpubPrevious(Pipeline):
                 elif dictfiles[file_name] < file_path:
                     dictfiles.update(new_dict)
 
-        changelog_path = os.path.join(self.dir_out, epub.identifier(), changelog)
         if os.path.exists(changelog_path):
             append_write = 'a'  # append if already exists
         else:
@@ -92,47 +100,56 @@ class NlbpubPrevious(Pipeline):
         changelog_file = open(changelog_path, append_write)
         new_file_list = []
 
+        file_added_again = False
         # Changelog.txt contains the history of changes to this nlbpub with timestamps
         for temp_path, temp_subdir_list, temp_file_list in walk(temp_epubdir):
             for temp_file in temp_file_list:
                 new_file_list.append(temp_file)
-                temp_file_path = os.path.join(temp_epubdir, temp_path, temp_file)
+                temp_file_path = os.path.join(temp_path, temp_file)
 
                 if temp_file in dictfiles and filecmp.cmp(temp_file_path, dictfiles[temp_file]):
                     os.remove(temp_file_path)
-                    # Remove empty folders
-                    if len(os.listdir(temp_path)) == 0:
-                        os.rmdir(temp_path)
 
                 elif temp_file in dictfiles and not filecmp.cmp(temp_file_path, dictfiles[temp_file]):
                     changes_made = True
                     self.utils.report.info("Fil endret: " + temp_file)
                     changelog_file.write("\n{}:     Fil endret: {}".format(time_created, temp_file))
-        folders = list(os.walk(temp_epubdir))[1:]
 
-        # Remove the rest of the empty dirs
-        for folder in folders:
-            if not folder[2]:
-                os.rmdir(folder[0])
+                elif temp_file not in dictfiles and not dictfiles == {}:
+                    changes_made = True
+                    self.utils.report.info("Fil lagt til: " + temp_file)
+                    changelog_file.write("\n{}:     Fil lagt til: {}".format(time_created, temp_file))
 
-        # Overview of deleted files, yaml file with delete history is located at deleted_path
-        deleted_path = os.path.join(self.dir_out, epub.identifier(), deleted)
+                if temp_file in deleted_doc:
+                    changes_made = True
+                    file_added_again = True
+                    deleted_doc.pop(temp_file, None)
+                    self.utils.report.info("Fil lagt til på nytt: " + temp_file)
+                    changelog_file.write("\n{}:     Fil lagt til på nytt: {}".format(time_created, temp_file))
+
+        dirs = next(walk(temp_epubdir))[1]
+        for dir in dirs:
+            self.del_empty_dirs(temp_epubdir, dir)
+
+        if file_added_again:
+            deleted_file = open(deleted_path, 'w')
+            for key in deleted_doc:
+                deleted_file.write("\n{}: {}".format(key, time_created))
+            deleted_file.close()
+
         if os.path.exists(deleted_path):
             deleted_append_write = 'a'  # append if already exists
         else:
             deleted_append_write = 'w'  # make a new file if not
         deleted_file = open(deleted_path, deleted_append_write)
 
-        with open(deleted_path, 'r') as f:
-            deleted_doc = yaml.load(f) or {}
-
         # Deleted file history
         for key in dictfiles:
-                if key not in new_file_list and key not in deleted_doc:
-                    changes_made = True
-                    self.utils.report.info("Fil slettet: " + key)
-                    changelog_file.write("\n{}:     Fil slettet: {}".format(time_created, key))
-                    deleted_file.write("\n{}: {}".format(key, dictfiles[key]))
+            if key not in new_file_list and key not in deleted_doc:
+                changes_made = True
+                self.utils.report.info("Fil slettet: " + key)
+                changelog_file.write("\n{}:     Fil slettet: {}".format(time_created, key))
+                deleted_file.write("\n{}: {}".format(key, time_created))
         changelog_file.close()
 
         # Save copy of different files in NLBPUB master. Different versions of files under NLBPUB-tidligere/xxxxxxx/time
@@ -147,6 +164,24 @@ class NlbpubPrevious(Pipeline):
             self.utils.report.info("Ingen endringer oppdaget for " + epub.identifier())
             self.utils.report.should_email = False
         return True
+
+    def del_empty_dirs(self, path, dir):
+            dir_path = os.path.join(path, dir)
+            if len(os.listdir(dir_path)) == 0:
+                try:
+                    os.rmdir(dir_path)
+                except Exception:
+                    pass
+                return
+            subdirs = next(walk(dir_path))[1]
+            if subdirs:
+                for subdir in subdirs:
+                    self.del_empty_dirs(dir_path, subdir)
+                if len(os.listdir(dir_path)) == 0:
+                    try:
+                        os.rmdir(dir_path)
+                    except Exception:
+                        pass
 
 
 if __name__ == "__main__":
