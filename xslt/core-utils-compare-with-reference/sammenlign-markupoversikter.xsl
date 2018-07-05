@@ -74,7 +74,7 @@
 
 
     <xsl:template name="start">
-        <xsl:message>sammenlign-markupoversikter.xsl (0.1.0 / 2018-07-03)</xsl:message>
+        <xsl:message>sammenlign-markupoversikter.xsl (0.1.1 / 2018-07-05)</xsl:message>
         <xsl:message>
             <xsl:text>* Sammenligner markup i </xsl:text>
             <xsl:value-of select="$filA"/>
