@@ -3,13 +3,13 @@
 
 import filecmp
 import os
-import shutil
 import sys
 import tempfile
 import time
-import filecmp
-import yaml
 from os import walk
+
+import yaml
+from core.pipeline import Pipeline
 from core.utils.epub import Epub
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
