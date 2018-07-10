@@ -140,7 +140,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="ol[parent::section/f:types(.) = 'toc']">
+    <xsl:template match="ol[parent::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             
@@ -152,7 +152,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="li[ancestor::section/f:types(.) = 'toc']">
+    <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:value-of select="concat('xxx', count(ancestor-or-self::li), ' ')"/>
@@ -173,6 +173,8 @@
             <xsl:variable name="issued" select="/*/head/meta[@name='dc:date.issued']/@content"/>
             <xsl:variable name="issued-original" select="/*/head/meta[@name='dc:issued.original']/@content"/>
             <xsl:variable name="edition-original" select="/*/head/meta[@name='schema:bookEdition.original']/@content"/>
+            <xsl:variable name="edition-original" select="replace($edition-original, '^(\d+\.?)$', '$1.utg.')"/> <!-- Replace "1" with "1.utg." -->
+            <xsl:variable name="edition-original" select="replace($edition-original, '\.+', '.')"/> <!-- Replace "1..utg." with "1.utg." -->
             <xsl:variable name="pagebreaks" select="(//div | //span)[f:types(.) = 'pagebreak']"/>
             <xsl:variable name="first-page" select="if ($pagebreaks[1]/@title) then $pagebreaks[1]/@title else $pagebreaks[1]/text()"/>
             <xsl:variable name="last-page" select="if ($pagebreaks[last()]/@title) then $pagebreaks[last()]/@title else $pagebreaks[last()]/text()"/>
@@ -181,7 +183,7 @@
             <p>
                 <xsl:value-of select="$title"/>
                 <xsl:if test="$language">
-                    <xsl:value-of select="if ($language) then concat(' - ', $language) else ''"/>
+                    <xsl:value-of select="concat(' - ', $language)"/>
                 </xsl:if>
                 <br/>
                 
@@ -193,16 +195,19 @@
                         <xsl:text> og </xsl:text>
                         <xsl:value-of select="$authors[last()]"/>
                     </xsl:when>
-                    <xsl:when test="$authors">
+                    <xsl:when test="count($authors) = 1">
                         <xsl:text> - </xsl:text>
                         <xsl:value-of select="$authors"/>
                     </xsl:when>
+                    <xsl:otherwise>
+                        <!-- No authors -->
+                    </xsl:otherwise>
                 </xsl:choose>
                 <br/>
                 
                 <xsl:value-of select="$publisher-original"/>
                 <xsl:value-of select="if ($issued-original) then concat(' ', $issued-original) else ''"/>
-                <xsl:value-of select="if ($edition-original) then concat(' - ', $edition-original, if (matches($edition-original, '^\d+\.?')) then '.utg.' else '') else ''"/>
+                <xsl:value-of select="if ($edition-original) then concat(' - ', $edition-original) else ''"/>
                 <xsl:value-of select="if ($isbn) then concat(' - ISBN: ', $isbn) else ''"/>
             </p>
             
@@ -236,7 +241,7 @@
     
     <xsl:function name="f:classes">
         <xsl:param name="element" as="element()"/>
-        <xsl:sequence select="tokenize($element/@epub:type,'\s+')"/>
+        <xsl:sequence select="tokenize($element/@class,'\s+')"/>
     </xsl:function>
     
 </xsl:stylesheet>
