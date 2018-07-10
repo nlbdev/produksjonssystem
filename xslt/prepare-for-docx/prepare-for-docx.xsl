@@ -94,9 +94,43 @@
     </xsl:template>
     
     <xsl:template match="img">
+        <xsl:variable name="is-inside-figure" select="exists(parent::figure[f:classes(.) = 'image'])"/>
+        
         <xsl:if test="string-length(@alt) gt 0">
-            <p><xsl:value-of select="@alt"/></p>
+            <xsl:if test="not($is-inside-figure)">
+                <p>{{Bilde:}}</p>
+            </xsl:if>
+            <p><xsl:value-of select="concat('Bildetekst: ', @alt)"/></p>
+            <xsl:if test="not($is-inside-figure)">
+                <p>{{Slutt}}</p>
+            </xsl:if>
         </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="figure[f:classes(.) = 'image']">
+        <p>{{Bilde:}}</p>
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
+        <p>{{Slutt}}</p>
+    </xsl:template>
+    
+    <xsl:template match="figure[f:classes(.) = 'image']/figcaption">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            
+            <xsl:choose>
+                <xsl:when test="exists(p)">
+                    <p>Forklaring:</p>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text>Forklaring: </xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+            
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
     </xsl:template>
     
     <xsl:template match="section[f:types(.) = 'toc']">

@@ -166,20 +166,64 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Remove images">
+    <x:scenario label="Images">
         <x:context>
             <div>
                 <img/>
                 <img alt=""/>
                 <img alt="image"/>
                 <img alt="God beskrivelse"/>
+                
+                <figure class="image">
+                    <img alt="figure-image"/>
+                    <figcaption>figcaption-image</figcaption>
+                </figure>
+                
+                <figure class="image-series">
+                    <figure class="image">
+                        <img alt="figure-image-series-1"/>
+                        <figcaption><span>figcaption-image-series-1</span></figcaption>
+                    </figure>
+                    <figure class="image">
+                        <img alt="figure-image-series-2"/>
+                        <figcaption><p>figcaption-image-series-2</p></figcaption>
+                    </figure>
+                </figure>
             </div>
         </x:context>
         
         <x:expect label="removed image; optionally replace with alt text">
             <div>
-                <p>image</p>
-                <p>God beskrivelse</p>
+                <p>{{Bilde:}}</p>
+                <p>Bildetekst: image</p>
+                <p>{{Slutt}}</p>
+                
+                <p>{{Bilde:}}</p>
+                <p>Bildetekst: God beskrivelse</p>
+                <p>{{Slutt}}</p>
+                
+                <p>{{Bilde:}}</p>
+                <figure class="image">
+                    <p>Bildetekst: figure-image</p>
+                    <figcaption>Forklaring: figcaption-image</figcaption>
+                </figure>
+                <p>{{Slutt}}</p>
+                
+                <figure class="image-series">
+                    <p>{{Bilde:}}</p>
+                    <figure class="image">
+                        <p>Bildetekst: figure-image-series-1</p>
+                        <figcaption>Forklaring: <span>figcaption-image-series-1</span></figcaption>
+                    </figure>
+                    <p>{{Slutt}}</p>
+                    
+                    <p>{{Bilde:}}</p>
+                    <figure class="image">
+                        <p>Bildetekst: figure-image-series-2</p>
+                        <figcaption><p>Forklaring:</p> <p>figcaption-image-series-2</p></figcaption>
+                    </figure>
+                    <p>{{Slutt}}</p>
+                </figure>
             </div>
         </x:expect>
     </x:scenario>
