@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:html="http://www.w3.org/1999/xhtml"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="nordic-cleanup-nav.xsl">
+    
+    <x:scenario label="Recreate cover structure in nav doc - not missing">
+        <x:call template="main">
+            <x:param name="nav">
+                <html xmlns:epub="http://www.idpf.org/2007/ops" xml:base="file:/tmp/nav.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Title</title>
+                        <meta name="dc:identifier" content="543210" />
+                        <meta name="viewport" content="width=device-width" />
+                    </head>
+                    <body>
+                        <nav epub:type="toc">
+                            <h1>Xkkdiåac</h1>
+                            <ol>
+                                <li><a href="543210-01-cover.xhtml#c1">Qlcja</a>
+                                    <ol>
+                                        <li><a href="543210-01-cover.xhtml#c2">Bwrbimmnik</a></li>
+                                    </ol>
+                                </li>
+                                <li><a href="543210-02-titlepage.xhtml#f1">Wgtn vl dxdqwaq</a></li>
+                                <li><a href="543210-03-colophon.xhtml#f2">Yigljtog</a></li>
+                                <li><a href="543210-04-toc.xhtml#f3">Jshwevm</a></li>
+                                <li><a href="543210-05-foreword.xhtml#f4">Smuzfv</a></li>
+                                <li><a href="543210-07-chapter-2.xhtml#ch2-1">FWMISPWL 2. Kjixkjyfv jchdk o icjmtouagt</a>
+                                    <ol>
+                                        <li><a href="543210-07-chapter-2.xhtml#ch2-2">Aewlgwkcrw</a></li>
+                                        <li><a href="543210-07-chapter-2.xhtml#ch2-3">Mczdzlqro filbjztnh</a></li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </nav>
+                        <nav epub:type="page-list">
+                            <h1>Zvwh eq Hmlrh</h1>
+                            <ol>
+                                <li><a href="543210-02-titlepage.xhtml#Page_3">3</a></li>
+                                <li><a href="543210-03-colophon.xhtml#Page_4">4</a></li>
+                                <li><a href="543210-04-toc.xhtml#Page_5">5</a></li>
+                            </ol>
+                        </nav>
+                    </body>
+                </html>
+            </x:param>
+            <x:param name="test-collection">
+                <html xmlns:epub="http://www.idpf.org/2007/ops" xml:base="file:/tmp/543210-01-cover.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Valg og velgere</title>
+                        <meta name="dc:identifier" content="543210" />
+                        <meta name="viewport" content="width=device-width" />
+                        <link href="css/543210.css" rel="stylesheet" type="text/css" />
+                    </head>
+                    <body epub:type="cover" id="c1">
+                        <section class="frontcover" id="c2">
+                            <figure class="image">
+                                <img alt="image" src="images/cover.jpg" />
+                            </figure>
+                        </section>
+                    </body>
+                </html>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="result">
+            <html xmlns:epub="http://www.idpf.org/2007/ops" xml:base="file:/tmp/nav.xhtml">
+                <head>
+                    <meta charset="UTF-8" />
+                    <title>Title</title>
+                    <meta name="dc:identifier" content="543210" />
+                    <meta name="viewport" content="width=device-width" />
+                </head>
+                <body>
+                    <nav epub:type="toc">
+                        <h1>Xkkdiåac</h1>
+                        <ol>
+                            <li><a href="543210-01-cover.xhtml#c1">Qlcja</a>
+                                <ol>
+                                    <li><a href="543210-01-cover.xhtml#c2">Section</a></li>
+                                </ol>
+                            </li>
+                            <li><a href="543210-02-titlepage.xhtml#f1">Wgtn vl dxdqwaq</a></li>
+                            <li><a href="543210-03-colophon.xhtml#f2">Yigljtog</a></li>
+                            <li><a href="543210-04-toc.xhtml#f3">Jshwevm</a></li>
+                            <li><a href="543210-05-foreword.xhtml#f4">Smuzfv</a></li>
+                            <li><a href="543210-07-chapter-2.xhtml#ch2-1">FWMISPWL 2. Kjixkjyfv jchdk o icjmtouagt</a>
+                                <ol>
+                                    <li><a href="543210-07-chapter-2.xhtml#ch2-2">Aewlgwkcrw</a></li>
+                                    <li><a href="543210-07-chapter-2.xhtml#ch2-3">Mczdzlqro filbjztnh</a></li>
+                                </ol>
+                            </li>
+                        </ol>
+                    </nav>
+                    <nav epub:type="page-list">
+                        <h1>Zvwh eq Hmlrh</h1>
+                        <ol>
+                            <li><a href="543210-02-titlepage.xhtml#Page_3">3</a></li>
+                            <li><a href="543210-03-colophon.xhtml#Page_4">4</a></li>
+                            <li><a href="543210-04-toc.xhtml#Page_5">5</a></li>
+                        </ol>
+                    </nav>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Recreate cover structure in nav doc - missing">
+        <x:call template="main">
+            <x:param name="nav">
+                <html xmlns:epub="http://www.idpf.org/2007/ops" xml:base="file:/tmp/nav.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Title</title>
+                        <meta name="dc:identifier" content="543210" />
+                        <meta name="viewport" content="width=device-width" />
+                    </head>
+                    <body>
+                        <nav epub:type="toc">
+                            <h1>Xkkdiåac</h1>
+                            <ol>
+                                <li><a href="543210-01-cover.xhtml#c1">Qlcja</a></li>
+                                <li><a href="543210-02-titlepage.xhtml#f1">Wgtn vl dxdqwaq</a></li>
+                                <li><a href="543210-03-colophon.xhtml#f2">Yigljtog</a></li>
+                                <li><a href="543210-04-toc.xhtml#f3">Jshwevm</a></li>
+                                <li><a href="543210-05-foreword.xhtml#f4">Smuzfv</a></li>
+                                <li><a href="543210-07-chapter-2.xhtml#ch2-1">FWMISPWL 2. Kjixkjyfv jchdk o icjmtouagt</a>
+                                    <ol>
+                                        <li><a href="543210-07-chapter-2.xhtml#ch2-2">Aewlgwkcrw</a></li>
+                                        <li><a href="543210-07-chapter-2.xhtml#ch2-3">Mczdzlqro filbjztnh</a></li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </nav>
+                        <nav epub:type="page-list">
+                            <h1>Zvwh eq Hmlrh</h1>
+                            <ol>
+                                <li><a href="543210-02-titlepage.xhtml#Page_3">3</a></li>
+                                <li><a href="543210-03-colophon.xhtml#Page_4">4</a></li>
+                                <li><a href="543210-04-toc.xhtml#Page_5">5</a></li>
+                            </ol>
+                        </nav>
+                    </body>
+                </html>
+            </x:param>
+            <x:param name="test-collection">
+                <html xmlns:epub="http://www.idpf.org/2007/ops" xml:base="file:/tmp/543210-01-cover.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Valg og velgere</title>
+                        <meta name="dc:identifier" content="543210" />
+                        <meta name="viewport" content="width=device-width" />
+                        <link href="css/543210.css" rel="stylesheet" type="text/css" />
+                    </head>
+                    <body epub:type="cover" id="c1">
+                        <section class="frontcover" id="c2">
+                            <figure class="image">
+                                <img alt="image" src="images/cover.jpg" />
+                            </figure>
+                        </section>
+                    </body>
+                </html>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="result">
+            <html xmlns:epub="http://www.idpf.org/2007/ops" xml:base="file:/tmp/nav.xhtml">
+                <head>
+                    <meta charset="UTF-8" />
+                    <title>Title</title>
+                    <meta name="dc:identifier" content="543210" />
+                    <meta name="viewport" content="width=device-width" />
+                </head>
+                <body>
+                    <nav epub:type="toc">
+                        <h1>Xkkdiåac</h1>
+                        <ol>
+                            <li><a href="543210-01-cover.xhtml#c1">Qlcja</a>
+                                <ol>
+                                    <li><a href="543210-01-cover.xhtml#c2">Section</a></li>
+                                </ol>
+                            </li>
+                            <li><a href="543210-02-titlepage.xhtml#f1">Wgtn vl dxdqwaq</a></li>
+                            <li><a href="543210-03-colophon.xhtml#f2">Yigljtog</a></li>
+                            <li><a href="543210-04-toc.xhtml#f3">Jshwevm</a></li>
+                            <li><a href="543210-05-foreword.xhtml#f4">Smuzfv</a></li>
+                            <li><a href="543210-07-chapter-2.xhtml#ch2-1">FWMISPWL 2. Kjixkjyfv jchdk o icjmtouagt</a>
+                                <ol>
+                                    <li><a href="543210-07-chapter-2.xhtml#ch2-2">Aewlgwkcrw</a></li>
+                                    <li><a href="543210-07-chapter-2.xhtml#ch2-3">Mczdzlqro filbjztnh</a></li>
+                                </ol>
+                            </li>
+                        </ol>
+                    </nav>
+                    <nav epub:type="page-list">
+                        <h1>Zvwh eq Hmlrh</h1>
+                        <ol>
+                            <li><a href="543210-02-titlepage.xhtml#Page_3">3</a></li>
+                            <li><a href="543210-03-colophon.xhtml#Page_4">4</a></li>
+                            <li><a href="543210-04-toc.xhtml#Page_5">5</a></li>
+                        </ol>
+                    </nav>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

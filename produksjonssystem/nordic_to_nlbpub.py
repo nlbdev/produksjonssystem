@@ -79,17 +79,30 @@ class NordicToNlbpub(Pipeline):
                 file = os.path.join(root, f)
                 if not file.endswith(".xhtml"):
                     continue
-                if file == nav_path:
-                    continue
 
-                xslt = Xslt(self,
-                            stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
-                            source=file,
-                            target=temp_html_file)
-                if not xslt.success:
-                    self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                    return False
-                shutil.copy(temp_html_file, file)
+                if file == nav_path:
+                    xslt = Xslt(self,
+                                stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
+                                source=file,
+                                target=temp_html_file,
+                                parameters={
+                                    "cover": " ".join([item["href"] for item in temp_epub.spine()]),
+                                    "base": os.path.dirname(temp_epubdir, temp_epub.opf_path()) + "/"
+                                })
+                    if not xslt.success:
+                        self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                        return False
+                    shutil.copy(temp_html_file, file)
+
+                else:
+                    xslt = Xslt(self,
+                                stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
+                                source=file,
+                                target=temp_html_file)
+                    if not xslt.success:
+                        self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                        return False
+                    shutil.copy(temp_html_file, file)
 
         xslt = Xslt(self,
                     stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
