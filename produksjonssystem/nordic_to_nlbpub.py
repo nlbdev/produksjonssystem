@@ -122,17 +122,31 @@ class NordicToNlbpub(Pipeline):
 
             if epub_validate_status == "WARN":
                 report_doc = ElementTree.parse(report_file)
-                errors = [e.xpath('.//text()[normalize-space()]')[0] for e in report_doc.xpath('//*[@class="error"]')]
+                errors = [e for e in report_doc.xpath('//*[@class=("error","message-error")]')]
                 for error in errors:
-                    if (bool(error) and (
+                    error_text = error.xpath('.//text()[normalize-space()]')[0]
+                    if (bool(error_text) and (
                             error.startswith("[opf") or
                             error.startswith("[nordic_nav") or
                             error.startswith("[nordic_opf"))):
                         continue  # ignorer disse feilmeldingene; de forsvinner når vi konverterer til XHTML5
 
+                    if error_text.startswith("Incorrect file signature"):
+                        magic_number = error.xpath('*[@class="message-details"]/*[last()]/*[last()]/text()')[0]
+
+                        # JFIF already allowed: FF D8 FF E0 ?? ?? 4A 46 49 46 00 01
+
+                        if magic_number.startswith("FF D8 FF DB"):  # Also allow JPEG RAW
+                            continue
+                        elif magic_number[:11] == "FF D8 FF E1" and magic_number[18:] == ("45 78 69 66"):  # Also allow EXIF
+                            continue
+                        else:
+                            epub_validate_status = "ERROR"
+                            self.utils.report.error(error_text)
+
                     else:
                         epub_validate_status = "ERROR"
-                        self.utils.report.error(error)
+                        self.utils.report.error(error_text)
 
             # get conversion report
             if os.path.isfile(report_file):
