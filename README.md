@@ -21,6 +21,18 @@ Anbefaler:
 - [oXygen](https://www.oxygenxml.com/) for XML-filer
 - For eksempel [atom.io](https://atom.io/) for redigering av Python-filer
 
+På "master"-grenen i git vil vi unngå merge commits. Dette er for å holde historikken ren og oversiktlig. Sett derfor opp git til å bruke "rebase" istedenfor "merge" når man gjør en "pull".
+
+Fra kommandolinja, skriv følgende for å sette "rebase" som standard for "git pull":
+
+```bash
+git config --global pull.rebase true
+```
+
+I GitKraken, trykk på pilen ved siden av "Pull", og trykk deretter på den lille rundingen ved siden av "Pull (rebase)".
+
+![Skjermbilde som viser hvor i GitKraken man skal trykke](gitkraken-pull-rebase.png)
+
 ## Installasjon
 
 - installer java 8 JDK: `sudo apt install openjdk-8-jdk`
@@ -74,6 +86,8 @@ Anbefaler:
     - `pip3 install -r requirements.txt`
 
 ## Konfigurasjon
+
+Konfigurasjon av passord og lignende som vi ikke vil ha lagret i Git legges i en konfiguratsjonsfil utenfor git repo'et.
 
 `~/config/set-env.sh`:
 
