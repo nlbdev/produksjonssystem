@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <url-fix>
      <!-- en liste med URLer som er funnet i bøkene våre. original-elementet inneholder lenken som den står i kildefila, og fixed-elementet inneholder en reparert versjon av linken. -->
      <url><original>http://www.gutenberg.org/fi les/20112/20112.txt</original><fixed>http://www.gutenberg.org/files/20112/20112.txt</fixed></url>
@@ -87,7 +86,7 @@
      <url><original>http://www.associationforcoaching.com/media/uploads/accreditation-documentation01/Coach_Com petency_Framework_AC_.pdf</original><fixed>http://www.associationforcoaching.com/media/uploads/accreditation-documentation01/Coach_Competency_Framework_AC_.pdf</fixed></url>
      <url><original>http://www.passionfor business.cam/articles/mastermindgroup.htm</original><fixed>http://www.passionforbusiness.com/articles/mastermindgroup.htm</fixed></url>
      <url><original>http://www.authentic happiness.com</original><fixed>http://www.authentichappiness.com</fixed></url>
-     <url><original>http://www.bcs.com www.acpicr.com</original><fixed>www.acpicr.com</fixed></url>
+     <url><original>http://www.bcs.com www.acpicr.com</original><fixed>http://www.acpicr.com</fixed></url>
      <url><original>http://www.bhsoc.org/resources/latest- guidelines/</original><fixed>http://www.bhsoc.org/resources/latest-guidelines/</fixed></url>
      <url><original>http://www.who.int/dietp hysicalactivity/publications/9789241599979/en/index.html</original><fixed>http://www.who.int/dietphysicalactivity/publications/9789241599979/en/index.html</fixed></url>
      <url><original>http://www. cancerresearchuk.org/cancer-info/cancerstats/keyfacts/lung-cancer/</original><fixed>http://www.cancerresearchuk.org/cancer-info/cancerstats/keyfacts/lung-cancer/</fixed></url>
@@ -212,7 +211,7 @@
      <url><original>http://www.nupi.no/content/download/11055/108591/version/6/file/NUPI-notat-768-Lur%C3 %A5s.pdf</original><fixed>http://www.nupi.no/content/download/11055/108591/version/6/file/NUPI-notat-768-Lur%C3%A5s.pdf</fixed></url>
      <url><original>http://milforum.net/threads/64010-E-sjefen-Vanskelig-%C3 %A5-se-en-rasjonell-grunn-til-russisk-milit%C3%A6r-aggresjon-mot-Norge</original><fixed>http://milforum.net/threads/64010-E-sjefen-Vanskelig-%C3%A5-se-en-rasjonell-grunn-til-russisk-milit%C3%A6r-aggresjon-mot-Norge</fixed></url>
      <url><original>http://www.regjeringen.no/upload/OED/Foredrag%20i%20pdf%20som%20er%20lagt%20ut%20 p%C3 %A5 %20nettet/2011/MTOGM_Oct_2011_Oslo.pdf</original><fixed>https://www.regjeringen.no/globalassets/upload/OED/2011/MTOGM_Oct_2011_Oslo.pdf</fixed></url>
-     <url><original>http://www.npd.no/Global/Norsk/1%20-%20Aktuelt/Nyheter/ Sokkelaret_2005ZSokkelaret2005presentasjon.pdf</original><fixed>www.npd.no/Global/Norsk/1-Aktuelt/Nyheter/Sokkelaret_2005ZSokkelaret2005presentasjon.pdf</fixed></url>
+     <url><original>http://www.npd.no/Global/Norsk/1%20-%20Aktuelt/Nyheter/ Sokkelaret_2005ZSokkelaret2005presentasjon.pdf</original><fixed>http://www.npd.no/Global/Norsk/1-Aktuelt/Nyheter/Sokkelaret_2005ZSokkelaret2005presentasjon.pdf</fixed></url>
      <url><original>http://www.nupi.no/content/download/277099/969632/version/4/file/NUPI-rapport-SIP-3-12-Lur%C3 %A5s.pdf</original><fixed>http://www.nupi.no/content/download/277099/969632/version/4/file/NUPI-rapport-SIP-3-12-Lur%C3%A5s.pdf</fixed></url>
      <url><original>http://www.Simul8.com/our_customers/case_studies/Chrysler line_balancing_case_study.pdf</original><fixed>http://www.Simul8.com/our_customers/case_studies/Chryslerline_balancing_case_study.pdf</fixed></url>
      <url><original>http://en.wikipedia.org/wiki/Aldi; https://corporate.aldi.us</original><fixed>https://en.wikipedia.org/wiki/Aldi</fixed></url>
@@ -924,7 +923,7 @@
      <url><original>http://www.cut-the-knot.org/proofs/sq\_root.shtml</original><fixed>http://www.cut-the-knot.org/proofs/sq/_root.shtml</fixed></url>
      <url><original>http://wikipedia.org/wiki/Table\_of\_mathematical_symbols</original><fixed>http://wikipedia.org/wiki/Table_of_mathematical_symbols</fixed></url>
      <url><original>http://home.hib.no/ansatte/gmh/didaktikk/lenker/matteprogram.html\#algebra</original><fixed>http://home.hib.no/ansatte/gmh/didaktikk/lenker/matteprogram.html/#algebra</fixed></url>
-     <url><original>http://www.wolframalpha.com/input/?i=solve+x^2%2B3x%3D4</original><fixed>http://www.wolframalpha.com/input/?i=solve+x^2%2B3x%3D4</fixed></url>
+     <url><original>http://www.wolframalpha.com/input/?i=solve+x^2%2B3x%3D4</original><fixed>http://www.wolframalpha.com/input/?i=solve+x%5E2%2B3x%3D4</fixed></url>
      <url><original>http://odin.dep.no/kd/norsk/dok/ regelverk/lover/o70021-200002/dok-nn.html</original><fixed>http://odin.dep.no/kd/norsk/dok/regelverk/lover/070021-200002/dok-nn.html</fixed></url>
      <url><original>http://www.oecd.org/linklist/o,3435,en_2649_39263231_273 5951_1_1_1_1,00.html</original><fixed>http://www.oecd.org/linklist/o,3435,en_2649_39263231_2735951_1_1_1_1,00.html</fixed></url>
      <url><original>http:// www.dvara.net/HK/freeculture.pdf</original><fixed>http://www.dvara.net/HK/freeculture.pdf</fixed></url>
@@ -940,10 +939,10 @@
      <url><original>https://www.riksrevisjonen.no/ SiteCollectionDocuments/Dokumentbasen/Dokument3/2008-2009/Dok_3_10_2008_2009.pdf</original><fixed>https://www.riksrevisjonen.no/SiteCollectionDocuments/Dokumentbasen/Dokument3/2008-2009/Dok_3_10_2008_2009.pdf</fixed></url>
      <url><original>http://www.hioa.no/Om-HiOA/Senter-for-velferds-og-arbeidslivsforskning/NOVA/Publikasjonar/ Notat/2015/Det-som-skjer-paa-nett-forblir-paa-nett</original><fixed>http://www.hioa.no/Om-HiOA/Senter-for-velferds-og-arbeidslivsforskning/NOVA/Publikasjonar/Notat/2015/Det-som-skjer-paa-nett-forblir-paa-nett</fixed></url>
      <url><original>http://www.hioa.no/index.php/ Om-HiOA/Senter-for-velferds-og-arbeidslivsforskning/NOVA/Publikasjonar/Rapporter/2014/ Tjenestetilbudet-til-voldsutsatte-personer-med-nedsatt-funksjonsevne</original><fixed>http://www.hioa.no/index.php/Om-HiOA/Senter-for-velferds-og-arbeidslivsforskning/NOVA/Publikasjonar/Rapporter/2014/Tjenestetilbudet-til-voldsutsatte-personer-med-nedsatt-funksjonsevne</fixed></url>
-     <url><original>http://www.unica.com.br/noticias/show.asp?nwsCode={75623F19-854B-4588~A8CA-C5F96BAF25CC}</original><fixed>http://www.unica.com.br/noticias/show.asp?nwsCode={75623F19-854B-4588~A8CA-C5F96BAF25CC}</fixed></url>
+     <url><original>http://www.unica.com.br/noticias/show.asp?nwsCode={75623F19-854B-4588~A8CA-C5F96BAF25CC}</original><fixed>http://www.unica.com.br/noticias/show.asp?nwsCode=%7B75623F19-854B-4588~A8CA-C5F96BAF25CC%7D</fixed></url>
      <url><original>http://www.unhcr.ch/refworld/pubs/pubon/htm&amp;gt;.</original><fixed>http://www.unhcr.ch/refworld/pubs/pubon.htm</fixed></url>
      <url><original>http://www.21learn.org/site/archive/battery-hens-or-free-range-chickens-what-kind-of-educationfor- what-kind-of-world-full-speech/1</original><fixed>http://www.21learn.org/site/archive/battery-hens-or-free-range-chickens-what-kind-of-educationfor-what-kind-of-world-full-speech/1</fixed></url>
-     <url><original>http://www.icj-cij.org/docket/index.php?p1^3&amp;amp;p2=3&amp;amp;code=pa&amp;amp;case=84&amp;amp;k=66&amp;amp;p3=0</original><fixed>http://www.icj-cij.org/docket/index.php?p1^3&amp;p2=3&amp;code=pa&amp;case=84&amp;k=66&amp;p3=0</fixed></url>
+     <url><original>http://www.icj-cij.org/docket/index.php?p1^3&amp;amp;p2=3&amp;amp;code=pa&amp;amp;case=84&amp;amp;k=66&amp;amp;p3=0</original><fixed>http://www.icj-cij.org/docket/index.php?p1%5E3&amp;p2=3&amp;code=pa&amp;case=84&amp;k=66&amp;p3=0</fixed></url>
      <url><original>http://www.law.ox.ac.uk/published/OSCOU\_4th_edn_Hart_2012.pdf</original><fixed>https://www.law.ox.ac.uk/sites/files/oxlaw/oscola_4th_edn_hart_2012.pdf</fixed></url>
      <url><original>http://www.elearningontario.ca/eng/pdf/strat_elo_en.pdf&amp;gt;</original><fixed>http://www.elearningontario.ca/eng/pdf/strat_elo_en.pdf</fixed></url>
      <url><original>http://www.who.int/hiv/topics/mtct/en/&amp;gt;http://www.who.int/hiv/topics/mtct/en/</original><fixed>http://www.who.int/hiv/topics/mtct/en/</fixed></url>
@@ -1003,7 +1002,7 @@
      <url><original>http://www.cantv.com.ve/seccion.asp?pid&amp;lt;1&amp;amp;sid&amp;lt;168</original><fixed>http://www.cantv.com.ve/seccion.asp?pid=1&amp;sid=168</fixed></url>
      <url><original>http://www.herohonda.com/site/advertising/index.asp?Sec&amp;lt;Brand+Ambassadors</original><fixed>http://www.herohonda.com/site/advertising/index.asp?Sec=Brand+Ambassadors</fixed></url>
      <url><original>http://www.educationau.edu.au/arc hlves/cp/04k.htm</original><fixed>http://www.educationau.edu.au/archlves/cp/04k.htm</fixed></url>
-     <url><original>http://www.rlnett.no, www.krlnett.no/art/menyadm/stat1/0057_Religionenes og www.hive.no,www-lu.hive.no/ ansatte/gw/intro.htm</original><fixed>www.krlnett.no/art/menyadm/stat1/0057_Religionenes</fixed></url>
+     <url><original>http://www.rlnett.no, www.krlnett.no/art/menyadm/stat1/0057_Religionenes og www.hive.no,www-lu.hive.no/ ansatte/gw/intro.htm</original><fixed>http://www.krlnett.no/art/menyadm/stat1/0057_Religionenes</fixed></url>
      <url><original>http://www.nb.no/nbsok/nb/a9fcda0a213d22cc5a1148885db828ac.nbdigital;jsessionid=C6066D1204F5E25CD9C83DF0A 0B17AFD.nbdigital3?lang=en#11</original><fixed>http://www.nb.no/nbsok/nb/a9fcda0a213d22cc5a1148885db828ac.nbdigital;jsessionid=C6066D1204F5E25CD9C83DF0A0B17AFD.nbdigital3?lang=en#11</fixed></url>
      <url><original>http://www.sintef.no/globalassets/upload/helse/psykisk-helse/pdf-filer/rapport_a9714_pasienter_og_behandlingstilbud_i_ psykisk_helsevern_for_barn_og_unge.pdf</original><fixed>http://www.sintef.no/globalassets/upload/helse/psykisk-helse/pdf-filer/rapport_a9714_pasienter_og_behandlingstilbud_i_psykisk_helsevern_for_barn_og_unge.pdf</fixed></url>
      <url><original>http://http://www.euro.who.int/document/e91397.pdf&amp;gt;</original><fixed>http://www.euro.who.int/document/e91397.pdf</fixed></url>
@@ -1038,7 +1037,6 @@
      <url><original>mailto:hjemmet@ egmont.com</original><fixed>mailto:hjemmet@egmont.com</fixed></url>
      <url><original>http://www. museodelprado.es</original><fixed>http://www.museodelprado.es</fixed></url>
      <url><original>http://cyclone-fanatic.com/forum/ showthread.php?t=199532</original><fixed>http://cyclonefanatic.com/forum/showthread.php?t=199532</fixed></url>
-     <url><original>http://www.unica.com.br/noticias/show.asp?nwsCode={75623F19-854B-4588~A8CA-C5F96BAF25CC}</original><fixed>http://www.unica.com.br/noticias/show.asp?nwsCode=%7B75623F19-854B-4588~A8CA-C5F96BAF25CC%7D</fixed></url>
      <url><original>http://www.icj-cij.org/docket/index.php?p1^3&amp;amp;p2=3&amp;amp;code=pa&amp;amp;case=84&amp;amp;k=66&amp;amp;p3=0</original><fixed>http://www.icj-cij.org/docket/index.php?p1=3&amp;p2=3&amp;code=pa&amp;case=84&amp;k=66&amp;p3=0</fixed></url>
      <url><original>http://www.thelancet.com/journals/lancet/article/PIISO 140-6736(13)62224-2/fulltext?_eventId=login</original><fixed>http://www.thelancet.com/journals/lancet/article/PIISO%20140-6736(13)62224-2/fulltext?_eventId=login</fixed></url>
      <url><original>http://&amp;lt;http://www.africa-union.org&amp;gt;</original><fixed>http://www.africa-union.org</fixed></url>
