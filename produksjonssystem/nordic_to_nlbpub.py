@@ -135,7 +135,7 @@ class NordicToNlbpub(Pipeline):
 
             if epub_validate_status == "WARN":
                 report_doc = ElementTree.parse(report_file)
-                errors = [e for e in report_doc.xpath('//*[@class=("error","message-error")]')]
+                errors = report_doc.xpath('//*[@class="error" or @class="message-error"]')
                 for error in errors:
                     error_text = error.xpath('.//text()[normalize-space()]')[0]
                     if (bool(error_text) and (
