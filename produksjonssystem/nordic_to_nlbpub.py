@@ -139,9 +139,9 @@ class NordicToNlbpub(Pipeline):
                 for error in errors:
                     error_text = error.xpath('.//text()[normalize-space()]')[0]
                     if (bool(error_text) and (
-                            error.startswith("[opf") or
-                            error.startswith("[nordic_nav") or
-                            error.startswith("[nordic_opf"))):
+                            error_text.startswith("[opf") or
+                            error_text.startswith("[nordic_nav") or
+                            error_text.startswith("[nordic_opf"))):
                         continue  # ignorer disse feilmeldingene; de forsvinner når vi konverterer til XHTML5
 
                     if error_text.startswith("Incorrect file signature"):
