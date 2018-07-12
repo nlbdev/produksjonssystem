@@ -99,6 +99,8 @@ class NLBpubToDocx(Pipeline):
                                                  "--no-chapters-in-toc",
                                                  "--toc-threshold=0",
                                                  "--docx-page-size=a4",
+                                                 "--linearize-tables",
+                                                 "--remove-paragraph-spacing",
                                                  "--insert-blank-line"])
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
