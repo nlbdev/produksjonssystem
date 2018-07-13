@@ -21,7 +21,7 @@
     <xsl:template match="html:a[@href]" xpath-default-namespace="">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* except @href"/>
-            <xsl:variable name="fix" select="($urls[original/text() = normalize-space(current()/@href)])[1]/fixed/text()" as="xs:string?"/>
+            <xsl:variable name="fix" select="($urls[(original, original-unquoted)/text() = normalize-space(current()/@href)])[1]/fixed/text()" as="xs:string?"/>
             <xsl:attribute name="href" select="if ($fix) then $fix else @href"/>
             <xsl:choose>
                 <xsl:when test="boolean($fix) and count(node()) = 1 and normalize-space(text()) = normalize-space(@href)">
