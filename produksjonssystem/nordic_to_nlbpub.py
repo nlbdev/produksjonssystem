@@ -147,12 +147,13 @@ class NordicToNlbpub(Pipeline):
 
                     if error_text.startswith("Incorrect file signature"):
                         magic_number = error.xpath('*[@class="message-details"]/*[last()]/*[last()]/text()')[0]
+                        magic_number = " ".join(magic_number.split()).strip() if bool(magic_number) else magic_number
 
-                        # JFIF already allowed: FF D8 FF E0 ?? ?? 4A 46 49 46 00 01
+                        # JFIF already allowed: 0xFF 0xD8 0xFF 0xE0 0x?? 0x?? 0x4A 0x46 0x49 0x46
 
-                        if magic_number.startswith("FF D8 FF DB"):  # Also allow JPEG RAW
+                        if magic_number.startswith("0xFF 0xD8 0xFF 0xDB"):  # Also allow JPEG RAW
                             continue
-                        elif magic_number[:11] == "FF D8 FF E1" and magic_number[18:] == ("45 78 69 66"):  # Also allow EXIF
+                        elif magic_number[:19] == "0xFF 0xD8 0xFF 0xE1" and magic_number[30:] == ("0x45 0x78 0x69 0x66"):  # Also allow EXIF
                             continue
                         else:
                             epub_validate_status = "ERROR"
