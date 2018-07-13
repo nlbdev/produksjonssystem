@@ -8,9 +8,9 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="no" method="xhtml" include-content-type="no"/>
+    <xsl:output indent="no" method="xhtml" include-content-type="no" exclude-result-prefixes="#all"/>
     
-    <xsl:template match="@* | node()" mode="#all">
+    <xsl:template match="@* | node()" mode="#all" priority="-1">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:copy>
@@ -78,7 +78,7 @@
                 <xsl:sequence select="$test-collection[base-uri() = $href]"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:sequence select="document($href)"/>
+                <xsl:sequence select="document($href)/*"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>

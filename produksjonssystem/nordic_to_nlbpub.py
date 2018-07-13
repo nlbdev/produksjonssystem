@@ -73,7 +73,7 @@ class NordicToNlbpub(Pipeline):
         temp_epub = Epub(self, temp_epubdir)
 
         self.utils.report.info("Rydder opp i nordisk EPUB")
-        nav_path = temp_epub.nav_path()
+        nav_path = os.path.join(temp_epubdir, temp_epub.nav_path())
         for root, dirs, files in os.walk(temp_epubdir):
             for f in files:
                 file = os.path.join(root, f)
@@ -87,7 +87,7 @@ class NordicToNlbpub(Pipeline):
                                 target=temp_html_file,
                                 parameters={
                                     "cover": " ".join([item["href"] for item in temp_epub.spine()]),
-                                    "base": os.path.dirname(temp_epubdir, temp_epub.opf_path()) + "/"
+                                    "base": os.path.dirname(os.path.join(temp_epubdir, temp_epub.opf_path())) + "/"
                                 })
                     if not xslt.success:
                         self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
@@ -138,6 +138,7 @@ class NordicToNlbpub(Pipeline):
                 errors = report_doc.xpath('//*[@class="error" or @class="message-error"]')
                 for error in errors:
                     error_text = error.xpath('.//text()[normalize-space()]')[0]
+                    error_text = " ".join(error_text.split()).strip() if bool(error_text) else error_text
                     if (bool(error_text) and (
                             error_text.startswith("[opf") or
                             error_text.startswith("[nordic_nav") or
