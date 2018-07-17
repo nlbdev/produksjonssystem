@@ -28,6 +28,27 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Insert 2 nbsp for new paragraphs">
+        <x:context>
+            <section epub:type="chapter">
+                <p>Dette er avsnitt 1</p>  
+                <p>Dette er avsnitt 2</p>
+                <p>Dette er avsnitt 3</p>  
+                <p>Dette er avsnitt 4</p>
+            </section>
+        </x:context>
+        
+        <x:expect label="result">
+            <section epub:type="chapter">
+                <p>&nbsp; Dette er en setning 1</p> 
+                <p>Dette er avsnitt 2</p> 
+                <p>Dette er avsnitt 3</p> 
+                <p>Dette er avsnitt 4</p> 
+                
+            </section>
+        </x:expect>
+    </x:scenario>
+    
     <x:scenario label="Table of contents">
         <x:context>
             <section epub:type="frontmatter toc" id="level1_4">
