@@ -70,7 +70,9 @@ class NlbpubPrevious(Pipeline):
         dictfiles = {}
         changelog = "changelog.txt"
         deleted = "deleted.yml"
+        files = "files.yml"
         changes_made = False
+        new_epub = False
 
         # Overview of deleted files and changelog history
         deleted_path = os.path.join(self.dir_out, epub.identifier(), deleted)
@@ -112,13 +114,20 @@ class NlbpubPrevious(Pipeline):
 
                 elif temp_file in dictfiles and not filecmp.cmp(temp_file_path, dictfiles[temp_file]):
                     changes_made = True
+                    new_location = {temp_file: temp_file_path}
+                    dictfiles.update(new_location)
                     self.utils.report.info("Fil endret: " + temp_file)
                     changelog_file.write("\n{}:     Fil endret: {}".format(time_created, temp_file))
 
-                elif temp_file not in dictfiles and not dictfiles == {}:
+                elif temp_file not in dictfiles:
+                    if dictfiles == {}:
+                        new_epub = True
                     changes_made = True
-                    self.utils.report.info("Fil lagt til: " + temp_file)
-                    changelog_file.write("\n{}:     Fil lagt til: {}".format(time_created, temp_file))
+                    new_file = {temp_file: os.path.join(self.dir_out, epub.identifier(), time_created, temp_file)}
+                    dictfiles.update(new_file)
+                    if not new_epub:
+                        self.utils.report.info("Fil lagt til: " + temp_file)
+                        changelog_file.write("\n{}:     Fil lagt til: {}".format(time_created, temp_file))
 
                 if temp_file in deleted_doc:
                     changes_made = True
@@ -152,6 +161,13 @@ class NlbpubPrevious(Pipeline):
                 deleted_file.write("\n{}: {}".format(key, time_created))
         changelog_file.close()
 
+        for del_file in deleted_doc:
+            del dictfiles[del_file]
+
+        files_doc = open(os.path.join(temp_epubdir, files), 'w')
+        for file in dictfiles:
+            files_doc.write("\n{}: {}".format(file, dictfiles[file]))
+        files_doc.close()
         # Save copy of different files in NLBPUB master. Different versions of files under NLBPUB-tidligere/xxxxxxx/time
         # To restore a certain version copy files from the each folder up to the wanted version to a new folder
 
@@ -159,10 +175,11 @@ class NlbpubPrevious(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         if changes_made:
             self.utils.report.info("Endringer oppdaget for: " + epub.identifier() + ", endrede filer ble kopiert til NLBpub tidligere versjoner.")
-            self.utils.report.title = self.title + ": " + epub.identifier() + " 👍😄" + epubTitle
+            self.utils.report.title = self.title + ": " + epub.identifier() + " 👍😄" + epubTitle + " , endring registrert"
         else:
             self.utils.report.info("Ingen endringer oppdaget for " + epub.identifier())
-            self.utils.report.should_email = False
+            self.utils.report.title = self.title + ": " + epub.identifier() + " 👍😄" + epubTitle + " ,  ingen endring registrert"
+            # self.utils.report.should_email = False
         return True
 
     def del_empty_dirs(self, path, dir):
