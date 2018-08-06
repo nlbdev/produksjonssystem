@@ -99,14 +99,14 @@ class NLBpubToDocx(Pipeline):
                                                  "--no-chapters-in-toc",
                                                  "--toc-threshold=0",
                                                  "--docx-page-size=a4",
-                                                 "--linearize-tables",
-                                                 "--embed-all-fonts",
+                                             #   "--linearize-tables",
+                                             #    "--extra-css=/home/tage/Dokumenter/produksjonssystem/produksjonssystem/extra.css",
                                                  "--embed-font-family=Verdana",   # microsoft fonts must be installed (sudo apt-get install ttf-mscorefonts-installer)
                                                  "--docx-page-margin-top=42",
                                                  "--docx-page-margin-bottom=42",
                                                  "--docx-page-margin-left=70",
                                                  "--docx-page-margin-right=56",
-                                                 "--base-font-size=13",            
+                                                 "--base-font-size=13",          
                                                  "--font-size-mapping=13,13,13,13,13,13,13,13"])  
                                   
             if process.returncode == 0:

@@ -27,7 +27,7 @@
         </x:expect>
     </x:scenario>
 
-    <x:scenario label="Insert 2 nbsp for new paragraphs">
+ <!--   <x:scenario label="Insert 2 nbsp for new paragraphs">
         <x:context>
             <section epub:type="chapter" id="level2_1">
                 <p>Dette er avsnitt 1</p>
@@ -39,15 +39,30 @@
 
         <x:expect label="Two hard spaces should be inserted">
             <section epub:type="chapter" id="level2_1">
-                <p>**Dette er avsnitt 1</p>
-                <p>**Dette er avsnitt 2</p>
-                <p>**Dette er avsnitt 3</p>
-                <p>**Dette er avsnitt 4</p>
+                <p>&#160;&#160;Dette er avsnitt 1</p>
+                <p>&#160;&#160;Dette er avsnitt 2</p>
+                <p>&#160;&#160;Dette er avsnitt 3</p>
+                <p>&#160;&#160;Dette er avsnitt 4</p>
             </section>
+        </x:expect>
+    </x:scenario> -->
+    
+    <x:scenario label="Insert style 2em identation  for p">
+        <x:context>
+            <head>
+                <meta charset="UTF-8" />
+             </head>
+        </x:context>
+        
+        <x:expect label="2 em indentation should be inserted">
+            <head>
+                <meta charset="UTF-8" />
+                <style>p { text-indent: 2em;}</style>
+            </head>
         </x:expect>
     </x:scenario>
 
-    <x:scenario label="Insert -- for each item in unordered list">
+ <!--   <x:scenario label="Insert ** for each item in unordered list">
         <x:context>
             <section epub:type="chapter" id="level2_1">
                 <ul>
@@ -58,17 +73,86 @@
             </section>
         </x:context>
 
-        <x:expect label="-- should be inserted in unordered list">  
+        <x:expect label="** should be inserted in unordered list">  
             <section epub:type="chapter" id="level2_1">
               <div>
-                <p>-- Hvorfor lever rike mennesker i Norge lenger enn fattige?</p>
-                <p>-- Hvorfor er det flere gutter enn jenter som dropper ut av videregående skole?</p>
-                <p>-- Har mobiltelefonen endret måten vi kommuniserer på?</p> 
+                <p>** Hvorfor lever rike mennesker i Norge lenger enn fattige?</p>
+                <p>** Hvorfor er det flere gutter enn jenter som dropper ut av videregående skole?</p>
+                <p>** Har mobiltelefonen endret måten vi kommuniserer på?</p> 
               </div>
             </section>
         </x:expect>
-    </x:scenario>
-
+    </x:scenario> -->
+    
+    
+    <x:scenario label="Insert . in ordered list after number">
+        <x:context>
+            <section id="level3_7">
+                 <ol class="list-style-type-none" style="list-style-type: none;">
+                    <li><strong>1</strong> Hvordan vil du beskrive forskjellene mellom de ulike samfunnsfagene?</li>
+                    <li><strong>2</strong> Hvilke fire ambisjoner har sosiologien for å forstå samfunnet og samspillet mellom mennesker?</li>
+                    <li><strong>3</strong> Hvilke samfunnsendringer skapte grunnlaget for sosiologien?</li>
+                    <li><strong>4</strong> Hvordan vil du forklare hva sosiologi er?</li>
+                    <li><strong>5</strong> Hvilket bidrag sto Auguste Comte for når det gjelder å forstå samfunnet?</li>
+                    <li><strong>6</strong> Hvorfor har Karl Marx hatt stor betydning for utviklingen av samfunnsfagene?</li>
+                    <li><strong>7</strong> Hva var Max Weber opptatt av?</li>
+                    <li><strong>8</strong> Hva mente Emile Durkheim alle samfunn hadde til felles?</li>
+                    <li><strong>9</strong> Hva undersøkte Eilert Sundt?</li>
+                    <li><strong>10</strong> På hvilke måter skiller sosialantropologien seg fra sosiologien?</li>
+                    <li><strong>11</strong> Hva er Franz Boas kjent for?</li>
+                    <li><strong>12</strong> Hva er Bronislaw Malinowski kjent for?</li>
+                    <li>
+                        <p><strong>13</strong> Hva menes med</p>
+                        <ol class="list-style-type-none" style="list-style-type: none;">
+                            <li>a) konfliktperspektivet?</li>
+                            <li>b) harmoniperspektivet?</li>
+                            <li>c) handlingsteorien?</li>
+                        </ol></li>
+                    <li><strong>14</strong> Hvorfor skiller vi mellom makro-, meso- og mikronivå?</li>
+                    <li><strong>15</strong> Hvilke teorier om menneskelig atferd har vi presentert i denne boka?</li>
+                    <li><strong>16</strong> Hva mente Margaret Mead at hun hadde funnet ut?</li>
+                    <li><strong>17</strong> Hva betyr sosiobiologi, og på hvilken måte forklarer det menneskelig atferd?</li>
+                    <li><strong>18</strong> Hva betyr begrepet «evolusjon»?</li>
+                    <li><strong>19</strong> Hva betyr «naturlig seleksjon»?</li>
+                    <li><strong>20</strong> Hvorfor har samfunnsvitere og biologer så ulikt syn på menneskets atferd?</li>
+                </ol>
+                </section>
+        </x:context>
+        
+        <x:expect label=". should be inserted in ordered list after number">  
+            <section id="level3_7">
+                <ol class="list-style-type-none" style="list-style-type: none;">
+                    <li>1. Hvordan vil du beskrive forskjellene mellom de ulike samfunnsfagene?</li>
+                    <li>2. Hvilke fire ambisjoner har sosiologien for å forstå samfunnet og samspillet mellom mennesker?</li>
+                    <li>3. Hvilke samfunnsendringer skapte grunnlaget for sosiologien?</li>
+                    <li>4. Hvordan vil du forklare hva sosiologi er?</li>
+                    <li>5. Hvilket bidrag sto Auguste Comte for når det gjelder å forstå samfunnet?</li>
+                    <li>6. Hvorfor har Karl Marx hatt stor betydning for utviklingen av samfunnsfagene?</li>
+                    <li>7. Hva var Max Weber opptatt av?</li>
+                    <li>8. Hva mente Emile Durkheim alle samfunn hadde til felles?</li>
+                    <li>9. Hva undersøkte Eilert Sundt?</li>
+                    <li>10. På hvilke måter skiller sosialantropologien seg fra sosiologien?</li>
+                    <li>11. Hva er Franz Boas kjent for?</li>
+                    <li>12. Hva er Bronislaw Malinowski kjent for?</li>
+                    <li>
+                        <p>13. Hva menes med</p>
+                        <ol class="list-style-type-none" style="list-style-type: none;">
+                            <li>a) konfliktperspektivet?</li>
+                            <li>b) harmoniperspektivet?</li>
+                            <li>c) handlingsteorien?</li>
+                        </ol></li>
+                    <li>14. Hvorfor skiller vi mellom makro-, meso- og mikronivå?</li>
+                    <li>15. Hvilke teorier om menneskelig atferd har vi presentert i denne boka?</li>
+                    <li>16. Hva mente Margaret Mead at hun hadde funnet ut?</li>
+                    <li>17. Hva betyr sosiobiologi, og på hvilken måte forklarer det menneskelig atferd?</li>
+                    <li>18. Hva betyr begrepet «evolusjon»?</li>
+                    <li>19. Hva betyr «naturlig seleksjon»?</li>
+                    <li>20. Hvorfor har samfunnsvitere og biologer så ulikt syn på menneskets atferd?</li>
+                </ol>
+            </section>
+        </x:expect>
+    </x:scenario> 
+    
     <x:scenario label="Table of contents">
         <x:context>
             <section epub:type="frontmatter toc" id="level1_4">
@@ -172,8 +256,7 @@
 
         <x:expect label="result2">
             <section epub:type="frontmatter toc" id="level1_4">
-                <ol>
-                    <li>
+                <ol>INNHOLD<li>
                         <a href="#statped_merknad">xxx1 Merknad</a>
                     </li>
                     <li>xxx1 <a href="#h1_4"><span class="lic">Del 1 <strong>Samfunnsfag og

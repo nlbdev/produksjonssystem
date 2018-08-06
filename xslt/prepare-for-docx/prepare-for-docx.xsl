@@ -153,7 +153,7 @@
     <xsl:template match="ol[parent::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-
+            <xsl:text>INNHOLD</xsl:text>
             <li>
                 <a href="#statped_merknad">xxx1 Merknad</a>
             </li>
@@ -161,14 +161,25 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
+    
+     <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
+           
             <xsl:value-of select="concat('xxx', count(ancestor-or-self::li), ' ')"/>
+            
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
-    </xsl:template>
+    </xsl:template> 
+  <!--  <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:if test="count(ancestor-or-self::li) lt 3">
+            <xsl:value-of select="concat('xxx', count(ancestor-or-self::li), ' ')"/>
+            </xsl:if>
+            <xsl:apply-templates select="node()[position() &lt; 3]"/>
+        </xsl:copy>
+    </xsl:template> -->
 
     <xsl:template match="body">
         <xsl:copy exclude-result-prefixes="#all">
@@ -282,7 +293,8 @@
                             ''"/>
                 <xsl:value-of select="'.'"/>
             </p>
-
+            <xsl:apply-templates select="section[f:types(.) = 'toc']"/>
+           
             <section>
                 <h1>xxx1 Merknad</h1>
                 <p>-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de
@@ -301,9 +313,8 @@
                 <p> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og
                     innhold for hele boka finner du til slutt i denne filen.</p>
             </section>
-
-            <xsl:apply-templates select="section[f:types(.) = 'toc']"/>
             <xsl:apply-templates select="* except section[f:types(.) = 'toc']"/>
+           
         </xsl:copy>
     </xsl:template>
 
@@ -311,40 +322,81 @@
     <xsl:template match="section[f:types(.) = 'colophon']"/>
 
 
-    <xsl:template
-        match="p[ancestor::section[f:types(.) = 'chapter']] | p[ancestor::section[starts-with(@id, 'level')]]">
-        <!-- <xsl:template match="section[f:types(.) = 'chapter'] | section[starts-with(@id,'level')]"> -->
+   
+  <!--  <xsl:template match="p[ancestor::section[f:types(.) = 'chapter' and starts-with(@id,'level')]]">
+ 
         <xsl:copy copy-namespaces="no" exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
 
 
             <xsl:if test="position() gt 1">
-                <xsl:text>**</xsl:text>
+                <xsl:text>&#160;&#160;</xsl:text>
             </xsl:if>
 
 
-
             <xsl:apply-templates select="node()"/>
-
+          
+            
 
         </xsl:copy>
 
 
     </xsl:template>
 
-
-  <xsl:template match="ul[ancestor::section[f:types(.) = 'chapter']] | ul[ancestor::section[starts-with(@id, 'level')]]"> 
-     
-       
-            <xsl:apply-templates select="@*"/>
+ 
     
-            <div>
-            <xsl:for-each select="li">
-                <p>-- <xsl:value-of select="text()"/> </p>
-            </xsl:for-each>
-            </div>            
-  </xsl:template>
-
+    <xsl:template match="ul[ancestor::section[not(f:types(.) = 'toc')]]">
+        <div>
+            <xsl:apply-templates select="@* | node()"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="ul[ancestor::section[not(f:types(.) = 'toc')]]/li">
+        <p>** <xsl:apply-templates select="@* "/>
+            
+            <xsl:apply-templates select="node()"/>
+        </p>
+    </xsl:template> -->
+    
+  <!--  <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]">
+        <div>
+            <xsl:apply-templates select=" node()"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li">
+        <p><xsl:apply-templates select="node()"/></p>
+    </xsl:template> -->
+    
+    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/strong">
+        <xsl:apply-templates select="node()"/>
+        <xsl:text>.</xsl:text>
+    </xsl:template>
+    
+  
+   
+    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p">
+        <p><xsl:apply-templates select="node()"/></p>
+    </xsl:template>
+    
+    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p/strong">
+        <xsl:apply-templates select="node()"/>
+        <xsl:text>.</xsl:text>
+    </xsl:template> 
+    
+    <xsl:template match="head">
+       
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+          
+           
+            <xsl:apply-templates select="node()"/>
+               
+            <xsl:element name="style">p { text-indent: 2em;}</xsl:element>
+        </xsl:copy>
+    </xsl:template> 
+    
+    
     <xsl:function name="f:types">
         <xsl:param name="element" as="element()"/>
         <xsl:sequence select="tokenize($element/@epub:type, '\s+')"/>
