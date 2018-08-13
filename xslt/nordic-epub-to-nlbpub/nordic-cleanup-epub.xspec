@@ -13,6 +13,7 @@
                 <a href="http://www.uv.uio.no/isp/om/jonasprisen/Last revised">http://www.uv.uio.no/isp/om/jonasprisen/Last revised</a>
                 <a href="http://www.nlb.no/">NLB</a>
                 <a href="http://www.biomedcentral. com/1472&#x2013;6874/11/5">http://www.biomedcentral. com/1472&#x2013;6874/11/5</a>
+                <a href="http://www.thelancet.com/journals/lancet/article/PIISO 140&#x002D;6736(13)62224&#x002D;2/fulltext?&#x005F;eventId&#x003D;login">http://www.thelancet.com/journals/lancet/article/PIISO 140&#x002D;6736(13)62224&#x002D;2/fulltext?&#x005F;eventId&#x003D;login</a>
             </div>
         </x:context>
 
@@ -24,6 +25,7 @@
                 <a href="http://www.uv.uio.no/isp/om/jonasprisen/">http://www.uv.uio.no/isp/om/jonasprisen/</a>
                 <a href="http://www.nlb.no/">NLB</a>
                 <a href="http://www.biomedcentral.com/1472%E2%80%936874/11/5">http://www.biomedcentral.com/1472%E2%80%936874/11/5</a>
+                <a href="http://www.thelancet.com/journals/lancet/article/PIISO%20140-6736(13)62224-2/fulltext?_eventId=login">http://www.thelancet.com/journals/lancet/article/PIISO%20140-6736(13)62224-2/fulltext?_eventId=login</a>
             </div>
         </x:expect>
     </x:scenario>
