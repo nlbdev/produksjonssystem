@@ -153,7 +153,7 @@
         </x:expect>
     </x:scenario> 
     
-    <x:scenario label="Table of contents">
+    <x:scenario label="Table of contents" pending="">
         <x:context>
             <section epub:type="frontmatter toc" id="level1_4">
                 <h1 id="h1_3">INNHOLD</h1>
@@ -316,7 +316,7 @@
         </x:expect>
     </x:scenario>
 
-    <x:scenario label="Page numbers">
+    <x:scenario label="Page numbers" pending="">
         <x:context>
             <section>
                 <section>
@@ -457,7 +457,7 @@
         </x:expect>
     </x:scenario>
 
-    <x:scenario label="Insert boilerplate text">
+    <x:scenario label="Insert boilerplate text" pending="">
         <x:context>
             <html>
                 <head>
@@ -581,7 +581,7 @@
         <x:expect label="the titlepage and colophon should be removed"/>
     </x:scenario>
 
-    <x:scenario label="move toc to the start">
+    <x:scenario label="move toc to the start" pending="">
         <x:context>
             <body>
                 <section epub:type="frontmatter foreword"/>
