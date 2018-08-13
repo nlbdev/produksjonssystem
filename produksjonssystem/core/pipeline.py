@@ -772,6 +772,8 @@ class Pipeline():
                     continue
 
                 self.book = None
+                self.book_title_cached = None
+                self.book_identifier_cached = None
 
                 with self._queue_lock:
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
@@ -921,6 +923,9 @@ class Pipeline():
     # This can be overridden if the identifier can not be retrieved from the EPUB dc:identifier
     # or from the top-level directory or file name
     def book_identifier(self):
+        if self.book_identifier_cached:
+            return self.book_identifier_cached
+
         if os.path.exists(self.book["source"]):
             epub = Epub(self, self.book["source"])
 
@@ -931,12 +936,15 @@ class Pipeline():
                 self.book_identifier_cached = epub.identifier()
 
         elif not self.book_identifier_cached:
-                self.book_identifier_cached = re.sub("\.[^\.]*$", "", self.book["name"])
+            self.book_identifier_cached = re.sub("\.[^\.]*$", "", self.book["name"])
 
         return self.book_identifier_cached
 
     # This can be overridden if the title can not be retrieved from the EPUB dc:title
     def book_title(self):
+        if self.book_title_cached:
+            return self.book_title_cached
+
         if os.path.exists(self.book["source"]):
             epub = Epub(self, self.book["source"])
             if epub.isepub(report_errors=False):
