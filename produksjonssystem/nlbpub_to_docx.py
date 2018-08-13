@@ -106,14 +106,14 @@ class NLBpubToDocx(Pipeline):
                                                  "--docx-page-margin-bottom=42",
                                                  "--docx-page-margin-left=70",
                                                  "--docx-page-margin-right=56",
-                                                 "--base-font-size=13",          
-                                                 "--font-size-mapping=13,13,13,13,13,13,13,13"])  
-                                  
+                                                 "--base-font-size=13",
+                                                 "--font-size-mapping=13,13,13,13,13,13,13,13"])
+
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
             else:
                 self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
-                self.pipeline.utils.report.debug(traceback.format_stack())
+                self.utils.report.debug(traceback.format_stack())
                 self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
                 return False
 
