@@ -58,6 +58,10 @@ class EpubToDtbookAudio(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
+        if epub.identifier() != self.book["name"].split(".")[0]:
+            self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
+            return False
+
         if not Metadata.should_produce(self, epub, "DAISY 2.02"):
             self.utils.report.info("{} skal ikke produseres som lydbok. Avbryter.".format(epub.identifier()))
             self.utils.report.should_email = False

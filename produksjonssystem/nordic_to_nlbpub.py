@@ -60,6 +60,10 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
+        if epub.identifier() != self.book["name"].split(".")[0]:
+            self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
+            return False
+
         temp_html_file_obj = tempfile.NamedTemporaryFile()
         temp_html_file = temp_html_file_obj.name
 
