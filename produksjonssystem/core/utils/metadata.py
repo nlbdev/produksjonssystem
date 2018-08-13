@@ -91,10 +91,12 @@ class Metadata:
 
     @staticmethod
     def get_identifiers(report, epub_edition_identifier):
+        report.debug("Finner boknummer for {}...".format(epub_edition_identifier))
         edition_identifier = epub_edition_identifier
         pub_identifier = edition_identifier
         if len(pub_identifier) > 6:
             pub_identifier = pub_identifier[:6]
+            report.debug("Boknummer for selve utgaven er (seks første siffer): {}".format(pub_identifier))
 
         edition_identifiers = [edition_identifier]
         publication_identifiers = [pub_identifier]
@@ -107,6 +109,7 @@ class Metadata:
     def get_quickbase_identifiers(report, edition_identifiers, publication_identifiers):
         quickbase_edition_identifiers = []
         for edition_identifier in edition_identifiers:
+            report.debug("Finner andre boknummer for {} i Quickbase...".format(edition_identifier))
             metadata_dir = os.path.join(Metadata.get_metadata_dir(), edition_identifier)
             rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
             if os.path.isfile(rdf_path):
@@ -114,7 +117,9 @@ class Metadata:
                 identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
                 identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
                 quickbase_edition_identifiers.extend(identifiers)
-                if not identifiers:
+                if identifiers:
+                    report.debug("Andre boknummer for {} i Quickbase: ".format(", ".join(identifiers)))
+                else:
                     report.warn("{} er ikke katalogisert i Quickbase".format(edition_identifier))
             else:
                 report.warn("Finner ikke lokal metadata for {}.".format(edition_identifier))
@@ -187,7 +192,7 @@ class Metadata:
                         if fmt_bookid not in publication_identifiers and fmt_bookid not in edition_identifiers:
                             report.info("{} har samme ISBN/ISSN i `*596$f` som {}".format(
                                 fmt_bookid,
-                                ("en av: " if len(edition_identifiers) > 2 else "") +
+                                ("en av: " if len(edition_identifiers) >= 2 else "") +
                                 "/".join(edition_identifiers)))
                             report.info("Legger til {} som utgave".format(fmt_bookid))
                             edition_identifiers.append(fmt_bookid)
