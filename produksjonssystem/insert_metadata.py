@@ -14,7 +14,7 @@ class InsertMetadata(Pipeline):
     title = "Sett inn metadata"
     labels = ["Metadata"]
     publication_format = None
-    expected_processing_time = 33
+    expected_processing_time = 30
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -86,7 +86,7 @@ class InsertMetadataEpub(InsertMetadata):
     title = "Sett inn metadata for EPUB"
     labels = ["EPUB", "Metadata"]
     publication_format = "EPUB"
-    expected_processing_time = 42
+    expected_processing_time = 30
 
 
 class InsertMetadataDaisy202(InsertMetadata):
@@ -94,7 +94,7 @@ class InsertMetadataDaisy202(InsertMetadata):
     title = "Sett inn metadata for lydbok"
     labels = ["Lydbok", "Innlesing", "Talesyntese", "Metadata"]
     publication_format = "DAISY 2.02"
-    expected_processing_time = 22
+    expected_processing_time = 30
 
 
 class InsertMetadataXhtml(InsertMetadata):
@@ -102,7 +102,7 @@ class InsertMetadataXhtml(InsertMetadata):
     title = "Sett inn metadata for e-tekst"
     labels = ["e-bok", "Metadata"]
     publication_format = "XHTML"
-    expected_processing_time = 155
+    expected_processing_time = 30
 
 
 class InsertMetadataBraille(InsertMetadata):
@@ -110,7 +110,7 @@ class InsertMetadataBraille(InsertMetadata):
     title = "Sett inn metadata for punktskrift"
     labels = ["Punktskrift", "Metadata"]
     publication_format = "Braille"
-    expected_processing_time = 21
+    expected_processing_time = 30
 
 
 #class InsertMetadataExternal(InsertMetadata):

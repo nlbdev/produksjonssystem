@@ -23,7 +23,7 @@ class HtmlToDtbook(Pipeline):
     title = "HTML til DTBook"
     labels = []
     publication_format = "DTBook"
-    expected_processing_time = 10
+    expected_processing_time = 172
 
     _book_title = None  # cache book title
 

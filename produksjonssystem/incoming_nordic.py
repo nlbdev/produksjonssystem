@@ -23,7 +23,7 @@ class IncomingNordic(Pipeline):
     title = "Validering av Nordisk EPUB 3"
     labels = ["EPUB"]
     publication_format = None
-    expected_processing_time = 414
+    expected_processing_time = 300
 
     ace_cli = None
 

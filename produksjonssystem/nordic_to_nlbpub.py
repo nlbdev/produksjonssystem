@@ -23,7 +23,7 @@ class NordicToNlbpub(Pipeline):
     title = "Nordisk EPUB til NLBPUB"
     labels = ["EPUB", "Lydbok", "Innlesing", "Talesyntese", "Punktskrift", "e-bok"]
     publication_format = None
-    expected_processing_time = 686
+    expected_processing_time = 534
 
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 
