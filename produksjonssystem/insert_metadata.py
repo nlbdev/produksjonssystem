@@ -41,12 +41,10 @@ class InsertMetadata(Pipeline):
 
         # sjekk at dette er en EPUB
         if not epub.isepub():
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         if epub.identifier() != self.book["name"].split(".")[0]:
@@ -71,7 +69,6 @@ class InsertMetadata(Pipeline):
             if library is not None and library.lower() == "statped":
                 self.utils.report.warn("Klarte ikke å oppdatere metadata, men boken tilhører Statped så vi fortsetter alikevel")
             else:
-                self.utils.report.title = self.title + ": " + temp_epub.identifier() + " feilet 😭👎" + epubTitle
                 return False
         temp_epub.refresh_metadata()
 

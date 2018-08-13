@@ -51,12 +51,10 @@ class EpubToDtbookBraille(Pipeline):
 
         # sjekk at dette er en EPUB
         if not epub.isepub():
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         if not epub.identifier():
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         if epub.identifier() != self.book["name"].split(".")[0]:
@@ -77,7 +75,6 @@ class EpubToDtbookBraille(Pipeline):
         self.utils.report.info("Oppdaterer metadata...")
         updated = Metadata.update(self, nordic_epub, publication_format="Braille")
         if isinstance(updated, bool) and updated is False:
-            self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         nordic_epub.refresh_metadata()
 
@@ -102,14 +99,12 @@ class EpubToDtbookBraille(Pipeline):
 
             if dp2_job.status != "DONE":
                 self.utils.report.error("Klarte ikke å konvertere boken")
-                self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
                 return False
 
             dp2_dtbook_file = os.path.join(dp2_job.dir_output, "output-dir", nordic_epub.identifier(), nordic_epub.identifier() + ".xml")
 
             if not os.path.isfile(dp2_dtbook_file):
                 self.utils.report.error("Finner ikke den konverterte boken: " + dp2_dtbook_file)
-                self.utils.report.title = self.title + ": " + nordic_epub.identifier() + " feilet 😭👎" + epubTitle
                 return False
 
             shutil.copy(dp2_dtbook_file, dtbook_file)
