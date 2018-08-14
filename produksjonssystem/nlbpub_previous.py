@@ -71,6 +71,7 @@ class NlbpubPrevious(Pipeline):
         changelog = "changelog.txt"
         deleted = "deleted.yml"
         files = "files.yml"
+        extra_files = [changelog, deleted, files, "restore_files.py"]
         changes_made = False
         new_epub = False
 
@@ -83,12 +84,12 @@ class NlbpubPrevious(Pipeline):
         else:
             deleted_doc = {}
 
-        # Dictfiles contains the most recent version of each file, can save this in a yaml file, like newest_files.yml
+        # Dictfiles contains the most recent version of each file, saved to files.yml
         for (path, subdir_list, file_list) in walk(os.path.join(self.dir_out, epub.identifier())):
             for file_name in file_list:
-                if file_name == changelog:
-                    break
-                file_path = os.path.join(self.dir_out, epub.identifier(), path, file_name)
+                if file_name in extra_files:
+                    continue
+                file_path = os.path.join(path, file_name)
                 new_dict = {file_name: file_path}
                 if file_name not in dictfiles:
                     dictfiles.update(new_dict)
@@ -123,7 +124,8 @@ class NlbpubPrevious(Pipeline):
                     if dictfiles == {}:
                         new_epub = True
                     changes_made = True
-                    new_file = {temp_file: os.path.join(self.dir_out, epub.identifier(), time_created, temp_file)}
+                    sub = temp_path.replace(temp_epubdir, "")
+                    new_file = {temp_file: os.path.join(self.dir_out, epub.identifier(), time_created + sub, temp_file)}
                     dictfiles.update(new_file)
                     if not new_epub:
                         self.utils.report.info("Fil lagt til: " + temp_file)
@@ -154,12 +156,19 @@ class NlbpubPrevious(Pipeline):
 
         # Deleted file history
         for key in dictfiles:
-            if key not in new_file_list and key not in deleted_doc:
+            if key not in new_file_list and key not in deleted_doc and key not in extra_files:
                 changes_made = True
                 self.utils.report.info("Fil slettet: " + key)
                 changelog_file.write("\n{}:     Fil slettet: {}".format(time_created, key))
                 deleted_file.write("\n{}: {}".format(key, time_created))
         changelog_file.close()
+        deleted_file.close()
+
+        if os.path.isfile(deleted_path):
+            with open(deleted_path, 'r') as f:
+                deleted_doc = yaml.load(f) or {}
+        else:
+            deleted_doc = {}
 
         for del_file in deleted_doc:
             del dictfiles[del_file]
@@ -179,7 +188,7 @@ class NlbpubPrevious(Pipeline):
         else:
             self.utils.report.info("Ingen endringer oppdaget for " + epub.identifier())
             self.utils.report.title = self.title + ": " + epub.identifier() + " 👍😄" + epubTitle + " ,  ingen endring registrert"
-            # self.utils.report.should_email = False
+            self.utils.report.should_email = False
         return True
 
     def del_empty_dirs(self, path, dir):
