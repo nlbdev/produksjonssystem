@@ -200,8 +200,36 @@ class NordicToNlbpub(Pipeline):
             with DaisyPipelineJob(self, "nordic-html-validate", {"html": dp2_html_file}) as dp2_job_html_validate:
                 html_validate_status = "SUCCESS" if dp2_job_html_validate.status == "DONE" else "ERROR"
 
-                # get conversion report
                 report_file = os.path.join(dp2_job_html_validate.dir_output, "html-report/report.xhtml")
+
+                if html_validate_status == "ERROR":
+                    html_validate_status = "WARN"
+
+                    report_doc = ElementTree.parse(report_file)
+                    errors = report_doc.xpath('//*[@class="error" or @class="message-error"]')
+                    for error in errors:
+                        error_text = error.xpath('.//text()[normalize-space()]')[0]
+                        error_text = " ".join(error_text.split()).strip() if bool(error_text) else error_text
+
+                        if error_text.startswith("Incorrect file signature"):
+                            magic_number = error.xpath('*[@class="message-details"]/*[last()]/*[last()]/text()')[0]
+                            magic_number = " ".join(magic_number.split()).strip() if bool(magic_number) else magic_number
+
+                            # JFIF already allowed: 0xFF 0xD8 0xFF 0xE0 0x?? 0x?? 0x4A 0x46 0x49 0x46
+
+                            if magic_number.startswith("0xFF 0xD8 0xFF 0xDB"):  # Also allow JPEG RAW
+                                continue
+                            elif magic_number[:19] == "0xFF 0xD8 0xFF 0xE1" and magic_number[30:] == ("0x45 0x78 0x69 0x66"):  # Also allow EXIF
+                                continue
+                            else:
+                                html_validate_status = "ERROR"
+                                self.utils.report.error(error_text)
+
+                        else:
+                            html_validate_status = "ERROR"
+                            self.utils.report.error(error_text)
+
+                # get conversion report
                 if os.path.isfile(report_file):
                     with open(report_file, 'r') as result_report:
                         self.utils.report.attachment(result_report.readlines(),
