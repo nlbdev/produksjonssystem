@@ -141,7 +141,13 @@ class NordicToNlbpub(Pipeline):
                     if (bool(error_text) and (
                             error_text.startswith("[opf") or
                             error_text.startswith("[nordic_nav") or
-                            error_text.startswith("[nordic_opf"))):
+                            error_text.startswith("[nordic_opf") or
+                            "missing required attribute \"epub:prefix\"" in error_text or
+                            "element \"title\" not allowed yet" in error_text or
+                            "element \"style\" not allowed yet" in error_text or
+                            "element \"meta\" not allowed yet" in error_text or
+                            "element \"body\" incomplete; expected element \"header\" or \"nav\"" in error_text
+                            )):
                         continue  # ignorer disse feilmeldingene; de forsvinner når vi konverterer til XHTML5
 
                     if error_text.startswith("Incorrect file signature"):
