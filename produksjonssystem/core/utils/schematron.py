@@ -137,7 +137,7 @@ class Schematron():
                     name = ".".join(os.path.basename(schematron).split(".")[:-1])
                     available_path = os.path.join(schematron_report_dir, "{}.html".format(name))
                     if os.path.exists(available_path):
-                        for i in range(2, 1000):
+                        for i in range(2, 100000):
                             available_path = os.path.join(schematron_report_dir, "{}-{}.html".format(name, i))  # assumes we won't have move than 1000 reports
                             if not os.path.exists(available_path):
                                 break

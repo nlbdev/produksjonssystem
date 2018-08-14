@@ -94,7 +94,7 @@ class CompareWithReference(object):
                     name = ".".join(os.path.basename(reference).split(".")[:-1])
                     available_path = os.path.join(compare_with_reference_report_dir, "{}.html".format(name))
                     if os.path.exists(available_path):
-                        for i in range(2, 1000):
+                        for i in range(2, 100000):
                             # assumes we won't have move than 1000 reports
                             available_path = os.path.join(compare_with_reference_report_dir, "{}-{}.html".format(name, i))
                             if not os.path.exists(available_path):
