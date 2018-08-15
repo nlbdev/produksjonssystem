@@ -248,6 +248,13 @@
     
     <xsl:template match="*:leader"/>
     
+    <xsl:template match="*:controlfield[@tag='000']">
+        <xsl:variable name="POS05" select="substring(text(),6,1)"/>
+        <xsl:if test="$POS05 = 'd'">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'availability'"/><xsl:with-param name="value" select="'deleted'"/></xsl:call-template>
+        </xsl:if>
+    </xsl:template>
+    
     <xsl:template match="*:controlfield[@tag='001']">
         <xsl:variable name="edition-identifier" select="if ($identifier) then $identifier else text()"/>
         

@@ -753,5 +753,18 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="When record is marked as deleted, it should be provided as 'availability' metadata">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:controlfield tag="000">     d</marcxchange:controlfield>
+            </marcxchange:record>
+        </x:context>
+        <x:expect>
+            <metadata>
+                <meta property="availability">deleted</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>

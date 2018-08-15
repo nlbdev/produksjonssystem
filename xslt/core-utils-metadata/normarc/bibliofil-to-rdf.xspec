@@ -67,4 +67,24 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="availability metadata">
+        <x:context>
+            <opf:metadata>
+                <opf:meta name="availability" content="deleted"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                    <schema:availability>deleted</schema:availability>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
