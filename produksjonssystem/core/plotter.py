@@ -26,10 +26,23 @@ class Plotter():
     buffered_network_paths = {}
     buffered_network_hosts = {}
     should_run = True
+    book_count = {}
 
     def __init__(self, pipelines, report_dir):
         self.pipelines = pipelines
         self.report_dir = report_dir
+
+    def get_book_count(self, dir):
+        if not isinstance(dir, str):
+            return 0
+        if (dir not in self.book_count or
+                "modified" not in self.book_count[dir] or
+                self.book_count[dir]["modified"] + 15 < time.time()):
+            self.book_count[dir] = {
+                "count": len(os.listdir(dir)) if os.path.isdir(dir) else 0,
+                "modified": time.time()
+            }
+        return self.book_count[dir]["count"]
 
     def rank_name(self, rank_id):
         for rank in Pipeline.dirs_ranked:
@@ -107,8 +120,10 @@ class Plotter():
                     netpath_in = self.buffered_network_hosts[pipeline[0].dir_in]
                     if not netpath_in:
                         netpath_in = self.buffered_network_paths[pipeline[0].dir_in]
-            label_in = "< <font point-size='24'>{}</font>{} >".format(
+            book_count_in = self.get_book_count(pipeline[0].dir_in)
+            label_in = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_in,
+                "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_in, "bok" if book_count_in == 1 else "bøker"),
                 "\n<br/><i><font point-size='20'>{}</font></i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
 
             relpath_out = None
@@ -136,8 +151,11 @@ class Plotter():
                     netpath_out = self.buffered_network_hosts[pipeline[0].dir_out]
                     if not netpath_out:
                         netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
-            label_out = "< <font point-size='24'>{}</font>{} >".format(
+            book_count_out = self.get_book_count(os.path.join(pipeline[0].dir_out, list(pipeline[0].parentdirs.values())[0])
+                                                 if pipeline[0].parentdirs else pipeline[0].dir_out)
+            label_out = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_out,
+                "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_out, "bok" if book_count_out == 1 else "bøker"),
                 "\n<br/><i><font point-size='20'>{}</font></i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
 
             if rank_out:
