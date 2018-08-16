@@ -39,7 +39,7 @@ class Plotter():
                 "modified" not in self.book_count[dir] or
                 self.book_count[dir]["modified"] + 15 < time.time()):
             self.book_count[dir] = {
-                "count": len(os.listdir(dir)) if os.path.isdir(dir) else 0,
+                "count": len([name for name in os.listdir(dir) if name[0] in "0123456789" or name.startswith("TEST")]) if os.path.isdir(dir) else 0,
                 "modified": time.time()
             }
         return self.book_count[dir]["count"]
