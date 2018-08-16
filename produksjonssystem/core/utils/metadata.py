@@ -950,3 +950,49 @@ class Metadata:
             return False
 
         return False
+
+    @staticmethod
+    def get_metadata_from_book(pipeline, path):
+        # Initialize book_metadata with the identifier based on the filename
+        book_metadata = {
+            "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
+        }
+
+        # Try getting EPUB metadata
+        if os.path.exists(path):
+            epub = Epub(pipeline, path)
+            if epub.isepub(report_errors=False):
+                book_metadata["identifier"] = epub.identifier()
+                book_metadata["title"] = epub.meta("dc:title")
+                return book_metadata
+
+        # Try getting HTML or DAISY 2.02 metadata
+        html_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith("html"):
+                    html_files.append(os.path.join(root, file))
+
+        if os.path.isfile(os.path.join(path, "ncc.html")) or len(html_files):
+            file = os.path.join(path, "ncc.html")
+            if not os.path.isfile(file):
+                file = os.path.join(path, os.path.basename(path) + ".xhtml")
+            if not os.path.isfile(file):
+                file = os.path.join(path, os.path.basename(path) + ".html")
+            if not os.path.isfile(file):
+                file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))][0]
+            if not file:
+                file = html_files[0]
+
+            html = ElementTree.parse(file).getroot()
+            book_title = [e.text for e in html.xpath(
+                "/*/*[local-name()='head']/*[local-name()='title']")][0]
+            book_identifier = [e.attrib["content"] for e in html.xpath(
+                "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib][0]
+
+            if book_title:
+                book_metadata["title"] = book_title
+            if book_identifier:
+                book_metadata["identifier"] = book_identifier
+
+        return book_metadata

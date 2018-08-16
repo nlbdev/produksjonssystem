@@ -46,8 +46,6 @@ class Pipeline():
 
     # The current book
     book = None
-    book_title_cached = None
-    book_identifier_cached = None
 
     # Directories
     dir_in = None
@@ -772,8 +770,6 @@ class Pipeline():
                     continue
 
                 self.book = None
-                self.book_title_cached = None
-                self.book_identifier_cached = None
 
                 with self._queue_lock:
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
@@ -816,6 +812,9 @@ class Pipeline():
                         self.utils.filesystem = Filesystem(self)
                         result = None
 
+                        # get some basic metadata (identifier and title) from the book for reporting purposes
+                        book_metadata = Metadata.get_metadata_from_book(self, self.book["source"])
+
                         try:
                             self.progress_start = time.time()
                             self.utils.report.debug("Started: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
@@ -836,15 +835,14 @@ class Pipeline():
 
                         finally:
                             try:
-                                Metadata.add_production_info(self.utils.report, self.book_identifier(), self.publication_format)
+                                Metadata.add_production_info(self.utils.report, book_metadata["identifier"], self.publication_format)
                             except Exception:
                                 self.utils.report.error("An error occured while retrieving production info")
                                 self.utils.report.error(traceback.format_exc(), preformatted=True)
                                 logging.exception("An error occured while retrieving production info")
 
                             if self.utils.report.title is None:
-                                book_title = self.book_title()
-                                book_title = " ({})".format(book_title) if book_title else ""
+                                book_title = " ({})".format(book_metadata["title"]) if "title" in book_metadata else ""
                                 if result is True:
                                     self.utils.report.title = self.title + ": " + self.book["name"] + " lyktes 👍😄" + book_title
                                 else:
@@ -919,38 +917,6 @@ class Pipeline():
     @staticmethod
     def translate(english_text, translated_text):
         Pipeline._i18n[english_text] = translated_text
-
-    # This can be overridden if the identifier can not be retrieved from the EPUB dc:identifier
-    # or from the top-level directory or file name
-    def book_identifier(self):
-        if self.book_identifier_cached:
-            return self.book_identifier_cached
-
-        if os.path.exists(self.book["source"]):
-            epub = Epub(self, self.book["source"])
-
-            # Hvis dette ikke er en EPUB; bruk filnavnet / mappenavnet
-            if not epub.isepub(report_errors=False):
-                self.book_identifier_cached = re.sub("\.[^\.]*$", "", self.book["name"])
-            else:
-                self.book_identifier_cached = epub.identifier()
-
-        elif not self.book_identifier_cached:
-            self.book_identifier_cached = re.sub("\.[^\.]*$", "", self.book["name"])
-
-        return self.book_identifier_cached
-
-    # This can be overridden if the title can not be retrieved from the EPUB dc:title
-    def book_title(self):
-        if self.book_title_cached:
-            return self.book_title_cached
-
-        if os.path.exists(self.book["source"]):
-            epub = Epub(self, self.book["source"])
-            if epub.isepub(report_errors=False):
-                self.book_title_cached = epub.meta("dc:title")
-
-        return self.book_title_cached
 
     # This should be overridden
     def on_book_created(self):

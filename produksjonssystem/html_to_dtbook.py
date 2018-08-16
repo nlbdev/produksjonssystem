@@ -7,10 +7,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-from lxml import etree as ElementTree
-
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
+from core.utils.metadata import Metadata
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -25,26 +24,9 @@ class HtmlToDtbook(Pipeline):
     publication_format = "DTBook"
     expected_processing_time = 172
 
-    _book_title = None  # cache book title
-
-    def book_identifier(self):
-        return Path(self.book["source"]).stem
-
-    def book_title(self):
-        if self._book_title is not None:
-            return self._book_title
-
-        html_file = self.html_file()
-        if not html_file:
-            self.utils.report.warn("Finner ikke HTML-fila: {}".format(html_file))
-            return False
-        htmldoc = ElementTree.parse(html_file).getroot()
-        self._book_title = htmldoc.xpath("/*/*[local-name()='head']/*[local-name()='title']")
-        self._book_title = self._book_title[0].text if len(self._book_title) else ""
-        return self._book_title
-
     def html_file(self):
-        identifier = self.book_identifier()
+        book_metadata = Metadata.get_metadata_from_book(self, self.book["source"])
+        identifier = book_metadata["identifier"]
 
         html_file = None
 
@@ -82,7 +64,7 @@ class HtmlToDtbook(Pipeline):
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
 
-        identifier = self.book_identifier()
+        identifier = Path(self.book["source"]).stem
 
         html_file = self.html_file()
         if not html_file:
