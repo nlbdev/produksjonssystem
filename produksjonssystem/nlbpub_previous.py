@@ -145,7 +145,7 @@ class NlbpubPrevious(Pipeline):
         if file_added_again:
             with open(deleted_path, 'w') as deleted_file:
                 for key in deleted_doc:
-                    deleted_file.write("\n{}: {}".format(key, time_created))
+                    deleted_file.write("\n'{}': '{}'".format(key.replace("'", "''"), time_created.replace("'", "''")))
 
         # Deleted file history saved to deleted files.yml
         with open(deleted_path, self.append_write(deleted_path)) as deleted_file:
@@ -154,7 +154,7 @@ class NlbpubPrevious(Pipeline):
                     changes_made = True
                     self.utils.report.info("Fil slettet: " + key)
                     changelog_string += ("\n{}:     Fil slettet: {}".format(time_created, key))
-                    deleted_file.write("\n{}: {}".format(key, time_created))
+                    deleted_file.write("\n'{}': '{}'".format(key.replace("'", "''"), time_created.replace("'", "''")))
 
         # Changelog saved to changelog.txt
         with open(changelog_path, self.append_write(changelog_path)) as changelog_file:
@@ -173,7 +173,7 @@ class NlbpubPrevious(Pipeline):
 
         with open(os.path.join(temp_epubdir, files), 'w') as files_doc:
             for file in dictfiles:
-                files_doc.write("\n{}: {}".format(file, dictfiles[file]))
+                files_doc.write("\n'{}': '{}'".format(file.replace("'", "''"), dictfiles[file].replace("'", "''")))
 
         # Save copy of different files in NLBPUB master. Different versions of files under NLBPUB-tidligere/xxxxxxx/time
         # To restore a certain version copy files from the each folder up to the wanted version to a new folder
