@@ -11,14 +11,20 @@
     -->
 
     <xsl:template name="generer-startinformasjon">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        
         <xsl:call-template name="generer-tittel"/>
         <!-- PSPS: Alltid før cover,sier Roald -->
         <xsl:call-template name="lydbokavtalen"/>
-        <xsl:call-template name="info-om-boka"/>
+        <xsl:if test="not(upper-case($library) = 'STATPED')">
+            <xsl:call-template name="info-om-boka"/>
+        </xsl:if>
         <xsl:call-template name="info-om-den-tilrettelagte-utgaven"/>
     </xsl:template>
 
     <xsl:template name="generer-tittel">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        
         <section epub:type="frontmatter titlepage" id="nlb-level1-tittel">
             <h1 epub:type="fulltitle" class="title">
                 <xsl:apply-templates select="//title/child::node()"/>
@@ -58,82 +64,171 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </p>
+            
+            <xsl:if test="upper-case($library) = 'STATPED'">
+                <figure class="image"><img alt="{$library} logo" src="{upper-case($library)}_logo.png"/></figure>
+            </xsl:if>
         </section>
     </xsl:template>
 
     <xsl:template name="generer-sluttinformasjon">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        
         <hr class="separator"/>
-        <p>
-            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-            <xsl:choose>
-                <xsl:when test="$SPRÅK.en">
-                    <xsl:text>You've been listening to </xsl:text>
-                </xsl:when>
-                <xsl:when test="$SPRÅK.nn">
-                    <xsl:text>Du høyrde </xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>Du hørte </xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-            <em>
-                <xsl:apply-templates select="//title/child::node()"/>
-            </em>
-            <xsl:choose>
-                <xsl:when test="$SPRÅK.en">
-                    <xsl:text>, by </xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>, av </xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-            <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
-            <xsl:text>.</xsl:text>
-        </p>
-        <p>
-            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-            <xsl:choose>
-                <xsl:when test="$SPRÅK.en">
-                    <xsl:text>Read by </xsl:text>
-                    <xsl:value-of
-                        select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
+        <xsl:choose>
+            
+            <xsl:when test="upper-case($library) = 'STATPED'">
+                <h1>
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                    <xsl:text>Informasjon om originalbok og lydbok</xsl:text>
+                </h1>
+                <dl>
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                    <xsl:variable name="title" select="ancestor::html/head/title/text()" as="xs:string?"/>
+                    <xsl:variable name="authors" select="ancestor::html/head/meta[@name='dc:creator']/string(@content)" as="xs:string*"/>
+                    <xsl:variable name="language" select="(ancestor-or-self::*/(@xml:lang/string(.), @lang/string(.)), /*/head/meta[@name='dc:language']/@content/string(.))[1]" as="xs:string"/>
+                    <xsl:variable name="language" select="if (count($language)) then tokenize($language, '-')[1] else $language" as="xs:string?"/>
+                    <xsl:variable name="originalPublisher" select="ancestor::html/head/meta[@name='dc:publisher.original']/string(@content)" as="xs:string?"/>
+                    <xsl:variable name="originalYear" select="ancestor::html/head/meta[@name='dc:date.issued.original']/string(@content)" as="xs:string?"/>
+                    <xsl:variable name="originalEdition" select="ancestor::html/head/meta[@name='schema:bookEdition.original']/string(@content)" as="xs:string?"/>
+                    <xsl:variable name="originalIsbn" select="ancestor::html/head/meta[@name='schema:isbn']/string(@content)" as="xs:string?"/>
+                    <xsl:variable name="productionYear" select="format-date(current-date(), '[Y]')" as="xs:string"/>
+                    
+                    <dt>Boktittel:</dt>
+                    <dd><xsl:value-of select="$title"/></dd>
+                    
+                    <dt><xsl:value-of select="if ($language = 'nn') then 'Forfattarar:' else 'Forfattere:'"/></dt>
+                    <xsl:for-each select="$authors">
+                        <dd><xsl:value-of select="."/></dd>
+                    </xsl:for-each>
+                    
+                    <xsl:choose>
+                        <xsl:when test="$language = ('nb', 'nn')">
+                            <dt>Målform:</dt>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <dt>Språk:</dt>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:choose>
+                        <xsl:when test="$language = 'no'">
+                            <dd>Norsk</dd>
+                        </xsl:when>
+                        <xsl:when test="$language = 'nb'">
+                            <dd>Bokmål</dd>
+                        </xsl:when>
+                        <xsl:when test="$language = 'nn'">
+                            <dd>Nynorsk</dd>
+                        </xsl:when>
+                        <xsl:when test="$language = 'en'">
+                            <dd>Engelsk</dd>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!-- TODO: koble flere språkkoder til språknavn -->
+                            <dd><xsl:value-of select="$language"/></dd>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    
+                    <dt><xsl:value-of select="if ($language = 'nn') then 'Utgjevar av originalboka:' else 'Utgiver av originalboka:'"/></dt>
+                    <dd><xsl:value-of select="if ($originalPublisher) then $originalPublisher else 'Ukjent'"/></dd>
+                    
+                    <dt><xsl:value-of select="if ($language = 'nn') then 'Utgjevingsår:' else 'Utgivelsesår:'"/></dt>
+                    <dd><xsl:value-of select="if ($originalYear) then $originalYear else 'Ukjent'"/></dd>
+                    
+                    <dt><xsl:value-of select="if ($language = 'nn') then 'Utgåve og opplag:' else 'Utgave og opplag:'"/></dt>
+                    <dd><xsl:value-of select="if ($originalEdition) then $originalEdition else 'Ukjent'"/></dd>
+                    
+                    <dt>ISBN originalbok:</dt>
+                    <dd><xsl:value-of select="if ($originalIsbn) then $originalIsbn else 'Ukjent'"/></dd>
+                    
+                    <dt><xsl:value-of select="if ($language = 'nn') then 'Ansvarleg utgjevar av lydboka:' else 'Ansvarlig utgiver av lydboka:'"/></dt>
+                    <dd>Statped</dd>
+                    
+                    <dt>Produksjonsår:</dt>
+                    <dd><xsl:value-of select="$productionYear"/></dd>
+                </dl>
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <p>
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>You've been listening to </xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.nn">
+                            <xsl:text>Du høyrde </xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Du hørte </xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <em>
+                        <xsl:apply-templates select="//title/child::node()"/>
+                    </em>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>, by </xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>, av </xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
                     <xsl:text>.</xsl:text>
-                </xsl:when>
-                <xsl:when test="$SPRÅK.nn">
-                    <xsl:text>Det var </xsl:text>
-                    <xsl:value-of
-                        select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
-                    <xsl:text> som las.</xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>Det var </xsl:text>
-                    <xsl:value-of
-                        select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
-                    <xsl:text> som leste.</xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-        </p>
+                </p>
+                <p>
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>Read by </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
+                            <xsl:text>.</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.nn">
+                            <xsl:text>Det var </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
+                            <xsl:text> som las.</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Det var </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
+                            <xsl:text> som leste.</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </p>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template name="lydbokavtalen">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        
         <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">
-            <h1>
-                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-                <xsl:choose>
-                    <xsl:when test="$SPRÅK.en">
-                        <xsl:text>The audiobook agreement</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>Lydbokavtalen</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </h1>
+            <xsl:if test="not(upper-case($library) = 'STATPED')">
+                <h1>
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                    <xsl:choose>
+                        <xsl:when test="$SPRÅK.en">
+                            <xsl:text>The audiobook agreement</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>Lydbokavtalen</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </h1>
+            </xsl:if>
 
             <xsl:choose>
                 <xsl:when test="$SPRÅK.en">
                     <p>
                         <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-                        <xsl:text>This edition is produced by NLB in </xsl:text>
+                        <xsl:text>This edition is produced by </xsl:text>
+                        <xsl:value-of select="$library"/>
+                        <xsl:text> in </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text> pursuant to article 17a of the Norwegian Copyright Act and can be reproduced for private use only. 
@@ -150,7 +245,9 @@
                 <xsl:when test="$SPRÅK.nn">
                     <p>
                         <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-                        <xsl:text>Denne utgåva er produsert av NLB i </xsl:text>
+                        <xsl:text>Denne utgåva er produsert av </xsl:text>
+                        <xsl:value-of select="$library"/>
+                        <xsl:text> i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text> med heimel i åndsverklova § 17a, og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over skal
@@ -168,7 +265,9 @@
                 <xsl:otherwise>
                     <p>
                         <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-                        <xsl:text>Denne utgaven er produsert av NLB i </xsl:text>
+                        <xsl:text>Denne utgaven er produsert av </xsl:text>
+                        <xsl:value-of select="$library"/>
+                        <xsl:text> i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text> med hjemmel i åndsverklovens § 17a, og kan kun kopieres til privat bruk. 
@@ -600,16 +699,25 @@
     </xsl:template>
 
     <xsl:template name="info-om-den-tilrettelagte-utgaven">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        
         <section epub:type="frontmatter" id="nlb-level1-om-lydboka">
             <h1>
                 <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                 <xsl:choose>
-                    <xsl:when test="$SPRÅK.en">About the accessible edition</xsl:when>
-                    <xsl:when test="$SPRÅK.nn">
-                        <xsl:text>Om den tilrettelagde utgåva</xsl:text>
+                    <xsl:when test="upper-case($library) = 'STATPED'">
+                        <xsl:text>Informasjon ved bruk av denne lydboka</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text>Om den tilrettelagte utgaven</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="$SPRÅK.en">About the accessible edition</xsl:when>
+                            <xsl:when test="$SPRÅK.nn">
+                                <xsl:text>Om den tilrettelagde utgåva</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:text>Om den tilrettelagte utgaven</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:otherwise>
                 </xsl:choose>
             </h1>

@@ -12,6 +12,7 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+from prepare_for_ebook import PrepareForEbook
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -173,6 +174,14 @@ class NlbpubToNarrationEpub(Pipeline):
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
+
+        # ---------- legg til logo ----------
+        library = nlbpub.meta("schema:library")
+        library = library.upper() if library else library
+        logo = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}_logo.png".format(library))
+
+        if os.path.isfile(logo) and library == "STATPED":
+            shutil.copy(logo, os.path.join(os.path.dirname(html_file), os.path.basename(logo)))
 
         # ---------- save EPUB ----------
 

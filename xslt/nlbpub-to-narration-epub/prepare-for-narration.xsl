@@ -126,13 +126,27 @@
     </xsl:template>
 
     <xsl:template match="body">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@*"/>
             <xsl:call-template name="generer-startinformasjon"/>
-            <xsl:if test="//element()[fnk:epub-type(@epub:type, 'cover')]">
-                <xsl:call-template name="bygg-opp-cover"/>
-            </xsl:if>
-            <xsl:apply-templates select="node()"/>
+            
+            <xsl:choose>
+                <xsl:when test="upper-case($library) = 'STATPED'">
+                    <xsl:apply-templates select="node()"/>
+                    <xsl:if test="//element()[fnk:epub-type(@epub:type, 'cover')]">
+                        <xsl:call-template name="bygg-opp-cover"/>
+                    </xsl:if>
+                </xsl:when>
+                
+                <xsl:otherwise>
+                    <xsl:if test="//element()[fnk:epub-type(@epub:type, 'cover')]">
+                        <xsl:call-template name="bygg-opp-cover"/>
+                    </xsl:if>
+                    <xsl:apply-templates select="node()"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:copy>
     </xsl:template>
 
