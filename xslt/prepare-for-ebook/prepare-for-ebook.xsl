@@ -107,7 +107,7 @@
                             For å kunne redigere i teksten må e-boka åpnes i en tekstbehandler (for eksempel Microsoft Word eller LibreOffice Writer).</p>
                         <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
                         <xsl:if test="$library">
-                            <figure class="image"><img alt="{$library} logo" src="{upper-case($library)}_logo.jpg"/></figure>
+                            <figure class="image"><img alt="{$library} logo" src="{upper-case($library)}_logo.png"/></figure>
                         </xsl:if>
                     </section>
                 </xsl:when>
@@ -123,7 +123,7 @@
                             ' levels')"/> of headings.</p>
                         <p>The format of this book is HTML. This file format can be opened in any web browser for reading,
                             or a text editor for editing purposes (for instance Microsoft Word or LibreOffice Writer).</p>
-                        <figure class="image"><img alt="NLB logo" src="NLB_logo.jpg"/></figure>
+                        <figure class="image"><img alt="NLB logo" src="NLB_logo.png"/></figure>
                     </section>
                 </xsl:otherwise>
             </xsl:choose>
