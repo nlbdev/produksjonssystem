@@ -12,7 +12,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h1">
+    <xsl:template match="h1[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx1 </xsl:text>
@@ -20,7 +20,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h2">
+    <xsl:template match="h2[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx2 </xsl:text>
@@ -28,7 +28,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h3">
+    <xsl:template match="h3[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx3 </xsl:text>
@@ -36,7 +36,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h4">
+    <xsl:template match="h4[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx4 </xsl:text>
@@ -44,7 +44,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h5">
+    <xsl:template match="h5[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx5 </xsl:text>
@@ -52,7 +52,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h6">
+    <xsl:template match="h6[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx6 </xsl:text>
@@ -146,40 +146,27 @@
     <xsl:template match="section[f:types(.) = 'toc']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node() except (h1, h2, h3, h4, h5, h6)"/>
+            <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
 
     <xsl:template match="ol[parent::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            <xsl:text>INNHOLD</xsl:text>
-            <li>
-                <a href="#statped_merknad">xxx1 Merknad</a>
-            </li>
-
+            <li>xxx1 <a href="#statped_merknad">Merknad</a></li>
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
     
-     <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
+    <xsl:template match="ol[ancestor::section[f:types(.) = 'toc'] and count(ancestor::li) ge 2]"/>
+    
+    <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-           
             <xsl:value-of select="concat('xxx', count(ancestor-or-self::li), ' ')"/>
-            
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template> 
-  <!--  <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-            <xsl:if test="count(ancestor-or-self::li) lt 3">
-            <xsl:value-of select="concat('xxx', count(ancestor-or-self::li), ' ')"/>
-            </xsl:if>
-            <xsl:apply-templates select="node()[position() &lt; 3]"/>
-        </xsl:copy>
-    </xsl:template> -->
 
     <xsl:template match="body">
         <xsl:copy exclude-result-prefixes="#all">
@@ -274,10 +261,7 @@
                 />
             </p>
 
-            <p>Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke
-                brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse
-                avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan
-                medføre ansvar etter åndsverkloven.<br/>
+            <p>Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>
                 <xsl:value-of select="$publisher-location"/>
                 <xsl:value-of
                     select="
@@ -297,21 +281,16 @@
            
             <section>
                 <h1>xxx1 Merknad</h1>
-                <p>-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de
-                    fire overskriftsnivåene som er merket med xxx.</p>
-                <p>-- Rammetekster og bilder som dukker opp midt i løpende tekst, er flyttet, slik
-                    at de står etter den løpende teksten, foran neste overskrift.</p>
+                <p>-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de fire overskriftsnivåene som er merket med xxx.</p>
+                <p>-- Rammetekster og bilder som dukker opp midt i løpende tekst, er flyttet, slik at de står etter den løpende teksten, foran neste overskrift.</p>
                 <p>-- Sidetallet står øverst på siden, på egen linje, med åpen linje over, slik:</p>
                 <p> --- 10 til 79</p>
                 <p> der 10 er aktuelt sidetall og 79 er sluttsidetalet i originalboka.</p>
                 <p> -- Uthevingstegnet er slik: _</p>
                 <p> Eksempel: _Denne setningen er uthevet._</p>
-                <p> -- {{}} Doble klammeparenteser brukes rundt opplysninger om layout eller
-                    spesielle elementer på siden.</p>
-                <p> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert
-                    slik: >>> 1, >>> 2 osv., slik at du enkelt kan søke deg frem til dem.</p>
-                <p> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og
-                    innhold for hele boka finner du til slutt i denne filen.</p>
+                <p> -- {{}} Doble klammeparenteser brukes rundt opplysninger om layout eller spesielle elementer på siden.</p>
+                <p> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert slik: >>> 1, >>> 2 osv., slik at du enkelt kan søke deg frem til dem.</p>
+                <p> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og innhold for hele boka finner du til slutt i denne filen.</p>
             </section>
             <xsl:apply-templates select="* except section[f:types(.) = 'toc']"/>
            
