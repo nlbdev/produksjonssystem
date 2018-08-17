@@ -20,7 +20,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class HtmlToDtbook(Pipeline):
     uid = "html-to-dtbook"
     title = "HTML til DTBook"
-    labels = []
+    labels = ["Statped"]
     publication_format = "DTBook"
     expected_processing_time = 172
 

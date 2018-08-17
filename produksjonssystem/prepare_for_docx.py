@@ -20,7 +20,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class PrepareForDocx(Pipeline):
     uid = "prepare-for-docx"
     title = "Klargjør for DOCX"
-    labels = ["e-bok"]
+    labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 8
 

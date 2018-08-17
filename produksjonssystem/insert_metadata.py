@@ -12,7 +12,7 @@ class InsertMetadata(Pipeline):
     # Ikke instansier denne klassen; bruk heller InsertMetadataEpub osv.
     uid = "insert-metadata"
     title = "Sett inn metadata"
-    labels = ["Metadata"]
+    labels = ["Metadata", "Statped"]
     publication_format = None
     expected_processing_time = 30
 
@@ -85,7 +85,7 @@ class InsertMetadata(Pipeline):
 class InsertMetadataEpub(InsertMetadata):
     uid = "insert-metadata-epub"
     title = "Sett inn metadata for EPUB"
-    labels = ["EPUB", "Metadata"]
+    labels = ["EPUB", "Metadata", "Statped"]
     publication_format = "EPUB"
     expected_processing_time = 30
 
@@ -93,7 +93,7 @@ class InsertMetadataEpub(InsertMetadata):
 class InsertMetadataDaisy202(InsertMetadata):
     uid = "insert-metadata-daisy202"
     title = "Sett inn metadata for lydbok"
-    labels = ["Lydbok", "Innlesing", "Talesyntese", "Metadata"]
+    labels = ["Lydbok", "Innlesing", "Talesyntese", "Metadata", "Statped"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 30
 
@@ -101,7 +101,7 @@ class InsertMetadataDaisy202(InsertMetadata):
 class InsertMetadataXhtml(InsertMetadata):
     uid = "insert-metadata-xhtml"
     title = "Sett inn metadata for e-tekst"
-    labels = ["e-bok", "Metadata"]
+    labels = ["e-bok", "Metadata", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 30
 
@@ -109,7 +109,7 @@ class InsertMetadataXhtml(InsertMetadata):
 class InsertMetadataBraille(InsertMetadata):
     uid = "insert-metadata-braille"
     title = "Sett inn metadata for punktskrift"
-    labels = ["Punktskrift", "Metadata"]
+    labels = ["Punktskrift", "Metadata", "Statped"]
     publication_format = "Braille"
     expected_processing_time = 30
 

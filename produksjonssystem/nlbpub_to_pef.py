@@ -18,7 +18,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubToPef(Pipeline):
     uid = "nlbpub-to-pef"
     title = "NLBPUB til PEF"
-    labels = ["Punktskrift"]
+    labels = ["Punktskrift", "Statped"]
     publication_format = "Braille"
     expected_processing_time = 200
 

@@ -21,7 +21,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class IncomingNordic(Pipeline):
     uid = "incoming-nordic"
     title = "Validering av Nordisk EPUB 3"
-    labels = ["EPUB"]
+    labels = ["EPUB", "Statped"]
     publication_format = None
     expected_processing_time = 300
 

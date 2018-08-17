@@ -20,7 +20,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NLBpubToDocx(Pipeline):
     uid = "nlbpub-to-docx"
     title = "NLBPUB til DOCX"
-    labels = ["e-bok"]
+    labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 14
 
