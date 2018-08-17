@@ -92,7 +92,7 @@ class NlbpubPrevious(Pipeline):
                 file_path = os.path.join(path, file_name)
                 relative_path = file_path.replace(os.path.join(self.dir_out, epub.identifier()), "")
                 relative_path = relative_path.strip("/")
-                short_path = short_path_by_one(relative_path)
+                short_path = self.short_path_by_one(relative_path)
                 new_dict = {short_path: relative_path}
 
                 if short_path not in dictfiles:
@@ -140,7 +140,7 @@ class NlbpubPrevious(Pipeline):
 
         dirs = next(walk(temp_epubdir))[1]
         for dir in dirs:
-            del_empty_dirs(temp_epubdir, dir)
+            self.del_empty_dirs(temp_epubdir, dir)
 
         if file_added_again:
             with open(deleted_path, 'w') as deleted_file:
@@ -148,7 +148,7 @@ class NlbpubPrevious(Pipeline):
                     deleted_file.write("\n{}: {}".format(key, time_created))
 
         # Deleted file history saved to deleted files.yml
-        with open(deleted_path, append_write(deleted_path)) as deleted_file:
+        with open(deleted_path, self.append_write(deleted_path)) as deleted_file:
             for key in dictfiles:
                 if key not in new_file_list and key not in deleted_doc and key not in extra_files:
                     changes_made = True
@@ -157,7 +157,7 @@ class NlbpubPrevious(Pipeline):
                     deleted_file.write("\n{}: {}".format(key, time_created))
 
         # Changelog saved to changelog.txt
-        with open(changelog_path, append_write(changelog_path)) as changelog_file:
+        with open(changelog_path, self.append_write(changelog_path)) as changelog_file:
             changelog_file.write(changelog_string)
 
         deleted_doc = {}
@@ -193,34 +193,31 @@ class NlbpubPrevious(Pipeline):
             self.utils.report.should_email = False
         return True
 
-
-def del_empty_dirs(path, dir):
-            dir_path = os.path.join(path, dir)
+    def del_empty_dirs(self, path, dir):
+        dir_path = os.path.join(path, dir)
+        if len(os.listdir(dir_path)) == 0:
+            try:
+                os.rmdir(dir_path)
+            except Exception:
+                pass
+            return
+        subdirs = next(walk(dir_path))[1]
+        if subdirs:
+            for subdir in subdirs:
+                self.del_empty_dirs(dir_path, subdir)
             if len(os.listdir(dir_path)) == 0:
                 try:
                     os.rmdir(dir_path)
                 except Exception:
                     pass
-                return
-            subdirs = next(walk(dir_path))[1]
-            if subdirs:
-                for subdir in subdirs:
-                    del_empty_dirs(dir_path, subdir)
-                if len(os.listdir(dir_path)) == 0:
-                    try:
-                        os.rmdir(dir_path)
-                    except Exception:
-                        pass
 
-
-def append_write(path):
+    def append_write(self, path):
         if os.path.exists(path):
             return 'a'  # append if already exists
         else:
             return 'w'  # make a new file if not
 
-
-def short_path_by_one(path):
+    def short_path_by_one(self, path):
         file_loc = path.split('/')
         short_path = ""
         for sub in file_loc:
