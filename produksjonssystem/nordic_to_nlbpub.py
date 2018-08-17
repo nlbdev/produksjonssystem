@@ -142,6 +142,7 @@ class NordicToNlbpub(Pipeline):
                             error_text.startswith("[opf") or
                             error_text.startswith("[nordic_nav") or
                             error_text.startswith("[nordic_opf") or
+                            error_text.startswith("[nordic280]") or
                             "missing required attribute \"epub:prefix\"" in error_text or
                             "element \"title\" not allowed yet" in error_text or
                             "element \"style\" not allowed yet" in error_text or
@@ -216,6 +217,11 @@ class NordicToNlbpub(Pipeline):
                     for error in errors:
                         error_text = error.xpath('.//text()[normalize-space()]')[0]
                         error_text = " ".join(error_text.split()).strip() if bool(error_text) else error_text
+
+                        if (bool(error_text) and (
+                                error_text.startswith("[nordic280]")
+                                )):
+                            continue  # ignorer disse feilmeldingene
 
                         if error_text.startswith("Incorrect file signature"):
                             magic_number = error.xpath('*[@class="message-details"]/*[last()]/*[last()]/text()')[0]
