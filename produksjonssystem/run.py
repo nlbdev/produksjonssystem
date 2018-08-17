@@ -122,7 +122,13 @@ class Produksjonssystem():
                     "master": Config.get("master_dir"),
                     "metadata": Config.get("metadata_dir"),
                     "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
-                    #"nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
+                }
+            },
+            {
+                "id": "version-control",
+                "name": "Versjonskontroll",
+                "dirs": {
+                    "nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
                 }
             },
             {
@@ -185,8 +191,8 @@ class Produksjonssystem():
             [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
 
             # Grunnlagsfiler
+            [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
             [UpdateMetadata(),                                "metadata",            "nlbpub"],
-            # [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
             [HtmlToDtbook(),                                  "nlbpub",              "dtbook"],
 
             # EPUB
