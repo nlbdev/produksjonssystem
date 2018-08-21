@@ -112,12 +112,10 @@
         <title>Oversatte utgaver</title>
         
         <let name="is-translated" value="boolean(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
-                                               | //marcxchange:datafield[@tag='041' and @id1='1']
                                                | //marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
                                                | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
         
         <rule context="marcxchange:record[$identifier and $is-translated]">
-            <assert test="marcxchange:datafield[@tag='041']/@ind1 = '1' or starts-with($identifier,'5')">For oversatte utgaver må første indikator i *041 settes til "1" (med mindre boknummeret starter med "5").</assert>
             <assert test="exists(marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']) or starts-with($identifier,'5')">For oversatte utgaver må originalspråk være definert i *041$h (med mindre boknummeret starter med "5").</assert>
             <assert test="exists(marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']) or starts-with($identifier,'5')">For oversatte utgaver må originaltittel være definert i *574$a.</assert>
             <assert test="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text() = 'overs.'">For oversatte utgaver må det være definert en oversetter i *700 ($e må være "overs.").</assert>
