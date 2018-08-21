@@ -1253,6 +1253,10 @@
         <!--<xsl:message select="'NORMARC-felt ignorert: 590 LOKALE NOTER'"/>-->
     </xsl:template>
     
+    <xsl:template match="*:datafield[@tag='591']">
+        <!--<xsl:message select="'NORMARC-felt ignorert: 591 LOKALE NOTER'"/>-->
+    </xsl:template>
+    
     <xsl:template match="*:datafield[@tag='592']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="available" select="nlb:parseDate(text())"/>
@@ -1278,6 +1282,10 @@
                 </xsl:when>
             </xsl:choose>
         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="*:datafield[@tag='595']">
+        <!--<xsl:message select="'NORMARC-felt ignorert: 595 LOKALE NOTER'"/>-->
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='596']">
@@ -1351,6 +1359,10 @@
                 </xsl:if>
             </xsl:if>
         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="*:datafield[@tag='599']">
+        <!--<xsl:message select="'NORMARC-felt ignorert: 599 LOKALE NOTER'"/>-->
     </xsl:template>
     
     <!-- 6XX EMNEINNFØRSLER -->
