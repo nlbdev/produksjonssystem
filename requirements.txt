@@ -4,6 +4,6 @@ lxml==4.2.1
 Markdown==2.6.11
 psutil==5.4.3
 pydub==0.21.0
-PyYAML==3.12
+PyYAML==3.13
 requests==2.18.4
 slacker==0.9.60
