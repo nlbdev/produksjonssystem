@@ -973,8 +973,12 @@ class Metadata:
                 if file.endswith("html"):
                     html_files.append(os.path.join(root, file))
 
-        if os.path.isfile(os.path.join(path, "ncc.html")) or len(html_files):
+        if (os.path.isfile(os.path.join(path, "ncc.html")) or
+                os.path.isfile(os.path.join(path, "metadata.html")) or
+                len(html_files)):
             file = os.path.join(path, "ncc.html")
+            if not os.path.isfile(file):
+                file = os.path.join(path, "metadata.html")
             if not os.path.isfile(file):
                 file = os.path.join(path, os.path.basename(path) + ".xhtml")
             if not os.path.isfile(file):
@@ -985,10 +989,15 @@ class Metadata:
                 file = html_files[0]
 
             html = ElementTree.parse(file).getroot()
-            book_title = [e.text for e in html.xpath(
-                "/*/*[local-name()='head']/*[local-name()='title']")][0]
-            book_identifier = [e.attrib["content"] for e in html.xpath(
-                "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib][0]
+            head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
+            head = head[0] if head else None
+            if head is not None:
+                book_title = [e.text for e in head.xpath(
+                    "/*/*[local-name()='head']/*[local-name()='title']")]
+                book_title = book_title[0] if book_title else None
+                book_identifier = [e.attrib["content"] for e in head.xpath(
+                    "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]
+                book_identifier = book_identifier[0] if book_identifier else None
 
             if book_title:
                 book_metadata["title"] = book_title
