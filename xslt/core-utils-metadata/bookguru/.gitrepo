@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/nlbdev/bookguru.git
+	branch = master
+	commit = 05772e23a880c5a1897bfdb8578f344810cb14df
+	parent = fcf41dad05302a8b04563872836e2890c7cea24a
+	cmdver = 0.3.1
