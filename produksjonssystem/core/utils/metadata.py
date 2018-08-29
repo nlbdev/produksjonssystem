@@ -323,7 +323,7 @@ class Metadata:
         if not success:
             return False
         xslt = Xslt(pipeline,
-                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-record-to-rdf.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
                     source=os.path.join(metadata_dir, 'quickbase/record.xml'),
                     target=os.path.join(metadata_dir, 'quickbase/record.html'),
                     parameters={
@@ -385,7 +385,7 @@ class Metadata:
             if not success:
                 return False
             xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-isbn-to-rdf.xsl"),
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
                         source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'),
                         target=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'),
                         parameters={
@@ -772,7 +772,7 @@ class Metadata:
         #     38: Tilvekstnummer ekstern produksjon
 
         xslt = Xslt(pipeline,
-                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-get.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-get.xsl"),
                     source=Metadata.sources["quickbase"]["records"],
                     target=target,
                     parameters={"book-id-rows": str.join(" ", Metadata.quickbase_record_id_rows), "book-id": book_id})
@@ -786,7 +786,7 @@ class Metadata:
         #     7: "Tilvekstnummer"
 
         xslt = Xslt(pipeline,
-                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "quickbase-get.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-get.xsl"),
                     source=Metadata.sources["quickbase"]["isbn"],
                     target=target,
                     parameters={"book-id-rows": str.join(" ", Metadata.quickbase_isbn_id_rows), "book-id": book_id})
