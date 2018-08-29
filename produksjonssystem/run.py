@@ -21,8 +21,8 @@ from epub_to_dtbook_braille import EpubToDtbookBraille
 from epub_to_dtbook_html import EpubToDtbookHTML
 from html_to_dtbook import HtmlToDtbook
 from incoming_nordic import IncomingNordic
-from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
-                             InsertMetadataXhtml)
+from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202, InsertMetadataXhtml)
+from incoming_NLBPUB import (NLBPUB_incoming_warning, NLBPUB_incoming_validator, NLBPUB_validator)
 from make_abstracts import Audio_Abstract
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
@@ -93,6 +93,8 @@ class Produksjonssystem():
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
+        Config.set("master_nlb_dir", os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB"))
+        Config.set("nlbpub_manuell", os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
@@ -103,6 +105,7 @@ class Produksjonssystem():
                 "name": "Mottak",
                 "dirs": {
                     "incoming": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
+                    "incoming_NLBPUB": os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
                 }
             },
             {
@@ -121,6 +124,8 @@ class Produksjonssystem():
                 "dirs": {
                     "master": Config.get("master_dir"),
                     "metadata": Config.get("metadata_dir"),
+                    "grunnlag": Config.get("master_nlb_dir"),
+                    "nlbpub_manuell": Config.get("nlbpub_manuell"),
                     "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
                 }
             },
@@ -187,6 +192,11 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Mottak, nordic guidelines 2015-1
+            [NLBPUB_incoming_validator(retry_all=True),                  "incoming_NLBPUB",     "grunnlag"],
+            [NLBPUB_incoming_warning(retry_all=True),               "incoming_NLBPUB",     "nlbpub_manuell"],
+            [DummyPipeline("Manuell sjekk av NLBPUB",
+                           labels=["EPUB"]),                 "nlbpub_manuell",       "grunnlag"],
+            #[NLBPUB_validator(),                              "grunnlag",            "nlbpub"],
             [IncomingNordic(retry_all=True),                  "incoming",            "master"],
             [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
 
@@ -298,8 +308,8 @@ class Produksjonssystem():
             os.makedirs(self.dirs[d], exist_ok=True)
 
         threads = []
-        file_name=os.environ.get("CONFIG_FILE")
-        self.emailDoc=""
+        file_name = os.environ.get("CONFIG_FILE")
+        self.emailDoc = ""
         with open(file_name, 'r') as f:
                 try:
                     self.emailDoc = yaml.load(f)
@@ -328,6 +338,7 @@ class Produksjonssystem():
                     elif isinstance(recipient, dict):
                         for key in recipient:
                             pipeline_config[key] = recipient[key]
+
             thread = Thread(target=pipeline[0].run, name=pipeline[0].uid,
                             args=(10,
                                   self.dirs[pipeline[1]] if pipeline[1] else None,
@@ -337,6 +348,7 @@ class Produksjonssystem():
                                   self.book_archive_dirs,
                                   pipeline_config
                                   ))
+
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
