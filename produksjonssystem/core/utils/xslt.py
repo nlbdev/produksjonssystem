@@ -14,6 +14,7 @@ class Xslt():
     # treat as class variables
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../..", "xslt"))
     saxon_jar = None
+    jing_jar = None
     _i18n = {
         "The XSLT": "XSLTen",
         "took too long time and was therefore stopped.": "tok for lang tid og ble derfor stoppet.",
@@ -26,7 +27,8 @@ class Xslt():
             for file in fileList:
                 if file.endswith(".jar") and "saxon-he" in file:
                     Xslt.saxon_jar = os.path.join(dirPath, file)
-                    break
+                elif file.endswith(".jar") and "jing" in file:
+                    Xslt.jing_jar = os.path.join(dirPath, file)
 
     def __init__(self,
                  pipeline=None,
