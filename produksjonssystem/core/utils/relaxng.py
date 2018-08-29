@@ -26,7 +26,6 @@ class Relaxng():
             cwd = report.pipeline.dir_in
 
         self.success = False
-        print(Xslt.jing_jar)
         if not(Xslt.jing_jar is None):
             process = pipeline.utils.filesystem.run(["java", "-jar", Xslt.jing_jar, "-t", relaxng, source])
 
