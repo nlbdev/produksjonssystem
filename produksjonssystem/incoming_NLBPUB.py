@@ -5,12 +5,14 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import traceback
 
 from core.pipeline import Pipeline
-from core.utils.compare_with_reference import CompareWithReference
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
+from core.utils.schematron import Schematron
+from core.utils.relaxng import Relaxng
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -19,7 +21,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 
 class IncomingNLBPUB(Pipeline):
-    uid = "incoming-nordic"
+    uid = "incoming-NLBPUB"
     title = "Mottakskontroll NLBPUB"
     labels = ["EPUB"]
     publication_format = None
@@ -70,96 +72,69 @@ class IncomingNLBPUB(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
-        self.utils.report.info("Validerer EPUB med epubcheck og nordiske retningslinjer...")
-        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": epub.asFile()}) as dp2_job:
+        self.utils.report.info("Lager kopi av EPUB...")
+        nordic_epubdir_obj = tempfile.TemporaryDirectory()
+        nordic_epubdir = nordic_epubdir_obj.name
+        self.utils.filesystem.copy(epub.asDir(), nordic_epubdir)
+        nordic_epub = Epub(self, nordic_epubdir)
 
-            # get validation report
-            report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
-            if os.path.isfile(report_file):
-                with open(report_file, 'r') as result_report:
-                    self.utils.report.attachment(result_report.readlines(),
-                                                 os.path.join(self.utils.report.reportDir(), "report.html"),
-                                                 "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+        html_file = os.path.join(nordic_epubdir, "EPUB", nordic_epub.identifier() + ".xhtml")
+        nav_file = os.path.join(nordic_epubdir, "EPUB", "nav" + ".xhtml")
+        package_file = os.path.join(nordic_epubdir, "EPUB", "package" + ".opf")
+        nlbpub_files = [html_file, nav_file, package_file]
 
-            if dp2_job.status != "DONE":
-                self.utils.report.error("Klarte ikke å validere boken")
-                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                return
+        for file in nlbpub_files:
+            if not os.path.isfile(file):
+                self.utils.report.error(file + " Not found. This is not a valid NLBPUB")
 
-        try:
-            self.utils.report.info("Genererer ACE-rapport...")
-            ace_dir = os.path.join(self.utils.report.reportDir(), "accessibility-report")
-            process = self.utils.filesystem.run([IncomingNLBPUB.ace_cli, "-o", ace_dir, epub.asFile()])
-            if process.returncode == 0:
-                self.utils.report.info("ACE-rapporten ble generert.")
-            else:
-                self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
-                self.utils.report.debug(traceback.format_stack())
+        self.utils.report.info("Validerer NLBPUB")
+        schematron_files = ["nordic2015-1.sch", "nordic2015-1.nav-references.sch", "nordic2015-1.opf.sch"]
+        rng_files = "nordic-html5.rng"
+        html_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[0]), source=html_file)
+        nav_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[1]), source=nav_file)
+        opf_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[2]), source=package_file)
+        schematron_list = [html_sch, nav_sch, opf_sch]
+        html_relax = Relaxng(self, relaxng=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", rng_files), source=html_file)
 
-            # attach report
-            ace_status = None
-            with open(os.path.join(ace_dir, "report.json")) as json_report:
-                ace_status = json.load(json_report)["earl:result"]["earl:outcome"]
-            if ace_status == "pass":
-                ace_status = "SUCCESS"
-            else:
-                ace_status = "WARN"
-            self.utils.report.attachment(None, os.path.join(ace_dir, "report.html"), ace_status)
+        for i in range(0, len(schematron_list)):
+            if not schematron_list[i].success:
+                self.utils.report.error("Validering av NLBPUB feilet etter schematron: " + schematron_files[i])
+                # return False
+        if not html_relax.success:
+            self.utils.report.error("Validering av NLBPUB feilet etter RELAXNG: " + rng_files)
+            # return False
 
-        except subprocess.TimeoutExpired:
-            self.utils.report.warn("Det tok for lang tid å lage ACE-rapporten for " + epub.identifier() + ", og prosessen ble derfor stoppet.")
+        self.utils.report.info("Boken er valid.")
 
-        except Exception:
-            self.utils.report.warn("En feil oppstod ved produksjon av ACE-rapporten for " + epub.identifier())
-            self.utils.report.debug(traceback.format_exc(), preformatted=True)
-
-        spine = epub.spine()
-        try:
-            self.utils.report.info("Sammenligner innholdet med referansefilen")
-            html_paths = []
-            for item in spine:
-                html_paths.append(os.path.join(epub.asDir(), os.path.dirname(epub.opf_path()), item["href"]))
-
-            reference = CompareWithReference(pipeline=self,
-                                             reference=os.path.join(Xslt.xslt_dir, IncomingNLBPUB.uid, "reference-files", "nordic.xhtml"),
-                                             source=html_paths)
-
-            if not reference.success:
-                self.utils.report.warn("Validering av HTML i henhold til referansefil feilet")
-
-        except Exception:
-            self.utils.report.warn("En feil oppstod ved produksjon av referansefil-rapporten for " + epub.identifier())
-            self.utils.report.debug(traceback.format_exc(), preformatted=True)
-
-        self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
-
-        if not self.skip_warning:
+        if self.skip_warning:
 
             # TODO Sjekk for advarsel ved bruk av schematron eller noe sånt, return true hvis advarsel false otherwise
 
             if self.warning:
-                if self.uid == "NLBPUB-validator-yellow":
-                    archived_path = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
+                if self.uid == "NLBPUB-incoming-warning":
+                    archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
                     self.utils.report.attachment(None, archived_path, "DEBUG")
                     self.utils.report.success(epub.identifier()+" ble lagt til for manuell sjekk.")
-                    self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
-                    return True
-                else:
+                    self.utils.report.title = self.title + ": " + epub.identifier() + " er valid, men må sjekkes manuelt 👍😄" + epubTitle
                     return True
 
             else:
-                archived_path = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
-                self.utils.report.attachment(None, archived_path, "DEBUG")
-                self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
-                self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
-                self.utils.filesystem.deleteSource()
-                return True
+                if self.uid == "NLBPUB-incoming-validator":
+                    archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
+                    self.utils.report.attachment(None, archived_path, "DEBUG")
+                    self.utils.report.success(epub.identifier()+" ble lagt til i grunnlagsfil-arkivet.")
+                    self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
+                    # self.utils.filesystem.deleteSource()
+                    return True
+                else:
+                    self.utils.report.info(epub.identifier() + " er valid og har ingen advarsler.")
+                    self.utils.report.should_email = False
+                    return True
 
-        archived_path = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
+        archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
-        self.utils.filesystem.deleteSource()
         return True
 
 
