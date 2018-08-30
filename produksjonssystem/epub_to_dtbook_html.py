@@ -61,9 +61,10 @@ class EpubToDtbookHTML(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        if not Metadata.should_produce(self, epub, "XHTML"):
+        should_produce, metadata_valid = Metadata.should_produce(self, epub, "XHTML")
+        if not should_produce:
             self.utils.report.info("{} skal ikke produseres som e-bok. Avbryter.".format(epub.identifier()))
-            return True
+            return metadata_valid
 
         self.utils.report.info("Lager kopi av EPUB...")
         nordic_epubdir_obj = tempfile.TemporaryDirectory()

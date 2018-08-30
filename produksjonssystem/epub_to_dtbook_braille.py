@@ -61,9 +61,10 @@ class EpubToDtbookBraille(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        if not Metadata.should_produce(self, epub, "Braille"):
+        should_produce, metadata_valid = Metadata.should_produce(self, epub, "Braille")
+        if not should_produce:
             self.utils.report.info("{} skal ikke produseres som punktskrift. Avbryter.".format(epub.identifier()))
-            return True
+            return metadata_valid
 
         self.utils.report.info("Lager kopi av EPUB...")
         nordic_epubdir_obj = tempfile.TemporaryDirectory()

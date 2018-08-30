@@ -887,18 +887,18 @@ class Metadata:
             library = epub.meta("schema:library")
             if library is None or library.lower() != "statped":
                 pipeline.utils.report.warn("Klarte ikke å hente metadata: {}".format(epub.identifier()))
-                return False
+                return False, False
 
         library = epub.meta("schema:library")
         if library is not None and library.lower() == "statped":
             pipeline.utils.report.info("Alle Statped-bøker skal produseres i alle formater")
-            return True
+            return True, True
 
         metadata_dir = os.path.join(Metadata.get_metadata_dir(), epub.identifier())
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
         if not os.path.isfile(rdf_path):
-            pipeline.utils.report.debug("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
-            return False
+            pipeline.utils.report.warn("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
+            return False, False
 
         rdf = ElementTree.parse(rdf_path).getroot()
         metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
@@ -915,7 +915,7 @@ class Metadata:
         if not exists_in_quickbase and exists_in_bibliofil:
             pipeline.utils.report.info("{} finnes i Bibliofil men ikke i Quickbase. Antar at den skal produseres som {}."
                                        .format(epub.identifier(), publication_format))
-            return True
+            return True, True
 
         result = False
         if publication_format == "Braille":
@@ -954,12 +954,12 @@ class Metadata:
 
         elif publication_format == "EPUB":
             production_formats = []
-            return True
+            return True, True
 
         else:
             production_formats = []
             pipeline.utils.report.warn("Ukjent format: {}. {} blir ikke produsert.".format(publication_format, epub.identifier()))
-            return False
+            return False, False
 
         if production_formats:
             if result is True:
@@ -981,7 +981,7 @@ class Metadata:
                 pipeline.utils.report.info("<p><strong>Merk at det kan ta opptil en time fra du huker av i BookGuru, " +
                                            "til produksjonssystemet ser at det har blitt huket av.</strong></p>")
 
-        return result
+        return result, True
 
     @staticmethod
     def get_metadata_from_book(pipeline, path):
