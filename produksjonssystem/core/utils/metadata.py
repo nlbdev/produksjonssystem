@@ -876,7 +876,14 @@ class Metadata:
 
     @staticmethod
     def should_produce(pipeline, epub, publication_format):
-        if not Metadata.update(pipeline, epub, publication_format=publication_format, insert=False):
+        force_metadata_update = False
+        if pipeline.book and pipeline.book["events"] and "triggered" in pipeline.book["events"]:
+            # Hvis steget ble trigget manuelt: sørg for at metadataen er oppdatert
+            # Merk at metadataen fortsatt kan være utdatert avhengig av hvordan den hentesself.
+            # For eksempel så hentes Quickbase-metadata via en cron-jobb én gang i timen.
+            force_metadata_update = True
+
+        if not Metadata.update(pipeline, epub, publication_format=publication_format, insert=False, force_update=force_metadata_update):
             library = epub.meta("schema:library")
             if library is None or library.lower() != "statped":
                 pipeline.utils.report.warn("Klarte ikke å hente metadata: {}".format(epub.identifier()))
@@ -894,10 +901,9 @@ class Metadata:
             return False
 
         rdf = ElementTree.parse(rdf_path).getroot()
-        production_formats = rdf.xpath("//nlbprod:*[starts-with(local-name(),'format')]", namespaces=rdf.nsmap)
+        metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
+        production_formats = [meta for meta in metadata if meta["property"].startswith("nlbprod:format")]
         exists_in_quickbase = bool(production_formats)
-        production_formats = [f.xpath("local-name()") for f in production_formats
-                              if (f.text == "true" or "{http://schema.org/}name" in f.attrib and f.attrib["{http://schema.org/}name"] == "true")]
 
         exists_in_bibliofil = False
         for i in rdf.xpath("//dc:identifier", namespaces=rdf.nsmap):
@@ -911,45 +917,71 @@ class Metadata:
                                        .format(epub.identifier(), publication_format))
             return True
 
+        result = False
         if publication_format == "Braille":
-            if [f for f in production_formats if f in [
-                "formatBraille",                   # Punktskrift
-                "formatBrailleClub",               # Punktklubb
-                "formatBraillePartialProduction",  # Punktskrift delproduksjon
-                "formatNotes",                     # Noter
-                "formatTactilePrint",              # Taktil trykk
-            ]]:
-                return True
+            production_formats = [f for f in production_formats if f["property"] in [
+                "nlbprod:formatBraille",                   # Punktskrift
+                "nlbprod:formatBrailleClub",               # Punktklubb
+                "nlbprod:formatBraillePartialProduction",  # Punktskrift delproduksjon
+                "nlbprod:formatNotes",                     # Noter
+                "nlbprod:formatTactilePrint",              # Taktil trykk
+            ]]
+            if "true" in [f["value"] for f in production_formats]:
+                result = True
 
         elif publication_format == "DAISY 2.02":
-            if [f for f in production_formats if f in [
-                "formatDaisy202narrated",              # DAISY 2.02 Innlest Skjønn
-                "formatDaisy202narratedFulltext",      # DAISY 2.02 Innlest fulltekst
-                "formatDaisy202narratedStudent",       # DAISY 2.02 Innlest Studie
-                "formatDaisy202tts",                   # DAISY 2.02 TTS Skjønn
-                "formatDaisy202ttsStudent",            # DAISY 2.02 TTS Studie
-                "formatDaisy202wips",                  # DAISY 2.02 WIPS
-                "formatAudioCDMP3ExternalProduction",  # Audio CD MP3 ekstern produksjon
-                "formatAudioCDWAVExternalProduction",  # Audio CD WAV ekstern produksjon
-                "formatDaisy202externalProduction",    # DAISY 2.02 ekstern produksjon
-            ]]:
-                return True
+            production_formats = [f for f in production_formats if f["property"] in [
+                "nlbprod:formatDaisy202narrated",              # DAISY 2.02 Innlest Skjønn
+                "nlbprod:formatDaisy202narratedFulltext",      # DAISY 2.02 Innlest fulltekst
+                "nlbprod:formatDaisy202narratedStudent",       # DAISY 2.02 Innlest Studie
+                "nlbprod:formatDaisy202tts",                   # DAISY 2.02 TTS Skjønn
+                "nlbprod:formatDaisy202ttsStudent",            # DAISY 2.02 TTS Studie
+                "nlbprod:formatDaisy202wips",                  # DAISY 2.02 WIPS
+                "nlbprod:formatAudioCDMP3ExternalProduction",  # Audio CD MP3 ekstern produksjon
+                "nlbprod:formatAudioCDWAVExternalProduction",  # Audio CD WAV ekstern produksjon
+                "nlbprod:formatDaisy202externalProduction",    # DAISY 2.02 ekstern produksjon
+            ]]
+            if "true" in [f["value"] for f in production_formats]:
+                result = True
 
         elif publication_format == "XHTML":
-            if [f for f in production_formats if f in [
-                "formatEbook",                    # E-bok
-                "formatEbookExternalProduction",  # E-bok ekstern produksjon
-            ]]:
-                return True
+            production_formats = [f for f in production_formats if f["property"] in [
+                "nlbprod:formatEbook",                    # E-bok
+                "nlbprod:formatEbookExternalProduction",  # E-bok ekstern produksjon
+            ]]
+            if "true" in [f["value"] for f in production_formats]:
+                result = True
 
         elif publication_format == "EPUB":
+            production_formats = []
             return True
 
         else:
+            production_formats = []
             pipeline.utils.report.warn("Ukjent format: {}. {} blir ikke produsert.".format(publication_format, epub.identifier()))
             return False
 
-        return False
+        if production_formats:
+            if result is True:
+                pipeline.utils.report.info(
+                    "<p><strong>{} skal produseres som {} fordi følgende felter er huket av i BookGuru:</strong></p>".format(
+                        epub.identifier(), publication_format))
+                production_formats = [f for f in production_formats if f["value"] == "true"]
+            else:
+                pipeline.utils.report.info(
+                    "<p><strong>{} skal ikke produseres som {} fordi følgende felter ikke er huket av i BookGuru:</strong></p>".format(
+                        epub.identifier(), publication_format))
+
+            pipeline.utils.report.info("<ul>")
+            for f in production_formats:
+                pipeline.utils.report.info("<li>{}</li>".format(f["source"]))
+            pipeline.utils.report.info("</ul>")
+
+            if result is False:
+                pipeline.utils.report.info("<p><strong>Merk at det kan ta opptil en time fra du huker av i BookGuru, " +
+                                           "til produksjonssystemet ser at det har blitt huket av.</strong></p>")
+
+        return result
 
     @staticmethod
     def get_metadata_from_book(pipeline, path):
@@ -1005,3 +1037,47 @@ class Metadata:
                 book_metadata["identifier"] = book_identifier
 
         return book_metadata
+
+    @staticmethod
+    def get_cached_rdf_metadata(epub_identifier):
+        metadata = []
+
+        rdf_file = os.path.join(Metadata.get_metadata_dir(), epub_identifier, "metadata.rdf")
+        if not os.path.isfile(rdf_file):
+            return metadata
+
+        rdf = ElementTree.parse(rdf_file).getroot()
+        creativeWork = rdf.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']", namespaces=rdf.nsmap)
+        publications = rdf.xpath("/rdf:RDF/rdf:Description[dc:identifier]", namespaces=rdf.nsmap)
+        if creativeWork:
+            for meta in list(creativeWork[0]):
+                property = meta.xpath("name()")
+                if property == "rdf:type":
+                    continue
+                value = meta.xpath("@schema:name", namespaces=meta.nsmap) + meta.xpath("text()[1]")
+                value = value[0] if value else ""
+                metadata.append({
+                    "property": property,
+                    "value": value,
+                    "publication": None,
+                    "source": meta.xpath("string(@nlb:metadata-source)", namespaces=meta.nsmap)
+                })
+        for publication in publications:
+            identifier = publication.xpath("dc:identifier[1]/@schema:name", namespaces=publication.nsmap) + publication.xpath("dc:identifier[1]/text()[1]",
+                                                                                                                              namespaces=publication.nsmap)
+            identifier = identifier[0] if identifier else None
+            if identifier:
+                for meta in list(publication):
+                    property = meta.xpath("name()")
+                    if property == "rdf:type":
+                        continue
+                    value = meta.xpath("@schema:name", namespaces=meta.nsmap) + meta.xpath("text()[1]")
+                    value = value[0] if value else ""
+                    metadata.append({
+                        "property": property,
+                        "value": value,
+                        "publication": identifier,
+                        "source": meta.xpath("string(@nlb:metadata-source)", namespaces=meta.nsmap)
+                    })
+
+        return metadata
