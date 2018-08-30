@@ -53,7 +53,6 @@ class InsertMetadata(Pipeline):
 
         if not Metadata.should_produce(self, epub, self.publication_format):
             self.utils.report.info("{} skal ikke produseres som {}. Avbryter.".format(epub.identifier(), self.publication_format))
-            self.utils.report.should_email = False
             return True
 
         self.utils.report.info("Lager en kopi av EPUBen")

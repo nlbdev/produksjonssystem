@@ -63,7 +63,6 @@ class EpubToDtbookBraille(Pipeline):
 
         if not Metadata.should_produce(self, epub, "Braille"):
             self.utils.report.info("{} skal ikke produseres som punktskrift. Avbryter.".format(epub.identifier()))
-            self.utils.report.should_email = False
             return True
 
         self.utils.report.info("Lager kopi av EPUB...")

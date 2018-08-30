@@ -63,7 +63,6 @@ class EpubToDtbookHTML(Pipeline):
 
         if not Metadata.should_produce(self, epub, "XHTML"):
             self.utils.report.info("{} skal ikke produseres som e-bok. Avbryter.".format(epub.identifier()))
-            self.utils.report.should_email = False
             return True
 
         self.utils.report.info("Lager kopi av EPUB...")
