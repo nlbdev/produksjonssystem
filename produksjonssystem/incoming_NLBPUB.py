@@ -27,6 +27,7 @@ class IncomingNLBPUB(Pipeline):
     publication_format = None
     expected_processing_time = 300
     warning = False
+    should_email_default = True
 
     ace_cli = None
 
@@ -72,6 +73,7 @@ class IncomingNLBPUB(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
+        self.utils.report.should_email = self.should_email_default
         self.utils.report.info("Lager kopi av EPUB...")
         nordic_epubdir_obj = tempfile.TemporaryDirectory()
         nordic_epubdir = nordic_epubdir_obj.name
@@ -99,14 +101,14 @@ class IncomingNLBPUB(Pipeline):
         for i in range(0, len(schematron_list)):
             if not schematron_list[i].success:
                 self.utils.report.error("Validering av NLBPUB feilet etter schematron: " + schematron_files[i])
-                # return False
+                return False
         if not html_relax.success:
             self.utils.report.error("Validering av NLBPUB feilet etter RELAXNG: " + rng_files)
-            # return False
+            return False
 
         self.utils.report.info("Boken er valid.")
 
-        if self.skip_warning:
+        if not self.skip_warning:
 
             # TODO Sjekk for advarsel ved bruk av schematron eller noe sånt, return true hvis advarsel false otherwise
 
@@ -116,19 +118,21 @@ class IncomingNLBPUB(Pipeline):
                     self.utils.report.attachment(None, archived_path, "DEBUG")
                     self.utils.report.success(epub.identifier()+" ble lagt til for manuell sjekk.")
                     self.utils.report.title = self.title + ": " + epub.identifier() + " er valid, men må sjekkes manuelt 👍😄" + epubTitle
+                    self.utils.report.should_email = True
                     return True
-
+                else:
+                    self.utils.report.should_email = False
+                    return True
             else:
                 if self.uid == "NLBPUB-incoming-validator":
                     archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
                     self.utils.report.attachment(None, archived_path, "DEBUG")
                     self.utils.report.success(epub.identifier()+" ble lagt til i grunnlagsfil-arkivet.")
                     self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
-                    # self.utils.filesystem.deleteSource()
+                    self.utils.filesystem.deleteSource()
                     return True
                 else:
                     self.utils.report.info(epub.identifier() + " er valid og har ingen advarsler.")
-                    self.utils.report.should_email = False
                     return True
 
         archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
@@ -145,6 +149,7 @@ class NLBPUB_validator(IncomingNLBPUB):
     publication_format = "None"
     skip_warning = True
     expected_processing_time = 300
+    should_email_default = True
 
 
 class NLBPUB_incoming_validator(IncomingNLBPUB):
@@ -154,6 +159,7 @@ class NLBPUB_incoming_validator(IncomingNLBPUB):
     publication_format = "None"
     skip_warning = False
     expected_processing_time = 300
+    should_email_default = True
 
 
 class NLBPUB_incoming_warning(IncomingNLBPUB):
@@ -163,3 +169,4 @@ class NLBPUB_incoming_warning(IncomingNLBPUB):
     publication_format = "None"
     skip_warning = False
     expected_processing_time = 300
+    should_email_default = True
