@@ -422,6 +422,24 @@ class Metadata:
         if not xslt.success:
             return False
 
+        # ========== Enrich dc:language information ==========
+
+        temp_rdf_file_obj = tempfile.NamedTemporaryFile()
+        temp_rdf_file = temp_rdf_file_obj.name
+
+        pipeline.utils.report.debug("iso-639.xsl")
+        pipeline.utils.report.debug("    source    = " + rdf_metadata)
+        pipeline.utils.report.debug("    target       = " + temp_rdf_file)
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc", "iso-639.xsl"),
+                    source=rdf_metadata,
+                    target=temp_rdf_file)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_rdf_file, rdf_metadata)
+
+        # ========== Convert to OPF ==========
+
         xslt_success = True
         for f in opf_metadata:
             pipeline.utils.report.debug("rdf-to-opf.xsl")
