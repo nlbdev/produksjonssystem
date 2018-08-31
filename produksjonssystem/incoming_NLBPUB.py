@@ -169,4 +169,4 @@ class NLBPUB_incoming_warning(IncomingNLBPUB):
     publication_format = "None"
     skip_warning = False
     expected_processing_time = 300
-    should_email_default = True
+    should_email_default = False
