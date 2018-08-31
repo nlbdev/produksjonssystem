@@ -1302,7 +1302,9 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.location.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='c']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
+                <xsl:if test="string(number($issued-year)) != 'NaN'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued.original'"/><xsl:with-param name="value" select="string($issued-year)"/></xsl:call-template>
+                </xsl:if>
             </xsl:for-each>
             <xsl:choose>
                 <xsl:when test="count(*:subfield[@code='d']) = 0">
@@ -1316,7 +1318,7 @@
             </xsl:choose>
             <xsl:for-each select="*:subfield[@code='e']">
                 <xsl:choose>
-                    <xsl:when test="matches(text(),'^\s*\d+\s*s?[\.\s]*$')">
+                    <xsl:when test="matches(text(),'^\s*\d+\s*s?[\.\s]*$') and string-length(replace(text(),'[^\d]','')) lt 10">
                         <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.pages.original'"/><xsl:with-param name="value" select="replace(text(),'[^\d]','')"/></xsl:call-template>
                     </xsl:when>
                     <xsl:otherwise>

@@ -87,4 +87,83 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="All titles should belong to the creative work">
+        <x:context>
+            <opf:metadata>
+                <dc:title content="dc:title"/>
+                <meta name="dc:title.original" content="dc:title.original"/>
+                <meta name="dc:title.subTitle" content="dc:title.subTitle"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:title>dc:title</dc:title>
+                    <dc:title.original>dc:title.original</dc:title.original>
+                    <dc:title.subTitle>dc:title.subTitle</dc:title.subTitle>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Narration is linked to the publication, all other contributions are linked to the creative work (i.e. the source file)">
+        <x:context>
+            <opf:metadata>
+                <dc:creator content="dc:creator"/>
+                <meta name="dc:contributor.translator" content="dc:contributor.translator"/>
+                <meta name="dc:contributor.narrator" content="dc:contributor.narrator"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:creator>dc:creator</dc:creator>
+                    <dc:contributor.translator>dc:contributor.translator</dc:contributor.translator>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                    <dc:contributor.narrator>dc:contributor.narrator</dc:contributor.narrator>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Genre and subject should belong to creative work">
+        <x:context>
+            <opf:metadata>
+                <dc:type content="dc:type"/>
+                <meta name="dc:type.genre" content="dc:type.genre"/>
+                <meta name="dc:type.other" content="dc:type.other"/>
+                
+                <dc:subject content="dc:subject"/>
+                <meta name="dc:subject.keyword" content="dc:subject.keyword"/>
+                <meta name="dc:subject.other" content="dc:subject.other"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:type.genre>dc:type.genre</dc:type.genre>
+                    <dc:subject>dc:subject</dc:subject>
+                    <dc:subject.keyword>dc:subject.keyword</dc:subject.keyword>
+                    <dc:subject.other>dc:subject.other</dc:subject.other>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                    <dc:type>dc:type</dc:type>
+                    <dc:type.other>dc:type.other</dc:type.other>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

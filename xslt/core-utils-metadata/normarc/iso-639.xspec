@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:opf="http://www.idpf.org/2007/opf"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:schema="http://schema.org/"
+               stylesheet="iso-639.xsl">
+    
+    <x:scenario label="Språknavn (RDF)">
+        <x:context>
+            <rdf:Description>
+                <dc:language>nob</dc:language>
+                <dc:language>eng</dc:language>
+                <dc:language schema:name="swe"/>
+            </rdf:Description>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:Description>
+                <dc:language schema:name="nb">
+                    <dc:language.name.english>Norwegian Bokmål</dc:language.name.english>
+                    <dc:language.name.native>Norsk Bokmål</dc:language.name.native>
+                    <dc:language.name.norwegian>Bokmål</dc:language.name.norwegian>
+                </dc:language>
+                <dc:language schema:name="en">
+                    <dc:language.name.english>English</dc:language.name.english>
+                    <dc:language.name.native>English</dc:language.name.native>
+                    <dc:language.name.norwegian>Engelsk</dc:language.name.norwegian>
+                </dc:language>
+                <dc:language schema:name="sv">
+                    <dc:language.name.english>Swedish</dc:language.name.english>
+                    <dc:language.name.native>Svenska</dc:language.name.native>
+                    <dc:language.name.norwegian>Svensk</dc:language.name.norwegian>
+                </dc:language>
+            </rdf:Description>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Språknavn (OPF)">
+        <x:context>
+            <opf:metadata>
+                <dc:language id="language-008-1">nob</dc:language>
+                <dc:language>eng</dc:language>
+                <dc:language id="language-041-2">swe</dc:language>
+            </opf:metadata>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <opf:metadata>
+                <dc:language id="language-008-1">nb</dc:language>
+                <opf:meta property="dc:language.name.english" refines="#language-008-1">Norwegian Bokmål</opf:meta>
+                <opf:meta property="dc:language.name.native" refines="#language-008-1">Norsk Bokmål</opf:meta>
+                <opf:meta property="dc:language.name.norwegian" refines="#language-008-1">Bokmål</opf:meta>
+                <dc:language id="language-2">en</dc:language>
+                <opf:meta property="dc:language.name.english" refines="#language-2">English</opf:meta>
+                <opf:meta property="dc:language.name.native" refines="#language-2">English</opf:meta>
+                <opf:meta property="dc:language.name.norwegian" refines="#language-2">Engelsk</opf:meta>
+                <dc:language id="language-041-2">sv</dc:language>
+                <opf:meta property="dc:language.name.english" refines="#language-041-2">Swedish</opf:meta>
+                <opf:meta property="dc:language.name.native" refines="#language-041-2">Svenska</opf:meta>
+                <opf:meta property="dc:language.name.norwegian" refines="#language-041-2">Svensk</opf:meta>
+            </opf:metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Språknavn (RDF) - two letter input">
+        <x:context>
+            <rdf:Description>
+                <dc:language>nb</dc:language>
+                <dc:language>en</dc:language>
+                <dc:language schema:name="sv"/>
+            </rdf:Description>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:Description>
+                <dc:language schema:name="nb">
+                    <dc:language.name.english>Norwegian Bokmål</dc:language.name.english>
+                    <dc:language.name.native>Norsk Bokmål</dc:language.name.native>
+                    <dc:language.name.norwegian>Bokmål</dc:language.name.norwegian>
+                </dc:language>
+                <dc:language schema:name="en">
+                    <dc:language.name.english>English</dc:language.name.english>
+                    <dc:language.name.native>English</dc:language.name.native>
+                    <dc:language.name.norwegian>Engelsk</dc:language.name.norwegian>
+                </dc:language>
+                <dc:language schema:name="sv">
+                    <dc:language.name.english>Swedish</dc:language.name.english>
+                    <dc:language.name.native>Svenska</dc:language.name.native>
+                    <dc:language.name.norwegian>Svensk</dc:language.name.norwegian>
+                </dc:language>
+            </rdf:Description>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Språknavn (RDF) - two letter input with culture">
+        <x:context>
+            <rdf:Description>
+                <dc:language>nb-NO</dc:language>
+                <dc:language schema:name="en-GB"/>
+            </rdf:Description>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:Description>
+                <dc:language schema:name="nb">
+                    <dc:language.name.english>Norwegian Bokmål</dc:language.name.english>
+                    <dc:language.name.native>Norsk Bokmål</dc:language.name.native>
+                    <dc:language.name.norwegian>Bokmål</dc:language.name.norwegian>
+                </dc:language>
+                <dc:language schema:name="en">
+                    <dc:language.name.english>English</dc:language.name.english>
+                    <dc:language.name.native>English</dc:language.name.native>
+                    <dc:language.name.norwegian>Engelsk</dc:language.name.norwegian>
+                </dc:language>
+            </rdf:Description>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

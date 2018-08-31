@@ -192,9 +192,10 @@
         <xsl:param name="type" as="xs:string" required="yes"/>
         <xsl:param name="nested" as="xs:boolean" select="false()" required="no"/>
         
-        <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition',
-                                                             'dc:contributor.translator', 'dc:contributor.photographer', 'dc:contributor.illustrator', 'dc:contributor.consultant', 'dc:contributor.secretary', 'dc:contributor.editor',
-                                                             'dc:contributor.collaborator', 'dc:contributor.commentator', 'dc:contributor.narrator', 'dc:contributor.director', 'dc:contributor.compiler')"/>
+        <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'dc:subject', 'dc:type.genre',
+                                                             $metadata//*[starts-with(@name,'dc:title.')]/string(@name),
+                                                             $metadata//*[starts-with(@name,'dc:contributor.') and not(@name='dc:contributor.narrator')]/string(@name),
+                                                             $metadata//*[starts-with(@name,'dc:subject.')]/string(@name))"/>
         <xsl:variable name="nlbbibProperties" select="('series.issn','series.position','periodical','periodicity','magazine','newspaper','watermark','external-production','websok.url','websok.type','bibliofil-id','pseudonym')"/>
         
         <xsl:for-each select="$metadata/*">

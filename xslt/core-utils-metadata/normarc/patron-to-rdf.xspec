@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:nlb="http://www.nlb.no/"
+               xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:opf="http://www.idpf.org/2007/opf"
+               xmlns:schema="http://schema.org/"
+               xmlns:frbr="http://purl.org/vocab/frbr/core#"
+               xmlns:nlbbib="http://www.nlb.no/bibliographic"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               stylesheet="patron-to-rdf.xsl">
+    
+    <x:scenario label="Test patron">
+        <x:context>
+            <laaner>
+                <row ln_nr="12345"
+                     ln_navn="Etternavn, Fornavn Mellomnavn"
+                     ln_adr1="HER"
+                     ln_adr2=""
+                     ln_post="0000"
+                     ln_land="no"
+                     ln_sprog=""
+                     ln_tlf=""
+                     ln_kat="v"
+                     ln_arbg=""
+                     ln_altadr=""
+                     ln_altpost=""
+                     ln_foedt="1980-01-01"
+                     ln_kjoenn="m"
+                     ln_friobs=""
+                     ln_obs=""
+                     ln_regnsendt=""
+                     ln_melding="Fiktiv f.dato."
+                     ln_kortdato="2009-09-11"
+                     ln_sistelaan="2018-08-09"
+                     ln_sperres=""
+                     ln_antlaan="49"
+                     ln_antpurr="0"
+                     ln_alt_id="">
+                    <lnel>
+                        <row lnel_nr="12345" lnel_epost="name@nlb.no" lnel_pin=""/>
+                    </lnel>
+                    <lmarc>
+                        <record>
+                            <controlfield tag="001" type="INT">12345</controlfield>
+                            <datafield tag="102" ind1=" " ind2=" ">
+                                <subfield code="a" type="DATETIME">2018-03-01T09:38:55</subfield>
+                                <subfield code="k" type="VARCHAR(17)">MappaMi</subfield>
+                            </datafield>
+                            <datafield tag="103" ind1=" " ind2=" ">
+                                <subfield code="a" type="DATETIME">2018-03-01T09:38:55</subfield>
+                                <subfield code="k" type="VARCHAR(7)">MappaMi</subfield>
+                            </datafield>
+                            <datafield tag="140" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(4)">OL</subfield>
+                                <subfield code="i" type="VARCHAR(13)">NLB SPED</subfield>
+                            </datafield>
+                            <datafield tag="150" ind1=" " ind2=" ">
+                                <subfield code="a" type="CHAR(4)">0000</subfield>
+                                <subfield code="b" type="LONGTEXT">Fiktiv f.dato.</subfield>
+                            </datafield>
+                            <datafield tag="200" ind1=" " ind2=" ">
+                                <subfield code="s" type="TINYINT">0</subfield>
+                            </datafield>
+                            <datafield tag="240" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(28)">93211111</subfield>
+                                <subfield code="c" type="VARCHAR(8)">mobilsms</subfield>
+                            </datafield>
+                            <datafield tag="250" ind1=" " ind2=" ">
+                                <subfield code="s" type="TINYINT">0</subfield>
+                            </datafield>
+                            <datafield tag="260" ind1=" " ind2=" ">
+                                <subfield code="l" type="CHAR(19)">31/01/2011 11:35:50</subfield>
+                                <subfield code="f" type="LONGTEXT">2011-03-10T01:14:47 2011-03-10T01:14:47 2011-03-16T22:15:06 2011-03-16T22:15:06 2011-03-28T12:32:13 2011-03-28T12:32:13 2016-02-15T14:06:01 2016-02-15T14:06:18 2016-02-15T14:06:27</subfield>
+                                <subfield code="c" type="MEDIUMINT">230</subfield>
+                            </datafield>
+                            <datafield tag="261" ind1=" " ind2=" ">
+                                <subfield code="a" type="CHAR(4)">1234</subfield>
+                                <subfield code="b" type="DATE">2011-03-03</subfield>
+                            </datafield>
+                            <datafield tag="272" ind1=" " ind2=" ">
+                                <subfield code="a" type="CHAR(8)">Ubestemt</subfield>
+                            </datafield>
+                            <datafield tag="273" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(8)">IkkeSend</subfield>
+                                <subfield code="b" type="VARCHAR(8)">EPost</subfield>
+                            </datafield>
+                            <datafield tag="300" ind1=" " ind2=" ">
+                                <subfield code="a" type="TINYINT">1</subfield>
+                            </datafield>
+                            <datafield tag="402" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(76)">HER</subfield>
+                                <subfield code="d" type="DATETIME">2016-01-06T13:05:43</subfield>
+                            </datafield>
+                            <datafield tag="465" ind1=" " ind2=" ">
+                                <subfield code="d" type="VARCHAR(2)">AN</subfield>
+                                <subfield code="c" type="VARCHAR(10)">1</subfield>
+                                <subfield code="i" type="TINYINT">0</subfield>
+                            </datafield>
+                            <datafield tag="467" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(28)">d n bd p s bs</subfield>
+                            </datafield>
+                            <datafield tag="468" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(28)">NLBDirekte</subfield>
+                            </datafield>
+                            <datafield tag="469" ind1=" " ind2=" ">
+                                <subfield code="a" type="CHAR(12)">624585 43320</subfield>
+                                <subfield code="d" type="DATETIME">2018-08-09T13:01:20</subfield>
+                                <subfield code="r" type="INT">4762346</subfield>
+                            </datafield>
+                            <datafield tag="500" ind1=" " ind2=" ">
+                                <subfield code="a" type="LONGTEXT">alle 004★/kl eller alle 005★/kl eller alle 006★/kl</subfield>
+                                <subfield code="b" type="TINYINT">1</subfield>
+                                <subfield code="d" type="DATE">2012-01-20</subfield>
+                                <subfield code="k" type="VARCHAR(100)">IT og Internett</subfield>
+                                <subfield code="t" type="TIME">12:08:45</subfield>
+                                <subfield code="c" type="DATE">2018-03-03</subfield>
+                            </datafield>
+                            <datafield tag="500" ind1=" " ind2=" ">
+                                <subfield code="a" type="LONGTEXT">asimov isaac/FO</subfield>
+                                <subfield code="b" type="TINYINT">1</subfield>
+                                <subfield code="d" type="DATE">2012-01-20</subfield>
+                                <subfield code="k" type="VARCHAR(100)">Asimov , Isaac</subfield>
+                                <subfield code="t" type="TIME">12:08:43</subfield>
+                                <subfield code="c" type="DATE">2017-03-28</subfield>
+                            </datafield>
+                            <datafield tag="500" ind1=" " ind2=" ">
+                                <subfield code="a" type="LONGTEXT">it/KE</subfield>
+                                <subfield code="b" type="TINYINT">1</subfield>
+                                <subfield code="c" type="DATE">2012-04-13</subfield>
+                                <subfield code="d" type="DATE">2012-01-20</subfield>
+                                <subfield code="k" type="VARCHAR(100)">It</subfield>
+                                <subfield code="t" type="TIME">12:09:38</subfield>
+                            </datafield>
+                            <datafield tag="500" ind1=" " ind2=" ">
+                                <subfield code="a" type="LONGTEXT">science fiction/lg og bn=a</subfield>
+                                <subfield code="b" type="TINYINT">1</subfield>
+                                <subfield code="d" type="DATE">2012-04-13</subfield>
+                                <subfield code="k" type="VARCHAR(100)">Science fiction</subfield>
+                                <subfield code="t" type="TIME">12:28:42</subfield>
+                                <subfield code="c" type="DATE">2018-08-08</subfield>
+                            </datafield>
+                            <datafield tag="516" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(13)">ff=za:ff=dj</subfield>
+                                <subfield code="d" type="DATE">2018-01-23</subfield>
+                            </datafield>
+                            <datafield tag="517" ind1=" " ind2=" ">
+                                <subfield code="a" type="TINYINT">1</subfield>
+                            </datafield>
+                            <datafield tag="518" ind1=" " ind2=" ">
+                                <subfield code="a" type="TINYINT">0</subfield>
+                            </datafield>
+                            <datafield tag="521" ind1=" " ind2=" ">
+                                <subfield code="a" type="TINYINT">0</subfield>
+                            </datafield>
+                            <datafield tag="600" ind1=" " ind2=" ">
+                                <subfield code="k" type="TINYINT">0</subfield>
+                            </datafield>
+                        </record>
+                    </lmarc>
+                    <bhist>
+                        <row bhist_tnr="100000" bhist_lnr="12345" bhist_laant="2011-04-07"/>
+                        <row bhist_tnr="100001" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                        <row bhist_tnr="100002" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                        <row bhist_tnr="100003" bhist_lnr="12345" bhist_laant="2011-04-06"/>
+                        <row bhist_tnr="100004" bhist_lnr="12345" bhist_laant="2016-10-18"/>
+                        <row bhist_tnr="100005" bhist_lnr="12345" bhist_laant="2018-07-13"/>
+                        <row bhist_tnr="100006" bhist_lnr="12345" bhist_laant="2011-05-28"/>
+                        <row bhist_tnr="100007" bhist_lnr="12345" bhist_laant="2011-04-11"/>
+                        <row bhist_tnr="100008" bhist_lnr="12345" bhist_laant="2011-06-07"/>
+                        <row bhist_tnr="100009" bhist_lnr="12345" bhist_laant="2011-05-24"/>
+                        <row bhist_tnr="100010" bhist_lnr="12345" bhist_laant="2013-06-28"/>
+                        <row bhist_tnr="100011" bhist_lnr="12345" bhist_laant="2013-11-15"/>
+                        <row bhist_tnr="100012" bhist_lnr="12345" bhist_laant="2016-11-21"/>
+                        <row bhist_tnr="100013" bhist_lnr="12345" bhist_laant="2016-09-30"/>
+                        <row bhist_tnr="100014" bhist_lnr="12345" bhist_laant="2018-04-04"/>
+                        <row bhist_tnr="100015" bhist_lnr="12345" bhist_laant="2014-09-18"/>
+                        <row bhist_tnr="100016" bhist_lnr="12345" bhist_laant="2011-10-03"/>
+                        <row bhist_tnr="100017" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                        <row bhist_tnr="100018" bhist_lnr="12345" bhist_laant="2011-09-30"/>
+                        <row bhist_tnr="100019" bhist_lnr="12345" bhist_laant="2011-04-13"/>
+                        <row bhist_tnr="100020" bhist_lnr="12345" bhist_laant="2014-01-06"/>
+                        <row bhist_tnr="100021" bhist_lnr="12345" bhist_laant="2013-08-13"/>
+                        <row bhist_tnr="100022" bhist_lnr="12345" bhist_laant="2014-05-14"/>
+                        <row bhist_tnr="100023" bhist_lnr="12345" bhist_laant="2014-07-13"/>
+                        <row bhist_tnr="100024" bhist_lnr="12345" bhist_laant="2014-07-13"/>
+                        <row bhist_tnr="100025" bhist_lnr="12345" bhist_laant="2015-09-29"/>
+                        <row bhist_tnr="100026" bhist_lnr="12345" bhist_laant="2011-01-31"/>
+                        <row bhist_tnr="100027" bhist_lnr="12345" bhist_laant="2011-04-07"/>
+                        <row bhist_tnr="100028" bhist_lnr="12345" bhist_laant="2012-03-19"/>
+                        <row bhist_tnr="100029" bhist_lnr="12345" bhist_laant="2014-09-18"/>
+                        <row bhist_tnr="100030" bhist_lnr="12345" bhist_laant="2011-12-21"/>
+                        <row bhist_tnr="100031" bhist_lnr="12345" bhist_laant="2011-06-03"/>
+                        <row bhist_tnr="100032" bhist_lnr="12345" bhist_laant="2015-09-29"/>
+                        <row bhist_tnr="100033" bhist_lnr="12345" bhist_laant="2011-05-09"/>
+                        <row bhist_tnr="100034" bhist_lnr="12345" bhist_laant="2018-01-30"/>
+                        <row bhist_tnr="100035" bhist_lnr="12345" bhist_laant="2014-03-14"/>
+                        <row bhist_tnr="100036" bhist_lnr="12345" bhist_laant="2013-06-07"/>
+                        <row bhist_tnr="100037" bhist_lnr="12345" bhist_laant="2014-07-13"/>
+                        <row bhist_tnr="100038" bhist_lnr="12345" bhist_laant="2011-05-16"/>
+                        <row bhist_tnr="100039" bhist_lnr="12345" bhist_laant="2011-11-10"/>
+                        <row bhist_tnr="100040" bhist_lnr="12345" bhist_laant="2015-09-14"/>
+                        <row bhist_tnr="100041" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100042" bhist_lnr="12345" bhist_laant="2011-04-04"/>
+                        <row bhist_tnr="100043" bhist_lnr="12345" bhist_laant="2013-02-01"/>
+                        <row bhist_tnr="100044" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100045" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100046" bhist_lnr="12345" bhist_laant="2011-04-14"/>
+                        <row bhist_tnr="100047" bhist_lnr="12345" bhist_laant="2018-03-01"/>
+                        <row bhist_tnr="100048" bhist_lnr="12345" bhist_laant="2016-08-25"/>
+                        <row bhist_tnr="100049" bhist_lnr="12345" bhist_laant="2011-09-30"/>
+                        <row bhist_tnr="100050" bhist_lnr="12345" bhist_laant="2014-05-14"/>
+                        <row bhist_tnr="100051" bhist_lnr="12345" bhist_laant="2011-04-07"/>
+                        <row bhist_tnr="100052" bhist_lnr="12345" bhist_laant="2011-05-27"/>
+                        <row bhist_tnr="100053" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                        <row bhist_tnr="100054" bhist_lnr="12345" bhist_laant="2011-05-27"/>
+                        <row bhist_tnr="100055" bhist_lnr="12345" bhist_laant="2011-05-16"/>
+                        <row bhist_tnr="100056" bhist_lnr="12345" bhist_laant="2011-05-27"/>
+                        <row bhist_tnr="100057" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100058" bhist_lnr="12345" bhist_laant="2011-05-09"/>
+                        <row bhist_tnr="100059" bhist_lnr="12345" bhist_laant="2011-03-31"/>
+                        <row bhist_tnr="100060" bhist_lnr="12345" bhist_laant="2016-01-06"/>
+                        <row bhist_tnr="100061" bhist_lnr="12345" bhist_laant="2016-05-12"/>
+                        <row bhist_tnr="100062" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100063" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                        <row bhist_tnr="100064" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                        <row bhist_tnr="100065" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100066" bhist_lnr="12345" bhist_laant="2012-01-20"/>
+                        <row bhist_tnr="100067" bhist_lnr="12345" bhist_laant="2011-04-14"/>
+                        <row bhist_tnr="100068" bhist_lnr="12345" bhist_laant="2014-09-18"/>
+                        <row bhist_tnr="100069" bhist_lnr="12345" bhist_laant="2011-09-23"/>
+                        <row bhist_tnr="100070" bhist_lnr="12345" bhist_laant="2011-09-19"/>
+                        <row bhist_tnr="100071" bhist_lnr="12345" bhist_laant="2012-05-03"/>
+                        <row bhist_tnr="100072" bhist_lnr="12345" bhist_laant="2012-07-26"/>
+                        <row bhist_tnr="100073" bhist_lnr="12345" bhist_laant="2013-05-26"/>
+                        <row bhist_tnr="100074" bhist_lnr="12345" bhist_laant="2014-09-18"/>
+                        <row bhist_tnr="100075" bhist_lnr="12345" bhist_laant="2014-11-25"/>
+                        <row bhist_tnr="100076" bhist_lnr="12345" bhist_laant="2013-12-24"/>
+                        <row bhist_tnr="100077" bhist_lnr="12345" bhist_laant="2011-06-20"/>
+                        <row bhist_tnr="100078" bhist_lnr="12345" bhist_laant="2011-05-11"/>
+                        <row bhist_tnr="100079" bhist_lnr="12345" bhist_laant="2011-03-28"/>
+                        <row bhist_tnr="100080" bhist_lnr="12345" bhist_laant="2011-04-28"/>
+                        <row bhist_tnr="100081" bhist_lnr="12345" bhist_laant="2013-11-07"/>
+                        <row bhist_tnr="100082" bhist_lnr="12345" bhist_laant="2011-07-12"/>
+                        <row bhist_tnr="100083" bhist_lnr="12345" bhist_laant="2013-06-04"/>
+                        <row bhist_tnr="100084" bhist_lnr="12345" bhist_laant="2016-02-15"/>
+                        <row bhist_tnr="100085" bhist_lnr="12345" bhist_laant="2012-08-27"/>
+                        <row bhist_tnr="100086" bhist_lnr="12345" bhist_laant="2012-09-18"/>
+                        <row bhist_tnr="100087" bhist_lnr="12345" bhist_laant="2017-11-15"/>
+                        <row bhist_tnr="100088" bhist_lnr="12345" bhist_laant="2012-12-05"/>
+                        <row bhist_tnr="100089" bhist_lnr="12345" bhist_laant="2014-03-07"/>
+                        <row bhist_tnr="100090" bhist_lnr="12345" bhist_laant="2013-11-07"/>
+                        <row bhist_tnr="100091" bhist_lnr="12345" bhist_laant="2013-02-20"/>
+                        <row bhist_tnr="100092" bhist_lnr="12345" bhist_laant="2015-05-13"/>
+                        <row bhist_tnr="100093" bhist_lnr="12345" bhist_laant="2015-03-21"/>
+                        <row bhist_tnr="100094" bhist_lnr="12345" bhist_laant="2015-03-21"/>
+                        <row bhist_tnr="100095" bhist_lnr="12345" bhist_laant="2014-03-14"/>
+                        <row bhist_tnr="100096" bhist_lnr="12345" bhist_laant="2014-09-16"/>
+                        <row bhist_tnr="100097" bhist_lnr="12345" bhist_laant="2014-12-05"/>
+                        <row bhist_tnr="100098" bhist_lnr="12345" bhist_laant="2017-05-09"/>
+                        <row bhist_tnr="100099" bhist_lnr="12345" bhist_laant="2017-01-18"/>
+                        <row bhist_tnr="100100" bhist_lnr="12345" bhist_laant="2016-01-06"/>
+                        <row bhist_tnr="100101" bhist_lnr="12345" bhist_laant="2017-05-08"/>
+                        <row bhist_tnr="100102" bhist_lnr="12345" bhist_laant="2018-03-01"/>
+                        <row bhist_tnr="100103" bhist_lnr="12345" bhist_laant="2018-08-09"/>
+                        <row bhist_tnr="100104" bhist_lnr="12345" bhist_laant="2018-01-25"/>
+                        <row bhist_tnr="100105" bhist_lnr="12345" bhist_laant="2018-07-05"/>
+                        <row bhist_tnr="100106" bhist_lnr="12345" bhist_laant="2016-02-15"/>
+                        <row bhist_tnr="100107" bhist_lnr="12345" bhist_laant="2011-03-25"/>
+                    </bhist>
+                </row>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="12345">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:ln_nr rdf:name="12345"/>
+                        <nlbbib:ln_navn rdf:name="Etternavn, Fornavn Mellomnavn"/>
+                        <nlbbib:ln_adr1 rdf:name="HER"/>
+                        <nlbbib:ln_adr2 rdf:name=""/>
+                        <nlbbib:ln_post rdf:name="0000"/>
+                        <nlbbib:ln_land rdf:name="no"/>
+                        <nlbbib:ln_sprog rdf:name=""/>
+                        <nlbbib:ln_tlf rdf:name=""/>
+                        <nlbbib:ln_kat rdf:name="v"/>
+                        <nlbbib:ln_arbg rdf:name=""/>
+                        <nlbbib:ln_altadr rdf:name=""/>
+                        <nlbbib:ln_altpost rdf:name=""/>
+                        <nlbbib:ln_foedt rdf:name="1980-01-01"/>
+                        <nlbbib:ln_kjoenn rdf:name="m"/>
+                        <nlbbib:ln_friobs rdf:name=""/>
+                        <nlbbib:ln_obs rdf:name=""/>
+                        <nlbbib:ln_regnsendt rdf:name=""/>
+                        <nlbbib:ln_melding rdf:name="Fiktiv f.dato."/>
+                        <nlbbib:ln_kortdato rdf:name="2009-09-11"/>
+                        <nlbbib:ln_sistelaan rdf:name="2018-08-09"/>
+                        <nlbbib:ln_sperres rdf:name=""/>
+                        <nlbbib:ln_antlaan rdf:name="49"/>
+                        <nlbbib:ln_antpurr rdf:name="0"/>
+                        <nlbbib:ln_alt_id rdf:name=""/>
+                        <nlbbib:lnel_nr rdf:name="12345"/>
+                        <nlbbib:lnel_epost rdf:name="name@nlb.no"/>
+                        <nlbbib:lnel_pin rdf:name=""/>
+                        <nlbbib:lmarc_nr rdf:name="12345"/>
+                        <nlbbib:lmarc_library rdf:name="OL"/>
+                        <nlbbib:lmarc_libraryAccess rdf:name="NLB"/>
+                        <nlbbib:lmarc_libraryAccess rdf:name="SPED"/>
+                        <nlbbib:lmarc_tlf rdf:name="93211111"/>
+                        <nlbbib:lmarc_tlf_type rdf:name="mobilsms"/>
+                        <nlbbib:lmarc_pin rdf:name="1234"/>
+                        <nlbbib:lmarc_pin_date rdf:name="2011-03-03"/>
+                        <nlbbib:lmarc_test_patron rdf:name="true"/>
+                        <nlbbib:lmarc_preferredPlayer rdf:name="NLBDirekte"/>
+                        <nlbbib:lmarc_subscription rdf:name="624585">
+                            <nlbbib:lmarc_subscriptionStarted rdf:name="2018-08-09T13:01:20"/>
+                        </nlbbib:lmarc_subscription>
+                        <nlbbib:bhist_tnr rdf:name="100000">
+                            <nlbbib:bhist_laant rdf:name="2011-04-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100001">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100002">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100003">
+                            <nlbbib:bhist_laant rdf:name="2011-04-06"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100004">
+                            <nlbbib:bhist_laant rdf:name="2016-10-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100005">
+                            <nlbbib:bhist_laant rdf:name="2018-07-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100006">
+                            <nlbbib:bhist_laant rdf:name="2011-05-28"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100007">
+                            <nlbbib:bhist_laant rdf:name="2011-04-11"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100008">
+                            <nlbbib:bhist_laant rdf:name="2011-06-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100009">
+                            <nlbbib:bhist_laant rdf:name="2011-05-24"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100010">
+                            <nlbbib:bhist_laant rdf:name="2013-06-28"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100011">
+                            <nlbbib:bhist_laant rdf:name="2013-11-15"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100012">
+                            <nlbbib:bhist_laant rdf:name="2016-11-21"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100013">
+                            <nlbbib:bhist_laant rdf:name="2016-09-30"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100014">
+                            <nlbbib:bhist_laant rdf:name="2018-04-04"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100015">
+                            <nlbbib:bhist_laant rdf:name="2014-09-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100016">
+                            <nlbbib:bhist_laant rdf:name="2011-10-03"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100017">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100018">
+                            <nlbbib:bhist_laant rdf:name="2011-09-30"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100019">
+                            <nlbbib:bhist_laant rdf:name="2011-04-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100020">
+                            <nlbbib:bhist_laant rdf:name="2014-01-06"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100021">
+                            <nlbbib:bhist_laant rdf:name="2013-08-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100022">
+                            <nlbbib:bhist_laant rdf:name="2014-05-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100023">
+                            <nlbbib:bhist_laant rdf:name="2014-07-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100024">
+                            <nlbbib:bhist_laant rdf:name="2014-07-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100025">
+                            <nlbbib:bhist_laant rdf:name="2015-09-29"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100026">
+                            <nlbbib:bhist_laant rdf:name="2011-01-31"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100027">
+                            <nlbbib:bhist_laant rdf:name="2011-04-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100028">
+                            <nlbbib:bhist_laant rdf:name="2012-03-19"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100029">
+                            <nlbbib:bhist_laant rdf:name="2014-09-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100030">
+                            <nlbbib:bhist_laant rdf:name="2011-12-21"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100031">
+                            <nlbbib:bhist_laant rdf:name="2011-06-03"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100032">
+                            <nlbbib:bhist_laant rdf:name="2015-09-29"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100033">
+                            <nlbbib:bhist_laant rdf:name="2011-05-09"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100034">
+                            <nlbbib:bhist_laant rdf:name="2018-01-30"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100035">
+                            <nlbbib:bhist_laant rdf:name="2014-03-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100036">
+                            <nlbbib:bhist_laant rdf:name="2013-06-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100037">
+                            <nlbbib:bhist_laant rdf:name="2014-07-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100038">
+                            <nlbbib:bhist_laant rdf:name="2011-05-16"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100039">
+                            <nlbbib:bhist_laant rdf:name="2011-11-10"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100040">
+                            <nlbbib:bhist_laant rdf:name="2015-09-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100041">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100042">
+                            <nlbbib:bhist_laant rdf:name="2011-04-04"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100043">
+                            <nlbbib:bhist_laant rdf:name="2013-02-01"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100044">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100045">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100046">
+                            <nlbbib:bhist_laant rdf:name="2011-04-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100047">
+                            <nlbbib:bhist_laant rdf:name="2018-03-01"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100048">
+                            <nlbbib:bhist_laant rdf:name="2016-08-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100049">
+                            <nlbbib:bhist_laant rdf:name="2011-09-30"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100050">
+                            <nlbbib:bhist_laant rdf:name="2014-05-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100051">
+                            <nlbbib:bhist_laant rdf:name="2011-04-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100052">
+                            <nlbbib:bhist_laant rdf:name="2011-05-27"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100053">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100054">
+                            <nlbbib:bhist_laant rdf:name="2011-05-27"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100055">
+                            <nlbbib:bhist_laant rdf:name="2011-05-16"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100056">
+                            <nlbbib:bhist_laant rdf:name="2011-05-27"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100057">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100058">
+                            <nlbbib:bhist_laant rdf:name="2011-05-09"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100059">
+                            <nlbbib:bhist_laant rdf:name="2011-03-31"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100060">
+                            <nlbbib:bhist_laant rdf:name="2016-01-06"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100061">
+                            <nlbbib:bhist_laant rdf:name="2016-05-12"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100062">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100063">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100064">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100065">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100066">
+                            <nlbbib:bhist_laant rdf:name="2012-01-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100067">
+                            <nlbbib:bhist_laant rdf:name="2011-04-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100068">
+                            <nlbbib:bhist_laant rdf:name="2014-09-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100069">
+                            <nlbbib:bhist_laant rdf:name="2011-09-23"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100070">
+                            <nlbbib:bhist_laant rdf:name="2011-09-19"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100071">
+                            <nlbbib:bhist_laant rdf:name="2012-05-03"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100072">
+                            <nlbbib:bhist_laant rdf:name="2012-07-26"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100073">
+                            <nlbbib:bhist_laant rdf:name="2013-05-26"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100074">
+                            <nlbbib:bhist_laant rdf:name="2014-09-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100075">
+                            <nlbbib:bhist_laant rdf:name="2014-11-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100076">
+                            <nlbbib:bhist_laant rdf:name="2013-12-24"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100077">
+                            <nlbbib:bhist_laant rdf:name="2011-06-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100078">
+                            <nlbbib:bhist_laant rdf:name="2011-05-11"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100079">
+                            <nlbbib:bhist_laant rdf:name="2011-03-28"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100080">
+                            <nlbbib:bhist_laant rdf:name="2011-04-28"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100081">
+                            <nlbbib:bhist_laant rdf:name="2013-11-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100082">
+                            <nlbbib:bhist_laant rdf:name="2011-07-12"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100083">
+                            <nlbbib:bhist_laant rdf:name="2013-06-04"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100084">
+                            <nlbbib:bhist_laant rdf:name="2016-02-15"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100085">
+                            <nlbbib:bhist_laant rdf:name="2012-08-27"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100086">
+                            <nlbbib:bhist_laant rdf:name="2012-09-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100087">
+                            <nlbbib:bhist_laant rdf:name="2017-11-15"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100088">
+                            <nlbbib:bhist_laant rdf:name="2012-12-05"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100089">
+                            <nlbbib:bhist_laant rdf:name="2014-03-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100090">
+                            <nlbbib:bhist_laant rdf:name="2013-11-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100091">
+                            <nlbbib:bhist_laant rdf:name="2013-02-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100092">
+                            <nlbbib:bhist_laant rdf:name="2015-05-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100093">
+                            <nlbbib:bhist_laant rdf:name="2015-03-21"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100094">
+                            <nlbbib:bhist_laant rdf:name="2015-03-21"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100095">
+                            <nlbbib:bhist_laant rdf:name="2014-03-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100096">
+                            <nlbbib:bhist_laant rdf:name="2014-09-16"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100097">
+                            <nlbbib:bhist_laant rdf:name="2014-12-05"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100098">
+                            <nlbbib:bhist_laant rdf:name="2017-05-09"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100099">
+                            <nlbbib:bhist_laant rdf:name="2017-01-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100100">
+                            <nlbbib:bhist_laant rdf:name="2016-01-06"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100101">
+                            <nlbbib:bhist_laant rdf:name="2017-05-08"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100102">
+                            <nlbbib:bhist_laant rdf:name="2018-03-01"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100103">
+                            <nlbbib:bhist_laant rdf:name="2018-08-09"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100104">
+                            <nlbbib:bhist_laant rdf:name="2018-01-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100105">
+                            <nlbbib:bhist_laant rdf:name="2018-07-05"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100106">
+                            <nlbbib:bhist_laant rdf:name="2016-02-15"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="100107">
+                            <nlbbib:bhist_laant rdf:name="2011-03-25"/>
+                        </nlbbib:bhist_tnr>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Actual patron">
+        <x:context>
+            <laaner>
+                <row ln_nr="12345"
+                     ln_navn="Etternavn, Fornavn"
+                     ln_adr1="Observatoriegata 1b"
+                     ln_adr2=""
+                     ln_post="0254  OSLO"
+                     ln_land=""
+                     ln_sprog=""
+                     ln_tlf=""
+                     ln_kat="sped_elev"
+                     ln_arbg=""
+                     ln_altadr=""
+                     ln_altpost=""
+                     ln_foedt="1985-05-15"
+                     ln_kjoenn="k"
+                     ln_friobs=""
+                     ln_obs=""
+                     ln_regnsendt=""
+                     ln_melding=""
+                     ln_kortdato="2018-05-02"
+                     ln_sistelaan="2018-07-10"
+                     ln_sperres=""
+                     ln_antlaan="40"
+                     ln_antpurr="0"
+                     ln_alt_id="">
+                    <lnel>
+                        <row lnel_nr="12345" lnel_epost="navn@nlb.no" lnel_pin=""/>
+                    </lnel>
+                    <lmarc>
+                        <record>
+                            <controlfield tag="001" type="INT">12345</controlfield>
+                            <datafield tag="102" ind1=" " ind2=" ">
+                                <subfield code="a" type="DATETIME">2018-06-06T10:20:54</subfield>
+                                <subfield code="k" type="VARCHAR(17)">Statpedskoleadmin</subfield>
+                            </datafield>
+                            <datafield tag="140" ind1=" " ind2=" ">
+                                <subfield code="s" type="CHAR(11)">skole-66666</subfield>
+                                <subfield code="a" type="VARCHAR(4)">SPED</subfield>
+                                <subfield code="i" type="VARCHAR(13)">SPED NLB</subfield>
+                            </datafield>
+                            <datafield tag="240" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(28)">93200000</subfield>
+                                <subfield code="c" type="VARCHAR(8)">mobilsms</subfield>
+                            </datafield>
+                            <datafield tag="260" ind1=" " ind2=" ">
+                                <subfield code="c" type="MEDIUMINT">5</subfield>
+                            </datafield>
+                            <datafield tag="261" ind1=" " ind2=" ">
+                                <subfield code="a" type="CHAR(4)">1234</subfield>
+                                <subfield code="b" type="DATE">2018-06-07</subfield>
+                                <subfield code="i" type="DATETIME">2018-06-07T10:50:40</subfield>
+                                <subfield code="p" type="MEDIUMINT">32221</subfield>
+                                <subfield code="k" type="VARCHAR(29)">mappami-statped_endrePassord</subfield>
+                            </datafield>
+                            <datafield tag="465" ind1=" " ind2=" ">
+                                <subfield code="d" type="VARCHAR(2)">AH</subfield>
+                                <subfield code="c" type="VARCHAR(10)">0</subfield>
+                            </datafield>
+                            <datafield tag="466" ind1=" " ind2=" ">
+                                <subfield code="a" type="VARCHAR(5)">D</subfield>
+                            </datafield>
+                        </record>
+                    </lmarc>
+                    <res>
+                        <row res_titnr="100001" res_koenr="328" res_exnr="0" res_stat="r" res_laanr="12345" res_dat="2018-06-05" res_forfall="" res_flerb="0" res_bind="0" res_avd="X" res_hentavd="" res_glob="" res_forrige="100001" res_neste="100001" res_ant="1"/>
+                        <row res_titnr="100002" res_koenr="320" res_exnr="0" res_stat="r" res_laanr="12345" res_dat="2018-06-05" res_forfall="" res_flerb="0" res_bind="0" res_avd="X" res_hentavd="" res_glob="" res_forrige="100002" res_neste="100002" res_ant="1"/>
+                        <row res_titnr="100003" res_koenr="323" res_exnr="0" res_stat="r" res_laanr="12345" res_dat="2018-06-05" res_forfall="" res_flerb="0" res_bind="0" res_avd="X" res_hentavd="" res_glob="" res_forrige="100003" res_neste="100003" res_ant="1"/>
+                    </res>
+                    <bhist>
+                        <row bhist_tnr="600000" bhist_lnr="12345" bhist_laant="2018-06-06"/>
+                        <row bhist_tnr="600001" bhist_lnr="12345" bhist_laant="2018-06-07"/>
+                        <row bhist_tnr="600002" bhist_lnr="12345" bhist_laant="2018-06-08"/>
+                        <row bhist_tnr="600003" bhist_lnr="12345" bhist_laant="2018-06-09"/>
+                        <row bhist_tnr="600004" bhist_lnr="12345" bhist_laant="2018-06-10"/>
+                        <row bhist_tnr="600005" bhist_lnr="12345" bhist_laant="2018-06-11"/>
+                        <row bhist_tnr="600006" bhist_lnr="12345" bhist_laant="2018-06-12"/>
+                        <row bhist_tnr="600007" bhist_lnr="12345" bhist_laant="2018-06-13"/>
+                        <row bhist_tnr="600008" bhist_lnr="12345" bhist_laant="2018-06-14"/>
+                        <row bhist_tnr="600009" bhist_lnr="12345" bhist_laant="2018-06-15"/>
+                        <row bhist_tnr="600010" bhist_lnr="12345" bhist_laant="2018-06-16"/>
+                        <row bhist_tnr="600011" bhist_lnr="12345" bhist_laant="2018-06-17"/>
+                        <row bhist_tnr="600012" bhist_lnr="12345" bhist_laant="2018-06-18"/>
+                        <row bhist_tnr="600013" bhist_lnr="12345" bhist_laant="2018-06-19"/>
+                        <row bhist_tnr="600014" bhist_lnr="12345" bhist_laant="2018-06-20"/>
+                        <row bhist_tnr="600015" bhist_lnr="12345" bhist_laant="2018-06-21"/>
+                        <row bhist_tnr="600016" bhist_lnr="12345" bhist_laant="2018-06-22"/>
+                        <row bhist_tnr="600017" bhist_lnr="12345" bhist_laant="2018-06-23"/>
+                        <row bhist_tnr="600018" bhist_lnr="12345" bhist_laant="2018-06-24"/>
+                        <row bhist_tnr="600019" bhist_lnr="12345" bhist_laant="2018-06-25"/>
+                        <row bhist_tnr="600020" bhist_lnr="12345" bhist_laant="2018-06-26"/>
+                        <row bhist_tnr="600021" bhist_lnr="12345" bhist_laant="2018-06-27"/>
+                        <row bhist_tnr="600022" bhist_lnr="12345" bhist_laant="2018-06-28"/>
+                        <row bhist_tnr="600023" bhist_lnr="12345" bhist_laant="2018-06-29"/>
+                        <row bhist_tnr="600024" bhist_lnr="12345" bhist_laant="2018-06-30"/>
+                        <row bhist_tnr="600025" bhist_lnr="12345" bhist_laant="2018-07-01"/>
+                        <row bhist_tnr="600026" bhist_lnr="12345" bhist_laant="2018-07-02"/>
+                        <row bhist_tnr="600027" bhist_lnr="12345" bhist_laant="2018-07-03"/>
+                        <row bhist_tnr="600028" bhist_lnr="12345" bhist_laant="2018-07-04"/>
+                        <row bhist_tnr="600029" bhist_lnr="12345" bhist_laant="2018-07-05"/>
+                        <row bhist_tnr="600030" bhist_lnr="12345" bhist_laant="2018-07-06"/>
+                        <row bhist_tnr="600031" bhist_lnr="12345" bhist_laant="2018-07-07"/>
+                        <row bhist_tnr="600032" bhist_lnr="12345" bhist_laant="2018-07-08"/>
+                        <row bhist_tnr="600033" bhist_lnr="12345" bhist_laant="2018-07-09"/>
+                        <row bhist_tnr="600034" bhist_lnr="12345" bhist_laant="2018-07-10"/>
+                    </bhist>
+                </row>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="12345">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:ln_nr rdf:name="12345"/>
+                        <nlbbib:ln_navn rdf:name="Etternavn, Fornavn"/>
+                        <nlbbib:ln_adr1 rdf:name="Observatoriegata 1b"/>
+                        <nlbbib:ln_adr2 rdf:name=""/>
+                        <nlbbib:ln_post rdf:name="0254  OSLO"/>
+                        <nlbbib:ln_land rdf:name=""/>
+                        <nlbbib:ln_sprog rdf:name=""/>
+                        <nlbbib:ln_tlf rdf:name=""/>
+                        <nlbbib:ln_kat rdf:name="sped_elev"/>
+                        <nlbbib:ln_arbg rdf:name=""/>
+                        <nlbbib:ln_altadr rdf:name=""/>
+                        <nlbbib:ln_altpost rdf:name=""/>
+                        <nlbbib:ln_foedt rdf:name="1985-05-15"/>
+                        <nlbbib:ln_kjoenn rdf:name="k"/>
+                        <nlbbib:ln_friobs rdf:name=""/>
+                        <nlbbib:ln_obs rdf:name=""/>
+                        <nlbbib:ln_regnsendt rdf:name=""/>
+                        <nlbbib:ln_melding rdf:name=""/>
+                        <nlbbib:ln_kortdato rdf:name="2018-05-02"/>
+                        <nlbbib:ln_sistelaan rdf:name="2018-07-10"/>
+                        <nlbbib:ln_sperres rdf:name=""/>
+                        <nlbbib:ln_antlaan rdf:name="40"/>
+                        <nlbbib:ln_antpurr rdf:name="0"/>
+                        <nlbbib:ln_alt_id rdf:name=""/>
+                        <nlbbib:lnel_nr rdf:name="12345"/>
+                        <nlbbib:lnel_epost rdf:name="navn@nlb.no"/>
+                        <nlbbib:lnel_pin rdf:name=""/>
+                        <nlbbib:lmarc_nr rdf:name="12345"/>
+                        <nlbbib:lmarc_library rdf:name="SPED"/>
+                        <nlbbib:lmarc_libraryAccess rdf:name="SPED"/>
+                        <nlbbib:lmarc_libraryAccess rdf:name="NLB"/>
+                        <nlbbib:lmarc_tlf rdf:name="93200000"/>
+                        <nlbbib:lmarc_tlf_type rdf:name="mobilsms"/>
+                        <nlbbib:lmarc_pin rdf:name="1234"/>
+                        <nlbbib:lmarc_pin_date rdf:name="2018-06-07"/>
+                        <nlbbib:res>
+                            <nlbbib:res_titnr rdf:name="100001" />
+                            <nlbbib:res_koenr rdf:name="328" />
+                            <nlbbib:res_exnr rdf:name="0" />
+                            <nlbbib:res_stat rdf:name="r" />
+                            <nlbbib:res_laanr rdf:name="12345" />
+                            <nlbbib:res_dat rdf:name="2018-06-05" />
+                            <nlbbib:res_forfall rdf:name="" />
+                            <nlbbib:res_flerb rdf:name="0" />
+                            <nlbbib:res_bind rdf:name="0" />
+                            <nlbbib:res_avd rdf:name="X" />
+                            <nlbbib:res_hentavd rdf:name="" />
+                            <nlbbib:res_glob rdf:name="" />
+                            <nlbbib:res_forrige rdf:name="100001" />
+                            <nlbbib:res_neste rdf:name="100001" />
+                            <nlbbib:res_ant rdf:name="1" />
+                        </nlbbib:res>
+                        <nlbbib:res>
+                            <nlbbib:res_titnr rdf:name="100002" />
+                            <nlbbib:res_koenr rdf:name="320" />
+                            <nlbbib:res_exnr rdf:name="0" />
+                            <nlbbib:res_stat rdf:name="r" />
+                            <nlbbib:res_laanr rdf:name="12345" />
+                            <nlbbib:res_dat rdf:name="2018-06-05" />
+                            <nlbbib:res_forfall rdf:name="" />
+                            <nlbbib:res_flerb rdf:name="0" />
+                            <nlbbib:res_bind rdf:name="0" />
+                            <nlbbib:res_avd rdf:name="X" />
+                            <nlbbib:res_hentavd rdf:name="" />
+                            <nlbbib:res_glob rdf:name="" />
+                            <nlbbib:res_forrige rdf:name="100002" />
+                            <nlbbib:res_neste rdf:name="100002" />
+                            <nlbbib:res_ant rdf:name="1" />
+                        </nlbbib:res>
+                        <nlbbib:res>
+                            <nlbbib:res_titnr rdf:name="100003" />
+                            <nlbbib:res_koenr rdf:name="323" />
+                            <nlbbib:res_exnr rdf:name="0" />
+                            <nlbbib:res_stat rdf:name="r" />
+                            <nlbbib:res_laanr rdf:name="12345" />
+                            <nlbbib:res_dat rdf:name="2018-06-05" />
+                            <nlbbib:res_forfall rdf:name="" />
+                            <nlbbib:res_flerb rdf:name="0" />
+                            <nlbbib:res_bind rdf:name="0" />
+                            <nlbbib:res_avd rdf:name="X" />
+                            <nlbbib:res_hentavd rdf:name="" />
+                            <nlbbib:res_glob rdf:name="" />
+                            <nlbbib:res_forrige rdf:name="100003" />
+                            <nlbbib:res_neste rdf:name="100003" />
+                            <nlbbib:res_ant rdf:name="1" />
+                        </nlbbib:res>
+                        <nlbbib:bhist_tnr rdf:name="600000">
+                            <nlbbib:bhist_laant rdf:name="2018-06-06"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600001">
+                            <nlbbib:bhist_laant rdf:name="2018-06-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600002">
+                            <nlbbib:bhist_laant rdf:name="2018-06-08"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600003">
+                            <nlbbib:bhist_laant rdf:name="2018-06-09"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600004">
+                            <nlbbib:bhist_laant rdf:name="2018-06-10"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600005">
+                            <nlbbib:bhist_laant rdf:name="2018-06-11"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600006">
+                            <nlbbib:bhist_laant rdf:name="2018-06-12"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600007">
+                            <nlbbib:bhist_laant rdf:name="2018-06-13"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600008">
+                            <nlbbib:bhist_laant rdf:name="2018-06-14"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600009">
+                            <nlbbib:bhist_laant rdf:name="2018-06-15"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600010">
+                            <nlbbib:bhist_laant rdf:name="2018-06-16"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600011">
+                            <nlbbib:bhist_laant rdf:name="2018-06-17"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600012">
+                            <nlbbib:bhist_laant rdf:name="2018-06-18"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600013">
+                            <nlbbib:bhist_laant rdf:name="2018-06-19"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600014">
+                            <nlbbib:bhist_laant rdf:name="2018-06-20"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600015">
+                            <nlbbib:bhist_laant rdf:name="2018-06-21"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600016">
+                            <nlbbib:bhist_laant rdf:name="2018-06-22"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600017">
+                            <nlbbib:bhist_laant rdf:name="2018-06-23"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600018">
+                            <nlbbib:bhist_laant rdf:name="2018-06-24"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600019">
+                            <nlbbib:bhist_laant rdf:name="2018-06-25"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600020">
+                            <nlbbib:bhist_laant rdf:name="2018-06-26"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600021">
+                            <nlbbib:bhist_laant rdf:name="2018-06-27"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600022">
+                            <nlbbib:bhist_laant rdf:name="2018-06-28"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600023">
+                            <nlbbib:bhist_laant rdf:name="2018-06-29"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600024">
+                            <nlbbib:bhist_laant rdf:name="2018-06-30"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600025">
+                            <nlbbib:bhist_laant rdf:name="2018-07-01"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600026">
+                            <nlbbib:bhist_laant rdf:name="2018-07-02"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600027">
+                            <nlbbib:bhist_laant rdf:name="2018-07-03"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600028">
+                            <nlbbib:bhist_laant rdf:name="2018-07-04"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600029">
+                            <nlbbib:bhist_laant rdf:name="2018-07-05"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600030">
+                            <nlbbib:bhist_laant rdf:name="2018-07-06"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600031">
+                            <nlbbib:bhist_laant rdf:name="2018-07-07"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600032">
+                            <nlbbib:bhist_laant rdf:name="2018-07-08"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600033">
+                            <nlbbib:bhist_laant rdf:name="2018-07-09"/>
+                        </nlbbib:bhist_tnr>
+                        <nlbbib:bhist_tnr rdf:name="600034">
+                            <nlbbib:bhist_laant rdf:name="2018-07-10"/>
+                        </nlbbib:bhist_tnr>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
