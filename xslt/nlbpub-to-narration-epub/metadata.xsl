@@ -28,19 +28,22 @@
     <xsl:variable name="metadata.forventet" as="xs:string*"
         select="
             (
-            'dc:creator', 'dc:date.issued.original', 'dc:publisher.original', 'schema:bookEdition.original', 'dc:contributor.narrator')
+            'dc:creator', 'dc:date.issued.original', 'dc:publisher.original', 'schema:bookEdition.original', 'dc:contributor.narrator',
+            (: Det følgende er flyttet fra metadata.essensiell, ettersom dette testes bedra andre steder :)
+            'schema:isbn', 'dc:publisher.location.original', 'dc:language',
+            (: Legg til litt mer hvis boken er oversatt :)
+            if ($boken.er-oversatt) then
+            ('dc:language.original', 'dc:title.original', 'dc:contributor.translator')
+            else
+            ''
+            )
             [normalize-space(.) ne '']"/>
 
     <!-- Transformasjonen avbrytes hvsi det er essensiell metadata som mangler -->
     <xsl:variable name="metadata.essensiell" as="xs:string*"
         select="
             (
-            'schema:isbn', 'dc:publisher.location.original', 'dc:language',
-            (: Legg til litt mer hvis boken er oversatt :)
-            if ($boken.er-oversatt) then
-                ('dc:language.original', 'dc:title.original', 'dc:contributor.translator')
-            else
-                '')
+            )
             [normalize-space(.) ne '']"/>
 
     <xsl:template name="varsle-om-manglende-metadata-i-nlbpub">
@@ -51,12 +54,15 @@
             </xsl:call-template>
         </xsl:for-each>
 
+        <!-- 20180903: fjerner denne
         <xsl:for-each select="$metadata.essensiell">
             <xsl:call-template name="flagg-manglende-essensiell-metadata">
                 <xsl:with-param name="navn" select="current()"/>
             </xsl:call-template>
         </xsl:for-each>
+         -->
 
+        <!-- 20180803: og fjerner denne
         <xsl:choose>
             <xsl:when
                 test="
@@ -81,7 +87,9 @@
                 </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
+         -->
     </xsl:template>
+   
 
     <xsl:template name="flagg-manglende-forventet-metadata">
         <xsl:param name="navn" as="xs:string" required="yes"/>
