@@ -29,7 +29,14 @@
                     
                     <xsl:apply-templates select="dc:identifier"/>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
-                    <xsl:apply-templates select="meta[starts-with(@property,'nordic:')]"/>
+                    <xsl:choose>
+                        <xsl:when test="meta[@property='schema:library']/text() = 'Statped'">
+                            <xsl:apply-templates select="* except (dc:identifier | dc:format)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="meta[starts-with(@property,'nordic:') or starts-with(@property,'nlb:')]"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </rdf:Description>
             </rdf:RDF>
         </xsl:variable>
