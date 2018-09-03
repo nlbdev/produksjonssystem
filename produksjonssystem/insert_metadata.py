@@ -54,6 +54,7 @@ class InsertMetadata(Pipeline):
         should_produce, metadata_valid = Metadata.should_produce(self, epub, self.publication_format)
         if not should_produce:
             self.utils.report.info("{} skal ikke produseres som {}. Avbryter.".format(epub.identifier(), self.publication_format))
+            self.utils.report.title("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
             return metadata_valid
 
         self.utils.report.info("Lager en kopi av EPUBen")
@@ -78,7 +79,7 @@ class InsertMetadata(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(temp_epub.identifier() + " ble lagt til i arkivet.")
 
-        self.utils.report.title = "{}: {} har fått {}-spesifikk metadata 👍😄 {}".format(self.title, epub.identifier(), self.publication_format, epubTitle)
+        self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(self.title, epub.identifier(), self.publication_format, epubTitle)
         return True
 
 
