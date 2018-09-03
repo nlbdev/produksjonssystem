@@ -34,7 +34,7 @@
                             <xsl:apply-templates select="* except (dc:identifier | dc:format)"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:apply-templates select="meta[starts-with(@property,'nordic:') or starts-with(@property,'nlb:')]"/>
+                            <xsl:apply-templates select="meta[contains(@property,':') and substring-before(@property,':') = ('nordic', 'nlb', 'a11y')]"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </rdf:Description>
