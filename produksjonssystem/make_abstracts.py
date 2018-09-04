@@ -215,7 +215,7 @@ class Audio_Abstract(Pipeline):
 
             self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
         else:
-            self.utils.report.title("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
+            self.utils.report.title = ("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
             return False
 
         return True

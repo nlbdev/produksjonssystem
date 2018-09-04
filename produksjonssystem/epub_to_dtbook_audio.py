@@ -63,7 +63,7 @@ class EpubToDtbookAudio(Pipeline):
         should_produce, metadata_valid = Metadata.should_produce(self, epub, "DAISY 2.02")
         if not should_produce:
             self.utils.report.info("{} skal ikke produseres som lydbok. Avbryter.".format(epub.identifier()))
-            self.utils.report.title("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
+            self.utils.report.title = ("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
             return metadata_valid
 
         self.utils.report.info("Lager kopi av EPUB...")
