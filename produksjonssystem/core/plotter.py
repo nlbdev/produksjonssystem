@@ -32,14 +32,24 @@ class Plotter():
         self.pipelines = pipelines
         self.report_dir = report_dir
 
-    def get_book_count(self, dir):
+    def get_book_count(self, dir, parentdirs=None):
         if not isinstance(dir, str):
             return 0
+        dirs = []
+        if parentdirs:
+            for parentdir in parentdirs:
+                dirs.append(os.path.join(dir, parentdirs[parentdir]))
+        else:
+            dirs.append(dir)
         if (dir not in self.book_count or
                 "modified" not in self.book_count[dir] or
                 self.book_count[dir]["modified"] + 15 < time.time()):
+            books = []
+            for d in dirs:
+                if os.path.isdir(d):
+                    books += [name for name in os.listdir(d) if name[0] in "0123456789" or name.startswith("TEST")]
             self.book_count[dir] = {
-                "count": len([name for name in os.listdir(dir) if name[0] in "0123456789" or name.startswith("TEST")]) if os.path.isdir(dir) else 0,
+                "count": len(set(books)),
                 "modified": time.time()
             }
         return self.book_count[dir]["count"]
@@ -151,8 +161,7 @@ class Plotter():
                     netpath_out = self.buffered_network_hosts[pipeline[0].dir_out]
                     if not netpath_out:
                         netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
-            book_count_out = self.get_book_count(os.path.join(pipeline[0].dir_out, list(pipeline[0].parentdirs.values())[0])
-                                                 if pipeline[0].parentdirs else pipeline[0].dir_out)
+            book_count_out = self.get_book_count(pipeline[0].dir_out, pipeline[0].parentdirs)
             label_out = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_out,
                 "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_out, "bok" if book_count_out == 1 else "bøker"),
