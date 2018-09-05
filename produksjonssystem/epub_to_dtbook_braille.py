@@ -67,6 +67,12 @@ class EpubToDtbookBraille(Pipeline):
             self.utils.report.title = ("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
             return metadata_valid
 
+        if not Metadata.is_in_quickbase(self.utils.report, epub.identifier()):
+            self.utils.report.info("{} finnes ikke i Quickbase og vi lager derfor ikke en DTBook av den. Avbryter.".format(epub.identifier()))
+            self.utils.report.title = ("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
+            self.utils.report.should_email = False
+            return False
+
         self.utils.report.info("Lager kopi av EPUB...")
         nordic_epubdir_obj = tempfile.TemporaryDirectory()
         nordic_epubdir = nordic_epubdir_obj.name
