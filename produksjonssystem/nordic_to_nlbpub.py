@@ -136,7 +136,7 @@ class NordicToNlbpub(Pipeline):
                 report_doc = ElementTree.parse(report_file)
                 errors = report_doc.xpath('//*[@class="error" or @class="message-error"]')
                 for error in errors:
-                    error_text = error.xpath('.//text()[normalize-space()]')[0]
+                    error_text = " ".join([e.strip() for e in error.xpath('.//text()')]).strip()
                     error_text = " ".join(error_text.split()).strip() if bool(error_text) else error_text
                     if (bool(error_text) and (
                             error_text.startswith("[opf") or
@@ -147,7 +147,8 @@ class NordicToNlbpub(Pipeline):
                             "element \"title\" not allowed yet" in error_text or
                             "element \"style\" not allowed yet" in error_text or
                             "element \"meta\" not allowed yet" in error_text or
-                            "element \"body\" incomplete; expected element \"header\" or \"nav\"" in error_text
+                            "element \"body\" incomplete; expected element \"header\" or \"nav\"" in error_text or
+                            "Only UTF-8 and UTF-16 encodings are allowed" in error_text
                             )):
                         continue  # ignorer disse feilmeldingene; de forsvinner når vi konverterer til XHTML5
 
