@@ -51,6 +51,7 @@
         <rule context="marcxchange:record[$is-publication and $is-periodical]">
             <report test="marcxchange:datafield[@tag='260']/marcxchange:subfield[@code='c']">For periodika må *260$c ikke være definert</report>
         </rule>
+        <!-- Merk: Dersom utgave (schema:bookEdition) ikke er definert i *250$a så blir den satt til "1" i marcxchange-to-opf.xsl. Derfor krever vi ikke at den er katalogisert her. -->
     </pattern>
     
     <pattern>
@@ -66,6 +67,7 @@
         <rule context="marcxchange:record[$is-publication and $is-periodical]">
             <report test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For periodika må *596$c ikke være definert</report>
         </rule>
+        <!-- Merk: Dersom utgave for originalen (schema:bookEdition.original) ikke er definert i *596$d så blir den satt til "1" i marcxchange-to-opf.xsl. Derfor krever vi ikke at den er katalogisert her. -->
     </pattern>
     
     <pattern>
