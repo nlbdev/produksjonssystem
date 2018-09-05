@@ -167,6 +167,14 @@
                         </xsl:call-template>
                     </xsl:otherwise>
                 </xsl:choose>
+                
+                <xsl:if test="self::dc:language">
+                    <xsl:for-each select="*[matches(name(), '^dc:language.name.*$')]">
+                        <xsl:call-template name="meta">
+                            <xsl:with-param name="rdf-property" select="."/>
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </xsl:if>
             </xsl:for-each>
         </xsl:for-each>
         <xsl:text><![CDATA[
@@ -187,7 +195,7 @@
         <xsl:variable name="authority" select="if (count($rdf-property/nlbbib:bibliofil-id)) then 'http://ns.nb.no/normarc' else ()" as="xs:string?"/>
         <xsl:variable name="term" select="$rdf-property/nlbbib:bibliofil-id" as="xs:string?"/>
         <xsl:variable name="translation" select="$rdf-property/../*[name() = concat($property,'.no')]/(@schema:name, text())[1]"/>
-        <xsl:variable name="metadata-source" select="$rdf-property/@nlb:metadata-source"/>
+        <xsl:variable name="metadata-source" select="($rdf-property/ancestor-or-self::*/@nlb:metadata-source)[1]"/>
         
         <xsl:if test="$value and not($property = 'dcterms:modified') and not(ends-with($property,'.no'))">
             <xsl:text><![CDATA[

@@ -1014,4 +1014,56 @@
     </metadata></x:expect>
     </x:scenario>
     
+    <x:scenario label="Language names for each language code (names no longer associated to codes in OPF)">
+        <x:call template="test">
+            <x:param name="format" select="'EPUB'"/>
+            <x:param name="update-identifier" select="false()"/>
+            <x:param name="context">
+                <rdf:RDF>
+                    <rdf:Description rdf:about="urn:isbn:9788202484347">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                    </rdf:Description>
+                    
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <dc:identifier>558237</dc:identifier>
+                        <dc:format>EPUB</dc:format>
+                        <dc:language nlb:metadata-source="Bibliofil@115437 *008" schema:name="nb">
+                            <dc:language.name.english>Norwegian Bokmål</dc:language.name.english>
+                            <dc:language.name.native>Norsk Bokmål</dc:language.name.native>
+                            <dc:language.name.norwegian>Bokmål</dc:language.name.norwegian>
+                        </dc:language>
+                        <dc:language nlb:metadata-source="Bibliofil@115437 *008" schema:name="en">
+                            <dc:language.name.english>English</dc:language.name.english>
+                            <dc:language.name.native>English</dc:language.name.native>
+                            <dc:language.name.norwegian>Engelsk</dc:language.name.norwegian>
+                        </dc:language>
+                    </rdf:Description>
+                </rdf:RDF>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected" xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production dc: http://purl.org/dc/elements/1.1/">
+        <!-- Boknummer for EPUB-utgaven -->
+        <dc:identifier id="pub-id">558237</dc:identifier>
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.epub">558237</meta>
+        
+        <!-- Metadata for åndsverket og EPUB-utgaven -->
+        <dc:language>en</dc:language> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.english">English</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.native">English</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.norwegian">Engelsk</meta> <!-- Bibliofil@115437 *008 -->
+        <dc:language>nb</dc:language> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.english">Norwegian Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.native">Norsk Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.norwegian">Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <dc:format>EPUB</dc:format>
+
+    </metadata></x:expect>
+    </x:scenario>
+    
 </x:description>

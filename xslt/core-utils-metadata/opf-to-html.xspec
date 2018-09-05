@@ -76,4 +76,52 @@
         <meta name="schema:audience" content="Juvenile"/> <!-- Bibliofil@561702 *008 -->
     </head></x:expect>
     </x:scenario>
+    
+    <x:scenario label="Language names for each language code (names no longer associated to codes in OPF or HTML)">
+        <x:context xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production dc: http://purl.org/dc/elements/1.1/">
+        <!-- Boknummer for EPUB-utgaven -->
+        <dc:identifier id="pub-id">558237</dc:identifier>
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.epub">558237</meta>
+        
+        <!-- Metadata for åndsverket og EPUB-utgaven -->
+        <dc:language>en</dc:language> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.english">English</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.native">English</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.norwegian">Engelsk</meta> <!-- Bibliofil@115437 *008 -->
+        <dc:language>nb</dc:language> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.english">Norwegian Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.native">Norsk Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.norwegian">Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <dc:format>EPUB</dc:format>
+
+    </metadata></x:context>
+        
+        <x:expect label="The result should be as expected" xml:space="preserve">
+    
+    <head xmlns="http://www.w3.org/1999/xhtml" xmlns:nlbprod="http://www.nlb.no/production" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        <!-- Boknummer for EPUB-utgaven -->
+        <meta name="dc:identifier" content="558237" /> <!-- Boknummer for andre utgaver -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta name="nlbprod:identifier.epub" content="558237" /> <!-- Metadata for åndsverket og EPUB-utgaven -->
+        
+        <!-- Metadata for åndsverket og EPUB-utgaven -->
+        <meta name="dc:language" content="en" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.english" content="English" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.native" content="English" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.norwegian" content="Engelsk" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language" content="nb" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.english" content="Norwegian Bokmål" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.native" content="Norsk Bokmål" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.norwegian" content="Bokmål" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:format" content="EPUB" />
+    </head></x:expect>
+    </x:scenario>
+    
 </x:description>
