@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
 
-    <title>Undersøk NLBPUB for å se om det behov for manuell kontroll</title>
+    <title>Undersøk innkommende NLBPUB for å se om det er behov for manuell kontroll</title>
     
-    <!-- Denne Schematron-filen brukes for å se etter litt rar eller unventet markup, og varsle om dette. -->
+    <!-- Denne Schematron-filen brukes i produksjonssystemet for å se etter litt rar eller unventet markup i innkommende filer, og varsle om dette. -->
 
     <ns prefix="html" uri="http://www.w3.org/1999/xhtml"/>
     <ns prefix="epub" uri="http://www.idpf.org/2007/ops"/>
