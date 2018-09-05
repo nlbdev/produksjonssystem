@@ -12,7 +12,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes" method="xhtml" include-content-type="no"/>
+    <xsl:output indent="yes" include-content-type="no"/>
     
     <xsl:param name="output-rdfa" select="false()"/>
     <xsl:param name="include-source-reference" select="false()"/>

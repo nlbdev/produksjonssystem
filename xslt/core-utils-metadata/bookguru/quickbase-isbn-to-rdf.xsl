@@ -12,9 +12,9 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes" method="xhtml"/>
+    <xsl:output indent="yes" include-content-type="no"/>
     
-    <xsl:param name="rdf-xml-path" as="xs:string"/>
+    <xsl:param name="output-rdfa" select="false()"/>
     <xsl:param name="include-source-reference" select="false()"/>
 
     <xsl:template match="/qdbapi">
@@ -42,11 +42,13 @@
         <xsl:variable name="identifier" select="($metadata[self::html:dd[@property = 'nlbprod:isbn.identifier' and normalize-space(.)]])[1]/normalize-space(.)"/>
         <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else concat('isbn_',($rid,replace(string(current-time()),'[^\d]',''))[1],'_book_', generate-id())"/>
         
-        <html>
-            <head>
-                <title><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:isbn.title']]"/></title>
-                <style>
-                    <xsl:text><![CDATA[
+        <xsl:choose>
+            <xsl:when test="$output-rdfa">
+                <html>
+                    <head>
+                        <title><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:isbn.title']]"/></title>
+                        <style>
+                        <xsl:text><![CDATA[
 dl {
    margin-top: 0;
    margin-bottom: 1rem;
@@ -76,20 +78,19 @@ section dl {
 }
 
 ]]></xsl:text>
-                </style>
-            </head>
-            <body vocab="http://schema.org/" typeof="Book">
-                <xsl:attribute name="{if (matches($resource,'^(http|urn)')) then 'about' else 'id'}" select="$resource"/>
-                <h1><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:isbn.title']]"/></h1>
-                
-                <xsl:call-template name="list-metadata-rdfa">
-                    <xsl:with-param name="metadata" select="$metadata[self::*]"/>
-                </xsl:call-template>
-            </body>
-        </html>
-        
-        <xsl:if test="$rdf-xml-path">
-            <xsl:result-document href="{$rdf-xml-path}" indent="yes">
+                        </style>
+                    </head>
+                    <body vocab="http://schema.org/" typeof="Book">
+                        <xsl:attribute name="{if (matches($resource,'^(http|urn)')) then 'about' else 'id'}" select="$resource"/>
+                        <h1><xsl:value-of select="$metadata[self::html:dd[@property='nlbprod:isbn.title']]"/></h1>
+                        
+                        <xsl:call-template name="list-metadata-rdfa">
+                            <xsl:with-param name="metadata" select="$metadata[self::*]"/>
+                        </xsl:call-template>
+                    </body>
+                </html>
+            </xsl:when>
+            <xsl:otherwise>
                 <rdf:RDF>
                     <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
                     <xsl:namespace name="schema" select="'http://schema.org/'"/>
@@ -102,8 +103,8 @@ section dl {
                         </xsl:call-template>
                     </rdf:Description>
                 </rdf:RDF>
-            </xsl:result-document>
-        </xsl:if>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <xsl:template name="list-metadata-rdfa">

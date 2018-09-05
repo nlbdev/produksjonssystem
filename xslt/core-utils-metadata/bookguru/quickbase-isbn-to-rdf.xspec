@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:schema="http://schema.org/"
+               xmlns:frbr="http://purl.org/vocab/frbr/core#"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:pkg="http://expath.org/ns/pkg"
+               xmlns:impl="urn:x-xspec:compile:xslt:impl"
+               stylesheet="quickbase-record-to-rdf.xsl">
+    
+    <x:scenario label="Basic test (creative work)">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="6" field_type="text" base_type="text">
+                                <label>ISBN</label>
+                            </field>
+                            <field id="7" field_type="text" base_type="text">
+                                <label>Tilvekstnummer</label>
+                            </field>
+                            <field id="8" field_type="text" base_type="text">
+                                <label>Tittel</label>
+                            </field>
+                            <field id="9" field_type="text" base_type="text">
+                                <label>Forfatter</label>
+                            </field>
+                            <field id="10" field_type="text" base_type="text">
+                                <label>User</label>
+                            </field>
+                            <field id="2" field_type="timestamp" base_type="int64" role="modified">
+                                <label>Date Modified</label>
+                            </field>
+                            <field id="1" field_type="timestamp" base_type="int64" role="created">
+                                <label>Date Created</label>
+                            </field>
+                            <field id="5" field_type="userid" base_type="text" role="modifier">
+                                <label>Last Modified By</label>
+                            </field>
+                            <field id="3" field_type="recordid" base_type="int32" role="recordid" mode="virtual">
+                                <label>Record ID#</label>
+                            </field>
+                            <field id="4" field_type="userid" base_type="text" role="owner">
+                                <label>Record Owner</label>
+                            </field>
+                        </fields>
+                        <lastluserid>0</lastluserid>
+                        <lusers>
+                            <luser id="57499776.zqqv">a@nlb.no</luser>
+                            <luser id="57727434.bz6f">B</luser>
+                            <luser id="57728628.dgd8">c@nlb.no</luser>
+                            <luser id="57933880.bk2j">d@nlb.no</luser>
+                            <luser id="59749752.bqi6">e@nlb.no</luser>
+                        </lusers>
+                        <records>
+                            <record rid="2438">
+                                <f id="6">978-82-16-27438-5</f>
+                                <f id="7">226376</f>
+                                <f id="8">Essentials of international relations</f>
+                                <f id="9">Forfattersdottir, Forfatter<BR/>
+                                </f>
+                                <f id="10">Bibliotekarsen, Bibliotekar</f>
+                                <f id="2">1535371195310</f>
+                                <f id="1">1488360063399</f>
+                                <f id="5">57499776.zqqv</f>
+                                <f id="3">2438</f>
+                                <f id="4">57727434.bz6f</f>
+                                <update_id>1535371195310</update_id>
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/">
+                    <head>
+                        <title>Essentials of international relations</title>
+                        <meta charset="utf-8" />
+                        <style>...</style>
+                    </head>
+                    <body vocab="http://schema.org/" typeof="CreativeWork" id="...">
+                        <h1>Essentials of international relations</h1>
+                        <dl>
+                            <dt title="nlbprod:dateCreated">Date Created</dt>
+                            <dd property="nlbprod:dateCreated">2017-03-01T09:21:03</dd>
+                            <dt title="nlbprod:publisher">User</dt>
+                            <dd property="nlbprod:publisher">Bibliotekarsen, Bibliotekar</dd>
+                            <dt title="nlbprod:dateModified">Date Modified</dt>
+                            <dd property="nlbprod:dateModified">2018-08-27T11:59:55</dd>
+                            <dt title="nlbprod:recordId">Record ID#</dt>
+                            <dd property="nlbprod:recordId">2438</dd>
+                            <dt title="nlbprod:recordOwner">Record Owner</dt>
+                            <dd property="nlbprod:recordOwner">B</dd>
+                            <dt title="nlbprod:lastModifiedBy">Last Modified By</dt>
+                            <dd property="nlbprod:lastModifiedBy">a@nlb.no</dd>
+                            <dt title="nlbprod:registrationDate">ISBN</dt>
+                            <dd property="nlbprod:registrationDate">978-82-16-27438-5</dd>
+                            <dt title="nlbprod:title">Tittel</dt>
+                            <dd property="nlbprod:title">Essentials of international relations</dd>
+                            <dt title="nlbprod:author">Forfatter</dt>
+                            <dd property="nlbprod:author">Forfattersdottir, Forfatter</dd>
+                        </dl>
+                    </body>
+                </html>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">...</rdf:RDF>
+            </_>
+        </x:expect>
+        <x:expect label="Should be as expected">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:nlbprod="http://www.nlb.no/production"
+                    xmlns:nlb="http://www.nlb.no/">
+                    <rdf:Description rdf:ID="...">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                        <nlbprod:dateCreated>2017-03-01T09:21:03</nlbprod:dateCreated>
+                        <nlbprod:publisher>Bibliotekarsen, Bibliotekar</nlbprod:publisher>
+                        <nlbprod:dateModified>2018-08-27T11:59:55</nlbprod:dateModified>
+                        <nlbprod:recordId>2438</nlbprod:recordId>
+                        <nlbprod:recordOwner>B</nlbprod:recordOwner>
+                        <nlbprod:lastModifiedBy>a@nlb.no</nlbprod:lastModifiedBy>
+                        <nlbprod:registrationDate>978-82-16-27438-5</nlbprod:registrationDate>
+                        <nlbprod:title>Essentials of international relations</nlbprod:title>
+                        <nlbprod:author>Forfattersdottir, Forfatter</nlbprod:author>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
