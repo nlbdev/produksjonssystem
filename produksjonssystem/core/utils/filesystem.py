@@ -231,7 +231,7 @@ class Filesystem():
         else:
             shutil.copy(source, destination)
 
-    def storeBook(self, source, book_id, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
+    def storeBook(self, source, book_id, overwrite = True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
         assert book_id
@@ -251,16 +251,20 @@ class Filesystem():
         if os.path.isfile(source) and file_extension:
             target += "." + str(file_extension)
         if os.path.exists(target):
-            self.pipeline.utils.report.info(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
-            try:
-                if os.path.isdir(target):
-                    shutil.rmtree(target)
-                else:
-                    os.remove(target)
-            except (OSError, NotADirectoryError):
-                self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the file or folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
-                self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
-                raise
+            if overwrite == True:
+                self.pipeline.utils.report.info(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
+                try:
+                    if os.path.isdir(target):
+                        shutil.rmtree(target)
+                    else:
+                        os.remove(target)
+                except (OSError, NotADirectoryError):
+                    self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the file or folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
+                    self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
+                    raise
+            else:
+                self.pipeline.utils.report.info(book_id + " finnes fra før og skal ikke overskrives.")
+                return target
         if move:
             shutil.move(source, target)
         else:

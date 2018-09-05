@@ -99,10 +99,11 @@ class Pipeline():
     labels = []
     publication_format = None
 
-    def __init__(self, retry_all=False, retry_missing=False):
+    def __init__(self, retry_all=False, retry_missing=False, overwrite=True):
         self.utils = DotMap()
         self.utils.report = None
         self.utils.filesystem = None
+        self.overwrite = overwrite
         self.retry_all = retry_all
         self.retry_missing = retry_missing
         self._queue_lock = RLock()
