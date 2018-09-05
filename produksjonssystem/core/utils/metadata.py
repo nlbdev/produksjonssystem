@@ -129,6 +129,26 @@ class Metadata:
         return edition_identifiers, publication_identifiers
 
     @staticmethod
+    def is_in_quickbase(report, identifiers):
+        if isinstance(identifiers, str):
+            identifiers = [identifiers]
+        for identifier in identifiers:
+            report.info("Ser etter {} i Quickbase...".format(identifier))
+            metadata_dir = os.path.join(Metadata.get_metadata_dir(), identifier)
+            rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+            if os.path.isfile(rdf_path):
+                rdf = ElementTree.parse(rdf_path).getroot()
+                identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
+                if identifiers:
+                    report.info("{} finnes i Quickbase".format(identifier))
+                    return True
+                else:
+                    report.info("{} finnes ikke i Quickbase".format(identifier))
+            else:
+                report.info("Finner ikke Quickbase-metadata for {}.".format(identifier))
+        return False
+
+    @staticmethod
     def get_bibliofil_identifiers(report, edition_identifiers, publication_identifiers):
         with Metadata._original_isbn_lock:
             # Find book IDs with the same ISBN in *596$f (input is "bookId,isbn" CSV dump)
