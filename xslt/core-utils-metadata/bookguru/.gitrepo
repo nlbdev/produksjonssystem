@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/nlbdev/bookguru.git
 	branch = master
-	commit = 05772e23a880c5a1897bfdb8578f344810cb14df
-	parent = fcf41dad05302a8b04563872836e2890c7cea24a
+	commit = d130eb6648ed62517d4e1714b263363851df0ac7
+	parent = f81378041182d2c802db805c36446d8ab46393e8
 	cmdver = 0.3.1
