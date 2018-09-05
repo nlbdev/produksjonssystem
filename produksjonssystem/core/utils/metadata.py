@@ -406,11 +406,9 @@ class Metadata:
                 return False
             rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
 
-            pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl")
-            rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.rdf')
+            pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/A)")
             pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
             pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'))
-            pipeline.utils.report.debug("    rdf    = " + rdf_path)
             success = Metadata.get_quickbase_isbn(pipeline, format_edition_identifier,
                                                   os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
             if not success:
@@ -419,10 +417,18 @@ class Metadata:
                         stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
                         source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'),
                         target=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.html'),
-                        parameters={
-                            "rdf-xml-path": rdf_path,
-                            "include-source-reference": "true"
-                        })
+                        parameters={"output-rdfa": "true", "include-source-reference": "true"})
+            if not xslt.success:
+                return False
+            pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/XML)")
+            rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.rdf')
+            pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'))
+            pipeline.utils.report.debug("    target = " + rdf_path)
+            xslt = Xslt(pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
+                        source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '.xml'),
+                        target=rdf_path,
+                        parameters={"include-source-reference": "true"})
             if not xslt.success:
                 return False
             rdf_files.append('quickbase/' + os.path.basename(rdf_path))
