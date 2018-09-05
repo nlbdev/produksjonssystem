@@ -17,9 +17,10 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dc:language">
+    <xsl:template match="dc:language | dc:language.original | opf:meta[@property='dc:language.original']">
         <xsl:variable name="language" select="tokenize((@schema:name, text())[1],'-')[1]"/>
         <xsl:variable name="language" select="$iso-639//language[(iso-639-3, iso-639-1)/text() = $language]"/>
+        <xsl:variable name="original" select="if (ends-with((@property, name())[1], '.original')) then '.original' else ''"/>
         
         <xsl:choose>
             <xsl:when test="parent::opf:*">
@@ -35,7 +36,7 @@
                     <xsl:sort select="name()"/>
                     <xsl:sort select="text()"/>
                     <xsl:element name="meta" namespace="http://www.idpf.org/2007/opf">
-                        <xsl:attribute name="property" select="concat('dc:language.name.', local-name())"/>
+                        <xsl:attribute name="property" select="concat('dc:language', $original, '.name.', local-name())"/>
                         <xsl:attribute name="refines" select="concat('#', $id)"/>
                         <xsl:value-of select="text()"/>
                     </xsl:element>
@@ -48,7 +49,7 @@
                     <xsl:for-each select="$language/(norwegian | english | native)">
                         <xsl:sort select="name()"/>
                         <xsl:sort select="text()"/>
-                        <xsl:element name="{concat('dc:language.name.', local-name())}">
+                        <xsl:element name="{concat('dc:language', $original, '.name.', local-name())}">
                             <xsl:value-of select="text()"/>
                         </xsl:element>
                     </xsl:for-each>

@@ -117,4 +117,50 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Originalspråk (RDF)">
+        <x:context>
+            <rdf:Description>
+                <dc:language.original>nob</dc:language.original>
+                <dc:language.original schema:name="eng"/>
+            </rdf:Description>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:Description>
+                <dc:language.original schema:name="nb">
+                    <dc:language.original.name.english>Norwegian Bokmål</dc:language.original.name.english>
+                    <dc:language.original.name.native>Norsk Bokmål</dc:language.original.name.native>
+                    <dc:language.original.name.norwegian>Bokmål</dc:language.original.name.norwegian>
+                </dc:language.original>
+                <dc:language.original schema:name="en">
+                    <dc:language.original.name.english>English</dc:language.original.name.english>
+                    <dc:language.original.name.native>English</dc:language.original.name.native>
+                    <dc:language.original.name.norwegian>Engelsk</dc:language.original.name.norwegian>
+                </dc:language.original>
+            </rdf:Description>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Originalspråk (OPF)">
+        <x:context>
+            <opf:metadata>
+                <opf:meta property="dc:language.original" id="language-008-1">nob</opf:meta>
+                <opf:meta property="dc:language.original" id="language-041-2">eng</opf:meta>
+            </opf:metadata>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <opf:metadata>
+                <opf:meta property="dc:language.original" id="language-008-1">nb</opf:meta>
+                <opf:meta property="dc:language.original.name.english" refines="#language-008-1">Norwegian Bokmål</opf:meta>
+                <opf:meta property="dc:language.original.name.native" refines="#language-008-1">Norsk Bokmål</opf:meta>
+                <opf:meta property="dc:language.original.name.norwegian" refines="#language-008-1">Bokmål</opf:meta>
+                <opf:meta property="dc:language.original" id="language-041-2">en</opf:meta>
+                <opf:meta property="dc:language.original.name.english" refines="#language-041-2">English</opf:meta>
+                <opf:meta property="dc:language.original.name.native" refines="#language-041-2">English</opf:meta>
+                <opf:meta property="dc:language.original.name.norwegian" refines="#language-041-2">Engelsk</opf:meta>
+            </opf:metadata>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
