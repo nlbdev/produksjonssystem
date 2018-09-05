@@ -168,8 +168,8 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 
-                <xsl:if test="self::dc:language">
-                    <xsl:for-each select="*[matches(name(), '^dc:language.name.*$')]">
+                <xsl:if test="self::dc:language | self::dc:language.original">
+                    <xsl:for-each select="*[matches(name(), '^dc:language(\.original)?\.name.*$')]">
                         <xsl:call-template name="meta">
                             <xsl:with-param name="rdf-property" select="."/>
                         </xsl:call-template>

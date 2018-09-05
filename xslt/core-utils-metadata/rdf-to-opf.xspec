@@ -1039,6 +1039,11 @@
                             <dc:language.name.native>English</dc:language.name.native>
                             <dc:language.name.norwegian>Engelsk</dc:language.name.norwegian>
                         </dc:language>
+                        <dc:language.original nlb:metadata-source="Bibliofil@115437 *008" schema:name="sv">
+                            <dc:language.original.name.english>Swedish</dc:language.original.name.english>
+                            <dc:language.original.name.native>Svenska</dc:language.original.name.native>
+                            <dc:language.original.name.norwegian>Svensk</dc:language.original.name.norwegian>
+                        </dc:language.original>
                     </rdf:Description>
                 </rdf:RDF>
             </x:param>
@@ -1061,6 +1066,10 @@
         <meta property="dc:language.name.english">Norwegian Bokmål</meta> <!-- Bibliofil@115437 *008 -->
         <meta property="dc:language.name.native">Norsk Bokmål</meta> <!-- Bibliofil@115437 *008 -->
         <meta property="dc:language.name.norwegian">Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original">sv</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original.name.english">Swedish</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original.name.native">Svenska</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original.name.norwegian">Svensk</meta> <!-- Bibliofil@115437 *008 -->
         <dc:format>EPUB</dc:format>
 
     </metadata></x:expect>
