@@ -12,18 +12,21 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes" method="xhtml" include-content-type="no"/>
+    <xsl:output indent="yes" include-content-type="no"/>
     
-    <xsl:param name="rdf-xml-path" as="xs:string"/>
+    <xsl:param name="output-rdfa" select="false()"/>
     <xsl:param name="include-source-reference" select="false()"/>
+    <xsl:param name="include-dc-identifier" select="false()"/>
+    
+    <xsl:variable name="fields" select="/qdbapi/table/fields" as="element()?"/>
+    <xsl:variable name="lusers" select="/qdbapi/table/lusers" as="element()?"/>
     
     <xsl:template name="test">
         <xsl:param name="qdbapi" as="element()"/>
-        
         <xsl:variable name="metadata" as="node()*">
-            <xsl:call-template name="metadata">
-                <xsl:with-param name="qdbapi" select="$qdbapi"/>
-            </xsl:call-template>
+            <xsl:for-each select="$qdbapi">
+                <xsl:call-template name="metadata"/>
+            </xsl:for-each>
         </xsl:variable>
         
         <xsl:variable name="resource-creativeWork" select="f:resource($metadata, 'creativeWork')"/>
@@ -42,43 +45,42 @@
     
     <xsl:template match="/qdbapi">
         <xsl:variable name="metadata" as="node()*">
-            <xsl:call-template name="metadata">
-                <xsl:with-param name="qdbapi" select="."/>
-            </xsl:call-template>
+            <xsl:call-template name="metadata"/>
         </xsl:variable>
         
         <xsl:variable name="resource-creativeWork" select="f:resource($metadata, 'creativeWork')"/>
         
-        <xsl:call-template name="rdfa">
-            <xsl:with-param name="metadata" select="$metadata"/>
-            <xsl:with-param name="resource-creativeWork" select="$resource-creativeWork"/>
-        </xsl:call-template>
-        
-        <xsl:if test="$rdf-xml-path">
-            <xsl:result-document href="{$rdf-xml-path}" indent="yes">
+        <xsl:choose>
+            <xsl:when test="$output-rdfa">
+                <xsl:call-template name="rdfa">
+                    <xsl:with-param name="metadata" select="$metadata"/>
+                    <xsl:with-param name="resource-creativeWork" select="$resource-creativeWork"/>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
                 <xsl:call-template name="rdfxml">
                     <xsl:with-param name="metadata" select="$metadata"/>
                     <xsl:with-param name="resource-creativeWork" select="$resource-creativeWork"/>
                 </xsl:call-template>
-            </xsl:result-document>
-        </xsl:if>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <xsl:template name="metadata" as="node()*">
-        <xsl:param name="qdbapi" as="element()"/>
-        <xsl:for-each select="$qdbapi/table/records/record/f">
+        <xsl:for-each select=".//f">
             <xsl:sort select="@id"/>
             <xsl:variable name="meta" as="node()*">
-                <xsl:apply-templates select=".">
-                    <xsl:with-param name="qdbapi" select="$qdbapi" tunnel="yes"/>
-                </xsl:apply-templates>
+                <xsl:apply-templates select="."/>
             </xsl:variable>
             <xsl:choose>
                 <xsl:when test="$meta[self::html:dd]">
                     <xsl:copy-of select="$meta"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:message select="concat('Ingen regel for QuickBase-felt i Record-tabell: ', @id)"/>
+                    <xsl:variable name="label" select="/qdbapi/table/fields/field[@id=current()/@id]/label" as="xs:string?"/>
+                    <xsl:variable name="book" select="(../f[@id='13'])[1]" as="xs:string?"/>
+                    <xsl:variable name="metadata-source" select="concat('Quickbase Record@', $book, ' ', $label)"/>
+                    <xsl:message select="concat('Ingen regel for QuickBase-felt i Record-tabell: ', @id, '(', $metadata-source, ')')"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -172,14 +174,22 @@ section dl {
                 </xsl:call-template>
             </rdf:Description>
             <xsl:for-each select="distinct-values($metadata/@_type-id[not(.='creativeWork')])">
+                <xsl:variable name="type-id" select="."/>
                 <rdf:Description>
-                    <xsl:variable name="resource" select="f:resource($metadata, .)"/>
+                    <xsl:variable name="resource" select="f:resource($metadata, $type-id)"/>
                     <xsl:attribute name="rdf:{if (matches($resource,'^(http|urn)')) then 'about' else 'ID'}" select="$resource"/>
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                    <xsl:if test="$include-dc-identifier">
+                        <xsl:for-each select="$metadata[@_type-id = $type-id and matches(@property,'^nlbprod:identifier.[^\.]*$') and text() != ''][1]">
+                            <dc:identifier>
+                                <xsl:value-of select="text()"/>
+                            </dc:identifier>
+                        </xsl:for-each>
+                    </xsl:if>
                     <xsl:call-template name="list-metadata-rdfxml">
                         <xsl:with-param name="metadata" select="$metadata[self::*]"/>
-                        <xsl:with-param name="type-id" select="."/>
+                        <xsl:with-param name="type-id" select="$type-id"/>
                     </xsl:call-template>
                 </rdf:Description>
             </xsl:for-each>
@@ -233,8 +243,8 @@ section dl {
     </xsl:template>
     
     <xsl:function name="f:resource">
-        <xsl:param name="metadata" as="element()*" required="yes"/>
-        <xsl:param name="type-id" as="xs:string" required="yes"/>
+        <xsl:param name="metadata" as="element()*"/>
+        <xsl:param name="type-id" as="xs:string"/>
         <xsl:variable name="identifier" select="($metadata[self::html:dd[@_type-id=$type-id and starts-with(@property,'nlbprod:identifier') and normalize-space(.)]])[1]/normalize-space(.)"/>
         <xsl:choose>
             <xsl:when test="$identifier">
@@ -279,16 +289,15 @@ section dl {
     </xsl:function>
     
     <xsl:template match="f" priority="2">
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <xsl:variable name="id" select="@id"/>
-        <dt _field_type="{$qdbapi/table/fields/field[@id=$id]/@field_type}" _base_type="{$qdbapi/table/fields/field[@id=$id]/@base_type}">
+        <dt _field_type="{($fields, ancestor::qdbapi/table/fields)[1]/field[@id=$id]/@field_type}" _base_type="{($fields, ancestor::qdbapi/table/fields)[1]/field[@id=$id]/@base_type}">
             <xsl:if test="$include-source-reference">
-                <xsl:variable name="label" select="$qdbapi/table/fields/field[@id=current()/@id]/label" as="xs:string?"/>
+                <xsl:variable name="label" select="($fields, ancestor::qdbapi/table/fields)[1]/field[@id=current()/@id]/label" as="xs:string?"/>
                 <xsl:variable name="book" select="(../f[@id='13'])[1]" as="xs:string?"/>
                 <xsl:attribute name="nlb:metadata-source" select="concat('Quickbase Record@', $book, ' ', $label)"/>
             </xsl:if>
             
-            <xsl:value-of select="$qdbapi/table/fields/field[@id=$id]/label"/>
+            <xsl:value-of select="($fields, ancestor::qdbapi/table/fields)[1]/field[@id=$id]/label"/>
         </dt>
         <xsl:next-match/>
     </xsl:template>
@@ -319,21 +328,19 @@ section dl {
     
     <xsl:template match="f[@id='4']">
         <!-- "Record Owner" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:recordOwner" _type-id="creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='5']">
         <!-- "Last Modified By" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:lastModifiedBy" _type-id="creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -347,11 +354,10 @@ section dl {
     
     <xsl:template match="f[@id='7']">
         <!-- "Opprettet av" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:createdBy" _type-id="creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -647,11 +653,10 @@ section dl {
     
     <xsl:template match="f[@id='48']">
         <!-- "Sist endret av:" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:lastChangedBy" _type-id="creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1385,41 +1390,37 @@ section dl {
     
     <xsl:template match="f[@id='314']">
         <!-- "Signatur etterarbeid DAISY 2.02" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionDaisy202" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='315']">
         <!-- "Signatur etterarbeid DAISY 2.02 TTS" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionDaisy202tts" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='316']">
         <!-- "Signatur etterarbeid punktskrift" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionBraille" _type-id="braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='317']">
         <!-- "Signatur etterarbeid E-bok" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionEbook" _type-id="ebook">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1449,51 +1450,46 @@ section dl {
     
     <xsl:template match="f[@id='321']">
         <!-- "Signatur etterarbeid punktklubb" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionBrailleClub" _type-id="braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='323']">
         <!-- "Signatur tilrettelegging" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePreparation" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='324']">
         <!-- "Signatur DAISY 2.02 klargjort for utlån" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureDaisy202readyForLoan" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='325']">
         <!-- "Signatur E-bok klargjort for utlån" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureEbookReadyForLoan" _type-id="ebook">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='326']">
         <!-- "Signatur punktskrift klargjort for utlån" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureBrailleReadyForLoan" _type-id="braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1515,11 +1511,10 @@ section dl {
     
     <xsl:template match="f[@id='329']">
         <!-- "Signatur punktklubb klargjort for utån" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureBrailleClubReadyForLoan" _type-id="braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1549,11 +1544,10 @@ section dl {
     
     <xsl:template match="f[@id='344']">
         <!-- "Signatur DTBook bestilt" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureDTBookOrdered" _type-id="epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1623,11 +1617,10 @@ section dl {
     
     <xsl:template match="f[@id='353']">
         <!-- "Signatur etterarbeid ekstern produksjon" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionExternalProduction" _type-id="external">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1649,11 +1642,10 @@ section dl {
     
     <xsl:template match="f[@id='360']">
         <!-- "Signatur levert innleser" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureDeliveredToNarrator" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -1731,21 +1723,19 @@ section dl {
     
     <xsl:template match="f[@id='377']">
         <!-- "Signatur taktilt trykk ferdig produsert" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureTactilePrintProductionComplete" _type-id="braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='378']">
         <!-- "Signatur taktilt trykk klar for utlån" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureTactilePrintReadyForLoan" _type-id="braille">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -2007,11 +1997,10 @@ section dl {
     
     <xsl:template match="f[@id='418']">
         <!-- "Signatur for nedlasting" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureForDownload" _type-id="epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -2057,21 +2046,19 @@ section dl {
     
     <xsl:template match="f[@id='426']">
         <!-- "Signatur godkjent produksjon" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureApprovedProduction" _type-id="epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='427']">
         <!-- "Signatur returnert produksjon" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureReturnedProduction" _type-id="epub">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -2125,21 +2112,19 @@ section dl {
     
     <xsl:template match="f[@id='436']">
         <!-- "Signatur honorering" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureFee" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
     <xsl:template match="f[@id='437']">
         <!-- "Signatur registrering" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureRegistration" _type-id="creativeWork">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -2345,11 +2330,10 @@ section dl {
     
     <xsl:template match="f[@id='465']">
         <!-- "Signatur for påbegynt etterarbeid" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signaturePostProductionStarted" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     
@@ -2371,11 +2355,10 @@ section dl {
     
     <xsl:template match="f[@id='468']">
         <!-- "Signatur honorarkrav behandlet" -->
-        <xsl:param name="qdbapi" as="element()" tunnel="yes"/>
         <!-- String -->
         <dd property="nlbprod:signatureFeeClaimHandled" _type-id="audio">
             <xsl:variable name="id" select="normalize-space(.)"/>
-            <xsl:value-of select="$qdbapi/table/lusers/luser[@id=$id]/text()"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
         </dd>
     </xsl:template>
     

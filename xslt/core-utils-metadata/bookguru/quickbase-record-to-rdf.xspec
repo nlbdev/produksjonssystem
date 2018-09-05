@@ -8,8 +8,6 @@
                xmlns:impl="urn:x-xspec:compile:xslt:impl"
                stylesheet="quickbase-record-to-rdf.xsl">
     
-    <x:param name="include-source-reference" select="false()"/>
-    
     <x:scenario label="Basic test (creative work)">
         <x:call template="test">
             <x:param name="qdbapi">
@@ -286,7 +284,9 @@
                             <field id="483" field_type="checkbox" base_type="bool"/>
                             <field id="484" field_type="checkbox" base_type="bool"/>
                             <field id="485" field_type="checkbox" base_type="bool"/>
-                            <field id="487" field_type="checkbox" base_type="bool"/>
+                            <field id="487" field_type="checkbox" base_type="bool">
+                                <label>Feltetikett</label>
+                            </field>
                             <field id="488" field_type="date" base_type="int64"/>
                             <field id="489" field_type="userid" base_type="text"/>
                             <field id="494" field_type="checkbox" base_type="bool"/>

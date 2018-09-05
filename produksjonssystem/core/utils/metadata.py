@@ -132,10 +132,15 @@ class Metadata:
     def is_in_quickbase(report, identifiers):
         if isinstance(identifiers, str):
             identifiers = [identifiers]
+        metadata_dir_exists = False
         for identifier in identifiers:
             report.info("Ser etter {} i Quickbase...".format(identifier))
             metadata_dir = os.path.join(Metadata.get_metadata_dir(), identifier)
             rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+            if os.path.isdir(metadata_dir):
+                metadata_dir_exists = True
+            else:
+                continue
             if os.path.isfile(rdf_path):
                 rdf = ElementTree.parse(rdf_path).getroot()
                 identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
@@ -334,11 +339,9 @@ class Metadata:
             return False
         rdf_files.append('epub/' + os.path.basename(rdf_path))
 
-        pipeline.utils.report.debug("quickbase-record-to-rdf.xsl")
-        rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+        pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/A)")
         pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record.xml'))
         pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/record.html'))
-        pipeline.utils.report.debug("    rdf    = " + rdf_path)
         success = Metadata.get_quickbase_record(pipeline, edition_identifier, os.path.join(metadata_dir, 'quickbase/record.xml'))
         if not success:
             return False
@@ -346,10 +349,18 @@ class Metadata:
                     stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
                     source=os.path.join(metadata_dir, 'quickbase/record.xml'),
                     target=os.path.join(metadata_dir, 'quickbase/record.html'),
-                    parameters={
-                      "rdf-xml-path": rdf_path,
-                      "include-source-reference": "true"
-                    })
+                    parameters={"output-rdfa": "true", "include-source-reference": "true"})
+        if not xslt.success:
+            return False
+        pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/XML)")
+        rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+        pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record.xml'))
+        pipeline.utils.report.debug("    target = " + rdf_path)
+        xslt = Xslt(pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
+                    source=os.path.join(metadata_dir, 'quickbase/record.xml'),
+                    target=rdf_path,
+                    parameters={"include-source-reference": "true"})
         if not xslt.success:
             return False
         rdf_files.append('quickbase/' + os.path.basename(rdf_path))
@@ -1032,7 +1043,6 @@ class Metadata:
         if os.path.exists(path):
             epub = Epub(pipeline, path)
             if epub.isepub(report_errors=False):
-                book_metadata = dict(epub.metadata())
                 book_metadata["identifier"] = epub.identifier()
                 book_metadata["title"] = epub.meta("dc:title")
                 return book_metadata
@@ -1063,10 +1073,8 @@ class Metadata:
             head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
             head = head[0] if head else None
             if head is not None:
-                for meta in [e for e in head.xpath("/*/*[local-name()='meta' and @name!='' and @value!='']") if "meta" in e.attrib and "content" in e.attrib]:
-                    book_metadata[meta.attrib["name"]] = meta.attrib["content"]
-
-                book_title = [e.text for e in head.xpath("/*/*[local-name()='head']/*[local-name()='title']")]
+                book_title = [e.text for e in head.xpath(
+                    "/*/*[local-name()='head']/*[local-name()='title']")]
                 book_title = book_title[0] if book_title else None
                 book_identifier = [e.attrib["content"] for e in head.xpath(
                     "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]
