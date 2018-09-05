@@ -194,9 +194,9 @@ class Produksjonssystem():
             [NLBPUB_incoming_warning(retry_all=True),         "incoming_NLBPUB",     "nlbpub_manuell"],
             [DummyPipeline("Manuell sjekk av NLBPUB",
                            labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
-            #[NLBPUB_validator(),                              "grunnlag",            "nlbpub"],
+            # [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
             [IncomingNordic(retry_all=True),                  "incoming",            "master"],
-            [NordicToNlbpub(retry_missing=True),              "master",              "nlbpub"],
+            [NordicToNlbpub(retry_missing=True, overwrite=False),              "master",              "nlbpub"],
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
