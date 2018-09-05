@@ -1012,6 +1012,7 @@ class Metadata:
         if os.path.exists(path):
             epub = Epub(pipeline, path)
             if epub.isepub(report_errors=False):
+                book_metadata = dict(epub.metadata())
                 book_metadata["identifier"] = epub.identifier()
                 book_metadata["title"] = epub.meta("dc:title")
                 return book_metadata
@@ -1042,8 +1043,10 @@ class Metadata:
             head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
             head = head[0] if head else None
             if head is not None:
-                book_title = [e.text for e in head.xpath(
-                    "/*/*[local-name()='head']/*[local-name()='title']")]
+                for meta in [e for e in head.xpath("/*/*[local-name()='meta' and @name!='' and @value!='']") if "meta" in e.attrib and "content" in e.attrib]:
+                    book_metadata[meta.attrib["name"]] = meta.attrib["content"]
+
+                book_title = [e.text for e in head.xpath("/*/*[local-name()='head']/*[local-name()='title']")]
                 book_title = book_title[0] if book_title else None
                 book_identifier = [e.attrib["content"] for e in head.xpath(
                     "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]

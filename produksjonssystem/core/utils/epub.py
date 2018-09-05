@@ -21,7 +21,7 @@ class Epub():
     }
 
     pipeline = None
-    metadata = None
+    _metadata = None
     book_path = None
     book_path_file = None
     book_path_dir = None
@@ -205,12 +205,12 @@ class Epub():
 
         return spine
 
-    def meta(self, name, default=None):
+    def metadata(self):
         """Read OPF metadata"""
-        if not self.metadata:
+        if not self._metadata:
             opf = None
             opf_path = self.opf_path()
-            self.metadata = {}
+            self._metadata = {}
 
             if os.path.isdir(self.book_path):
                 opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
@@ -227,12 +227,17 @@ class Epub():
                 n = m.attrib["property"] if "property" in m.attrib else m.attrib["name"] if "name" in m.attrib else m.tag
                 n = n.replace("{http://purl.org/dc/elements/1.1/}", "dc:")
                 value = m.attrib["content"] if "content" in m.attrib else m.text
-                self.metadata[n] = value
+                self._metadata[n] = value
 
-        return self.metadata[name] if name in self.metadata else default
+        return self._metadata
+
+    def meta(self, name, default=None):
+        self.metadata()  # make sure self._metadata is defined
+        return self._metadata[name] if name in self._metadata else default
 
     def refresh_metadata(self):
-        self.metadata = None
+        self._metadata = None
+        self.metadata()
 
     @staticmethod
     def html_to_nav(pipeline, source, target):
