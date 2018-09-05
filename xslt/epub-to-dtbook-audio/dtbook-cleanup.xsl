@@ -62,6 +62,10 @@
         <meta name="dc:Language" content="{f:lang(@content)}"/>
     </xsl:template>
     
+    <xsl:template match="h1[@class='title fulltitle']"/>   
+    
+    <xsl:template match="p[@class='docauthor author']"/>
+    
     <xsl:template match="@xml:lang[not(parent::dtbook) and . = /*/tokenize(lower-case(string(@xml:lang)),'-')[last()]]" priority="2"/> 
     
     <xsl:template match="@xml:lang">
