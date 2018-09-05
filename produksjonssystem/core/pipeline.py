@@ -855,11 +855,10 @@ class Pipeline():
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
                             try:
-                                if self.utils.report.should_email:
-                                    logging.exception("Sending email")
-                                    self.utils.report.email(self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
-                                else:
-                                    logging.exception("Not sending email")
+                                self.utils.report.email(self.email_settings["smtp"],
+                                                        self.email_settings["sender"],
+                                                        self.email_settings["recipients"],
+                                                        should_email=self.utils.report.should_email)
                             except Exception:
                                 logging.exception("An error occured while sending email")
                             finally:

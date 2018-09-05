@@ -161,40 +161,43 @@ class Report():
         return tuple(_addresses)
 
     @staticmethod
-    def emailPlainText(subject, message, smtp, sender, recipients):
+    def emailPlainText(subject, message, smtp, sender, recipients, should_email=True):
         assert isinstance(subject, str)
         assert isinstance(message, str)
         assert isinstance(smtp, dict)
         assert isinstance(sender, str) or isinstance(sender, Address)
         assert isinstance(recipients, str) or isinstance(recipients, list)
 
-        # 1. build e-mail
-        msg = EmailMessage()
-        msg['Subject'] = subject
-        msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
-        msg['To'] = Report.emailStringsToAddresses(recipients)
-        msg.set_content(message)
-
-        # 2. send e-mail
-        if not msg["To"]:
-            logging.warning("Email with subject \"{}\" has no recipients".format(subject))
+        if not should_email:
+            logging.exception("Not sending plain text email")
         else:
-            logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
-            if "host" in smtp and "port" in smtp:
-                with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
-                    s.ehlo()
-                    s.starttls()
-                    if "user" in smtp and "pass" in smtp:
-                        s.login(smtp["user"], smtp["pass"])
-                    else:
-                        logging.debug("email user/pass not configured")
-                    s.send_message(msg)
+            # 1. build e-mail
+            msg = EmailMessage()
+            msg['Subject'] = subject
+            msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
+            msg['To'] = Report.emailStringsToAddresses(recipients)
+            msg.set_content(message)
+
+            # 2. send e-mail
+            if not msg["To"]:
+                logging.warning("Email with subject \"{}\" has no recipients".format(subject))
             else:
-                logging.warning("email host/port not configured")
+                logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
+                if "host" in smtp and "port" in smtp:
+                    with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
+                        s.ehlo()
+                        s.starttls()
+                        if "user" in smtp and "pass" in smtp:
+                            s.login(smtp["user"], smtp["pass"])
+                        else:
+                            logging.debug("email user/pass not configured")
+                        s.send_message(msg)
+                else:
+                    logging.warning("email host/port not configured")
 
         Slack.slack(text=subject, attachments=None)
 
-    def email(self, smtp, sender, recipients, subject=None):
+    def email(self, smtp, sender, recipients, subject=None, should_email=True):
         if not subject:
             assert isinstance(self.title, str) or self.pipeline is not None, "either title or pipeline must be specified when subject is missing"
             subject = self.title if self.title else self.pipeline.title
@@ -311,39 +314,42 @@ class Report():
 </html>
 '''
 
-            # 3. build e-mail
-            msg = EmailMessage()
-            msg['Subject'] = subject
-            msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
-            msg['To'] = Report.emailStringsToAddresses(recipients)
-            msg.set_content(markdown_text)
-            msg.add_alternative(markdown_html, subtype="html")
-
-            logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
-
-            # 4. send e-mail
-            if "host" in smtp and "port" in smtp:
-                smtp_server = "{}:{}".format(smtp["host"], smtp["port"])
-                logging.info("SMTP server: {}".format(smtp_server))
-                with smtplib.SMTP(smtp_server) as s:
-                    s.ehlo()
-                    s.starttls()
-                    if "user" in smtp and "pass" in smtp:
-                        s.login(smtp["user"], smtp["pass"])
-                    else:
-                        logging.debug("email user/pass not configured")
-                    s.send_message(msg)
+            if not should_email:
+                logging.exception("Not sending email")
             else:
-                logging.warning("email host/port not configured")
+                # 3. build e-mail
+                msg = EmailMessage()
+                msg['Subject'] = subject
+                msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
+                msg['To'] = Report.emailStringsToAddresses(recipients)
+                msg.set_content(markdown_text)
+                msg.add_alternative(markdown_html, subtype="html")
 
-            temp_md_obj = tempfile.NamedTemporaryFile(suffix=".md")
-            temp_html_obj = tempfile.NamedTemporaryFile(suffix=".html")
-            with open(temp_md_obj.name, "w") as f:
-                f.write(markdown_text)
-                logging.debug("email markdown: {}".format(temp_md_obj.name))
-            with open(temp_html_obj.name, "w") as f:
-                f.write(markdown_html)
-                logging.debug("email html: {}".format(temp_html_obj.name))
+                logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
+
+                # 4. send e-mail
+                if "host" in smtp and "port" in smtp:
+                    smtp_server = "{}:{}".format(smtp["host"], smtp["port"])
+                    logging.info("SMTP server: {}".format(smtp_server))
+                    with smtplib.SMTP(smtp_server) as s:
+                        s.ehlo()
+                        s.starttls()
+                        if "user" in smtp and "pass" in smtp:
+                            s.login(smtp["user"], smtp["pass"])
+                        else:
+                            logging.debug("email user/pass not configured")
+                        s.send_message(msg)
+                else:
+                    logging.warning("email host/port not configured")
+
+                temp_md_obj = tempfile.NamedTemporaryFile(suffix=".md")
+                temp_html_obj = tempfile.NamedTemporaryFile(suffix=".html")
+                with open(temp_md_obj.name, "w") as f:
+                    f.write(markdown_text)
+                    logging.debug("email markdown: {}".format(temp_md_obj.name))
+                with open(temp_html_obj.name, "w") as f:
+                    f.write(markdown_html)
+                    logging.debug("email html: {}".format(temp_html_obj.name))
 
         except AssertionError as e:
             logging.error(str(e))
