@@ -28,21 +28,7 @@ class IncomingNLBPUB(Pipeline):
     expected_processing_time = 300
     warning = False
     should_email_default = True
-
-    ace_cli = None
-
-    @staticmethod
-    def init_environment():
-        if "ACE_CLI" in Pipeline.environment:
-            IncomingNLBPUB.ace_cli = Pipeline.environment["ACE_CLI"]
-        elif os.path.exists("/usr/bin/ace"):
-            IncomingNLBPUB.ace_cli = "/usr/bin/ace"
-        else:
-            IncomingNLBPUB.ace_cli = "ace"
-
-    def __init__(self, *args, **kwargs):
-        IncomingNLBPUB.init_environment()
-        super().__init__(*args, **kwargs)
+    should_message_slack = True
 
     def on_book_deleted(self):
         self.utils.report.should_email = False
@@ -74,6 +60,7 @@ class IncomingNLBPUB(Pipeline):
             return
 
         self.utils.report.should_email = self.should_email_default
+        self.utils.report.should_message_slack = self.should_message_slack
         self.utils.report.info("Lager kopi av EPUB...")
         nordic_epubdir_obj = tempfile.TemporaryDirectory()
         nordic_epubdir = nordic_epubdir_obj.name
@@ -95,6 +82,7 @@ class IncomingNLBPUB(Pipeline):
         html_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[0]), source=html_file)
         nav_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[1]), source=nav_file)
         opf_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[2]), source=package_file)
+        warning_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", "nlbpub-check-need-for-manual-intervention.sch"), source=html_file)
         schematron_list = [html_sch, nav_sch, opf_sch]
         html_relax = Relaxng(self, relaxng=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", rng_files), source=html_file)
 
@@ -110,18 +98,21 @@ class IncomingNLBPUB(Pipeline):
 
         if not self.skip_warning:
 
-            # TODO Sjekk for advarsel ved bruk av schematron eller noe sånt, return true hvis advarsel false otherwise
+            #warning_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", "nlbpub-check-need-for-manual-intervention.sch"), source=html_file)
 
-            if self.warning:
+            if warning_sch.success is False:
                 if self.uid == "NLBPUB-incoming-warning":
                     archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
                     self.utils.report.attachment(None, archived_path, "DEBUG")
                     self.utils.report.success(epub.identifier()+" ble lagt til for manuell sjekk.")
                     self.utils.report.title = self.title + ": " + epub.identifier() + " er valid, men må sjekkes manuelt 👍😄" + epubTitle
                     self.utils.report.should_email = True
+                    self.utils.report.should_message_slack = True
                     return True
                 else:
                     self.utils.report.should_email = False
+                    self.utils.report.should_message_slack = False
+                    self.utils.report.title = self.title + ": " + epub.identifier() + " er valid, men må sjekkes manuelt 👍😄" + epubTitle
                     return True
             else:
                 if self.uid == "NLBPUB-incoming-validator":
@@ -150,6 +141,7 @@ class NLBPUB_validator(IncomingNLBPUB):
     skip_warning = True
     expected_processing_time = 300
     should_email_default = True
+    should_message_slack = True
 
 
 class NLBPUB_incoming_validator(IncomingNLBPUB):
@@ -160,6 +152,7 @@ class NLBPUB_incoming_validator(IncomingNLBPUB):
     skip_warning = False
     expected_processing_time = 300
     should_email_default = True
+    should_message_slack = True
 
 
 class NLBPUB_incoming_warning(IncomingNLBPUB):
@@ -170,3 +163,4 @@ class NLBPUB_incoming_warning(IncomingNLBPUB):
     skip_warning = False
     expected_processing_time = 300
     should_email_default = False
+    should_message_slack = False
