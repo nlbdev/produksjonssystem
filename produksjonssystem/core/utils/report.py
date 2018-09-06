@@ -26,6 +26,7 @@ class Report():
     pipeline = None
     title = None
     should_email = True
+    should_message_slack = True
     _report_dir = None
     _messages = None
 
@@ -197,7 +198,7 @@ class Report():
 
         Slack.slack(text=subject, attachments=None)
 
-    def email(self, smtp, sender, recipients, subject=None, should_email=True):
+    def email(self, smtp, sender, recipients, subject=None, should_email=True, should_message_slack=True):
         if not subject:
             assert isinstance(self.title, str) or self.pipeline is not None, "either title or pipeline must be specified when subject is missing"
             subject = self.title if self.title else self.pipeline.title
@@ -354,23 +355,26 @@ class Report():
         except AssertionError as e:
             logging.error(str(e))
 
-        # 5. send message to Slack
-        slack_attachments = []
-        for attachment in attachments:
-            color = None
-            if attachment["severity"] == "SUCCESS":
-                color = "good"
-            elif attachment["severity"] == "WARN":
-                color = "warning"
-            elif attachment["severity"] == "ERROR":
-                color = "danger"
-            slack_attachments.append({
-                "title_link": attachment["smb"],
-                "title": attachment["title"],
-                "fallback": attachment["title"],
-                "color": color
-            })
-        Slack.slack(text=subject, attachments=slack_attachments)
+        if not should_message_slack:
+            logging.exception("Not sending message to slack")
+        else:
+            # 5. send message to Slack
+            slack_attachments = []
+            for attachment in attachments:
+                color = None
+                if attachment["severity"] == "SUCCESS":
+                    color = "good"
+                elif attachment["severity"] == "WARN":
+                    color = "warning"
+                elif attachment["severity"] == "ERROR":
+                    color = "danger"
+                slack_attachments.append({
+                    "title_link": attachment["smb"],
+                    "title": attachment["title"],
+                    "fallback": attachment["title"],
+                    "color": color
+                })
+            Slack.slack(text=subject, attachments=slack_attachments)
 
     def attachLog(self):
         logpath = os.path.join(self.reportDir(), "log.txt")

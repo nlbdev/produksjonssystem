@@ -868,7 +868,8 @@ class Pipeline():
                                 self.utils.report.email(self.email_settings["smtp"],
                                                         self.email_settings["sender"],
                                                         self.email_settings["recipients"],
-                                                        should_email=self.utils.report.should_email)
+                                                        should_email=self.utils.report.should_email,
+                                                        should_message_slack=self.utils.report.should_message_slack)
                             except Exception:
                                 logging.exception("An error occured while sending email")
                             finally:
