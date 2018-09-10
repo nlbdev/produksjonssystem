@@ -2490,6 +2490,71 @@ section dl {
         </dd>
     </xsl:template>
     
+    <xsl:template match="f[@id='488']">
+        <!-- "Dato kontroll påbegynt" -->
+        <!-- Integer -->
+        <dd property="nlbprod:controlStartedDate" _type-id="epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='487']">
+        <!-- "Kontroll påbegynt" -->
+        <!-- Boolean -->
+        <dd property="nlbprod:controlStarted" _type-id="epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='497']">
+        <!-- "Konverter EPUB til DTBook for HTML" -->
+        <!-- Boolean -->
+        <dd property="nlbprod:triggerHtml" _type-id="ebook">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='496']">
+        <!-- "Konverter EPUB til DTBook for Punktskrift" -->
+        <!-- Boolean -->
+        <dd property="nlbprod:triggerBraille" _type-id="braille">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='495']">
+        <!-- "Konverter EPUB til DTBook for TTS" -->
+        <!-- Boolean -->
+        <dd property="nlbprod:triggerTts" _type-id="audio">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='494']">
+        <!-- "PDF fra NB" -->
+        <!-- Boolean -->
+        <dd property="nlbprod:pdfFromNb" _type-id="epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='489']">
+        <!-- "Signatur kontroll påbegynt" -->
+        <!-- String -->
+        <dd property="nlbprod:signatureControlStarted" _type-id="epub">
+            <xsl:variable name="id" select="normalize-space(.)"/>
+            <xsl:value-of select="($lusers, ancestor::qdbapi/table/lusers)[1]/luser[@id=$id]/text()"/>
+        </dd>
+    </xsl:template>
+    
+    <xsl:template match="f[@id='498']">
+        <!-- "Start EPUB konvertering" -->
+        <!-- Boolean -->
+        <dd property="nlbprod:triggerEpub" _type-id="epub">
+            <xsl:value-of select="."/>
+        </dd>
+    </xsl:template>
+    
     <xsl:template match="f[@id='record_id']">
         <!-- Integer -->
         <dd property="nlbprod:record_id" _type-id="creativeWork">

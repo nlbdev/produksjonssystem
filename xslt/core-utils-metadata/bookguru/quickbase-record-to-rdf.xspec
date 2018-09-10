@@ -872,6 +872,10 @@
                                 <dd property="nlbprod:structureChecked">false</dd>
                                 <dt title="nlbprod:editingInstructionsChecked"/>
                                 <dd property="nlbprod:editingInstructionsChecked">false</dd>
+                                <dt title="nlbprod:controlStarted">Feltetikett</dt>
+                                <dd property="nlbprod:controlStarted">false</dd>
+                                <dt title="nlbprod:pdfFromNb" />
+                                <dd property="nlbprod:pdfFromNb">false</dd>
                                 <dt title="nlbprod:sourceFileOrdered"/>
                                 <dd property="nlbprod:sourceFileOrdered">true</dd>
                                 <dt title="nlbprod:catalogizationDateEpub"/>
@@ -1132,6 +1136,8 @@
                         <nlbprod:metadataChecked>false</nlbprod:metadataChecked>
                         <nlbprod:structureChecked>false</nlbprod:structureChecked>
                         <nlbprod:editingInstructionsChecked>false</nlbprod:editingInstructionsChecked>
+                        <nlbprod:controlStarted>false</nlbprod:controlStarted>
+                        <nlbprod:pdfFromNb>false</nlbprod:pdfFromNb>
                         <nlbprod:sourceFileOrdered>true</nlbprod:sourceFileOrdered>
                         <nlbprod:catalogizationDateEpub>2016-01-07</nlbprod:catalogizationDateEpub>
                         <nlbprod:forManualPreparationInNLB>false</nlbprod:forManualPreparationInNLB>
@@ -1235,6 +1241,105 @@
                         <dc:format.extent.pages>962</dc:format.extent.pages>
                         <dc:format.extent.volumes>16</dc:format.extent.volumes>
                         <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Added more fields, 2018-09-10">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="488" field_type="date" base_type="int64">
+                                <label>Dato kontroll påbegynt</label>
+                            </field>
+                            <field id="487" field_type="checkbox" base_type="bool">
+                                <label>Kontroll påbegynt</label>
+                            </field>
+                            <field id="497" field_type="checkbox" base_type="bool">
+                                <label>Konverter EPUB til DTBook for HTML</label>
+                            </field>
+                            <field id="496" field_type="checkbox" base_type="bool">
+                                <label>Konverter EPUB til DTBook for Punktskrift</label>
+                            </field>
+                            <field id="495" field_type="checkbox" base_type="bool">
+                                <label>Konverter EPUB til DTBook for TTS</label>
+                            </field>
+                            <field id="494" field_type="checkbox" base_type="bool">
+                                <label>PDF fra NB</label>
+                            </field>
+                            <field id="489" field_type="userid" base_type="text">
+                                <label>Signatur kontroll påbegynt</label>
+                            </field>
+                            <field id="498" field_type="checkbox" base_type="bool">
+                                <label>Start EPUB konvertering</label>
+                            </field>
+                        </fields>
+                        <lusers>
+                            <luser id="60477861.bez3">x@nlb.no</luser>
+                        </lusers>
+                        <records>
+                            <record rid="8185">
+                                <f id="13">558237</f>
+                                <f id="28">115437</f>
+                                <f id="20">200000</f>
+                                <f id="32">300000</f>
+                                <f id="431">978-82-02-48434-7</f>
+                                
+                                <f id="488">1529884800000</f> <!-- date -->
+                                <f id="487">0</f> <!-- bool -->
+                                <f id="497">0</f> <!-- bool -->
+                                <f id="496">0</f> <!-- bool -->
+                                <f id="495">0</f> <!-- bool -->
+                                <f id="494">0</f> <!-- bool -->
+                                <f id="489">60477861.bez3</f> <!-- userid -->
+                                <f id="498">0</f> <!-- bool -->
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:nlbprod="http://www.nlb.no/production"
+                    xmlns:nlb="http://www.nlb.no/">
+                    <rdf:Description rdf:about="urn:isbn:9788202484347">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
+                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
+                        <nlbprod:controlStarted>false</nlbprod:controlStarted>
+                        <nlbprod:controlStartedDate>2018-06-25</nlbprod:controlStartedDate>
+                        <nlbprod:signatureControlStarted>x@nlb.no</nlbprod:signatureControlStarted>
+                        <nlbprod:pdfFromNb>false</nlbprod:pdfFromNb>
+                        <nlbprod:triggerEpub>false</nlbprod:triggerEpub>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=200000">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <nlbprod:identifier.daisy202>200000</nlbprod:identifier.daisy202>
+                        <nlbprod:triggerTts>false</nlbprod:triggerTts>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
+                        <nlbprod:triggerBraille>false</nlbprod:triggerBraille>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=300000">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                        <nlbprod:identifier.ebook>300000</nlbprod:identifier.ebook>
+                        <nlbprod:triggerHtml>false</nlbprod:triggerHtml>
                     </rdf:Description>
                 </rdf:RDF>
             </_>
