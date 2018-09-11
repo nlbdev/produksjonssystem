@@ -292,12 +292,8 @@ class Pipeline():
         # because of a network station becoming unavailable.
         with self._queue_lock:
             new_queue = []
-            for book in self._queue:
-                if len([e for e in book["events"] if e != "autotriggered"]):
-                    # at least one event that is not "autotriggered"
-                    new_queue.append(book)
             if len(new_queue) < len(self._queue):
-                logging.info("Removed {} autotriggered books from the queue.".format(len(self._queue) - len(new_queue)))
+                logging.info("Removed {} books from the queue that may have been added because the network station was unavailable.".format(len(self._queue) - len(new_queue)))
                 self._queue = new_queue
 
         if exit:
