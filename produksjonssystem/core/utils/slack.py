@@ -12,7 +12,7 @@ class Slack():
     _slack_channel = os.getenv("SLACK_CHANNEL", "#test")
 
     @staticmethod
-    def slack(text, attachments):
+    def slack(text, attachments, retry=True):
         assert not text or isinstance(text, str)
         assert not attachments or isinstance(attachments, list)
         assert text or attachments
@@ -37,4 +37,11 @@ class Slack():
             logging.warning("Tried to send message to {}: {}".format(Slack._slack_channel, text))
 
         else:
-            Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)
+            try:
+                Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)
+            except Exception:
+                Slack._slack = None
+                if retry:
+                    Slack.slack(text, attachments, retry=False)
+                else:
+                    logging.exception("An exception occured while trying to send a message to Slack")
