@@ -235,9 +235,6 @@ class Pipeline():
             return
         self._inactivity_timeout = inactivity_timeout
 
-        self.shouldHandleBooks = True
-        self._dirsAvailable = True
-
         self.threads = []
 
         with self._md5_lock:
@@ -254,6 +251,9 @@ class Pipeline():
             md5_count += 1
             self.progress_text = "{} / {}".format(md5_count, len(dir_list))
         self.progress_text = ""
+
+        self.shouldHandleBooks = True
+        self._dirsAvailable = True
 
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
         self._bookMonitorThread.setDaemon(True)
