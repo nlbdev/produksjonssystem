@@ -832,8 +832,14 @@ class Pipeline():
                             logging.exception("An error occured while handling the book")
 
                         finally:
+                            epub_identifier = None
+                            if "nlbprod:identifier.epub" in book_metadata:
+                                epub_identifier = book_metadata["nlbprod:identifier.epub"]
+                            elif book_metadata["identifier"].startswith("5"):
+                                epub_identifier = book_metadata["identifier"]
+
                             try:
-                                Metadata.add_production_info(self.utils.report, book_metadata["identifier"], self.publication_format)
+                                Metadata.add_production_info(self.utils.report, [epub_identifier, book_metadata["identifier"]][0], self.publication_format)
                             except Exception:
                                 self.utils.report.error("An error occured while retrieving production info")
                                 self.utils.report.error(traceback.format_exc(), preformatted=True)
@@ -846,11 +852,6 @@ class Pipeline():
                                 else:
                                     self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + book_title
 
-                            epub_identifier = None
-                            if "nlbprod:identifier.epub" in book_metadata:
-                                epub_identifier = book_metadata["nlbprod:identifier.epub"]
-                            elif book_metadata["identifier"].startswith("5"):
-                                epub_identifier = book_metadata["identifier"]
                             if epub_identifier and not Metadata.is_in_quickbase(self.utils.report, epub_identifier):
                                 self.utils.report.info("{} finnes ikke i Quickbase. Vi sender derfor ikke en e-post.".format(epub_identifier))
                                 self.utils.report.should_email = False

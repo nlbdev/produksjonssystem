@@ -1009,6 +1009,7 @@ class Metadata:
 
         elif publication_format == "EPUB":
             production_formats = []
+            pipeline.utils.report.info("EPUB skal alltid produseres.".format())
             return True, True
 
         else:
@@ -1035,6 +1036,8 @@ class Metadata:
             if result is False:
                 pipeline.utils.report.info("<p><strong>Merk at det kan ta opptil en time fra du huker av i BookGuru, " +
                                            "til produksjonssystemet ser at det har blitt huket av.</strong></p>")
+        else:
+            pipeline.utils.report.warn("Ingen informasjon i BookGuru om produksjon av formatet \"{}\".".format(publication_format))
 
         return result, True
 
