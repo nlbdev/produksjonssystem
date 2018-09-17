@@ -254,14 +254,21 @@ class Plotter():
         while self.should_run:
             time.sleep(1)
             try:
+                times = []
+
                 # Main dashboard
+                time_start = time.time()
                 self.plot([p[0].uid for p in self.pipelines], "dashboard")
+                times += "dashboard: {}s".format(round(time.time() - time_start, 1))
 
                 # Dashboard for steps
+                time_start = time.time()
                 for p in self.pipelines:
                     self.plot([p[0].uid], p[0].uid)
+                times += "pipelines: {}s".format(round(time.time() - time_start, 1))
 
                 # Dashboard for persons
+                time_start = time.time()
                 emails = {}
                 for p in self.pipelines:
                     for e in p[0].email_settings["recipients"]:
@@ -270,8 +277,10 @@ class Plotter():
                         emails[e].append(p[0].uid)
                 for e in emails:
                     self.plot(emails[e], e.lower())
+                times += "persons: {}s".format(round(time.time() - time_start, 1))
 
                 # Dashboard for labels
+                time_start = time.time()
                 labels = {}
                 for p in self.pipelines:
                     for l in p[0].labels:
@@ -280,6 +289,11 @@ class Plotter():
                         labels[l].append(p[0].uid)
                 for l in labels:
                     self.plot(labels[l], l)
+                times += "labels: {}s".format(round(time.time() - time_start, 1))
+
+                if time.time() % 60 == 0:
+                    # print only when mod time is 0 so that this is not logged all the time
+                    logging.info(", ".join(times))
 
             except Exception:
                 logging.exception("An error occurred while generating plot")
