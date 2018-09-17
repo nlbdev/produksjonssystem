@@ -169,8 +169,11 @@ class Report():
         assert isinstance(sender, str) or isinstance(sender, Address)
         assert isinstance(recipients, str) or isinstance(recipients, list)
 
+        if isinstance(recipients, str):
+            recipients = [recipients]
+
         if not should_email:
-            logging.exception("Not sending plain text email")
+            logging.info("Not sending plain text email")
         else:
             # 1. build e-mail
             msg = EmailMessage()
@@ -316,7 +319,7 @@ class Report():
 '''
 
             if not should_email:
-                logging.exception("Not sending email")
+                logging.info("Not sending email")
             else:
                 # 3. build e-mail
                 msg = EmailMessage()
