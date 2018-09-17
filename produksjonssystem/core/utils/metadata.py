@@ -286,7 +286,7 @@ class Metadata:
             opf = os.path.join(epub.book_path, opf)
         else:
             opf_obj = tempfile.NamedTemporaryFile()
-            with zipfile.ZipFile(epub.book_path, 'r') as archive, open(opf, "wb") as opf_file:
+            with zipfile.ZipFile(epub.book_path, 'r') as archive, open(opf_obj.name, "wb") as opf_file:
                 opf_file.write(archive.read(opf))
             opf = opf_obj.name
 
