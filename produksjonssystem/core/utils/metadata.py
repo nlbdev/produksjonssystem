@@ -151,7 +151,7 @@ class Metadata:
                     report.info("{} finnes ikke i Quickbase".format(identifier))
             else:
                 report.info("Finner ikke Quickbase-metadata for {}.".format(identifier))
-        return False
+        return True if not metadata_dir_exists else False
 
     @staticmethod
     def get_bibliofil_identifiers(report, edition_identifiers, publication_identifiers):

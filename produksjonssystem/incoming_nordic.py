@@ -10,7 +10,7 @@ import traceback
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
-from core.utils.xslt import Xslt
+from core.utils.metadata import Metadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -67,6 +67,12 @@ class IncomingNordic(Pipeline):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
+
+        # Hent metadata her sånn at den er tilgjengelig senere for Metadata.is_in_quickbase() og lignende.
+        self.utils.report.debug("Henter metadata...")
+        updated = Metadata.update(self, epub, insert=False)
+        if isinstance(updated, bool) and updated is False:
+            self.utils.report.debug("Klarte ikke å hente metadata for {}.".format(epub.identifier()))
 
         self.utils.report.info("Validerer EPUB med epubcheck og nordiske retningslinjer...")
         with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": epub.asFile()}) as dp2_job:

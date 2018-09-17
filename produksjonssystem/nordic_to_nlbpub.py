@@ -11,6 +11,7 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
+from core.utils.metadata import Metadata
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -61,6 +62,12 @@ class NordicToNlbpub(Pipeline):
         if epub.identifier() != self.book["name"].split(".")[0]:
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
+
+        # Hent metadata her sånn at den er tilgjengelig senere for Metadata.is_in_quickbase() og lignende.
+        self.utils.report.debug("Henter metadata...")
+        updated = Metadata.update(self, epub, insert=False)
+        if isinstance(updated, bool) and updated is False:
+            self.utils.report.debug("Klarte ikke å hente metadata for {}.".format(epub.identifier()))
 
         temp_html_file_obj = tempfile.NamedTemporaryFile()
         temp_html_file = temp_html_file_obj.name
