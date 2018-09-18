@@ -1063,6 +1063,13 @@ class Metadata:
                 if file.endswith("html"):
                     html_files.append(os.path.join(root, file))
 
+        # Try getting DTBook metadata
+        xml_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(".xml"):
+                    xml_files.append(os.path.join(root, file))
+
         if (os.path.isfile(os.path.join(path, "ncc.html")) or
                 os.path.isfile(os.path.join(path, "metadata.html")) or
                 len(html_files)):
@@ -1093,6 +1100,30 @@ class Metadata:
                 book_metadata["title"] = book_title
             if book_identifier:
                 book_metadata["identifier"] = book_identifier
+
+        elif len(xml_files) > 0:
+            dtbook = None
+            for file in xml_files:
+                xml = ElementTree.parse(file).getroot()
+                if xml.xpath("namespace-uri()") == "http://www.daisy.org/z3986/2005/dtbook/":
+                    dtbook = xml
+                    break
+
+            if dtbook is not None:
+                head = dtbook.xpath("/*[local-name()='head']") + dtbook.xpath("/*/*[local-name()='head']")
+                head = head[0] if head else None
+                if head is not None:
+                    book_title = [e.attrib["content"] for e in head.xpath(
+                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Title']") if "content" in e.attrib]
+                    book_title = book_title[0] if book_title else None
+                    book_identifier = [e.attrib["content"] for e in head.xpath(
+                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Identifier']") if "content" in e.attrib]
+                    book_identifier = book_identifier[0] if book_identifier else None
+
+                if book_title:
+                    book_metadata["title"] = book_title
+                if book_identifier:
+                    book_metadata["identifier"] = book_identifier
 
         return book_metadata
 

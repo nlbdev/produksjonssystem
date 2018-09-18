@@ -33,6 +33,7 @@ from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_pef import NlbpubToPef
+from nordic_dtbook_to_epub import NordicDTBookToEpub
 from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from prepare_for_docx import PrepareForDocx
@@ -129,6 +130,8 @@ class Produksjonssystem():
                     "metadata": Config.get("metadata_dir"),
                     "grunnlag": os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB"),
                     "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
+                    "old_dtbook": os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook"),
+                    "epub_from_dtbook": os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook"),
                 }
             },
             {
@@ -193,6 +196,9 @@ class Produksjonssystem():
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
+            # Konvertering av gamle DTBøker til EPUB 3
+            [NordicDTBookToEpub(retry_all=True),              "old_dtbook",     "epub_from_dtbook"],
+
             # Mottak, nordic guidelines 2015-1
             [NLBPUB_incoming_validator(retry_all=True),       "incoming_NLBPUB",     "grunnlag"],
             [NLBPUB_incoming_warning(retry_all=True),         "incoming_NLBPUB",     "nlbpub_manuell"],
