@@ -16,19 +16,22 @@ from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
 from core.utils.slack import Slack
+
+# Import pipelines
 from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
 from epub_to_dtbook_html import EpubToDtbookHTML
 from html_to_dtbook import HtmlToDtbook
+from incoming_NLBPUB import (NLBPUB_incoming_validator,
+                             NLBPUB_incoming_warning, NLBPUB_validator)
 from incoming_nordic import IncomingNordic
-from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202, InsertMetadataXhtml)
-from incoming_NLBPUB import (NLBPUB_incoming_warning, NLBPUB_incoming_validator, NLBPUB_validator)
+from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
+                             InsertMetadataXhtml)
 from make_abstracts import Audio_Abstract
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
-# Import pipelines
 from nlbpub_to_pef import NlbpubToPef
 from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
@@ -65,7 +68,8 @@ class Produksjonssystem():
             self.environment = {}
         Pipeline.environment = self.environment  # Make environment available from pipelines
         # Check that archive dirs is defined
-        assert os.environ.get("BOOK_ARCHIVE_DIRS"), "The book archives must be defined as a space separated list in the environment variable BOOK_ARCHIVE_DIRS (as name=path pairs)"
+        assert os.environ.get("BOOK_ARCHIVE_DIRS"), (
+            "The book archives must be defined as a space separated list in the environment variable BOOK_ARCHIVE_DIRS (as name=path pairs)")
         self.book_archive_dirs = {}
         for d in os.environ.get("BOOK_ARCHIVE_DIRS").split(" "):
             assert "=" in d, "Book archives must be specified as name=path. For instance: master=/media/archive. Note that paths can not contain spaces."
@@ -275,14 +279,18 @@ class Produksjonssystem():
                     continue
                 d_norm = os.path.normpath(self.book_archive_dirs[d]) + "/"
                 a_norm = os.path.normpath(self.book_archive_dirs[a]) + "/"
-                assert not (a != d and a_norm == d_norm), "Two book archives must not be equal ({} == {})".format(self.book_archive_dirs[a], self.book_archive_dirs[d])
-                assert not (a != d and a_norm.startswith(d_norm) or d_norm.startswith(a_norm)), "Book archives can not contain eachother ({} contains or is contained by {})".format(self.book_archive_dirs[a], self.book_archive_dirs[d])
+                assert not (a != d and a_norm == d_norm), "Two book archives must not be equal ({} == {})".format(
+                    self.book_archive_dirs[a], self.book_archive_dirs[d])
+                assert not (a != d and a_norm.startswith(d_norm) or d_norm.startswith(a_norm)), (
+                    "Book archives can not contain eachother ({} contains or is contained by {})".format(self.book_archive_dirs[a], self.book_archive_dirs[d]))
         for d in self.dirs:
             self.dirs[d] = os.path.normpath(self.dirs[d])
         for d in self.dirs:
             if not d == "reports":
-                assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d]
-            assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d]
+                assert [a for a in self.book_archive_dirs if self.dirs[d].startswith(self.book_archive_dirs[a])], (
+                    "Directory \"" + d + "\" must be part of one of the book archives: " + self.dirs[d])
+            assert not [a for a in self.book_archive_dirs if os.path.normpath(self.dirs[d]) == os.path.normpath(self.book_archive_dirs[a])], (
+                "The directory \"" + d + "\" must not be equal to any of the book archive dirs: " + self.dirs[d])
             assert len([x for x in self.dirs if self.dirs[x] == self.dirs[d]]), "The directory \"" + d + "\" is defined multiple times: " + self.dirs[d]
 
         # Make sure that the pipelines are defined properly
@@ -291,8 +299,10 @@ class Produksjonssystem():
             assert isinstance(pipeline[0], Pipeline), "The first argument of a pipeline declaration must be a pipeline instance"
             assert pipeline[1] is None or isinstance(pipeline[1], str), "The second argument of a pipeline declaration must be a string or None"
             assert pipeline[2] is None or isinstance(pipeline[2], str), "The third argument of a pipeline declaration must be a string or None"
-            assert pipeline[1] is None or pipeline[1] in self.dirs, "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\""
-            assert pipeline[2] is None or pipeline[2] in self.dirs, "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\""
+            assert pipeline[1] is None or pipeline[1] in self.dirs, (
+                "The second argument of a pipeline declaration (\"" + str(pipeline[1]) + "\") must be None or refer to a key in \"dirs\"")
+            assert pipeline[2] is None or pipeline[2] in self.dirs, (
+                "The third argument of a pipeline declaration (\"" + str(pipeline[2]) + "\") must be None or refer to a key in \"dirs\"")
 
         # Some useful output to stdout before starting everything else
         print("")
@@ -448,7 +458,6 @@ class Produksjonssystem():
         with open(stopfile, "w") as f:
             f.write("stop")
 
-
     def _config_thread(self):
         fileName = os.environ.get("CONFIG_FILE")
         last_update = 0
@@ -517,18 +526,19 @@ class Produksjonssystem():
                 for i in range(0, len(new_config[tempkey])):
                     if isinstance(new_config[tempkey][i], dict):
 
-                     for item in new_config[tempkey][i]:
-                        tempset_new = set(new_config[tempkey][i][item])
-                        tempset_old = set(old_config[tempkey][i][item])
+                        for item in new_config[tempkey][i]:
+                            tempset_new = set(new_config[tempkey][i][item])
+                            tempset_old = set(old_config[tempkey][i][item])
 
-                        if (len(tempset_new) > len(tempset_old)):
-                            delta = (yaml.dump(list(tempset_new-tempset_old), default_flow_style=False))
-                            return ("Følgende mottakere ble lagt til i {}: {} : \n{}" .format(tempkey, item, delta))
+                            if (len(tempset_new) > len(tempset_old)):
+                                delta = (yaml.dump(list(tempset_new-tempset_old), default_flow_style=False))
+                                return ("Følgende mottakere ble lagt til i {}: {} : \n{}" .format(tempkey, item, delta))
 
-                        elif (len(tempset_new) < len(tempset_old)):
-                            delta = (yaml.dump(list(tempset_old-tempset_new), default_flow_style=False))
-                            return ("Følgende mottakere ble fjernet i {}: {} : \n{}" .format(tempkey, item, delta))
+                            elif (len(tempset_new) < len(tempset_old)):
+                                delta = (yaml.dump(list(tempset_old-tempset_new), default_flow_style=False))
+                                return ("Følgende mottakere ble fjernet i {}: {} : \n{}" .format(tempkey, item, delta))
         return ""
+
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
