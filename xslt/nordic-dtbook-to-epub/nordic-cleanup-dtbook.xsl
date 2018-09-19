@@ -25,4 +25,13 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="dtbook:hd">
+        <xsl:variable name="ancestor-headlines" select="ancestor::*/dtbook:*[matches(local-name(),'^h\d$')]"/>
+        <xsl:variable name="parent-level" select="if (count($ancestor-headlines)) then max(for $hx in $ancestor-headlines return xs:integer(replace($hx/local-name(), '[^\d]', ''))) else 1" as="xs:integer"/>
+        <xsl:variable name="level" select="min((6, $parent-level + 1))" as="xs:integer"/>
+        <xsl:element name="h{$level}" namespace="http://www.daisy.org/z3986/2005/dtbook/">
+            <xsl:apply-templates select="@* | node()"/>
+        </xsl:element>
+    </xsl:template>
+    
 </xsl:stylesheet>

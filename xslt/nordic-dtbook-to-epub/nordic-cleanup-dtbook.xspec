@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dtbook="http://www.daisy.org/z3986/2005/dtbook/"
+               xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+               stylesheet="nordic-cleanup-dtbook.xsl">
+    
+    <x:scenario label="Convert hd to hX">
+        <x:context>
+            <level3> 
+                <h3>headline h3</h3> 
+                <sidebar> 
+                    <hd>headline hd</hd> 
+                </sidebar> 
+            </level3> 
+        </x:context>
+
+        <x:expect label="hd should become the correct hX">
+            <level3> 
+                <h3>headline h3</h3> 
+                <sidebar> 
+                    <h4>headline hd</h4> 
+                </sidebar> 
+            </level3>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
