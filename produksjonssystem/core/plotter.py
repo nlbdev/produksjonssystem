@@ -291,7 +291,7 @@ class Plotter():
                     self.plot(labels[l], l)
                 times += "labels: {}s".format(round(time.time() - time_start, 1))
 
-                if time.time() % 60 == 0:
+                if int(time.time()) % 60 == 0:
                     # print only when mod time is 0 so that this is not logged all the time
                     logging.info(", ".join(times))
 
