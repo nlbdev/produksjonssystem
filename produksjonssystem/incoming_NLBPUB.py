@@ -150,7 +150,7 @@ class NLBPUB_incoming_validator(IncomingNLBPUB):
     labels = ["EPUB"]
     publication_format = "None"
     skip_warning = False
-    expected_processing_time = 300
+    expected_processing_time = 40
     should_email_default = True
     should_message_slack = True
 
@@ -161,6 +161,6 @@ class NLBPUB_incoming_warning(IncomingNLBPUB):
     labels = ["EPUB"]
     publication_format = "None"
     skip_warning = False
-    expected_processing_time = 300
+    expected_processing_time = 41
     should_email_default = False
     should_message_slack = False

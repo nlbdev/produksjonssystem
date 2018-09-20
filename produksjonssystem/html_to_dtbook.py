@@ -22,7 +22,7 @@ class HtmlToDtbook(Pipeline):
     title = "HTML til DTBook"
     labels = ["Statped"]
     publication_format = "DTBook"
-    expected_processing_time = 172
+    expected_processing_time = 205
 
     def html_file(self):
         book_metadata = Metadata.get_metadata_from_book(self, self.book["source"])

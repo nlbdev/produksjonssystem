@@ -24,7 +24,7 @@ class EpubToDtbookBraille(Pipeline):
     title = "EPUB til DTBook for punktskrift"
     labels = ["Punktskrift", "Metadata"]
     publication_format = "Braille"
-    expected_processing_time = 300
+    expected_processing_time = 868
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

@@ -25,7 +25,7 @@ class NordicDTBookToEpub(Pipeline):
     title = "Nordisk DTBook til EPUB"
     labels = []
     publication_format = "EPUB"
-    expected_processing_time = 600
+    expected_processing_time = 205
 
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 

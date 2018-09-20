@@ -20,7 +20,7 @@ class NlbpubToPef(Pipeline):
     title = "NLBPUB til PEF"
     labels = ["Punktskrift", "Statped"]
     publication_format = "Braille"
-    expected_processing_time = 200
+    expected_processing_time = 223
 
     parentdirs = {
                   "fullskrift": "fullskrift",
