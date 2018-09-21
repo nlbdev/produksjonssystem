@@ -47,4 +47,6 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="html:meta[@name='dtb:uid']"/>
+    
 </xsl:stylesheet>
