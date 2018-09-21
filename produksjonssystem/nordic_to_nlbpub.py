@@ -111,6 +111,14 @@ class NordicToNlbpub(Pipeline):
                         return False
                     shutil.copy(temp_html_file, file)
 
+                xslt = Xslt(self,
+                            stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "update-epub-prefixes.xsl"),
+                            source=file,
+                            target=temp_html_file)
+                if not xslt.success:
+                    return False
+                shutil.copy(temp_html_file, file)
+
         xslt = Xslt(self,
                     stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
                     source=os.path.join(temp_epubdir, temp_epub.opf_path()),
