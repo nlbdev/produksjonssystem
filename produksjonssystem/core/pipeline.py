@@ -839,7 +839,9 @@ class Pipeline():
                                 epub_identifier = book_metadata["identifier"]
 
                             try:
-                                Metadata.add_production_info(self.utils.report, [epub_identifier, book_metadata["identifier"]][0], self.publication_format)
+                                Metadata.add_production_info(self.utils.report,
+                                                             epub_identifier if epub_identifier else book_metadata["identifier"],
+                                                             self.publication_format)
                             except Exception:
                                 self.utils.report.error("An error occured while retrieving production info")
                                 self.utils.report.error(traceback.format_exc(), preformatted=True)
