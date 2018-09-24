@@ -30,14 +30,19 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:meta[@name='dc:Identifier']">
+    <xsl:template match="dtbook:meta[@name=('dc:Identifier','dtb:uid')]">
         <xsl:variable name="test" select="starts-with(@content, 'TEST')" as="xs:boolean"/>
         <xsl:variable name="identifier" select="replace(@content, '[^\d]', '')" as="xs:string"/>
+        <xsl:variable name="content" select="concat(if ($test) then @content else '', $identifier)"/>
         
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            <xsl:attribute name="content" select="concat(if ($test) then @content else '', $identifier)"/>
+            <xsl:attribute name="content" select="$content"/>
         </xsl:copy>
+        
+        <xsl:if test="@name = 'dtb:uid' and not(../*/@name = 'dc:Identifier')">
+            <meta name="dc:Identifier" content="{$content}"/>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="dtbook:meta[@name='track:Guidelines' and not(@content=('2011-1','2011-2','2015-1'))]">
@@ -61,8 +66,11 @@
     <xsl:template match="dtbook:*[matches(local-name(),'(level\d?|sidebar)')]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            
-            <xsl:if test="(parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and string(@class) = ''">
+
+            <!-- xpath expressions based on expressions in dtbook-to-epub3.xsl in nordic migrator -->
+            <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (dtbook:note[not(//dtbook:table//dtbook:noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::dtbook:frontmatter) then false() else true() else false()"/>
+            <xsl:variable name="implicit-toc" select="if (dtbook:list[tokenize(@class,'\s+')='toc']) then true() else false()"/>
+            <xsl:if test="not($implicit-footnotes-or-rearnotes or $implicit-toc) and (parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and string(@class) = ''">
                 <xsl:attribute name="class" select="'chapter'"/>
             </xsl:if>
             

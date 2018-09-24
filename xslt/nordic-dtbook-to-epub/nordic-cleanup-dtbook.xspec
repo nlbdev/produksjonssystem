@@ -76,9 +76,31 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="dtb:uid but no dc:Identifier">
+        <x:context>
+            <head>
+                <meta name="dtb:uid" content="123456"/>
+                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="track:Guidelines" content="2015-1"/>
+            </head>
+        </x:context>
+        
+        <x:expect label="result">
+            <head>
+                <meta name="dtb:uid" content="123456"/>
+                <meta name="dc:Identifier" content="123456"/>
+                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="track:Guidelines" content="2015-1"/>
+            </head>
+        </x:expect>
+    </x:scenario>
+    
     <x:scenario label="Missing top-level types">
         <x:context>
             <book>
+                <level1>
+                    <list class="toc"/>
+                </level1>
                 <level1 class="part">
                     <level2 class="abstract"/>
                     <level2 class="acknowledgments"/>
@@ -93,11 +115,18 @@
                 <level1 class="chapter"/>
                 <level1 class=""/>
                 <level1 class="appendix"/>
+                <level1>
+                    <h1>Note</h1>
+                    <note id="noteid">...</note>
+                </level1>
             </book>
         </x:context>
         
         <x:expect label="result">
             <book>
+                <level1>
+                    <list class="toc"/>
+                </level1>
                 <level1 class="part">
                     <level2 class="abstract"/>
                     <level2 class="acknowledgments"/>
@@ -112,6 +141,10 @@
                 <level1 class="chapter"/>
                 <level1 class="chapter"/>
                 <level1 class="appendix"/>
+                <level1>
+                    <h1>Note</h1>
+                    <note id="noteid">...</note>
+                </level1>
             </book>
         </x:expect>
     </x:scenario>
