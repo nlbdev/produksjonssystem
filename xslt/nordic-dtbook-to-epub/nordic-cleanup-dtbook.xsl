@@ -20,6 +20,12 @@
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
             
+            <xsl:if test="not(*/@name='dtb:uid') and not(*/@name='dc:Identifier')">
+                <xsl:variable name="identifier" select="replace(replace(base-uri(),'.*/',''),'\..*','')"/>
+                <meta name="dtb:uid" content="{$identifier}"/>
+                <meta name="dc:Identifier" content="{$identifier}"/>
+            </xsl:if>
+            
             <xsl:if test="not(*/@name = 'dc:Publisher')">
                 <meta name="dc:Publisher" content="NLB"/>
             </xsl:if>
