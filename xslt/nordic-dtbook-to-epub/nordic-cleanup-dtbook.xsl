@@ -87,9 +87,9 @@
     </xsl:template>
     
     <xsl:template match="dtbook:p[../dtbook:lic]">
-        <span>
+        <lic>
             <xsl:apply-templates select="@* | node()"/>
-        </span>
+        </lic>
     </xsl:template>
     
     <xsl:template match="dtbook:list[tokenize(@class,'\s+') = 'index']">

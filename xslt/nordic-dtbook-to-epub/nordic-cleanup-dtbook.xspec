@@ -131,9 +131,9 @@
             <li>
                 <lic>KAPITTEL X NAVN PÅ KAPITTEL</lic>
                 <lic>123</lic>
-                <span id="foo">
+                <lic id="foo">
                     <em>Av Forfatter</em>
-                </span>
+                </lic>
             </li>
         </x:expect>
     </x:scenario>
