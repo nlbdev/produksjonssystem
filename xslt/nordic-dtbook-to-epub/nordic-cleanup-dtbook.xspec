@@ -6,21 +6,149 @@
     
     <x:scenario label="Convert hd to hX">
         <x:context>
-            <level3> 
-                <h3>headline h3</h3> 
-                <sidebar> 
-                    <hd>headline hd</hd> 
-                </sidebar> 
-            </level3> 
-        </x:context>
-
-        <x:expect label="hd should become the correct hX">
-            <level3> 
-                <h3>headline h3</h3> 
-                <sidebar> 
-                    <h4>headline hd</h4> 
-                </sidebar> 
+            <level3>
+                <h3>headline h3</h3>
+                <sidebar>
+                    <hd>headline hd</hd>
+                </sidebar>
             </level3>
+        </x:context>
+        
+        <x:expect label="hd should become the correct hX">
+            <level3>
+                <h3>headline h3</h3>
+                <sidebar>
+                    <h4>headline hd</h4>
+                </sidebar>
+            </level3>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Add headline to colophon">
+        <x:context>
+            <level1 class="colophon">
+                <pagenum id="page-4" page="normal">4</pagenum>
+                <p>Copyright &#x00A9; Schibsted Forlagene AS, 2007 All rights reserved</p>
+                <level2 showin="xxp"><p>Omslagsdesign: Tor-Edvin Str&#x00F8;m (logo)/&#x00D8;ivind Makilla</p>
+                    <p>Omslagsillustrasjon: Ragna Lise Vikre</p>
+                    <p>Forfatterfoto: Thomas Barstad Eckhoff</p></level2>
+                <p>ISBN: 82-516-2898-3</p>
+                <level2 showin="xxp"><p>Sats: Type-it AS, Trondheim</p>
+                    <p>Trykk og innbinding: GGP Media GmbH, Tyskland</p></level2><pagenum id="page-5" page="normal">5</pagenum>
+            </level1>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <level1 class="colophon">
+                <pagenum id="page-4" page="normal">4</pagenum>
+                <h1>Kolofon</h1>
+                <p>Copyright &#x00A9; Schibsted Forlagene AS, 2007 All rights reserved</p>
+                <level2 showin="xxp"><p>Omslagsdesign: Tor-Edvin Str&#x00F8;m (logo)/&#x00D8;ivind Makilla</p>
+                    <p>Omslagsillustrasjon: Ragna Lise Vikre</p>
+                    <p>Forfatterfoto: Thomas Barstad Eckhoff</p></level2>
+                <p>ISBN: 82-516-2898-3</p>
+                <level2 showin="xxp"><p>Sats: Type-it AS, Trondheim</p>
+                    <p>Trykk og innbinding: GGP Media GmbH, Tyskland</p></level2><pagenum id="page-5" page="normal">5</pagenum>
+            </level1>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Missing dc:Publisher and track:Guidelines">
+        <x:context>
+            <head/>
+        </x:context>
+        
+        <x:expect label="result">
+            <head>
+                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="track:Guidelines" content="2015-1"/>
+            </head>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Wrong track:Guidelines">
+        <x:context>
+            <meta name="track:Guidelines" content="foo"/>
+        </x:context>
+        
+        <x:expect label="result">
+            <meta name="track:Guidelines" content="2015-1"/>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Missing top-level types">
+        <x:context>
+            <book>
+                <level1 class="part">
+                    <level2 class="abstract"/>
+                    <level2 class="acknowledgments"/>
+                    <level2/>
+                    <level2 class="chapter"/>
+                    <level2 class=""/>
+                    <level2 class="appendix"/>
+                </level1>
+                <level1 class="abstract"/>
+                <level1 class="acknowledgments"/>
+                <level1/>
+                <level1 class="chapter"/>
+                <level1 class=""/>
+                <level1 class="appendix"/>
+            </book>
+        </x:context>
+        
+        <x:expect label="result">
+            <book>
+                <level1 class="part">
+                    <level2 class="abstract"/>
+                    <level2 class="acknowledgments"/>
+                    <level2 class="chapter"/>
+                    <level2 class="chapter"/>
+                    <level2 class="chapter"/>
+                    <level2 class="appendix"/>
+                </level1>
+                <level1 class="abstract"/>
+                <level1 class="acknowledgments"/>
+                <level1 class="chapter"/>
+                <level1 class="chapter"/>
+                <level1 class="chapter"/>
+                <level1 class="appendix"/>
+            </book>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="lic with sibling block element">
+        <x:context>
+            <li>
+                <lic>KAPITTEL X NAVN PÅ KAPITTEL</lic>
+                <lic>123</lic>
+                <p id="foo">
+                    <em>Av Forfatter</em>
+                </p>
+            </li>
+        </x:context>
+        
+        <x:expect label="result">
+            <li>
+                <lic>KAPITTEL X NAVN PÅ KAPITTEL</lic>
+                <lic>123</lic>
+                <span id="foo">
+                    <em>Av Forfatter</em>
+                </span>
+            </li>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="indexes">
+        <x:context>
+            <level1 class="foo">
+                <list type="pl" class="index bar"/>
+            </level1>
+        </x:context>
+        
+        <x:expect label="result">
+            <level1 class="foo index">
+                <list type="pl" class="bar"/>
+            </level1>
         </x:expect>
     </x:scenario>
     
