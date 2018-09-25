@@ -122,22 +122,22 @@
         <x:context>
             <book>
                 <level1>
-                    <list class="toc"/>
+                    <list class="toc">...</list>
                 </level1>
                 <level1 class="part">
-                    <level2 class="abstract"/>
-                    <level2 class="acknowledgments"/>
-                    <level2/>
-                    <level2 class="chapter"/>
-                    <level2 class=""/>
-                    <level2 class="appendix"/>
+                    <level2 class="abstract">...</level2>
+                    <level2 class="acknowledgments">...</level2>
+                    <level2>...</level2>
+                    <level2 class="chapter">...</level2>
+                    <level2 class="">...</level2>
+                    <level2 class="appendix">...</level2>
                 </level1>
-                <level1 class="abstract"/>
-                <level1 class="acknowledgments"/>
-                <level1/>
-                <level1 class="chapter"/>
-                <level1 class=""/>
-                <level1 class="appendix"/>
+                <level1 class="abstract">...</level1>
+                <level1 class="acknowledgments">...</level1>
+                <level1>...</level1>
+                <level1 class="chapter">...</level1>
+                <level1 class="">...</level1>
+                <level1 class="appendix">...</level1>
                 <level1>
                     <h1>Note</h1>
                     <note id="noteid">...</note>
@@ -148,22 +148,22 @@
         <x:expect label="result">
             <book>
                 <level1>
-                    <list class="toc"/>
+                    <list class="toc">...</list>
                 </level1>
                 <level1 class="part">
-                    <level2 class="abstract"/>
-                    <level2 class="acknowledgments"/>
-                    <level2 class="chapter"/>
-                    <level2 class="chapter"/>
-                    <level2 class="chapter"/>
-                    <level2 class="appendix"/>
+                    <level2 class="abstract">...</level2>
+                    <level2 class="acknowledgments">...</level2>
+                    <level2 class="chapter">...</level2>
+                    <level2 class="chapter">...</level2>
+                    <level2 class="chapter">...</level2>
+                    <level2 class="appendix">...</level2>
                 </level1>
-                <level1 class="abstract"/>
-                <level1 class="acknowledgments"/>
-                <level1 class="chapter"/>
-                <level1 class="chapter"/>
-                <level1 class="chapter"/>
-                <level1 class="appendix"/>
+                <level1 class="abstract">...</level1>
+                <level1 class="acknowledgments">...</level1>
+                <level1 class="chapter">...</level1>
+                <level1 class="chapter">...</level1>
+                <level1 class="chapter">...</level1>
+                <level1 class="appendix">...</level1>
                 <level1>
                     <h1>Note</h1>
                     <note id="noteid">...</note>
@@ -197,14 +197,152 @@
     <x:scenario label="indexes">
         <x:context>
             <level1 class="foo">
-                <list type="pl" class="index bar"/>
+                <list type="pl" class="index bar">...</list>
             </level1>
         </x:context>
         
         <x:expect label="result">
             <level1 class="foo index">
-                <list type="pl" class="bar"/>
+                <list type="pl" class="bar">...</list>
             </level1>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="element may not be empty">
+        <x:context>
+            <book showin="blp">
+                <frontmatter>
+                    <doctitle>...</doctitle>
+                    <docauthor>...</docauthor>
+                    <level1>
+                        <p/>
+                    </level1>
+                </frontmatter>
+                <bodymatter id="bodymatter_0001">
+                    <level1>
+                        <p/>
+                    </level1>
+                    <level1 class="chapter">
+                        <h1>...</h1>
+                        <p>...</p>
+                        <p>...</p>
+                        <p/>
+                    </level1>
+                </bodymatter>
+                <rearmatter>
+                    <level1>
+                        <p/>
+                    </level1>
+                </rearmatter>
+            </book>
+        </x:context>
+        
+        <x:expect label="result">
+            <book showin="blp">
+                <frontmatter>
+                    <doctitle>...</doctitle>
+                    <docauthor>...</docauthor>
+                </frontmatter>
+                <bodymatter id="bodymatter_0001">
+                    <level1 class="chapter">
+                        <h1>...</h1>
+                        <p>...</p>
+                        <p>...</p>
+                    </level1>
+                </bodymatter>
+            </book>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="no leading or trailing whitespace in headlines">
+        <x:context>
+            <h1 xml:space="preserve"> .  . </h1>
+            <h2 xml:space="preserve"> .  . </h2>
+            <h3 xml:space="preserve"> .  . </h3>
+            <h4 xml:space="preserve"> .  . </h4>
+            <h5 xml:space="preserve"> .  . </h5>
+            <h6 xml:space="preserve"> .  . </h6>
+        </x:context>
+        
+        <x:expect label="result">
+            <h1 xml:space="preserve">. .</h1>
+            <h2 xml:space="preserve">. .</h2>
+            <h3 xml:space="preserve">. .</h3>
+            <h4 xml:space="preserve">. .</h4>
+            <h5 xml:space="preserve">. .</h5>
+            <h6 xml:space="preserve">. .</h6>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="remove dt:version">
+        <x:context>
+            <meta name="dt:version" content="..."/>
+        </x:context>
+        
+        <x:expect label="result"/>
+    </x:scenario>
+    
+    <x:scenario label="byline should become p, not span, in nordic migrator. fixing it here for now.">
+        <x:context>
+            <byline id="asdf" class="foo bar">...</byline>
+        </x:context>
+        
+        <x:expect label="result">
+            <p id="asdf" class="foo bar byline">...</p>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="single toc => preserve">
+        <x:context>
+            <book>
+                <frontmatter>
+                    <level1>
+                        <list class="toc">...</list>
+                    </level1>
+                </frontmatter>
+            </book>
+        </x:context>
+        
+        <x:expect>
+            <book>
+                <frontmatter>
+                    <level1>
+                        <list class="toc">...</list>
+                    </level1>
+                </frontmatter>
+            </book>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="multiple tocs => mark as toc-brief">
+        <x:context>
+            <book>
+                <frontmatter>
+                    <level1>
+                        <list class="toc">...</list>
+                    </level1>
+                </frontmatter>
+                <bodymatter>
+                    <level1>
+                        <list class="toc">...</list>
+                    </level1>
+                </bodymatter>
+            </book>
+        </x:context>
+        
+        <x:expect>
+            <book>
+                <frontmatter>
+                    <level1 class="toc-brief">
+                        <list>...</list>
+                    </level1>
+                </frontmatter>
+                <bodymatter>
+                    <level1 class="toc-brief">
+                        <list>...</list>
+                    </level1>
+                </bodymatter>
+            </book>
         </x:expect>
     </x:scenario>
     

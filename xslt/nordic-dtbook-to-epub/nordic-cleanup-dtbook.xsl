@@ -58,6 +58,8 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="dtbook:meta[@name='dt:version']"/>
+    
     <xsl:template match="dtbook:hd">
         <xsl:variable name="ancestor-levels" select="ancestor::*/dtbook:*[matches(local-name(),'(level\d?|sidebar)')]"/>
         <xsl:variable name="parent-level" select="if (count($ancestor-levels)) then max(for $levelx in $ancestor-levels return xs:integer(
@@ -71,17 +73,22 @@
     
     <xsl:template match="dtbook:*[matches(local-name(),'(level\d?|sidebar)')]">
         <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="@* except @class"/>
+            
+            <xsl:variable name="classes" select="tokenize(@class,'\s+')" as="xs:string*"/>
 
             <!-- xpath expressions based on expressions in dtbook-to-epub3.xsl in nordic migrator -->
-            <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (dtbook:note[not(//dtbook:table//dtbook:noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::dtbook:frontmatter) then false() else true() else false()"/>
-            <xsl:variable name="implicit-toc" select="if (dtbook:list[tokenize(@class,'\s+')='toc']) then true() else false()"/>
-            <xsl:if test="not($implicit-footnotes-or-rearnotes or $implicit-toc) and (parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and string(@class) = ''">
-                <xsl:attribute name="class" select="'chapter'"/>
-            </xsl:if>
+            <xsl:variable name="multiple-tocs" select="count(//dtbook:list[tokenize(@class,'\s+')='toc']) gt 1"/>
+            <xsl:variable name="classes" select="($classes, if ($multiple-tocs) then 'toc-brief' else ())"/>
             
-            <xsl:if test="dtbook:list/tokenize(@class,'\s+') = 'index'">
-                <xsl:attribute name="class" select="string-join((@class,'index'),' ')"/>
+            <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (dtbook:note[not(//dtbook:table//dtbook:noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::dtbook:frontmatter) then false() else true() else false()"/>
+            <xsl:variable name="implicit-toc" select="if (not($multiple-tocs) and exists(dtbook:list[tokenize(@class,'\s+')='toc'])) then true() else false()"/>
+            <xsl:variable name="classes" select="($classes, if (not($implicit-footnotes-or-rearnotes or $implicit-toc or $multiple-tocs) and (parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and count($classes) = 0) then 'chapter' else ())" as="xs:string*"/>
+            
+            <xsl:variable name="classes" select="($classes, if (dtbook:list/tokenize(@class,'\s+') = 'index') then 'index' else ())" as="xs:string*"/>
+            
+            <xsl:if test="count($classes)">
+                <xsl:attribute name="class" select="string-join($classes, ' ')"/>
             </xsl:if>
             
             <!-- text nodes and pagenum can be before headlines -->
@@ -106,6 +113,26 @@
         </lic>
     </xsl:template>
     
+    <xsl:template match="dtbook:list[tokenize(@class,'\s+') = 'toc']">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except @class"/>
+            
+            <xsl:variable name="multiple-tocs" select="count(//dtbook:list[tokenize(@class,'\s+')='toc']) gt 1"/>
+            <xsl:choose>
+                <xsl:when test="$multiple-tocs">
+                    <xsl:if test="normalize-space(@class) != 'toc'">
+                        <xsl:attribute name="class" select="tokenize(@class,'\s+')[not(.='toc')]"/>
+                    </xsl:if>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="@class"/>
+                </xsl:otherwise>
+            </xsl:choose>
+            
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:template match="dtbook:list[tokenize(@class,'\s+') = 'index']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* except @class"/>
@@ -116,6 +143,28 @@
             
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="dtbook:*" priority="2">
+        <xsl:choose>
+            <!-- based on xpath from mtm2015-1.sch in nordic migrator -->
+            <xsl:when test="not(false() = (for $node in (descendant-or-self::node()) return (normalize-space($node)='' and not($node/self::dtbook:img or $node/self::dtbook:br or $node/self::dtbook:meta or $node/self::dtbook:link or $node/self::dtbook:col or $node/self::dtbook:th or $node/self::dtbook:td or $node/self::dtbook:dd or $node/self::dtbook:pagenum[@page='special']))))"/>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="dtbook:h1/text() | dtbook:h2/text() | dtbook:h3/text() | dtbook:h4/text() | dtbook:h5/text() | dtbook:h6/text() | dtbook:hd/text()">
+        <xsl:value-of select="normalize-space()"/>
+    </xsl:template>
+    
+    <xsl:template match="dtbook:byline">
+        <p>
+            <xsl:apply-templates select="@* except @class"/>
+            <xsl:attribute name="class" select="string-join((tokenize(@class,'\s+'), 'byline'),' ')"/>
+            <xsl:apply-templates select="node()"/>
+        </p>
     </xsl:template>
     
     <xsl:function name="f:level" as="xs:integer">
