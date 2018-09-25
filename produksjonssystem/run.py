@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import datetime
 import logging
 import os
 import sys
@@ -372,6 +373,10 @@ class Produksjonssystem():
         self._configThread.setDaemon(True)
         self._configThread.start()
 
+        self._dailyReportThread = Thread(target=self._daily_report_thread, name="daily report")
+        self._dailyReportThread.setDaemon(True)
+        self._dailyReportThread.start()
+
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run, name="graph")
         graph_thread.setDaemon(True)
@@ -443,6 +448,8 @@ class Produksjonssystem():
         self.info("Venter på at konfigtråden skal stoppe...")
         self.shouldRun = False
         self._configThread.join()
+        self.info("Venter på at dagsrapport tråden skal stoppe...")
+        self._dailyReportThread
 
     def wait_until_running(self, timeout=60):
         start_time = time.time()
@@ -463,6 +470,53 @@ class Produksjonssystem():
         stopfile = os.path.join(stopfile, "stop")
         with open(stopfile, "w") as f:
             f.write("stop")
+
+    def _daily_report_thread(self):
+        mail_sent_today = False
+        yesterday = datetime.datetime.now() - datetime.timedelta(1)
+        yesterday = str(yesterday.strftime("%Y-%m-%d"))
+        daily_dir = os.path.join(self.dirs["reports"], "logs", "dagsrapporter", yesterday)
+
+        while self.shouldRun:
+            time.sleep(5)
+            if 2 <= datetime.datetime.now().hour <= 3 and mail_sent_today is True:
+                mail_sent_today = False
+
+            if not (7 <= datetime.datetime.now().hour <= 8) or mail_sent_today is True:
+                continue
+            else:
+                for pipeline in self.pipelines:
+                    if "dummy" not in pipeline[0].uid:
+                        number_produced = 0
+                        number_failed = 0
+                        file = os.path.join(daily_dir, pipeline[0].uid)
+                        message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
+                        message = message + "\n<h2>Bøker som har gått gjennom:</h2>"
+                        report_content = ""
+                        dirs = [self.book_archive_dirs["master"], self.dirs["reports"]]
+                        if (os.path.isfile(file + "-SUCCESS.txt")):
+                            with open(file + "-SUCCESS.txt", "r") as report_file_success:
+                                report_content = report_file_success.readlines()
+                                message = message + self.format_email_report(report_content, dirs)
+                                for line in report_content:
+                                    if pipeline[0].title in line and line.startswith("["):
+                                        number_produced += 1
+                        else:
+                            message = message + "\nIngen ble produsert\n"
+
+                        message = message + "\n<h2>Bøker som har mislyktes:</h2>"
+                        if (os.path.isfile(file + "-FAIL.txt")):
+                            with open(file + "-FAIL.txt", "r") as report_file_fail:
+                                report_content = report_file_fail.readlines()
+                                message = message + self.format_email_report(report_content, dirs)
+                                for line in report_content:
+                                    if pipeline[0].title in line and line.startswith("["):
+                                        number_failed += 1
+                        else:
+                            message = message + "\nIngen feilet\n"
+                        message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>".format(number_produced, number_failed)
+                        pipeline[0].daily_report(message)
+                mail_sent_today = True
 
     def _config_thread(self):
         fileName = os.environ.get("CONFIG_FILE")
@@ -544,6 +598,23 @@ class Produksjonssystem():
                                 delta = (yaml.dump(list(tempset_old-tempset_new), default_flow_style=False))
                                 return ("Følgende mottakere ble fjernet i {}: {} : \n{}" .format(tempkey, item, delta))
         return ""
+
+    @staticmethod
+    def format_email_report(content, dirs):
+        message = ""
+        for line in content:
+            if "(li)" in line:
+                line = line.replace("(li)", "")
+                message = message + "\n<ul>\n<li>" + line + "</li>\n</ul>"
+            elif "(href)" in line:
+                line = line.replace("(href)", "")
+                for dir in dirs:
+                    if dir in line:
+                        short_path = line.replace(dir, "")
+                message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(line, short_path)
+            else:
+                message = message + "\n" + line
+        return message
 
 
 if __name__ == "__main__":

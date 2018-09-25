@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import smtplib
+import traceback
 import sys
 import tempfile
 import time
@@ -201,13 +202,14 @@ class Report():
 
         Slack.slack(text=subject, attachments=None)
 
-    def email(self, smtp, sender, recipients, subject=None, should_email=True, should_message_slack=True):
+    def email(self, smtp, sender, recipients, subject=None, should_email=True, should_message_slack=True, should_attach_log=True):
         if not subject:
             assert isinstance(self.title, str) or self.pipeline is not None, "either title or pipeline must be specified when subject is missing"
             subject = self.title if self.title else self.pipeline.title
 
         # 0. Create attachment with complete log (including DEBUG statements)
-        self.attachLog()
+        if should_attach_log is True:
+            self.attachLog()
 
         attachments = []
         for m in self._messages["attachment"]:
@@ -258,50 +260,51 @@ class Report():
                     markdown_text.append("<pre>{}</pre>".format(m['text']))
                 elif m['severity'] != 'DEBUG':
                     markdown_text.append(m['text'])
-            markdown_text.append("\n----\n")
-            markdown_text.append("\n# "+self._i18n["Links"]+"\n")
-            markdown_text.append("\n<ul style=\"list-style: none;\">")
+            if attachments != [] or should_attach_log is True:
+                markdown_text.append("\n----\n")
+                markdown_text.append("\n# "+self._i18n["Links"]+"\n")
+                markdown_text.append("\n<ul style=\"list-style: none;\">")
 
-            # Pick icon and style for INFO-attachments
-            attachment_styles = {
-                "DEBUG": {
-                    "icon": "🗎",
-                    "style": ""
-                },
-                "INFO": {
-                    "icon": "🛈",
-                    "style": ""
-                },
-                "SUCCESS": {
-                    "icon": "😄",
-                    "style": "background-color: #bfffbf;"
-                },
-                "WARN": {
-                    "icon": "😟",
-                    "style": "background-color: #ffffbf;"
-                },
-                "ERROR": {
-                    "icon": "😭",
-                    "style": "background-color: #ffbfbf;"
+                # Pick icon and style for INFO-attachments
+                attachment_styles = {
+                    "DEBUG": {
+                        "icon": "🗎",
+                        "style": ""
+                    },
+                    "INFO": {
+                        "icon": "🛈",
+                        "style": ""
+                    },
+                    "SUCCESS": {
+                        "icon": "😄",
+                        "style": "background-color: #bfffbf;"
+                    },
+                    "WARN": {
+                        "icon": "😟",
+                        "style": "background-color: #ffffbf;"
+                    },
+                    "ERROR": {
+                        "icon": "😭",
+                        "style": "background-color: #ffbfbf;"
+                    }
                 }
-            }
 
-            for attachment in attachments:
-                # UNC links seems to be preserved when viewed in Outlook.
-                # file: and smb: URIs are disallowed or removed.
-                # So these links will only work in Windows.
-                # If we need this to work cross-platform, we would have
-                # to map the network share paths to a web server so that
-                # the transfers go through http:. This could maybe be mapped
-                # using environment variables.
-                li = "<li>"
-                li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
-                li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
-                li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a>"
-                li += "</span>"
-                li += "</li>"
-                markdown_text.append(li)
-            markdown_text.append("</ul>\n")
+                for attachment in attachments:
+                    # UNC links seems to be preserved when viewed in Outlook.
+                    # file: and smb: URIs are disallowed or removed.
+                    # So these links will only work in Windows.
+                    # If we need this to work cross-platform, we would have
+                    # to map the network share paths to a web server so that
+                    # the transfers go through http:. This could maybe be mapped
+                    # using environment variables.
+                    li = "<li>"
+                    li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
+                    li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
+                    li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a>"
+                    li += "</span>"
+                    li += "</li>"
+                    markdown_text.append(li)
+                markdown_text.append("</ul>\n")
             markdown_text = "\n".join(markdown_text)
 
             # 2. parse string as Markdown and render as HTML
@@ -328,7 +331,6 @@ class Report():
                 msg['To'] = Report.emailStringsToAddresses(recipients)
                 msg.set_content(markdown_text)
                 msg.add_alternative(markdown_html, subtype="html")
-
                 logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
 
                 # 4. send e-mail

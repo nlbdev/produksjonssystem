@@ -875,6 +875,7 @@ class Pipeline():
                             finally:
                                 logpath = self.utils.report.attachLog()
                                 logging.exception("Logfile: " + logpath)
+                            self.write_to_daily()
 
             except Exception:
                 logging.exception(Pipeline._i18n["An error occured while checking for book events"] +
@@ -890,6 +891,72 @@ class Pipeline():
                 time.sleep(1)
 
         self.running = False
+
+    def daily_report(self, message):
+        report = Report(self)
+        report._messages["message"].append({'time': time.strftime("%Y-%m-%d %H:%M:%S"),
+                                            'severity': "INFO",
+                                            'text': message,
+                                            'time_seconds': (time.time()),
+                                            'preformatted': False})
+        report.title = "Dagsrapport for " + self.title
+        try:
+            report.email(self.email_settings["smtp"],
+                         self.email_settings["sender"],
+                         self.email_settings["recipients"],
+                         should_attach_log=False)
+        except Exception:
+                logging.info("Failed mail")
+
+    def write_to_daily(self):
+        error = ""
+        attachment = []
+        subject = self.utils.report.title
+        for item in self.utils.report._messages["attachment"]:
+            if self.dir_out in item["text"] or self.dir_in in item["text"] or self.dir_reports in item["text"]:
+                attachment.append(item["text"])
+        for u in self.utils.report._messages["message"]:
+            if (u["severity"] == "ERROR"):
+                if not(u["text"] == ""):
+                    error = u["text"]
+            elif(u["severity"] == "WARN") and (error == "") and not (u["text"] == ""):
+                error = u["text"]
+        timestring = datetime.datetime.now().strftime("%Y-%m-%d")
+        dir = os.path.join(self.dir_reports, "logs", "dagsrapporter", timestring)
+        if not os.path.isdir(dir):
+            os.makedirs(dir)
+        fail = False
+        if "👍😄" in subject:
+            loc = os.path.join(dir, self.uid + "-SUCCESS.txt")
+        else:
+            loc = os.path.join(dir, self.uid + "-FAIL.txt")
+            fail = True
+
+        try:
+            epub_identifier = None
+            with open(loc, Pipeline.append_write(loc)) as today_status_file:
+                split_subject = subject.split()
+                for split in split_subject:
+                    if split.isnumeric():
+                        epub_identifier = split
+                        break
+
+                today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
+                if fail is True and error != "":
+                    today_status_file.write("\n" + "(li)" + error)
+                for attach in attachment:
+                    today_status_file.write("\n" + "(href)" + attach)
+                today_status_file.write("\n")
+
+        except Exception:
+            logging.info(traceback.format_exc())
+
+    @staticmethod
+    def append_write(path):
+        if os.path.exists(path):
+            return 'a'  # append if already exists
+        else:
+            return 'w'  # make a new file if not
 
     @staticmethod
     def get_main_event(book):
