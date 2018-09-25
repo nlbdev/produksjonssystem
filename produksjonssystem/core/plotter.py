@@ -6,6 +6,7 @@ import os
 import shutil
 import sys
 import time
+import threading
 
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
@@ -27,6 +28,7 @@ class Plotter():
     buffered_network_hosts = {}
     should_run = True
     book_count = {}
+    threads = None
 
     debug_logging = False
 
@@ -37,23 +39,14 @@ class Plotter():
     def get_book_count(self, dir, parentdirs=None):
         if not isinstance(dir, str):
             return 0
-        dirs = []
-        if parentdirs:
-            for parentdir in parentdirs:
-                dirs.append(os.path.join(dir, parentdirs[parentdir]))
-        else:
-            dirs.append(dir)
-        if (dir not in self.book_count or
-                "modified" not in self.book_count[dir] or
-                self.book_count[dir]["modified"] + 15 < time.time()):
-            books = []
-            for d in dirs:
-                if os.path.isdir(d):
-                    books += [name for name in os.listdir(d) if name[0] in "0123456789" or name.startswith("TEST")]
+        if dir not in self.book_count:
             self.book_count[dir] = {
-                "count": len(set(books)),
-                "modified": time.time()
+                "parentdirs": parentdirs,
+                "count": 0,
+                "modified": 0
             }
+        if parentdirs:
+            self.book_count[dir]["parentdirs"] = parentdirs
         return self.book_count[dir]["count"]
 
     def rank_name(self, rank_id):
@@ -328,13 +321,51 @@ class Plotter():
                 logging.info("after creating dashboard file")
 
     def run(self):
-        for name in os.listdir(self.report_dir):
-            path = os.path.join(self.report_dir, name)
-            if os.path.isfile(path) and path.endswith(".html"):
-                try:
-                    os.remove(path)
-                except Exception:
-                    logging.exception("An error occurred while deleting existing HTML-file")
+        self.threads = []
+
+        plotter_thread = threading.Thread(target=self._generate_plots_thread, name="graph plotter")
+        plotter_thread.setDaemon(True)
+        plotter_thread.start()
+        self.threads.append(plotter_thread)
+
+        book_count_thread = threading.Thread(target=self._update_book_count_thread, name="graph book count updater")
+        book_count_thread.setDaemon(True)
+        book_count_thread.start()
+        self.threads.append(book_count_thread)
+
+        while self.should_run:
+            time.sleep(1)
+
+        self.join()
+
+    def join(self):
+        for thread in self.threads:
+            if thread:
+                logging.debug("joining {}".format(thread.name))
+                thread.join(timeout=60)
+
+        is_alive = True
+        while is_alive:
+            is_alive = False
+            for thread in self.threads:
+                if thread and thread != threading.current_thread() and thread.is_alive():
+                    is_alive = True
+                    logging.info("Thread is still running: {}".format(thread.name))
+                    thread.join(timeout=60)
+
+
+
+    def _generate_plots_thread(self):
+        try:
+            for name in os.listdir(self.report_dir):
+                path = os.path.join(self.report_dir, name)
+                if os.path.isfile(path) and path.endswith(".html"):
+                    try:
+                        os.remove(path)
+                    except Exception:
+                        logging.exception("An error occurred while deleting existing HTML file")
+        except Exception:
+            logging.exception("An error occurred while deleting existing HTML files")
 
         while self.should_run:
             time.sleep(1)
@@ -397,3 +428,29 @@ class Plotter():
 
             except Exception:
                 logging.exception("An error occurred while generating plot")
+
+    def _update_book_count_thread(self):
+        while self.should_run:
+            time.sleep(1)
+            try:
+                for dir in self.book_count:
+                    dirs = []
+                    parentdirs = self.book_count[dir]["parentdirs"]
+                    if parentdirs:
+                        for parentdir in parentdirs:
+                            dirs.append(os.path.join(dir, parentdirs[parentdir]))
+                    else:
+                        dirs.append(dir)
+                    if (self.book_count[dir]["modified"] + 15 < time.time()):
+                        books = []
+                        for d in dirs:
+                            if os.path.isdir(d):
+                                books += [name for name in os.listdir(d) if name[0] in "0123456789" or name.startswith("TEST")]
+                        self.book_count[dir]["modified"] = time.time()
+                        self.book_count[dir]["count"] = len(set(books))
+
+                    if not self.should_run:
+                        break
+
+            except Exception:
+                logging.exception("An error occurred while updating book count")
