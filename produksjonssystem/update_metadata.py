@@ -70,9 +70,6 @@ class UpdateMetadata(Pipeline):
     def get_queue(self):
         return Metadata.queue
 
-    def current_book_name(self):
-        return Metadata.queue[0]["name"] if len(Metadata.queue) > 0 else ""
-
     def _watch_metadata_thread(self):
         while self._shouldRun:
             self.running = True

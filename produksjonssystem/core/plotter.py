@@ -10,6 +10,7 @@ import time
 
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
+from core.utils.metadata import Metadata
 from graphviz import Digraph
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -112,10 +113,10 @@ class Plotter():
 
             queue_size = len(queue) if queue else 0
             if self.debug_logging:
-                logging.info("before pipeline[0].current_book_name()")
-            book = pipeline[0].current_book_name()
+                logging.info("before pipeline[0].pipeline_book_shortname()")
+            book = Metadata.pipeline_book_shortname(pipeline[0])
             if self.debug_logging:
-                logging.info("after pipeline[0].current_book_name()")
+                logging.info("after pipeline[0].pipeline_book_shortname()")
 
             relpath_in = None
             netpath_in = ""

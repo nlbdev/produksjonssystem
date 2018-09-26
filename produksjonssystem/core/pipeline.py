@@ -16,7 +16,6 @@ from copy import deepcopy
 from pathlib import Path
 from threading import RLock, Thread
 
-from core.utils.epub import Epub
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from core.utils.report import DummyReport, Report
@@ -388,23 +387,6 @@ class Pipeline():
         with self._queue_lock:
             return deepcopy(self._queue)
 
-    def current_book_name(self):
-        name = self.book["name"] if self.book else ""
-
-        try:
-            if self.book and self.book["source"] and os.path.isdir(self.book["source"]):
-                epub = Epub(self, self.book["source"])
-
-                if epub.isepub(report_errors=False):
-                    title = epub.meta("dc:title")
-                    if title:
-                        name += ": " + title[:25] + ("…" if len(title) > 25 else "")
-
-        except Exception:
-            logging.exception("An error occured while trying to extract the title of the book")
-
-        return name
-
     def get_status(self):
         if self._shouldRun and not self.running:
             return "Starter..."
@@ -413,7 +395,7 @@ class Pipeline():
         elif not self.running and not isinstance(self, DummyPipeline):
             return "Stoppet"
         elif self.book:
-            return str(self.current_book_name())
+            return str(Metadata.pipeline_book_shortname(self))
         elif isinstance(self, DummyPipeline):
             return "Manuelt steg"
         else:

@@ -50,6 +50,9 @@ class Metadata:
 
     _update_lock = threading.RLock()
 
+    metadata_cache = {}
+    _cache_update_lock = threading.RLock()
+
     @staticmethod
     def get_metadata_dir():
         if not Config.get("metadata_dir"):
@@ -1042,82 +1045,78 @@ class Metadata:
         return result, True
 
     @staticmethod
-    def get_metadata_from_book(pipeline, path):
-        # Initialize book_metadata with the identifier based on the filename
-        book_metadata = {
-            "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
-        }
+    def get_metadata_from_book(pipeline, path, force_update=False):
+        with Metadata._cache_update_lock:
 
-        # Try getting EPUB metadata
-        if os.path.exists(path):
-            epub = Epub(pipeline, path)
-            if epub.isepub(report_errors=False):
-                book_metadata["identifier"] = epub.identifier()
-                book_metadata["title"] = epub.meta("dc:title")
-                return book_metadata
+            # remove old metadata from cache
+            if not Metadata.metadata_cache:
+                Metadata.metadata_cache = {}
+            for p in Metadata.metadata_cache:
+                if time.time() - Metadata.metadata_cache[p]["cache_time"] > 3600:
+                    del Metadata.metadata_cache[p]
+            if force_update and path in Metadata.metadata_cache:
+                del Metadata.metadata_cache[path]
 
-        # Try getting HTML or DAISY 2.02 metadata
-        html_files = []
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                if file.endswith("html"):
-                    html_files.append(os.path.join(root, file))
+            # return cached metadata
+            if path in Metadata.metadata_cache:
+                return Metadata.metadata_cache[path]["metadata"]
 
-        # Try getting DTBook metadata
-        xml_files = []
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                if file.endswith(".xml"):
-                    xml_files.append(os.path.join(root, file))
+            # Initialize book_metadata with the identifier based on the filename
+            book_metadata = {
+                "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
+            }
+            Metadata.metadata_cache[path] = {
+                "cache_time": time.time(),
+                "metadata": book_metadata
+            }
 
-        if (os.path.isfile(os.path.join(path, "ncc.html")) or
-                os.path.isfile(os.path.join(path, "metadata.html")) or
-                len(html_files)):
-            file = os.path.join(path, "ncc.html")
-            if not os.path.isfile(file):
-                file = os.path.join(path, "metadata.html")
-            if not os.path.isfile(file):
-                file = os.path.join(path, os.path.basename(path) + ".xhtml")
-            if not os.path.isfile(file):
-                file = os.path.join(path, os.path.basename(path) + ".html")
-            if not os.path.isfile(file):
-                file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))][0]
-            if not file:
-                file = html_files[0]
+            # Try getting EPUB metadata
+            if os.path.exists(path):
+                epub = Epub(pipeline, path)
+                if epub.isepub(report_errors=False):
+                    book_metadata["identifier"] = epub.identifier()
+                    book_metadata["title"] = epub.meta("dc:title")
+                    Metadata.metadata_cache[path]["metadata"] = book_metadata
+                    return book_metadata
 
-            html = ElementTree.parse(file).getroot()
-            head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
-            head = head[0] if head else None
-            if head is not None:
-                book_title = [e.text for e in head.xpath(
-                    "/*/*[local-name()='head']/*[local-name()='title']")]
-                book_title = book_title[0] if book_title else None
-                book_identifier = [e.attrib["content"] for e in head.xpath(
-                    "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]
-                book_identifier = book_identifier[0] if book_identifier else None
+            # Try getting HTML or DAISY 2.02 metadata
+            html_files = []
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    if file.endswith("html"):
+                        html_files.append(os.path.join(root, file))
 
-            if book_title:
-                book_metadata["title"] = book_title
-            if book_identifier:
-                book_metadata["identifier"] = book_identifier
+            # Try getting DTBook metadata
+            xml_files = []
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    if file.endswith(".xml"):
+                        xml_files.append(os.path.join(root, file))
 
-        elif len(xml_files) > 0:
-            dtbook = None
-            for file in xml_files:
-                xml = ElementTree.parse(file).getroot()
-                if xml.xpath("namespace-uri()") == "http://www.daisy.org/z3986/2005/dtbook/":
-                    dtbook = xml
-                    break
+            if (os.path.isfile(os.path.join(path, "ncc.html")) or
+                    os.path.isfile(os.path.join(path, "metadata.html")) or
+                    len(html_files)):
+                file = os.path.join(path, "ncc.html")
+                if not os.path.isfile(file):
+                    file = os.path.join(path, "metadata.html")
+                if not os.path.isfile(file):
+                    file = os.path.join(path, os.path.basename(path) + ".xhtml")
+                if not os.path.isfile(file):
+                    file = os.path.join(path, os.path.basename(path) + ".html")
+                if not os.path.isfile(file):
+                    file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))][0]
+                if not file:
+                    file = html_files[0]
 
-            if dtbook is not None:
-                head = dtbook.xpath("/*[local-name()='head']") + dtbook.xpath("/*/*[local-name()='head']")
+                html = ElementTree.parse(file).getroot()
+                head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
                 head = head[0] if head else None
                 if head is not None:
-                    book_title = [e.attrib["content"] for e in head.xpath(
-                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Title']") if "content" in e.attrib]
+                    book_title = [e.text for e in head.xpath(
+                        "/*/*[local-name()='head']/*[local-name()='title']")]
                     book_title = book_title[0] if book_title else None
                     book_identifier = [e.attrib["content"] for e in head.xpath(
-                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Identifier']") if "content" in e.attrib]
+                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]
                     book_identifier = book_identifier[0] if book_identifier else None
 
                 if book_title:
@@ -1125,7 +1124,32 @@ class Metadata:
                 if book_identifier:
                     book_metadata["identifier"] = book_identifier
 
-        return book_metadata
+            elif len(xml_files) > 0:
+                dtbook = None
+                for file in xml_files:
+                    xml = ElementTree.parse(file).getroot()
+                    if xml.xpath("namespace-uri()") == "http://www.daisy.org/z3986/2005/dtbook/":
+                        dtbook = xml
+                        break
+
+                if dtbook is not None:
+                    head = dtbook.xpath("/*[local-name()='head']") + dtbook.xpath("/*/*[local-name()='head']")
+                    head = head[0] if head else None
+                    if head is not None:
+                        book_title = [e.attrib["content"] for e in head.xpath(
+                            "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Title']") if "content" in e.attrib]
+                        book_title = book_title[0] if book_title else None
+                        book_identifier = [e.attrib["content"] for e in head.xpath(
+                            "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Identifier']") if "content" in e.attrib]
+                        book_identifier = book_identifier[0] if book_identifier else None
+
+                    if book_title:
+                        book_metadata["title"] = book_title
+                    if book_identifier:
+                        book_metadata["identifier"] = book_identifier
+
+            Metadata.metadata_cache[path]["metadata"] = book_metadata
+            return book_metadata
 
     @staticmethod
     def get_cached_rdf_metadata(epub_identifier):
@@ -1170,3 +1194,14 @@ class Metadata:
                     })
 
         return metadata
+
+    @staticmethod
+    def pipeline_book_shortname(pipeline):
+        name = pipeline.book["name"] if pipeline.book else ""
+
+        if pipeline.book and pipeline.book["source"]:
+            book_metadata = Metadata.get_metadata_from_book(pipeline, pipeline.book["source"])
+            if "title" in book_metadata:
+                name += ": " + book_metadata["title"][:25] + ("…" if len(book_metadata["title"]) > 25 else "")
+
+        return name
