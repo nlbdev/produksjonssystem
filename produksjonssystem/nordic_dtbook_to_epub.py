@@ -109,7 +109,8 @@ class NordicDTBookToEpub(Pipeline):
                             'element "h3" not allowed here' in error_text or
                             'element "h4" not allowed here' in error_text or
                             'element "h5" not allowed here' in error_text or
-                            'element "h6" not allowed here' in error_text
+                            'element "h6" not allowed here' in error_text or
+                            'token "toc-brief" invalid' in error_text
                             )):
                         continue  # ignorer disse feilmeldingene
 

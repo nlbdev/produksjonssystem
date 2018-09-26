@@ -299,6 +299,7 @@
                     <level1>
                         <list class="toc">...</list>
                     </level1>
+                    <level1 class="chapter">...</level1>
                 </frontmatter>
             </book>
         </x:context>
@@ -309,6 +310,7 @@
                     <level1>
                         <list class="toc">...</list>
                     </level1>
+                    <level1 class="chapter">...</level1>
                 </frontmatter>
             </book>
         </x:expect>
@@ -321,6 +323,7 @@
                     <level1>
                         <list class="toc">...</list>
                     </level1>
+                    <level1 class="chapter">...</level1>
                 </frontmatter>
                 <bodymatter>
                     <level1>
@@ -336,6 +339,7 @@
                     <level1 class="toc-brief">
                         <list>...</list>
                     </level1>
+                    <level1 class="chapter">...</level1>
                 </frontmatter>
                 <bodymatter>
                     <level1 class="toc-brief">
@@ -343,6 +347,133 @@
                     </level1>
                 </bodymatter>
             </book>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Unable to mix pagebreaks inside sidebars in nordic 2015-1. Move it to adjacent paragraph if possible">
+        <x:context>
+            <div>
+                <sidebar render="optional">
+                    <p><strong>…</strong></p>
+                    <p>…<em>…</em>…<pagenum id="page-7" page="normal">…</pagenum>…</p>
+                    <imggroup>
+                        <img src="7_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <pagenum id="page-8" page="normal">…</pagenum>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                </sidebar>
+                <sidebar render="optional">
+                    <p><strong>…</strong></p>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="52_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <pagenum id="page-53" page="normal">…</pagenum>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="53_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="53_img02.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                </sidebar>
+                <sidebar render="optional">
+                    <p><strong>…</strong></p>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="56_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="56_img02.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <pagenum id="page-57" page="normal">…</pagenum>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="57_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                </sidebar>
+            </div>
+        </x:context>
+        
+        <x:expect label="result">
+            <div>
+                <sidebar render="optional">
+                    <p><strong>…</strong></p>
+                    <p>…<em>…</em>…<pagenum id="page-7" page="normal">…</pagenum>…</p>
+                    <imggroup>
+                        <img src="7_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <p><strong>…</strong></p>
+                    <p>…<pagenum id="page-8" page="normal">…</pagenum></p>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                </sidebar>
+                <sidebar render="optional">
+                    <p><strong>…</strong></p>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="52_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><pagenum id="page-53" page="normal">…</pagenum><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="53_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="53_img02.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                </sidebar>
+                <sidebar render="optional">
+                    <p><strong>…</strong></p>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="56_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="56_img02.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                    <p><pagenum id="page-57" page="normal">…</pagenum><strong>…</strong></p>
+                    <p>…</p>
+                    <imggroup>
+                        <img src="57_img01.jpg" alt="illustration"/>
+                        <caption><p><strong>…</strong>…</p></caption>
+                    </imggroup>
+                </sidebar>
+            </div>
         </x:expect>
     </x:scenario>
     
