@@ -198,7 +198,7 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Konvertering av gamle DTBøker til EPUB 3
-            [NordicDTBookToEpub(retry_all=True),              "old_dtbook",     "epub_from_dtbook"],
+            [NordicDTBookToEpub(retry_missing=True),              "old_dtbook",     "epub_from_dtbook"],
 
             # Mottak, nordic guidelines 2015-1
             [NLBPUB_incoming_validator(retry_all=True),       "incoming_NLBPUB",     "grunnlag"],
