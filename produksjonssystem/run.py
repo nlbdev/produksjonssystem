@@ -482,7 +482,7 @@ class Produksjonssystem():
             if 2 <= datetime.datetime.now().hour <= 3 and mail_sent_today is True:
                 mail_sent_today = False
 
-            if not (7 <= datetime.datetime.now().hour <= 10) or mail_sent_today is True:
+            if not (7 <= datetime.datetime.now().hour <= 8) or mail_sent_today is True:
                 continue
             else:
                 for pipeline in self.pipelines:
