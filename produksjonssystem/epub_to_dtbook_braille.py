@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class EpubToDtbookBraille(Pipeline):
     uid = "epub-to-dtbook-braille"
     title = "EPUB til DTBook for punktskrift"
-    labels = ["Punktskrift", "Metadata"]
+    labels = ["Punktskrift"]
     publication_format = "Braille"
     expected_processing_time = 868
 

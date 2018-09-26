@@ -21,7 +21,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class EpubToDtbookAudio(Pipeline):
     uid = "epub-to-dtbook-audio"
     title = "EPUB til DTBook for talesyntese"
-    labels = ["Lydbok", "Talesyntese", "Metadata"]
+    labels = ["Lydbok"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 1408
 

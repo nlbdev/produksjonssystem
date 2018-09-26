@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class EpubToDtbookHTML(Pipeline):
     uid = "epub-to-dtbook-HTML"
     title = "Epub til DTBook for ebok"
-    labels = ["e-bok", "Metadata"]
+    labels = ["e-bok"]
     publication_format = "XHTML"
     expected_processing_time = 1059
 

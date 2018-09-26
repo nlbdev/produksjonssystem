@@ -12,7 +12,7 @@ class InsertMetadata(Pipeline):
     # Ikke instansier denne klassen; bruk heller InsertMetadataEpub osv.
     uid = "insert-metadata"
     title = "Sett inn metadata"
-    labels = ["Metadata", "Statped"]
+    labels = ["Statped"]
     publication_format = None
     expected_processing_time = 30
 

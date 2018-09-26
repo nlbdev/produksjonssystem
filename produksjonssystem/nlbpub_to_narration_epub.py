@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubToNarrationEpub(Pipeline):
     uid = "nlbpub-to-narration-epub"
     title = "NLBPUB til innlesingsklar EPUB"
-    labels = ["Lydbok", "Innlesing", "Statped"]
+    labels = ["Lydbok", "Statped"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 21
 

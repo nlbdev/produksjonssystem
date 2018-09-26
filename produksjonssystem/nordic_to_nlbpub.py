@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NordicToNlbpub(Pipeline):
     uid = "nordic-epub-to-nlbpub"
     title = "Nordisk EPUB til NLBPUB"
-    labels = ["EPUB", "Lydbok", "Innlesing", "Talesyntese", "Punktskrift", "e-bok", "Statped"]
+    labels = ["EPUB", "Lydbok", "Punktskrift", "e-bok", "Statped"]
     publication_format = None
     expected_processing_time = 601
 

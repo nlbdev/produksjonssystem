@@ -20,7 +20,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class UpdateMetadata(Pipeline):
     uid = "update-metadata"
     title = "Oppdater metadata"
-    labels = [ "Metadata" ]
+    labels = []
     publication_format = None
     expected_processing_time = 180
 
