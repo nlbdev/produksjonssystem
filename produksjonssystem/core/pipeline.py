@@ -85,6 +85,7 @@ class Pipeline():
     progress_text = None
     progress_log = None
     progress_start = None
+    last_check_for_triggered_books = 0
     expected_processing_time = 60  # can be overridden in each pipeline
 
     # utility classes; reconfigured every time a book is processed to simplify function signatures
@@ -557,6 +558,28 @@ class Pipeline():
         if _trigger_dir_obj:
             _trigger_dir_obj.cleanup()
 
+    def check_for_triggered_books(self):
+        if time.time() - self.last_check_for_triggered_books < 5:
+            return
+        else:
+            self.last_check_for_triggered_books = time.time()
+        if os.path.isdir(self.dir_trigger):
+            for f in os.listdir(self.dir_trigger):
+                if f == "_name":
+                    continue
+                triggerfile = os.path.join(self.dir_trigger, f)
+                if os.path.isfile(triggerfile):
+                    try:
+                        autotriggered = False
+                        with open(triggerfile, "r") as tf:
+                            first_line = tf.readline().strip()
+                            if first_line == "autotriggered":
+                                autotriggered = True
+                        os.remove(triggerfile)
+                        self._add_book_to_queue(f, "autotriggered" if autotriggered else "triggered")
+                    except Exception:
+                        logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
+
     def _monitor_book_events_thread(self):
         while self._dirsAvailable and self._shouldRun:
             try:
@@ -580,30 +603,18 @@ class Pipeline():
 
                 time.sleep(1)  # unless anything has recently changed, give the system time to breathe between each iteration
 
-                # Note: triggering books are allowed even when self.shouldHandleBooks is False
-                if os.path.isdir(self.dir_trigger):
-                    for f in os.listdir(self.dir_trigger):
-                        if f == "_name":
-                            continue
-                        triggerfile = os.path.join(self.dir_trigger, f)
-                        if os.path.isfile(triggerfile):
-                            try:
-                                autotriggered = False
-                                with open(triggerfile, "r") as tf:
-                                    first_line = tf.readline().strip()
-                                    if first_line == "autotriggered":
-                                        autotriggered = True
-                                os.remove(triggerfile)
-                                self._add_book_to_queue(f, "autotriggered" if autotriggered else "triggered")
-                            except Exception:
-                                logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
-
                 if self.shouldHandleBooks:
+                    # opportunity to check for triggered books
+                    self.check_for_triggered_books()
+
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
                         if not (self._dirsAvailable and self._shouldRun):
                             break  # break loop if we're shutting down the system
+
+                        # opportunity to check for triggered books
+                        self.check_for_triggered_books()
 
                         with self._md5_lock:
                             if not os.path.exists(os.path.join(self.dir_in, f)):
@@ -646,6 +657,9 @@ class Pipeline():
                         for b in long_time_since_checked[:10]:
                             if not (self._dirsAvailable and self._shouldRun):
                                 break  # break loop if we're shutting down the system
+
+                            # opportunity to check for triggered books
+                            self.check_for_triggered_books()
 
                             f = b["name"]
                             deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
