@@ -31,11 +31,6 @@ class Report():
     _report_dir = None
     _messages = None
 
-    _i18n = {
-        "Links": "Lenker",
-        "none": "ingen"
-    }
-
     def __init__(self, pipeline, title=None, report_dir=None, dir_base=None, uid=None):
         self._messages = {
             "message": [],
@@ -262,7 +257,7 @@ class Report():
                     markdown_text.append(m['text'])
             if attachments != [] or should_attach_log is True:
                 markdown_text.append("\n----\n")
-                markdown_text.append("\n# "+self._i18n["Links"]+"\n")
+                markdown_text.append("\n# Lenker\n")
                 markdown_text.append("\n<ul style=\"list-style: none;\">")
 
                 # Pick icon and style for INFO-attachments
@@ -430,10 +425,6 @@ class Report():
             self.warn(path, message_type="attachment", add_empty_line_last=False)
         else:  # "ERROR"
             self.error(path, message_type="attachment", add_empty_line_last=False)
-
-    # in case you want to override something
-    def translate(self, english_text, translated_text):
-        self._i18n[english_text] = translated_text
 
 
 class DummyReport(Report):

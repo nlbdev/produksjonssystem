@@ -22,23 +22,6 @@ class Filesystem():
     pipeline = None
     last_reported_md5 = None  # avoid reporting change for same book multiple times
 
-    _i18n = {
-        "Storing": "Lagrer",
-        "in": "i",
-        "exists in": "finnes i",
-        "already; existing copy will be deleted": "fra før; eksisterende kopi blir slettet",
-        "Running": "Kjører",
-        "Unable to replace file with newer version": "Klarte ikke å erstatte filen med nyere versjon",
-        "Unable to remove": "Klarte ikke å fjerne",
-        "directory": "mappe",
-        "file": "fil",
-        "that should no longer exist": "som ikke skal eksistere lenger",
-        "Problem reading ZIP file. Did someone modify or delete it maybe?": "En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?",
-        "An error occured while trying to delete the folder": "En feil oppstod ved sletting av mappen",
-        "Maybe someone has a file or folder open on their computer?": "Kanskje noen har en fil eller mappe åpen på datamaskinen sin?",
-        "A file or folder could not be found. Did someone delete it maybe?": "Filen eller mappen ble ikke funnet. Kanskje noen slettet den?"
-    }
-
     shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
         "Thumbs.db", "*.swp", "ehthumbs.db", "ehthumbs_vista.db", "*.stackdump", "Desktop.ini", "desktop.ini",
         "$RECYCLE.BIN/", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
@@ -101,7 +84,7 @@ class Filesystem():
                             if shallow:
                                 break
                 except FileNotFoundError as e:
-                    logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
+                    logging.exception("Filen eller mappen ble ikke funnet. Kanskje noen slettet den?")
                     raise e
 
             if attributes:
@@ -153,7 +136,7 @@ class Filesystem():
                 logging.warning("Path does not refer to a file or a directory: {}".format(path))
 
         except FileNotFoundError as e:
-            logging.exception(Filesystem._i18n["A file or folder could not be found. Did someone delete it maybe?"])
+            logging.exception("Filen eller mappen ble ikke funnet. Kanskje noen slettet den?")
             raise e
 
     def copytree(self, src, dst):
@@ -183,7 +166,7 @@ class Filesystem():
                         src_md5 = Filesystem.path_md5(src_subpath, shallow=False)
                         dst_md5 = Filesystem.path_md5(dst_subpath, shallow=False)
                         if src_md5 != dst_md5:
-                            self.pipeline.utils.report.error(Filesystem._i18n["Unable to replace file with newer version"] + ": " + dst_subpath)
+                            self.pipeline.utils.report.error("Klarte ikke å erstatte filen med nyere versjon: " + dst_subpath)
                     else:
                         shutil.copy(src_subpath, dst_subpath)
 
@@ -191,12 +174,12 @@ class Filesystem():
         for item in dst_list:
             dst_subpath = os.path.join(dst, item)
             if item not in src_list:
-                message = Filesystem._i18n["Unable to remove"] + " "
+                message = "Klarte ikke å fjerne "
                 if os.path.isdir(dst_subpath):
-                    message += Filesystem._i18n["directory"]
+                    message += "mappe"
                 else:
-                    message += Filesystem._i18n["file"]
-                message += " " + Filesystem._i18n["that should no longer exist"] + ": " + dst_subpath
+                    message += "fil"
+                message += " som ikke skal eksistere lenger: " + dst_subpath
                 self.pipeline.utils.report.error(message)
 
         return dst
@@ -211,7 +194,7 @@ class Filesystem():
             try:
                 if os.path.exists(destination):
                     if os.listdir(destination):
-                        self.pipeline.utils.report.info(os.path.basename(destination) + " " + self._i18n["exists in"] + " " + os.path.dirname(destination) + " " + self._i18n["already; existing copy will be deleted"])
+                        self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(os.path.basename(destination), os.path.dirname(destination)))
                     shutil.rmtree(destination, ignore_errors=True)
                 self.copytree(source, destination)
             except shutil.Error as errors:
@@ -233,7 +216,7 @@ class Filesystem():
 
     def storeBook(self, source, book_id, overwrite = True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
-        self.pipeline.utils.report.info(self._i18n["Storing"] + " " + book_id + " " + self._i18n["in"] + " " + self.pipeline.dir_out + "...")
+        self.pipeline.utils.report.info("Lagrer {} i {}...".format(book_id, self.pipeline.dir_out))
         assert book_id
         assert book_id.strip()
         assert book_id != "."
@@ -252,14 +235,14 @@ class Filesystem():
             target += "." + str(file_extension)
         if os.path.exists(target):
             if overwrite == True:
-                self.pipeline.utils.report.info(book_id + " " + self._i18n["exists in"] + " " + dir_out + " " + self._i18n["already; existing copy will be deleted"])
+                self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(book_id, dir_out))
                 try:
                     if os.path.isdir(target):
                         shutil.rmtree(target)
                     else:
                         os.remove(target)
                 except (OSError, NotADirectoryError):
-                    self.pipeline.utils.report.error(self._i18n["An error occured while trying to delete the file or folder"] + " " + dir_out + ". " + self._i18n["Maybe someone has a file or folder open on their computer?"])
+                    self.pipeline.utils.report.error("En feil oppstod ved sletting av mappen {}. Kanskje noen har en fil eller mappe åpen på datamaskinen sin?".format(dir_out))
                     self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                     raise
             else:
@@ -290,7 +273,7 @@ class Filesystem():
     def run_static(args, cwd, report, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
         """Convenience method for subprocess.run, with our own defaults"""
 
-        report.debug(Filesystem._i18n["Running"] + ": "+(" ".join(args) if isinstance(args, list) else args))
+        report.debug("Kjører: "+(" ".join(args) if isinstance(args, list) else args))
 
         completedProcess = None
         try:
@@ -340,7 +323,7 @@ class Filesystem():
                 try:
                     zip_ref.extractall(target)
                 except EOFError as e:
-                    self.pipeline.utils.report.error(Epub._i18n["Problem reading ZIP file. Did someone modify or delete it maybe?"])
+                    self.pipeline.utils.report.error("En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?")
                     self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                     raise e
 
@@ -425,8 +408,3 @@ class Filesystem():
             if not relpath.startswith("../"):
                 return base_dirs[d]
         return None
-
-    # in case you want to override something
-    @staticmethod
-    def translate(english_text, translated_text):
-        Filesystem._i18n[english_text] = translated_text

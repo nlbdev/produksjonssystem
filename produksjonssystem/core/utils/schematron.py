@@ -153,8 +153,3 @@ class Schematron():
         except Exception:
             report.debug(traceback.format_exc(), preformatted=True)
             report.error("An error occured while running the Schematron (" + str(schematron) + ")")
-
-    # in case you want to override something
-    @staticmethod
-    def translate(english_text, translated_text):
-        Schematron._i18n[english_text] = translated_text

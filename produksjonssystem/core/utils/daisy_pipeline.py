@@ -17,14 +17,6 @@ class DaisyPipelineJob():
     # treat as class variables
     dp2_home = None
     dp2_cli = None
-    _i18n = {
-        "Starting Pipeline 2": "Oppstart av Pipeline 2",
-        "The DAISY Pipeline 2 job": "DAISY Pipeline 2-jobben",
-        "took too long time and was therefore stopped.": "tok for lang tid og ble derfor stoppet.",
-        "An error occured when starting Pipeline 2": "En feil oppstod når Pipeline 2 startet",
-        "Let's wait a few seconds and try again...": "Vi venter noen sekunder og prøver igjen...",
-        "Could not delete the DAISY Pipeline 2 job with ID": "Klarte ikke å slette Pipeline 2 jobb med ID"
-    }
 
     # treat as instance variables
     _dir_output_obj = None  # store TemporaryDirectory object in instance so that it's not cleaned up
@@ -114,41 +106,32 @@ class DaisyPipelineJob():
                             pipeline.utils.report.info("Starting Pipeline 2 engine...")
                             process = pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True)
                             if process.returncode != 0:
-                                pipeline.utils.report.error(DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"])
+                                pipeline.utils.report.error("En feil oppstod når Pipeline 2 startet")
                                 continue
 
                         except subprocess.TimeoutExpired:
-                            pipeline.utils.report.info("{} {}".format(
-                                DaisyPipelineJob._i18n["Starting Pipeline 2"],
-                                DaisyPipelineJob._i18n["took too long time and was therefore stopped."]
-                            ))
+                            pipeline.utils.report.info("Oppstart av Pipeline 2 tok for lang tid og ble derfor stoppet.")
                             continue
 
                         except subprocess.CalledProcessError:
                             pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
-                            pipeline.utils.report.warn("{}. {}".format(
-                                DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"],
-                                DaisyPipelineJob._i18n["Let's wait a few seconds and try again..."]
-                            ))
+                            pipeline.utils.report.warn("En feil oppstod når Pipeline 2 startet. Vi venter noen sekunder og prøver igjen...")
                             time.sleep(10)
                             try:
                                 # start engine if it's not started already
                                 pipeline.utils.report.info("Starting Pipeline 2 engine...")
                                 process = pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True)
                                 if process.returncode != 0:
-                                    pipeline.utils.report.error(DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"])
+                                    pipeline.utils.report.error("En feil oppstod når Pipeline 2 startet")
                                     continue
 
                             except subprocess.TimeoutExpired:
-                                pipeline.utils.report.info("{} {}".format(
-                                    DaisyPipelineJob._i18n["Starting Pipeline 2"],
-                                    DaisyPipelineJob._i18n["took too long time and was therefore stopped."]
-                                ))
+                                pipeline.utils.report.info("Oppstart av Pipeline 2 tok for lang tid og ble derfor stoppet.")
                                 continue
 
                             except subprocess.CalledProcessError:
                                 pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
-                                pipeline.utils.report.error(DaisyPipelineJob._i18n["An error occured when starting Pipeline 2"] + ".")
+                                pipeline.utils.report.error("En feil oppstod når Pipeline 2 startet.")
                                 continue
 
                         # Save PID for Pipeline 2 engine
@@ -263,11 +246,7 @@ class DaisyPipelineJob():
                         assert process.returncode == 0, "An error occured when posting the results from the Pipeline 2 job"
 
             except subprocess.TimeoutExpired:
-                self.pipeline.utils.report.error("{} {} {}".format(
-                    DaisyPipelineJob._i18n["The DAISY Pipeline 2 job"],
-                    self.job_id,
-                    DaisyPipelineJob._i18n["took too long time and was therefore stopped."]
-                ))
+                self.pipeline.utils.report.error("DAISY Pipeline 2-jobben {} tok for lang tid og ble derfor stoppet.".format(self.job_id))
                 self.status = None
 
             except Exception:
@@ -288,10 +267,10 @@ class DaisyPipelineJob():
                     self.pipeline.utils.report.debug(self.job_id + " was deleted")
                 else:
                     self.pipeline.utils.report.debug(traceback.format_stack())
-                    self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)
+                    self.pipeline.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + self.job_id)
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
                 self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
-                self.pipeline.utils.report.warn(DaisyPipelineJob._i18n["Could not delete the DAISY Pipeline 2 job with ID"] + " " + self.job_id)
+                self.pipeline.utils.report.warn("Klarte ikke å slette Pipeline 2 jobb med ID " + self.job_id)
 
     @staticmethod
     def list_processes():
@@ -310,8 +289,3 @@ class DaisyPipelineJob():
                 pass
         procs = list(sorted(procs, key=lambda p: p.create_time()))
         return procs
-
-    # in case you want to override something
-    @staticmethod
-    def translate(english_text, translated_text):
-        DaisyPipelineJob._i18n[english_text] = translated_text

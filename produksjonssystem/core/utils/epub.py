@@ -14,12 +14,6 @@ from core.utils.xslt import Xslt
 class Epub():
     """Methods for working with EPUB files/filesets"""
 
-    _i18n = {
-        "does not exist": "eksisterer ikke",
-        "cannot validate EPUB": "kan ikke validere EPUB",
-        "the file does not end with \".epub\" or \".zip\"": "filen slutter ikke med \".epub\" eller \".zip\""
-    }
-
     pipeline = None
     _metadata = None
     book_path = None
@@ -109,7 +103,7 @@ class Epub():
         if os.path.isdir(self.book_path) and not os.path.isfile(os.path.join(self.book_path, "EPUB/package.opf")):
             if report_errors:
                 self.pipeline.utils.report.error(
-                    os.path.basename(self.book_path) + ": EPUB/package.opf " + Epub._i18n["does not exist"] + "; " + Epub._i18n["cannot validate EPUB"] + ".")
+                    os.path.basename(self.book_path) + ": EPUB/package.opf eksisterer ikke. Kan ikke validere EPUB.")
             return False
 
         elif os.path.isfile(self.book_path):
@@ -330,11 +324,6 @@ class Epub():
             container.write("</container>\n")
 
         return Epub(pipeline, dir_out)
-
-    # in case you want to override something
-    @staticmethod
-    def translate(english_text, translated_text):
-        Epub._i18n[english_text] = translated_text
 
     file_extensions = {
         "xml":       "application/xml",

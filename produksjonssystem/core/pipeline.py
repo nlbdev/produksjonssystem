@@ -211,7 +211,7 @@ class Pipeline():
                 with open(os.path.join(self.dir_trigger, "_name"), "w") as namefile:
                     namefile.write("{} # {}\n".format(self.uid, self.title))
             except Exception:
-                logging.exception("" + "Could not create trigger directory: " + self.dir_trigger)
+                logging.exception("Could not create trigger directory: " + self.dir_trigger)
         else:
             self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
             self.dir_trigger = self._dir_trigger_obj.name

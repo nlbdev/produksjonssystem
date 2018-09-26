@@ -15,10 +15,6 @@ class Xslt():
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../..", "xslt"))
     saxon_jar = None
     jing_jar = None
-    _i18n = {
-        "The XSLT": "XSLTen",
-        "took too long time and was therefore stopped.": "tok for lang tid og ble derfor stoppet.",
-    }
 
     @staticmethod
     def init_environment():
@@ -72,13 +68,8 @@ class Xslt():
             self.success = process.returncode == 0
 
         except subprocess.TimeoutExpired:
-            report.error(Xslt._i18n["The XSLT"] + " " + stylesheet + " " + Xslt._i18n["took too long time and was therefore stopped."])
+            report.error("XSLTen {} tok for lang tid og ble derfor stoppet.".format(stylesheet))
 
         except Exception:
             report.debug(traceback.format_exc(), preformatted=True)
             report.error("An error occured while running the XSLT (" + str(stylesheet) + ")")
-
-    # in case you want to override something
-    @staticmethod
-    def translate(english_text, translated_text):
-        Filesystem._i18n[english_text] = translated_text
