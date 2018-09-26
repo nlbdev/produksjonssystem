@@ -146,4 +146,4 @@ class EpubToDtbookAudio(Pipeline):
 
 
 if __name__ == "__main__":
-    EpubToDtbook().run()
+    EpubToDtbookAudio().run()

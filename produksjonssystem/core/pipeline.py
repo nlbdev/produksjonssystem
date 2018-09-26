@@ -295,7 +295,8 @@ class Pipeline():
         with self._queue_lock:
             new_queue = []
             if len(new_queue) < len(self._queue):
-                logging.info("Removed {} books from the queue that may have been added because the network station was unavailable.".format(len(self._queue) - len(new_queue)))
+                logging.info("Removed {} books from the queue that may have been added because the network station was unavailable.".format(
+                    len(self._queue) - len(new_queue)))
                 self._queue = new_queue
 
         if exit:

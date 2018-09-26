@@ -79,7 +79,8 @@ class InsertMetadata(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info(temp_epub.identifier() + " ble lagt til i arkivet.")
 
-        self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(self.title, epub.identifier(), self.publication_format, epubTitle)
+        self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(
+            self.title, epub.identifier(), self.publication_format, epubTitle)
         return True
 
 
@@ -113,9 +114,3 @@ class InsertMetadataBraille(InsertMetadata):
     labels = ["Punktskrift", "Metadata", "Statped"]
     publication_format = "Braille"
     expected_processing_time = 874
-
-
-#class InsertMetadataExternal(InsertMetadata):
-#    uid = "insert-metadata-external"
-#    title = "Sett inn metadata for ekstern produksjon"
-#    publication_format = "External" # eller hva er formatet her?

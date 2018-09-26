@@ -16,6 +16,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
 
+
 class UpdateMetadata(Pipeline):
     uid = "update-metadata"
     title = "Oppdater metadata"
@@ -23,7 +24,7 @@ class UpdateMetadata(Pipeline):
     publication_format = None
     expected_processing_time = 180
 
-    min_update_interval = 60 * 60 * 24 # 1 day
+    min_update_interval = 60 * 60 * 24  # 1 day
     max_metadata_emails_per_day = 5
 
     # if UpdateMetadata is not loaded, use a temporary directory
@@ -36,7 +37,7 @@ class UpdateMetadata(Pipeline):
 
     metadata = None
 
-    throttle_metadata_emails = True # if enabled, will only send up to N automated metadata error emails per day, and only in working hours
+    throttle_metadata_emails = True  # if enabled, will only send up to N automated metadata error emails per day, and only in working hours
 
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
@@ -101,7 +102,7 @@ class UpdateMetadata(Pipeline):
                         while len(Metadata.last_metadata_errors) > 0 and Metadata.last_metadata_errors[0] < now - 3600*24:
                             Metadata.last_metadata_errors = Metadata.last_metadata_errors[1:]
                         if len(Metadata.last_metadata_errors) >= Metadata.max_metadata_emails_per_day:
-                            break # only process N erroneous books per day (avoid getting flooded with errors)
+                            break  # only process N erroneous books per day (avoid getting flooded with errors)
 
                     last_updated = self.metadata[book_id]["last_updated"] if book_id in self.metadata else None
 
@@ -129,7 +130,7 @@ class UpdateMetadata(Pipeline):
                         Metadata.get_metadata(self.logPipeline, epub)
 
                         now = int(time.time())
-                        if not book_id in self.metadata:
+                        if book_id not in self.metadata:
                             self.metadata[book_id] = {}
                         self.metadata[book_id]["last_updated"] = now
                         if not os.path.exists(metadata_dir):
@@ -165,6 +166,7 @@ class UpdateMetadata(Pipeline):
     def on_book_created(self):
         self.utils.report.should_email = False
         return True
+
 
 if __name__ == "__main__":
     UpdateMetadata().run()

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import tempfile
 import traceback
-import shutil
 
 from lxml import etree as ElementTree
 

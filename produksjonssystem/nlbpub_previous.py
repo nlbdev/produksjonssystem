@@ -10,6 +10,7 @@ import traceback
 from os import walk
 
 import yaml
+
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 

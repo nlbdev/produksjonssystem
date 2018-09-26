@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import smtplib
-import traceback
 import sys
 import tempfile
 import time

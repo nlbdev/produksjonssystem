@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json
 import os
-import subprocess
 import sys
 import tempfile
-import traceback
 
 from core.pipeline import Pipeline
-from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
-from core.utils.schematron import Schematron
 from core.utils.relaxng import Relaxng
+from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -82,7 +78,9 @@ class IncomingNLBPUB(Pipeline):
         html_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[0]), source=html_file)
         nav_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[1]), source=nav_file)
         opf_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", schematron_files[2]), source=package_file)
-        warning_sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", "nlbpub-check-need-for-manual-intervention.sch"), source=html_file)
+        warning_sch = Schematron(self,
+                                 schematron=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", "nlbpub-check-need-for-manual-intervention.sch"),
+                                 source=html_file)
         schematron_list = [html_sch, nav_sch, opf_sch]
         html_relax = Relaxng(self, relaxng=os.path.join(Xslt.xslt_dir, "incoming-NLBPUB", rng_files), source=html_file)
 

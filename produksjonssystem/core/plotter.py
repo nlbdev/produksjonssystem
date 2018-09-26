@@ -5,8 +5,8 @@ import logging
 import os
 import shutil
 import sys
-import time
 import threading
+import time
 
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
@@ -352,8 +352,6 @@ class Plotter():
                     is_alive = True
                     logging.info("Thread is still running: {}".format(thread.name))
                     thread.join(timeout=60)
-
-
 
     def _generate_plots_thread(self):
         try:
