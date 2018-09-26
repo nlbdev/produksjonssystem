@@ -482,40 +482,44 @@ class Produksjonssystem():
             if 2 <= datetime.datetime.now().hour <= 3 and mail_sent_today is True:
                 mail_sent_today = False
 
-            if not (7 <= datetime.datetime.now().hour <= 8) or mail_sent_today is True:
+            if not (7 <= datetime.datetime.now().hour <= 10) or mail_sent_today is True:
                 continue
             else:
                 for pipeline in self.pipelines:
-                    if "dummy" not in pipeline[0].uid:
-                        number_produced = 0
-                        number_failed = 0
-                        file = os.path.join(daily_dir, pipeline[0].uid)
-                        message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
-                        message = message + "\n<h2>Bøker som har gått gjennom:</h2>"
-                        report_content = ""
-                        dirs = [self.book_archive_dirs["master"], self.dirs["reports"]]
-                        if (os.path.isfile(file + "-SUCCESS.txt")):
-                            with open(file + "-SUCCESS.txt", "r") as report_file_success:
-                                report_content = report_file_success.readlines()
-                                message = message + self.format_email_report(report_content, dirs)
-                                for line in report_content:
-                                    if pipeline[0].title in line and line.startswith("["):
-                                        number_produced += 1
-                        else:
-                            message = message + "\nIngen ble produsert\n"
+                    try:
+                        if "dummy" not in pipeline[0].uid:
+                            number_produced = 0
+                            number_failed = 0
+                            file = os.path.join(daily_dir, pipeline[0].uid)
+                            message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
+                            message = message + "\n<h2>Bøker som har gått gjennom:</h2>"
+                            report_content = ""
+                            dirs = [self.book_archive_dirs["master"], self.dirs["reports"]]
+                            if (os.path.isfile(file + "-SUCCESS.txt")):
+                                with open(file + "-SUCCESS.txt", "r") as report_file_success:
+                                    report_content = report_file_success.readlines()
+                                    message = message + self.format_email_report(report_content, dirs)
+                                    for line in report_content:
+                                        if pipeline[0].title in line and line.startswith("["):
+                                            number_produced += 1
+                            else:
+                                message = message + "\nIngen ble produsert\n"
 
-                        message = message + "\n<h2>Bøker som har mislyktes:</h2>"
-                        if (os.path.isfile(file + "-FAIL.txt")):
-                            with open(file + "-FAIL.txt", "r") as report_file_fail:
-                                report_content = report_file_fail.readlines()
-                                message = message + self.format_email_report(report_content, dirs)
-                                for line in report_content:
-                                    if pipeline[0].title in line and line.startswith("["):
-                                        number_failed += 1
-                        else:
-                            message = message + "\nIngen feilet\n"
-                        message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>".format(number_produced, number_failed)
-                        pipeline[0].daily_report(message)
+                            message = message + "\n<h2>Bøker som har mislyktes:</h2>"
+                            if (os.path.isfile(file + "-FAIL.txt")):
+                                with open(file + "-FAIL.txt", "r") as report_file_fail:
+                                    report_content = report_file_fail.readlines()
+                                    message = message + self.format_email_report(report_content, dirs)
+                                    for line in report_content:
+                                        if pipeline[0].title in line and line.startswith("["):
+                                            number_failed += 1
+                            else:
+                                message = message + "\nIngen feilet\n"
+                            message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>".format(number_produced, number_failed)
+                            pipeline[0].daily_report(message)
+                    except Exception:
+                        self.info("En feil oppstod under sending av dagsrapporten for " + pipeline[0].title)
+                        self.info(traceback.format_exc())
                 mail_sent_today = True
 
     def _config_thread(self):
@@ -611,7 +615,7 @@ class Produksjonssystem():
                 for dir in dirs:
                     if dir in line:
                         short_path = line.replace(dir, "")
-                message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(line, short_path)
+                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(line, short_path)
             else:
                 message = message + "\n" + line
         return message
