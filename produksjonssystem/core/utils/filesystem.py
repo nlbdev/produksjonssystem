@@ -9,6 +9,7 @@ import socket
 import subprocess
 import tempfile
 import threading
+import time
 import traceback
 import urllib.parse
 import urllib.request
@@ -21,6 +22,7 @@ class Filesystem():
 
     pipeline = None
     last_reported_md5 = None  # avoid reporting change for same book multiple times
+    hosts = {} # hosts cache
 
     shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
         "Thumbs.db", "*.swp", "ehthumbs.db", "ehthumbs_vista.db", "*.stackdump", "Desktop.ini", "desktop.ini",
@@ -392,14 +394,23 @@ class Filesystem():
 
     @staticmethod
     def get_host_from_url(addr):
-        try:
-            logging.info("Getting host from URL: {}".format(addr))
-            addr = urllib.parse.urlparse(addr)
-            addr = socket.gethostbyaddr(addr.netloc.split(":")[0])
-            logging.info("Host for URL is: {}".format(addr[0]))
-            return addr[0]
-        except Exception:
-            return None
+        if not Filesystem.hosts:
+            Filesystem.hosts = {}
+        if addr not in Filesystem.hosts:
+            Filesystem.hosts[addr] = {
+                "last_updated": 0,
+                "host": None
+            }
+        if time.time() - Filesystem.hosts[addr]["last_updated"] > 3600:
+            try:
+                logging.info("Getting host from URL: {}".format(addr))
+                host = urllib.parse.urlparse(addr)
+                host = socket.gethostbyaddr(host.netloc.split(":")[0])
+                logging.info("Host for URL is: {}".format(host[0]))
+                Filesystem.hosts[addr]["host"] = host[0]
+            except Exception:
+                Filesystem.hosts[addr]["host"] = None
+        return Filesystem.hosts[addr]["host"]
 
     @staticmethod
     def get_base_path(path, base_dirs):
