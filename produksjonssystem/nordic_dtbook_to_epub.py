@@ -84,7 +84,7 @@ class NordicDTBookToEpub(Pipeline):
         shutil.copy(temp_dtbook_file, dtbook)
 
         self.utils.report.info("Validerer Nordisk DTBook...")
-        with DaisyPipelineJob(self, "nordic-dtbook-validate", {"dtbook": dtbook}) as dp2_job_dtbook_validate:
+        with DaisyPipelineJob(self, "nordic-dtbook-validate", {"dtbook": dtbook, "no-legacy": "false"}) as dp2_job_dtbook_validate:
             dtbook_validate_status = None
             if dp2_job_dtbook_validate.status == "DONE":
                 dtbook_validate_status = "SUCCESS"
@@ -152,7 +152,9 @@ class NordicDTBookToEpub(Pipeline):
         self.utils.report.info("Konverterer fra Nordisk DTBook til Nordisk EPUB3...")
         temp_epub_file_obj = tempfile.NamedTemporaryFile()
         temp_epub_file = temp_epub_file_obj.name
-        with DaisyPipelineJob(self, "nordic-dtbook-to-epub3", {"dtbook": dtbook, "fail-on-error": "false",
+        with DaisyPipelineJob(self, "nordic-dtbook-to-epub3", {"dtbook": dtbook,
+                                                               "fail-on-error": "false",
+                                                               "no-legacy": "false",
                                                                "discard-intermediary-html": "false"}) as dp2_job_convert:
             convert_status = "SUCCESS" if dp2_job_convert.status == "DONE" else "ERROR"
 
