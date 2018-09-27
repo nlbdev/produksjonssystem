@@ -304,7 +304,7 @@
             </book>
         </x:context>
         
-        <x:expect>
+        <x:expect label="result">
             <book>
                 <frontmatter>
                     <level1>
@@ -333,7 +333,7 @@
             </book>
         </x:context>
         
-        <x:expect>
+        <x:expect label="result">
             <book>
                 <frontmatter>
                     <level1 class="toc-brief">
@@ -474,6 +474,29 @@
                     </imggroup>
                 </sidebar>
             </div>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="frontmatter without any level1">
+        <x:context>
+            <frontmatter>
+                <doctitle>doctitle</doctitle>
+                <docauthor>docauthor 1</docauthor>
+                <docauthor>docauthor 2</docauthor>
+            </frontmatter>
+        </x:context>
+        
+        <x:expect label="result">
+            <frontmatter>
+                <doctitle>doctitle</doctitle>
+                <docauthor>docauthor 1</docauthor>
+                <docauthor>docauthor 2</docauthor>
+                <level1 class="titlepage">  
+                    <h1 class="title fulltitle">doctitle</h1> 
+                    <p class="docauthor author">docauthor 1</p>
+                    <p class="docauthor author">docauthor 2</p>
+                </level1>
+            </frontmatter>
         </x:expect>
     </x:scenario>
     

@@ -200,6 +200,21 @@
         </p>
     </xsl:template>
     
+    <xsl:template match="dtbook:frontmatter">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()"/>
+            
+            <xsl:if test="not(exists(dtbook:level1))">
+                <level1 class="titlepage">
+                    <h1 class="title fulltitle"><xsl:value-of select="normalize-space(string-join(dtbook:doctitle//text(),' '))"/></h1>
+                    <xsl:for-each select="dtbook:docauthor">
+                        <p class="docauthor author"><xsl:value-of select="normalize-space(string-join(.//text(),' '))"/></p>
+                    </xsl:for-each>
+                </level1>
+            </xsl:if>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:function name="f:level" as="xs:integer">
         <xsl:param name="context" as="element()"/>
         <xsl:variable name="numbered-level" select="($context/ancestor-or-self::*[matches(local-name(),'level\d') or *[matches(local-name(),'h\d')]])[last()]" as="element()?"/>
