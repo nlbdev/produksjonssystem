@@ -104,6 +104,9 @@ class NordicDTBookToEpub(Pipeline):
                     if (bool(error_text) and (
                             error_text.startswith("[tpb124]") or
                             error_text.startswith("[tpb43]") or
+                            error_text.startswith("[tpb10] Meta dc:Publisher") or
+                            error_text.startswith("[tpb10] Meta dc:Date") or
+                            error_text.startswith("[opf3g]") or
                             'element "h1" not allowed here' in error_text or
                             'element "h2" not allowed here' in error_text or
                             'element "h3" not allowed here' in error_text or
