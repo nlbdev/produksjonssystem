@@ -115,7 +115,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:pagenum">
+    <xsl:template match="dtbook:pagenum" priority="2">
         <xsl:variable name="level" select="f:level(.)"/>
         <xsl:variable name="notes-on-same-level" select="ancestor::*[f:level(.) = $level]/descendant::*[self::note and f:level(.) = $level]" as="element()*"/>
         <xsl:if test="not(exists($notes-on-same-level))">
