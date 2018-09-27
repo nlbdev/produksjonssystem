@@ -72,6 +72,8 @@
     </xsl:template>
     
     <xsl:template match="dtbook:*[matches(local-name(),'(level\d?|sidebar)')]">
+        <xsl:variable name="level" select="f:level(.)"/>
+        
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* except @class"/>
             
@@ -97,14 +99,28 @@
             
             <!-- conditionally insert headline -->
             <xsl:if test="tokenize(@class,'\s+') = 'colophon' and not(exists(dtbook:*[matches(local-name(),'h[d\d]')]))">
-                <xsl:element name="h{f:level(.)}" exclude-result-prefixes="#all">
+                <xsl:element name="h{$level}" exclude-result-prefixes="#all">
                     <xsl:text>Kolofon</xsl:text>
                 </xsl:element>
             </xsl:if>
             
             <!-- remaining elements and other nodes -->
             <xsl:apply-templates select="node() except $before-headline"/>
+            
+            <xsl:if test="not(exists(.//note[f:level(.) = $level])) and exists(following-sibling::*[1]//note[f:level(.) = $level])">
+                <xsl:for-each select="(following-sibling::* intersect following-sibling::*[not(exists(.//note[f:level(.) = $level]))][1]/preceding-sibling::*)//pagenum">
+                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                </xsl:for-each>
+            </xsl:if>
         </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="dtbook:pagenum">
+        <xsl:variable name="level" select="f:level(.)"/>
+        <xsl:variable name="notes-on-same-level" select="ancestor::*[f:level(.) = $level]/descendant::*[self::note and f:level(.) = $level]" as="element()*"/>
+        <xsl:if test="not(exists($notes-on-same-level))">
+            <xsl:next-match/>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="dtbook:p[../dtbook:lic]">

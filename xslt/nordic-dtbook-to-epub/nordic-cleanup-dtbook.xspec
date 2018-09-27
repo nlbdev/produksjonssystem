@@ -500,4 +500,63 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="move page numbers out of rearnotes when necessary to preserve page numbering order">
+        <x:context>
+            <level1 class="chapter">
+                <pagenum page="normal" id="page-77">77</pagenum>
+                <h1>…</h1>
+                <p>…</p>
+                <level2>
+                    <h3>…</h3>
+                    <p>…</p>
+                </level2>
+                <level2>
+                    <pagenum page="normal" id="page-78">78</pagenum>
+                    <h2>…</h2>
+                    <p>…<noteref href="#c05001">1</noteref>…<noteref href="#c05002">2</noteref>…</p>
+                </level2>
+                <level2 class="rearnotes" id="level3_13">
+                    <pagenum page="normal" id="page-79">79</pagenum>
+                    <h2>NOTES</h2>
+                    <pagenum page="normal" id="page-80">80</pagenum>
+                    <note id="…"><p>…</p></note>
+                    <note id="…"><p>…</p></note>
+                </level2>
+                <level2 id="level3_12">
+                    <pagenum page="normal" id="page-81">81</pagenum>
+                    <h2>…</h2>
+                    <p>…</p>
+                </level2>
+            </level1>
+        </x:context>
+        <x:expect label="the rearnotes should be split into its own document, preserving page numbering order">
+            <level1 class="chapter">
+                <pagenum page="normal" id="page-77">77</pagenum>
+                <h1>…</h1>
+                <p>…</p>
+                <level2>
+                    <h3>…</h3>
+                    <p>…</p>
+                </level2>
+                <level2>
+                    <pagenum page="normal" id="page-78">78</pagenum>
+                    <h2>…</h2>
+                    <p>…<noteref href="#c05001">1</noteref>…<noteref href="#c05002">2</noteref>…</p>
+                    <pagenum page="normal" id="page-79">79</pagenum>
+                    <pagenum page="normal" id="page-80">80</pagenum>
+                </level2>
+                <level2 class="rearnotes" id="level3_13">
+                    <h2>NOTES</h2>
+                    <note id="…"><p>…</p></note>
+                    <note id="…"><p>…</p></note>
+                </level2>
+                <level2 id="level3_12">
+                    <pagenum page="normal" id="page-81">81</pagenum>
+                    <h2>…</h2>
+                    <p>…</p>
+                </level2>
+            </level1>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
