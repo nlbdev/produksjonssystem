@@ -3,6 +3,7 @@
 
 import logging
 import os
+import re
 import shutil
 import sys
 import threading
@@ -74,14 +75,17 @@ class Plotter():
         for rank in Pipeline.dirs_ranked:
             node_ranks[rank["id"]] = []
 
+        # remember edges so that we don't plot them twice
+        edges = {}
+
         for pipeline in self.pipelines:
             if not pipeline[0].uid in uids:
                 continue
 
             if self.debug_logging:
                 logging.info("for pipeline in self.pipelines: (pipeline={})".format(pipeline[0].uid))
-            pipeline_id = pipeline[0].uid
-            title = pipeline[0].title if pipeline[0].title else pipeline_id
+            title = pipeline[0].title if pipeline[0].title else pipeline[0].uid
+            pipeline_id = re.sub(r"[^a-z\d]", "", title.lower())
 
             if self.debug_logging:
                 logging.info("before pipeline[0].get_queue()")
@@ -253,7 +257,11 @@ class Plotter():
                     logging.info("after Pipeline.directory_watchers_ready(…)")
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[1], label_in)
-                dot.edge(pipeline[1], pipeline_id)
+                if pipeline[1] not in edges:
+                    edges[pipeline[1]] = []
+                if pipeline_id not in edges[pipeline[1]]:
+                    edges[pipeline[1]].append(pipeline_id)
+                    dot.edge(pipeline[1], pipeline_id)
                 node_ranks[rank_in].append(pipeline[1])
 
             if relpath_out:
@@ -266,7 +274,11 @@ class Plotter():
                     logging.info("after Pipeline.directory_watchers_ready(…)")
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[2], label_out)
-                dot.edge(pipeline_id, pipeline[2])
+                if pipeline_id not in edges:
+                    edges[pipeline_id] = []
+                if pipeline[2] not in edges[pipeline_id]:
+                    edges[pipeline_id].append(pipeline[2])
+                    dot.edge(pipeline_id, pipeline[2])
                 node_ranks[rank_out].append(pipeline[2])
 
         if self.debug_logging:
