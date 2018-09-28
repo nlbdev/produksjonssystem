@@ -39,6 +39,7 @@ class Pipeline():
 
     _queue_lock = None
     _md5_lock = None
+    _group_locks = {}  # use this statically: Pipeline._group_locks
 
     _dir_trigger_obj = None  # store TemporaryDirectory object in instance so that it's not cleaned up
     pipelines = []
@@ -95,7 +96,9 @@ class Pipeline():
 
     # should be overridden when extending this class
     uid = None
+    gid = None
     title = None
+    group_title = None
     labels = []
     publication_format = None
 
@@ -108,6 +111,8 @@ class Pipeline():
         self.retry_missing = retry_missing
         self._queue_lock = RLock()
         self._md5_lock = RLock()
+        if self.get_group_id() not in Pipeline._group_locks:
+            Pipeline._group_locks[self.get_group_id()] = {"lock": RLock(), "current-uid": None}
         with self._queue_lock:
             self._queue = []
         super().__init__()
@@ -369,6 +374,31 @@ class Pipeline():
                     is_alive = True
                     logging.info("Thread is still running: {}".format(thread.name))
                     thread.join(timeout=60)
+
+    def get_group_id(self):
+        if self.gid:
+            return self.gid
+        else:
+            return self.uid
+
+    def get_group_title(self):
+        current_pipeline = self.get_current_group_pipeline(default_self=False)
+        if current_pipeline:
+            return next(value for value in [current_pipeline.title, current_pipeline.uid] if value)
+        else:
+            return next(value for value in [self.group_title, self.title, self.gid, self.uid] if value)
+
+    def get_current_group_pipeline(self, default_self=True):
+        gid = self.get_group_id()
+        if gid in Pipeline._group_locks:
+            uid = Pipeline._group_locks[gid]["current-uid"]
+            for p in Pipeline.pipelines:
+                if p.uid == uid:
+                    return p
+        if default_self:
+            return self
+        else:
+            return None
 
     def trigger(self, name, auto=True):
         path = os.path.join(self.dir_trigger, name)
@@ -814,14 +844,19 @@ class Pipeline():
                             self.progress_start = time.time()
                             self.utils.report.debug("Started: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
-                            if event == "created":
-                                result = self.on_book_created()
+                            with Pipeline._group_locks[self.get_group_id()]["lock"]:
+                                Pipeline._group_locks[self.get_group_id()]["current-uid"] = self.uid
 
-                            elif event == "deleted":
-                                result = self.on_book_deleted()
+                                if event == "created":
+                                    result = self.on_book_created()
 
-                            else:
-                                result = self.on_book_modified()
+                                elif event == "deleted":
+                                    result = self.on_book_deleted()
+
+                                else:
+                                    result = self.on_book_modified()
+
+                                Pipeline._group_locks[self.get_group_id()]["current-uid"] = None
 
                         except Exception:
                             self.utils.report.error("An error occured while handling the book")
@@ -829,6 +864,9 @@ class Pipeline():
                             logging.exception("An error occured while handling the book")
 
                         finally:
+                            if Pipeline._group_locks[self.get_group_id()]["current-uid"] == self.uid:
+                                Pipeline._group_locks[self.get_group_id()]["current-uid"] = None
+
                             epub_identifier = None
                             if "nlbprod:identifier.epub" in book_metadata:
                                 epub_identifier = book_metadata["nlbprod:identifier.epub"]

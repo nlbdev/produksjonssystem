@@ -18,7 +18,9 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class IncomingNLBPUB(Pipeline):
     uid = "incoming-NLBPUB"
+    gid = "incoming-NLBPUB"
     title = "Mottakskontroll NLBPUB"
+    group_title = "Mottakskontroll NLBPUB"
     labels = ["EPUB"]
     publication_format = None
     expected_processing_time = 300
@@ -133,6 +135,7 @@ class IncomingNLBPUB(Pipeline):
 
 class NLBPUB_validator(IncomingNLBPUB):
     uid = "NLBPUB-validator-final"
+    gid = "NLBPUB-validator-final"
     title = "NLBPUB validator"
     labels = ["EPUB"]
     publication_format = "None"
@@ -144,6 +147,7 @@ class NLBPUB_validator(IncomingNLBPUB):
 
 class NLBPUB_incoming_validator(IncomingNLBPUB):
     uid = "NLBPUB-incoming-validator"
+    title = "Mottakskontroll NLBPUB validering"
     labels = ["EPUB"]
     publication_format = "None"
     skip_warning = False
@@ -154,6 +158,7 @@ class NLBPUB_incoming_validator(IncomingNLBPUB):
 
 class NLBPUB_incoming_warning(IncomingNLBPUB):
     uid = "NLBPUB-incoming-warning"
+    title = "Mottakskontroll NLBPUB advarsel"
     labels = ["EPUB"]
     publication_format = "None"
     skip_warning = False

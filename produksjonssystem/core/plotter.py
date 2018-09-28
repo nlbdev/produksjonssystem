@@ -3,7 +3,6 @@
 
 import logging
 import os
-import re
 import shutil
 import sys
 import threading
@@ -82,16 +81,18 @@ class Plotter():
             if not pipeline[0].uid in uids:
                 continue
 
-            if self.debug_logging:
-                logging.info("for pipeline in self.pipelines: (pipeline={})".format(pipeline[0].uid))
-            title = pipeline[0].title if pipeline[0].title else pipeline[0].uid
-            pipeline_id = re.sub(r"[^a-z\d]", "", title.lower())
+            group_pipeline = pipeline[0].get_current_group_pipeline()
 
             if self.debug_logging:
-                logging.info("before pipeline[0].get_queue()")
-            queue = pipeline[0].get_queue()
+                logging.info("for pipeline in self.pipelines: (pipeline={})".format(pipeline[0].uid))
+            title = group_pipeline.get_group_title()
+            pipeline_id = group_pipeline.get_group_id()  # re.sub(r"[^a-z\d]", "", title.lower())
+
             if self.debug_logging:
-                logging.info("after pipeline[0].get_queue()")
+                logging.info("before group_pipeline.get_queue()")
+            queue = group_pipeline.get_queue()
+            if self.debug_logging:
+                logging.info("after group_pipeline.get_queue()")
 
             if self.debug_logging:
                 logging.info("before many invocations of Pipeline.get_main_event(book)")
@@ -117,10 +118,10 @@ class Plotter():
 
             queue_size = len(queue) if queue else 0
             if self.debug_logging:
-                logging.info("before pipeline[0].pipeline_book_shortname()")
-            book = Metadata.pipeline_book_shortname(pipeline[0])
+                logging.info("before group_pipeline.pipeline_book_shortname()")
+            book = Metadata.pipeline_book_shortname(group_pipeline)
             if self.debug_logging:
-                logging.info("after pipeline[0].pipeline_book_shortname()")
+                logging.info("after group_pipeline.pipeline_book_shortname()")
 
             relpath_in = None
             netpath_in = ""
@@ -226,15 +227,15 @@ class Plotter():
                     node_ranks[rank_in].append(pipeline_id)
 
             if self.debug_logging:
-                logging.info("before pipeline[0].get_status()")
-            status = pipeline[0].get_status()
+                logging.info("before group_pipeline.get_status()")
+            status = group_pipeline.get_status()
             if self.debug_logging:
-                logging.info("after pipeline[0].get_status(…)")
+                logging.info("after group_pipeline.get_status(…)")
             if self.debug_logging:
-                logging.info("before pipeline[0].get_progress(…)")
-            progress_text = pipeline[0].get_progress()
+                logging.info("before group_pipeline.get_progress(…)")
+            progress_text = group_pipeline.get_progress()
             if self.debug_logging:
-                logging.info("after pipeline[0].get_progress(…)")
+                logging.info("after group_pipeline.get_progress(…)")
             pipeline_label = "< <font point-size='26'>{}</font>{} >".format(
                 title,
                 "".join(["\n<br/><i><font point-size='22'>{}</font></i>".format(val) for val in [queue_string, progress_text, status] if val]))
@@ -242,7 +243,7 @@ class Plotter():
             fillcolor = "lightskyblue1"
             if book or queue_size:
                 fillcolor = "lightslateblue"
-            if not pipeline[0].running or isinstance(pipeline[0], DummyPipeline):
+            if not group_pipeline.running or isinstance(group_pipeline, DummyPipeline):
                 fillcolor = "white"
             dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
             dot.node(pipeline_id, pipeline_label.replace("\\", "\\\\"))
