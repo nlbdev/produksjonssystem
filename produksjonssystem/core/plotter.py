@@ -369,7 +369,7 @@ class Plotter():
         while self.should_run:
             time.sleep(1)
             try:
-                self.debug_logging = int(time.time()) % 60 == 0
+                self.debug_logging = False
                 times = []
 
                 # Main dashboard
@@ -421,7 +421,7 @@ class Plotter():
                 if not self.should_run:
                     break
 
-                if self.debug_logging:
+                if int(time.time()) % 300 == 0:
                     # print only when mod time is 0 so that this is not logged all the time
                     logging.info(", ".join(times))
 
