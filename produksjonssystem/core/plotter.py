@@ -77,8 +77,13 @@ class Plotter():
         # remember edges so that we don't plot them twice
         edges = {}
 
-        for pipeline in self.pipelines:
-            if not pipeline[0].uid in uids:
+        for uid in uids:
+            pipeline = None
+            for p in self.pipelines:
+                if p[0].uid == uid:
+                    pipeline = p
+                    break
+            if not pipeline:
                 continue
 
             group_pipeline = pipeline[0].get_current_group_pipeline()

@@ -8,6 +8,7 @@ import sys
 import threading
 import time
 import traceback
+from collections import OrderedDict
 from email.headerregistry import Address
 from threading import Thread
 
@@ -17,7 +18,6 @@ from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
 from core.utils.slack import Slack
-
 # Import pipelines
 from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
@@ -102,88 +102,90 @@ class Produksjonssystem():
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
-        # Define directories
-        self.dirs_ranked = [
-            {
-                "id": "incoming",
-                "name": "Mottak",
-                "dirs": {
-                    "incoming_NLBPUB": os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB"),
-                    "nlbpub_manuell": os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB"),
-                    "incoming": os.path.join(book_archive_dirs["master"], "innkommende/nordisk"),
-                }
-            },
-            {
-                "id": "source-in",
-                "name": "Ubehandlet kildefil",
-                "dirs": {}
-            },
-            {
-                "id": "source-out",
-                "name": "Behandlet kildefil",
-                "dirs": {}
-            },
-            {
-                "id": "master",
-                "name": "Grunnlagsfil",
-                "dirs": {
-                    "master": Config.get("master_dir"),
-                    "metadata": Config.get("metadata_dir"),
-                    "grunnlag": os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB"),
-                    "nlbpub": os.path.join(book_archive_dirs["master"], "master/NLBPUB"),
-                    "old_dtbook": os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook"),
-                    "epub_from_dtbook": os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook"),
-                }
-            },
-            {
-                "id": "version-control",
-                "name": "Versjonskontroll",
-                "dirs": {
-                    "nlbpub-previous": os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere"),
-                }
-            },
-            {
+        # Define directories (using OrderedDicts to preserve order when plotting)
+        self.dirs_ranked = []
+
+        self.dirs_ranked.append({
+            "id": "incoming",
+            "name": "Mottak",
+            "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
+        self.dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
+        self.dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
+
+        self.dirs_ranked.append({
+            "id": "source-in",
+            "name": "Ubehandlet kildefil",
+            "dirs": OrderedDict()
+        })
+
+        self.dirs_ranked.append({
+            "id": "source-out",
+            "name": "Behandlet kildefil",
+            "dirs": OrderedDict()
+        })
+
+        self.dirs_ranked.append({
+            "id": "master",
+            "name": "Grunnlagsfil",
+            "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["master"] = Config.get("master_dir")
+        self.dirs_ranked[-1]["dirs"]["metadata"] = Config.get("metadata_dir")
+        self.dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
+        self.dirs_ranked[-1]["dirs"]["nlbpub"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB")
+        self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
+        self.dirs_ranked[-1]["dirs"]["epub_from_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook")
+
+        self.dirs_ranked.append({
+            "id": "version-control",
+            "name": "Versjonskontroll",
+            "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["nlbpub-previous"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere")
+
+        self.dirs_ranked.append({
                 "id": "publication-in",
                 "name": "Format-spesifikk metadata",
-                "dirs": {
-                    "pub-in-epub": os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB"),
-                    "pub-in-audio": os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok"),
-                    "pub-in-ebook": os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst"),
-                    "pub-in-braille": os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift"),
-                }
-            },
-            {
-                "id": "publication-ready",
-                "name": "Klar for produksjon",
-                "dirs": {
-                    "dtbook": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook"),
-                    "dtbook_braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift"),
-                    "dtbook_tts": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese"),
-                    "dtbook_html": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML"),
-                    "epub_narration": os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing"),
-                    "pub-ready-braille": os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift"),
-                    "pub-ready-ebook": os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok"),
-                    "pub-ready-docx": os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX"),
-                }
-            },
-            {
-                "id": "publication-out",
-                "name": "Ferdig produsert",
-                "dirs": {
-                    "html": os.path.join(book_archive_dirs["master"], "utgave-ut/HTML"),
-                    "docx": os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX"),
-                    "pef": os.path.join(book_archive_dirs["master"], "utgave-ut/PEF"),
-                    "daisy202": os.path.join(book_archive_dirs["share"], "daisy202"),
-                }
-            },
-            {
-                "id": "distribution",
-                "name": "Klar til distribusjon",
-                "dirs": {
-                    "abstracts": os.path.join(book_archive_dirs["distribution"], "www/abstracts")
-                }
-            }
-        ]
+                "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["pub-in-epub"] = os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB")
+        self.dirs_ranked[-1]["dirs"]["pub-in-braille"] = os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift")
+        self.dirs_ranked[-1]["dirs"]["pub-in-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst")
+        self.dirs_ranked[-1]["dirs"]["pub-in-audio"] = os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok")
+
+        self.dirs_ranked.append({
+            "id": "publication-ready",
+            "name": "Klar for produksjon",
+            "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["dtbook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook")
+        self.dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
+        self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
+        self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
+        self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
+        self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
+        self.dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
+        self.dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
+
+        self.dirs_ranked.append({
+            "id": "publication-out",
+            "name": "Ferdig produsert",
+            "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
+        self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
+        self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
+        self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
+
+        self.dirs_ranked.append({
+            "id": "distribution",
+            "name": "Klar til distribusjon",
+            "dirs": OrderedDict()
+        })
+        self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+
         # also make dirs available from static contexts
         Pipeline.dirs_ranked = self.dirs_ranked
 
