@@ -95,7 +95,7 @@ class InsertMetadataEpub(InsertMetadata):
 class InsertMetadataDaisy202(InsertMetadata):
     uid = "insert-metadata-daisy202"
     title = "Sett inn metadata for lydbok"
-    labels = ["Lydbok", "Innlesing", "Talesyntese", "Metadata", "Statped"]
+    labels = ["Lydbok", "Metadata", "Statped"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 1035
 
