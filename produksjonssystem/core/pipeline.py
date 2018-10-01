@@ -953,7 +953,7 @@ class Pipeline():
         for u in self.utils.report._messages["message"]:
             if (u["severity"] == "ERROR"):
                 if not(u["text"] == ""):
-                    error = u["text"]
+                    error = u["text"].split("\n")[-1]
             elif(u["severity"] == "WARN") and (error == "") and not (u["text"] == ""):
                 error = u["text"]
         timestring = datetime.datetime.now().strftime("%Y-%m-%d")

@@ -496,11 +496,13 @@ class Produksjonssystem():
                             message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
                             message = message + "\n<h2>Bøker som har gått gjennom:</h2>"
                             report_content = ""
-                            dirs = [self.book_archive_dirs["master"], self.dirs["reports"]]
+                            dirs = [pipeline[0].dir_out, pipeline[0].dir_in]
+                            dir_log = self.dirs["reports"]
+                            logfile = os.path.join(pipeline[0].uid, "log.txt")
                             if (os.path.isfile(file + "-SUCCESS.txt")):
                                 with open(file + "-SUCCESS.txt", "r") as report_file_success:
                                     report_content = report_file_success.readlines()
-                                    message = message + self.format_email_report(report_content, dirs)
+                                    message = message + self.format_email_report(report_content, dirs, dir_log, logfile, self.book_archive_dirs["master"])
                                     for line in report_content:
                                         if pipeline[0].title in line and line.startswith("["):
                                             number_produced += 1
@@ -511,13 +513,13 @@ class Produksjonssystem():
                             if (os.path.isfile(file + "-FAIL.txt")):
                                 with open(file + "-FAIL.txt", "r") as report_file_fail:
                                     report_content = report_file_fail.readlines()
-                                    message = message + self.format_email_report(report_content, dirs)
+                                    message = message + self.format_email_report(report_content, dirs, dir_log, logfile, self.book_archive_dirs["master"])
                                     for line in report_content:
                                         if pipeline[0].title in line and line.startswith("["):
                                             number_failed += 1
                             else:
                                 message = message + "\nIngen feilet\n"
-                            message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>".format(number_produced, number_failed)
+                            message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>\n".format(number_produced, number_failed)
                             pipeline[0].daily_report(message)
                     except Exception:
                         self.info("En feil oppstod under sending av dagsrapporten for " + pipeline[0].title)
@@ -606,20 +608,28 @@ class Produksjonssystem():
         return ""
 
     @staticmethod
-    def format_email_report(content, dirs):
+    def format_email_report(content, dirs, dir_log, logfile, book_archive):
         message = ""
+        first_dir_log = True
         for line in content:
             if "(li)" in line:
                 line = line.replace("(li)", "")
                 message = message + "\n<ul>\n<li>" + line + "</li>\n</ul>"
             elif "(href)" in line:
                 line = line.replace("(href)", "")
+                # print(line)
                 for dir in dirs:
                     if dir in line:
-                        short_path = line.replace(dir, "")
+                        short_path = line.replace(os.path.basename(dir), "")
                         message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(line, short_path)
-            else:
-                message = message + "\n" + line
+                if logfile in line and first_dir_log:
+                    dir_path = os.path.dirname(line)
+                    short_path = dir_path.replace(book_archive, "")
+                    message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(dir_path, short_path)
+                    first_dir_log = False
+            elif line != "":
+                message = message + "\n" + "<b>" + line + "</b>"
+                first_dir_log = True
         return message
 
 
