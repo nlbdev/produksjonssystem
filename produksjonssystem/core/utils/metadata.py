@@ -1093,6 +1093,13 @@ class Metadata:
                     if file.endswith(".xml"):
                         xml_files.append(os.path.join(root, file))
 
+            # Try getting PEF metadata
+            pef_files = []
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    if file.endswith(".pef"):
+                        pef_files.append(os.path.join(root, file))
+
             if (os.path.isfile(os.path.join(path, "ncc.html")) or
                     os.path.isfile(os.path.join(path, "metadata.html")) or
                     len(html_files)):
@@ -1142,6 +1149,39 @@ class Metadata:
                         book_identifier = [e.attrib["content"] for e in head.xpath(
                             "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Identifier']") if "content" in e.attrib]
                         book_identifier = book_identifier[0] if book_identifier else None
+
+                    if book_title:
+                        book_metadata["title"] = book_title
+                    if book_identifier:
+                        book_metadata["identifier"] = book_identifier
+
+            elif len(pef_files) > 0:
+                pef = None
+                nsmap = {
+                    'pef': 'http://www.daisy.org/ns/2008/pef',
+                    'dc': 'http://purl.org/dc/elements/1.1/',
+                    'nlb': 'http://www.nlb.no/ns/pipeline/xproc'
+                }
+                for file in pef_files:
+                    xml = ElementTree.parse(file).getroot()
+                    if xml.xpath("namespace-uri()") == nsmap["pef"]:
+                        pef = xml
+                        break
+
+                if pef is not None:
+                    head = pef.xpath("/*/pef:head/pef:meta", namespaces=nsmap)
+                    head = head[0] if head else None
+                    if head is not None:
+                        book_title = [e.text for e in head.xpath("dc:title", namespaces=nsmap)]
+                        book_title = book_title[0] if book_title else None
+                        book_identifier = [e.text for e in head.xpath("dc:identifier", namespaces=nsmap)]
+                        book_identifier = book_identifier[0] if (book_identifier and re.match(r"^(TEST)?\d+$", book_identifier[0])) else None
+
+                        for e in head.xpath("/*/pef:head/dc:*", namespaces=nsmap):
+                            name = e.xpath("name()", namespaces=nsmap)
+                            value = e.text
+                            if ":" in name:
+                                book_metadata[name] = value
 
                     if book_title:
                         book_metadata["title"] = book_title
