@@ -1051,7 +1051,7 @@ class Metadata:
             # remove old metadata from cache
             if not Metadata.metadata_cache:
                 Metadata.metadata_cache = {}
-            for p in Metadata.metadata_cache:
+            for p in list(Metadata.metadata_cache.keys()):
                 if time.time() - Metadata.metadata_cache[p]["cache_time"] > 3600:
                     del Metadata.metadata_cache[p]
             if force_update and path in Metadata.metadata_cache:
