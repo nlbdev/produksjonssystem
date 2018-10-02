@@ -99,6 +99,11 @@ for pipeline in prodsys.pipelines:
     if pipeline[0].uid in ["incoming-NLBPUB", "NLBPUB-incoming-validator", "NLBPUB-incoming-warning", "NLBPUB-validator-final"]:
         pipeline[0].stop(exit=True)
 
+# TODO: disable testing of PEF production until braille script is improved
+for pipeline in prodsys.pipelines:
+    if pipeline[0].uid in ["nlbpub-to-pef", "check-pef"]:
+        pipeline[0].stop(exit=True)
+
 # Don't test pipeline for upgrading old DTBooks (it's temporary)
 for pipeline in prodsys.pipelines:
     if pipeline[0].uid == "nordic-dtbook-to-epub":
@@ -107,7 +112,7 @@ for pipeline in prodsys.pipelines:
 expect_dirs = {}
 for pipeline in prodsys.pipelines:
     if (not pipeline[0].uid in ["update-metadata", "incoming-NLBPUB", "NLBPUB-incoming-validator", "NLBPUB-incoming-warning", "NLBPUB-validator-final",
-                                "nordic-dtbook-to-epub"]
+                                "nordic-dtbook-to-epub", "nlbpub-to-pef", "check-pef"]
        and not isinstance(pipeline[0], DummyPipeline)
        and pipeline[2]):
         expect_dirs[pipeline[0].uid] = {

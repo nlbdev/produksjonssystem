@@ -18,7 +18,9 @@ from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
 from core.utils.slack import Slack
+
 # Import pipelines
+from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
 from epub_to_dtbook_html import EpubToDtbookHTML
@@ -185,6 +187,7 @@ class Produksjonssystem():
             "dirs": OrderedDict()
         })
         self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+        self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
 
         # also make dirs available from static contexts
         Pipeline.dirs_ranked = self.dirs_ranked
@@ -230,6 +233,7 @@ class Produksjonssystem():
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
             [PrepareForBraille(retry_missing=True),           "pub-in-braille",      "pub-ready-braille"],
             [NlbpubToPef(retry_missing=True),                 "pub-ready-braille",   "pef"],
+            [CheckPef(),                                      "pef",                 "pef-checked"],
 
             # innlest lydbok
             [InsertMetadataDaisy202(),                        "nlbpub",              "pub-in-audio"],
