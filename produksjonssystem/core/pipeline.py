@@ -910,7 +910,8 @@ class Pipeline():
                             finally:
                                 logpath = self.utils.report.attachLog()
                                 logging.exception("Logfile: " + logpath)
-                            self.write_to_daily()
+                            if self.utils.report.should_email:
+                                self.write_to_daily()
 
             except Exception:
                 logging.exception(Pipeline._i18n["An error occured while checking for book events"] +
