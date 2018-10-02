@@ -22,11 +22,6 @@ class NlbpubToPef(Pipeline):
     publication_format = "Braille"
     expected_processing_time = 223
 
-    parentdirs = {
-                  "fullskrift": "fullskrift",
-                  "kortskrift": "kortskrift"
-                  }
-
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " HTML-kilde slettet: " + self.book['name']
@@ -87,55 +82,44 @@ class NlbpubToPef(Pipeline):
         # ---------- konverter til PEF ----------
 
         braille_arguments = {
-            "fullskrift": {
-                "source": html_file,
-                "braille-standard": "(dots:6)(grade:0)",
-                "line-spacing": line_spacing,
-                "duplex": duplex
-            },
-            #"kortskrift": {
-            #    "source": html_file,
-            #    "braille-standard": "(dots:6)(grade:2)",
-            #    "line-spacing": line_spacing,
-            #    "duplex": duplex
-            #}
+            "source": html_file,
+            "braille-standard": "(dots:6)(grade:0)",
+            "line-spacing": line_spacing,
+            "duplex": duplex
         }
-        pef_tempdir_objects = {}
-        for braille_version in braille_arguments:
-            pef_tempdir_objects[braille_version] = tempfile.TemporaryDirectory()
+        pef_tempdir_object = tempfile.TemporaryDirectory()
 
-            self.utils.report.info("Konverterer fra HTML til PEF (" + braille_version + ")...")
-            with DaisyPipelineJob(self, "nlb:html-to-pef", braille_arguments[braille_version]) as dp2_job:
+        self.utils.report.info("Konverterer fra HTML til PEF...")
+        with DaisyPipelineJob(self, "nlb:html-to-pef", braille_arguments) as dp2_job:
 
-                # get conversion report
-                if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
-                    self.utils.filesystem.copy(os.path.join(dp2_job.dir_output, "preview-output-dir"),
-                                               os.path.join(self.utils.report.reportDir(), "preview-" + braille_version))
-                    self.utils.report.attachment(None,
-                                                 os.path.join(self.utils.report.reportDir(), "preview-" + braille_version + "/" + identifier + ".pef.html"),
-                                                 "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+            # get conversion report
+            if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
+                self.utils.filesystem.copy(os.path.join(dp2_job.dir_output, "preview-output-dir"),
+                                           os.path.join(self.utils.report.reportDir(), "preview"))
+                self.utils.report.attachment(None,
+                                             os.path.join(self.utils.report.reportDir(), "preview" + "/" + identifier + ".pef.html"),
+                                             "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
 
-                if dp2_job.status != "DONE":
-                    self.utils.report.info("Klarte ikke å konvertere boken")
-                    self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
-                    return False
+            if dp2_job.status != "DONE":
+                self.utils.report.info("Klarte ikke å konvertere boken")
+                self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
+                return False
 
-                dp2_pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
+            dp2_pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
 
-                if not os.path.isdir(dp2_pef_dir):
-                    self.utils.report.info("Finner ikke den konverterte boken.")
-                    self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
-                    return False
+            if not os.path.isdir(dp2_pef_dir):
+                self.utils.report.info("Finner ikke den konverterte boken.")
+                self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
+                return False
 
-                self.utils.filesystem.copy(dp2_pef_dir, pef_tempdir_objects[braille_version].name)
+            self.utils.filesystem.copy(dp2_pef_dir, pef_tempdir_object.name)
 
-                self.utils.report.info("Boken ble konvertert.")
+            self.utils.report.info("Boken ble konvertert.")
 
         self.utils.report.info("Kopierer til PEF-arkiv.")
-        for braille_version in pef_tempdir_objects:
-            archived_path = self.utils.filesystem.storeBook(pef_tempdir_objects[braille_version].name, identifier, parentdir=self.parentdirs[braille_version])
-            self.utils.report.attachment(None, archived_path, "DEBUG")
-            self.utils.report.info(identifier + " ble lagt til i arkivet under PEF/" + braille_version + ".")
+        archived_path = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
+        self.utils.report.attachment(None, archived_path, "DEBUG")
+        self.utils.report.info(identifier + " ble lagt til i arkivet")
 
         self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄" + bookTitle
         return True
