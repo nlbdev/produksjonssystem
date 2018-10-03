@@ -69,6 +69,7 @@ class Plotter():
         if self.debug_logging:
             logging.info("plot(self, {}, {})".format(" ".join(uids), name))
         dot = Digraph(name="Produksjonssystem", format="png")
+        dot.graph_attr["bgcolor"] = "transparent"
 
         node_ranks = {}
         for rank in Pipeline.dirs_ranked:
@@ -291,9 +292,10 @@ class Plotter():
             logging.info("before building Digraph")
         for rank in node_ranks:
             subgraph = Digraph("cluster_" + rank, graph_attr={"style": "dotted"})
+            subgraph.graph_attr["bgcolor"] = "#FFFFFFAA"
 
             if node_ranks[rank]:
-                subgraph.attr("node", shape="none", style="filled", fillcolor="white")
+                subgraph.attr("node", shape="none", style="filled", fillcolor="transparent")
                 subgraph.node("_ranklabel_" + rank, "< <i><font point-size='28'>{}</font></i> >".format(" <br/>".join(str(self.rank_name(rank)).split(" "))))
 
             for dir in node_ranks[rank]:
