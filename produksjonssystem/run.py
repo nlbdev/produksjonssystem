@@ -613,30 +613,50 @@ class Produksjonssystem():
 
     @staticmethod
     def format_email_report(content, dirs, dir_log, logfile, book_archive):
+        img_string = ("<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA"
+                      "sTAAALEwEAmpwYAAAAB3RJTUUH4goFCTApeBNtqgAAA2pJREFUOMt1lF1rI2UYhu/JfCST6bRp2kyCjmWzG0wllV1SULTSyoLpcfHU5jyLP6IUQX+"
+                      "DLqw/wBbPWiUeaLHBlijpiZbNR9PdDUPKSjL5mszX48Ha6U6HveGBeeGd67nf+3lnGCIi3FKv10e9/hQMw+Du3XuYn4/hjaJbqtVqtL29Tfn8KuXz"
+                      "q1QsFqlardKb5AFs26ZyuUzZbJZUVSVFUUgQBBIEgTKZDB0cHJDjOEGAaZrU6XTo6OiICoUCqapKxWKRdnd3aXZ2liRJIkmSaHNzkzqdThDw5Mn3t"
+                      "La2Rul0mmKxGOXzq3R4eEiNRoMWFxdJlmWSZZkymQxVKpUAgFtaUvH5w3t43jLx429jXF62sb+/j6urK9i2DZZlAQCu68IwjECG3MbGp7h//wFedp"
+                      "9Bc77BTz+Xsbe3BwDeywAgCALC4XAAEGJZFgsLC3j3vQcoPfoSiqKAZdlADYdDnJ2dBQDszs7OzvVCVVXE4/MwXv4NnmMxI8/AcUOwbRuu60LXdWx"
+                      "tbYHn+RsHPjuhEBJxEV9/McK3JQsPV+dfnZPjwHEczs/PUS7/4j/C64tut4uZyA9Y+sRG8kMWf/zjwLZthEIhhEIhWJaFx4+/84XpAWzbRvvyL7z/"
+                      "cQvMOzKO2wq07r9e9+tqNpuo1WpBQK/XgyQ/gyh8BGADv/+agOu6gTBN00SlUrkZ4/WDruuIzX4ABp9hqA/R6XzlC+t1XVxcYDweIxqN3jgwTRMC/"
+                      "xZc+22MR3GY5qvuHMdBEASfi36/j8lk4ncwnU7Bshwsy4JlWV76kiSB4zj0+33Pgeu6cBzHDyAiOI6N6ZQBy7KQJAk8zyORSMAwDIxGIw8giiI4jv"
+                      "eH6LouRqMRDGMChmGQTqcRDoeRyWQQDofB87xX8Xgc0ajodyAIAgaDgdelUChA0zTkciuo1+vgOG8rUqkUIpGIHxCPx9FqtbyNc3NzKJVK0DQNROS"
+                      "biKIkg2NMJpPQdR2NRhOpVNL7Eh3HgSAIPoBhTEBEYBjmBsCyLJaXlyHLMk5PTyGKIkRRRCQSgaIoGI/HHuD4+Bi5XA4rKytgbv+VNU1Dtfon6vWn"
+                      "4Hked+6k0ev1cHJyghcvnnsjlmUZ6+vrQYDjOLAsC5OJAdd1EI1G/78nJtrtCzSaTQz0AVKpJLLZLP4DF17fodMaIVYAAAAASUVORK5CYII")
+                      # + siste del: "=\" alt=\"DATA\">")
+
         message = ""
         log_path = ""
         first_dir_log = True
         for line in content:
             if "(li)" in line:
-                line = line.replace("(li)", "")
+                line = line.replace("(li) ", "")
                 message = message + "\n<ul>\n<li>" + line + "</li>\n</ul>"
             elif "(href)" in line:
-                line = line.replace("(href)", "")
+                line = line.replace("(href) ", "")
                 for dir in dirs:
                     if dir in line or dir in line.replace("\\", "/"):
-                        short_path = line.replace(os.path.basename(dir), "")
-                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(line, short_path)
+                        split_href = line.split(", ")
+                        smb_img_string = img_string + "=\" alt=\"{}\">".format(split_href[-1])
+                        short_path = split_href[0].replace(os.path.basename(dir), "")
+                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a> {}</li>\n</ul>".format(split_href[0], short_path, smb_img_string)
                 if logfile in line or logfile in line.replace("\\", "/"):
                     if first_dir_log:
-                        log_path = os.path.dirname(line)
-                        short_path = log_path.replace(book_archive, "")
-                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(log_path, short_path)
+                        split_href = line.split(", ")
+                        smb_img_string = img_string + "=\" alt=\"{}\">".format(split_href[-1])
+                        log_path = split_href[0]
+                        short_path = "log.txt"
+                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a> {}</li>\n</ul>".format(log_path, short_path, smb_img_string)
                         first_dir_log = False
             elif line != "":
                 first_dir_log = True
                 if "mail:" in line:
                     splitline = line.split("mail: ")
-                    message = message + "\n<b>{}<a href=\"file:///{}\">Link</a></b>".format(splitline[0], splitline[-1])
+                    splitmail = splitline[-1].split(", ")
+                    smb_img_string = img_string + "=\" alt=\"{}\">".format(splitmail[-1])
+                    message = message + "\n<b>{}<a href=\"file:///{}\">Link</a> {}</b>".format(splitline[0], splitmail[0], smb_img_string)
                     continue
                 message = message + "\n" + "<b>" + line + "</b>"
         return message

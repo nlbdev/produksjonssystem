@@ -28,9 +28,22 @@ class Report():
     title = None
     should_email = True
     should_message_slack = True
-    mailpath = ""
+    mailpath = ()  # smb, file, unc
     _report_dir = None
     _messages = None
+    img_string = ("<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA"
+                  "sTAAALEwEAmpwYAAAAB3RJTUUH4goFCTApeBNtqgAAA2pJREFUOMt1lF1rI2UYhu/JfCST6bRp2kyCjmWzG0wllV1SULTSyoLpcfHU5jyLP6IUQX+"
+                  "DLqw/wBbPWiUeaLHBlijpiZbNR9PdDUPKSjL5mszX48Ha6U6HveGBeeGd67nf+3lnGCIi3FKv10e9/hQMw+Du3XuYn4/hjaJbqtVqtL29Tfn8KuXz"
+                  "q1QsFqlardKb5AFs26ZyuUzZbJZUVSVFUUgQBBIEgTKZDB0cHJDjOEGAaZrU6XTo6OiICoUCqapKxWKRdnd3aXZ2liRJIkmSaHNzkzqdThDw5Mn3t"
+                  "La2Rul0mmKxGOXzq3R4eEiNRoMWFxdJlmWSZZkymQxVKpUAgFtaUvH5w3t43jLx429jXF62sb+/j6urK9i2DZZlAQCu68IwjECG3MbGp7h//wFedp"
+                  "9Bc77BTz+Xsbe3BwDeywAgCALC4XAAEGJZFgsLC3j3vQcoPfoSiqKAZdlADYdDnJ2dBQDszs7OzvVCVVXE4/MwXv4NnmMxI8/AcUOwbRuu60LXdWx"
+                  "tbYHn+RsHPjuhEBJxEV9/McK3JQsPV+dfnZPjwHEczs/PUS7/4j/C64tut4uZyA9Y+sRG8kMWf/zjwLZthEIhhEIhWJaFx4+/84XpAWzbRvvyL7z/"
+                  "cQvMOzKO2wq07r9e9+tqNpuo1WpBQK/XgyQ/gyh8BGADv/+agOu6gTBN00SlUrkZ4/WDruuIzX4ABp9hqA/R6XzlC+t1XVxcYDweIxqN3jgwTRMC/"
+                  "xZc+22MR3GY5qvuHMdBEASfi36/j8lk4ncwnU7Bshwsy4JlWV76kiSB4zj0+33Pgeu6cBzHDyAiOI6N6ZQBy7KQJAk8zyORSMAwDIxGIw8giiI4jv"
+                  "eH6LouRqMRDGMChmGQTqcRDoeRyWQQDofB87xX8Xgc0ajodyAIAgaDgdelUChA0zTkciuo1+vgOG8rUqkUIpGIHxCPx9FqtbyNc3NzKJVK0DQNROS"
+                  "biKIkg2NMJpPQdR2NRhOpVNL7Eh3HgSAIPoBhTEBEYBjmBsCyLJaXlyHLMk5PTyGKIkRRRCQSgaIoGI/HHuD4+Bi5XA4rKytgbv+VNU1Dtfon6vWn"
+                  "4Hked+6k0ev1cHJyghcvnnsjlmUZ6+vrQYDjOLAsC5OJAdd1EI1G/78nJtrtCzSaTQz0AVKpJLLZLP4DF17fodMaIVYAAAAASUVORK5CYII")
+    # + siste del: "=\" alt=\"DATA\">")
 
     def __init__(self, pipeline, title=None, report_dir=None, dir_base=None, uid=None):
         self._messages = {
@@ -296,7 +309,7 @@ class Report():
                     li = "<li>"
                     li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
                     li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
-                    li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a>"
+                    li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a> " + self.img_string + "=\" alt=\"" + attachment["smb"] + "\">"
                     li += "</span>"
                     li += "</li>"
                     markdown_text.append(li)
@@ -352,13 +365,13 @@ class Report():
                 with open(temp_html_obj.name, "w") as f:
                     f.write(markdown_html)
                     logging.debug("email html: {}".format(temp_html_obj.name))
+                if should_attach_log is True:
+                    path_mail = os.path.join(self.reportDir(), "email.html")
+                    shutil.copy(temp_html_obj.name, path_mail)
+                    self.mailpath = Filesystem.networkpath(path_mail)
 
         except AssertionError as e:
             logging.error(str(e))
-        if should_attach_log is True:
-            self.mailpath = os.path.join(self.reportDir(), "email.html")
-            shutil.copy(temp_html_obj.name, self.mailpath)
-            self.mailpath = Filesystem.networkpath(self.mailpath)[2]
         if not should_message_slack:
             logging.exception("Not sending message to slack")
         else:

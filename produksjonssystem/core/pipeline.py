@@ -952,12 +952,14 @@ class Pipeline():
 
     def write_to_daily(self):
         error = ""
-        attachment = []
+        attachment_unc = []
+        attachment_smb = []
         subject = self.utils.report.title
         for item in self.utils.report._messages["attachment"]:
             if self.dir_out in item["text"] or self.dir_in in item["text"] or self.dir_reports in item["text"]:
-                attach_item_unc = Filesystem.networkpath(item["text"])[2]
-                attachment.append(attach_item_unc)
+                smb, file, unc = Filesystem.networkpath(item["text"])
+                attachment_unc.append(unc)
+                attachment_smb.append(smb)
         for u in self.utils.report._messages["message"]:
             if (u["severity"] == "ERROR"):
                 if not(u["text"] == ""):
@@ -988,14 +990,15 @@ class Pipeline():
                     if split.isnumeric():
                         epub_identifier = split
                         break
-                if self.utils.report.mailpath != "":
-                    today_status_file.write("\n[{}] {}: {} mail: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject, self.utils.report.mailpath))
+                if self.utils.report.mailpath != ():
+                    today_status_file.write("\n[{}] {}: {} mail: {}, {}".format(time.strftime("%H:%M:%S"),
+                                            epub_identifier, subject, self.utils.report.mailpath[2], self.utils.report.mailpath[0],))
                 else:
                     today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
                 if fail is True and error != "":
                     today_status_file.write("\n" + "(li)" + error)
-                for attach in attachment:
-                    today_status_file.write("\n" + "(href)" + attach)
+                for attach_unc, attach_smb in zip(attachment_unc, attachment_smb):
+                    today_status_file.write("\n(href) {}, {}".format(attach_unc, attach_smb))
                 today_status_file.write("\n")
 
         except Exception:
