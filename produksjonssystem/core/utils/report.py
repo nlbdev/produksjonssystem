@@ -359,7 +359,6 @@ class Report():
             self.mailpath = os.path.join(self.reportDir(), "email.html")
             shutil.copy(temp_html_obj.name, self.mailpath)
             self.mailpath = Filesystem.networkpath(self.mailpath)[2]
-        print(markdown_html)
         if not should_message_slack:
             logging.exception("Not sending message to slack")
         else:
