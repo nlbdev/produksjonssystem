@@ -929,20 +929,26 @@ class Pipeline():
         self.running = False
 
     def daily_report(self, message):
-        report = Report(self)
-        report._messages["message"].append({'time': time.strftime("%Y-%m-%d %H:%M:%S"),
-                                            'severity': "INFO",
-                                            'text': message,
-                                            'time_seconds': (time.time()),
-                                            'preformatted': False})
-        report.title = "Dagsrapport for " + self.title
+        report_daily = Report(self)
+        report_daily._messages["message"].append({'time': time.strftime("%Y-%m-%d %H:%M:%S"),
+                                                  'severity': "INFO",
+                                                  'text': message,
+                                                  'time_seconds': (time.time()),
+                                                  'preformatted': False})
+        report_daily.title = "Dagsrapport for " + self.title
+        recipients_daily = []
+        for key in self.config:
+            if key == "daily":
+                for recipient_daily in self.config[key]:
+                    recipients_daily.append(recipient_daily)
         try:
-            report.email(self.email_settings["smtp"],
-                         self.email_settings["sender"],
-                         self.email_settings["recipients"],
-                         should_attach_log=False)
+            report_daily.email(self.email_settings["smtp"],
+                               self.email_settings["sender"],
+                               recipients_daily + self.email_settings["recipients"],
+                               should_attach_log=False)
         except Exception:
-                logging.info("Failed mail")
+                logging.info("Failed sending daily email")
+                logging.info(traceback.format_exc())
 
     def write_to_daily(self):
         error = ""
@@ -950,13 +956,19 @@ class Pipeline():
         subject = self.utils.report.title
         for item in self.utils.report._messages["attachment"]:
             if self.dir_out in item["text"] or self.dir_in in item["text"] or self.dir_reports in item["text"]:
-                attachment.append(item["text"])
+                attach_item_unc = Filesystem.networkpath(item["text"])[2]
+                attachment.append(attach_item_unc)
         for u in self.utils.report._messages["message"]:
             if (u["severity"] == "ERROR"):
                 if not(u["text"] == ""):
-                    error = u["text"].split("\n")[-1]
+                    for line in u["text"].split("\n"):
+                        if line != "":
+                            error = line
             elif(u["severity"] == "WARN") and (error == "") and not (u["text"] == ""):
-                error = u["text"]
+                if not(u["text"] == ""):
+                    for line in u["text"].split("\n"):
+                        if line != "":
+                            error = line
         timestring = datetime.datetime.now().strftime("%Y-%m-%d")
         dir = os.path.join(self.dir_reports, "logs", "dagsrapporter", timestring)
         if not os.path.isdir(dir):
@@ -976,8 +988,10 @@ class Pipeline():
                     if split.isnumeric():
                         epub_identifier = split
                         break
-
-                today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
+                if self.utils.report.mailpath != "":
+                    today_status_file.write("\n[{}] {}: {} mail: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject, self.utils.report.mailpath))
+                else:
+                    today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
                 if fail is True and error != "":
                     today_status_file.write("\n" + "(li)" + error)
                 for attach in attachment:

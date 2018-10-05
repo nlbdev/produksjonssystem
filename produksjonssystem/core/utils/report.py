@@ -3,6 +3,7 @@
 import logging
 import os
 import re
+import shutil
 import smtplib
 import sys
 import tempfile
@@ -27,6 +28,7 @@ class Report():
     title = None
     should_email = True
     should_message_slack = True
+    mailpath = ""
     _report_dir = None
     _messages = None
 
@@ -353,7 +355,11 @@ class Report():
 
         except AssertionError as e:
             logging.error(str(e))
-
+        if should_attach_log is True:
+            self.mailpath = os.path.join(self.reportDir(), "email.html")
+            shutil.copy(temp_html_obj.name, self.mailpath)
+            self.mailpath = Filesystem.networkpath(self.mailpath)[2]
+        print(markdown_html)
         if not should_message_slack:
             logging.exception("Not sending message to slack")
         else:

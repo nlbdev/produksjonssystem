@@ -614,6 +614,7 @@ class Produksjonssystem():
     @staticmethod
     def format_email_report(content, dirs, dir_log, logfile, book_archive):
         message = ""
+        log_path = ""
         first_dir_log = True
         for line in content:
             if "(li)" in line:
@@ -621,19 +622,23 @@ class Produksjonssystem():
                 message = message + "\n<ul>\n<li>" + line + "</li>\n</ul>"
             elif "(href)" in line:
                 line = line.replace("(href)", "")
-                # print(line)
                 for dir in dirs:
-                    if dir in line:
+                    if dir in line or dir in line.replace("\\", "/"):
                         short_path = line.replace(os.path.basename(dir), "")
                         message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(line, short_path)
-                if logfile in line and first_dir_log:
-                    dir_path = os.path.dirname(line)
-                    short_path = dir_path.replace(book_archive, "")
-                    message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(dir_path, short_path)
-                    first_dir_log = False
+                if logfile in line or logfile in line.replace("\\", "/"):
+                    if first_dir_log:
+                        log_path = os.path.dirname(line)
+                        short_path = log_path.replace(book_archive, "")
+                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a></li>\n</ul>".format(log_path, short_path)
+                        first_dir_log = False
             elif line != "":
-                message = message + "\n" + "<b>" + line + "</b>"
                 first_dir_log = True
+                if "mail:" in line:
+                    splitline = line.split("mail: ")
+                    message = message + "\n<b>{}<a href=\"file:///{}\">Link</a></b>".format(splitline[0], splitline[-1])
+                    continue
+                message = message + "\n" + "<b>" + line + "</b>"
         return message
 
 
