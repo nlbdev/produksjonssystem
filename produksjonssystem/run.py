@@ -479,9 +479,6 @@ class Produksjonssystem():
 
     def _daily_report_thread(self):
         mail_sent_today = False
-        yesterday = datetime.datetime.now() - datetime.timedelta(1)
-        yesterday = str(yesterday.strftime("%Y-%m-%d"))
-        daily_dir = os.path.join(self.dirs["reports"], "logs", "dagsrapporter", yesterday)
 
         while self.shouldRun:
             time.sleep(5)
@@ -491,6 +488,9 @@ class Produksjonssystem():
             if not (7 <= datetime.datetime.now().hour <= 8) or mail_sent_today is True:
                 continue
             else:
+                yesterday = datetime.datetime.now() - datetime.timedelta(1)
+                yesterday = str(yesterday.strftime("%Y-%m-%d"))
+                daily_dir = os.path.join(self.dirs["reports"], "logs", "dagsrapporter", yesterday)
                 for pipeline in self.pipelines:
                     try:
                         if "dummy" not in pipeline[0].uid:
@@ -631,10 +631,10 @@ class Produksjonssystem():
         log_path = ""
         first_dir_log = True
         for line in content:
-            if "(li)" in line:
+            if "(li) " in line:
                 line = line.replace("(li) ", "")
                 message = message + "\n<ul>\n<li>" + line + "</li>\n</ul>"
-            elif "(href)" in line:
+            elif "(href) " in line:
                 line = line.replace("(href) ", "")
                 for dir in dirs:
                     if dir in line or dir in line.replace("\\", "/"):
