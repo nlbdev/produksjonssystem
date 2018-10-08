@@ -285,13 +285,14 @@ class Metadata:
         # get path to OPF in EPUB (unzip if necessary)
         opf = epub.opf_path()
         opf_obj = None  # if tempfile is needed
+        opf_path = None
         if os.path.isdir(epub.book_path):
-            opf = os.path.join(epub.book_path, opf)
+            opf_path = os.path.join(epub.book_path, opf)
         else:
             opf_obj = tempfile.NamedTemporaryFile()
             with zipfile.ZipFile(epub.book_path, 'r') as archive, open(opf_obj.name, "wb") as opf_file:
                 opf_file.write(archive.read(opf))
-            opf = opf_obj.name
+            opf_path = opf_obj.name
 
         # Publication and edition identifiers are the same except for periodicals
         edition_identifier = epub.identifier()
@@ -312,9 +313,8 @@ class Metadata:
 
         rdf_files = []
 
-        opf_path = os.path.join(epub.book_path, epub.opf_path())
         if not os.path.exists(opf_path):
-            pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
+            pipeline.utils.report.error("Klarte ikke å lese OPF-filen.")
             return False
 
         md5_before = []
@@ -701,7 +701,7 @@ class Metadata:
 
         opf_path = os.path.join(epub.book_path, epub.opf_path())
         if not os.path.exists(opf_path):
-            pipeline.utils.report.error("Could not read OPF file. Maybe the EPUB is zipped?")
+            pipeline.utils.report.error("Klarte ikke å lese OPF-filen. Kanskje EPUBen er zippet?")
             return False
 
         assert publication_format == "" or publication_format in Metadata.formats, "Format for updating metadata, when specified, must be one of: {}".format(
