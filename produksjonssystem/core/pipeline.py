@@ -996,7 +996,7 @@ class Pipeline():
                 else:
                     today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
                 if fail is True and error != "":
-                    today_status_file.write("\n" + "(li)" + error)
+                    today_status_file.write("\n" + "(li) " + error)
                 for attach_unc, attach_smb in zip(attachment_unc, attachment_smb):
                     today_status_file.write("\n(href) {}, {}".format(attach_unc, attach_smb))
                 today_status_file.write("\n")
