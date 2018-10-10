@@ -954,9 +954,13 @@ class Pipeline():
         error = ""
         attachment_unc = []
         attachment_smb = []
+        attachment_title = []
         subject = self.utils.report.title
         for item in self.utils.report._messages["attachment"]:
             if self.dir_out in item["text"] or self.dir_in in item["text"] or self.dir_reports in item["text"]:
+                base_path = Filesystem.get_base_path(item["text"], self.dir_base)
+                relpath = os.path.relpath(item["text"], base_path) if base_path else None
+                attachment_title.append("{}{}".format(relpath, ("/" if os.path.isdir(item["text"]) else "")))
                 smb, file, unc = Filesystem.networkpath(item["text"])
                 attachment_unc.append(unc)
                 attachment_smb.append(smb)
@@ -997,8 +1001,8 @@ class Pipeline():
                     today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
                 if fail is True and error != "":
                     today_status_file.write("\n" + "(li) " + error)
-                for attach_unc, attach_smb in zip(attachment_unc, attachment_smb):
-                    today_status_file.write("\n(href) {}, {}".format(attach_unc, attach_smb))
+                for attach_title, attach_unc, attach_smb in zip(attachment_title, attachment_unc, attachment_smb):
+                    today_status_file.write("\n(href) {}, {}, {}".format(attach_title, attach_unc, attach_smb))
                 today_status_file.write("\n")
 
         except Exception:

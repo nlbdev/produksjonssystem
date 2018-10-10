@@ -18,6 +18,7 @@ from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
 from core.utils.slack import Slack
+from core.utils.filesystem import Filesystem
 
 # Import pipelines
 from check_pef import CheckPef
@@ -628,7 +629,6 @@ class Produksjonssystem():
                       # + siste del: "=\" alt=\"DATA\">")
 
         message = ""
-        log_path = ""
         first_dir_log = True
         for line in content:
             if "(li) " in line:
@@ -637,19 +637,20 @@ class Produksjonssystem():
             elif "(href) " in line:
                 line = line.replace("(href) ", "")
                 for dir in dirs:
-                    if dir in line or dir in line.replace("\\", "/"):
+                    dir_unc = Filesystem.networkpath(dir)[2]
+                    if dir_unc in line:
                         split_href = line.split(", ")
-                        smb_img_string = img_string + "=\" alt=\"{}\">".format(split_href[-1])
-                        short_path = split_href[0].replace(os.path.basename(dir), "")
-                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a> {}</li>\n</ul>".format(split_href[0], short_path, smb_img_string)
-                if logfile in line or logfile in line.replace("\\", "/"):
+                        if len(split_href) == 3:
+                            smb_img_string = img_string + "=\" alt=\"{}\">".format(split_href[-1])
+                            message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a> {}</li>\n</ul>".format(split_href[1], split_href[0], smb_img_string)
+                if logfile in line:
                     if first_dir_log:
                         split_href = line.split(", ")
                         smb_img_string = img_string + "=\" alt=\"{}\">".format(split_href[-1])
-                        log_path = split_href[0]
-                        short_path = "log.txt"
-                        message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a> {}</li>\n</ul>".format(log_path, short_path, smb_img_string)
-                        first_dir_log = False
+                        if len(split_href) == 3:
+                            short_path = "log.txt"
+                            message = message + "\n<ul>\n<li><a href=\"file:///{}\">{}</a> {}</li>\n</ul>".format(split_href[1], short_path, smb_img_string)
+                            first_dir_log = False
             elif line != "":
                 first_dir_log = True
                 if "mail:" in line:
