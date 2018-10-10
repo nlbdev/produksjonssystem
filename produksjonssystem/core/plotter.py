@@ -456,7 +456,7 @@ class Plotter():
         while self.should_run:
             time.sleep(1)
             try:
-                for dir in self.book_count:
+                for dir in list(self.book_count.keys()):
                     dirs = []
                     parentdirs = self.book_count[dir]["parentdirs"]
                     if parentdirs:
