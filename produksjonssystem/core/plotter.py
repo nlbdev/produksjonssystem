@@ -122,9 +122,13 @@ class Plotter():
                 queue_string.append("autotrigget:"+str(queue_autotriggered))
             queue_string = ", ".join(queue_string)
 
-            queue_size = len(queue) if queue else 0
             if self.debug_logging:
                 logging.info("before group_pipeline.pipeline_book_shortname()")
+            queue_size = 0
+            if queue:
+                queue_size = len(queue)
+                if not group_pipeline.should_retry():
+                    queue_size -= queue_autotriggered
             book = Metadata.pipeline_book_shortname(group_pipeline)
             if self.debug_logging:
                 logging.info("after group_pipeline.pipeline_book_shortname()")

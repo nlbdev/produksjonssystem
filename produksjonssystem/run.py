@@ -204,16 +204,22 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Konvertering av gamle DTBøker til EPUB 3
-            [NordicDTBookToEpub(retry_missing=True),              "old_dtbook",     "epub_from_dtbook"],
+            [NordicDTBookToEpub(retry_missing=True),          "old_dtbook",          "epub_from_dtbook"],
 
             # Mottak, nordic guidelines 2015-1
-            [NLBPUB_incoming_validator(retry_all=True),       "incoming_NLBPUB",     "grunnlag"],
-            [NLBPUB_incoming_warning(retry_all=True),         "incoming_NLBPUB",     "nlbpub_manuell"],
+            [NLBPUB_incoming_validator(retry_all=True,
+                                       during_working_hours=True
+                                       ),                     "incoming_NLBPUB",     "grunnlag"],
+            [NLBPUB_incoming_warning(retry_all=True,
+                                     during_working_hours=True
+                                     ),                       "incoming_NLBPUB",     "nlbpub_manuell"],
             [DummyPipeline("Manuell sjekk av NLBPUB",
                            labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
             # [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
-            [IncomingNordic(retry_all=True),                  "incoming",            "master"],
-            [NordicToNlbpub(retry_missing=True, overwrite=False),              "master",              "nlbpub"],
+            [IncomingNordic(retry_all=True,
+                            during_working_hours=True),       "incoming",            "master"],
+            [NordicToNlbpub(retry_missing=True,
+                            overwrite=False),                 "master",              "nlbpub"],
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],

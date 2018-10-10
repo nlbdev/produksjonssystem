@@ -66,6 +66,8 @@ class Pipeline():
     # constants (set during instantiation)
     running = False
     shouldHandleBooks = True
+    should_retry_during_working_hours = False
+    should_retry_during_night_and_weekend = False
     _inactivity_timeout = 10
     _bookHandlerThread = None
     _bookRetryThread = None
@@ -102,13 +104,42 @@ class Pipeline():
     labels = []
     publication_format = None
 
-    def __init__(self, retry_all=False, retry_missing=False, overwrite=True):
+    def __init__(self,
+                 retry_all=False,
+                 retry_missing=False,
+                 overwrite=True,
+                 during_working_hours=None,
+                 during_night_and_weekend=None,
+                 _uid=None,
+                 _gid=None,
+                 _title=None,
+                 _group_title=None):
+
+        # Parameters starting with underscore are only meant to be used in tests.
+        if _uid:
+            self.uid = _uid
+        if _gid:
+            self.gid = _gid
+        if _title:
+            self.title = _title
+        if _group_title:
+            self.group_title = _group_title
+
         self.utils = DotMap()
         self.utils.report = None
         self.utils.filesystem = None
         self.overwrite = overwrite
         self.retry_all = retry_all
         self.retry_missing = retry_missing
+
+        # By default, only retry during the night or during the weekend.
+        # If during_working_hours is True but during_night_and_weekend is not specified,
+        # then during_night_and_weekend are set to False. To process books both
+        # during working hours as well as during the night and weekend:
+        # set both variables explicitly.
+        self.should_retry_during_working_hours = during_working_hours if isinstance(during_working_hours, bool) else False
+        self.should_retry_during_night_and_weekend = during_night_and_weekend if isinstance(during_night_and_weekend, bool) else not bool(during_working_hours)
+
         self._queue_lock = RLock()
         self._md5_lock = RLock()
         if self.get_group_id() not in Pipeline._group_locks:
@@ -457,6 +488,20 @@ class Pipeline():
             return ""
 
     @staticmethod
+    def is_working_hours():
+        if not (datetime.date.today().weekday() <= 4):
+            return False
+        if not (8 <= datetime.datetime.now().hour <= 15):
+            return False
+        return True
+
+    def should_retry(self):
+        if Pipeline.is_working_hours():
+            return self.should_retry_during_working_hours
+        else:
+            return self.should_retry_during_night_and_weekend
+
+    @staticmethod
     def directory_watchers_ready(directory):
         if directory is None:
             return True
@@ -473,7 +518,8 @@ class Pipeline():
             for item in self._queue:
                 if item['name'] == name:
                     book_in_queue = True
-                    item['last_event'] = int(time.time())
+                    if event_type != "autotriggered":
+                        item['last_event'] = int(time.time())
                     if event_type not in item['events']:
                         item['events'].append(event_type)
                     break
@@ -708,11 +754,6 @@ class Pipeline():
             if time.time() - last_check < max_update_interval:
                 continue
 
-            if not (datetime.date.today().weekday() <= 4):
-                continue
-            if not (8 <= datetime.datetime.now().hour <= 15):
-                continue
-
             last_check = time.time()
             for filename in os.listdir(self.dir_in):
                 if not (self._dirsAvailable and self._shouldRun):
@@ -726,11 +767,6 @@ class Pipeline():
             max_update_interval = 60 * 60 * 4
 
             if time.time() - last_check < max_update_interval:
-                continue
-
-            if not (datetime.date.today().weekday() <= 4):
-                continue
-            if not (8 <= datetime.datetime.now().hour <= 15):
                 continue
 
             last_check = time.time()
@@ -797,14 +833,21 @@ class Pipeline():
                 self.book = None
 
                 with self._queue_lock:
+                    # list all books where no book event have occured very recently (self._inactivity_timeout)
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
-                    books = sorted(books, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
 
                     # process books that were started manually first (manual trigger or book modification)
-                    books_autotriggered = [b for b in books if "autotriggered" in b["events"]]
-                    books_manual = [b for b in books if "autotriggered" not in b["events"]]
+                    books_autotriggered = [b for b in books if Pipeline.get_main_event(b) == "autotriggered"]
+                    books_autotriggered = sorted(books_autotriggered, key=lambda b: b["last_event"])  # process recently autotriggered books last
+                    books_manual = [b for b in books if Pipeline.get_main_event(b) != "autotriggered"]
+                    books_manual = sorted(books_manual, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
                     books = books_manual
-                    books.extend(books_autotriggered)
+                    if self.should_retry():
+                        # Don't handle autotriggered books unless should_retry() returns True
+                        # This will make sure that certain pipelines only retry books
+                        # during working hours, and make sure that certain other pipelines
+                        # only process books outside of working hours.
+                        books.extend(books_autotriggered)
 
                     if books:
                         logging.info("queue: " + ", ".join(

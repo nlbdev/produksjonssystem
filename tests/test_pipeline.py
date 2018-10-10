@@ -34,9 +34,12 @@ class PipelineTest(unittest.TestCase):
         os.makedirs(self.dir_in)
         os.makedirs(self.dir_out)
         os.makedirs(self.dir_reports)
-        self.pipeline = Pipeline()
-        self.pipeline.title = "test"
-        self.pipeline.uid = "test"
+        self.pipeline = Pipeline(
+            during_working_hours=True,
+            during_night_and_weekend=True,
+            _title="test",
+            _uid="test"
+        )
         self.pipeline._inactivity_timeout = 1
 
     def tearDown(self):
