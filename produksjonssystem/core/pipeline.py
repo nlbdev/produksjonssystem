@@ -32,11 +32,6 @@ class Pipeline():
     Do not override methods or variables starting with underscore (_).
     """
 
-    _i18n = {
-        "An error occured while monitoring of": "En feil oppstod ved overvåking av",
-        "An error occured while checking for book events": "En feil oppstod ved håndtering av bokhendelse"
-    }
-
     _queue_lock = None
     _md5_lock = None
     _group_locks = {}  # use this statically: Pipeline._group_locks
@@ -735,10 +730,10 @@ class Pipeline():
                                     logging.debug("book modified: " + f)
 
             except Exception:
-                logging.exception(Pipeline._i18n["An error occured while monitoring of"] + " " +
+                logging.exception("En feil oppstod ved overvåking av " +
                                   str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
                 try:
-                    Report.emailPlainText(Pipeline._i18n["An error occured while monitoring of"] + " " +
+                    Report.emailPlainText("En feil oppstod ved overvåking av " +
                                           str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""),
                                           traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                 except Exception:
@@ -957,10 +952,10 @@ class Pipeline():
                                 self.write_to_daily()
 
             except Exception:
-                logging.exception(Pipeline._i18n["An error occured while checking for book events"] +
+                logging.exception("En feil oppstod ved håndtering av bokhendelse" +
                                   (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
                 try:
-                    Report.emailPlainText(Pipeline._i18n["An error occured while checking for book events"] +
+                    Report.emailPlainText("En feil oppstod ved håndtering av bokhendelse" +
                                           (": " + str(self.book["name"]) if self.book and "name" in self.book else ""),
                                           traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
                 except Exception:
