@@ -66,8 +66,6 @@ class Plotter():
         return None
 
     def plot(self, uids, name):
-        if self.debug_logging:
-            logging.info("plot(self, {}, {})".format(" ".join(uids), name))
         dot = Digraph(name="Produksjonssystem", format="png")
         dot.graph_attr["bgcolor"] = "transparent"
 
@@ -89,26 +87,16 @@ class Plotter():
 
             group_pipeline = pipeline[0].get_current_group_pipeline()
 
-            if self.debug_logging:
-                logging.info("for pipeline in self.pipelines: (pipeline={})".format(pipeline[0].uid))
             title = group_pipeline.get_group_title()
             pipeline_id = group_pipeline.get_group_id()  # re.sub(r"[^a-z\d]", "", title.lower())
 
-            if self.debug_logging:
-                logging.info("before group_pipeline.get_queue()")
             queue = group_pipeline.get_queue()
-            if self.debug_logging:
-                logging.info("after group_pipeline.get_queue()")
 
-            if self.debug_logging:
-                logging.info("before many invocations of Pipeline.get_main_event(book)")
             queue_created = len([book for book in queue if Pipeline.get_main_event(book) == "created"]) if queue else 0
             queue_deleted = len([book for book in queue if Pipeline.get_main_event(book) == "deleted"]) if queue else 0
             queue_modified = len([book for book in queue if Pipeline.get_main_event(book) == "modified"]) if queue else 0
             queue_triggered = len([book for book in queue if Pipeline.get_main_event(book) == "triggered"]) if queue else 0
             queue_autotriggered = len([book for book in queue if Pipeline.get_main_event(book) == "autotriggered"]) if queue else 0
-            if self.debug_logging:
-                logging.info("after many invocations of Pipeline.get_main_event(book)")
             queue_string = []
             if queue_created:
                 queue_string.append("nye:"+str(queue_created))
@@ -122,16 +110,12 @@ class Plotter():
                 queue_string.append("autotrigget:"+str(queue_autotriggered))
             queue_string = ", ".join(queue_string)
 
-            if self.debug_logging:
-                logging.info("before group_pipeline.pipeline_book_shortname()")
             queue_size = 0
             if queue:
                 queue_size = len(queue)
                 if not group_pipeline.should_retry():
                     queue_size -= queue_autotriggered
             book = Metadata.pipeline_book_shortname(group_pipeline)
-            if self.debug_logging:
-                logging.info("after group_pipeline.pipeline_book_shortname()")
 
             relpath_in = None
             netpath_in = ""
@@ -145,36 +129,20 @@ class Plotter():
             if pipeline[0].dir_in and not pipeline[0].dir_base:
                 relpath_in = os.path.basename(os.path.dirname(pipeline[0].dir_in))
             elif pipeline[0].dir_in and pipeline[0].dir_base:
-                if self.debug_logging:
-                    logging.info("before Filesystem.get_base_path(…, …)")
                 base_path = Filesystem.get_base_path(pipeline[0].dir_in, pipeline[0].dir_base)
-                if self.debug_logging:
-                    logging.info("after Filesystem.get_base_path(…, …)")
                 relpath_in = os.path.relpath(pipeline[0].dir_in, base_path)
                 if "master" in pipeline[0].dir_base and pipeline[0].dir_base["master"] == base_path:
                     pass
                 else:
                     if pipeline[0].dir_in not in self.buffered_network_paths:
-                        if self.debug_logging:
-                            logging.info("before Filesystem.networkpath(…)")
                         smb, file, unc = Filesystem.networkpath(pipeline[0].dir_in)
-                        if self.debug_logging:
-                            logging.info("after Filesystem.networkpath(…)")
-                        if self.debug_logging:
-                            logging.info("before Filesystem.get_host_from_url(…)")
                         host = Filesystem.get_host_from_url(smb)
-                        if self.debug_logging:
-                            logging.info("after Filesystem.get_host_from_url(…)")
                         self.buffered_network_paths[pipeline[0].dir_in] = smb
                         self.buffered_network_hosts[pipeline[0].dir_in] = host
                     netpath_in = self.buffered_network_hosts[pipeline[0].dir_in]
                     if not netpath_in:
                         netpath_in = self.buffered_network_paths[pipeline[0].dir_in]
-            if self.debug_logging:
-                logging.info("before get_book_count(…)")
             book_count_in = self.get_book_count(pipeline[0].dir_in)
-            if self.debug_logging:
-                logging.info("after get_book_count(…)")
             label_in = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_in,
                 "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_in, "bok" if book_count_in == 1 else "bøker"),
@@ -192,36 +160,20 @@ class Plotter():
             if pipeline[0].dir_out and not pipeline[0].dir_base:
                 relpath_out = os.path.basename(os.path.dirname(pipeline[0].dir_out))
             elif pipeline[0].dir_out and pipeline[0].dir_base:
-                if self.debug_logging:
-                    logging.info("before Filesystem.get_base_path(…, …)")
                 base_path = Filesystem.get_base_path(pipeline[0].dir_out, pipeline[0].dir_base)
-                if self.debug_logging:
-                    logging.info("after Filesystem.get_base_path(…, …)")
                 relpath_out = os.path.relpath(pipeline[0].dir_out, base_path)
                 if "master" in pipeline[0].dir_base and pipeline[0].dir_base["master"] == base_path:
                     pass
                 else:
                     if pipeline[0].dir_out not in self.buffered_network_paths:
-                        if self.debug_logging:
-                            logging.info("before Filesystem.networkpath(…)")
                         smb, file, unc = Filesystem.networkpath(pipeline[0].dir_out)
-                        if self.debug_logging:
-                            logging.info("after Filesystem.networkpath(…)")
-                        if self.debug_logging:
-                            logging.info("after Filesystem.get_host_from_url(…)")
                         host = Filesystem.get_host_from_url(smb)
-                        if self.debug_logging:
-                            logging.info("after Filesystem.get_host_from_url(…)")
                         self.buffered_network_paths[pipeline[0].dir_out] = unc
                         self.buffered_network_hosts[pipeline[0].dir_out] = host
                     netpath_out = self.buffered_network_hosts[pipeline[0].dir_out]
                     if not netpath_out:
                         netpath_out = self.buffered_network_paths[pipeline[0].dir_out]
-            if self.debug_logging:
-                logging.info("before get_book_count(…)")
             book_count_out = self.get_book_count(pipeline[0].dir_out, pipeline[0].parentdirs)
-            if self.debug_logging:
-                logging.info("after get_book_count(…)")
             label_out = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_out,
                 "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_out, "bok" if book_count_out == 1 else "bøker"),
@@ -236,16 +188,8 @@ class Plotter():
                 else:
                     node_ranks[rank_in].append(pipeline_id)
 
-            if self.debug_logging:
-                logging.info("before group_pipeline.get_status()")
             status = group_pipeline.get_status()
-            if self.debug_logging:
-                logging.info("after group_pipeline.get_status(…)")
-            if self.debug_logging:
-                logging.info("before group_pipeline.get_progress(…)")
             progress_text = group_pipeline.get_progress()
-            if self.debug_logging:
-                logging.info("after group_pipeline.get_progress(…)")
             pipeline_label = "< <font point-size='26'>{}</font>{} >".format(
                 title,
                 "".join(["\n<br/><i><font point-size='22'>{}</font></i>".format(val) for val in [queue_string, progress_text, status] if val]))
@@ -260,12 +204,8 @@ class Plotter():
 
             if relpath_in:
                 fillcolor = "wheat"
-                if self.debug_logging:
-                    logging.info("before Pipeline.directory_watchers_ready(…)")
                 if not Pipeline.directory_watchers_ready(pipeline[0].dir_in):
                     fillcolor = "white"
-                if self.debug_logging:
-                    logging.info("after Pipeline.directory_watchers_ready(…)")
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[1], label_in)
                 if pipeline[1] not in edges:
@@ -277,12 +217,8 @@ class Plotter():
 
             if relpath_out:
                 fillcolor = "wheat"
-                if self.debug_logging:
-                    logging.info("before Pipeline.directory_watchers_ready(…)")
                 if not Pipeline.directory_watchers_ready(pipeline[0].dir_out):
                     fillcolor = "white"
-                if self.debug_logging:
-                    logging.info("after Pipeline.directory_watchers_ready(…)")
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[2], label_out)
                 if pipeline_id not in edges:
@@ -292,8 +228,6 @@ class Plotter():
                     dot.edge(pipeline_id, pipeline[2])
                 node_ranks[rank_out].append(pipeline[2])
 
-        if self.debug_logging:
-            logging.info("before building Digraph")
         for rank in node_ranks:
             subgraph = Digraph("cluster_" + rank, graph_attr={"style": "dotted"})
             subgraph.graph_attr["bgcolor"] = "#FFFFFFAA"
@@ -306,24 +240,14 @@ class Plotter():
                 subgraph.node(dir)
 
             dot.subgraph(subgraph)
-        if self.debug_logging:
-            logging.info("after building Digraph")
 
-        if self.debug_logging:
-            logging.info("before dot.render(…)")
         dot.render(os.path.join(self.report_dir, name + "_"))
-        if self.debug_logging:
-            logging.info("after dot.render(…)")
 
         # there seems to be some race condition when doing this across a mounted network drive,
         # so if we get an exception we retry a few times and hope that it works.
         # see: https://github.com/nlbdev/produksjonssystem/issues/81
-        if self.debug_logging:
-            logging.info("before race condition workaround")
         for t in reversed(range(10)):
             try:
-                if self.debug_logging:
-                    logging.info("race condition iteration: {}".format(t))
                 shutil.copyfile(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
                 break
             except Exception as e:
@@ -331,19 +255,13 @@ class Plotter():
                 time.sleep(0.5)
                 if t == 0:
                     raise e
-        if self.debug_logging:
-            logging.info("after race condition workaround")
 
         dashboard_file = os.path.join(self.report_dir, name + ".html")
         if not os.path.isfile(dashboard_file):
-            if self.debug_logging:
-                logging.info("before creating dashboard file")
             dashboard_template = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../dashboard.html'))
             if not os.path.exists(self.report_dir):
                 os.makedirs(self.report_dir)
             shutil.copyfile(dashboard_template, dashboard_file)
-            if self.debug_logging:
-                logging.info("after creating dashboard file")
 
     def run(self):
         self.threads = []
@@ -402,32 +320,6 @@ class Plotter():
                 times.append("dashboard: {}s".format(round(time.time() - time_start, 1)))
                 if not self.should_run:
                     break
-
-                # Dashboard for steps
-#                time_start = time.time()
-#                for p in self.pipelines:
-#                    self.plot([p[0].uid], p[0].uid)
-#                    if not self.should_run:
-#                        break
-#                times.append("pipelines: {}s".format(round(time.time() - time_start, 1)))
-#                if not self.should_run:
-#                    break
-
-                # Dashboard for persons
-#                time_start = time.time()
-#                emails = {}
-#                for p in self.pipelines:
-#                    for e in p[0].email_settings["recipients"]:
-#                        if e not in emails:
-#                            emails[e] = []
-#                        emails[e].append(p[0].uid)
-#                for e in emails:
-#                    self.plot(emails[e], e.lower())
-#                    if not self.should_run:
-#                        break
-#                times.append("persons: {}s".format(round(time.time() - time_start, 1)))
-#                if not self.should_run:
-#                    break
 
                 # Dashboard for labels
                 time_start = time.time()
