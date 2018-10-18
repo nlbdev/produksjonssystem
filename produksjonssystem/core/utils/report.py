@@ -8,7 +8,7 @@ import smtplib
 import sys
 import tempfile
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from email.headerregistry import Address
 from email.message import EmailMessage
 
@@ -367,6 +367,12 @@ class Report():
                     logging.debug("email html: {}".format(temp_html_obj.name))
                 if should_attach_log is True:
                     path_mail = os.path.join(self.reportDir(), "email.html")
+                    shutil.copy(temp_html_obj.name, path_mail)
+                    self.mailpath = Filesystem.networkpath(path_mail)
+                else:
+                    yesterday = datetime.now() - timedelta(1)
+                    yesterday = str(yesterday.strftime("%Y-%m-%d"))
+                    path_mail = os.path.join(self.pipeline.dir_reports, "logs", "dagsrapporter", yesterday, self.pipeline.uid + ".html")
                     shutil.copy(temp_html_obj.name, path_mail)
                     self.mailpath = Filesystem.networkpath(path_mail)
 
