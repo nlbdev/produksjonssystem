@@ -494,6 +494,8 @@ class Produksjonssystem():
             yesterday = datetime.datetime.now() - datetime.timedelta(1)
             yesterday = str(yesterday.strftime("%Y-%m-%d"))
             daily_dir = os.path.join(self.dirs["reports"], "logs", "dagsrapporter", yesterday)
+            if not os.path.isdir(daily_dir):
+                os.mkdir(daily_dir)
             for pipeline in self.pipelines:
                 if "dummy" in pipeline[0].uid:
                     continue
