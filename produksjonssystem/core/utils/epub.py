@@ -25,8 +25,9 @@ class Epub():
     uid = "core-utils-epub"
 
     def __init__(self, pipeline, book_path):
-        assert os.path.exists(book_path), "'{}' must exist".format(book_path)
-        assert os.path.isfile(book_path) or os.path.isdir(book_path), "'{}' must be either a file or a directory".format(book_path)
+        if not os.path.exists(book_path):
+            self.pipeline.utils.report.error("Epub does not exist anymore." + book_path)
+            return False
         self.pipeline = pipeline
         self.book_path = book_path
 
