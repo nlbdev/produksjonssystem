@@ -495,7 +495,7 @@ class Produksjonssystem():
             yesterday = str(yesterday.strftime("%Y-%m-%d"))
             daily_dir = os.path.join(self.dirs["reports"], "logs", "dagsrapporter", yesterday)
             if not os.path.isdir(daily_dir):
-                os.mkdir(daily_dir)
+                continue
             for pipeline in self.pipelines:
                 if "dummy" in pipeline[0].uid:
                     continue
