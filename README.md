@@ -87,7 +87,7 @@ I GitKraken, trykk på pilen ved siden av "Pull", og trykk deretter på den lill
 
 ## Konfigurasjon
 
-Konfigurasjon av passord og lignende som vi ikke vil ha lagret i Git legges i en konfiguratsjonsfil utenfor git repo'et.
+Konfigurasjon av passord og lignende som vi ikke vil ha lagret i Git legges i en konfigurasjonsfil utenfor git repo'et.
 
 `~/config/set-env.sh`:
 
