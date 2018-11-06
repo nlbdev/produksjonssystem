@@ -254,9 +254,9 @@ class Produksjonssystem():
                            labels=["Lydbok"]),                "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
-            [EpubToDtbookHTML(),                              "master",              "dtbook_html"],
-            [DummyPipeline("Pipeline 1 og Ammars skript",
-                           labels=["e-bok"]),                 "dtbook_html",         None],
+            #[EpubToDtbookHTML(),                              "master",              "dtbook_html"],
+            #[DummyPipeline("Pipeline 1 og Ammars skript",
+            #               labels=["e-bok"]),                 "dtbook_html",         None],
 
             # DTBook for punktskrift
             [EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
