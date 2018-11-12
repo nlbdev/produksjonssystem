@@ -488,7 +488,7 @@ class Produksjonssystem():
         # Checks for reports in daily report dir for each pipeline. Only sends mail once each day
         last_update = 0
         while self.shouldRun:
-            if time.time() - last_update < 3600:
+            if time.time() - last_update < 3600 or datetime.datetime.now().hour < 7:
                 time.sleep(5)
                 continue
             last_update = time.time()
@@ -507,7 +507,7 @@ class Produksjonssystem():
                     number_failed = 0
                     file = os.path.join(daily_dir, pipeline[0].uid)
                     message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
-                    message = message + "\n<h2>Bøker som har gått gjennom:</h2>"
+                    content = "\n<h2>Bøker som har gått gjennom:</h2>"
                     report_content = ""
                     dirs = [pipeline[0].dir_out, pipeline[0].dir_in]
                     dir_log = self.dirs["reports"]
@@ -622,6 +622,8 @@ class Produksjonssystem():
 
     @staticmethod
     def format_email_report(content, dirs, dir_log, logfile, book_archive):
+        # Formats the daily report message in html format for email. img_string penguin for linux
+
         img_string = ("<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAYCAYAAADzoH0MAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA"
                       "sTAAALEwEAmpwYAAAAB3RJTUUH4goFCTApeBNtqgAAA2pJREFUOMt1lF1rI2UYhu/JfCST6bRp2kyCjmWzG0wllV1SULTSyoLpcfHU5jyLP6IUQX+"
                       "DLqw/wBbPWiUeaLHBlijpiZbNR9PdDUPKSjL5mszX48Ha6U6HveGBeeGd67nf+3lnGCIi3FKv10e9/hQMw+Du3XuYn4/hjaJbqtVqtL29Tfn8KuXz"
