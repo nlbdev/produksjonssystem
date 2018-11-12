@@ -485,6 +485,7 @@ class Produksjonssystem():
             f.write("stop")
 
     def _daily_report_thread(self):
+        # Checks for reports in daily report dir for each pipeline. Only sends mail once each day
         last_update = 0
         while self.shouldRun:
             if time.time() - last_update < 3600:
@@ -514,24 +515,25 @@ class Produksjonssystem():
                     if (os.path.isfile(file + "-SUCCESS.txt")):
                         with open(file + "-SUCCESS.txt", "r") as report_file_success:
                             report_content = report_file_success.readlines()
-                            message = message + self.format_email_report(report_content, dirs, dir_log, logfile, self.book_archive_dirs["master"])
+                            content = content + self.format_email_report(report_content, dirs, dir_log, logfile, self.book_archive_dirs["master"])
                             for line in report_content:
                                 if pipeline[0].title in line and line.startswith("["):
                                     number_produced += 1
                     else:
-                        message = message + "\nIngen ble produsert\n"
+                        content = content + "\nIngen ble produsert\n"
 
-                    message = message + "\n<h2>Bøker som har mislyktes:</h2>"
+                    content = content + "\n<h2>Bøker som har feilet:</h2>"
                     if (os.path.isfile(file + "-FAIL.txt")):
                         with open(file + "-FAIL.txt", "r") as report_file_fail:
                             report_content = report_file_fail.readlines()
-                            message = message + self.format_email_report(report_content, dirs, dir_log, logfile, self.book_archive_dirs["master"])
+                            content = content + self.format_email_report(report_content, dirs, dir_log, logfile, self.book_archive_dirs["master"])
                             for line in report_content:
                                 if pipeline[0].title in line and line.startswith("["):
                                     number_failed += 1
                     else:
-                        message = message + "\nIngen feilet\n"
+                        content = content + "\nIngen feilet\n"
                     message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>\n".format(number_produced, number_failed)
+                    message = message + content
                     pipeline[0].daily_report(message)
                 except Exception:
                     self.info("En feil oppstod under sending av dagsrapporten for " + pipeline[0].title)
