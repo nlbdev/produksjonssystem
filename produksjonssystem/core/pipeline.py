@@ -766,21 +766,24 @@ class Pipeline():
 
             last_check = time.time()
 
-            for fileName in os.listdir(self.dir_in):
+            filenames = (os.path.join(self.dir_in, fileName) for fileName in os.listdir(self.dir_in))
+            filenames = ((os.stat(path).st_mtime, path) for path in filenames)
+            for modification_time, path in reversed(sorted(filenames)):
 
                 if not (self._dirsAvailable and self._shouldRun):
                     break  # break loop if we're shutting down the system
-                file_name = Path(fileName).stem
-                edition = [file_name]
+                fileName = Path(path).name
+                fileStem = Path(path).stem
+                edition = [fileStem]
 
                 # if input file is an epub (starts with 5), find all possible identifiers
                 try:
-                    if file_name.startswith("5"):
-                        self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + file_name + " retry")
-                        edition, publication = Metadata.get_identifiers(self.pipelineDummy.utils.report, file_name)
+                    if fileStem.startswith("5"):
+                        self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
+                        edition, publication = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
                         edition = list(set(edition) | set(publication))
                 except Exception:
-                    logging.info("Metadata feilet under get_identifiers for file_name")
+                    logging.info("Metadata feilet under get_identifiers for fileStem")
                 # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
                 file_exists = False
 
