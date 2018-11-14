@@ -75,7 +75,7 @@ class IncomingNordic(Pipeline):
             self.utils.report.debug("Klarte ikke å hente metadata for {}.".format(epub.identifier()))
 
         self.utils.report.info("Validerer EPUB med epubcheck og nordiske retningslinjer...")
-        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": epub.asFile()}) as dp2_job:
+        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": epub.asFile(), "priority": "high"}) as dp2_job:
 
             # get validation report
             report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")

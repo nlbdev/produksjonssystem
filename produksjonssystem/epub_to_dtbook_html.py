@@ -92,7 +92,7 @@ class EpubToDtbookHTML(Pipeline):
         temp_dtbook_file = temp_dtbook_file_obj.name
 
         self.utils.report.info("Konverterer fra nordisk EPUB til DTBook...")
-        with DaisyPipelineJob(self, "nordic-epub3-to-dtbook", {"epub": nordic_epub.asFile(), "fail-on-error": "false"}) as dp2_job:
+        with DaisyPipelineJob(self, "nordic-epub3-to-dtbook", {"epub": nordic_epub.asFile(), "fail-on-error": "false", "priority": "low"}) as dp2_job:
 
             self.utils.report.info("Henter rapport fra konvertering...")
             report_file = os.path.join(dp2_job.dir_output, "html-report/report.xhtml")
