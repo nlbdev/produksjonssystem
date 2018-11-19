@@ -258,9 +258,9 @@ class Produksjonssystem():
             #               labels=["e-bok"]),                 "dtbook_html",         None],
 
             # DTBook for punktskrift
-            [EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
-            [DummyPipeline("Punktskrift med NorBraille",
-                           labels=["Punktskrift"]),           "dtbook_braille",      None],
+            #[EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
+            #[DummyPipeline("Punktskrift med NorBraille",
+            #               labels=["Punktskrift"]),           "dtbook_braille",      None],
 
             # lydutdrag
             [Audio_Abstract(retry_missing=True),              "daisy202",            "abstracts"],
