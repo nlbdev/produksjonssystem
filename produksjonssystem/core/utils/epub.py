@@ -26,7 +26,7 @@ class Epub():
 
     def __init__(self, pipeline, book_path):
         if not os.path.exists(book_path):
-            self.pipeline.utils.report.error("Epub does not exist anymore." + book_path)
+            pipeline.utils.report.error("Epub does not exist anymore." + book_path)
             return False
         self.pipeline = pipeline
         self.book_path = book_path
