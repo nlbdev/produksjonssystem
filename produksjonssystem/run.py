@@ -429,7 +429,7 @@ class Produksjonssystem():
                 if time.time() - last_thread_usage_log > 600:
                     last_thread_usage_log = time.time()
                     with system_process.oneshot():
-                        self.info("Total memory usage: {:.1f} % ({:.3} MB)".format(system_process.memory_percent(memtype='uss') * 100,
+                        self.info("Total memory usage: {:.1f} % ({:.3} MB)".format(system_process.memory_percent(memtype='uss'),
                                                                                   system_process.memory_full_info().uss / 1000000))
                         self.info("Total CPU usage: {:.1f} % ({} cores)".format(system_process.cpu_percent(), psutil.cpu_count()))
                         # TODO: find a way to log thread cpu usage
