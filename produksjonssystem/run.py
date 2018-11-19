@@ -8,12 +8,11 @@ import sys
 import threading
 import time
 import traceback
+import yaml
+import psutil
 from collections import OrderedDict
 from email.headerregistry import Address
 from threading import Thread
-
-import yaml
-
 from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
@@ -397,6 +396,9 @@ class Produksjonssystem():
 
         self.info("Produksjonssystemet er startet")
 
+        last_thread_usage_log = time.time()
+        system_process = psutil.Process()  # This process
+        system_process.cpu_percent()  # first value returned is 0.0, which we ignore
         try:
             stopfile = os.getenv("TRIGGER_DIR")
             if stopfile:
@@ -423,6 +425,15 @@ class Produksjonssystem():
                         if not thread.isAlive():
                             running = False
                             break
+
+                if time.time() - last_thread_usage_log > 600:
+                    last_thread_usage_log = time.time()
+                    with system_process.oneshot():
+                        self.info("Total memory usage: {:.1f} % ({:.3} MB)".format(system_process.memory_percent(memtype='uss') * 100,
+                                                                                  system_process.memory_full_info().uss / 1000000))
+                        self.info("Total CPU usage: {:.1f} % ({} cores)".format(system_process.cpu_percent(), psutil.cpu_count()))
+                        # TODO: find a way to log thread cpu usage
+
         except KeyboardInterrupt:
             pass
 
@@ -441,7 +452,7 @@ class Produksjonssystem():
             for thread in threads:
                 if thread and thread != threading.current_thread() and thread.is_alive():
                     is_alive = True
-                    logging.info("Thread is still running: {}".format(thread.name))
+                    self.info("Thread is still running: {}".format(thread.name))
                     thread.join(timeout=5)
             for pipeline in self.pipelines:
                 if pipeline[0].running:
