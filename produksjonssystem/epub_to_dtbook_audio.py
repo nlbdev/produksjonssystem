@@ -60,11 +60,15 @@ class EpubToDtbookAudio(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        should_produce, metadata_valid = Metadata.should_produce(self, epub, "DAISY 2.02")
+        should_produce, metadata_valid = Metadata.should_produce(self, epub, self.publication_format)
+        if not metadata_valid:
+            self.utils.report.info("{} har feil i metadata for lydbok. Avbryter.".format(epub.identifier()))
+            self.utils.report.title = ("{}: {} har feil i metadata for {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
+            return False
         if not should_produce:
             self.utils.report.info("{} skal ikke produseres som lydbok. Avbryter.".format(epub.identifier()))
-            self.utils.report.title = ("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
-            return metadata_valid
+            self.utils.report.title = ("{}: {} Skal ikke produseres som {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
+            return True
 
         if not Metadata.is_in_quickbase(self.utils.report, epub.identifier()):
             self.utils.report.info("{} finnes ikke i Quickbase og vi lager derfor ikke en DTBook av den. Avbryter.".format(epub.identifier()))
@@ -79,7 +83,7 @@ class EpubToDtbookAudio(Pipeline):
         nordic_epub = Epub(self, nordic_epubdir)
 
         self.utils.report.info("Oppdaterer metadata...")
-        updated = Metadata.update(self, nordic_epub, publication_format="DAISY 2.02")
+        updated = Metadata.update(self, nordic_epub, publication_format=self.publication_format)
         if isinstance(updated, bool) and updated is False:
             return False
         nordic_epub.refresh_metadata()
