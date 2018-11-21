@@ -24,6 +24,10 @@ class Schematron():
             report = pipeline.utils.report
 
         if not cwd:
+            assert report.pipeline.dir_in is not None, (
+                "Schematron: for pipelines with no input directory, " +
+                "the current working directory needs to be explicitly set."
+            )
             cwd = report.pipeline.dir_in
 
         self.success = False

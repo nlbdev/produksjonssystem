@@ -218,7 +218,6 @@ class Filesystem():
 
     def storeBook(self, source, book_id, overwrite = True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
-        self.pipeline.utils.report.info("Lagrer {} i {}...".format(book_id, self.pipeline.dir_out))
         assert book_id
         assert book_id.strip()
         assert book_id != "."
@@ -227,9 +226,14 @@ class Filesystem():
         assert not parentdir or not ".." in parentdir
         assert not parentdir or not "/" in parentdir
         if not dir_out:
+            assert self.pipeline.dir_out is not None, (
+                "When storing a book from a pipeline with no output directory, " +
+                "the output directory to store the book in must be explicitly defined."
+            )
             dir_out = self.pipeline.dir_out
         if parentdir:
             dir_out = os.path.join(dir_out, parentdir)
+        self.pipeline.utils.report.info("Lagrer {} i {}...".format(book_id, dir_out))
         target = os.path.join(dir_out, book_id)
         if subdir:
             target = target + "/" + subdir
@@ -267,6 +271,10 @@ class Filesystem():
 
     def run(self, *args, cwd=None, **kwargs):
         if not cwd:
+            assert self.pipeline.dir_in is not None, (
+                "Filesystem.run: for pipelines with no input directory, " +
+                "the current working directory needs to be explicitly set."
+            )
             cwd = self.pipeline.dir_in
 
         return Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)

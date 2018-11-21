@@ -222,15 +222,12 @@ class Pipeline():
                           dir_base=dir_base,
                           config=config)
 
-        assert (
-            self.dir_in is not None and len(self.dir_in) > 0
-            ), "The environment variable DIR_IN must be specified, and must point to a directory."
-        assert (
-            self.dir_out is not None and len(self.dir_out) > 0 and os.path.exists(self.dir_out)
-            ), "The environment variable DIR_OUT must be specified, and must point to a directory that exists."
+        assert (self.dir_in is None or os.path.isdir(self.dir_in)), "The input directory, if specified, must point to a directory."
+        assert (self.dir_out is None or os.path.isdir(self.dir_out)), "The output directory, if specified, must point to a directory."
 
-        for p in self.parentdirs:
-            os.makedirs(os.path.join(self.dir_out, self.parentdirs[p]), exist_ok=True)
+        if self.dir_out is not None:
+            for p in self.parentdirs:
+                os.makedirs(os.path.join(self.dir_out, self.parentdirs[p]), exist_ok=True)
 
         self.dir_trigger = os.getenv("TRIGGER_DIR")
         if self.dir_trigger:
@@ -256,14 +253,15 @@ class Pipeline():
         type(self).email_settings = self.email_settings
         type(self).config = self.config
 
-        if Filesystem.ismount(self.dir_in):
-            logging.debug(self.dir_in +
-                          " is the root of a mounted filesystem. " +
-                          "Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
-        if not os.path.isdir(self.dir_in):
-            logging.error(self.dir_in +
-                          " is not available. Will not start watching.")
-            return
+        if self.dir_in is not None:
+            if Filesystem.ismount(self.dir_in):
+                logging.warning(self.dir_in +
+                                " is the root of a mounted filesystem. " +
+                                "Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+            if not os.path.isdir(self.dir_in):
+                logging.error(self.dir_in +
+                              " is not available. Will not start watching.")
+                return
         self._inactivity_timeout = inactivity_timeout
 
         self._dirsAvailable = True
@@ -272,42 +270,44 @@ class Pipeline():
 
         with self._md5_lock:
             self._md5 = {}
-        dir_list = os.listdir(self.dir_in)
-        md5_count = 0
-        self.progress_text = "0 / {}".format(len(dir_list))
-        for f in dir_list:
-            if not (self._dirsAvailable and self._shouldRun):
-                with self._md5_lock:
-                    self._md5 = {}
-                return  # break loop if we're shutting down the system
-            self._update_md5(f)
-            md5_count += 1
-            self.progress_text = "{} / {}".format(md5_count, len(dir_list))
+        if self.dir_in is not None:
+            dir_list = os.listdir(self.dir_in)
+            md5_count = 0
+            self.progress_text = "0 / {}".format(len(dir_list))
+            for f in dir_list:
+                if not (self._dirsAvailable and self._shouldRun):
+                    with self._md5_lock:
+                        self._md5 = {}
+                    return  # break loop if we're shutting down the system
+                self._update_md5(f)
+                md5_count += 1
+                self.progress_text = "{} / {}".format(md5_count, len(dir_list))
         self.progress_text = ""
 
         self.shouldHandleBooks = True
 
-        self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
-        self._bookMonitorThread.setDaemon(True)
-        self._bookMonitorThread.start()
-        self.threads.append(self._bookMonitorThread)
+        if self.dir_in is not None:
+            self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
+            self._bookMonitorThread.setDaemon(True)
+            self._bookMonitorThread.start()
+            self.threads.append(self._bookMonitorThread)
+
+            if (self.retry_all):
+                self._bookRetryThread = Thread(target=self._retry_all_books_thread, name="retry all for {}".format(self.uid))
+                self._bookRetryThread.setDaemon(True)
+                self._bookRetryThread.start()
+                self.threads.append(self._bookRetryThread)
+
+            if (self.retry_missing):
+                self._bookRetryInNotOutThread = Thread(target=self._retry_missing_books_thread, name="retry missing for {}".format(self.uid))
+                self._bookRetryInNotOutThread.setDaemon(True)
+                self._bookRetryInNotOutThread.start()
+                self.threads.append(self._bookRetryInNotOutThread)
 
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book in {}".format(self.uid))
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
         self.threads.append(self._bookHandlerThread)
-
-        if (self.retry_all):
-            self._bookRetryThread = Thread(target=self._retry_all_books_thread, name="retry all for {}".format(self.uid))
-            self._bookRetryThread.setDaemon(True)
-            self._bookRetryThread.start()
-            self.threads.append(self._bookRetryThread)
-
-        if (self.retry_missing):
-            self._bookRetryInNotOutThread = Thread(target=self._retry_missing_books_thread, name="retry missing for {}".format(self.uid))
-            self._bookRetryInNotOutThread.setDaemon(True)
-            self._bookRetryInNotOutThread.start()
-            self.threads.append(self._bookRetryInNotOutThread)
 
         if self.uid == "newsletter-to-braille":
             self._newsLetterThread = Thread(target=self._trigger_newsletter_thread, name="generating newsletter for braille productions")
@@ -321,7 +321,10 @@ class Pipeline():
             Pipeline._triggerDirThread.start()
             self.threads.append(Pipeline._triggerDirThread)
 
-        logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
+        if self.dir_in is not None:
+            logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
+        else:
+            logging.info("Pipeline \"" + str(self.title) + "\" started")
 
     def stop(self, exit=False):
         self._dirsAvailable = False
@@ -348,10 +351,11 @@ class Pipeline():
         try:
             while self._shouldRun:
 
-                available = {
-                    self.dir_in: False,
-                    self.dir_out: False
-                }
+                available = {}
+                if self.dir_in is not None:
+                    available[self.dir_in] = False
+                if self.dir_out is not None:
+                    available[self.dir_out] = False
                 for dir in available:
                     is_mount = Filesystem.ismount(dir)
                     contains_books = False
@@ -360,7 +364,7 @@ class Pipeline():
                             contains_books = True
                             break
                     mount_is_mounted = not is_mount or contains_books
-                    available[dir] = os.path.isdir(self.dir_in) and mount_is_mounted
+                    available[dir] = os.path.isdir(dir) and mount_is_mounted
 
                 if False in [available[dir] for dir in available]:
                     if self._dirsAvailable:
@@ -372,11 +376,12 @@ class Pipeline():
                         for dir in [d for d in available if not available[d]]:
                             logging.warning("{} is still not available...".format(dir))
 
-                if not self._dirsAvailable and os.path.isdir(self.dir_in) and mount_is_mounted:
-                    logging.info("All directories are available again. Start watching...")
-                    for dir in [d for d in available if not available[d]]:
-                        logging.debug("Available: {}".format(dir))
-                    self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
+                else:
+                    if not self._dirsAvailable:
+                        logging.info("All directories are available again. Start watching...")
+                        for dir in available:
+                            logging.info("Available: {}".format(dir))
+                        self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
 
                 time.sleep(1)
 
@@ -527,13 +532,15 @@ class Pipeline():
             if not book_in_queue:
                 self._queue.append({
                      'name': name,
-                     'source': os.path.join(self.dir_in, name),
+                     'source': os.path.join(self.dir_in, name) if self.dir_in is not None else None,
                      'events': [event_type],
                      'last_event': int(time.time())
                 })
                 logging.debug("added book to queue: " + name)
 
     def _update_md5(self, name):
+        assert self.dir_in is not None, "Cannot get MD5 checksum for {} when there is no input directory".format(name)
+
         path = os.path.join(self.dir_in, name)
 
         assert "/" not in name
@@ -841,11 +848,11 @@ class Pipeline():
             self.running = True
 
             try:
-                if not Pipeline.directory_watchers_ready(self.dir_out):
+                if self.dir_out is not None and not Pipeline.directory_watchers_ready(self.dir_out):
                     time.sleep(10)
                     continue
 
-                if not os.path.isdir(self.dir_in):
+                if self.dir_in is not None and not os.path.isdir(self.dir_in):
                     # when base dir is not available we should stop watching the directory,
                     # this just catches a potential race condition
                     time.sleep(1)
@@ -1021,7 +1028,9 @@ class Pipeline():
         attachment_title = []
         subject = self.utils.report.title
         for item in self.utils.report._messages["attachment"]:
-            if self.dir_out in item["text"] or self.dir_in in item["text"] or self.dir_reports in item["text"]:
+            if (self.dir_out is not None and self.dir_out in item["text"] or
+                    self.dir_in is not None and self.dir_in in item["text"] or
+                    self.dir_reports in item["text"]):
                 base_path = Filesystem.get_base_path(item["text"], self.dir_base)
                 relpath = os.path.relpath(item["text"], base_path) if base_path else None
                 attachment_title.append("{}{}".format(relpath, ("/" if os.path.isdir(item["text"]) else "")))
