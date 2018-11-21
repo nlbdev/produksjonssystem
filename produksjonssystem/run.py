@@ -24,6 +24,7 @@ from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
 from epub_to_dtbook_html import EpubToDtbookHTML
+from generate_resources import GenerateResources
 from html_to_dtbook import HtmlToDtbook
 from incoming_NLBPUB import (NLBPUB_incoming_validator,
                              NLBPUB_incoming_warning, NLBPUB_validator)
@@ -42,6 +43,7 @@ from prepare_for_braille import PrepareForBraille
 from prepare_for_docx import PrepareForDocx
 from prepare_for_ebook import PrepareForEbook
 from update_metadata import UpdateMetadata
+from newsletter import Newsletter
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -163,6 +165,7 @@ class Produksjonssystem():
             "dirs": OrderedDict()
         })
         self.dirs_ranked[-1]["dirs"]["dtbook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook")
+        self.dirs_ranked[-1]["dirs"]["newsletter-in"] = os.path.join(book_archive_dirs["master"], "nyhetsbrev/inn")
         self.dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
         self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
         self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
@@ -234,6 +237,7 @@ class Produksjonssystem():
             [PrepareForDocx(retry_missing=True),              "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToHtml(retry_missing=True),                "pub-ready-ebook",     "html"],
             [NLBpubToDocx(retry_missing=True),                "pub-ready-docx",      "docx"],
+            [Newsletter(during_working_hours=True),   "newsletter-in",                    "pub-ready-braille"],
 
             # punktskrift
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
