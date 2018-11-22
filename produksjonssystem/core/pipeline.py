@@ -895,10 +895,10 @@ class Pipeline():
                     if event == "create_before_delete":
                         pass
 
-                    # source directory or file should be ignored
-                    elif Filesystem.shutil_ignore_patterns(os.path.dirname(self.book["source"]), [os.path.basename(self.book["source"])]):
+                    # check if source directory or file should be ignored
+                    elif (self.book["source"] is not None and
+                            Filesystem.shutil_ignore_patterns(os.path.dirname(self.book["source"]), [os.path.basename(self.book["source"])])):
                         logging.info("Ignoring book: {}".format(self.book["source"]))
-                        pass
 
                     # trigger book event
                     else:
