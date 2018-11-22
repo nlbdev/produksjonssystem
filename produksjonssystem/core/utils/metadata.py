@@ -1046,6 +1046,16 @@ class Metadata:
 
     @staticmethod
     def get_metadata_from_book(pipeline, path, force_update=False):
+        # Initialize book_metadata with the identifier based on the filename
+        book_metadata = {
+            "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
+        }
+
+        # if there's no "/" in the path, then we assume it's a filename,
+        # and we just return the filename as the identifier.
+        if "/" not in path:
+            return book_metadata
+
         with Metadata._cache_update_lock:
 
             # remove old metadata from cache
@@ -1061,10 +1071,6 @@ class Metadata:
             if path in Metadata.metadata_cache:
                 return Metadata.metadata_cache[path]["metadata"]
 
-            # Initialize book_metadata with the identifier based on the filename
-            book_metadata = {
-                "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
-            }
             Metadata.metadata_cache[path] = {
                 "cache_time": time.time(),
                 "metadata": book_metadata

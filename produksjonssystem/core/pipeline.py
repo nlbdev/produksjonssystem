@@ -908,7 +908,7 @@ class Pipeline():
                         result = None
 
                         # get some basic metadata (identifier and title) from the book for reporting purposes
-                        book_metadata = Metadata.get_metadata_from_book(self, self.book["source"])
+                        book_metadata = Metadata.get_metadata_from_book(self, self.book["source"] if self.book["source"] else self.book["name"])
 
                         try:
                             self.progress_start = time.time()
@@ -1100,7 +1100,7 @@ class Pipeline():
             elif event == "deleted":
                 deleted_seq.append(e)
 
-        if created_seq and deleted_seq:
+        if created_seq and deleted_seq and book["source"]:
             if max(deleted_seq) > max(created_seq) or not os.path.exists(book["source"]):
                 event = "deleted"
             else:
