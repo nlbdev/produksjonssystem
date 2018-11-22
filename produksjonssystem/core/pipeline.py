@@ -82,7 +82,6 @@ class Pipeline():
     progress_text = None
     progress_log = None
     progress_start = None
-    last_check_for_triggered_books = 0
     expected_processing_time = 60  # can be overridden in each pipeline
 
     # utility classes; reconfigured every time a book is processed to simplify function signatures
@@ -303,6 +302,11 @@ class Pipeline():
                 self._bookRetryInNotOutThread.setDaemon(True)
                 self._bookRetryInNotOutThread.start()
                 self.threads.append(self._bookRetryInNotOutThread)
+
+        self._bookTriggerThread = Thread(target=self._monitor_book_triggers_thread, name="trigger in {}".format(self.uid))
+        self._bookTriggerThread.setDaemon(True)
+        self._bookTriggerThread.start()
+        self.threads.append(self._bookTriggerThread)
 
         self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book in {}".format(self.uid))
         self._bookHandlerThread.setDaemon(True)
@@ -625,12 +629,16 @@ class Pipeline():
         if _trigger_dir_obj:
             _trigger_dir_obj.cleanup()
 
-    def check_for_triggered_books(self):
-        if time.time() - self.last_check_for_triggered_books < 5:
-            return
-        else:
-            self.last_check_for_triggered_books = time.time()
-        if os.path.isdir(self.dir_trigger):
+    def _monitor_book_triggers_thread(self):
+        while self._dirsAvailable and self._shouldRun:
+            time.sleep(10)
+
+            if not os.path.isdir(self.dir_trigger):
+                continue
+
+            if not self.shouldHandleBooks:
+                continue
+
             for f in os.listdir(self.dir_trigger):
                 if f == "_name":
                     continue
@@ -671,17 +679,11 @@ class Pipeline():
                 time.sleep(1)  # unless anything has recently changed, give the system time to breathe between each iteration
 
                 if self.shouldHandleBooks:
-                    # opportunity to check for triggered books
-                    self.check_for_triggered_books()
-
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
                         if not (self._dirsAvailable and self._shouldRun):
                             break  # break loop if we're shutting down the system
-
-                        # opportunity to check for triggered books
-                        self.check_for_triggered_books()
 
                         with self._md5_lock:
                             if not os.path.exists(os.path.join(self.dir_in, f)):
@@ -724,9 +726,6 @@ class Pipeline():
                         for b in long_time_since_checked[:10]:
                             if not (self._dirsAvailable and self._shouldRun):
                                 break  # break loop if we're shutting down the system
-
-                            # opportunity to check for triggered books
-                            self.check_for_triggered_books()
 
                             f = b["name"]
                             deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
