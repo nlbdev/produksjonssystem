@@ -104,7 +104,7 @@ class DaisyPipelineJob():
                         try:
                             # start engine if it's not started already
                             pipeline.utils.report.info("Starting Pipeline 2 engine...")
-                            process = pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True)
+                            process = pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True, cwd=DaisyPipelineJob.dp2_home)
                             if process.returncode != 0:
                                 pipeline.utils.report.error("En feil oppstod når Pipeline 2 startet")
                                 continue
@@ -120,7 +120,7 @@ class DaisyPipelineJob():
                             try:
                                 # start engine if it's not started already
                                 pipeline.utils.report.info("Starting Pipeline 2 engine...")
-                                process = pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True)
+                                process = pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "help"], shell=True, cwd=DaisyPipelineJob.dp2_home)
                                 if process.returncode != 0:
                                     pipeline.utils.report.error("En feil oppstod når Pipeline 2 startet")
                                     continue
@@ -181,7 +181,7 @@ class DaisyPipelineJob():
                 command.extend(["--background"])
 
                 self.pipeline.utils.report.debug("Posting job")
-                process = self.pipeline.utils.filesystem.run(command)
+                process = self.pipeline.utils.filesystem.run(command, cwd=DaisyPipelineJob.dp2_home)
                 assert process.returncode == 0, "An error occured when posting the Pipeline 2 job"
 
                 # Get DAISY Pipeline 2 job ID
@@ -217,7 +217,7 @@ class DaisyPipelineJob():
 
                     # get job status
                     self.pipeline.utils.report.debug("Getting job status")
-                    process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "status", self.job_id])
+                    process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "status", self.job_id], cwd=DaisyPipelineJob.dp2_home)
                     assert process.returncode == 0, "An error occured when getting the Pipeline 2 job status"
                     for line in process.stdout.decode("utf-8").split("\n"):
                         # look for: Job {id} sent to the server
@@ -236,13 +236,13 @@ class DaisyPipelineJob():
                 else:
                     # get job log (the run method will log stdout/stderr as debug output)
                     self.pipeline.utils.report.debug("Getting job log")
-                    process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "log", self.job_id])
+                    process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "log", self.job_id], cwd=DaisyPipelineJob.dp2_home)
                     assert process.returncode == 0, "An error occured when getting the Pipeline 2 job log"
 
                     # get results
                     if self.status and self.status != "ERROR":
                         self.pipeline.utils.report.debug("Getting job results")
-                        process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "results", "--output", self.dir_output, self.job_id])
+                        process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "results", "--output", self.dir_output, self.job_id], cwd=DaisyPipelineJob.dp2_home)
                         assert process.returncode == 0, "An error occured when posting the results from the Pipeline 2 job"
 
             except subprocess.TimeoutExpired:
@@ -262,7 +262,7 @@ class DaisyPipelineJob():
     def __exit__(self, exc_type, exc_value, trace):
         if self.job_id:
             try:
-                process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "delete", self.job_id])
+                process = self.pipeline.utils.filesystem.run([DaisyPipelineJob.dp2_cli, "delete", self.job_id], cwd=DaisyPipelineJob.dp2_home)
                 if process.returncode == 0:
                     self.pipeline.utils.report.debug(self.job_id + " was deleted")
                 else:
