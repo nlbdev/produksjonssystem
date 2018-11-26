@@ -237,7 +237,7 @@ class Produksjonssystem():
             [PrepareForDocx(retry_missing=True),              "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToHtml(retry_missing=True),                "pub-ready-ebook",     "html"],
             [NLBpubToDocx(retry_missing=True),                "pub-ready-docx",      "docx"],
-            [Newsletter(during_working_hours=True),   "newsletter-in",                    "pub-ready-braille"],
+            [Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
 
             # punktskrift
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],

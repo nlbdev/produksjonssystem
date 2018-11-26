@@ -313,12 +313,6 @@ class Pipeline():
         self._bookHandlerThread.start()
         self.threads.append(self._bookHandlerThread)
 
-        if self.uid == "newsletter-to-braille":
-            self._newsLetterThread = Thread(target=self._trigger_newsletter_thread, name="generating newsletter for braille productions")
-            self._newsLetterThread.setDaemon(True)
-            self._newsLetterThread.start()
-            self.threads.append(self._newsLetterThread)
-
         if not Pipeline._triggerDirThread:
             Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
             Pipeline._triggerDirThread.setDaemon(True)
@@ -824,23 +818,6 @@ class Pipeline():
                 if not file_exists:
                     logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
                     self.trigger(fileName)
-
-    def _trigger_newsletter_thread(self):
-        last_check = 0
-        while self._dirsAvailable and self._shouldRun:
-            time.sleep(5)
-            max_update_interval = 60 * 60
-
-            if time.time() - last_check < max_update_interval:
-                continue
-
-            last_check = time.time()
-            newsletter_identifier = "120209"
-            newsletter_identifier += time.strftime("%m%Y")
-            year_month = datetime.datetime.today().strftime('%Y-%m')
-            if newsletter_identifier not in os.listdir(self.dir_out):
-                logging.info("Lager nyhetsbrev for: " + year_month)
-                self.trigger(year_month)
 
     def _handle_book_events_thread(self):
         while self._dirsAvailable and self._shouldRun:
