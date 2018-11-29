@@ -625,13 +625,13 @@ class Metadata:
             if f.endswith(".xml"):
                 marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
         for marcxchange_path in marcxchange_paths:
+            normarc_report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
             format_from_normarc, marc019b = Metadata.get_format_from_normarc(normarc_report, marcxchange_path)
             if not format_from_normarc and marc019b:
                 normarc_report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0], marc019b))
             if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
                 continue
 
-            normarc_report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
             sch = Schematron(report=normarc_report,
                              cwd=metadata_dir,
                              schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "validate-normarc.sch"),
