@@ -80,7 +80,7 @@ class Newsletter(Pipeline):
     def on_book(self):
 
         self.utils.report.info("Lager nyhetsbrev for punktskrift i pipeline2")
-        with DaisyPipelineJob(self, "nlb:catalog-month", {"month": self.year_month}) as dp2_job_newsletter:
+        with DaisyPipelineJob(self, "nlb:catalog-month", {"month": self.year_month, "make-email": "false"}) as dp2_job_newsletter:
             if dp2_job_newsletter.status == "DONE":
                 for file in os.listdir(os.path.join(dp2_job_newsletter.dir_output, "output-dir")):
                     if file.endswith(".xhtml"):
