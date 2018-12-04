@@ -82,11 +82,12 @@ class Newsletter(Pipeline):
         self.utils.report.info("Lager nyhetsbrev for punktskrift i pipeline2")
         with DaisyPipelineJob(self, "nlb:catalog-month", {"month": self.year_month, "make-email": "false"}) as dp2_job_newsletter:
             if dp2_job_newsletter.status == "DONE":
+                newsletter = None
                 for file in os.listdir(os.path.join(dp2_job_newsletter.dir_output, "output-dir")):
                     if file.endswith(".xhtml"):
                         newsletter = file
                         break
-                if newsletter == "":
+                if not newsletter:
                     self.utils.report.error("Could not find html")
                     return False
                 os.mkdir(os.path.join(dp2_job_newsletter.dir_output, "output-dir", self.newsletter_identifier))
