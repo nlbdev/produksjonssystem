@@ -500,7 +500,7 @@ class Produksjonssystem():
             f.write("stop")
 
     def _daily_report_thread(self):
-        # Checks for reports in daily report dir for each pipeline. Only sends mail once each day
+        # Checks for reports in daily report dir for each pipeline. Only sends mail once each day after 7
         last_update = 0
         while self.shouldRun:
             if time.time() - last_update < 3600 or datetime.datetime.now().hour < 7:
@@ -524,7 +524,11 @@ class Produksjonssystem():
                     message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
                     content = "\n<h2>Bøker som har gått gjennom:</h2>"
                     report_content = ""
-                    dirs = [pipeline[0].dir_out, pipeline[0].dir_in]
+                    dirs = []
+                    if pipeline[0].dir_out:
+                        dirs.append(pipeline[0].dir_out)
+                    if pipeline[0].dir_in:
+                        dirs.append(pipeline[0].dir_in)
                     dir_log = self.dirs["reports"]
                     logfile = os.path.join(pipeline[0].uid, "log.txt")
                     if (os.path.isfile(file + "-SUCCESS.txt")):
