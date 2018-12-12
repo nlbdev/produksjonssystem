@@ -766,5 +766,58 @@
             </metadata>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Samme format i både 019$c og 245$h">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="b">dc,dj</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="245" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="h">daisy 2.02</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:format>DAISY 2.02</dc:format>
+                
+                <meta property="dc:format.other">Audio recording</meta>
+                <meta property="dc:format.other">Compact Disk</meta>
+                <meta property="dc:format.other">Other voice/other</meta>
+                <meta property="dc:format.other.no">Lydopptak</meta>
+                <meta property="dc:format.other.no">CD (kompaktplate)</meta>
+                <meta property="dc:format.other.no">Annen tale/annet</meta>
+                <meta property="bookEdition">1</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Forskjellig format i 019$c og 245$h">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="b">c</marcxchange:subfield>
+                </marcxchange:datafield>
+                
+                <marcxchange:datafield tag="245" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="h">daisy 2.02</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:format>Braille</dc:format>
+                
+                <meta property="dc:format.no">Punktskrift</meta>
+                <meta property="dc:format.other">Sheet music</meta>
+                <meta property="dc:format.other.no">Musikktrykk</meta>
+                <meta property="bookEdition">1</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
 
 </x:description>

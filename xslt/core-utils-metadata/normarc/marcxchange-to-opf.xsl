@@ -1004,18 +1004,23 @@
         <xsl:for-each select="*:subfield[@code='b']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
-    
-        <xsl:for-each select="*:subfield[@code='h']">
-            <xsl:choose>
-                <xsl:when test="matches(text(),'.*da[i\\ss][si]y[\\.\\s]*.*','i') or matches(text(),'.*2[.\\s]*0?2.*','i')">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/></xsl:call-template>
-                </xsl:when>
-                <xsl:when test="matches(text(),'.*(dtbook|epub).*','i')">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type'"/><xsl:with-param name="value" select="'Full Text'"/></xsl:call-template>
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/></xsl:call-template>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:for-each>
+        
+        <xsl:variable name="format019" as="element()*">
+            <xsl:apply-templates select="../*:datafield[@tag='019']"/>
+        </xsl:variable>
+        <xsl:if test="count($format019/dc:format) gt 0">
+            <xsl:for-each select="*:subfield[@code='h']">
+                <xsl:choose>
+                    <xsl:when test="matches(text(),'.*da[i\\ss][si]y[\\.\\s]*.*','i') or matches(text(),'.*2[.\\s]*0?2.*','i')">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/></xsl:call-template>
+                    </xsl:when>
+                    <xsl:when test="matches(text(),'.*(dtbook|epub).*','i')">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type'"/><xsl:with-param name="value" select="'Full Text'"/></xsl:call-template>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/></xsl:call-template>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
+        </xsl:if>
         
         <!-- https://github.com/nlbdev/normarc/issues/5 -->
         <xsl:for-each select="*:subfield[@code='n']">
