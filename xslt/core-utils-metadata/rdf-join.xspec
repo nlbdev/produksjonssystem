@@ -1915,4 +1915,43 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="schema:library - bibliofil overriding quickbase">
+        <x:call template="main-testable">
+            <x:param name="descriptions">
+                <rdf:Description rdf:about="urn:isbn:9788202484347" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="quickbase">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <dc:identifier>861001</dc:identifier>
+                    <schema:library>NLB</schema:library>
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="bibliofil">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <dc:identifier>861001</dc:identifier>
+                    <schema:library>Statped</schema:library>
+                </rdf:Description>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="The result should be as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:9788202484347">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                </rdf:Description>
+                
+                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                    <rdf:type rdf:resource="http://schema.org/Book" />
+                    <dc:identifier>861001</dc:identifier>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
+                    <schema:library>Statped</schema:library>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
