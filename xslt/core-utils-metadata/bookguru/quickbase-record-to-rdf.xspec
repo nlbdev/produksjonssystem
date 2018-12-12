@@ -820,8 +820,8 @@
                                 <dd property="nlbprod:productionDelivered">true</dd>
                                 <dt title="nlbprod:productionDeliveryDate"/>
                                 <dd property="nlbprod:productionDeliveryDate">2016-01-18</dd>
-                                <dt title="nlbprod:agency"/>
-                                <dd property="nlbprod:agency">NLB</dd>
+                                <dt title="schema:library"/>
+                                <dd property="schema:library">NLB</dd>
                                 <dt title="nlbprod:productionNumberUID"/>
                                 <dd property="nlbprod:productionNumberUID">558237</dd>
                                 <dt title="nlbprod:leaveAMessage"/>
@@ -1110,7 +1110,7 @@
                         <nlbprod:uploadEpub>558237.epubhttps://...</nlbprod:uploadEpub>
                         <nlbprod:productionDelivered>true</nlbprod:productionDelivered>
                         <nlbprod:productionDeliveryDate>2016-01-18</nlbprod:productionDeliveryDate>
-                        <nlbprod:agency>NLB</nlbprod:agency>
+                        <schema:library>NLB</schema:library>
                         <nlbprod:productionNumberUID>558237</nlbprod:productionNumberUID>
                         <nlbprod:leaveAMessage>true</nlbprod:leaveAMessage>
                         <nlbprod:productionQuestionsAndNotes>[JAN-18-16 Erik Holst] We need the Epub file.</nlbprod:productionQuestionsAndNotes>

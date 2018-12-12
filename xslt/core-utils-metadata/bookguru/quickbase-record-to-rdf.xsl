@@ -1862,7 +1862,7 @@ section dl {
     <xsl:template match="f[@id='396']">
         <!-- "Agency" -->
         <!-- String -->
-        <dd property="nlbprod:agency" _type-id="epub">
+        <dd property="schema:library" _type-id="epub">
             <xsl:value-of select="."/>
         </dd>
     </xsl:template>
