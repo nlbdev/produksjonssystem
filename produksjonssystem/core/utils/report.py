@@ -256,6 +256,8 @@ class Report():
 
             if isinstance(recipients, str):
                 recipients = [recipients]
+            elif isinstance(recipients, tuple):
+                recipients = list(recipients)
 
             if status == "ERROR":
                 for key in Config.get("administrators", default=[]):
