@@ -22,31 +22,42 @@
     <let name="is-translated" value="boolean(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
                                            | //marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
                                            | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
+    <let name="library" value="(//marcxchange:datafield[@tag='850']/marcxchange:subfield[@code='a']/text()/lower-case(.))[1]"/>
     
     
     <!-- Format -->
     <pattern>
         <title>Format for punktskrift</title>
-        <rule context="marcxchange:record[starts-with($identifier,'1')]">
+        <rule context="marcxchange:record[starts-with($identifier,'1') and not($library = 'statped')]">
             <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('za','c')">Utgaver med boknummer som starter med 1 må være markert som punktbok i *019$b ('za' for vanlig, eller 'c' for musikktrykk; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Format for lydbok</title>
-        <rule context="marcxchange:record[starts-with($identifier,'2') or starts-with($identifier,'6')]">
+        <rule context="marcxchange:record[starts-with($identifier,'2') or starts-with($identifier,'6') and not($library = 'statped')]">
             <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('dc','dj')">Utgaver med boknummer som starter med 2 eller 6 må være markert som lydbok i *019$b ('dc' og/eller 'dj'; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Format for e-bok</title>
-        <rule context="marcxchange:record[starts-with($identifier,'3')]">
+        <rule context="marcxchange:record[starts-with($identifier,'3') and not($library = 'statped')]">
             <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('la')">Utgaver med boknummer som starter med 3 må være markert som e-bok i *019$b ('la', gjerne med 'ga' i tillegg; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Format for EPUB</title>
-        <rule context="marcxchange:record[starts-with($identifier,'5')]">
-            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('gt')">Utgaver med boknummer som starter med 5 må være markert som EPUB i *019$b ('gt'; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
+        <rule context="marcxchange:record[starts-with($identifier,'5') and not($library = 'statped')]">
+            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('gt','nb')">Utgaver med boknummer som starter med 5 må være markert som EPUB i *019$b ('nb' og/eller 'gt'; var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
+        </rule>
+    </pattern>
+    <pattern>
+        <title>Format for Statped</title>
+        <rule context="marcxchange:record[starts-with($identifier, '86')]">
+            <assert test="$library = 'statped'">Utgaver med boknummer som starter med 86 må tilhøre Statped (*850$a må inneholde 'StatPed'; var: '<value-of select="$library"/>')</assert>
+        </rule>
+        <rule context="marcxchange:record[$library = 'statped']">
+            <assert test="starts-with($identifier, '86')">Utgaver som tilhører Statped (i følge *850$a) må ha boknummer som starter på 86 (var: '<value-of select="$identifier"/>').</assert>
+            <assert test="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/tokenize(text(),',') = ('za','c','dc','dj','la','gt','nb')">Alle utgaver må være markert som enten punktbok ('za' for vanlig, 'c' for musikktrykk), lydbok ('dc' og/eller 'dj'), e-bok ('la', gjerne med 'ga' i tillegg), eller EPUB ('nb' og/eller 'gt') (var: '<value-of select="marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text()"/>').</assert>
         </rule>
     </pattern>
     
