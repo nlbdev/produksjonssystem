@@ -285,11 +285,22 @@
     </xsl:template>
     
     <xsl:template match="*:controlfield[@tag='008']">
+        <xsl:variable name="POS00-05" select="substring(text(),1,6)"/>
         <xsl:variable name="POS22" select="substring(text(),23,1)"/>
         <xsl:variable name="POS33" select="substring(text(),34,1)"/>
         <xsl:variable name="POS34" select="substring(text(),35,1)"/>
         <xsl:variable name="POS35-37" select="substring(text(),36,3)"/>
-    
+        
+        <xsl:if test="matches($POS00-05,'^\d\d\d\d\d\d$')">
+            <xsl:variable name="current-year" select="xs:integer(tokenize(xs:string(current-date()),'-')[1])"/>
+            <xsl:variable name="year" select="xs:integer(substring($POS00-05,1,2))"/>
+            <xsl:variable name="year" select="xs:string($current-year - $current-year mod 100 + (if ($year gt $current-year mod 100) then $year - 100 else $year))"/>
+            <xsl:variable name="month" select="substring($POS00-05,3,2)"/>
+            <xsl:variable name="day" select="substring($POS00-05,5,2)"/>
+            
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.registered'"/><xsl:with-param name="value" select="concat($year,'-',$month,'-',$day)"/></xsl:call-template>
+        </xsl:if>
+        
         <xsl:choose>
             <xsl:when test="$POS22='a'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
