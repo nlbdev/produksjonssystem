@@ -172,6 +172,32 @@ class Report():
         return tuple(_addresses)
 
     @staticmethod
+    def filterEmailAddresses(addresses, library=None):
+        if isinstance(addresses, Address):
+            return addresses
+        elif isinstance(addresses, str):
+            addresses = [addresses]
+        elif isinstance(addresses, tuple):
+            addresses = list(addresses)
+
+        if not library:
+            return tuple(addresses)
+
+        filtered = []
+        library = library.lower()
+        for address in addresses:
+            second_level_domain = address.lower().split("@")[-1].split(".")[-2]
+            if second_level_domain == library:
+                filtered.append(address)
+
+        if filtered:
+            logging.info("Filtered e-mail addresses. Only sending to: {}".format(library))
+            return tuple(filtered)
+        else:
+            logging.info("No addresses remaining after filtering. Using unfiltered list of e-mail addresses.")
+            return tuple(addresses)
+
+    @staticmethod
     def emailPlainText(subject, message, smtp, sender, recipients, should_email=True):
         assert isinstance(subject, str)
         assert isinstance(message, str)

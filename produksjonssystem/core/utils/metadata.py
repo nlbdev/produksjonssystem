@@ -663,10 +663,14 @@ class Metadata:
                 pipeline.utils.report._messages[message_type].append(message)
 
         if not normarc_success:
+            cached_rdf_metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
+            library = [m for m in cached_rdf_metadata if m["publication"] in [None, epub.identifier()] and m["property"] == "schema:library"]
+            library = library[0]["value"] if len(library) > 0 else None
+
             Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
             normarc_report.email(pipeline.email_settings["smtp"],
                                  pipeline.email_settings["sender"],
-                                 signatureRegistrationAddress,
+                                 Report.filterEmailAddresses(signatureRegistrationAddress, library=library),
                                  subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
             pipeline.utils.report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
                                        ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
@@ -1045,7 +1049,18 @@ class Metadata:
         return result, True
 
     @staticmethod
-    def get_metadata_from_book(pipeline, path, force_update=False):
+    def get_metadata_from_book(pipeline, path, force_update=False, extend_with_cached_rdf_metadata=True):
+        book_metadata = Metadata._get_metadata_from_book(pipeline, path, force_update)
+        if extend_with_cached_rdf_metadata:
+            cached_rdf_metadata = Metadata.get_cached_rdf_metadata(book_metadata["identifier"],
+                                                                   simplified=True,
+                                                                   filter_identifiers=[None, book_metadata["identifier"]])
+            for meta in cached_rdf_metadata:
+                if meta not in book_metadata:
+                    book_metadata[meta] = cached_rdf_metadata[meta]
+
+    @staticmethod
+    def _get_metadata_from_book(pipeline, path, force_update):
         # Initialize book_metadata with the identifier based on the filename
         book_metadata = {
             "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
@@ -1198,7 +1213,27 @@ class Metadata:
             return book_metadata
 
     @staticmethod
-    def get_cached_rdf_metadata(epub_identifier):
+    def get_cached_rdf_metadata(epub_identifier, simplified=False, filter_identifiers=None):
+        cached_rdf_metadata = Metadata._get_cached_rdf_metadata(epub_identifier)
+
+        if filter_identifiers:
+            new_cached_rdf_metadata = []
+            for meta in cached_rdf_metadata:
+                if meta["publication"] in filter_identifiers:
+                    new_cached_rdf_metadata.append(meta)
+            cached_rdf_metadata = new_cached_rdf_metadata
+
+        if simplified:
+            simplified = {}
+            for meta in cached_rdf_metadata:
+                count = len([m for m in cached_rdf_metadata if m["property"] == meta["property"]])
+                if count == 1:
+                    simplified[meta["property"]] = meta["value"]
+            return simplified
+        else:
+            return cached_rdf_metadata
+
+    def _get_cached_rdf_metadata(epub_identifier):
         metadata = []
 
         rdf_file = os.path.join(Metadata.get_metadata_dir(), epub_identifier, "metadata.rdf")

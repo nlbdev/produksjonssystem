@@ -949,7 +949,8 @@ class Pipeline():
                             try:
                                 self.utils.report.email(self.email_settings["smtp"],
                                                         self.email_settings["sender"],
-                                                        self.email_settings["recipients"],
+                                                        Report.filterEmailAddresses(self.email_settings["recipients"],
+                                                                                    library=book_metadata["library"] if "library" in book_metadata else None),
                                                         should_email=self.utils.report.should_email,
                                                         should_message_slack=self.utils.report.should_message_slack)
                             except Exception:
