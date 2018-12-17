@@ -1058,6 +1058,7 @@ class Metadata:
             for meta in cached_rdf_metadata:
                 if meta not in book_metadata:
                     book_metadata[meta] = cached_rdf_metadata[meta]
+        return book_metadata
 
     @staticmethod
     def _get_metadata_from_book(pipeline, path, force_update):
