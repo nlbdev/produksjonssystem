@@ -314,6 +314,9 @@ class Plotter():
                 self.debug_logging = False
                 times = []
 
+                if not isinstance(self.pipelines, list):
+                    logging.warn("self.pipelines is not a list: {}".format(self.pipelines))
+
                 # Main dashboard
                 time_start = time.time()
                 self.plot([p[0].uid for p in self.pipelines], "dashboard")
