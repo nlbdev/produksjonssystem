@@ -889,7 +889,7 @@ class Metadata:
         if [val for val in split if val in ['la']]:
             return "XHTML", marc019b
 
-        if [val for val in split if val in ['gt']]:
+        if [val for val in split if val in ['gt', 'nb']]:
             return "EPUB", marc019b
 
         report.warn("Ukjent format i `*019$b` for {}: {}".format(os.path.basename(marcxchange_path), marc019b))
