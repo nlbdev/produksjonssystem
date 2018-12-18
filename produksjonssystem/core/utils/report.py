@@ -277,7 +277,7 @@ class Report():
         try:
             assert isinstance(smtp, dict), "smtp must be a dict"
             assert isinstance(sender, str) or isinstance(sender, Address), "sender must be a str or Address"
-            assert isinstance(recipients, str) or isinstance(recipients, list), "recipients must be a str or list"
+            assert isinstance(recipients, str) or isinstance(recipients, list) or isinstance(recipients, tuple), "recipients must be a str, list or tuple"
             assert isinstance(self.title, str) or self.pipeline and isinstance(self.pipeline.title, str), "title or pipeline.title must be a str"
 
             if isinstance(recipients, str):
