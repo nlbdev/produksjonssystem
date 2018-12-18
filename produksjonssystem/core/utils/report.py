@@ -8,7 +8,7 @@ import smtplib
 import sys
 import tempfile
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from email.headerregistry import Address
 from email.message import EmailMessage
 
@@ -337,7 +337,8 @@ class Report():
                     li = "<li>"
                     li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
                     li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
-                    li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a> " + self.img_string + "=\" alt=\"" + attachment["smb"] + "\">"
+                    li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a> "
+                    li += self.img_string + "=\" alt=\"" + attachment["smb"] + "\">"
                     li += "</span>"
                     li += "</li>"
                     markdown_text.append(li)
