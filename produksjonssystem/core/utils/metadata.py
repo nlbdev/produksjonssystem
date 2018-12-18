@@ -1245,7 +1245,13 @@ class Metadata:
         if not os.path.isfile(rdf_file):
             return metadata
 
-        rdf = ElementTree.parse(rdf_file).getroot()
+        rdf = None
+        try:
+            rdf = ElementTree.parse(rdf_file).getroot()
+        except ElementTree.XMLSyntaxError:
+            logging.exception("Could not parse {}".format(rdf_file))
+            return metadata
+
         creativeWork = rdf.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']", namespaces=rdf.nsmap)
         publications = rdf.xpath("/rdf:RDF/rdf:Description[dc:identifier]", namespaces=rdf.nsmap)
         if creativeWork:
