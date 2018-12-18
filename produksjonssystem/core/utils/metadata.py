@@ -429,7 +429,8 @@ class Metadata:
                                                                                "-"+library if library else "")))
                 success = Metadata.get_quickbase(pipeline, "isbn", format_edition_identifier,
                                                  os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
-                                                     "-"+library if library else "")))
+                                                     "-"+library if library else "")),
+                                                 library=library)
                 if not success:
                     return False
                 xslt = Xslt(pipeline,
