@@ -145,21 +145,25 @@ class Metadata:
         for identifier in identifiers:
             report.info("Ser etter {} i Quickbase...".format(identifier))
             metadata_dir = os.path.join(Metadata.get_metadata_dir(), identifier)
-            rdf_path = os.path.join(metadata_dir, 'quickbase/record.rdf')
+            rdf_paths = [os.path.join(metadata_dir, 'quickbase/record{}.rdf'.format("-"+library if library else "")) for library in [None, "statped"]]
             if os.path.isdir(metadata_dir):
                 metadata_dir_exists = True
             else:
                 continue
-            if os.path.isfile(rdf_path):
-                rdf = ElementTree.parse(rdf_path).getroot()
-                identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
-                if identifiers:
-                    report.info("{} finnes i Quickbase".format(identifier))
-                    return True
-                else:
-                    report.info("{} finnes ikke i Quickbase".format(identifier))
-            else:
+            found_rdf_file = False
+            identifiers = []
+            for rdf_path in rdf_paths:
+                if os.path.isfile(rdf_path):
+                    found_rdf_file = True
+                    rdf = ElementTree.parse(rdf_path).getroot()
+                    identifiers.append(rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap))
+            if not found_rdf_file:
                 report.info("Finner ikke Quickbase-metadata for {}.".format(identifier))
+            elif identifiers:
+                report.info("{} finnes i Quickbase".format(identifier))
+                return True
+            else:
+                report.info("{} finnes ikke i Quickbase".format(identifier))
         return True if not metadata_dir_exists else False
 
     @staticmethod
