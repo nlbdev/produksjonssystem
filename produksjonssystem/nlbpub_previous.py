@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 class NlbpubPrevious(Pipeline):
     uid = "nlbpub-previous-versions"
     title = "NLBPUB tidligere versjoner"
-    labels = ["EPUB"]
+    labels = ["EPUB", "Statped"]
     publication_format = None
     expected_processing_time = 2
 
