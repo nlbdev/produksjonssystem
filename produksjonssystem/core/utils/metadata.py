@@ -127,11 +127,13 @@ class Metadata:
                     identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
                     quickbase_edition_identifiers.extend(identifiers)
                     if identifiers:
-                        report.debug("Andre boknummer for {} i Quickbase: ".format(", ".join(identifiers)))
+                        report.debug("Andre boknummer for {} i {}-Quickbase: {}".format(edition_identifier,
+                                                                                        library if library else "NLB",
+                                                                                        ", ".join(identifiers)))
                     else:
-                        report.warn("{} er ikke katalogisert i Quickbase".format(edition_identifier))
+                        report.warn("{} er ikke katalogisert i {}-Quickbase.".format(edition_identifier, library if library else "NLB"))
                 else:
-                    report.warn("Finner ikke lokal metadata for {}.".format(edition_identifier))
+                    report.warn("Finner ikke lokal metadata for {} i {}-Quickbase.".format(edition_identifier, library if library else "NLB"))
 
         edition_identifiers = sorted(set(edition_identifiers + quickbase_edition_identifiers))
         publication_identifiers = sorted(set([i[:6] for i in edition_identifiers if len(i) >= 6]))
