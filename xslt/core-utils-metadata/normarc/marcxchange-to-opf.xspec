@@ -333,12 +333,14 @@
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected">
+            <meta property="dc:date.registered">2017-12-20</meta>
             <meta property="audience">Adult</meta>
             <meta property="dc:type.genre">Fiction</meta>
             <meta property="dc:type.genre">Non-biography</meta>
             <dc:language>nob</dc:language>
             <meta property="typicalAgeRange">17-</meta>
             
+            <meta property="dc:date.registered">2017-12-20</meta>
             <meta property="audience">Adult</meta>
             <meta property="dc:type.genre">Fiction</meta>
             <meta property="dc:type.genre">Non-biography</meta>
@@ -348,7 +350,6 @@
             
             <dc:title>Tommy flytter</dc:title>
             <meta property="dc:title.subTitle">Tigergjengen</meta>
-            <dc:format>DAISY 2.02</dc:format>
             <meta property="position">2</meta>
             <meta property="dc:title.part">Tittel for del av verk</meta>
             
@@ -816,6 +817,61 @@
                 <meta property="dc:format.other">Sheet music</meta>
                 <meta property="dc:format.other.no">Musikktrykk</meta>
                 <meta property="bookEdition">1</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Bruk registreringsdato som tilgjengeliggjøringsdato for katalogposter eldre enn år 2000">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:controlfield tag="008">971220                a          10nob</marcxchange:controlfield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:language>nob</dc:language>
+                <meta property="dc:date.available">1997-12-20</meta>
+                <meta property="dc:date.registered">1997-12-20</meta>
+                <meta property="dc:type.genre">Fiction</meta>
+                <meta property="dc:type.genre">Non-biography</meta>
+                <meta property="audience">Adult</meta>
+                <meta property="typicalAgeRange">17-</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="900 og 950 (brukes egentlig bare i autoritetsregistertabellen)" pending="TODO">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="100" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a" type="LONGTEXT">Ragde, Anne Birkefeldt</marcxchange:subfield>
+                    <marcxchange:subfield code="j" type="VARCHAR(73)">n.</marcxchange:subfield>
+                    <marcxchange:subfield code="%" type="CHAR(2)">  </marcxchange:subfield>
+                    <marcxchange:subfield code="3" type="INT">10856500</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="900" ind1=" " ind2="0">
+                    <marcxchange:subfield code="a" type="VARCHAR(46)">Birkefeldt Ragde, Anne</marcxchange:subfield>
+                    <marcxchange:subfield code="%" type="CHAR(2)"> 0</marcxchange:subfield>
+                    <marcxchange:subfield code="3" type="INT">10856501</marcxchange:subfield>
+                    <marcxchange:subfield code="~" type="INT">15538600</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="950" ind1=" " ind2="0">
+                    <marcxchange:subfield code="a" type="VARCHAR(46)">Ragde, Anne B.</marcxchange:subfield>
+                    <marcxchange:subfield code="%" type="CHAR(2)"> 0</marcxchange:subfield>
+                    <marcxchange:subfield code="3" type="INT">10856502</marcxchange:subfield>
+                    <marcxchange:subfield code="~" type="INT">17941800</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:creator id="creator-1">Ragde, Anne Birkefeldt</dc:creator>
+                <meta property="bibliofil-id" refines="#creator-1">10856500</meta>
+                <meta property="nationality" refines="#creator-1">no</meta>
+                <meta property="bibliofil-id.reference" refines="#creator-1">15538600</meta>
+                <meta property="bibliofil-id.reference" refines="#creator-1">17941800</meta>
             </metadata>
         </x:expect>
     </x:scenario>
