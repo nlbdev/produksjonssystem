@@ -26,7 +26,7 @@ class Filesystem():
 
     shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
         "Thumbs.db", "*.swp", "ehthumbs.db", "ehthumbs_vista.db", "*.stackdump", "Desktop.ini", "desktop.ini",
-        "$RECYCLE.BIN/", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
+        "$RECYCLE.BIN", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
         ".LSOverride", "._*", ".DocumentRevisions-V100", ".fseventsd", ".Spotlight-V100", ".TemporaryItems",
         ".Trashes", ".VolumeIcon.icns", ".com.apple.timemachine.donotpresent", ".AppleDB", ".AppleDesktop",
         "Network Trash Folder", "Temporary Items", ".apdisk", "Dolphin check log.txt", "*dirmodified", "dds-temp",
@@ -144,6 +144,14 @@ class Filesystem():
     def copytree(self, src, dst):
         assert os.path.isdir(src)
 
+        # check if ancestor directory should be ignored
+        src_parts = os.path.abspath(src).split("/")
+        for i in range(1, len(src_parts)):
+            ignore = Filesystem.shutil_ignore_patterns("/" + "/".join(src_parts[1:i]), [src_parts[i]])
+            if ignore:
+                return dst
+
+        # use shutil.copytree if the target does not exist yet (no need to merge copy)
         if not os.path.exists(dst):
             return shutil.copytree(src, dst, ignore=Filesystem.shutil_ignore_patterns)
 
