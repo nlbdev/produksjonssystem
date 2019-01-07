@@ -989,10 +989,17 @@ class Pipeline():
             if key == "daily":
                 for recipient_daily in self.config[key]:
                     recipients_daily.append(recipient_daily)
+
+        for rec in self.email_settings["recipients"]:
+            if "not-daily" in self.config:
+                if rec not in self.config["not-daily"]:
+                    recipients_daily.append(rec)
+            else:
+                recipients_daily.append(rec)
         try:
             report_daily.email(self.email_settings["smtp"],
                                self.email_settings["sender"],
-                               recipients_daily + self.email_settings["recipients"],
+                               recipients_daily,
                                should_attach_log=False)
         except Exception:
                 logging.info("Failed sending daily email")
