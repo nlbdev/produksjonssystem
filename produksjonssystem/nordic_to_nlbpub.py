@@ -26,8 +26,6 @@ class NordicToNlbpub(Pipeline):
     publication_format = None
     expected_processing_time = 601
 
-    xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
-
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
@@ -91,7 +89,7 @@ class NordicToNlbpub(Pipeline):
 
                 if file == nav_path:
                     xslt = Xslt(self,
-                                stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
+                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
                                 source=file,
                                 target=temp_html_file,
                                 parameters={
@@ -104,23 +102,15 @@ class NordicToNlbpub(Pipeline):
 
                 else:
                     xslt = Xslt(self,
-                                stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
+                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
                                 source=file,
                                 target=temp_html_file)
                     if not xslt.success:
                         return False
                     shutil.copy(temp_html_file, file)
 
-                xslt = Xslt(self,
-                            stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "update-epub-prefixes.xsl"),
-                            source=file,
-                            target=temp_html_file)
-                if not xslt.success:
-                    return False
-                shutil.copy(temp_html_file, file)
-
         xslt = Xslt(self,
-                    stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
                     source=os.path.join(temp_epubdir, temp_epub.opf_path()),
                     target=temp_opf_file)
         if not xslt.success:
@@ -271,7 +261,15 @@ class NordicToNlbpub(Pipeline):
             self.utils.filesystem.copy(dp2_html_dir, html_dir)
 
         self.utils.report.info("Rydder opp i nordisk HTML")
-        xslt = Xslt(self, stylesheet=os.path.join(NordicToNlbpub.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
+                    source=html_file,
+                    target=temp_html_file)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_html_file, html_file)
+
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "update-epub-prefixes.xsl"),
                     source=html_file,
                     target=temp_html_file)
         if not xslt.success:
