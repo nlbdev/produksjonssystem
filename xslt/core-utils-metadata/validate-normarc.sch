@@ -121,6 +121,12 @@
         </rule>
     </pattern>
     <pattern>
+        <title>EPUB-nr når originalen mangler ISBN og ISSN</title>
+        <rule context="marcxchange:record[$is-publication and $isbn-missing and $issn-missing]">
+            <assert test="marcxchange:datafield[@tag='599' and marcxchange:subfield[@code='a']/text()='EPUB-nr' and marcxchange:subfield[@code='b']/text()/matches(.,'^\d+$')]">Når originalens ISBN og ISSN er ukjent, så må det finnes en tag *599 med "EPUB-nr" i delfelt $a, og boknummeret til EPUBen i delfelt $b.</assert>
+        </rule>
+    </pattern>
+    <pattern>
         <title>Formatering av ISBN og ISSN for originalen (bruk av tegn)</title>
         <rule context="marcxchange:record/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
             <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISBN og ISSN i *596$f kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
