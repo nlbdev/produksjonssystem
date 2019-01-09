@@ -1418,7 +1418,14 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='599']">
-        <!--<xsl:message select="'NORMARC-felt ignorert: 599 LOKALE NOTER'"/>-->
+        <xsl:choose>
+            <xsl:when test="*:subfield[@code='a']/text() = 'EPUB-nr' and exists(*:subfield[@code='b'])">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'epub-nr'"/><xsl:with-param name="value" select="(*:subfield[@code='b'])[1]/text()"/></xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+                <!--<xsl:message select="'NORMARC-felt ignorert: 599 LOKALE NOTER'"/>-->
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <!-- 6XX EMNEINNFØRSLER -->

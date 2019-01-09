@@ -166,4 +166,24 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="EPUB-nr: move the 'epub-nr' property into the nlbbib namespace">
+        <x:context>
+            <opf:metadata>
+                <meta name="epub-nr" content="555555"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                    <nlbbib:epub-nr>555555</nlbbib:epub-nr>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

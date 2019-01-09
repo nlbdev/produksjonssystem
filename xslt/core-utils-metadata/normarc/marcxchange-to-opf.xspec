@@ -841,26 +841,43 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="EPUB-nr i *599">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="599" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">EPUB-nr</marcxchange:subfield>
+                    <marcxchange:subfield code="b">563747</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="epub-nr">563747</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
     <x:scenario label="900 og 950 (brukes egentlig bare i autoritetsregistertabellen)" pending="TODO">
         <x:context>
             <marcxchange:record>
                 <marcxchange:datafield tag="100" ind1=" " ind2=" ">
-                    <marcxchange:subfield code="a" type="LONGTEXT">Ragde, Anne Birkefeldt</marcxchange:subfield>
-                    <marcxchange:subfield code="j" type="VARCHAR(73)">n.</marcxchange:subfield>
-                    <marcxchange:subfield code="%" type="CHAR(2)">  </marcxchange:subfield>
-                    <marcxchange:subfield code="3" type="INT">10856500</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Ragde, Anne Birkefeldt</marcxchange:subfield>
+                    <marcxchange:subfield code="j">n.</marcxchange:subfield>
+                    <marcxchange:subfield code="%">  </marcxchange:subfield>
+                    <marcxchange:subfield code="3">10856500</marcxchange:subfield>
                 </marcxchange:datafield>
                 <marcxchange:datafield tag="900" ind1=" " ind2="0">
-                    <marcxchange:subfield code="a" type="VARCHAR(46)">Birkefeldt Ragde, Anne</marcxchange:subfield>
-                    <marcxchange:subfield code="%" type="CHAR(2)"> 0</marcxchange:subfield>
-                    <marcxchange:subfield code="3" type="INT">10856501</marcxchange:subfield>
-                    <marcxchange:subfield code="~" type="INT">15538600</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Birkefeldt Ragde, Anne</marcxchange:subfield>
+                    <marcxchange:subfield code="%"> 0</marcxchange:subfield>
+                    <marcxchange:subfield code="3">10856501</marcxchange:subfield>
+                    <marcxchange:subfield code="~">15538600</marcxchange:subfield>
                 </marcxchange:datafield>
                 <marcxchange:datafield tag="950" ind1=" " ind2="0">
-                    <marcxchange:subfield code="a" type="VARCHAR(46)">Ragde, Anne B.</marcxchange:subfield>
-                    <marcxchange:subfield code="%" type="CHAR(2)"> 0</marcxchange:subfield>
-                    <marcxchange:subfield code="3" type="INT">10856502</marcxchange:subfield>
-                    <marcxchange:subfield code="~" type="INT">17941800</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Ragde, Anne B.</marcxchange:subfield>
+                    <marcxchange:subfield code="%"> 0</marcxchange:subfield>
+                    <marcxchange:subfield code="3">10856502</marcxchange:subfield>
+                    <marcxchange:subfield code="~">17941800</marcxchange:subfield>
                 </marcxchange:datafield>
             </marcxchange:record>
         </x:context>
