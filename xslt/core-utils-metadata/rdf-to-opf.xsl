@@ -87,7 +87,7 @@
         <xsl:variable name="epub" select="(rdf:Description[dc:format = 'EPUB'])[1]"/>
         <xsl:variable name="publication" select="if ($format) then (rdf:Description[dc:format = $format])[1] else ()"/>
         
-        <xsl:variable name="identifier" select="if ($update-identifier and $format) then $publication[1]/dc:identifier[1] else $epub[1]/dc:identifier[1]"/>
+        <xsl:variable name="identifier" select="if ($update-identifier and $format) then $publication/dc:identifier[1] else $epub/dc:identifier[1]"/>
         
         <xsl:choose>
             <xsl:when test="$identifier">
@@ -113,6 +113,8 @@
         <xsl:comment select="' Boknummer for andre utgaver '"/>
         
         <xsl:for-each select="//nlbprod:*[starts-with(local-name(),'identifier')]">
+            <xsl:sort select="local-name() = 'identifier.epub'"/> <!-- epub identifier last -->
+            <xsl:sort select="local-name()"/> <!-- sort by name -->
             <xsl:call-template name="meta">
                 <xsl:with-param name="rdf-property" select="."/>
             </xsl:call-template>
@@ -124,16 +126,26 @@
             </xsl:if>
         </xsl:for-each>
         <xsl:if test="not(//nlbprod:identifier.epub)">
+            <xsl:choose>
+                <xsl:when test="$publication/nlbbib:epub-nr">
+                    <xsl:call-template name="meta">
+                        <xsl:with-param name="rdf-property" select="$publication/nlbbib:epub-nr[1]"/>
+                        <xsl:with-param name="rename" select="'nlbprod:identifier.epub'"/>
+                    </xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$epub/dc:identifier">
+                    <xsl:call-template name="meta">
+                        <xsl:with-param name="rdf-property" select="$epub/dc:identifier[1]"/>
+                        <xsl:with-param name="rename" select="'nlbprod:identifier.epub'"/>
+                    </xsl:call-template>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:if>
+        <xsl:if test="$epub/schema:isbn[1]">
             <xsl:call-template name="meta">
-                <xsl:with-param name="rdf-property" select="$epub[1]/dc:identifier[1]"/>
-                <xsl:with-param name="rename" select="'nlbprod:identifier.epub'"/>
+                <xsl:with-param name="rdf-property" select="$epub/schema:isbn[1]"/>
+                <xsl:with-param name="rename" select="'nlbprod:isbn.epub'"/>
             </xsl:call-template>
-            <xsl:if test="$epub[1]/schema:isbn[1]">
-                <xsl:call-template name="meta">
-                    <xsl:with-param name="rdf-property" select="$epub[1]/schema:isbn[1]"/>
-                    <xsl:with-param name="rename" select="'nlbprod:isbn.epub'"/>
-                </xsl:call-template>
-            </xsl:if>
         </xsl:if>
         
         <xsl:text><![CDATA[

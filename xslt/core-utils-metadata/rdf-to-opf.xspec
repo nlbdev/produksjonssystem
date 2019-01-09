@@ -322,11 +322,11 @@
         <!-- Boknummer for andre utgaver -->
         <meta property="nlbprod:identifier.braille">118902</meta> <!-- Quickbase Record@561702 Tilvekstnummer Punktskrift -->
         <meta property="nlbprod:isbn.braille">978-82-16-26048-7</meta> <!-- Bibliofil@118902 *020$a -->
-        <meta property="nlbprod:identifier.ebook">360302</meta> <!-- Quickbase Record@561702 Tilvekstnummer e-bok -->
-        <meta property="nlbprod:identifier.epub">561702</meta> <!-- Quickbase Record@561702 Tilvekstnummer EPUB -->
         <meta property="nlbprod:identifier.daisy202">628002</meta> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Skjønnlitteratur -->
         <meta property="nlbprod:identifier.daisy202.fulltext">410302</meta> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Innlest fulltekst -->
+        <meta property="nlbprod:identifier.ebook">360302</meta> <!-- Quickbase Record@561702 Tilvekstnummer e-bok -->
         <meta property="nlbprod:identifier.external">910702</meta> <!-- Quickbase Record@561702 Tilvekstnummer ekstern produksjon -->
+        <meta property="nlbprod:identifier.epub">561702</meta> <!-- Quickbase Record@561702 Tilvekstnummer EPUB -->
         
         <!-- Metadata for åndsverket -->
         <dc:title>Rampete Robins forundringspakke</dc:title> <!-- Bibliofil@561702 *245$a -->
@@ -437,6 +437,7 @@
                         <schema:audience nlb:metadata-source="Bibliofil@225518 *850$a">Student</schema:audience>
                         <schema:library nlb:metadata-source="Bibliofil@225518 *850$a">NLB</schema:library>
                         <schema:typicalAgeRange nlb:metadata-source="Bibliofil@225518 *008">17-</schema:typicalAgeRange>
+                        <nlbbib:epub-nr nlb:metadata-source="Bibliofil@628002 *599">561702</nlbbib:epub-nr>
                     </rdf:Description>
                     <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=360918">
                         <rdf:type rdf:resource="http://schema.org/Book"/>
@@ -477,7 +478,7 @@
                         <nlbprod:exercisesAndAnswers nlb:metadata-source="Quickbase Record@562318 Exercises and answers">false</nlbprod:exercisesAndAnswers>
                         <nlbprod:extractionOfTextContentInImages nlb:metadata-source="Quickbase Record@562318 Extraction of text content in images">false</nlbprod:extractionOfTextContentInImages>
                         <nlbprod:forManualPreparationInNLB nlb:metadata-source="Quickbase Record@562318 Til manuell tilrettelegging i NLB">false</nlbprod:forManualPreparationInNLB>
-                        <nlbprod:identifier.epub nlb:metadata-source="Quickbase Record@562318 Tilvekstnummer EPUB">562318</nlbprod:identifier.epub>
+                        <!--<nlbprod:identifier.epub nlb:metadata-source="Quickbase Record@562318 Tilvekstnummer EPUB">562318</nlbprod:identifier.epub>-->
                         <nlbprod:inlineTextStyling nlb:metadata-source="Quickbase Record@562318 Inline text styling">false</nlbprod:inlineTextStyling>
                         <nlbprod:leaveAMessage nlb:metadata-source="Quickbase Record@562318 Leave a message">false</nlbprod:leaveAMessage>
                         <nlbprod:metadataChecked nlb:metadata-source="Quickbase Record@562318 Metadata kontrollert">false</nlbprod:metadataChecked>
@@ -675,12 +676,12 @@
         
         <!-- Boknummer for andre utgaver -->
         <meta property="nlbprod:identifier.braille">119518</meta> <!-- Quickbase Record@562318 Tilvekstnummer Punktskrift -->
-        <meta property="nlbprod:identifier.ebook">360918</meta> <!-- Quickbase Record@562318 Tilvekstnummer e-bok -->
-        <meta property="nlbprod:identifier.epub">562318</meta> <!-- Quickbase Record@562318 Tilvekstnummer EPUB -->
         <meta property="nlbprod:identifier.daisy202">628618</meta> <!-- Quickbase Record@562318 Tilvekstnummer DAISY 2.02 Skjønnlitteratur -->
         <meta property="nlbprod:identifier.daisy202.fulltext">410918</meta> <!-- Quickbase Record@562318 Tilvekstnummer DAISY 2.02 Innlest fulltekst -->
         <meta property="nlbprod:identifier.daisy202.student">225518</meta> <!-- Quickbase Record@562318 Tilvekstnummer DAISY 2.02 Studielitteratur -->
+        <meta property="nlbprod:identifier.ebook">360918</meta> <!-- Quickbase Record@562318 Tilvekstnummer e-bok -->
         <meta property="nlbprod:identifier.external">911318</meta> <!-- Quickbase Record@562318 Tilvekstnummer ekstern produksjon -->
+        <meta property="nlbprod:identifier.epub">561702</meta> <!-- Bibliofil@628002 *599 -->
         
         <!-- Metadata for åndsverket og DAISY 2.02-utgaven -->
         <dc:title>An introduction to child development</dc:title> <!-- Bibliofil@225518 *245$a -->
