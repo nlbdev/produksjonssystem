@@ -12,7 +12,6 @@
         <title>Boknummer</title>
         <rule context="opf:metadata">
             <assert test="count(dc:identifier[not(@refines)]) = 1">Det må være nøyaktig ett boknummer (dc:identifier).</assert>
-            <assert test="exists(opf:meta[@property='schema:isbn']) or exists(opf:meta[not(@refines)][@property='schema:issn'])">ISBN eller ISSN må være definert (schema:isbn / schema:issn).</assert>
         </rule>
     </pattern>
     

@@ -11,7 +11,6 @@
         <title>Boknummer, ISBN og ISSN</title>
         <rule context="html:head">
             <assert test="count(html:meta[@name='dc:identifier']) = 1">Det må være nøyaktig ett boknummer (dc:identifier).</assert>
-            <assert test="exists(html:meta[@name='schema:isbn']) or exists(html:meta[@name='schema:issn'])">ISBN eller ISSN må være definert (schema:isbn / schema:issn).</assert>
         </rule>
     </pattern>
     
