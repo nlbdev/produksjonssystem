@@ -174,18 +174,29 @@ def check_dirs(last_run=False):
 
 
 start_time = int(time.time())
+idle = False
 while prodsys_thread.is_alive() and t > 0:
     t -= 1
     prodsys_thread.join(timeout=1)
     check_dirs()
+    idle = prodsys.is_idle()
+    if idle:
+        t -= 5
+        prodsys_thread.join(timeout=5)
+        idle = prodsys.is_idle()
+        if idle:
+            print("--- System is idle. Aborting. ---")
+            break
 end_time = int(time.time())
 
 if t <= 0:
-    print("--- timeout ---")
+    print("--- Timeout. ---")
 
 success = check_dirs(last_run=True)
 
-if prodsys_thread.is_alive():
+if idle:
+    print("The tests were stopped due to inactivity after {} seconds".format(end_time - start_time))
+elif prodsys_thread.is_alive():
     print("The tests timed out after {} seconds".format(end_time - start_time))
 else:
     print("The tests finished after {} seconds".format(end_time - start_time))

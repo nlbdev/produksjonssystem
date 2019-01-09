@@ -499,6 +499,14 @@ class Produksjonssystem():
         with open(stopfile, "w") as f:
             f.write("stop")
 
+    def is_idle(self):
+        for pipeline in self.pipelines:
+            if "dummy" in pipeline[0].uid or not pipeline[0].running:
+                continue
+            if len(pipeline[0].get_queue()) > 0 or pipeline[0].book is not None:
+                return False
+        return True
+
     def _daily_report_thread(self):
         # Checks for reports in daily report dir for each pipeline. Only sends mail once each day after 7
         last_update = 0
