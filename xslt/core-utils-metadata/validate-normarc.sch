@@ -201,4 +201,11 @@
         </rule>
     </pattern>
     
+    <pattern>
+        <title>Språk</title>
+        <rule context="marcxchange:controlfield[@tag='008' and substring(text(),36,3) = 'mul']">
+            <assert test="../marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='a']">For flerspråklige bøker (*008 POS 35-37 = "mul") så må språkene være definert i *041$a.</assert>
+        </rule>
+    </pattern>
+    
 </schema>
