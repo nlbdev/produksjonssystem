@@ -44,6 +44,10 @@ class Filesystem():
         return hashlib.md5(open(path, 'rb').read()).hexdigest()
 
     @staticmethod
+    def should_ignore(path):
+        return bool(Filesystem.shutil_ignore_patterns(os.path.dirname(path), [os.path.basename(path)]))
+
+    @staticmethod
     def path_md5(path, shallow, expect=None):
         attributes = []
 
@@ -58,7 +62,7 @@ class Filesystem():
             md5 = "d41d8cd98f00b204e9800998ecf8427e"  # MD5 of an empty string
 
         else:
-            if os.path.isfile(path) and not Filesystem.shutil_ignore_patterns(os.path.dirname(path), [os.path.basename(path)]):
+            if os.path.isfile(path) and not Filesystem.should_ignore(path):
                 stat = os.stat(path)
                 st_size = stat.st_size if os.path.isfile(path) else 0
                 st_mtime = round(stat.st_mtime)

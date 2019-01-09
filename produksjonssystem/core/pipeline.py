@@ -679,6 +679,9 @@ class Pipeline():
                         if not (self._dirsAvailable and self._shouldRun):
                             break  # break loop if we're shutting down the system
 
+                        if Filesystem.should_ignore(os.path.join(self.dir_in, f)):
+                            continue
+
                         with self._md5_lock:
                             if not os.path.exists(os.path.join(self.dir_in, f)):
                                 # iterating over all books can take a lot of time,
