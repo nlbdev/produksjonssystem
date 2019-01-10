@@ -114,9 +114,10 @@ class Produksjonssystem():
             "name": "Mottak",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
+        # self.dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
+        # self.dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
+        self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
 
         self.dirs_ranked.append({
             "id": "source-in",
@@ -137,9 +138,8 @@ class Produksjonssystem():
         })
         self.dirs_ranked[-1]["dirs"]["master"] = Config.get("master_dir")
         self.dirs_ranked[-1]["dirs"]["metadata"] = Config.get("metadata_dir")
-        self.dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
+        # self.dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["nlbpub"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
         self.dirs_ranked[-1]["dirs"]["epub_from_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook")
 
         self.dirs_ranked.append({
@@ -209,15 +209,15 @@ class Produksjonssystem():
             [NordicDTBookToEpub(retry_missing=True),          "old_dtbook",          "epub_from_dtbook"],
 
             # Mottak, nordic guidelines 2015-1
-            [NLBPUB_incoming_validator(retry_all=True,
-                                       during_working_hours=True
-                                       ),                     "incoming_NLBPUB",     "grunnlag"],
-            [NLBPUB_incoming_warning(retry_all=True,
-                                     during_working_hours=True
-                                     ),                       "incoming_NLBPUB",     "nlbpub_manuell"],
-            [DummyPipeline("Manuell sjekk av NLBPUB",
-                           labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
-            # [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
+            # [NLBPUB_incoming_validator(retry_all=True,
+            #                            during_working_hours=True
+            #                            ),                     "incoming_NLBPUB",     "grunnlag"],
+            # [NLBPUB_incoming_warning(retry_all=True,
+            #                          during_working_hours=True
+            #                          ),                       "incoming_NLBPUB",     "nlbpub_manuell"],
+            # [DummyPipeline("Manuell sjekk av NLBPUB",
+            #                labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
+            #  [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
             [IncomingNordic(retry_all=True,
                             during_working_hours=True),       "incoming",            "master"],
             [NordicToNlbpub(retry_missing=True,
