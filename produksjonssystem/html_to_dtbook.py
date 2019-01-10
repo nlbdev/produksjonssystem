@@ -81,7 +81,7 @@ class HtmlToDtbook(Pipeline):
 
         for root, dirs, files in os.walk(temp_dtbookdir):
             for file in files:
-                if Path(file).suffix.lower() in [".xhtml", ".html", ".smil", ".mp3", ".wav"]:
+                if Path(file).suffix.lower() in [".xhtml", ".html", ".smil", ".mp3", ".wav", ".opf"]:
                     os.remove(os.path.join(root, file))
         shutil.copy(html_file, temp_dtbook)
 
