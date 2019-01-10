@@ -24,7 +24,7 @@ from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
 from epub_to_dtbook_braille import EpubToDtbookBraille
 from epub_to_dtbook_html import EpubToDtbookHTML
-#from generate_resources import GenerateResources
+from generate_resources import GenerateResources
 from html_to_dtbook import HtmlToDtbook
 from incoming_NLBPUB import (NLBPUB_incoming_validator,
                              NLBPUB_incoming_warning, NLBPUB_validator)
@@ -189,8 +189,8 @@ class Produksjonssystem():
             "name": "Klar til distribusjon",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
         self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
+        self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
 
         # also make dirs available from static contexts
         Pipeline.dirs_ranked = self.dirs_ranked
@@ -237,7 +237,7 @@ class Produksjonssystem():
             [PrepareForDocx(retry_missing=True),              "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToHtml(retry_missing=True),                "pub-ready-ebook",     "html"],
             [NLBpubToDocx(retry_missing=True),                "pub-ready-docx",      "docx"],
-            [Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
+            #[Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
 
             # punktskrift
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
@@ -268,6 +268,7 @@ class Produksjonssystem():
 
             # lydutdrag
             [Audio_Abstract(retry_missing=True),              "daisy202",            "abstracts"],
+            [GenerateResources(during_working_hours=True, during_night_and_weekend=True),                             "daisy202",            None],
         ]
 
     # ---------------------------------------------------------------------------
@@ -663,7 +664,7 @@ class Produksjonssystem():
                       "eH6LouRqMRDGMChmGQTqcRDoeRyWQQDofB87xX8Xgc0ajodyAIAgaDgdelUChA0zTkciuo1+vgOG8rUqkUIpGIHxCPx9FqtbyNc3NzKJVK0DQNROS"
                       "biKIkg2NMJpPQdR2NRhOpVNL7Eh3HgSAIPoBhTEBEYBjmBsCyLJaXlyHLMk5PTyGKIkRRRCQSgaIoGI/HHuD4+Bi5XA4rKytgbv+VNU1Dtfon6vWn"
                       "4Hked+6k0ev1cHJyghcvnnsjlmUZ6+vrQYDjOLAsC5OJAdd1EI1G/78nJtrtCzSaTQz0AVKpJLLZLP4DF17fodMaIVYAAAAASUVORK5CYII")
-                      # + siste del: "=\" alt=\"DATA\">")
+    # + siste del: "=\" alt=\"DATA\">")
 
         message = ""
         first_dir_log = True
