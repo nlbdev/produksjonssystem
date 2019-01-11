@@ -129,19 +129,19 @@
     <pattern>
         <title>Formatering av ISBN og ISSN for originalen (bruk av tegn)</title>
         <rule context="marcxchange:record/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
-            <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISBN og ISSN i *596$f kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
+            <assert test="string-length(replace(text(),'[^\dxX-]','')) gt 0">ISBN og ISSN i *596$f kan ikke inneholde andre tegn enn tall, "X" og bindestrek (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Formatering av ISBN for originalen (antall siffer)</title>
         <rule context="marcxchange:record[not($is-periodical)]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
-            <assert test="matches(replace(text(),'[^0-9]',''), '^(\d{10}|\d{13})$')">ISBN i *596$f må bestå av enten 10 eller 13 siffer (var: '<value-of select="text()"/>').</assert>
+            <assert test="matches(replace(text(),'[^0-9xX]',''), '^(\d{9}|\d{12})[\dxX]$')">ISBN i *596$f må bestå av enten 10 eller 13 siffer. Det siste sifferet kan være "X". (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Formatering av ISSN for originalen (antall siffer)</title>
         <rule context="marcxchange:record[$is-periodical]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
-            <assert test="matches(replace(text(),'[^0-9]',''), '^\d{8}$')">ISSN i *596$f må bestå av 8 siffer (var: '<value-of select="text()"/>').</assert>
+            <assert test="matches(replace(text(),'[^0-9xX]',''), '^\d{7}[\dxX]$')">ISSN i *596$f må bestå av 8 siffer (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
@@ -161,13 +161,13 @@
     <pattern>
         <title>Formatering av ISBN for bøker (bruk av tegn)</title>
         <rule context="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">
-            <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISBN i *020$a kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
+            <assert test="string-length(replace(text(),'[^\dxX-]','')) gt 0">ISBN i *020$a kan ikke inneholde andre tegn enn tall, "X" og bindestrek (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Formatering av ISBN for bøker (antall siffer)</title>
         <rule context="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">
-            <assert test="matches(replace(text(),'[^0-9]',''), '^(\d{10}|\d{13})$')">ISBN i *020$a må bestå av enten 10 eller 13 siffer (var: '<value-of select="text()"/>').</assert>
+            <assert test="matches(replace(text(),'[^0-9xX]',''), '^(\d{9}|\d{12})[\dxX]$')">ISBN i *020$a må bestå av enten 10 eller 13 siffer. Det siste sifferet kan være "X" (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     
@@ -181,13 +181,13 @@
     <pattern>
         <title>Formatering av ISSN for periodika (bruk av tegn)</title>
         <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
-            <assert test="string-length(replace(text(),'[^\d-]','')) gt 0">ISSN i *022$a kan ikke inneholde andre tegn enn tall og bindestrek (var: '<value-of select="text()"/>').</assert>
+            <assert test="string-length(replace(text(),'[^\dxX-]','')) gt 0">ISSN i *022$a kan ikke inneholde andre tegn enn tall, "X" og bindestrek (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Formatering av ISSN for periodika (antall siffer)</title>
         <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
-            <assert test="matches(replace(text(),'[^0-9]',''), '^\d{8}$')">ISSN i *022$a må bestå av 8 siffer (var: '<value-of select="text()"/>').</assert>
+            <assert test="matches(replace(text(),'[^0-9xX]',''), '^\d{7}[\dxX]$')">ISSN i *022$a må bestå av 8 siffer. Det siste sifferet kan være "X" (var: '<value-of select="text()"/>').</assert>
         </rule>
     </pattern>
     
