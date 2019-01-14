@@ -655,7 +655,7 @@ class Metadata:
 
             sch = Schematron(report=normarc_report,
                              cwd=metadata_dir,
-                             schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "validate-normarc.sch"),
+                             schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/normarc.sch"),
                              source=marcxchange_path)
             if not sch.success:
                 normarc_report.error("Validering av Bibliofil-metadata feilet")
@@ -701,7 +701,7 @@ class Metadata:
             if os.path.isfile(opf_metadata[f]):
                 pipeline.utils.report.info("Validerer OPF-metadata for " + (f if f else "åndsverk"))
                 sch = Schematron(pipeline=pipeline,
-                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "validate-opf.sch"),
+                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/opf.sch"),
                                  source=opf_metadata[f])
                 if not sch.success:
                     pipeline.utils.report.error("Validering av OPF-metadata feilet")
@@ -710,7 +710,7 @@ class Metadata:
             if os.path.isfile(html_metadata[f]):
                 pipeline.utils.report.info("Validerer HTML-metadata for " + (f if f else "åndsverk"))
                 sch = Schematron(pipeline=pipeline,
-                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "validate-html-metadata.sch"),
+                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/html-metadata.sch"),
                                  source=html_metadata[f])
                 if not sch.success:
                     pipeline.utils.report.error("Validering av HTML-metadata feilet")
