@@ -366,7 +366,7 @@ class Metadata:
                         stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
                         source=os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")),
                         target=os.path.join(metadata_dir, 'quickbase/record{}.html'.format("-"+library if library else "")),
-                        parameters={"output-rdfa": "true", "include-source-reference": "true"})
+                        parameters={"output-rdfa": "true", "include-source-reference": "true", "library": "nlb" if not library else library})
             if not xslt.success:
                 return False
             pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/XML)")
@@ -377,7 +377,7 @@ class Metadata:
                         stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
                         source=os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")),
                         target=rdf_path,
-                        parameters={"include-source-reference": "true"})
+                        parameters={"include-source-reference": "true", "library": "nlb" if not library else library})
             if not xslt.success:
                 return False
             rdf_files.append('quickbase/' + os.path.basename(rdf_path))
