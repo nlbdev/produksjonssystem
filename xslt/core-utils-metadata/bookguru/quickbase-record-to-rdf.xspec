@@ -311,7 +311,7 @@
                             <luser id="57728628.dgd8">eh@nlb.no</luser>
                             <luser id="57728488.cev2">mm@nlb.no</luser>
                             <luser id="57728484.cgkt">sj@nlb.no</luser>
-                            <luser id="57727434.bz6f">OlavI</luser>
+                            <luser id="57727434.bz6f">Librarian</luser>
                             <luser id="57727428.b9pf">if@nlb.no</luser>
                             <luser id="57721503.c66h">wa@nlb.no</luser>
                             <luser id="57499780.49fz">mk@nlb.no</luser>
@@ -323,7 +323,7 @@
                                 <f id="6">1452124800000</f>
                                 <f id="5">57933880.bk2j</f>
                                 <f id="8">Valg og velgere</f>
-                                <f id="9">Aardal, Bernt<BR/> Bergh, Johannes</f>
+                                <f id="9">Author</f>
                                 <f id="67">Studielitteratur</f>
                                 <f id="170">Voksen</f>
                                 <f id="10">Cappelen Damm akademisk</f>
@@ -371,7 +371,7 @@
                                 <f id="18">280</f>
                                 <f id="268">0</f>
                                 <f id="405">0</f>
-                                <f id="421">Aardal, BerntBergh, Johannes</f>
+                                <f id="421">Author</f>
                                 <f id="442"/>
                                 <f id="153"/>
                                 <f id="389">Category 2</f>
@@ -489,14 +489,14 @@
                                 <f id="15">1</f>
                                 <f id="82">1452211200000</f>
                                 <f id="330"/>
-                                <f id="16">Net Systems</f>
+                                <f id="16">Agency</f>
                                 <f id="17">1</f>
                                 <f id="61">1453075200000</f>
                                 <f id="393">1</f>
                                 <f id="395">1453075200000</f>
                                 <f id="416">1</f>
                                 <f id="397">558237</f>
-                                <f id="399">[JAN-18-16 Erik Holst] We need the Epub file.</f>
+                                <f id="399">[JAN-18-16 Producer] We need the Epub file.</f>
                                 <f id="414"/>
                                 <f id="413">0</f>
                                 <f id="12">14</f>
@@ -553,7 +553,7 @@
                                 <f id="177">84720000</f>
                                 <f id="354"/>
                                 <f id="165">no</f>
-                                <f id="66">Marie L. Waale</f>
+                                <f id="66">Student</f>
                                 <f id="122">0.00</f>
                                 <f id="462">0.00</f>
                                 <f id="374">0</f>
@@ -636,11 +636,11 @@
                             <dt title="nlbprod:duplicate"/>
                             <dd property="nlbprod:duplicate">false</dd>
                             <dt title="nlbprod:recordOwner"/>
-                            <dd property="nlbprod:recordOwner">OlavI</dd>
+                            <dd property="nlbprod:recordOwner">Librarian</dd>
                             <dt title="nlbprod:title2"/>
                             <dd property="nlbprod:title2">Valg og velgere</dd>
                             <dt title="nlbprod:author2"/>
-                            <dd property="nlbprod:author2">Aardal, BerntBergh, Johannes</dd>
+                            <dd property="nlbprod:author2">Author</dd>
                             <dt title="nlbprod:signatureRegistration"/>
                             <dd property="nlbprod:signatureRegistration">lk@nlb.no</dd>
                             <dt title="nlbprod:newRegistration"/>
@@ -650,7 +650,7 @@
                             <dt title="nlbprod:registrationDate"/>
                             <dd property="nlbprod:registrationDate">2016-01-07</dd>
                             <dt title="nlbprod:student"/>
-                            <dd property="nlbprod:student">Marie L. Waale</dd>
+                            <dd property="nlbprod:student">Student</dd>
                             <dt title="nlbprod:genre"/>
                             <dd property="nlbprod:genre">Studielitteratur</dd>
                             <dt title="nlbprod:title"/>
@@ -658,7 +658,7 @@
                             <dt title="nlbprod:addRecord"/>
                             <dd property="nlbprod:addRecord">https://...</dd>
                             <dt title="nlbprod:author"/>
-                            <dd property="nlbprod:author">Aardal, Bernt Bergh, Johannes</dd>
+                            <dd property="nlbprod:author">Author</dd>
                         </dl>
                         <section vocab="http://schema.org/" typeof="Book" about="http://websok.nlb.no/cgi-bin/websok?tnr=221437">
                             <link property="exampleOfWork" href="urn:isbn:9788202484347" />
@@ -714,8 +714,8 @@
                                 <dd property="nlbprod:formatDaisy202ttsStudent">true</dd>
                                 <dt title="nlbprod:generateReceipt"/>
                                 <dd property="nlbprod:generateReceipt">false</dd>
-                                <dt title="nlbprod:identifier.daisy202.fulltext"/>
-                                <dd property="nlbprod:identifier.daisy202.fulltext" id="identifier-daisy202narratedfulltext">406837</dd>
+                                <dt title="nlbprod:identifier.reserved"/>
+                                <dd property="nlbprod:identifier.reserved" id="identifier-daisy202narratedfulltext">406837</dd>
                                 <dt title="nlbprod:signaturePostProductionDaisy202tts"/>
                                 <dd property="nlbprod:signaturePostProductionDaisy202tts">eh@nlb.no</dd>
                                 <dt title="nlbprod:signatureDaisy202readyForLoan"/>
@@ -797,7 +797,7 @@
                                 <dt title="nlbprod:dtbookReturned"/>
                                 <dd property="nlbprod:dtbookReturned">false</dd>
                                 <dt title="nlbprod:producer"/>
-                                <dd property="nlbprod:producer">Net Systems</dd>
+                                <dd property="nlbprod:producer">Agency</dd>
                                 <dt title="nlbprod:dueDateForProduction"/>
                                 <dd property="nlbprod:dueDateForProduction">2016-01-22</dd>
                                 <dt title="nlbprod:productionApproved"/>
@@ -827,7 +827,7 @@
                                 <dt title="nlbprod:leaveAMessage"/>
                                 <dd property="nlbprod:leaveAMessage">true</dd>
                                 <dt title="nlbprod:productionQuestionsAndNotes"/>
-                                <dd property="nlbprod:productionQuestionsAndNotes">[JAN-18-16 Erik Holst] We need the Epub file.</dd>
+                                <dd property="nlbprod:productionQuestionsAndNotes">[JAN-18-16 Producer] We need the Epub file.</dd>
                                 <dt title="nlbprod:purchaseOrderId"/>
                                 <dd property="nlbprod:purchaseOrderId">https://...</dd>
                                 <dt title="nlbprod:asciimath"/>
@@ -1015,18 +1015,18 @@
                         <nlbprod:dateModified>2017-06-13T11:29:23</nlbprod:dateModified>
                         <nlbprod:recordId>8185</nlbprod:recordId>
                         <nlbprod:duplicate>false</nlbprod:duplicate>
-                        <nlbprod:recordOwner>OlavI</nlbprod:recordOwner>
+                        <nlbprod:recordOwner>Librarian</nlbprod:recordOwner>
                         <nlbprod:title2>Valg og velgere</nlbprod:title2>
-                        <nlbprod:author2>Aardal, BerntBergh, Johannes</nlbprod:author2>
+                        <nlbprod:author2>Author</nlbprod:author2>
                         <nlbprod:signatureRegistration>lk@nlb.no</nlbprod:signatureRegistration>
                         <nlbprod:newRegistration>true</nlbprod:newRegistration>
                         <nlbprod:lastModifiedBy>kg@nlb.no</nlbprod:lastModifiedBy>
                         <nlbprod:registrationDate>2016-01-07</nlbprod:registrationDate>
-                        <nlbprod:student>Marie L. Waale</nlbprod:student>
+                        <nlbprod:student>Student</nlbprod:student>
                         <nlbprod:genre>Studielitteratur</nlbprod:genre>
                         <nlbprod:title>Valg og velgere</nlbprod:title>
                         <nlbprod:addRecord>https://...</nlbprod:addRecord>
-                        <nlbprod:author>Aardal, Bernt Bergh, Johannes</nlbprod:author>
+                        <nlbprod:author>Author</nlbprod:author>
                     </rdf:Description>
                     <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=221437">
                         <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
@@ -1056,7 +1056,7 @@
                         <nlbprod:generateFee>false</nlbprod:generateFee>
                         <nlbprod:formatDaisy202ttsStudent>true</nlbprod:formatDaisy202ttsStudent>
                         <nlbprod:generateReceipt>false</nlbprod:generateReceipt>
-                        <nlbprod:identifier.daisy202.fulltext>406837</nlbprod:identifier.daisy202.fulltext>
+                        <nlbprod:identifier.reserved>406837</nlbprod:identifier.reserved>
                         <nlbprod:signaturePostProductionDaisy202tts>eh@nlb.no</nlbprod:signaturePostProductionDaisy202tts>
                         <nlbprod:signatureDaisy202readyForLoan>lk@nlb.no</nlbprod:signatureDaisy202readyForLoan>
                         <nlbprod:formatDaisy202narratedFulltext>false</nlbprod:formatDaisy202narratedFulltext>
@@ -1098,7 +1098,7 @@
                         <nlbprod:epubCatalogued>true</nlbprod:epubCatalogued>
                         <nlbprod:sourceFileReceived>true</nlbprod:sourceFileReceived>
                         <nlbprod:dtbookReturned>false</nlbprod:dtbookReturned>
-                        <nlbprod:producer>Net Systems</nlbprod:producer>
+                        <nlbprod:producer>Agency</nlbprod:producer>
                         <nlbprod:dueDateForProduction>2016-01-22</nlbprod:dueDateForProduction>
                         <nlbprod:productionApproved>true</nlbprod:productionApproved>
                         <nlbprod:emailPublisherContact>a@cd.no</nlbprod:emailPublisherContact>
@@ -1113,7 +1113,7 @@
                         <schema:library>NLB</schema:library>
                         <nlbprod:productionNumberUID>558237</nlbprod:productionNumberUID>
                         <nlbprod:leaveAMessage>true</nlbprod:leaveAMessage>
-                        <nlbprod:productionQuestionsAndNotes>[JAN-18-16 Erik Holst] We need the Epub file.</nlbprod:productionQuestionsAndNotes>
+                        <nlbprod:productionQuestionsAndNotes>[JAN-18-16 Producer] We need the Epub file.</nlbprod:productionQuestionsAndNotes>
                         <nlbprod:purchaseOrderId>https://...</nlbprod:purchaseOrderId>
                         <nlbprod:asciimath>false</nlbprod:asciimath>
                         <nlbprod:sourceFileFormat2>Open PDF</nlbprod:sourceFileFormat2>
@@ -1340,6 +1340,538 @@
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.ebook>300000</nlbprod:identifier.ebook>
                         <nlbprod:triggerHtml>false</nlbprod:triggerHtml>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Statped example. With Statped-specific fields.">
+        <x:call template="test">
+            <x:param name="library" select="'statped'"/>
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="6" field_type="date" base_type="int64"/>
+                            <field id="5" field_type="userid" base_type="text" role="modifier"/>
+                            <field id="8" field_type="text" base_type="text"/>
+                            <field id="9" field_type="text" base_type="text"/>
+                            <field id="67" field_type="text" base_type="text"/>
+                            <field id="170" field_type="text" base_type="text"/>
+                            <field id="10" field_type="text" base_type="text"/>
+                            <field id="481" field_type="checkbox" base_type="bool"/>
+                            <field id="51" field_type="text" base_type="text"/>
+                            <field id="13" field_type="float" base_type="float"/>
+                            <field id="24" field_type="float" base_type="float"/>
+                            <field id="503" field_type="float" base_type="float"/>
+                            <field id="26" field_type="checkbox" base_type="bool"/>
+                            <field id="27" field_type="checkbox" base_type="bool"/>
+                            <field id="28" field_type="float" base_type="float"/>
+                            <field id="30" field_type="checkbox" base_type="bool"/>
+                            <field id="32" field_type="float" base_type="float"/>
+                            <field id="504" field_type="float" base_type="float"/>
+                            <field id="505" field_type="float" base_type="float"/>
+                            <field id="506" field_type="float" base_type="float"/>
+                            <field id="507" field_type="float" base_type="float"/>
+                            <field id="508" field_type="float" base_type="float"/>
+                            <field id="37" field_type="checkbox" base_type="bool"/>
+                            <field id="46" field_type="checkbox" base_type="bool"/>
+                            <field id="65" field_type="date" base_type="int64"/>
+                            <field id="71" field_type="date" base_type="int64"/>
+                            <field id="68" field_type="checkbox" base_type="bool"/>
+                            <field id="69" field_type="date" base_type="int64"/>
+                            <field id="41" field_type="checkbox" base_type="bool"/>
+                            <field id="85" field_type="date" base_type="int64"/>
+                            <field id="42" field_type="checkbox" base_type="bool"/>
+                            <field id="86" field_type="date" base_type="int64"/>
+                            <field id="146" field_type="checkbox" base_type="bool"/>
+                            <field id="147" field_type="date" base_type="int64"/>
+                            <field id="44" field_type="checkbox" base_type="bool"/>
+                            <field id="88" field_type="date" base_type="int64"/>
+                            <field id="151" field_type="checkbox" base_type="bool"/>
+                            <field id="152" field_type="date" base_type="int64"/>
+                            <field id="87" field_type="date" base_type="int64"/>
+                            <field id="43" field_type="checkbox" base_type="bool"/>
+                            <field id="149" field_type="checkbox" base_type="bool"/>
+                            <field id="150" field_type="date" base_type="int64"/>
+                            <field id="469" field_type="text" base_type="text" mode="virtual"/>
+                            <field id="471" field_type="text" base_type="text" mode="virtual"/>
+                            <field id="472" field_type="text" base_type="text" mode="virtual"/>
+                            <field id="479" field_type="text" base_type="text"/>
+                            <field id="431" field_type="text" base_type="text"/>
+                            <field id="80" field_type="url" base_type="text" mode="virtual"/>
+                            <field id="396" field_type="text" base_type="text"/>
+                            <field id="407" field_type="url" base_type="text"/>
+                            <field id="18" field_type="float" base_type="float"/>
+                            <field id="268" field_type="checkbox" base_type="bool"/>
+                            <field id="405" field_type="checkbox" base_type="bool"/>
+                            <field id="421" field_type="text" base_type="text"/>
+                            <field id="442" field_type="date" base_type="int64"/>
+                            <field id="389" field_type="text" base_type="text"/>
+                            <field id="422" field_type="text" base_type="text"/>
+                            <field id="157" field_type="date" base_type="int64"/>
+                            <field id="1" field_type="timestamp" base_type="int64" role="created"/>
+                            <field id="2" field_type="timestamp" base_type="int64" role="modified"/>
+                            <field id="488" field_type="date" base_type="int64"/>
+                            <field id="167" field_type="text" base_type="text"/>
+                            <field id="417" field_type="date" base_type="int64"/>
+                            <field id="154" field_type="checkbox" base_type="bool"/>
+                            <field id="155" field_type="date" base_type="int64"/>
+                            <field id="161" field_type="date" base_type="int64"/>
+                            <field id="470" field_type="text" base_type="text" mode="virtual"/>
+                            <field id="342" field_type="text" base_type="text"/>
+                            <field id="343" field_type="email" base_type="text"/>
+                            <field id="163" field_type="text" base_type="text"/>
+                            <field id="485" field_type="checkbox" base_type="bool"/>
+                            <field id="318" field_type="checkbox" base_type="bool"/>
+                            <field id="14" field_type="checkbox" base_type="bool"/>
+                            <field id="84" field_type="checkbox" base_type="bool"/>
+                            <field id="388" field_type="text" base_type="text"/>
+                            <field id="463" field_type="checkbox" base_type="bool"/>
+                            <field id="464" field_type="date" base_type="int64"/>
+                            <field id="408" field_type="checkbox" base_type="bool"/>
+                            <field id="410" field_type="checkbox" base_type="bool"/>
+                            <field id="171" field_type="checkbox" base_type="bool"/>
+                            <field id="368" field_type="checkbox" base_type="bool"/>
+                            <field id="430" field_type="text" base_type="text"/>
+                            <field id="270" field_type="text" base_type="text"/>
+                            <field id="409" field_type="checkbox" base_type="bool"/>
+                            <field id="63" field_type="text" base_type="text"/>
+                            <field id="56" field_type="date" base_type="int64"/>
+                            <field id="402" field_type="text" base_type="text"/>
+                            <field id="415" field_type="text" base_type="text"/>
+                            <field id="175" field_type="text" base_type="text"/>
+                            <field id="148" field_type="text" base_type="text"/>
+                            <field id="370" field_type="text" base_type="text"/>
+                            <field id="487" field_type="checkbox" base_type="bool"/>
+                            <field id="497" field_type="checkbox" base_type="bool"/>
+                            <field id="496" field_type="checkbox" base_type="bool"/>
+                            <field id="495" field_type="checkbox" base_type="bool"/>
+                            <field id="423" field_type="text" base_type="text"/>
+                            <field id="398" field_type="checkbox" base_type="bool"/>
+                            <field id="483" field_type="checkbox" base_type="bool"/>
+                            <field id="480" field_type="float" base_type="float"/>
+                            <field id="25" field_type="text" base_type="text"/>
+                            <field id="36" field_type="text" base_type="text"/>
+                            <field id="29" field_type="text" base_type="text"/>
+                            <field id="19" field_type="float" base_type="float"/>
+                            <field id="390" field_type="float" base_type="float"/>
+                            <field id="438" field_type="checkbox" base_type="bool"/>
+                            <field id="482" field_type="checkbox" base_type="bool"/>
+                            <field id="7" field_type="userid" base_type="text"/>
+                            <field id="62" field_type="date" base_type="int64"/>
+                            <field id="11" field_type="text" base_type="text"/>
+                            <field id="429" field_type="text" base_type="text"/>
+                            <field id="164" field_type="text" base_type="text"/>
+                            <field id="311" field_type="float" base_type="float"/>
+                            <field id="419" field_type="float" base_type="float"/>
+                            <field id="55" field_type="checkbox" base_type="bool"/>
+                            <field id="81" field_type="date" base_type="int64"/>
+                            <field id="83" field_type="text" base_type="text"/>
+                            <field id="15" field_type="checkbox" base_type="bool"/>
+                            <field id="82" field_type="date" base_type="int64"/>
+                            <field id="476" field_type="float" base_type="float"/>
+                            <field id="330" field_type="text" base_type="text"/>
+                            <field id="16" field_type="text" base_type="text"/>
+                            <field id="17" field_type="checkbox" base_type="bool"/>
+                            <field id="61" field_type="date" base_type="int64"/>
+                            <field id="393" field_type="checkbox" base_type="bool"/>
+                            <field id="395" field_type="date" base_type="int64"/>
+                            <field id="416" field_type="checkbox" base_type="bool"/>
+                            <field id="397" field_type="float" base_type="float"/>
+                            <field id="399" field_type="text" base_type="text"/>
+                            <field id="414" field_type="date" base_type="int64"/>
+                            <field id="413" field_type="checkbox" base_type="bool"/>
+                            <field id="12" field_type="text" base_type="text"/>
+                            <field id="49" field_type="float" base_type="float"/>
+                            <field id="74" field_type="text" base_type="text"/>
+                            <field id="269" field_type="text" base_type="text"/>
+                            <field id="158" field_type="date" base_type="int64"/>
+                            <field id="403" field_type="url" base_type="text" mode="virtual"/>
+                            <field id="3" field_type="recordid" base_type="int32" role="recordid" mode="virtual"/>
+                            <field id="4" field_type="userid" base_type="text" role="owner"/>
+                            <field id="324" field_type="userid" base_type="text"/>
+                            <field id="325" field_type="userid" base_type="text"/>
+                            <field id="344" field_type="userid" base_type="text"/>
+                            <field id="314" field_type="userid" base_type="text"/>
+                            <field id="315" field_type="userid" base_type="text"/>
+                            <field id="317" field_type="userid" base_type="text"/>
+                            <field id="353" field_type="userid" base_type="text"/>
+                            <field id="316" field_type="userid" base_type="text"/>
+                            <field id="418" field_type="userid" base_type="text"/>
+                            <field id="465" field_type="userid" base_type="text"/>
+                            <field id="426" field_type="multiuserid" base_type="text"/>
+                            <field id="468" field_type="userid" base_type="text"/>
+                            <field id="489" field_type="userid" base_type="text"/>
+                            <field id="360" field_type="userid" base_type="text"/>
+                            <field id="326" field_type="userid" base_type="text"/>
+                            <field id="437" field_type="userid" base_type="text"/>
+                            <field id="427" field_type="multiuserid" base_type="text"/>
+                            <field id="377" field_type="userid" base_type="text"/>
+                            <field id="378" field_type="userid" base_type="text"/>
+                            <field id="323" field_type="userid" base_type="text"/>
+                            <field id="48" field_type="userid" base_type="text"/>
+                            <field id="387" field_type="file" base_type="text"/>
+                            <field id="406" field_type="text" base_type="text"/>
+                            <field id="176" field_type="duration" base_type="int64"/>
+                            <field id="177" field_type="duration" base_type="int64"/>
+                            <field id="165" field_type="text" base_type="text"/>
+                            <field id="498" field_type="checkbox" base_type="bool"/>
+                            <field id="475" field_type="text" base_type="text"/>
+                            <field id="474" field_type="text" base_type="text" mode="virtual"/>
+                            <field id="484" field_type="checkbox" base_type="bool"/>
+                            <field id="66" field_type="text" base_type="text"/>
+                            <field id="374" field_type="checkbox" base_type="bool"/>
+                            <field id="375" field_type="date" base_type="int64"/>
+                            <field id="371" field_type="checkbox" base_type="bool"/>
+                            <field id="372" field_type="date" base_type="int64"/>
+                            <field id="47" field_type="date" base_type="int64"/>
+                            <field id="73" field_type="date" base_type="int64"/>
+                            <field id="40" field_type="checkbox" base_type="bool"/>
+                            <field id="420" field_type="text" base_type="text"/>
+                            <field id="477" field_type="float" base_type="float" mode="virtual"/>
+                            <field id="392" field_type="file" base_type="text"/>
+                            <field id="428" field_type="file" base_type="text"/>
+                            <field id="499" field_type="checkbox" base_type="bool"/>
+                            <field id="502" field_type="file" base_type="text"/>
+                        </fields>
+                        <lusers>
+                            <luser id="57727434.bz6f">x@nlb.no</luser>
+                        </lusers>
+                        <records>
+                            <record rid="16592">
+                                <f id="1">1542882318923</f>
+                                <f id="2">1547464210053</f>
+                                <f id="3">16592</f>
+                                <f id="4">57727434.bz6f</f>
+                                <f id="5">57727434.bz6f</f>
+                                <f id="6">1543276800000</f>
+                                <f id="7"/>
+                                <f id="8">Title</f>
+                                <f id="9">…</f>
+                                <f id="10">Publisher</f>
+                                <f id="11">9788211008152</f>
+                                <f id="12">7</f>
+                                <f id="13">861020</f>
+                                <f id="14">1</f>
+                                <f id="15">1</f>
+                                <f id="16">ACME</f>
+                                <f id="17">0</f>
+                                <f id="18">246</f>
+                                <f id="19">188</f>
+                                <f id="24">861021</f>
+                                <f id="25"/>
+                                <f id="26">1</f>
+                                <f id="27">0</f>
+                                <f id="28">861023</f>
+                                <f id="29"/>
+                                <f id="30">0</f>
+                                <f id="32">861024</f>
+                                <f id="36"/>
+                                <f id="37">1</f>
+                                <f id="40">0</f>
+                                <f id="41">0</f>
+                                <f id="42">0</f>
+                                <f id="43">0</f>
+                                <f id="44">0</f>
+                                <f id="46">0</f>
+                                <f id="47"/>
+                                <f id="48"/>
+                                <f id="49"/>
+                                <f id="51">Testbok for Statped</f>
+                                <f id="55">1</f>
+                                <f id="56">1543276800000</f>
+                                <f id="61"/>
+                                <f id="62">1543276800000</f>
+                                <f id="63"/>
+                                <f id="65"/>
+                                <f id="66"/>
+                                <f id="67">Studielitteratur</f>
+                                <f id="68">0</f>
+                                <f id="69"/>
+                                <f id="71"/>
+                                <f id="73"/>
+                                <f id="74"/>
+                                <f id="80">https://…</f>
+                                <f id="81">1543276800000</f>
+                                <f id="82">1543276800000</f>
+                                <f id="83">PDF Image</f>
+                                <f id="84">1</f>
+                                <f id="85"/>
+                                <f id="86"/>
+                                <f id="87"/>
+                                <f id="88"/>
+                                <f id="146">0</f>
+                                <f id="147"/>
+                                <f id="148"/>
+                                <f id="149">0</f>
+                                <f id="150"/>
+                                <f id="151">0</f>
+                                <f id="152"/>
+                                <f id="154">0</f>
+                                <f id="155"/>
+                                <f id="157"/>
+                                <f id="158"/>
+                                <f id="161">1543968000000</f>
+                                <f id="163">Markup instructions here.</f>
+                                <f id="164"/>
+                                <f id="165">mul</f>
+                                <f id="167"/>
+                                <f id="170">Barn/ungdom</f>
+                                <f id="171">0</f>
+                                <f id="175"/>
+                                <f id="176"/>
+                                <f id="177"/>
+                                <f id="268">0</f>
+                                <f id="269"/>
+                                <f id="270"/>
+                                <f id="311">131</f>
+                                <f id="314"/>
+                                <f id="315"/>
+                                <f id="316"/>
+                                <f id="317"/>
+                                <f id="318">0</f>
+                                <f id="323"/>
+                                <f id="324"/>
+                                <f id="325"/>
+                                <f id="326"/>
+                                <f id="330"/>
+                                <f id="342"/>
+                                <f id="343"/>
+                                <f id="344">57727434.bz6f</f>
+                                <f id="353"/>
+                                <f id="360"/>
+                                <f id="368">0</f>
+                                <f id="370"/>
+                                <f id="371">0</f>
+                                <f id="372"/>
+                                <f id="374">0</f>
+                                <f id="375"/>
+                                <f id="377"/>
+                                <f id="378"/>
+                                <f id="387"/>
+                                <f id="388">Advanced</f>
+                                <f id="389">Advanced</f>
+                                <f id="390">246</f>
+                                <f id="392">861001.epub<url>https://…/861001.epub</url></f>
+                                <f id="393">1</f>
+                                <f id="395">1544140800000</f>
+                                <f id="396">Statped</f>
+                                <f id="397">861001</f>
+                                <f id="398">1</f>
+                                <f id="399">[DEC-07-18 Person1] Hello.<BR/> How are you?<BR/> <BR/> [DEC-07-18 Person2] Hi Person1! I'm good. This was a good test of this Quickbase field.</f>
+                                <f id="402"/>
+                                <f id="403">https://…</f>
+                                <f id="405">0</f>
+                                <f id="406">PDF Image</f>
+                                <f id="407">https://…</f>
+                                <f id="408">1</f>
+                                <f id="409">0</f>
+                                <f id="410">1</f>
+                                <f id="413">0</f>
+                                <f id="414">1544140800000</f>
+                                <f id="415"/>
+                                <f id="416">1</f>
+                                <f id="417">1544140800000</f>
+                                <f id="418"/>
+                                <f id="419">246</f>
+                                <f id="420">Title</f>
+                                <f id="421">Author1<BR/> Author2<BR/> Author3<BR/> </f>
+                                <f id="422"/>
+                                <f id="423">en</f>
+                                <f id="426"/>
+                                <f id="427">57727434.bz6f</f>
+                                <f id="428"/>
+                                <f id="429"/>
+                                <f id="430"/>
+                                <f id="431">9788211008152</f>
+                                <f id="437">57727434.bz6f</f>
+                                <f id="438">1</f>
+                                <f id="442"/>
+                                <f id="463">0</f>
+                                <f id="464"/>
+                                <f id="465"/>
+                                <f id="468"/>
+                                <f id="469"/>
+                                <f id="470"/>
+                                <f id="471"/>
+                                <f id="472"/>
+                                <f id="474"/>
+                                <f id="475"/>
+                                <f id="476">1</f>
+                                <f id="477">246</f>
+                                <f id="479">Author1<BR/> Author2<BR/> Author3<BR/> </f>
+                                <f id="480"/>
+                                <f id="481">0</f>
+                                <f id="482">0</f>
+                                <f id="483">0</f>
+                                <f id="484">0</f>
+                                <f id="485">0</f>
+                                <f id="487">0</f>
+                                <f id="488"/>
+                                <f id="489"/>
+                                <f id="495">0</f>
+                                <f id="496">0</f>
+                                <f id="497">0</f>
+                                <f id="498">1</f>
+                                <f id="499">0</f>
+                                <f id="502"/>
+                                <f id="503">861022</f>
+                                <f id="504">861025</f>
+                                <f id="505">861026</f>
+                                <f id="506">861027</f>
+                                <f id="507">861028</f>
+                                <f id="508">861029</f>
+                                <update_id>1547464210053</update_id>
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should be as expected">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:nlbprod="http://www.nlb.no/production"
+                    xmlns:nlb="http://www.nlb.no/">...</html>
+                <rdf:RDF xmlns:nlbprod="http://www.nlb.no/production"
+                    xmlns:nlb="http://www.nlb.no/">
+                    <rdf:Description rdf:about="urn:isbn:9788211008152">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                        <nlbprod:dateCreated>2018-11-22T10:25:18</nlbprod:dateCreated>
+                        <nlbprod:publisher>Publisher</nlbprod:publisher>
+                        <schema:isbn>9788211008152</schema:isbn>
+                        <nlbprod:language>mul</nlbprod:language>
+                        <nlbprod:category>Barn/ungdom</nlbprod:category>
+                        <nlbprod:numberOfPages>246</nlbprod:numberOfPages>
+                        <nlbprod:numberOfImages>188</nlbprod:numberOfImages>
+                        <nlbprod:dateModified>2019-01-14T11:10:10</nlbprod:dateModified>
+                        <nlbprod:recordId>16592</nlbprod:recordId>
+                        <nlbprod:recordOwner>x@nlb.no</nlbprod:recordOwner>
+                        <nlbprod:title2>Title</nlbprod:title2>
+                        <nlbprod:author2>Author1 Author2 Author3</nlbprod:author2>
+                        <nlbprod:language2>en</nlbprod:language2>
+                        <nlbprod:signatureRegistration>x@nlb.no</nlbprod:signatureRegistration>
+                        <nlbprod:newRegistration>true</nlbprod:newRegistration>
+                        <nlbprod:dcCreator>Author1 Author2 Author3</nlbprod:dcCreator>
+                        <nlbprod:lastModifiedBy>x@nlb.no</nlbprod:lastModifiedBy>
+                        <nlbprod:commentCatalogization>Testbok for Statped</nlbprod:commentCatalogization>
+                        <nlbprod:registrationDate>2018-11-27</nlbprod:registrationDate>
+                        <nlbprod:genre>Studielitteratur</nlbprod:genre>
+                        <nlbprod:title>Title</nlbprod:title>
+                        <nlbprod:addRecord>https://…</nlbprod:addRecord>
+                        <nlbprod:author>…</nlbprod:author>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861021">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
+                        <nlbprod:productionTurnaroundTime>7</nlbprod:productionTurnaroundTime>
+                        <nlbprod:daisy202readyForLoan>false</nlbprod:daisy202readyForLoan>
+                        <nlbprod:identifier.daisy202>861021</nlbprod:identifier.daisy202>
+                        <nlbprod:formatDaisy202narrated>true</nlbprod:formatDaisy202narrated>
+                        <nlbprod:formatDaisy202tts>false</nlbprod:formatDaisy202tts>
+                        <nlbprod:overriding>131</nlbprod:overriding>
+                        <nlbprod:preparedForNarration>false</nlbprod:preparedForNarration>
+                        <nlbprod:daisy202productionComplete>false</nlbprod:daisy202productionComplete>
+                        <nlbprod:daisy202ttsProductionComplete>false</nlbprod:daisy202ttsProductionComplete>
+                        <nlbprod:handedOverToNarrator>false</nlbprod:handedOverToNarrator>
+                        <nlbprod:postProductionStarted>false</nlbprod:postProductionStarted>
+                        <nlbprod:narratedFulltext>false</nlbprod:narratedFulltext>
+                        <nlbprod:triggerTts>false</nlbprod:triggerTts>
+                        <nlbprod:identifier.daisy202.tts>861022</nlbprod:identifier.daisy202.tts>
+                        <nlbprod:narrationComplete>false</nlbprod:narrationComplete>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861020">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
+                        <nlbprod:identifier.epub>861020</nlbprod:identifier.epub>
+                        <nlbprod:epubCatalogued>true</nlbprod:epubCatalogued>
+                        <nlbprod:sourceFileReceived>true</nlbprod:sourceFileReceived>
+                        <nlbprod:dtbookReturned>false</nlbprod:dtbookReturned>
+                        <nlbprod:producer>ACME</nlbprod:producer>
+                        <nlbprod:dueDateForProduction>2018-12-05</nlbprod:dueDateForProduction>
+                        <nlbprod:editingInstructions>Markup instructions here.</nlbprod:editingInstructions>
+                        <nlbprod:productionApproved>false</nlbprod:productionApproved>
+                        <nlbprod:signatureDTBookOrdered>x@nlb.no</nlbprod:signatureDTBookOrdered>
+                        <nlbprod:estimatedBookCategory>Advanced</nlbprod:estimatedBookCategory>
+                        <nlbprod:bookCategory>Advanced</nlbprod:bookCategory>
+                        <nlbprod:numberOfPages2>246</nlbprod:numberOfPages2>
+                        <nlbprod:uploadEpub>861001.epubhttps://…/861001.epub</nlbprod:uploadEpub>
+                        <nlbprod:productionDelivered>true</nlbprod:productionDelivered>
+                        <nlbprod:productionDeliveryDate>2018-12-07</nlbprod:productionDeliveryDate>
+                        <schema:library>Statped</schema:library>
+                        <nlbprod:productionNumberUID>861001</nlbprod:productionNumberUID>
+                        <nlbprod:leaveAMessage>true</nlbprod:leaveAMessage>
+                        <nlbprod:productionQuestionsAndNotes>[DEC-07-18 Person1] Hello. How are you? [DEC-07-18 Person2] Hi Person1! I'm good. This was a good test of this Quickbase field.</nlbprod:productionQuestionsAndNotes>
+                        <nlbprod:purchaseOrderId>https://…</nlbprod:purchaseOrderId>
+                        <nlbprod:asciimath>false</nlbprod:asciimath>
+                        <nlbprod:sourceFileFormat2>PDF Image</nlbprod:sourceFileFormat2>
+                        <nlbprod:alternateSourceFileURL>https://…</nlbprod:alternateSourceFileURL>
+                        <nlbprod:exercisesAndAnswers>true</nlbprod:exercisesAndAnswers>
+                        <nlbprod:inlineTextStyling>false</nlbprod:inlineTextStyling>
+                        <nlbprod:extractionOfTextContentInImages>true</nlbprod:extractionOfTextContentInImages>
+                        <nlbprod:productionReturned>false</nlbprod:productionReturned>
+                        <nlbprod:productionReturnDate>2018-12-07</nlbprod:productionReturnDate>
+                        <nlbprod:productionDownloaded>true</nlbprod:productionDownloaded>
+                        <nlbprod:downloadedDate>2018-12-07</nlbprod:downloadedDate>
+                        <nlbprod:pages>246</nlbprod:pages>
+                        <nlbprod:signatureReturnedProduction>x@nlb.no</nlbprod:signatureReturnedProduction>
+                        <nlbprod:dcSourceUrnIsbn>9788211008152</nlbprod:dcSourceUrnIsbn>
+                        <nlbprod:pricePerPage>1</nlbprod:pricePerPage>
+                        <nlbprod:totalPriceForEpubProduction>246</nlbprod:totalPriceForEpubProduction>
+                        <nlbprod:ocrChecked>false</nlbprod:ocrChecked>
+                        <nlbprod:metadataChecked>false</nlbprod:metadataChecked>
+                        <nlbprod:structureChecked>false</nlbprod:structureChecked>
+                        <nlbprod:editingInstructionsChecked>false</nlbprod:editingInstructionsChecked>
+                        <nlbprod:controlStarted>false</nlbprod:controlStarted>
+                        <nlbprod:triggerEpub>true</nlbprod:triggerEpub>
+                        <nlbprod:containsMathML>false</nlbprod:containsMathML>
+                        <nlbprod:sourceFileOrdered>true</nlbprod:sourceFileOrdered>
+                        <nlbprod:catalogizationDateEpub>2018-11-27</nlbprod:catalogizationDateEpub>
+                        <nlbprod:orderDate>2018-11-27</nlbprod:orderDate>
+                        <nlbprod:sourceFileOrderedDate>2018-11-27</nlbprod:sourceFileOrderedDate>
+                        <nlbprod:sourceFileReceivedOrScannedDate>2018-11-27</nlbprod:sourceFileReceivedOrScannedDate>
+                        <nlbprod:sourceFileFormat>PDF Image</nlbprod:sourceFileFormat>
+                        <nlbprod:epubDTBookOrdered>true</nlbprod:epubDTBookOrdered>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861023">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
+                        <nlbprod:brailleReadyForLoan>false</nlbprod:brailleReadyForLoan>
+                        <nlbprod:formatNotes>false</nlbprod:formatNotes>
+                        <nlbprod:openLinespacing>false</nlbprod:openLinespacing>
+                        <nlbprod:identifier.braille>861023</nlbprod:identifier.braille>
+                        <nlbprod:formatBraille>false</nlbprod:formatBraille>
+                        <nlbprod:singlePagePrint>false</nlbprod:singlePagePrint>
+                        <nlbprod:formatTactilePrint>false</nlbprod:formatTactilePrint>
+                        <nlbprod:tactilePrintReadyForLoan>false</nlbprod:tactilePrintReadyForLoan>
+                        <nlbprod:tactilePrintProductionComplete>false</nlbprod:tactilePrintProductionComplete>
+                        <nlbprod:brailleProductionComplete>false</nlbprod:brailleProductionComplete>
+                        <nlbprod:triggerBraille>false</nlbprod:triggerBraille>
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861024">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
+                        <nlbprod:ebookReadyForLoan>false</nlbprod:ebookReadyForLoan>
+                        <nlbprod:identifier.ebook>861024</nlbprod:identifier.ebook>
+                        <nlbprod:formatEbook>true</nlbprod:formatEbook>
+                        <nlbprod:ebookProductionComplete>false</nlbprod:ebookProductionComplete>
+                        <nlbprod:triggerHtml>false</nlbprod:triggerHtml>
+                        <nlbprod:identifier.ebook.word>861025</nlbprod:identifier.ebook.word>
+                    </rdf:Description>
+                    <rdf:Description rdf:ID="...">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
+                    </rdf:Description>
+                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861026">
+                        <rdf:type rdf:resource="http://schema.org/Book" />
+                        <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
+                        <nlbprod:identifier.reserved>861026</nlbprod:identifier.reserved>
+                        <nlbprod:identifier.reserved>861027</nlbprod:identifier.reserved>
+                        <nlbprod:identifier.reserved>861028</nlbprod:identifier.reserved>
+                        <nlbprod:identifier.reserved>861029</nlbprod:identifier.reserved>
                     </rdf:Description>
                 </rdf:RDF>
             </_>
