@@ -135,6 +135,19 @@ class EpubToDtbookAudio(Pipeline):
             return False
         shutil.copy(temp_dtbook_file, dtbook_file)
 
+		# 2019-01-15, Per Sennels:
+		# Fjern denne transformasjonen hvis det oppstår kritiske proplemer med håndteringen av komplekst innhold
+        self.utils.report.info("Legger inn ekstra informasjon om komplekst innhold")
+        self.utils.report.debug("optimaliser-komplekst-innhold.xsl")
+        self.utils.report.debug("    source = " + dtbook_file)
+        self.utils.report.debug("    target = " + temp_dtbook_file)
+        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "optimaliser-komplekst-innhold.xsl"),
+                    source=dtbook_file,
+                    target=temp_dtbook_file)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_dtbook_file, dtbook_file)
+
         self.utils.report.info("Validerer DTBook")
         sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "validate-dtbook.sch"), source=dtbook_file)
         if not sch.success:
