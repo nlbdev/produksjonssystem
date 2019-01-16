@@ -177,6 +177,16 @@ class Metadata:
         return True if not metadata_dir_exists else False
 
     @staticmethod
+    def has_metadata(report, identifiers):
+        if isinstance(identifiers, str):
+            identifiers = [identifiers]
+        for identifier in identifiers:
+            if os.path.isfile(os.path.join(Metadata.get_metadata_dir(), identifier)):
+                return True
+        report.debug("Finner ikke metadata-mappen for noen av følgende boknummer: {}".format(", ".join(identifiers)))
+        return False
+
+    @staticmethod
     def get_bibliofil_identifiers(report, edition_identifiers, publication_identifiers):
         with Metadata._original_isbn_lock:
             # Find book IDs with the same ISBN in *596$f (input is "bookId,isbn" CSV dump)
