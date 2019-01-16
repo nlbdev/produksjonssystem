@@ -279,7 +279,7 @@ class Metadata:
             if epub.identifier() in Metadata.last_validation_results:
                 del Metadata.last_validation_results[epub.identifier()]
             if not success:
-                pipeline.utils.report.error("Klarte ikke å hente metadata")
+                pipeline.utils.report.error("Klarte ikke å hente metadata for {}".format(epub.identifier()))
                 return False
 
         # If metadata has changed; re-validate the metadata
@@ -697,9 +697,10 @@ class Metadata:
             library = library[0]["value"] if len(library) > 0 else None
 
             Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
+            signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
             normarc_report.email(pipeline.email_settings["smtp"],
                                  pipeline.email_settings["sender"],
-                                 Report.filterEmailAddresses(signatureRegistrationAddress, library=library),
+                                 signatureRegistrationAddress,
                                  subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
             pipeline.utils.report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
                                        ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
@@ -851,7 +852,7 @@ class Metadata:
 
     @staticmethod
     def get_quickbase(pipeline, table, book_id, target, library=None):
-        pipeline.utils.report.info("Henter metadata fra Quickbase ({}) for {}...".format(library, str(book_id)))
+        pipeline.utils.report.debug("Henter metadata fra Quickbase ({}) for {}...".format(library if library else "NLB", str(book_id)))
 
         # Records book id rows:
         #     13: Tilvekstnummer EPUB
