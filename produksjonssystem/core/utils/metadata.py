@@ -407,29 +407,30 @@ class Metadata:
             pipeline.utils.report.debug("    source = " + marcxchange_path)
             pipeline.utils.report.debug("    target = " + current_opf_path)
             Metadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
-            xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
-                        source=marcxchange_path,
-                        target=current_opf_path,
-                        parameters={
-                          "nested": "true",
-                          "include-source-reference": "true",
-                          "identifier": format_edition_identifier
-                        })
-            if not xslt.success:
-                return False
-            pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
-            pipeline.utils.report.debug("    source = " + current_opf_path)
-            pipeline.utils.report.debug("    target = " + html_path)
-            pipeline.utils.report.debug("    rdf    = " + rdf_path)
-            xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/bibliofil-to-rdf.xsl"),
-                        source=current_opf_path,
-                        target=html_path,
-                        parameters={"rdf-xml-path": rdf_path})
-            if not xslt.success:
-                return False
-            rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
+            if os.path.isfile(marcxchange_path):
+                xslt = Xslt(pipeline,
+                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
+                            source=marcxchange_path,
+                            target=current_opf_path,
+                            parameters={
+                              "nested": "true",
+                              "include-source-reference": "true",
+                              "identifier": format_edition_identifier
+                            })
+                if not xslt.success:
+                    return False
+                pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
+                pipeline.utils.report.debug("    source = " + current_opf_path)
+                pipeline.utils.report.debug("    target = " + html_path)
+                pipeline.utils.report.debug("    rdf    = " + rdf_path)
+                xslt = Xslt(pipeline,
+                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/bibliofil-to-rdf.xsl"),
+                            source=current_opf_path,
+                            target=html_path,
+                            parameters={"rdf-xml-path": rdf_path})
+                if not xslt.success:
+                    return False
+                rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
 
             for library in [None, "statped"]:
                 pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/A)")
@@ -876,12 +877,15 @@ class Metadata:
 
     @staticmethod
     def get_bibliofil(pipeline, book_id, target):
-        pipeline.utils.report.info("Henter metadata fra Bibliofil for " + str(book_id) + "...")
+        pipeline.utils.report.debug("Henter metadata fra Bibliofil for " + str(book_id) + "...")
         url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
         url += book_id
         request = requests.get(url)
-        with open(target, "wb") as target_file:
-            target_file.write(request.content)
+        if "<SRU:numberOfRecords>0</SRU:numberOfRecords>" in str(request.content, 'utf-8'):
+            pipeline.utils.report.debug("Ingen katalogpost funnet for {}".format(book_id))
+        else:
+            with open(target, "wb") as target_file:
+                target_file.write(request.content)
 
     @staticmethod
     def get_format_from_normarc(report, marcxchange_path):
