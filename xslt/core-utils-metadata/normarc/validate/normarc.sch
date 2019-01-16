@@ -84,22 +84,29 @@
     <!-- Merk: Dersom utgave (schema:bookEdition) ikke er definert i *250$a så blir den satt til "1" i marcxchange-to-opf.xsl. Derfor krever vi ikke at den er katalogisert her. -->
     
     <pattern>
-        <title>Originalforlag for alle utgaver</title>
+        <title>Beskrivelse av originalutgaven</title>
         <rule context="marcxchange:record[$is-publication]">
-            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='a']">Utgivelsessted for originalen må være definert i *596$a</assert>
-            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='b']">Forlag for originalen må være definert i *596$b</assert>
+            <report test="count(marcxchange:datafield[@tag='596']) = 0">Informasjon om originalen (forlag, år, sted, ISBN) må være definert i *596</report>
+            <report test="count(marcxchange:datafield[@tag='596']) gt 1">Informasjon om originalen (forlag, år, sted, ISBN) må være definert i ett *596-felt (fant <value-of select="count(marcxchange:datafield[@tag='596'])"/>).</report>
+        </rule>
+    </pattern>
+    <pattern>
+        <title>Originalforlag for alle utgaver</title>
+        <rule context="marcxchange:record[$is-publication]/marcxchange:datafield[@tag='596']">
+            <assert test="marcxchange:subfield[@code='a']">Utgivelsessted for originalen må være definert i *596$a</assert>
+            <assert test="marcxchange:subfield[@code='b']">Forlag for originalen må være definert i *596$b</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Originalforlag for bøker</title>
-        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
-            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For bøker må utgivelsesår for originalen være definert i *596$c</assert>
+        <rule context="marcxchange:record[$is-publication and not($is-periodical)]/marcxchange:datafield[@tag='596']">
+            <assert test="marcxchange:subfield[@code='c']">For bøker må utgivelsesår for originalen være definert i *596$c</assert>
         </rule>
     </pattern>
     <pattern>
         <title>Originalforlag for periodika</title>
-        <rule context="marcxchange:record[$is-publication and $is-periodical]">
-            <report test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='c']">For periodika må *596$c ikke være definert</report>
+        <rule context="marcxchange:record[$is-publication and $is-periodical]/marcxchange:datafield[@tag='596']">
+            <report test="marcxchange:subfield[@code='c']">For periodika må *596$c ikke være definert</report>
         </rule>
     </pattern>
     <!-- Merk: Dersom utgave for originalen (schema:bookEdition.original) ikke er definert i *596$d så blir den satt til "1" i marcxchange-to-opf.xsl. Derfor krever vi ikke at den er katalogisert her. -->
@@ -116,8 +123,8 @@
     <!-- Spesifikt for originalen -->
     <pattern>
         <title>Original ISBN og ISSN</title>
-        <rule context="marcxchange:record[$is-publication and not($isbn-missing) and not($issn-missing)]">
-            <assert test="marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">ISBN eller ISSN for originalen må være definert i *596$f</assert>
+        <rule context="marcxchange:record[$is-publication and not($isbn-missing) and not($issn-missing)]/marcxchange:datafield[@tag='596']">
+            <assert test="marcxchange:subfield[@code='f']">ISBN eller ISSN for originalen må være definert i *596$f</assert>
         </rule>
     </pattern>
     <pattern>
