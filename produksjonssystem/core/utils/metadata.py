@@ -119,6 +119,8 @@ class Metadata:
         for edition_identifier in edition_identifiers:
             report.debug("Finner andre boknummer for {} i Quickbase...".format(edition_identifier))
             metadata_dir = os.path.join(Metadata.get_metadata_dir(), edition_identifier)
+            catalogued = False
+            missing_catalogue_warnings = []
             for library in [None, "statped"]:
                 rdf_path = os.path.join(metadata_dir, 'quickbase/record{}.rdf'.format("-"+library if library else ""))
                 if os.path.isfile(rdf_path):
@@ -131,9 +133,15 @@ class Metadata:
                                                                                         library if library else "NLB",
                                                                                         ", ".join(identifiers)))
                     else:
-                        report.warn("{} er ikke katalogisert i {}-Quickbase.".format(edition_identifier, library if library else "NLB"))
+                        catalogued = False
+                        missing_catalogue_warnings.append("{} er ikke katalogisert i {}-Quickbase.".format(edition_identifier,
+                                                                                                           library if library else "NLB"))
                 else:
-                    report.warn("Finner ikke lokal metadata for {} i {}-Quickbase.".format(edition_identifier, library if library else "NLB"))
+                    missing_catalogue_warnings.append("Finner ikke metadata for {} i {}-Quickbase.".format(edition_identifier,
+                                                                                                           library if library else "NLB"))
+            if not catalogued:
+                for warning in missing_catalogue_warnings:
+                    report.warn(warning)
 
         edition_identifiers = sorted(set(edition_identifiers + quickbase_edition_identifiers))
         publication_identifiers = sorted(set([i[:6] for i in edition_identifiers if len(i) >= 6]))
