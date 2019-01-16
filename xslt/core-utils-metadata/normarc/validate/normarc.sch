@@ -22,6 +22,7 @@
     <let name="is-translated" value="boolean(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
                                            | //marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
                                            | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
+    <let name="is-audiobook" value="exists(//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b' and tokenize(text(),',') = ('dc','dj')])"/>
     <let name="library" value="(//marcxchange:datafield[@tag='850']/marcxchange:subfield[@code='a']/text()/lower-case(.))[1]"/>
     
     
@@ -161,7 +162,7 @@
     <!-- Spesifikt for bøker -->
     <pattern>
         <title>ISBN for bøker</title>
-        <rule context="marcxchange:record[$is-publication and not($is-periodical)]">
+        <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($library = 'statped' and not($is-audiobook))]">
             <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a</assert>
         </rule>
     </pattern>
@@ -181,7 +182,7 @@
     <!-- Spesifikt for periodika -->
     <pattern>
         <title>ISSN for periodika</title>
-        <rule context="marcxchange:record[$is-publication and $is-periodical]">
+        <rule context="marcxchange:record[$is-publication and $is-periodical and not($library = 'statped' and not($is-audiobook))]">
             <assert test="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">ISSN for utgaven må være definert i *022$a</assert>
         </rule>
     </pattern>
