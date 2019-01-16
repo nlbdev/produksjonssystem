@@ -206,7 +206,8 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Konvertering av gamle DTBøker til EPUB 3
-            [NordicDTBookToEpub(retry_missing=True),          "old_dtbook",          "epub_from_dtbook"],
+            [NordicDTBookToEpub(retry_missing=True,
+                                only_when_idle=True),         "old_dtbook",          "epub_from_dtbook"],
 
             # Mottak, nordic guidelines 2015-1
             # [NLBPUB_incoming_validator(retry_all=True,
@@ -393,6 +394,10 @@ class Produksjonssystem():
         self._dailyReportThread.setDaemon(True)
         self._dailyReportThread.start()
 
+        self._systemStatusThread = Thread(target=self._system_status_thread, name="system status")
+        self._systemStatusThread.setDaemon(True)
+        self._systemStatusThread.start()
+
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run, name="graph")
         graph_thread.setDaemon(True)
@@ -473,11 +478,16 @@ class Produksjonssystem():
         if graph_thread:
             logging.debug("joined {}".format(graph_thread.name))
 
-        self.info("Venter på at konfigtråden skal stoppe...")
         self.shouldRun = False
+
+        self.info("Venter på at konfigtråden skal stoppe...")
         self._configThread.join()
-        self.info("Venter på at dagsrapport tråden skal stoppe...")
-        self._dailyReportThread
+
+        self.info("Venter på at dagsrapport-tråden skal stoppe...")
+        self._dailyReportThread.join()
+
+        self.info("Venter på at systemstatus-tråden skal stoppe...")
+        self._systemStatusThread.join()
 
     def wait_until_running(self, timeout=60):
         start_time = time.time()
@@ -506,6 +516,12 @@ class Produksjonssystem():
             if len(pipeline[0].get_queue()) > 0 or pipeline[0].book is not None:
                 return False
         return True
+
+    def _system_status_thread(self):
+        # Update system status
+        while self.shouldRun:
+            time.sleep(5)
+            Config.set("system.idle", self.is_idle())
 
     def _daily_report_thread(self):
         # Checks for reports in daily report dir for each pipeline. Only sends mail once each day after 7

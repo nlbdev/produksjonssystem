@@ -16,6 +16,7 @@ from copy import deepcopy
 from pathlib import Path
 from threading import RLock, Thread
 
+from core.config import Config
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from core.utils.report import DummyReport, Report
@@ -63,6 +64,7 @@ class Pipeline():
     shouldHandleBooks = True
     should_retry_during_working_hours = False
     should_retry_during_night_and_weekend = False
+    should_retry_only_when_idle = False
     _inactivity_timeout = 10
     _bookHandlerThread = None
     _bookRetryThread = None
@@ -104,6 +106,7 @@ class Pipeline():
                  overwrite=True,
                  during_working_hours=None,
                  during_night_and_weekend=None,
+                 only_when_idle=None,
                  _uid=None,
                  _gid=None,
                  _title=None,
@@ -131,8 +134,11 @@ class Pipeline():
         # then during_night_and_weekend are set to False. To process books both
         # during working hours as well as during the night and weekend:
         # set both variables explicitly.
+        # To reduce server load, only_when_idle can be set to True, which will
+        # only allow the pipeline to retry books when the whole system is idle.
         self.should_retry_during_working_hours = during_working_hours if isinstance(during_working_hours, bool) else False
         self.should_retry_during_night_and_weekend = during_night_and_weekend if isinstance(during_night_and_weekend, bool) else not bool(during_working_hours)
+        self.should_retry_only_when_idle = only_when_idle if isinstance(only_when_idle, bool) else False
 
         self._queue_lock = RLock()
         self._md5_lock = RLock()
@@ -500,6 +506,9 @@ class Pipeline():
         return True
 
     def should_retry(self):
+        if self.should_retry_only_when_idle and self.config and not Config.get("system.idle"):
+            return False
+
         if Pipeline.is_working_hours():
             return self.should_retry_during_working_hours
         else:
