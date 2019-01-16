@@ -115,7 +115,7 @@ class Newsletter(Pipeline):
                 return False
             shutil.copy(temp_html, html_file)
 
-        archived_path = self.utils.filesystem.storeBook(os.path.dirname(html_file), self.newsletter_identifier)
+        archived_path, stored = self.utils.filesystem.storeBook(os.path.dirname(html_file), self.newsletter_identifier)
 
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info("Nyhetsbrev punktskrift ble produsert i pipeline2")

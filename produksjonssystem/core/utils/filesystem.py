@@ -228,7 +228,7 @@ class Filesystem():
         else:
             shutil.copy(source, destination)
 
-    def storeBook(self, source, book_id, overwrite = True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
+    def storeBook(self, source, book_id, overwrite=True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         assert book_id
         assert book_id.strip()
@@ -243,8 +243,10 @@ class Filesystem():
                 "the output directory to store the book in must be explicitly defined."
             )
             dir_out = self.pipeline.dir_out
+        dir_nicename = "/".join(dir_out.split("/")[-2:])
         if parentdir:
             dir_out = os.path.join(dir_out, parentdir)
+            dir_nicename = os.path.join(dir_nicename, parentdir)
         self.pipeline.utils.report.info("Lagrer {} i {}...".format(book_id, dir_out))
         target = os.path.join(dir_out, book_id)
         if subdir:
@@ -253,19 +255,19 @@ class Filesystem():
             target += "." + str(file_extension)
         if os.path.exists(target):
             if overwrite == True:
-                self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(book_id, dir_out))
+                self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(book_id, dir_nicename))
                 try:
                     if os.path.isdir(target):
                         shutil.rmtree(target)
                     else:
                         os.remove(target)
                 except (OSError, NotADirectoryError):
-                    self.pipeline.utils.report.error("En feil oppstod ved sletting av mappen {}. Kanskje noen har en fil eller mappe åpen på datamaskinen sin?".format(dir_out))
+                    self.pipeline.utils.report.error("En feil oppstod ved sletting av mappen {}. Kanskje noen har en fil eller mappe åpen på datamaskinen sin?".format(target))
                     self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                     raise
             else:
-                self.pipeline.utils.report.info(book_id + " finnes fra før og skal ikke overskrives.")
-                return target
+                self.pipeline.utils.report.warn("{} finnes fra før i {} og skal ikke overskrives.".format(book_id, dir_nicename))
+                return target, False
         if move:
             shutil.move(source, target)
         else:
@@ -273,7 +275,9 @@ class Filesystem():
 
         Filesystem.touch(target)
 
-        return target
+        self.pipeline.utils.report.info("{} ble lagt til i {}.".format(book_id, dir_nicename))
+
+        return target, True
 
     def deleteSource(self):
         if os.path.isdir(self.pipeline.book["source"]):

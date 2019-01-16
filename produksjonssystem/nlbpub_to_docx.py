@@ -128,9 +128,8 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
 
-        archived_path = self.utils.filesystem.storeBook(temp_docxdir, epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(temp_docxdir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i DOCX-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 

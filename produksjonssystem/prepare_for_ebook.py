@@ -118,9 +118,8 @@ class PrepareForEbook(Pipeline):
 
         self.utils.report.info("Boken ble konvertert. Kopierer til HTML-arkiv.")
 
-        archived_path = self.utils.filesystem.storeBook(temp_epubdir, epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i HTML-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 

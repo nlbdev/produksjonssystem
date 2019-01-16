@@ -102,9 +102,8 @@ class IncomingNLBPUB(Pipeline):
 
             if warning_sch.success is False:
                 if self.uid == "NLBPUB-incoming-warning":
-                    archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
+                    archived_path, stored = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
                     self.utils.report.attachment(None, archived_path, "DEBUG")
-                    self.utils.report.success(epub.identifier()+" ble lagt til for manuell sjekk.")
                     self.utils.report.title = self.title + ": " + epub.identifier() + " er valid, men må sjekkes manuelt 👍😄" + epubTitle
                     self.utils.report.should_email = True
                     self.utils.report.should_message_slack = True
@@ -116,9 +115,8 @@ class IncomingNLBPUB(Pipeline):
                     return True
             else:
                 if self.uid == "NLBPUB-incoming-validator":
-                    archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
+                    archived_path, stored = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
                     self.utils.report.attachment(None, archived_path, "DEBUG")
-                    self.utils.report.success(epub.identifier()+" ble lagt til i grunnlagsfil-arkivet.")
                     self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
                     self.utils.filesystem.deleteSource()
                     return True
@@ -126,9 +124,8 @@ class IncomingNLBPUB(Pipeline):
                     self.utils.report.info(epub.identifier() + " er valid og har ingen advarsler.")
                     return True
 
-        archived_path = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(nordic_epubdir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
         return True
 

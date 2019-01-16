@@ -81,9 +81,8 @@ class InsertMetadata(Pipeline):
 
         self.utils.report.info("Boken ble oppdatert med format-spesifik metadata. Kopierer til {}-arkiv.".format(self.publication_format))
 
-        archived_path = self.utils.filesystem.storeBook(temp_epub.asDir(), epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(temp_epub.asDir(), epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(temp_epub.identifier() + " ble lagt til i arkivet.")
 
         self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(
             self.title, epub.identifier(), self.publication_format, epubTitle)

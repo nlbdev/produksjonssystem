@@ -207,10 +207,10 @@ class Audio_Abstract(Pipeline):
 
             for key in self.parentdirs:
                 if(file_exists[key]):
-                    archived_path = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"),
-                                                                    audio_identifier,
-                                                                    parentdir=self.parentdirs[key],
-                                                                    file_extension="mp3")
+                    archived_path, stored = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"),
+                                                                            audio_identifier,
+                                                                            parentdir=self.parentdirs[key],
+                                                                            file_extension="mp3")
                     self.utils.report.attachment(None, archived_path, "DEBUG")
 
             self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title

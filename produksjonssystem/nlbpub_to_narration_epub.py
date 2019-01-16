@@ -187,9 +187,8 @@ class NlbpubToNarrationEpub(Pipeline):
 
         self.utils.report.info("Boken ble konvertert. Kopierer til innlesingsklart EPUB-arkiv.")
 
-        archived_path = self.utils.filesystem.storeBook(nlbpub.asFile(), nlbpub.identifier(), file_extension="epub", move=True)
+        archived_path, stored = self.utils.filesystem.storeBook(nlbpub.asFile(), nlbpub.identifier(), file_extension="epub", move=True)
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i innlesingsklart EPUB-arkiv.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 

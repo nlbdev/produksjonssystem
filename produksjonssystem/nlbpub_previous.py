@@ -179,7 +179,7 @@ class NlbpubPrevious(Pipeline):
         # Save copy of different files in NLBPUB master. Different versions of files under NLBPUB-tidligere/xxxxxxx/time
         # To restore a certain version copy files from the each folder up to the wanted version to a new folder
 
-        archived_path = self.utils.filesystem.storeBook(temp_epubdir, epub.identifier(), subdir=time_created)
+        archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, epub.identifier(), subdir=time_created)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         if changes_made:
             if new_epub:

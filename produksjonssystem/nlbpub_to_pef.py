@@ -117,9 +117,8 @@ class NlbpubToPef(Pipeline):
             self.utils.report.info("Boken ble konvertert.")
 
         self.utils.report.info("Kopierer til PEF-arkiv.")
-        archived_path = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
+        archived_path, stored = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(identifier + " ble lagt til i arkivet")
 
         self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄" + bookTitle
         return True

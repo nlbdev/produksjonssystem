@@ -119,9 +119,8 @@ class IncomingNordic(Pipeline):
 
         self.utils.report.info("Boken er valid. Kopierer til EPUB master-arkiv.")
 
-        archived_path = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(epub.asDir(), epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.success(epub.identifier()+" ble lagt til i master-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " er valid 👍😄" + epubTitle
         self.utils.filesystem.deleteSource()
         return True

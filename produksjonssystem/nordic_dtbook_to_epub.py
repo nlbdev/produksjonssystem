@@ -247,9 +247,8 @@ class NordicDTBookToEpub(Pipeline):
             return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til EPUB3-fra-DTBook-arkiv.")
-        archived_path = self.utils.filesystem.storeBook(epub.asDir(), metadata["identifier"], overwrite=self.overwrite)
+        archived_path, stored = self.utils.filesystem.storeBook(epub.asDir(), metadata["identifier"], overwrite=self.overwrite)
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info("{} ble lagt til i EPUB3-fra-DTBook-arkivet.".format(metadata["identifier"]))
         self.utils.report.title = "{}: {} ble konvertert 👍😄 ({})".format(self.title, metadata["identifier"], metadata["title"])
         return True
 

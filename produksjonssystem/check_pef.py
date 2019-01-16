@@ -50,9 +50,8 @@ class CheckPef(Pipeline):
 
             self.utils.report.info("Boken ble automatisk godkjent.")
 
-            archived_path = self.utils.filesystem.storeBook(self.book["source"], metadata["identifier"])
+            archived_path, stored = self.utils.filesystem.storeBook(self.book["source"], metadata["identifier"])
             self.utils.report.attachment(None, archived_path, "DEBUG")
-            self.utils.report.info(metadata["identifier"] + " ble lagt til i arkivet.")
 
         return True
 

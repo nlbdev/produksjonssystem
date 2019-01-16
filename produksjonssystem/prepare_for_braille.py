@@ -144,9 +144,8 @@ class PrepareForBraille(Pipeline):
 
         self.utils.report.info("Boken ble konvertert. Kopierer til arkiv for punkt-klare HTML-filer.")
 
-        archived_path = self.utils.filesystem.storeBook(html_dir, self.book["name"])
+        archived_path, stored = self.utils.filesystem.storeBook(html_dir, self.book["name"])
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(self.book["name"] + " ble lagt til i arkiv for punkt-klare HTML-filer.")
         self.utils.report.title = self.title + ": " + self.book["name"] + " ble konvertert 👍😄" + epubTitle
         return True
 

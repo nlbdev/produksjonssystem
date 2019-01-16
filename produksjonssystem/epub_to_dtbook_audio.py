@@ -155,9 +155,8 @@ class EpubToDtbookAudio(Pipeline):
             return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-til-talesyntese-arkiv.")
-        archived_path = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(dtbook_dir, epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(epub.identifier() + " ble lagt til i DTBook-arkivet.")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 

@@ -114,9 +114,8 @@ class HtmlToDtbook(Pipeline):
                 return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
-        archived_path = self.utils.filesystem.storeBook(temp_dtbookdir, identifier)
+        archived_path, stored = self.utils.filesystem.storeBook(temp_dtbookdir, identifier)
         self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info(identifier + " ble lagt til i DTBook-arkivet.")
         return True
 
 
