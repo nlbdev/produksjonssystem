@@ -68,23 +68,29 @@ class Metadata:
         return Config.get("metadata_dir")
 
     @staticmethod
-    def update(*args, **kwargs):
+    def update(pipeline, epub, publication_format="", *args, **kwargs):
         # Only update one book at a time, to avoid potentially overwriting metadata while it's being used
 
         ret = False
+        pipeline.utils.report.debug("Metadata.update venter på at Metadata._update_lock skal være ledig...")
         with Metadata._update_lock:
-            ret = Metadata._update(*args, **kwargs)
+            pipeline.utils.report.debug("Metadata.update fikk Metadata._update_lock.")
+            ret = Metadata._update(pipeline, epub, publication_format, *args, **kwargs)
             Metadata.queue = []
+            pipeline.utils.report.debug("Metadata.update er ferdig med Metadata._update_lock.")
         return ret
 
     @staticmethod
-    def get_metadata(*args, **kwargs):
+    def get_metadata(pipeline, epub, publication_format="", *args, **kwargs):
         # Only get metadata from one book at a time, to avoid potentially overwriting metadata while it's being used
 
         ret = False
+        pipeline.utils.report.debug("Metadata.get_metadata venter på at Metadata._update_lock skal være ledig...")
         with Metadata._update_lock:
-            ret = Metadata._get_metadata(*args, **kwargs)
+            pipeline.utils.report.debug("Metadata.get_metadata fikk Metadata._update_lock.")
+            ret = Metadata._get_metadata(pipeline, epub, publication_format, *args, **kwargs)
             Metadata.queue = []
+            pipeline.utils.report.debug("Metadata.get_metadata er ferdig med Metadata._update_lock.")
         return ret
 
     @staticmethod
@@ -129,11 +135,11 @@ class Metadata:
                     identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
                     quickbase_edition_identifiers.extend(identifiers)
                     if identifiers:
+                        catalogued = True
                         report.debug("Andre boknummer for {} i {}-Quickbase: {}".format(edition_identifier,
                                                                                         library if library else "NLB",
                                                                                         ", ".join(identifiers)))
                     else:
-                        catalogued = False
                         missing_catalogue_warnings.append("{} er ikke katalogisert i {}-Quickbase.".format(edition_identifier,
                                                                                                            library if library else "NLB"))
                 else:
