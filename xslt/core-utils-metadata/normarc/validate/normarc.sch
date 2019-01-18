@@ -182,20 +182,8 @@
     <!-- Spesifikt for periodika -->
     <pattern>
         <title>ISSN for periodika</title>
-        <rule context="marcxchange:record[$is-publication and $is-periodical and not($library = 'statped' and not($is-audiobook))]">
-            <assert test="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">ISSN for utgaven må være definert i *022$a</assert>
-        </rule>
-    </pattern>
-    <pattern>
-        <title>Formatering av ISSN for periodika (bruk av tegn)</title>
-        <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
-            <assert test="string-length(replace(text(),'[^\dxX-]','')) gt 0">ISSN i *022$a kan ikke inneholde andre tegn enn tall, "X" og bindestrek (var: '<value-of select="text()"/>').</assert>
-        </rule>
-    </pattern>
-    <pattern>
-        <title>Formatering av ISSN for periodika (antall siffer)</title>
-        <rule context="marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
-            <assert test="matches(replace(text(),'[^0-9xX]',''), '^\d{7}[\dxX]$')">ISSN i *022$a må bestå av 8 siffer. Det siste sifferet kan være "X" (var: '<value-of select="text()"/>').</assert>
+        <rule context="marcxchange:record[$is-publication and $is-periodical]/marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a']">
+            <assert test="text() = '0'">Hvis ISSN for utgaven er definert i *022$a så må den være "0" (var: <value-of select="text()"/>). Vi har ikke egne ISSN-nummer for våre utgaver som inngår i serier eller periodika. ISSN for originalen katalogiseres i *596$f.</assert>
         </rule>
     </pattern>
     
