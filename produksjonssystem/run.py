@@ -222,7 +222,9 @@ class Produksjonssystem():
             [IncomingNordic(retry_all=True,
                             during_working_hours=True),       "incoming",            "master"],
             [NordicToNlbpub(retry_missing=True,
-                            overwrite=False),                 "master",              "nlbpub"],
+                            overwrite=False,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),   "master",              "nlbpub"],
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
