@@ -717,7 +717,7 @@
                 <marcxchange:controlfield tag="001">500000</marcxchange:controlfield>
             </marcxchange:record>
         </x:context>
-        <x:expect>
+        <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <dc:identifier id="pub-id">500000</dc:identifier>
                 <meta property="library">NLB</meta>
@@ -734,7 +734,7 @@
                 </marcxchange:datafield>
             </marcxchange:record>
         </x:context>
-        <x:expect>
+        <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <dc:identifier id="pub-id">500000</dc:identifier>
                 <meta property="library">StatPed</meta>
@@ -748,7 +748,7 @@
                 <marcxchange:controlfield tag="001">000000</marcxchange:controlfield>
             </marcxchange:record>
         </x:context>
-        <x:expect>
+        <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <dc:identifier id="pub-id">000000</dc:identifier>
             </metadata>
@@ -761,7 +761,7 @@
                 <marcxchange:controlfield tag="000">     d</marcxchange:controlfield>
             </marcxchange:record>
         </x:context>
-        <x:expect>
+        <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <meta property="availability">deleted</meta>
             </metadata>
@@ -889,6 +889,25 @@
                 <meta property="nationality" refines="#creator-1">no</meta>
                 <meta property="bibliofil-id.reference" refines="#creator-1">15538600</meta>
                 <meta property="bibliofil-id.reference" refines="#creator-1">17941800</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="regression: XTTE0570: A sequence of more than one item is not allowed as the value of parameter $value">
+        <!-- Får ikke feilmeldingen her. Dukket bare opp i Pentaho som har en merkelig XSLT-prosessor.
+             Men vi sjekker det nå i validate/normarc.sch, og håndterer det vet at det kun er ett element som lages her i marcxchange-to-opf.xsl. -->
+        <x:context>
+            <marcxchange:record format="normarc" type="Bibliographic">
+                <marcxchange:datafield tag="240" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Don Giovanni, klaver, sopran, Batti, Batti o bel Masetto740</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Don Giovanni, klaver, sopran, Batti, Batti o bel Ma</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <meta property="dc:title.alternative">Don Giovanni, klaver, sopran, Batti, Batti o bel Masetto740</meta>
             </metadata>
         </x:expect>
     </x:scenario>

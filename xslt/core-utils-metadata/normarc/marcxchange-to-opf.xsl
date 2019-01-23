@@ -1028,7 +1028,7 @@
     <!-- 2XX TITTEL-, ANSVARS- OG UTGIVELSESOPPLYSNINGER -->
     
     <xsl:template match="*:datafield[@tag='240']">
-        <xsl:for-each select="*:subfield[@code='a']">
+        <xsl:for-each select="(*:subfield[@code='a'])[1]">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
@@ -1995,7 +1995,7 @@
         <xsl:variable name="preceding-datafield-refines" as="element()*">
             <xsl:apply-templates select="$preceding-datafield"/>
         </xsl:variable>
-        <xsl:variable name="preceding-datafield-refines" as="xs:string" select="($preceding-datafield-refines[@property='bibliofil-id']/@refines)[1]"/>
+        <xsl:variable name="preceding-datafield-refines" as="xs:string" select="string(($preceding-datafield-refines[@property='bibliofil-id']/@refines)[1])"/>
         <xsl:if test="$preceding-datafield-refines">
             <xsl:for-each select="*:subfield[@code='~']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id.reference'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$preceding-datafield-refines"/></xsl:call-template>

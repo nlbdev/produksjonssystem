@@ -210,4 +210,11 @@
         </rule>
     </pattern>
     
+    <pattern>
+        <title>Alternativ tittel</title>
+        <rule context="marcxchange:datafield[@tag='240']">
+            <report test="count(marcxchange:subfield[@code='a']) gt 1">Det må ikke være mer enn ett delfelt $a under tagg *240.</report>
+        </rule>
+    </pattern>
+    
 </schema>
