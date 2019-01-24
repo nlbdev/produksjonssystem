@@ -51,7 +51,6 @@ class GenerateResources(Pipeline):
         Trigger books in folder but not in DOD database
         """
         last_check = 0
-        # If no newsletter this month, trigger newsletter
         while self._dirsAvailable and self._shouldRun:
             time.sleep(5)
             max_update_interval = 60 * 60 * 2
@@ -70,16 +69,15 @@ class GenerateResources(Pipeline):
 
             list_books_dod = []
             dod_data = str(urllib.request.urlopen(self.config['url_database_list'][0]).read(), "utf-8")
-            dod_data.replace("b", "")
             for book in dod_data.split(","):
                 if book.isdigit():
                     list_books_dod.append(book)
-            if len(list_books_dod) > 2:
-                for folder in os.listdir(self.dir_in):
-                    if folder.isdigit():
-                        if folder not in list_books_dod:
-                            logging.info("Trigger ressursgenerering for " + folder)
-                            self.trigger(folder)
+            #if len(list_books_dod) > 2:
+            for folder in os.listdir(self.dir_in):
+                if folder.isdigit():
+                    if folder not in list_books_dod:
+                        logging.info("Trigger ressursgenerering for " + folder)
+                        self.trigger(folder)
 
     def on_book_deleted(self):
         self.utils.report.should_email = False
@@ -108,9 +106,9 @@ class GenerateResources(Pipeline):
         """
         if self.dp1_home is "" or self.validator_script is "":
             if self.init_environment():
-                self.utils.report.info("PIPELINE1_HOME ble funnet")
+                self.utils.report.info("Pipeline1 ble funnet")
             else:
-                self.utils.report.error("PIPELINE1_HOME ble ikke funnet. Avbryter..")
+                self.utils.report.error("Pipeline1 ble ikke funnet. Avbryter..")
                 return False
 
         self.utils.report.attachment(None, os.path.join(self.book['source']), "DEBUG")
@@ -170,7 +168,7 @@ class GenerateResources(Pipeline):
     def validate_book(self, path_ncc):
 
         if self.dp1_home is "":
-            self.utils.report.error("PIPELINE1 ble ikke funnet. Avslutter..")
+            self.utils.report.error("Pipeline1 ble ikke funnet. Avslutter..")
             return False
         input = "--input=" + path_ncc
         report = os.path.join(self.utils.report.reportDir(), "report.xml")
