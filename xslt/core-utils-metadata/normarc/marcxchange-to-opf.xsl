@@ -1018,17 +1018,15 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='130']">
-        <xsl:choose>
-            <xsl:when test="*:subfield[@code='a']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/></xsl:call-template>
-            </xsl:when>
-        </xsl:choose>
+        <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+        </xsl:for-each>
     </xsl:template>
     
     <!-- 2XX TITTEL-, ANSVARS- OG UTGIVELSESOPPLYSNINGER -->
     
     <xsl:template match="*:datafield[@tag='240']">
-        <xsl:for-each select="(*:subfield[@code='a'])[1]">
+        <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
@@ -1251,7 +1249,9 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='505']">
-        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:description.content'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+        <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:description.content'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+        </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='511']">

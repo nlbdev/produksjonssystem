@@ -894,13 +894,14 @@
     </x:scenario>
     
     <x:scenario label="regression: XTTE0570: A sequence of more than one item is not allowed as the value of parameter $value">
-        <!-- Får ikke feilmeldingen her. Dukket bare opp i Pentaho som har en merkelig XSLT-prosessor.
-             Men vi sjekker det nå i validate/normarc.sch, og håndterer det vet at det kun er ett element som lages her i marcxchange-to-opf.xsl. -->
+        <!-- *130$a i autoritetsregisteret (aut) -->
         <x:context>
             <marcxchange:record format="normarc" type="Bibliographic">
-                <marcxchange:datafield tag="240" ind1=" " ind2=" ">
+                <marcxchange:datafield tag="130" ind1=" " ind2=" ">
                     <marcxchange:subfield code="a">Don Giovanni, klaver, sopran, Batti, Batti o bel Masetto740</marcxchange:subfield>
                     <marcxchange:subfield code="a">Don Giovanni, klaver, sopran, Batti, Batti o bel Ma</marcxchange:subfield>
+                    <marcxchange:subfield code="%"><![CDATA[  ]]></marcxchange:subfield>
+                    <marcxchange:subfield code="3">17159800</marcxchange:subfield>
                 </marcxchange:datafield>
             </marcxchange:record>
         </x:context>
@@ -908,6 +909,7 @@
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <meta property="dc:title.alternative">Don Giovanni, klaver, sopran, Batti, Batti o bel Masetto740</meta>
+                <meta property="dc:title.alternative">Don Giovanni, klaver, sopran, Batti, Batti o bel Ma</meta>
             </metadata>
         </x:expect>
     </x:scenario>
