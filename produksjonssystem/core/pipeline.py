@@ -103,6 +103,7 @@ class Pipeline():
     def __init__(self,
                  retry_all=False,
                  retry_missing=False,
+                 check_identifiers=False,
                  overwrite=True,
                  during_working_hours=None,
                  during_night_and_weekend=None,
@@ -128,6 +129,7 @@ class Pipeline():
         self.overwrite = overwrite
         self.retry_all = retry_all
         self.retry_missing = retry_missing
+        self.check_identifiers = check_identifiers
 
         # By default, only retry during the night or during the weekend.
         # If during_working_hours is True but during_night_and_weekend is not specified,
@@ -795,14 +797,14 @@ class Pipeline():
                 edition = [fileStem]
 
                 # if input file is an epub (starts with 5), find all possible identifiers
-                try:
-                    if fileStem.startswith("5"):
+                if self.check_identifiers:
+                    try:
                         self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
                         edition, publication = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
                         edition = list(set(edition) | set(publication))
-                except Exception:
-                    logging.info("Metadata feilet under get_identifiers for fileStem")
-                # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
+                    except Exception:
+                        logging.info("Metadata feilet under get_identifiers for fileStem")
+                    # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
                 file_exists = False
 
                 try:

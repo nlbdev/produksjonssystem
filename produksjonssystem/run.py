@@ -236,21 +236,21 @@ class Produksjonssystem():
 
             # e-bok
             [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
-            [PrepareForEbook(retry_missing=True),             "pub-in-ebook",        "pub-ready-ebook"],
-            [PrepareForDocx(retry_missing=True),              "pub-in-ebook",        "pub-ready-docx"],
-            [NlbpubToHtml(retry_missing=True),                "pub-ready-ebook",     "html"],
-            [NLBpubToDocx(retry_missing=True),                "pub-ready-docx",      "docx"],
+            [PrepareForEbook(retry_missing=True, check_identifiers=True),             "pub-in-ebook",        "pub-ready-ebook"],
+            [PrepareForDocx(retry_missing=True, check_identifiers=True),              "pub-in-ebook",        "pub-ready-docx"],
+            [NlbpubToHtml(retry_missing=True, check_identifiers=True),                "pub-ready-ebook",     "html"],
+            [NLBpubToDocx(retry_missing=True, check_identifiers=True),                "pub-ready-docx",      "docx"],
             [Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
 
             # punktskrift
             [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
-            [PrepareForBraille(retry_missing=True),           "pub-in-braille",      "pub-ready-braille"],
-            [NlbpubToPef(retry_missing=True),                 "pub-ready-braille",   "pef"],
+            [PrepareForBraille(retry_missing=True, check_identifiers=True),           "pub-in-braille",      "pub-ready-braille"],
+            [NlbpubToPef(retry_missing=True, check_identifiers=True),                 "pub-ready-braille",   "pef"],
             [CheckPef(),                                      "pef",                 "pef-checked"],
 
             # innlest lydbok
             [InsertMetadataDaisy202(),                        "nlbpub",              "pub-in-audio"],
-            [NlbpubToNarrationEpub(retry_missing=True),       "pub-in-audio",        "epub_narration"],
+            [NlbpubToNarrationEpub(retry_missing=True, check_identifiers=True),       "pub-in-audio",        "epub_narration"],
             [DummyPipeline("Innlesing med Hindenburg",
                            labels=["Lydbok", "Statped"]),     "epub_narration",      "daisy202"],
 
