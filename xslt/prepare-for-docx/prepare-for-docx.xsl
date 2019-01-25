@@ -173,7 +173,15 @@
             <xsl:apply-templates select="@*"/>
 
             <xsl:variable name="title" select="/*/head/title/text()"/>
-            <xsl:variable name="language" select="/*/head/meta[@name = 'dc:language']/@content"/>
+            
+            <!--  select="/*/head/meta[@name = 'dc:language']/@content"/> -->
+            <xsl:variable name="language" 
+              
+                select="
+                for $language in (/*/head/meta[@name = 'dc:language']/@content)
+                return
+                replace($language, '^(.*), *(.*)$', '$2 $1')"/>
+           
             <xsl:variable name="authors"
                 select="
                     for $author in (/*/head/meta[@name = 'dc:creator']/@content)
@@ -211,9 +219,24 @@
 
             <p>
                 <xsl:value-of select="$title"/>
-                <xsl:if test="$language">
+             <!--   <xsl:if test="$language">
                     <xsl:value-of select="concat(' - ', $language)"/>
-                </xsl:if>
+                </xsl:if> -->
+                <xsl:choose>
+                    <xsl:when test="count($language) gt 1">
+                        <xsl:text> - </xsl:text>
+                        <xsl:value-of select="string-join($language[position() lt last()], ', ')"/>
+                        <xsl:text>/</xsl:text>
+                        <xsl:value-of select="$language[last()]"/>
+                    </xsl:when>
+                    <xsl:when test="count($language) = 1">
+                        <xsl:text> - </xsl:text>
+                        <xsl:value-of select="$language"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!-- No language -->
+                    </xsl:otherwise>
+                </xsl:choose>
                 <br/>
 
                 <xsl:value-of

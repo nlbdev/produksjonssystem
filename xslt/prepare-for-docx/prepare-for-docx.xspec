@@ -445,6 +445,7 @@
                     <meta name="nordic:guidelines" content="2015-1"/>
                     <meta name="nordic:supplier" content="AEL Data"/>
                     <meta name="dc:language" content="no"/>
+                    <meta name="dc:language" content="en"/>
                     <meta name="dc:format" content="EPUB3"/>
                     <meta name="dc:creator" content="Westersjø, Martin"/>
                     <meta name="dc:creator" content="Kval, Karl-Eirik"/>
@@ -486,6 +487,7 @@
                     <meta name="nordic:guidelines" content="2015-1"/>
                     <meta name="nordic:supplier" content="AEL Data"/>
                     <meta name="dc:language" content="no"/>
+                    <meta name="dc:language" content="en"/>
                     <meta name="dc:format" content="EPUB3"/>
                     <meta name="dc:creator" content="Westersjø, Martin"/>
                     <meta name="dc:creator" content="Kval, Karl-Eirik"/>
@@ -505,7 +507,7 @@
                     <style>...</style>
                 </head>
                 <body>
-                    <p>Mangfold - no<br/>(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br/>Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
+                    <p>Mangfold - no/en<br/>(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br/>Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
                     <p>Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>Oslo 2018, Statped læringsressurser og teknologiutvikling.</p>
                     <section>
                         <h1>xxx1 Merknad</h1>
