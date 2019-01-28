@@ -11,9 +11,9 @@ from core.utils.metadata import Metadata
 class InsertMetadata(Pipeline):
     # Ikke instansier denne klassen; bruk heller InsertMetadataEpub osv.
     uid = "insert-metadata"
-    gid = "insert-metadata"
+    # gid = "insert-metadata"
     title = "Sett inn metadata"
-    group_title = "Sett inn metadata"
+    # group_title = "Sett inn metadata"
     labels = ["Statped"]
     publication_format = None
     expected_processing_time = 30
