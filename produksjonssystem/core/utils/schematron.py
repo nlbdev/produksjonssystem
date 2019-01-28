@@ -3,6 +3,7 @@
 import os
 import tempfile
 import traceback
+from threading import RLock
 
 from lxml import etree as ElementTree
 
@@ -14,6 +15,10 @@ class Schematron():
 
     uid = "core-utils-schematron"
     schematron_dir = os.path.join(Xslt.xslt_dir, uid, "schematron/trunk/schematron/code")
+
+    # static
+    cache = {}
+    _cache_lock = RLock()
 
     def __init__(self, pipeline=None, schematron=None, source=None, report=None, cwd=None, attach_report=True):
         assert pipeline or report and cwd
@@ -33,50 +38,12 @@ class Schematron():
         self.success = False
 
         try:
-            temp_xml_1_obj = tempfile.NamedTemporaryFile()
-            temp_xml_1 = temp_xml_1_obj.name
-
-            temp_xml_2_obj = tempfile.NamedTemporaryFile()
-            temp_xml_2 = temp_xml_2_obj.name
-
-            temp_xml_3_obj = tempfile.NamedTemporaryFile()
-            temp_xml_3 = temp_xml_3_obj.name
+            compiled_schematron = Schematron.compile_schematron(schematron, cwd, report)
+            if not compiled_schematron:
+                return
 
             temp_xml_report_obj = tempfile.NamedTemporaryFile()
             temp_xml_report = temp_xml_report_obj.name
-
-            report.debug("Compiling schematron ({} + {}): {}".format("iso_dsdl_include.xsl", os.path.basename(schematron), os.path.basename(temp_xml_1)))
-            xslt = Xslt(report=report,
-                        cwd=cwd,
-                        stylesheet=os.path.join(self.schematron_dir, "iso_dsdl_include.xsl"),
-                        source=schematron,
-                        target=temp_xml_1,
-                        stdout_level="DEBUG",
-                        stderr_level="DEBUG")
-            if not xslt.success:
-                return
-
-            report.debug("Compiling schematron ({} + {}): {}".format("iso_abstract_expand.xsl", os.path.basename(schematron), os.path.basename(temp_xml_2)))
-            xslt = Xslt(report=report,
-                        cwd=cwd,
-                        stylesheet=os.path.join(self.schematron_dir, "iso_abstract_expand.xsl"),
-                        source=temp_xml_1,
-                        target=temp_xml_2,
-                        stdout_level="DEBUG",
-                        stderr_level="DEBUG")
-            if not xslt.success:
-                return
-
-            report.debug("Compiling schematron ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(schematron), os.path.basename(temp_xml_3)))
-            xslt = Xslt(report=report,
-                        cwd=cwd,
-                        stylesheet=os.path.join(self.schematron_dir, "iso_svrl_for_xslt2.xsl"),
-                        source=temp_xml_2,
-                        target=temp_xml_3,
-                        stdout_level="DEBUG",
-                        stderr_level="DEBUG")
-            if not xslt.success:
-                return
 
             report.debug("Validating against compiled Schematron ({} + {}): {}".format(
                 "iso_svrl_for_xslt2.xsl",
@@ -84,7 +51,7 @@ class Schematron():
                 os.path.basename(temp_xml_report)))
             xslt = Xslt(report=report,
                         cwd=cwd,
-                        stylesheet=temp_xml_3,
+                        stylesheet=compiled_schematron,
                         source=source,
                         target=temp_xml_report,
                         stdout_level="DEBUG",
@@ -157,3 +124,61 @@ class Schematron():
         except Exception:
             report.debug(traceback.format_exc(), preformatted=True)
             report.error("An error occured while running the Schematron (" + str(schematron) + ")")
+
+    def compile_schematron(schematron, cwd, report):
+        with Schematron._cache_lock:
+            if schematron in Schematron.cache and Schematron.cache[schematron] and os.path.isfile(Schematron.cache[schematron].name):
+                return Schematron.cache[schematron].name
+
+        try:
+            temp_xml_1_obj = tempfile.NamedTemporaryFile()
+            temp_xml_1 = temp_xml_1_obj.name
+
+            temp_xml_2_obj = tempfile.NamedTemporaryFile()
+            temp_xml_2 = temp_xml_2_obj.name
+
+            temp_xml_3_obj = tempfile.NamedTemporaryFile()
+            temp_xml_3 = temp_xml_3_obj.name
+
+            report.debug("Compiling schematron ({} + {}): {}".format("iso_dsdl_include.xsl", os.path.basename(schematron), os.path.basename(temp_xml_1)))
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=os.path.join(Schematron.schematron_dir, "iso_dsdl_include.xsl"),
+                        source=schematron,
+                        target=temp_xml_1,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
+            if not xslt.success:
+                return None
+
+            report.debug("Compiling schematron ({} + {}): {}".format("iso_abstract_expand.xsl", os.path.basename(schematron), os.path.basename(temp_xml_2)))
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=os.path.join(Schematron.schematron_dir, "iso_abstract_expand.xsl"),
+                        source=temp_xml_1,
+                        target=temp_xml_2,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
+            if not xslt.success:
+                return None
+
+            report.debug("Compiling schematron ({} + {}): {}".format("iso_svrl_for_xslt2.xsl", os.path.basename(schematron), os.path.basename(temp_xml_3)))
+            xslt = Xslt(report=report,
+                        cwd=cwd,
+                        stylesheet=os.path.join(Schematron.schematron_dir, "iso_svrl_for_xslt2.xsl"),
+                        source=temp_xml_2,
+                        target=temp_xml_3,
+                        stdout_level="DEBUG",
+                        stderr_level="DEBUG")
+            if not xslt.success:
+                return None
+
+            with Schematron._cache_lock:
+                Schematron.cache[schematron] = temp_xml_3_obj
+                return Schematron.cache[schematron].name
+
+        except Exception:
+            report.debug(traceback.format_exc(), preformatted=True)
+            report.error("An error occured while compiling the Schematron (" + str(schematron) + ")")
+
+        return None
