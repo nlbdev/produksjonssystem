@@ -181,6 +181,7 @@ class Report():
             addresses = list(addresses)
 
         if not library:
+            logging.info("[email] No library to filter on. Using unfiltered list of e-mail addresses.")
             return tuple(addresses)
 
         filtered = []
@@ -191,10 +192,10 @@ class Report():
                 filtered.append(address)
 
         if filtered:
-            logging.info("Filtered e-mail addresses. Only sending to: {}".format(library))
+            logging.info("[email] Filtered e-mail addresses. Only sending to: {}".format(library))
             return tuple(filtered)
         else:
-            logging.info("No addresses remaining after filtering. Using unfiltered list of e-mail addresses.")
+            logging.info("[email] No addresses remaining after filtering. Using unfiltered list of e-mail addresses.")
             return tuple(addresses)
 
     @staticmethod
