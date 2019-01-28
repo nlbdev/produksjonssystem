@@ -343,6 +343,11 @@ class Report():
                     li += "</li>"
                     markdown_text.append(li)
                 markdown_text.append("</ul>\n")
+                label_string = ""
+                filter_status = ""
+                for label in self.pipeline.labels:
+                    label_string += "[{}] ".format(label)
+                markdown_text.append("\n[{}] {} [{}] [status:{}]".format(self.pipeline.uid, label_string, self.pipeline.publication_format, status))
             markdown_text = "\n".join(markdown_text)
 
             # 2. parse string as Markdown and render as HTML
