@@ -22,12 +22,12 @@ from core.utils.filesystem import Filesystem
 # Import pipelines
 from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
-from epub_to_dtbook_braille import EpubToDtbookBraille
-from epub_to_dtbook_html import EpubToDtbookHTML
-#from generate_resources import GenerateResources
+# from epub_to_dtbook_braille import EpubToDtbookBraille
+# from epub_to_dtbook_html import EpubToDtbookHTML
+# from generate_resources import GenerateResources
 from html_to_dtbook import HtmlToDtbook
-from incoming_NLBPUB import (NLBPUB_incoming_validator,
-                             NLBPUB_incoming_warning, NLBPUB_validator)
+# from incoming_NLBPUB import (NLBPUB_incoming_validator,
+#                              NLBPUB_incoming_warning, NLBPUB_validator)
 from incoming_nordic import IncomingNordic
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
                              InsertMetadataXhtml)
@@ -42,7 +42,7 @@ from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from prepare_for_docx import PrepareForDocx
 from prepare_for_ebook import PrepareForEbook
-from update_metadata import UpdateMetadata
+# from update_metadata import UpdateMetadata
 from newsletter import Newsletter
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -228,7 +228,7 @@ class Produksjonssystem():
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
-            [UpdateMetadata(),                                "metadata",            "nlbpub"],
+            # [UpdateMetadata(),                                "metadata",            "nlbpub"],
             [HtmlToDtbook(),                                  "nlbpub",              "dtbook"],
 
             # EPUB
@@ -260,13 +260,13 @@ class Produksjonssystem():
                            labels=["Lydbok"]),                "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
-            #[EpubToDtbookHTML(),                              "master",              "dtbook_html"],
-            #[DummyPipeline("Pipeline 1 og Ammars skript",
+            # [EpubToDtbookHTML(),                              "master",              "dtbook_html"],
+            # [DummyPipeline("Pipeline 1 og Ammars skript",
             #               labels=["e-bok"]),                 "dtbook_html",         None],
 
             # DTBook for punktskrift
-            #[EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
-            #[DummyPipeline("Punktskrift med NorBraille",
+            # [EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
+            # [DummyPipeline("Punktskrift med NorBraille",
             #               labels=["Punktskrift"]),           "dtbook_braille",      None],
 
             # lydutdrag
