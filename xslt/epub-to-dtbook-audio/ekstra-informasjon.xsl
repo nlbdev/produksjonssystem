@@ -27,7 +27,7 @@
     <xsl:template name="lag-span-eller-p-med-ekstra-informasjon">
         <xsl:param name="informasjon" as="xs:string"/>
         <xsl:variable name="første-node-er-tekst" as="xs:boolean"
-            select="descendant-or-self::text()[normalize-space(.) ne ''][1]/parent::node() is current()"/>
+            select="(descendant-or-self::text()[normalize-space(.) ne ''][1]/parent::node() is current(), false())[1]"/>
         <xsl:variable name="element-navn" as="xs:string">
             <xsl:choose>
                 <xsl:when test="(normalize-space(.) eq '') and not(exists(child::element())) ">
