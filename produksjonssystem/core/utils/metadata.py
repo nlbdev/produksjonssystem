@@ -48,60 +48,36 @@ class Metadata:
     original_isbn_last_update = 0
     _original_isbn_lock = threading.RLock()
 
-    queue = []
     last_validation_results = {}
     last_metadata_errors = []  # timestamps for last automated metadata updates
     metadata_tempdir_obj = None
 
-    _update_lock = threading.RLock()
+    metadata_dirs = {}
+    _metadata_dirs_locks = {}
+    _metadata_dirs_locks_lock = threading.RLock()
 
     metadata_cache = {}
     _cache_update_lock = threading.RLock()
 
     @staticmethod
-    def get_metadata_dir():
+    def get_metadata_dir(identifier=None):
         if not Config.get("metadata_dir"):
             Metadata.metadata_tempdir_obj = tempfile.TemporaryDirectory(prefix="metadata-")
             logging.info("Using temporary directory for metadata: " + Metadata.metadata_tempdir_obj.name)
             Config.set("metadata_dir", Metadata.metadata_tempdir_obj.name)
 
-        return Config.get("metadata_dir")
+        if len(str(identifier)) > 0:
+            return os.path.join(Config.get("metadata_dir"), str(identifier))
+        else:
+            return Config.get("metadata_dir")
 
     @staticmethod
-    def update(pipeline, epub, publication_format="", *args, **kwargs):
-        # Only update one book at a time, to avoid potentially overwriting metadata while it's being used
-
-        ret = False
-        pipeline.utils.report.debug("Metadata.update venter på at Metadata._update_lock skal være ledig...")
-        with Metadata._update_lock:
-            pipeline.utils.report.debug("Metadata.update fikk Metadata._update_lock.")
-            ret = Metadata._update(pipeline, epub, publication_format, *args, **kwargs)
-            Metadata.queue = []
-            pipeline.utils.report.debug("Metadata.update er ferdig med Metadata._update_lock.")
-        return ret
-
-    @staticmethod
-    def get_metadata(pipeline, epub, publication_format="", *args, **kwargs):
-        # Only get metadata from one book at a time, to avoid potentially overwriting metadata while it's being used
-
-        ret = False
-        pipeline.utils.report.debug("Metadata.get_metadata venter på at Metadata._update_lock skal være ledig...")
-        with Metadata._update_lock:
-            pipeline.utils.report.debug("Metadata.get_metadata fikk Metadata._update_lock.")
-            ret = Metadata._get_metadata(pipeline, epub, publication_format, *args, **kwargs)
-            Metadata.queue = []
-            pipeline.utils.report.debug("Metadata.get_metadata er ferdig med Metadata._update_lock.")
-        return ret
-
-    @staticmethod
-    def validate_metadata(*args, **kwargs):
-        # Only get metadata from one book at a time, to avoid potentially overwriting metadata while it's being used
-
-        ret = False
-        with Metadata._update_lock:
-            ret = Metadata._validate_metadata(*args, **kwargs)
-            Metadata.queue = []
-        return ret
+    def get_dir_lock(dir):
+        assert dir is not None, "get_dir_lock: dir missing"
+        with Metadata._metadata_dirs_locks_lock:
+            if dir not in Metadata._metadata_dirs_locks:
+                Metadata._metadata_dirs_locks[dir] = threading.RLock()
+            return Metadata._metadata_dirs_locks[dir]
 
     @staticmethod
     def get_identifiers(report, epub_edition_identifier):
@@ -124,7 +100,7 @@ class Metadata:
         quickbase_edition_identifiers = []
         for edition_identifier in edition_identifiers:
             report.debug("Finner andre boknummer for {} i Quickbase...".format(edition_identifier))
-            metadata_dir = os.path.join(Metadata.get_metadata_dir(), edition_identifier)
+            metadata_dir = Metadata.get_metadata_dir(edition_identifier)
             catalogued = False
             missing_catalogue_warnings = []
             for library in [None, "statped"]:
@@ -132,7 +108,7 @@ class Metadata:
                 if os.path.isfile(rdf_path):
                     rdf = ElementTree.parse(rdf_path).getroot()
                     identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
-                    identifiers = [e.text for e in identifiers if re.match("^[\dA-Za-z._-]+$", e.text)]
+                    identifiers = [e.text for e in identifiers if re.match(r"^[\dA-Za-z._-]+$", e.text)]
                     quickbase_edition_identifiers.extend(identifiers)
                     if identifiers:
                         catalogued = True
@@ -160,7 +136,7 @@ class Metadata:
         metadata_dir_exists = False
         for identifier in identifiers:
             report.info("Ser etter {} i Quickbase...".format(identifier))
-            metadata_dir = os.path.join(Metadata.get_metadata_dir(), identifier)
+            metadata_dir = Metadata.get_metadata_dir(identifier)
             rdf_paths = [os.path.join(metadata_dir, 'quickbase/record{}.rdf'.format("-"+library if library else "")) for library in [None, "statped"]]
             if os.path.isdir(metadata_dir):
                 metadata_dir_exists = True
@@ -265,332 +241,336 @@ class Metadata:
             return sorted(set(edition_identifiers)), sorted(set(publication_identifiers))
 
     @staticmethod
-    def _update(pipeline, epub, publication_format="", insert=True, force_update=False):
+    def update(pipeline, epub, publication_format="", insert=True, force_update=False):
+        # Don't update the same book at the same time, to avoid potentially overwriting metadata while it's being used
+
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read and update metadata from EPUBs")
             return False
 
-        # make a queue for plotting purposes
-        queue_book = {}
-        queue_book["name"] = epub.identifier()
-        queue_book["source"] = os.path.join(Metadata.get_metadata_dir(), queue_book["name"])
-        queue_book["events"] = ["autotriggered"]
-        queue_book["last_event"] = int(time.time())
-        Metadata.queue = [queue_book]
+        pipeline.utils.report.debug("Metadata.update venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
+        metadata_dir = Metadata.get_metadata_dir(epub.identifier())
+        with Metadata.get_dir_lock(metadata_dir):
+            pipeline.utils.report.debug("Metadata.update fikk metadata-låsen for {}.".format(epub.identifier()))
 
-        last_updated = 0
-        last_updated_path = os.path.join(Metadata.get_metadata_dir(), epub.identifier(), "last_updated")
-        if os.path.exists(last_updated_path):
-            with open(last_updated_path, "r") as last_updated_file:
-                try:
-                    last = int(last_updated_file.readline().strip())
-                    last_updated = last
-                except Exception:
-                    logging.exception("Could not parse " + last_updated_path)
+            last_updated = 0
+            last_updated_path = os.path.join(metadata_dir, "last_updated")
+            if os.path.exists(last_updated_path):
+                with open(last_updated_path, "r") as last_updated_file:
+                    try:
+                        last = int(last_updated_file.readline().strip())
+                        last_updated = last
+                    except Exception:
+                        logging.exception("Could not parse " + last_updated_path)
 
-        # Get updated metadata for a book, but only if the metadata is older than max_update_interval minutes
-        now = int(time.time())
-        if now - last_updated > Metadata.max_update_interval or force_update:
-            success = Metadata.get_metadata(pipeline, epub, publication_format=publication_format)
-            if epub.identifier() in Metadata.last_validation_results:
-                del Metadata.last_validation_results[epub.identifier()]
-            if not success:
-                pipeline.utils.report.error("Klarte ikke å hente metadata for {}".format(epub.identifier()))
-                return False
+            # Get updated metadata for a book, but only if the metadata is older than max_update_interval minutes
+            now = int(time.time())
+            if now - last_updated > Metadata.max_update_interval or force_update:
+                success = Metadata.get_metadata(pipeline, epub, publication_format=publication_format)
+                if epub.identifier() in Metadata.last_validation_results:
+                    del Metadata.last_validation_results[epub.identifier()]
+                if not success:
+                    pipeline.utils.report.error("Klarte ikke å hente metadata for {}".format(epub.identifier()))
+                    return False
 
-        # If metadata has changed; re-validate the metadata
-        if not epub.identifier() in Metadata.last_validation_results:
-            Metadata.last_validation_results[epub.identifier()] = Metadata.validate_metadata(pipeline, epub, publication_format=publication_format)
+            # If metadata has changed; re-validate the metadata
+            if not epub.identifier() in Metadata.last_validation_results:
+                Metadata.last_validation_results[epub.identifier()] = Metadata.validate_metadata(pipeline, epub, publication_format=publication_format)
 
-        if not Metadata.last_validation_results[epub.identifier()]:
-            pipeline.utils.report.error("Metadata er ikke valide")
-            return False  # metadata is not valid
+            if not Metadata.last_validation_results[epub.identifier()]:
+                pipeline.utils.report.error("Metadata er ikke valide")
+                return False  # metadata is not valid
 
-        if insert:
-            # Return whether or not insertion of metadata was successful
-            return Metadata.insert_metadata(pipeline, epub, publication_format=publication_format)
-        else:
-            return True  # metadata is valid
+            if insert:
+                # Return whether or not insertion of metadata was successful
+                return Metadata.insert_metadata(pipeline, epub, publication_format=publication_format)
+            else:
+                return True  # metadata is valid
 
     @staticmethod
-    def _get_metadata(pipeline, epub, publication_format=""):
+    def get_metadata(pipeline, epub, publication_format=""):
+        # Don't update the same book at the same time, to avoid potentially overwriting metadata while it's being used
+
         if not isinstance(epub, Epub) or not epub.isepub():
             pipeline.utils.report.error("Can only read metadata from EPUBs")
             return False
 
-        # get path to OPF in EPUB (unzip if necessary)
-        opf = epub.opf_path()
-        opf_obj = None  # if tempfile is needed
-        opf_path = None
-        if os.path.isdir(epub.book_path):
-            opf_path = os.path.join(epub.book_path, opf)
-        else:
-            opf_obj = tempfile.NamedTemporaryFile()
-            with zipfile.ZipFile(epub.book_path, 'r') as archive, open(opf_obj.name, "wb") as opf_file:
-                opf_file.write(archive.read(opf))
-            opf_path = opf_obj.name
+        pipeline.utils.report.debug("Metadata.get_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
+        metadata_dir = Metadata.get_metadata_dir(epub.identifier())
+        with Metadata.get_dir_lock(metadata_dir):
+            pipeline.utils.report.debug("Metadata.get_metadata fikk metadata-låsen for {}.".format(epub.identifier()))
 
-        # Publication and edition identifiers are the same except for periodicals
-        edition_identifier = epub.identifier()
-        pub_identifier = edition_identifier
-        if len(pub_identifier) > 6:
-            pub_identifier = pub_identifier[:6]
+            # get path to OPF in EPUB (unzip if necessary)
+            opf = epub.opf_path()
+            opf_obj = None  # if tempfile is needed
+            opf_path = None
+            if os.path.isdir(epub.book_path):
+                opf_path = os.path.join(epub.book_path, opf)
+            else:
+                opf_obj = tempfile.NamedTemporaryFile()
+                with zipfile.ZipFile(epub.book_path, 'r') as archive, open(opf_obj.name, "wb") as opf_file:
+                    opf_file.write(archive.read(opf))
+                opf_path = opf_obj.name
 
-        # path to directory with metadata from Quickbase / Bibliofil / Bokbasen
-        metadata_dir = os.path.join(Metadata.get_metadata_dir(), edition_identifier)
-        pipeline.utils.report.attachment(None, metadata_dir, "DEBUG")
-        os.makedirs(metadata_dir, exist_ok=True)
-        os.makedirs(metadata_dir + '/quickbase', exist_ok=True)
-        os.makedirs(metadata_dir + '/bibliofil', exist_ok=True)
-        os.makedirs(metadata_dir + '/epub', exist_ok=True)
+            # Publication and edition identifiers are the same except for periodicals
+            edition_identifier = epub.identifier()
+            pub_identifier = edition_identifier
+            if len(pub_identifier) > 6:
+                pub_identifier = pub_identifier[:6]
 
-        with open(os.path.join(metadata_dir, "last_updated"), "w") as last_updated:
-            last_updated.write(str(int(time.time())))
+            pipeline.utils.report.attachment(None, metadata_dir, "DEBUG")
+            os.makedirs(metadata_dir, exist_ok=True)
+            os.makedirs(metadata_dir + '/quickbase', exist_ok=True)
+            os.makedirs(metadata_dir + '/bibliofil', exist_ok=True)
+            os.makedirs(metadata_dir + '/epub', exist_ok=True)
 
-        rdf_files = []
+            with open(os.path.join(metadata_dir, "last_updated"), "w") as last_updated:
+                last_updated.write(str(int(time.time())))
 
-        if not os.path.exists(opf_path):
-            pipeline.utils.report.error("Klarte ikke å lese OPF-filen.")
-            return False
+            rdf_files = []
 
-        md5_before = []
-        metadata_paths = []
-        for f in os.listdir(metadata_dir):
-            path = os.path.join(metadata_dir, f)
-            if os.path.isfile(path) and (f.endswith(".opf") or f.endswith(".html")):
-                metadata_paths.append(path)
-        metadata_paths.sort()
-        for path in metadata_paths:
-            md5_before.append(Filesystem.file_content_md5(path))
-
-        # ========== Collect metadata from sources ==========
-
-        pipeline.utils.report.debug("nlbpub-opf-to-rdf.xsl")
-        rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
-        pipeline.utils.report.debug("    source = " + opf_path)
-        pipeline.utils.report.debug("    target = " + rdf_path)
-        xslt = Xslt(pipeline,
-                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "nlbpub-opf-to-rdf.xsl"),
-                    source=opf_path,
-                    target=rdf_path,
-                    parameters={"include-source-reference": "true"})
-        if not xslt.success:
-            return False
-        rdf_files.append('epub/' + os.path.basename(rdf_path))
-
-        for library in [None, "statped"]:
-            pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/A)")
-            pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")))
-            pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/record{}.html'.format("-"+library if library else "")))
-            success = Metadata.get_quickbase(pipeline, "records", edition_identifier,
-                                             os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")), library=library)
-            if not success:
+            if not os.path.exists(opf_path):
+                pipeline.utils.report.error("Klarte ikke å lese OPF-filen.")
                 return False
-            xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
-                        source=os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")),
-                        target=os.path.join(metadata_dir, 'quickbase/record{}.html'.format("-"+library if library else "")),
-                        parameters={"output-rdfa": "true", "include-source-reference": "true", "library": "nlb" if not library else library})
-            if not xslt.success:
-                return False
-            pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/XML)")
-            rdf_path = os.path.join(metadata_dir, 'quickbase/record{}.rdf'.format("-"+library if library else ""))
-            pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")))
+
+            md5_before = []
+            metadata_paths = []
+            for f in os.listdir(metadata_dir):
+                path = os.path.join(metadata_dir, f)
+                if os.path.isfile(path) and (f.endswith(".opf") or f.endswith(".html")):
+                    metadata_paths.append(path)
+            metadata_paths.sort()
+            for path in metadata_paths:
+                md5_before.append(Filesystem.file_content_md5(path))
+
+            # ========== Collect metadata from sources ==========
+
+            pipeline.utils.report.debug("nlbpub-opf-to-rdf.xsl")
+            rdf_path = os.path.join(metadata_dir, 'epub/opf.rdf')
+            pipeline.utils.report.debug("    source = " + opf_path)
             pipeline.utils.report.debug("    target = " + rdf_path)
             xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
-                        source=os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")),
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "nlbpub-opf-to-rdf.xsl"),
+                        source=opf_path,
                         target=rdf_path,
-                        parameters={"include-source-reference": "true", "library": "nlb" if not library else library})
+                        parameters={"include-source-reference": "true"})
             if not xslt.success:
                 return False
-            rdf_files.append('quickbase/' + os.path.basename(rdf_path))
-
-        identifiers, publication_identifiers = Metadata.get_quickbase_identifiers(pipeline.utils.report, [edition_identifier], [pub_identifier])
-        identifiers, publication_identifiers = Metadata.get_bibliofil_identifiers(pipeline.utils.report, identifiers, publication_identifiers)
-
-        for format_edition_identifier in identifiers:
-            format_pub_identifier = format_edition_identifier
-            if len(format_pub_identifier) > 6:
-                format_pub_identifier = format_pub_identifier[:6]
-
-            pipeline.utils.report.debug("normarc/marcxchange-to-opf.xsl")
-            marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.xml')
-            current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.opf')
-            html_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.html')
-            rdf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.rdf')
-
-            pipeline.utils.report.debug("    source = " + marcxchange_path)
-            pipeline.utils.report.debug("    target = " + current_opf_path)
-            Metadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
-            if os.path.isfile(marcxchange_path):
-                xslt = Xslt(pipeline,
-                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
-                            source=marcxchange_path,
-                            target=current_opf_path,
-                            parameters={
-                              "nested": "true",
-                              "include-source-reference": "true",
-                              "identifier": format_edition_identifier
-                            })
-                if not xslt.success:
-                    return False
-                pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
-                pipeline.utils.report.debug("    source = " + current_opf_path)
-                pipeline.utils.report.debug("    target = " + html_path)
-                pipeline.utils.report.debug("    rdf    = " + rdf_path)
-                xslt = Xslt(pipeline,
-                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/bibliofil-to-rdf.xsl"),
-                            source=current_opf_path,
-                            target=html_path,
-                            parameters={"rdf-xml-path": rdf_path})
-                if not xslt.success:
-                    return False
-                rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
+            rdf_files.append('epub/' + os.path.basename(rdf_path))
 
             for library in [None, "statped"]:
-                pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/A)")
-                pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
-                                                                               "-"+library if library else "")))
-                pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.html'.format(
-                                                                               "-"+library if library else "")))
-                success = Metadata.get_quickbase(pipeline, "isbn", format_edition_identifier,
-                                                 os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
-                                                     "-"+library if library else "")),
-                                                 library=library)
+                pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/A)")
+                pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")))
+                pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/record{}.html'.format("-"+library if library else "")))
+                success = Metadata.get_quickbase(pipeline, "records", edition_identifier,
+                                                 os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")), library=library)
                 if not success:
                     return False
                 xslt = Xslt(pipeline,
-                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
-                            source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format("-"+library if library else "")),
-                            target=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.html'.format("-"+library if library else "")),
-                            parameters={"output-rdfa": "true", "include-source-reference": "true"})
+                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
+                            source=os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")),
+                            target=os.path.join(metadata_dir, 'quickbase/record{}.html'.format("-"+library if library else "")),
+                            parameters={"output-rdfa": "true", "include-source-reference": "true", "library": "nlb" if not library else library})
                 if not xslt.success:
                     return False
-                pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/XML)")
-                rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.rdf'.format("-"+library if library else ""))
-                pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
-                                                                                                                "-"+library if library else "")))
+                pipeline.utils.report.debug("quickbase-record-to-rdf.xsl (RDF/XML)")
+                rdf_path = os.path.join(metadata_dir, 'quickbase/record{}.rdf'.format("-"+library if library else ""))
+                pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")))
                 pipeline.utils.report.debug("    target = " + rdf_path)
                 xslt = Xslt(pipeline,
-                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
-                            source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
-                                                                                                                "-"+library if library else "")),
+                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-record-to-rdf.xsl"),
+                            source=os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")),
                             target=rdf_path,
-                            parameters={"include-source-reference": "true"})
+                            parameters={"include-source-reference": "true", "library": "nlb" if not library else library})
                 if not xslt.success:
                     return False
                 rdf_files.append('quickbase/' + os.path.basename(rdf_path))
 
-        # ========== Combine metadata ==========
+            identifiers, publication_identifiers = Metadata.get_quickbase_identifiers(pipeline.utils.report, [edition_identifier], [pub_identifier])
+            identifiers, publication_identifiers = Metadata.get_bibliofil_identifiers(pipeline.utils.report, identifiers, publication_identifiers)
 
-        rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
-        opf_metadata = {"": rdf_metadata.replace(".rdf", ".opf")}
-        html_metadata = {"": rdf_metadata.replace(".rdf", ".html")}
+            for format_edition_identifier in identifiers:
+                format_pub_identifier = format_edition_identifier
+                if len(format_pub_identifier) > 6:
+                    format_pub_identifier = format_pub_identifier[:6]
 
-        for f in Metadata.formats:
-            format_id = re.sub(r"[^a-z0-9]", "", f.lower())
-            opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
-            html_metadata[f] = opf_metadata[f].replace(".opf", ".html")
+                pipeline.utils.report.debug("normarc/marcxchange-to-opf.xsl")
+                marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.xml')
+                current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.opf')
+                html_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.html')
+                rdf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.rdf')
 
-        pipeline.utils.report.debug("rdf-join.xsl")
-        pipeline.utils.report.debug("    metadata-dir = " + metadata_dir + "/")
-        pipeline.utils.report.debug("    rdf-files    = " + " ".join(rdf_files))
-        pipeline.utils.report.debug("    target       = " + rdf_metadata)
-        xslt = Xslt(pipeline,
-                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-join.xsl"),
-                    template="main",
-                    target=rdf_metadata,
-                    parameters={
-                        "metadata-dir": metadata_dir + "/",
-                        "rdf-files": " ".join(rdf_files)
-                    })
-        if not xslt.success:
-            return False
+                pipeline.utils.report.debug("    source = " + marcxchange_path)
+                pipeline.utils.report.debug("    target = " + current_opf_path)
+                Metadata.get_bibliofil(pipeline, format_pub_identifier, marcxchange_path)
+                if os.path.isfile(marcxchange_path):
+                    xslt = Xslt(pipeline,
+                                stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
+                                source=marcxchange_path,
+                                target=current_opf_path,
+                                parameters={
+                                  "nested": "true",
+                                  "include-source-reference": "true",
+                                  "identifier": format_edition_identifier
+                                })
+                    if not xslt.success:
+                        return False
+                    pipeline.utils.report.debug("normarc/bibliofil-to-rdf.xsl")
+                    pipeline.utils.report.debug("    source = " + current_opf_path)
+                    pipeline.utils.report.debug("    target = " + html_path)
+                    pipeline.utils.report.debug("    rdf    = " + rdf_path)
+                    xslt = Xslt(pipeline,
+                                stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/bibliofil-to-rdf.xsl"),
+                                source=current_opf_path,
+                                target=html_path,
+                                parameters={"rdf-xml-path": rdf_path})
+                    if not xslt.success:
+                        return False
+                    rdf_files.append('bibliofil/' + os.path.basename(rdf_path))
 
-        # ========== Enrich dc:language information ==========
+                for library in [None, "statped"]:
+                    pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/A)")
+                    pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                                                                                   "-"+library if library else "")))
+                    pipeline.utils.report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.html'.format(
+                                                                                   "-"+library if library else "")))
+                    success = Metadata.get_quickbase(pipeline, "isbn", format_edition_identifier,
+                                                     os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                                                         "-"+library if library else "")),
+                                                     library=library)
+                    if not success:
+                        return False
+                    xslt = Xslt(pipeline,
+                                stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
+                                source=os.path.join(metadata_dir, 'quickbase/isbn-{}{}.xml'.format(format_edition_identifier, "-"+library if library else "")),
+                                target=os.path.join(metadata_dir, 'quickbase/isbn-{}{}.html'.format(format_edition_identifier, "-"+library if library else "")),
+                                parameters={"output-rdfa": "true", "include-source-reference": "true"})
+                    if not xslt.success:
+                        return False
+                    pipeline.utils.report.debug("quickbase-isbn-to-rdf.xsl (RDF/XML)")
+                    rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.rdf'.format("-"+library if library else ""))
+                    pipeline.utils.report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                                                                                                                    "-"+library if library else "")))
+                    pipeline.utils.report.debug("    target = " + rdf_path)
+                    xslt = Xslt(pipeline,
+                                stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
+                                source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                                                                                                                    "-"+library if library else "")),
+                                target=rdf_path,
+                                parameters={"include-source-reference": "true"})
+                    if not xslt.success:
+                        return False
+                    rdf_files.append('quickbase/' + os.path.basename(rdf_path))
 
-        temp_rdf_file_obj = tempfile.NamedTemporaryFile()
-        temp_rdf_file = temp_rdf_file_obj.name
+            # ========== Combine metadata ==========
 
-        pipeline.utils.report.debug("iso-639.xsl")
-        pipeline.utils.report.debug("    source    = " + rdf_metadata)
-        pipeline.utils.report.debug("    target       = " + temp_rdf_file)
-        xslt = Xslt(pipeline,
-                    stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc", "iso-639.xsl"),
-                    source=rdf_metadata,
-                    target=temp_rdf_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_rdf_file, rdf_metadata)
+            rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
+            opf_metadata = {"": rdf_metadata.replace(".rdf", ".opf")}
+            html_metadata = {"": rdf_metadata.replace(".rdf", ".html")}
 
-        # ========== Convert to OPF ==========
+            for f in Metadata.formats:
+                format_id = re.sub(r"[^a-z0-9]", "", f.lower())
+                opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
+                html_metadata[f] = opf_metadata[f].replace(".opf", ".html")
 
-        xslt_success = True
-        for f in opf_metadata:
-            pipeline.utils.report.debug("rdf-to-opf.xsl")
-            pipeline.utils.report.debug("    source = " + rdf_metadata)
-            pipeline.utils.report.debug("    target = " + opf_metadata[f])
+            pipeline.utils.report.debug("rdf-join.xsl")
+            pipeline.utils.report.debug("    metadata-dir = " + metadata_dir + "/")
+            pipeline.utils.report.debug("    rdf-files    = " + " ".join(rdf_files))
+            pipeline.utils.report.debug("    target       = " + rdf_metadata)
             xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-to-opf.xsl"),
-                        source=rdf_metadata,
-                        target=opf_metadata[f],
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-join.xsl"),
+                        template="main",
+                        target=rdf_metadata,
                         parameters={
-                            "format": f,
-                            "update-identifier": "true"
+                            "metadata-dir": metadata_dir + "/",
+                            "rdf-files": " ".join(rdf_files)
                         })
-
             if not xslt.success:
-                xslt_success = False
+                return False
 
-            xml = ElementTree.parse(opf_metadata[f]).getroot()
-            if not xml.xpath("/*[local-name()='metadata']/*[name()='dc:identifier']"):
-                pipeline.utils.report.warn("Ingen boknummer for {}. Kan ikke klargjøre metadata for dette formatet.".format(f))
-                os.remove(opf_metadata[f])
-                if os.path.isfile(html_metadata[f]):
-                    os.remove(html_metadata[f])
-                continue
+            # ========== Enrich dc:language information ==========
 
-            pipeline.utils.report.debug("opf-to-html.xsl")
-            pipeline.utils.report.debug("    source = " + opf_metadata[f])
-            pipeline.utils.report.debug("    target = " + html_metadata[f])
+            temp_rdf_file_obj = tempfile.NamedTemporaryFile()
+            temp_rdf_file = temp_rdf_file_obj.name
+
+            pipeline.utils.report.debug("iso-639.xsl")
+            pipeline.utils.report.debug("    source    = " + rdf_metadata)
+            pipeline.utils.report.debug("    target       = " + temp_rdf_file)
             xslt = Xslt(pipeline,
-                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "opf-to-html.xsl"),
-                        source=opf_metadata[f],
-                        target=html_metadata[f])
+                        stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc", "iso-639.xsl"),
+                        source=rdf_metadata,
+                        target=temp_rdf_file)
             if not xslt.success:
-                xslt_success = False
+                return False
+            shutil.copy(temp_rdf_file, rdf_metadata)
 
-        if not xslt_success:
-            return False
+            # ========== Convert to OPF ==========
 
-        # ========== Validate metadata ==========
+            xslt_success = True
+            for f in opf_metadata:
+                pipeline.utils.report.debug("rdf-to-opf.xsl")
+                pipeline.utils.report.debug("    source = " + rdf_metadata)
+                pipeline.utils.report.debug("    target = " + opf_metadata[f])
+                xslt = Xslt(pipeline,
+                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "rdf-to-opf.xsl"),
+                            source=rdf_metadata,
+                            target=opf_metadata[f],
+                            parameters={
+                                "format": f,
+                                "update-identifier": "true"
+                            })
 
-        if not Metadata.validate_metadata(pipeline, epub, publication_format=publication_format):
-            return False
+                if not xslt.success:
+                    xslt_success = False
 
-        # ========== Trigger conversions if necessary ==========
+                xml = ElementTree.parse(opf_metadata[f]).getroot()
+                if not xml.xpath("/*[local-name()='metadata']/*[name()='dc:identifier']"):
+                    pipeline.utils.report.warn("Ingen boknummer for {}. Kan ikke klargjøre metadata for dette formatet.".format(f))
+                    os.remove(opf_metadata[f])
+                    if os.path.isfile(html_metadata[f]):
+                        os.remove(html_metadata[f])
+                    continue
 
-        md5_after = []
-        metadata_paths = []
-        for f in os.listdir(metadata_dir):
-            path = os.path.join(metadata_dir, f)
-            if os.path.isfile(path) and (f.endswith(".opf") or f.endswith(".html")):
-                metadata_paths.append(path)
-        metadata_paths.sort()
-        for path in metadata_paths:
-            md5_after.append(Filesystem.file_content_md5(path))
+                pipeline.utils.report.debug("opf-to-html.xsl")
+                pipeline.utils.report.debug("    source = " + opf_metadata[f])
+                pipeline.utils.report.debug("    target = " + html_metadata[f])
+                xslt = Xslt(pipeline,
+                            stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "opf-to-html.xsl"),
+                            source=opf_metadata[f],
+                            target=html_metadata[f])
+                if not xslt.success:
+                    xslt_success = False
 
-        md5_before = "".join(md5_before)
-        md5_after = "".join(md5_after)
+            if not xslt_success:
+                return False
 
-        if md5_before != md5_after:
-            pipeline.utils.report.info("Metadata for '{}' has changed".format(epub.identifier()))
-            Metadata.trigger_metadata_pipelines(pipeline, epub.identifier(), exclude=pipeline.uid)
-        else:
-            pipeline.utils.report.debug("Metadata for '{}' has not changed".format(epub.identifier()))
+            # ========== Validate metadata ==========
 
-        return True
+            if not Metadata.validate_metadata(pipeline, epub, publication_format=publication_format):
+                return False
+
+            # ========== Trigger conversions if necessary ==========
+
+            md5_after = []
+            metadata_paths = []
+            for f in os.listdir(metadata_dir):
+                path = os.path.join(metadata_dir, f)
+                if os.path.isfile(path) and (f.endswith(".opf") or f.endswith(".html")):
+                    metadata_paths.append(path)
+            metadata_paths.sort()
+            for path in metadata_paths:
+                md5_after.append(Filesystem.file_content_md5(path))
+
+            md5_before = "".join(md5_before)
+            md5_after = "".join(md5_after)
+
+            if md5_before != md5_after:
+                pipeline.utils.report.info("Metadata for '{}' har blitt endret".format(epub.identifier()))
+                Metadata.trigger_metadata_pipelines(pipeline, epub.identifier(), exclude=pipeline.uid)
+            else:
+                pipeline.utils.report.debug("Metadata for '{}' har ikke blitt endret".format(epub.identifier()))
+
+            return True
 
     @staticmethod
     def trigger_metadata_pipelines(pipeline, book_id, exclude=None):
@@ -621,128 +601,135 @@ class Metadata:
                 pipeline.utils.report.info("Trigger: {}".format(pipeline_uid))
 
     @staticmethod
-    def _validate_metadata(pipeline, epub, publication_format=""):
+    def validate_metadata(pipeline, epub, publication_format=""):
+        # Don't update the same book at the same time, to avoid potentially overwriting metadata while it's being used
+
         if not isinstance(epub, Epub) or not epub.isepub():
-            pipeline.utils.report.error("Can only update metadata in EPUBs")
+            pipeline.utils.report.error("Can only read metadata from EPUBs")
             return False
 
-        assert not publication_format or publication_format in Metadata.formats, "Format for validating metadata, when specified, must be one of: {}".format(
-            ", ".join(Metadata.formats))
+        pipeline.utils.report.debug("Metadata.validate_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
+        metadata_dir = Metadata.get_metadata_dir(epub.identifier())
+        with Metadata.get_dir_lock(metadata_dir):
+            pipeline.utils.report.debug("Metadata.validate_metadata fikk metadata-låsen for {}.".format(epub.identifier()))
 
-        metadata_dir = os.path.join(Metadata.get_metadata_dir(), epub.identifier())
+            assert not publication_format or publication_format in Metadata.formats, (
+                "Format for validating metadata, when specified, must be one of: {}".format(", ".join(Metadata.formats))
+            )
 
-        rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
-        opf_metadata = {"": rdf_metadata.replace(".rdf", ".opf")}
-        html_metadata = {"": rdf_metadata.replace(".rdf", ".html")}
+            rdf_metadata = os.path.join(metadata_dir, "metadata.rdf")
+            opf_metadata = {"": rdf_metadata.replace(".rdf", ".opf")}
+            html_metadata = {"": rdf_metadata.replace(".rdf", ".html")}
 
-        if not os.path.isfile(rdf_metadata):
-            if not Metadata.get_metadata(pipeline, epub, publication_format=publication_format):
-                pipeline.utils.report.error("Could not retrieve metadata; metadata.rdf does not exist")
+            if not os.path.isfile(rdf_metadata):
+                if not Metadata.get_metadata(pipeline, epub, publication_format=publication_format):
+                    pipeline.utils.report.error("Could not retrieve metadata; metadata.rdf does not exist")
+                    return False
+
+            for f in Metadata.formats:
+                format_id = re.sub(r"[^a-z0-9]", "", f.lower())
+                if not publication_format or f == publication_format or f == "EPUB":
+                    opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
+                    html_metadata[f] = opf_metadata[f].replace(".opf", ".html")
+
+            # Lag separat rapport/e-post for Bibliofil-metadata
+            normarc_report_dir = os.path.join(pipeline.utils.report.reportDir(), "normarc")
+            normarc_report = Report(None,
+                                    title=Metadata.title,
+                                    report_dir=normarc_report_dir,
+                                    dir_base=pipeline.dir_base,
+                                    uid=Metadata.uid)
+
+            signatureRegistration = ElementTree.parse(rdf_metadata).getroot()
+            nsmap = {
+                'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+                'nlbprod': 'http://www.nlb.no/production'
+            }
+            signatureRegistration = signatureRegistration.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']" +
+                                                                "/nlbprod:signatureRegistration/text()", namespaces=nsmap)
+            signatureRegistration = signatureRegistration[0].lower() if signatureRegistration else None
+            normarc_report.info("*Ansvarlig for katalogisering*: {}".format(signatureRegistration if signatureRegistration else "(ukjent)"))
+
+            # Valider Bibliofil-metadata
+            normarc_success = True
+            marcxchange_paths = []
+            for f in os.listdir(os.path.join(metadata_dir, "bibliofil")):
+                if f.endswith(".xml"):
+                    marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
+            for marcxchange_path in marcxchange_paths:
+                normarc_report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
+                format_from_normarc, marc019b = Metadata.get_format_from_normarc(normarc_report, marcxchange_path)
+                if not format_from_normarc and marc019b:
+                    normarc_report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0],
+                                                                                                        marc019b))
+                if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
+                    continue
+
+                sch = Schematron(report=normarc_report,
+                                 cwd=metadata_dir,
+                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/normarc.sch"),
+                                 source=marcxchange_path)
+                if not sch.success:
+                    normarc_report.error("Validering av Bibliofil-metadata feilet")
+                    normarc_success = False
+
+            # Send rapport
+            normarc_report.attachLog()
+            signatureRegistrationAddress = None
+            if not normarc_success:
+                Metadata.last_metadata_errors.append(int(time.time()))
+                if signatureRegistration:
+                    for addr in Config.get("librarians", default=[]):
+                        if signatureRegistration == addr.lower():
+                            signatureRegistrationAddress = addr
+                if not signatureRegistrationAddress:
+                    normarc_report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: {}".format(
+                                                        signatureRegistration if signatureRegistration else "(ukjent)",
+                                                        ", ".join([addr.lower() for addr in Config.get("default_librarian", default=[])])))
+                    normarc_report.debug("Aktive bibliotekarer: {}".format(
+                                                        ", ".join([addr.lower() for addr in Config.get("librarians", default=[])])))
+                    signatureRegistrationAddress = Config.get("default_librarian", default=[])
+
+            # Kopier Bibliofil-metadata-rapporten inn i samme rapport som resten av konverteringen
+            for message_type in normarc_report._messages:
+                for message in normarc_report._messages[message_type]:
+                    pipeline.utils.report._messages[message_type].append(message)
+
+            if not normarc_success:
+                cached_rdf_metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
+                library = [m for m in cached_rdf_metadata if m["publication"] in [None, epub.identifier()] and m["property"] == "schema:library"]
+                library = library[0]["value"] if len(library) > 0 else None
+
+                Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
+                signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
+                normarc_report.email(pipeline.email_settings["smtp"],
+                                     pipeline.email_settings["sender"],
+                                     signatureRegistrationAddress,
+                                     subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
+                pipeline.utils.report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
+                                           ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
                 return False
 
-        for f in Metadata.formats:
-            format_id = re.sub(r"[^a-z0-9]", "", f.lower())
-            if not publication_format or f == publication_format or f == "EPUB":
-                opf_metadata[f] = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
-                html_metadata[f] = opf_metadata[f].replace(".opf", ".html")
+            for f in opf_metadata:
+                if os.path.isfile(opf_metadata[f]):
+                    pipeline.utils.report.info("Validerer OPF-metadata for " + (f if f else "åndsverk"))
+                    sch = Schematron(pipeline=pipeline,
+                                     schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/opf.sch"),
+                                     source=opf_metadata[f])
+                    if not sch.success:
+                        pipeline.utils.report.error("Validering av OPF-metadata feilet")
+                        return False
 
-        # Lag separat rapport/e-post for Bibliofil-metadata
-        normarc_report_dir = os.path.join(pipeline.utils.report.reportDir(), "normarc")
-        normarc_report = Report(None,
-                                title=Metadata.title,
-                                report_dir=normarc_report_dir,
-                                dir_base=pipeline.dir_base,
-                                uid=Metadata.uid)
+                if os.path.isfile(html_metadata[f]):
+                    pipeline.utils.report.info("Validerer HTML-metadata for " + (f if f else "åndsverk"))
+                    sch = Schematron(pipeline=pipeline,
+                                     schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/html-metadata.sch"),
+                                     source=html_metadata[f])
+                    if not sch.success:
+                        pipeline.utils.report.error("Validering av HTML-metadata feilet")
+                        return False
 
-        signatureRegistration = ElementTree.parse(rdf_metadata).getroot()
-        nsmap = {
-            'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-            'nlbprod': 'http://www.nlb.no/production'
-        }
-        signatureRegistration = signatureRegistration.xpath("/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://schema.org/CreativeWork']" +
-                                                            "/nlbprod:signatureRegistration/text()", namespaces=nsmap)
-        signatureRegistration = signatureRegistration[0].lower() if signatureRegistration else None
-        normarc_report.info("*Ansvarlig for katalogisering*: {}".format(signatureRegistration if signatureRegistration else "(ukjent)"))
-
-        # Valider Bibliofil-metadata
-        normarc_success = True
-        marcxchange_paths = []
-        for f in os.listdir(os.path.join(metadata_dir, "bibliofil")):
-            if f.endswith(".xml"):
-                marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
-        for marcxchange_path in marcxchange_paths:
-            normarc_report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
-            format_from_normarc, marc019b = Metadata.get_format_from_normarc(normarc_report, marcxchange_path)
-            if not format_from_normarc and marc019b:
-                normarc_report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0], marc019b))
-            if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
-                continue
-
-            sch = Schematron(report=normarc_report,
-                             cwd=metadata_dir,
-                             schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/normarc.sch"),
-                             source=marcxchange_path)
-            if not sch.success:
-                normarc_report.error("Validering av Bibliofil-metadata feilet")
-                normarc_success = False
-
-        # Send rapport
-        normarc_report.attachLog()
-        signatureRegistrationAddress = None
-        if not normarc_success:
-            Metadata.last_metadata_errors.append(int(time.time()))
-            if signatureRegistration:
-                for addr in Config.get("librarians", default=[]):
-                    if signatureRegistration == addr.lower():
-                        signatureRegistrationAddress = addr
-            if not signatureRegistrationAddress:
-                normarc_report.warn("'{}' er ikke en aktiv bibliotekar, sender til hovedansvarlig istedenfor: {}".format(
-                                                    signatureRegistration if signatureRegistration else "(ukjent)",
-                                                    ", ".join([addr.lower() for addr in Config.get("default_librarian", default=[])])))
-                normarc_report.debug("Aktive bibliotekarer: {}".format(
-                                                    ", ".join([addr.lower() for addr in Config.get("librarians", default=[])])))
-                signatureRegistrationAddress = Config.get("default_librarian", default=[])
-
-        # Kopier Bibliofil-metadata-rapporten inn i samme rapport som resten av konverteringen
-        for message_type in normarc_report._messages:
-            for message in normarc_report._messages[message_type]:
-                pipeline.utils.report._messages[message_type].append(message)
-
-        if not normarc_success:
-            cached_rdf_metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
-            library = [m for m in cached_rdf_metadata if m["publication"] in [None, epub.identifier()] and m["property"] == "schema:library"]
-            library = library[0]["value"] if len(library) > 0 else None
-
-            Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
-            signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
-            normarc_report.email(pipeline.email_settings["smtp"],
-                                 pipeline.email_settings["sender"],
-                                 signatureRegistrationAddress,
-                                 subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
-            pipeline.utils.report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
-                                       ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
-            return False
-
-        for f in opf_metadata:
-            if os.path.isfile(opf_metadata[f]):
-                pipeline.utils.report.info("Validerer OPF-metadata for " + (f if f else "åndsverk"))
-                sch = Schematron(pipeline=pipeline,
-                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/opf.sch"),
-                                 source=opf_metadata[f])
-                if not sch.success:
-                    pipeline.utils.report.error("Validering av OPF-metadata feilet")
-                    return False
-
-            if os.path.isfile(html_metadata[f]):
-                pipeline.utils.report.info("Validerer HTML-metadata for " + (f if f else "åndsverk"))
-                sch = Schematron(pipeline=pipeline,
-                                 schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/html-metadata.sch"),
-                                 source=html_metadata[f])
-                if not sch.success:
-                    pipeline.utils.report.error("Validering av HTML-metadata feilet")
-                    return False
-
-        return True
+            return True
 
     @staticmethod
     def insert_metadata(pipeline, epub, publication_format=""):
@@ -760,8 +747,7 @@ class Metadata:
 
         # ========== Update metadata in EPUB ==========
 
-        metadata_dir = os.path.join(Metadata.get_metadata_dir(), epub.identifier())
-
+        metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         format_id = re.sub(r"[^a-z0-9]", "", publication_format.lower())
         opf_metadata = os.path.join(metadata_dir, "metadata-{}.opf".format(format_id))
         html_metadata = opf_metadata.replace(".opf", ".html")
@@ -769,6 +755,18 @@ class Metadata:
         if not os.path.exists(opf_metadata) or not os.path.exists(html_metadata):
             pipeline.utils.report.error("Finner ikke metadata for formatet \"{}\".".format(publication_format))
             return False
+
+        pipeline.utils.report.debug("Metadata.insert_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
+        opf_metadata_obj = tempfile.NamedTemporaryFile()
+        html_metadata_obj = tempfile.NamedTemporaryFile()
+        with Metadata.get_dir_lock(metadata_dir):
+            pipeline.utils.report.debug("Metadata.insert_metadata fikk metadata-låsen for {}.".format(epub.identifier()))
+
+            # Temporary copy of needed metadata files
+            shutil.copy(opf_metadata, opf_metadata_obj.name)
+            shutil.copy(html_metadata, html_metadata_obj.name)
+            opf_metadata = opf_metadata_obj.name
+            html_metadata = html_metadata_obj.name
 
         updated_file_obj = tempfile.NamedTemporaryFile()
         updated_file = updated_file_obj.name
@@ -933,12 +931,22 @@ class Metadata:
 
     @staticmethod
     def add_production_info(report, identifier, publication_format=""):
-        metadata_dir = os.path.join(Metadata.get_metadata_dir(), identifier)
+        report.debug("Metadata.add_production_info venter på at metadata-låsen for {} skal være ledig...".format(identifier))
+        metadata_dir = Metadata.get_metadata_dir(identifier)
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
-        rdf = ElementTree.parse(rdf_path).getroot() if os.path.isfile(rdf_path) else None
+        rdf_path_obj = tempfile.NamedTemporaryFile()
 
-        report.info("<h2>Signaturer</h2>")
-        if rdf is not None:
+        if os.path.isfile(rdf_path):
+            with Metadata.get_dir_lock(metadata_dir):
+                report.debug("Metadata.add_production_info fikk metadata-låsen for {}.".format(identifier))
+
+                # Temporary copy of RDF file
+                shutil.copy(rdf_path, rdf_path_obj.name)
+                rdf_path = rdf_path_obj.name
+
+            rdf = ElementTree.parse(rdf_path).getroot() if os.path.isfile(rdf_path) else None
+
+            report.info("<h2>Signaturer</h2>")
             signaturesWork = rdf.xpath("/*/*[rdf:type/@rdf:resource='http://schema.org/CreativeWork']/nlbprod:*[starts-with(local-name(),'signature')]",
                                        namespaces=rdf.nsmap)
             signaturesPublication = rdf.xpath(
@@ -956,6 +964,7 @@ class Metadata:
                     report.info("<dt>{}</dt>".format(source))
                     report.info("<dd>{}</dd>".format(value))
                 report.info("</dl>")
+
         else:
             report.info("Metadata om produksjonen er ikke tilgjengelig: {}".format(identifier))
 
@@ -996,11 +1005,21 @@ class Metadata:
             pipeline.utils.report.info("Alle Statped-bøker skal produseres i alle formater")
             return True, True
 
-        metadata_dir = os.path.join(Metadata.get_metadata_dir(), epub.identifier())
+        pipeline.utils.report.debug("Metadata.should_produce venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
+        metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
+        rdf_path_obj = tempfile.NamedTemporaryFile()
+
         if not os.path.isfile(rdf_path):
             pipeline.utils.report.warn("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
             return False, False
+
+        with Metadata.get_dir_lock(metadata_dir):
+            pipeline.utils.report.debug("Metadata.should_produce fikk metadata-låsen for {}.".format(epub.identifier()))
+
+            # Temporary copy of RDF file
+            shutil.copy(rdf_path, rdf_path_obj.name)
+            rdf_path = rdf_path_obj.name
 
         rdf = ElementTree.parse(rdf_path).getroot()
         metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
@@ -1113,7 +1132,6 @@ class Metadata:
             return book_metadata
 
         with Metadata._cache_update_lock:
-
             # remove old metadata from cache
             if not Metadata.metadata_cache:
                 Metadata.metadata_cache = {}
@@ -1123,69 +1141,92 @@ class Metadata:
             if force_update and path in Metadata.metadata_cache:
                 del Metadata.metadata_cache[path]
 
-            # return cached metadata
+            # return cached metadata if cached metadata is not old
             if path in Metadata.metadata_cache:
                 return Metadata.metadata_cache[path]["metadata"]
 
-            Metadata.metadata_cache[path] = {
-                "cache_time": time.time(),
-                "metadata": book_metadata
-            }
-
-            # Try getting EPUB metadata
-            if os.path.exists(path):
-                epub = Epub(pipeline, path)
-                if epub.isepub(report_errors=False):
-                    book_metadata["identifier"] = epub.identifier()
-                    book_metadata["title"] = epub.meta("dc:title")
-                    Metadata.metadata_cache[path]["metadata"] = book_metadata
+        # Try getting EPUB metadata
+        if os.path.exists(path):
+            epub = Epub(pipeline, path)
+            if epub.isepub(report_errors=False):
+                book_metadata["identifier"] = epub.identifier()
+                book_metadata["title"] = epub.meta("dc:title")
+                with Metadata._cache_update_lock:
+                    Metadata.metadata_cache[path] = {
+                        "cache_time": time.time(),
+                        "metadata": book_metadata
+                    }
                     return book_metadata
 
-            # Try getting HTML or DAISY 2.02 metadata
-            html_files = []
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    if file.endswith("html"):
-                        html_files.append(os.path.join(root, file))
+        # Try getting HTML or DAISY 2.02 metadata
+        html_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith("html"):
+                    html_files.append(os.path.join(root, file))
 
-            # Try getting DTBook metadata
-            xml_files = []
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    if file.endswith(".xml"):
-                        xml_files.append(os.path.join(root, file))
+        # Try getting DTBook metadata
+        xml_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(".xml"):
+                    xml_files.append(os.path.join(root, file))
 
-            # Try getting PEF metadata
-            pef_files = []
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    if file.endswith(".pef"):
-                        pef_files.append(os.path.join(root, file))
+        # Try getting PEF metadata
+        pef_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(".pef"):
+                    pef_files.append(os.path.join(root, file))
 
-            if (os.path.isfile(os.path.join(path, "ncc.html")) or
-                    os.path.isfile(os.path.join(path, "metadata.html")) or
-                    len(html_files)):
-                file = os.path.join(path, "ncc.html")
-                if not os.path.isfile(file):
-                    file = os.path.join(path, "metadata.html")
-                if not os.path.isfile(file):
-                    file = os.path.join(path, os.path.basename(path) + ".xhtml")
-                if not os.path.isfile(file):
-                    file = os.path.join(path, os.path.basename(path) + ".html")
-                if not os.path.isfile(file):
-                    file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))][0]
-                if not file:
-                    file = html_files[0]
+        if (os.path.isfile(os.path.join(path, "ncc.html")) or
+                os.path.isfile(os.path.join(path, "metadata.html")) or
+                len(html_files)):
+            file = os.path.join(path, "ncc.html")
+            if not os.path.isfile(file):
+                file = os.path.join(path, "metadata.html")
+            if not os.path.isfile(file):
+                file = os.path.join(path, os.path.basename(path) + ".xhtml")
+            if not os.path.isfile(file):
+                file = os.path.join(path, os.path.basename(path) + ".html")
+            if not os.path.isfile(file):
+                file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))][0]
+            if not file:
+                file = html_files[0]
 
-                html = ElementTree.parse(file).getroot()
-                head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
+            html = ElementTree.parse(file).getroot()
+            head = html.xpath("/*[local-name()='head']") + html.xpath("/*/*[local-name()='head']")
+            head = head[0] if head else None
+            if head is not None:
+                book_title = [e.text for e in head.xpath(
+                    "/*/*[local-name()='head']/*[local-name()='title']")]
+                book_title = book_title[0] if book_title else None
+                book_identifier = [e.attrib["content"] for e in head.xpath(
+                    "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]
+                book_identifier = book_identifier[0] if book_identifier else None
+
+            if book_title:
+                book_metadata["title"] = book_title
+            if book_identifier:
+                book_metadata["identifier"] = book_identifier
+
+        elif len(xml_files) > 0:
+            dtbook = None
+            for file in xml_files:
+                xml = ElementTree.parse(file).getroot()
+                if xml.xpath("namespace-uri()") == "http://www.daisy.org/z3986/2005/dtbook/":
+                    dtbook = xml
+                    break
+
+            if dtbook is not None:
+                head = dtbook.xpath("/*[local-name()='head']") + dtbook.xpath("/*/*[local-name()='head']")
                 head = head[0] if head else None
                 if head is not None:
-                    book_title = [e.text for e in head.xpath(
-                        "/*/*[local-name()='head']/*[local-name()='title']")]
+                    book_title = [e.attrib["content"] for e in head.xpath(
+                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Title']") if "content" in e.attrib]
                     book_title = book_title[0] if book_title else None
                     book_identifier = [e.attrib["content"] for e in head.xpath(
-                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:identifier']") if "content" in e.attrib]
+                        "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Identifier']") if "content" in e.attrib]
                     book_identifier = book_identifier[0] if book_identifier else None
 
                 if book_title:
@@ -1193,65 +1234,45 @@ class Metadata:
                 if book_identifier:
                     book_metadata["identifier"] = book_identifier
 
-            elif len(xml_files) > 0:
-                dtbook = None
-                for file in xml_files:
-                    xml = ElementTree.parse(file).getroot()
-                    if xml.xpath("namespace-uri()") == "http://www.daisy.org/z3986/2005/dtbook/":
-                        dtbook = xml
-                        break
+        elif len(pef_files) > 0:
+            pef = None
+            nsmap = {
+                'pef': 'http://www.daisy.org/ns/2008/pef',
+                'dc': 'http://purl.org/dc/elements/1.1/',
+                'nlb': 'http://www.nlb.no/ns/pipeline/xproc'
+            }
+            for file in pef_files:
+                xml = ElementTree.parse(file).getroot()
+                if xml.xpath("namespace-uri()") == nsmap["pef"]:
+                    pef = xml
+                    break
 
-                if dtbook is not None:
-                    head = dtbook.xpath("/*[local-name()='head']") + dtbook.xpath("/*/*[local-name()='head']")
-                    head = head[0] if head else None
-                    if head is not None:
-                        book_title = [e.attrib["content"] for e in head.xpath(
-                            "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Title']") if "content" in e.attrib]
-                        book_title = book_title[0] if book_title else None
-                        book_identifier = [e.attrib["content"] for e in head.xpath(
-                            "/*/*[local-name()='head']/*[local-name()='meta' and @name='dc:Identifier']") if "content" in e.attrib]
-                        book_identifier = book_identifier[0] if book_identifier else None
+            if pef is not None:
+                head = pef.xpath("/*/pef:head/pef:meta", namespaces=nsmap)
+                head = head[0] if head else None
+                if head is not None:
+                    book_title = [e.text for e in head.xpath("dc:title", namespaces=nsmap)]
+                    book_title = book_title[0] if book_title else None
+                    book_identifier = [e.text for e in head.xpath("dc:identifier", namespaces=nsmap)]
+                    book_identifier = book_identifier[0] if (book_identifier and re.match(r"^(TEST)?\d+$", book_identifier[0])) else None
 
-                    if book_title:
-                        book_metadata["title"] = book_title
-                    if book_identifier:
-                        book_metadata["identifier"] = book_identifier
+                    for e in head.xpath("/*/pef:head/dc:*", namespaces=nsmap):
+                        name = e.xpath("name()", namespaces=nsmap)
+                        value = e.text
+                        if ":" in name:
+                            book_metadata[name] = value
 
-            elif len(pef_files) > 0:
-                pef = None
-                nsmap = {
-                    'pef': 'http://www.daisy.org/ns/2008/pef',
-                    'dc': 'http://purl.org/dc/elements/1.1/',
-                    'nlb': 'http://www.nlb.no/ns/pipeline/xproc'
-                }
-                for file in pef_files:
-                    xml = ElementTree.parse(file).getroot()
-                    if xml.xpath("namespace-uri()") == nsmap["pef"]:
-                        pef = xml
-                        break
+                if book_title:
+                    book_metadata["title"] = book_title
+                if book_identifier:
+                    book_metadata["identifier"] = book_identifier
 
-                if pef is not None:
-                    head = pef.xpath("/*/pef:head/pef:meta", namespaces=nsmap)
-                    head = head[0] if head else None
-                    if head is not None:
-                        book_title = [e.text for e in head.xpath("dc:title", namespaces=nsmap)]
-                        book_title = book_title[0] if book_title else None
-                        book_identifier = [e.text for e in head.xpath("dc:identifier", namespaces=nsmap)]
-                        book_identifier = book_identifier[0] if (book_identifier and re.match(r"^(TEST)?\d+$", book_identifier[0])) else None
-
-                        for e in head.xpath("/*/pef:head/dc:*", namespaces=nsmap):
-                            name = e.xpath("name()", namespaces=nsmap)
-                            value = e.text
-                            if ":" in name:
-                                book_metadata[name] = value
-
-                    if book_title:
-                        book_metadata["title"] = book_title
-                    if book_identifier:
-                        book_metadata["identifier"] = book_identifier
-
-            Metadata.metadata_cache[path]["metadata"] = book_metadata
-            return book_metadata
+        with Metadata._cache_update_lock:
+            Metadata.metadata_cache[path] = {
+                "cache_time": time.time(),
+                "metadata": book_metadata
+            }
+        return book_metadata
 
     @staticmethod
     def get_cached_rdf_metadata(epub_identifier, simplified=False, filter_identifiers=None):
@@ -1274,12 +1295,24 @@ class Metadata:
         else:
             return cached_rdf_metadata
 
+    @staticmethod
     def _get_cached_rdf_metadata(epub_identifier):
         metadata = []
 
-        rdf_file = os.path.join(Metadata.get_metadata_dir(), epub_identifier, "metadata.rdf")
+        logging.debug("Metadata.get_cached_rdf_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub_identifier))
+        metadata_dir = Metadata.get_metadata_dir(epub_identifier)
+        rdf_file = os.path.join(metadata_dir, "metadata.rdf")
+        rdf_file_obj = tempfile.NamedTemporaryFile()
+
         if not os.path.isfile(rdf_file):
             return metadata
+
+        with Metadata.get_dir_lock(metadata_dir):
+            logging.debug("Metadata.get_cached_rdf_metadata fikk metadata-låsen for {}.".format(epub_identifier))
+
+            # Temporary copy of RDF file
+            shutil.copy(rdf_file, rdf_file_obj.name)
+            rdf_file = rdf_file_obj.name
 
         rdf = None
         try:
