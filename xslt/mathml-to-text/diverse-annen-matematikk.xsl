@@ -16,7 +16,7 @@
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
 
-    <xsl:template match="m:mspace" mode="verbal-matte" />
+    <xsl:template match="m:mspace | m:annotation" mode="verbal-matte" />
     
     <xsl:template match="m:mtext" mode="verbal-matte">
         <xsl:apply-templates mode="#current"/>
@@ -365,6 +365,11 @@
         <xsl:text> vektor </xsl:text>
         <xsl:next-match></xsl:next-match>
     </xsl:template>
+    
+    <xsl:template match="m:mover[(count(child::element()) eq 2) and (local-name(child::element()[2]) eq 'mo') and (normalize-space(child::element()[2]) eq '&#8594;')]" mode="verbal-matte">
+        <xsl:text> vektor </xsl:text>
+        <xsl:apply-templates select="child::element()[1]" mode="#current"></xsl:apply-templates>
+    </xsl:template>
 
     <xsl:template match="m:mi[matches(normalize-space(.), '^\p{IsGreek}$')]" mode="verbal-matte">
         <xsl:variable name="uc" as="xs:integer" select="string-to-codepoints(normalize-space(.))"/>
@@ -402,7 +407,7 @@
                 <xsl:text> pi</xsl:text>
             </xsl:when>
             <!-- TODO: Andre små greske bokstaver -->
-            <xsl:when test="($uc eq 966) or ($uc eq 934)">
+            <xsl:when test="($uc eq 966) or ($uc eq 934)or ($uc eq 981)">
                 <xsl:text> fi</xsl:text>
             </xsl:when>
             <!-- TODO: Andre små greske bokstaver -->

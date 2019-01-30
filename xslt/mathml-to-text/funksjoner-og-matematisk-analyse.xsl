@@ -73,7 +73,7 @@
             m:mrow[
             (count(child::element()) eq 3) (: mrow må ha tre barn, og det er ingen krav til det tredje barnet :)
             and (local-name(child::element()[1]) eq 'mi') (: første barn nå være mi :)
-            and matches(normalize-space(child::element()[1]), '^(sin|cos|cot|tan|ln|arcsin|arccos|arctan|sinh|cosh|tanh)$') (: og må inneholde et kjent funksjonsnavn, så her utvider vi etter hvert :)
+            and matches(normalize-space(child::element()[1]), '^(sin|cos|tan|arcsin|arccos|arctan|sinh|cosh|tanh|cot|sec|csc|cosec|arccot|arcsec|arccsc|arccosec|coth|sech|csch|cosech|arsinh|arcosh|artanh|arcoth|ln)$') (: og må inneholde et kjent funksjonsnavn, så her utvider vi etter hvert :)
             and (local-name(child::element()[2]) eq 'mo') (: andre barn må være mo :)
             and (normalize-space(child::element()[2]) eq '&#8289;') (: som inneholder ApplyFunction :)
             ]"
@@ -121,17 +121,44 @@
                 <xsl:when test="$f eq 'tanh'">
                     <xsl:text>hyperbolsk tangens</xsl:text>
                 </xsl:when>
-                <xsl:when test="$f eq 'arcsin'">
-                    <xsl:text>arkus sinus</xsl:text>
+                <xsl:when test="$f eq 'arsinh'">
+                    <xsl:text>hyperbolsk arkus sinus</xsl:text>
                 </xsl:when>
-                <xsl:when test="$f eq 'arccos'">
-                    <xsl:text>arkus cosinus</xsl:text>
+                <xsl:when test="$f eq 'arcosh'">
+                    <xsl:text>hyperbolsk arkus cosinus</xsl:text>
                 </xsl:when>
-                <xsl:when test="$f eq 'arctan'">
-                    <xsl:text>arkus tangens</xsl:text>
+                <xsl:when test="$f eq 'artanh'">
+                    <xsl:text>hyperbolsk arkus tangens</xsl:text>
+                </xsl:when>
+                <xsl:when test="$f eq 'arcoth'">
+                    <xsl:text>hyperbolsk arkus cotangens</xsl:text>
                 </xsl:when>
                 <xsl:when test="$f eq 'cot'">
                     <xsl:text>cotangens</xsl:text>
+                </xsl:when>
+                <xsl:when test="$f eq 'sec'">
+                    <xsl:text>secans</xsl:text>
+                </xsl:when>
+                <xsl:when test="($f eq 'cosec') or ($f eq 'csc')">
+                    <xsl:text>cosecans</xsl:text>
+                </xsl:when>
+                <xsl:when test="$f eq 'arccot'">
+                    <xsl:text>arkus cotangens</xsl:text>
+                </xsl:when>
+                <xsl:when test="$f eq 'arcsec'">
+                    <xsl:text>arkus secans</xsl:text>
+                </xsl:when>
+                <xsl:when test="($f eq 'arccosec') or ($f eq 'arccsc')">
+                    <xsl:text>arkus cosecans</xsl:text>
+                </xsl:when>
+                <xsl:when test="$f eq 'coth'">
+                    <xsl:text>hyperbolsk cotangens</xsl:text>
+                </xsl:when>
+                <xsl:when test="$f eq 'sech'">
+                    <xsl:text>hyperbolsk secans</xsl:text>
+                </xsl:when>
+                <xsl:when test="($f eq 'csch') or ($f eq 'cosech')">
+                    <xsl:text>hyperbolsk cosecans</xsl:text>
                 </xsl:when>
                 <xsl:when test="$f eq 'ln'">
                     <xsl:text>den naturlige logaritmen</xsl:text>

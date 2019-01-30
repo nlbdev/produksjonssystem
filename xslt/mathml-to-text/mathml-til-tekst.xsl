@@ -33,6 +33,10 @@
 
     <xsl:output method="xhtml" indent="yes" encoding="UTF-8"/>
 
+    <!-- Sett denne til true() hvis eventuell AsciiMath skal presenteres i utfilen, eller false() -->
+    <xsl:param name="inkluder-asciimath" as="xs:boolean" select="false()"/>
+
+
     <xsl:template match="/">
         <xsl:message>mathml-til-tekst.xsl (2019-01-18)</xsl:message>
         <xsl:apply-templates/>
@@ -83,6 +87,9 @@
         <span class="verbal-matte">
             <xsl:call-template name="generer-verbal-matte"/>
         </span>
+        <xsl:call-template name="vis-asciimath">
+            <xsl:with-param name="elementnavn" as="xs:string" select="'span'"/>
+        </xsl:call-template>
     </xsl:template>
 
     <xsl:template match="m:math[@display eq 'block']">
@@ -97,11 +104,17 @@
                 <p class="verbal-matte">
                     <xsl:call-template name="generer-verbal-matte"/>
                 </p>
+                <xsl:call-template name="vis-asciimath">
+                    <xsl:with-param name="elementnavn" as="xs:string" select="'p'"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:otherwise>
                 <span class="verbal-matte">
                     <xsl:call-template name="generer-verbal-matte"/>
                 </span>
+                <xsl:call-template name="vis-asciimath">
+                    <xsl:with-param name="elementnavn" as="xs:string" select="'span'"/>
+                </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -117,7 +130,22 @@
         <!-- ... og deretter presenterer vi dette pent og pyntelig -->
         <xsl:value-of select="normalize-space(string-join($verbal-matte, ' '))"/>
     </xsl:template>
-    
+
+    <!-- Vis AsciiMath hvis det er noe å vise -->
+    <xsl:template name="vis-asciimath">
+        <xsl:param name="elementnavn" as="xs:string" required="yes"/>
+        <xsl:variable name="ascimath" as="xs:string?"
+            select="normalize-space((m:semantics/m:annotation, @alttext)[normalize-space() ne ''][1])"/>
+        <xsl:if test="$ascimath and $inkluder-asciimath">
+            <xsl:text> </xsl:text>
+            <xsl:element name="{$elementnavn}">
+                <xsl:attribute name="class" select="'asciimath'"/>
+                <xsl:text>Alternativt: </xsl:text>
+                <xsl:value-of select="$ascimath"/>
+            </xsl:element>
+            <xsl:text> </xsl:text>
+        </xsl:if>
+    </xsl:template>
     <!-- Og her får vi informasjon om all MathML-markup som vi ikke har regler for i nevnte mode  -->
     <xsl:template match="m:*" mode="verbal-matte">
         <xsl:message>Ingen template for denne: <xsl:value-of select="local-name()"/></xsl:message>
