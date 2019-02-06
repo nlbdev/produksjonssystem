@@ -17,7 +17,8 @@ class Slack():
         assert not attachments or isinstance(attachments, list)
         assert text or attachments
 
-        if Slack._slack_authed is None or Slack._slack is None:
+        # If not authenticated: try to authenticate and test authorization
+        if not Slack._slack_authed or Slack._slack is None:
             Slack._slack = Slacker(os.getenv("SLACK_TOKEN"))
             try:
                 auth = Slack._slack.auth.test()
@@ -32,16 +33,17 @@ class Slack():
                 logging.exception("Failed to authorize to Slack")
                 Slack._slack_authed = False
 
-        if Slack._slack_authed is not True:
-            logging.warning("Not authorized to send messages to Slack")
-            logging.warning("Tried to send message to {}: {}".format(Slack._slack_channel, text))
-
-        else:
+        # Try to send
+        if Slack._slack_authed:
             try:
                 Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)
             except Exception:
-                Slack._slack = None
+                Slack._slack = None  # set to None so that we try to create a new connection when sending the next message
                 if retry:
                     Slack.slack(text, attachments, retry=False)
                 else:
                     logging.exception("An exception occured while trying to send a message to Slack")
+
+        else:
+            logging.warning("Not authorized to send messages to Slack")
+            logging.warning("Tried to send message to {}: {}".format(Slack._slack_channel, text))
