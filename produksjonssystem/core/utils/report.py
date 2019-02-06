@@ -370,7 +370,7 @@ class Report():
             else:
                 # 3. build e-mail
                 msg = EmailMessage()
-                msg['Subject'] = subject
+                msg['Subject'] = re.sub(r"\s", " ", subject).strip()
                 msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
                 msg['To'] = Report.emailStringsToAddresses(recipients)
                 msg.set_content(markdown_text)
