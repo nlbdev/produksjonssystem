@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fnk="http://www.nlb.no/2017/functions/"
-    xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.w3.org/1999/xhtml"
-    xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
+    xmlns:epub="http://www.idpf.org/2007/ops" xpath-default-namespace="http://www.daisy.org/z3986/2005/dtbook/"
+    xmlns="http://www.daisy.org/z3986/2005/dtbook/" exclude-result-prefixes="#all" version="2.0">
 
     <!-- 
         (c) 2018 NLB
@@ -18,9 +18,9 @@
     <!-- For kjøring på lokal PC -->
 <!--    <xsl:variable name="metadata" as="element()*" select="doc($metadata.url)//meta"/>-->
 
-    <!-- Antar her at boken er oversatt, HVIS OG BARE HVIS følgende metadata er gitt: 'dc:language.original' og 'dc:title.original'  -->
+    <!-- Antar her at boken er oversatt, HVIS OG BARE HVIS følgende metadata er gitt: 'dc:Language.original' og 'dc:Title.original'  -->
     <xsl:variable name="boken.er-oversatt" as="xs:boolean"
-        select="fnk:metadata-finnes('dc:language.original') or fnk:metadata-finnes('dc:title.original') or fnk:metadata-finnes('dc:contributor.translator')"/>
+        select="fnk:metadata-finnes('dc:Language.original') or fnk:metadata-finnes('dc:Title.original') or fnk:metadata-finnes('dc:Contributor.translator')"/>
 
     <!-- Transformasjonen fortsetter selv om det er forventet metadata som mangler
         NB: Noe metadata som er plassert her bør flyttes over til essensiell, men er her foreløpig for at ting ikke skal stoppe hele tiden
@@ -28,12 +28,12 @@
     <xsl:variable name="metadata.forventet" as="xs:string*"
         select="
             (
-            'dc:creator', 'dc:date.issued.original', 'dc:publisher.original', 'schema:bookEdition.original', 'dc:contributor.narrator',
+            'dc:Creator', 'dc:Date.issued.original', 'dc:Publisher.original', 'schema:bookEdition.original', 'dc:Contributor.narrator',
             (: Det følgende er flyttet fra metadata.essensiell, ettersom dette testes bedra andre steder :)
-            'schema:isbn', 'dc:publisher.location.original', 'dc:language',
+            'schema:isbn', 'dc:Publisher.location.original', 'dc:Language',
             (: Legg til litt mer hvis boken er oversatt :)
             if ($boken.er-oversatt) then
-            ('dc:language.original', 'dc:title.original', 'dc:contributor.translator')
+            ('dc:Language.original', 'dc:Title.original', 'dc:Contributor.translator')
             else
             ''
             )

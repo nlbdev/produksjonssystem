@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="optimaliser-komplekst-innhold.xsl">
+
+    <x:scenario label="Engelsk" pending="Virker ikke av en eller annen grunn, muligens noe whitespace-krøll.">
+        <x:context>
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" xml:lang="en" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="227100"/>
+                    <meta name="dc:Title" content="Believing in belonging"/>
+                    <meta name="dc:Identifier" content="227100"/>
+                    <meta name="track:Guidelines" content="2015-1"/>
+                    <meta name="track:Supplier" content="…"/>
+                    <meta name="dc:Language" content="en"/>
+                    <meta name="dc:Creator" content="Day, Abby"/>
+                    <meta name="dc:Format" content="DTBook"/>
+                    <meta name="dc:Publisher" content="Norsk lyd- og blindeskriftbibliotek"/>
+                    <meta name="dc:Source" content="urn:isbn:9780199577873"/>
+                    <meta name="nlbprod:identifierBraille" content="121100"/>
+                    <meta name="nlbprod:identifierDaisy202Student" content="227100"/>
+                    <meta name="nlbprod:isbnDaisy202Student" content="978-82-16-28249-6"/>
+                    <meta name="nlbprod:identifierEbook" content="362500"/>
+                    <meta name="nlbprod:isbnEbook" content="978-82-16-28251-9"/>
+                    <meta name="nlbprod:identifierReserved" content="412500"/>
+                    <meta name="nlbprod:isbnReserved" content="978-82-16-28249-6"/>
+                    <meta name="nlbprod:identifierEpub" content="563900"/>
+                    <meta name="dc:Title.part.sortingkey" content="elieving in belonging"/>
+                    <meta name="dc:Title.subtitle" content="belief and social identity in the modern world"/>
+                    <meta name="dc:Language.name.english" content="English"/>
+                    <meta name="dc:Language.name.native" content="English"/>
+                    <meta name="dc:Language.name.norwegian" content="Engelsk"/>
+                    <meta name="dc:Contributor.narrator" content="Talesyntese"/>
+                    <meta name="dc:Format.extent.pages.original" content="230"/>
+                    <meta name="dc:Format.other" content="Audio recording"/>
+                    <meta name="dc:Format.other" content="Compact Disk"/>
+                    <meta name="dc:Format.other" content="Other voice/other"/>
+                    <meta name="dc:Publisher.location" content="Oslo"/>
+                    <meta name="dc:Publisher.location.original" content="Oxford"/>
+                    <meta name="dc:Publisher.original" content="Oxford University Press"/>
+                    <meta name="dc:Date.issued" content="2019"/>
+                    <meta name="dc:Date.issued.original" content="2011"/>
+                    <meta name="dc:Date.registered" content="2019-01-23"/>
+                    <meta name="dc:Description.abstract" content="Fra forlagets bokomtale: Believing in Belonging draws on empirical research exploring mainstream religious belief and identity in Euro-American countries."/>
+                    <meta name="dc:Subject.dewey" content="306.6"/>
+                    <meta name="dc:Subject.keyword" content="Religionssosiologi"/>
+                    <meta name="dc:Type.genre" content="Non-biography"/>
+                    <meta name="dc:Type.genre" content="Non-fiction"/>
+                    <meta name="dc:Type.genre" content="textbook"/>
+                    <meta name="schema:isbn" content="978-0-19-957787-3"/>
+                    <meta name="schema:bookEdition" content="1"/>
+                    <meta name="schema:bookEdition.original" content="1. utg"/>
+                    <meta name="schema:audience" content="Adult"/>
+                    <meta name="schema:audience" content="Student"/>
+                    <meta name="schema:library" content="NLB"/>
+                    <meta name="schema:typicalAgeRange" content="17-"/>
+                    <meta name="dcterms:modified" content="2019-02-08T11:41:22+00:00"/>
+                    <meta name="dc:Date" content="2019-02-08"/>
+                </head>
+                <book>
+                    <bodymatter>
+                        <level1 id="level1_6" class="part">
+                            <pagenum id="page-1" page="normal">…</pagenum>
+                            <h1 id="h1_4">…</h1>
+                            <level2 id="level2_3" class="chapter">
+                                <pagenum id="page-28" page="normal">…</pagenum>
+                                <h2 id="h2_2">…</h2>
+                                <level3 id="level3_8">
+                                    <h3 id="h3_8">…</h3>
+                                    <list type="pl" depth="1">
+                                        <li>…</li>
+                                        <li>…</li>
+                                        <li>…</li>
+                                        <li>…<pagenum id="page-35" page="normal">…</pagenum>…</li>
+                                    </list>
+                                    <level4 id="level4_2">
+                                        <h4 id="h4_2">…</h4>
+                                        <list type="pl" depth="1">
+                                            <li>
+                                                <p>…<em>…</em></p>
+                                                <list type="pl" depth="2">
+                                                    <li>• …</li>
+                                                </list>
+                                            </li>
+                                            <li>
+                                                <p>…<em>…</em></p>
+                                                <list type="pl" depth="2">
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …<pagenum id="page-39" page="normal">…</pagenum></li>
+                                                </list>
+                                            </li>
+                                            <li>
+                                                <p>…<em>…</em></p>
+                                                <list type="pl" depth="2">
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                    <li>• …</li>
+                                                </list>
+                                            </li>
+                                            <li>
+                                                <p>…<em>…</em></p>
+                                                <list type="pl" depth="2">
+                                                    <li>• …</li>
+                                                </list>
+                                            </li>
+                                        </list>
+                                    </level4>
+                                </level3>
+                                <level3 id="level3_37">
+                                    <h3 id="h3_37">…</h3>
+                                    <pagenum id="page-189" page="normal">…</pagenum>
+                                    <table>
+                                        <caption>…</caption>
+                                        <tr><th rowspan="2"/><th colspan="2">…</th><th colspan="2">…</th></tr>
+                                        <tr><th>…</th><th>…</th><th>…</th><th>…</th></tr>
+                                        <tr><td>…</td><td/><td/><td/><td/></tr>
+                                        <tr><td>…</td><td>…</td><td/><td/><td/></tr>
+                                        <tr><td>…</td><td>…</td><td/><td/><td/></tr>
+                                        <tr><td>…</td><td>…</td><td/><td/><td/></tr>
+                                        <tr><td>…</td><td/><td/><td/><td/></tr>
+                                        <tr><td>…</td><td/><td/><td/><td>…</td></tr>
+                                        <tr><td>…</td><td/><td/><td/><td>…</td></tr>
+                                        <tr><td>…</td><td/><td>…</td><td/><td/></tr>
+                                        <tr><td>…</td><td/><td>…</td><td/><td/></tr>
+                                        <tr><td>…</td><td>…</td><td/><td/><td/></tr>
+                                        <tr><td>…</td><td>…</td><td/><td/><td/></tr>
+                                        <tr><td>…</td><td>…</td><td>…</td><td/><td>…</td></tr>
+                                    </table>
+                                </level3>
+                            </level2>
+                        </level1>
+                    </bodymatter>
+                </book>
+            </dtbook>
+        </x:context>
+
+        <x:expect label="Resultatet skal bli som forventet">
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" xml:lang="en" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="227100"/>
+                    <meta name="dc:Title" content="Believing in belonging"/>
+                    <meta name="dc:Identifier" content="227100"/>
+                    <meta name="track:Guidelines" content="2015-1"/>
+                    <meta name="track:Supplier" content="…"/>
+                    <meta name="dc:Language" content="en"/>
+                    <meta name="dc:Creator" content="Day, Abby"/>
+                    <meta name="dc:Format" content="DTBook"/>
+                    <meta name="dc:Publisher" content="Norsk lyd- og blindeskriftbibliotek"/>
+                    <meta name="dc:Source" content="urn:isbn:9780199577873"/>
+                    <meta name="nlbprod:identifierBraille" content="121100"/>
+                    <meta name="nlbprod:identifierDaisy202Student" content="227100"/>
+                    <meta name="nlbprod:isbnDaisy202Student" content="978-82-16-28249-6"/>
+                    <meta name="nlbprod:identifierEbook" content="362500"/>
+                    <meta name="nlbprod:isbnEbook" content="978-82-16-28251-9"/>
+                    <meta name="nlbprod:identifierReserved" content="412500"/>
+                    <meta name="nlbprod:isbnReserved" content="978-82-16-28249-6"/>
+                    <meta name="nlbprod:identifierEpub" content="563900"/>
+                    <meta name="dc:Title.part.sortingkey" content="elieving in belonging"/>
+                    <meta name="dc:Title.subtitle" content="belief and social identity in the modern world"/>
+                    <meta name="dc:Language.name.english" content="English"/>
+                    <meta name="dc:Language.name.native" content="English"/>
+                    <meta name="dc:Language.name.norwegian" content="Engelsk"/>
+                    <meta name="dc:Contributor.narrator" content="Talesyntese"/>
+                    <meta name="dc:Format.extent.pages.original" content="230"/>
+                    <meta name="dc:Format.other" content="Audio recording"/>
+                    <meta name="dc:Format.other" content="Compact Disk"/>
+                    <meta name="dc:Format.other" content="Other voice/other"/>
+                    <meta name="dc:Publisher.location" content="Oslo"/>
+                    <meta name="dc:Publisher.location.original" content="Oxford"/>
+                    <meta name="dc:Publisher.original" content="Oxford University Press"/>
+                    <meta name="dc:Date.issued" content="2019"/>
+                    <meta name="dc:Date.issued.original" content="2011"/>
+                    <meta name="dc:Date.registered" content="2019-01-23"/>
+                    <meta name="dc:Description.abstract" content="Fra forlagets bokomtale: Believing in Belonging draws on empirical research exploring mainstream religious belief and identity in Euro-American countries."/>
+                    <meta name="dc:Subject.dewey" content="306.6"/>
+                    <meta name="dc:Subject.keyword" content="Religionssosiologi"/>
+                    <meta name="dc:Type.genre" content="Non-biography"/>
+                    <meta name="dc:Type.genre" content="Non-fiction"/>
+                    <meta name="dc:Type.genre" content="textbook"/>
+                    <meta name="schema:isbn" content="978-0-19-957787-3"/>
+                    <meta name="schema:bookEdition" content="1"/>
+                    <meta name="schema:bookEdition.original" content="1. utg"/>
+                    <meta name="schema:audience" content="Adult"/>
+                    <meta name="schema:audience" content="Student"/>
+                    <meta name="schema:library" content="NLB"/>
+                    <meta name="schema:typicalAgeRange" content="17-"/>
+                    <meta name="dcterms:modified" content="2019-02-08T11:41:22+00:00"/>
+                    <meta name="dc:Date" content="2019-02-08"/>
+                </head>
+                <book>
+                    <bodymatter>
+                        <level1 id="level1_6" class="part">
+                            <pagenum id="page-1" page="normal">…</pagenum>
+                            <h1 id="h1_4">…</h1>
+                            <level2 id="level2_3" class="chapter">
+                                <pagenum id="page-28" page="normal">…</pagenum>
+                                <h2 id="h2_2">…</h2>
+                                <level3 id="level3_8">
+                                    <h3 id="h3_8">…</h3>
+                                    <p class="nlb-ekstra-informasjon">Here is a list with 4 bullet points.</p><list type="pl" depth="1">
+                                        <li><span class="nlb-ekstra-informasjon">Bullet point 1: </span>…</li>
+                                        <li><span class="nlb-ekstra-informasjon">Bullet point 2: </span>…</li>
+                                        <li><span class="nlb-ekstra-informasjon">Bullet point 3: </span>…</li>
+                                        <li><span class="nlb-ekstra-informasjon">Bullet point 4: </span>…<pagenum id="page-35" page="normal">…</pagenum>…</li>
+                                    </list><p class="nlb-ekstra-informasjon">End of list</p>
+                                    <level4 id="level4_2">
+                                        <h4 id="h4_2">…</h4>
+                                        <p class="nlb-ekstra-informasjon">Here is a list with 4 bullet points. 4 of these bullet points have sub-bullets.</p><list type="pl" depth="1">
+                                            <li><p class="nlb-ekstra-informasjon">Bullet point 1: </p>
+                                                <p>…<em>…</em></p>
+                                                <p class="nlb-ekstra-informasjon">Here is a list with one sub-bullet.</p><list type="pl" depth="2">
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 1: </span>• …</li>
+                                                </list><p class="nlb-ekstra-informasjon">End of sub-bullets</p>
+                                            </li>
+                                            <li><p class="nlb-ekstra-informasjon">Bullet point 2: </p>
+                                                <p>…<em>…</em></p>
+                                                <p class="nlb-ekstra-informasjon">Here is a list with 4 sub-bullets.</p><list type="pl" depth="2">
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 1: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 2: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 3: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 4: </span>• …<pagenum id="page-39" page="normal">…</pagenum></li>
+                                                </list><p class="nlb-ekstra-informasjon">End of sub-bullets</p>
+                                            </li>
+                                            <li><p class="nlb-ekstra-informasjon">Bullet point 3: </p>
+                                                <p>…<em>…</em></p>
+                                                <p class="nlb-ekstra-informasjon">Here is a list with 11 sub-bullets.</p><list type="pl" depth="2">
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 1: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 2: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 3: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 4: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 5: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 6: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 7: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 8: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 9: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 10: </span>• …</li>
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 11: </span>• …</li>
+                                                </list><p class="nlb-ekstra-informasjon">End of sub-bullets</p>
+                                            </li>
+                                            <li><p class="nlb-ekstra-informasjon">Bullet point 4: </p>
+                                                <p>…<em>…</em></p>
+                                                <p class="nlb-ekstra-informasjon">Here is a list with one sub-bullet.</p><list type="pl" depth="2">
+                                                    <li><span class="nlb-ekstra-informasjon">Bullet point 1: </span>• …</li>
+                                                </list><p class="nlb-ekstra-informasjon">End of sub-bullets</p>
+                                            </li>
+                                        </list><p class="nlb-ekstra-informasjon">End of list</p>
+                                    </level4>
+                                </level3>
+                                <level3 id="level3_37">
+                                    <h3 id="h3_37">…</h3>
+                                    <pagenum id="page-189" page="normal">…</pagenum>
+                                    <p class="nlb-ekstra-informasjon">Here is a table with 5 columns and 14 rows.</p><table>
+                                        <caption><span class="nlb-ekstra-informasjon">Table heading: </span>…</caption>
+                                        <tr><th rowspan="2" colspan="1"><span class="nlb-ekstra-informasjon">Row 1: Empty cell</span></th><th colspan="2" rowspan="1"><span class="nlb-ekstra-informasjon">Cell which spans columns 2 and 3: </span>…</th><th colspan="2" rowspan="1"><span class="nlb-ekstra-informasjon">Cell which spans columns 4 and 5: </span>…</th></tr>
+                                        <tr><th rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 2: </span>…</th><th rowspan="1" colspan="1">…</th><th rowspan="1" colspan="1">…</th><th rowspan="1" colspan="1">…</th></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 3: </span>…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 4: </span>…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 5: </span>…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 6: </span>…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 7: </span>…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 8: </span>…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1">…</td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 9: </span>…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1">…</td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 10: </span>…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 11: </span>…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 12: </span>…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 13: </span>…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td></tr>
+                                        <tr><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Row 14: </span>…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1">…</td><td rowspan="1" colspan="1"><span class="nlb-ekstra-informasjon">Empty cell</span></td><td rowspan="1" colspan="1">…</td></tr>
+                                    </table><p class="nlb-ekstra-informasjon">End of table</p>
+                                </level3>
+                            </level2>
+                        </level1>
+                    </bodymatter>
+                </book>
+            </dtbook>
+        </x:expect>
+    </x:scenario>
+
+</x:description>

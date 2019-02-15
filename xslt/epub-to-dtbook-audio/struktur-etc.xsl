@@ -14,11 +14,11 @@
     
     <!-- Bestem hvilket språk som gjelder. Hentes fra Bibliofil, via metadata -->
     <!-- nynorsk -->
-    <!--<xsl:variable name="SPRÅK.nn" as="xs:boolean" select="(//meta[@name eq 'dc:language'][1]/@content eq 'nn-NO')"/>-->
-    <xsl:variable name="SPRÅK.nn" as="xs:boolean" select="matches(fnk:hent-metadata-verdi('dc:language',true(),false()),'^(nn-no|nn)$','i')"/>
+    <!--<xsl:variable name="SPRÅK.nn" as="xs:boolean" select="(//meta[@name eq 'dc:Language'][1]/@content eq 'nn-NO')"/>-->
+    <xsl:variable name="SPRÅK.nn" as="xs:boolean" select="matches(fnk:hent-metadata-verdi('dc:Language',true(),false()),'^(nn-no|nn)$','i')"/>
     <!-- engelsk, både 'en-GB' og 'en-US' -->
-    <!--<xsl:variable name="SPRÅK.en" as="xs:boolean" select="(starts-with(//meta[@name eq 'dc:language'][1]/@content,'en'))"/>-->
-    <xsl:variable name="SPRÅK.en" as="xs:boolean" select="(starts-with(fnk:hent-metadata-verdi('dc:language',true(),false()),'en'))"/>
+    <!--<xsl:variable name="SPRÅK.en" as="xs:boolean" select="(starts-with(//meta[@name eq 'dc:Language'][1]/@content,'en'))"/>-->
+    <xsl:variable name="SPRÅK.en" as="xs:boolean" select="(starts-with(fnk:hent-metadata-verdi('dc:Language',true(),false()),'en'))"/>
     <!-- Og hvis det ikke er en av disse, så er det bokmål -->
     <xsl:variable name="SPRÅK.nb" as="xs:boolean" select="not($SPRÅK.nn or $SPRÅK.en)"/>
     
