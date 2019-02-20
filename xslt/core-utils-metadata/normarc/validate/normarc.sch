@@ -12,7 +12,7 @@
     <ns prefix="DIAG" uri="http://www.loc.gov/zing/sru/diagnostics/"/>
     <ns prefix="marcxchange" uri="info:lc/xmlns/marcxchange-v1"/>
     
-    <let name="identifier" value="string((//marcxchange:record/marcxchange:controlfield[@tag='001'])[1])"/>
+    <let name="identifier" value="replace(string((//marcxchange:record/marcxchange:controlfield[@tag='001'])[1]), '^[ 0]+', '')"/>
     <let name="is-publication" value="//marcxchange:record/marcxchange:controlfield[@tag='001']/substring(text(),1,1) = ('1','2','3','4','6','7','8','9')"/>
     <let name="is-magazine" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jp' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Tidsskrifter'"/>
     <let name="is-newspaper" value="//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b']/text() = 'jn' or //marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a']/text() = 'Avis'"/>
@@ -22,6 +22,11 @@
     <let name="is-translated" value="boolean(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']
                                            | //marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']
                                            | //marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])"/>
+    <let name="explain-why-translated" value="concat('Boken er oversatt fordi ', string-join((
+        if (exists(//marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h'])) then '*041$h finnes' else (),
+        if (exists(//marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a'])) then '*574$a finnes' else (),
+        if (exists(//marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e' and text() = 'overs.'])) then 'det finnes en oversetter i *700' else ()
+    ), ' og '), '.')"/>
     <let name="is-audiobook" value="exists(//marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b' and tokenize(text(),',') = ('dc','dj')])"/>
     <let name="library" value="(//marcxchange:datafield[@tag='850']/marcxchange:subfield[@code='a']/text()/lower-case(.))[1]"/>
     
@@ -190,9 +195,9 @@
     <pattern>
         <title>Oversatte utgaver</title>
         <rule context="marcxchange:record[$identifier and $is-translated]">
-            <assert test="exists(marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']) or starts-with($identifier,'5')">For oversatte utgaver må originalspråk være definert i *041$h (med mindre boknummeret starter med "5").</assert>
-            <assert test="exists(marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']) or starts-with($identifier,'5')">For oversatte utgaver må originaltittel være definert i *574$a.</assert>
-            <assert test="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text() = 'overs.'">For oversatte utgaver må det være definert en oversetter i *700 ($e må være "overs.").</assert>
+            <assert test="exists(marcxchange:datafield[@tag='041']/marcxchange:subfield[@code='h']) or starts-with($identifier,'5')">For oversatte utgaver må originalspråk være definert i *041$h (med mindre boknummeret starter med "5"). <value-of select="$explain-why-translated"/></assert>
+            <assert test="exists(marcxchange:datafield[@tag='574']/marcxchange:subfield[@code='a']) or starts-with($identifier,'5')">For oversatte utgaver må originaltittel være definert i *574$a. <value-of select="$explain-why-translated"/></assert>
+            <assert test="marcxchange:datafield[@tag='700']/marcxchange:subfield[@code='e']/text() = 'overs.'">For oversatte utgaver må det være definert en oversetter i *700 ($e må være "overs."). <value-of select="$explain-why-translated"/></assert>
         </rule>
     </pattern>
     
