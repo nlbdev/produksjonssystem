@@ -25,6 +25,7 @@ from epub_to_dtbook_audio import EpubToDtbookAudio
 # from epub_to_dtbook_braille import EpubToDtbookBraille
 # from epub_to_dtbook_html import EpubToDtbookHTML
 # from generate_resources import GenerateResources
+from generate_resources import GenerateResources
 from html_to_dtbook import HtmlToDtbook
 # from incoming_NLBPUB import (NLBPUB_incoming_validator,
 #                              NLBPUB_incoming_warning, NLBPUB_validator)
@@ -271,6 +272,7 @@ class Produksjonssystem():
 
             # lydutdrag
             [Audio_Abstract(retry_missing=True),              "daisy202",            "abstracts"],
+            [GenerateResources(during_working_hours=True, during_night_and_weekend=True),                             "daisy202",            None],
         ]
 
     # ---------------------------------------------------------------------------
@@ -681,7 +683,7 @@ class Produksjonssystem():
                       "eH6LouRqMRDGMChmGQTqcRDoeRyWQQDofB87xX8Xgc0ajodyAIAgaDgdelUChA0zTkciuo1+vgOG8rUqkUIpGIHxCPx9FqtbyNc3NzKJVK0DQNROS"
                       "biKIkg2NMJpPQdR2NRhOpVNL7Eh3HgSAIPoBhTEBEYBjmBsCyLJaXlyHLMk5PTyGKIkRRRCQSgaIoGI/HHuD4+Bi5XA4rKytgbv+VNU1Dtfon6vWn"
                       "4Hked+6k0ev1cHJyghcvnnsjlmUZ6+vrQYDjOLAsC5OJAdd1EI1G/78nJtrtCzSaTQz0AVKpJLLZLP4DF17fodMaIVYAAAAASUVORK5CYII")
-                      # + siste del: "=\" alt=\"DATA\">")
+    # + siste del: "=\" alt=\"DATA\">")
 
         message = ""
         first_dir_log = True
