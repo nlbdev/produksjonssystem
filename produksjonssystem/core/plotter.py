@@ -113,7 +113,7 @@ class Plotter():
             queue_size = 0
             if queue:
                 queue_size = len(queue)
-                if not group_pipeline.should_retry():
+                if not group_pipeline.should_handle_autotriggered_books():
                     queue_size -= queue_autotriggered
             book = Metadata.pipeline_book_shortname(group_pipeline)
 

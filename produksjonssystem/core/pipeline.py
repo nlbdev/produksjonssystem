@@ -507,7 +507,8 @@ class Pipeline():
             return False
         return True
 
-    def should_retry(self):
+    # Whether or not to process autotriggered books
+    def should_handle_autotriggered_books(self):
         if self.should_retry_only_when_idle and self.config and not Config.get("system.idle"):
             return False
 
@@ -515,6 +516,10 @@ class Pipeline():
             return self.should_retry_during_working_hours
         else:
             return self.should_retry_during_night_and_weekend
+
+    # Whether or not to autotrigger a specific book
+    def should_retry_book(self, source):
+        return True
 
     @staticmethod
     def directory_watchers_ready(directory):
@@ -830,8 +835,11 @@ class Pipeline():
                     logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
 
                 if not file_exists:
-                    logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
-                    self.trigger(fileName)
+                    if self.should_retry_book(path):
+                        logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
+                        self.trigger(fileName)
+                    else:
+                        logging.info(fileName + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
 
     def _handle_book_events_thread(self):
         while self._dirsAvailable and self._shouldRun:
@@ -860,8 +868,8 @@ class Pipeline():
                     books_manual = [b for b in books if Pipeline.get_main_event(b) != "autotriggered"]
                     books_manual = sorted(books_manual, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
                     books = books_manual
-                    if self.should_retry():
-                        # Don't handle autotriggered books unless should_retry() returns True
+                    if self.should_handle_autotriggered_books():
+                        # Don't handle autotriggered books unless should_handle_autotriggered_books() returns True
                         # This will make sure that certain pipelines only retry books
                         # during working hours, and make sure that certain other pipelines
                         # only process books outside of working hours.
