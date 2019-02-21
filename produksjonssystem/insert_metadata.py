@@ -3,7 +3,7 @@
 
 import tempfile
 
-from core.pipeline import Pipeline
+from core.pipeline import DummyPipeline, Pipeline
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
 
@@ -17,6 +17,8 @@ class InsertMetadata(Pipeline):
     labels = ["Statped"]
     publication_format = None
     expected_processing_time = 30
+
+    logPipeline = None
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -87,6 +89,21 @@ class InsertMetadata(Pipeline):
         self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(
             self.title, epub.identifier(), self.publication_format, epubTitle)
         return True
+
+    def should_retry_book(self, source):
+        if not self.logPipeline:
+            self.logPipeline = DummyPipeline(uid=self.uid + "-dummylogger", title=self.title + " dummy logger", inherit_config_from=self)
+
+        epub = Epub(self, source)
+        if not epub.isepub(report_errors=False):
+            self.logPipeline.utils.report.warn("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke." +
+                                               "Antar at den skal det: {}".format(source))
+            return True
+
+        return (
+            Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
+            and not Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
+        )
 
 
 class InsertMetadataEpub(InsertMetadata):

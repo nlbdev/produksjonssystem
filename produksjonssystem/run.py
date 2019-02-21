@@ -236,27 +236,35 @@ class Produksjonssystem():
             # [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [InsertMetadataXhtml(),                           "nlbpub",              "pub-in-ebook"],
             [PrepareForEbook(retry_missing=True, check_identifiers=True),             "pub-in-ebook",        "pub-ready-ebook"],
             [PrepareForDocx(retry_missing=True, check_identifiers=True),              "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToHtml(retry_missing=True, check_identifiers=True),                "pub-ready-ebook",     "html"],
             [NLBpubToDocx(retry_missing=True, check_identifiers=True),                "pub-ready-docx",      "docx"],
             [Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
+            [InsertMetadataXhtml(retry_missing=True,
+                                 check_identifiers=True,
+                                 during_working_hours=True),    "nlbpub",              "pub-in-ebook"],
 
             # punktskrift
-            [InsertMetadataBraille(),                         "nlbpub",              "pub-in-braille"],
             [PrepareForBraille(retry_missing=True, check_identifiers=True),           "pub-in-braille",      "pub-ready-braille"],
             [NlbpubToPef(retry_missing=True, check_identifiers=True),                 "pub-ready-braille",   "pef"],
             [CheckPef(),                                      "pef",                 "pef-checked"],
+            [InsertMetadataBraille(retry_missing=True,
+                                   check_identifiers=True,
+                                   during_working_hours=True),  "nlbpub",              "pub-in-braille"],
 
             # innlest lydbok
-            [InsertMetadataDaisy202(),                        "nlbpub",              "pub-in-audio"],
             [NlbpubToNarrationEpub(retry_missing=True, check_identifiers=True),       "pub-in-audio",        "epub_narration"],
+            [InsertMetadataDaisy202(retry_missing=True,
+                                    check_identifiers=True,
+                                    during_working_hours=True), "nlbpub",              "pub-in-audio"],
             [DummyPipeline("Innlesing med Hindenburg",
                            labels=["Lydbok", "Statped"]),     "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-            [EpubToDtbookAudio(),                             "master",              "dtbook_tts"],
+            [EpubToDtbookAudio(retry_missing=True,
+                               check_identifiers=True,
+                               during_working_hours=True),      "master",              "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok"]),                "dtbook_tts",          "daisy202"],
 

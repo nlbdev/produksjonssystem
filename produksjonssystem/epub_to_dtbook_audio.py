@@ -6,7 +6,7 @@ import shutil
 import sys
 import tempfile
 
-from core.pipeline import Pipeline
+from core.pipeline import DummyPipeline, Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
@@ -24,6 +24,8 @@ class EpubToDtbookAudio(Pipeline):
     labels = ["Lydbok"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 1408
+
+    logPipeline = None
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -135,8 +137,8 @@ class EpubToDtbookAudio(Pipeline):
             return False
         shutil.copy(temp_dtbook_file, dtbook_file)
 
-		# 2019-01-15, Per Sennels:
-		# Fjern denne transformasjonen hvis det oppstår kritiske proplemer med håndteringen av komplekst innhold
+        # 2019-01-15, Per Sennels:
+        # Fjern denne transformasjonen hvis det oppstår kritiske proplemer med håndteringen av komplekst innhold
         self.utils.report.info("Legger inn ekstra informasjon om komplekst innhold")
         self.utils.report.debug("optimaliser-komplekst-innhold.xsl")
         self.utils.report.debug("    source = " + dtbook_file)
@@ -159,6 +161,21 @@ class EpubToDtbookAudio(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
+
+    def should_retry_book(self, source):
+        if not self.logPipeline:
+            self.logPipeline = DummyPipeline(uid=self.uid + "-dummylogger", title=self.title + " dummy logger", inherit_config_from=self)
+
+        epub = Epub(self, source)
+        if not epub.isepub(report_errors=False):
+            self.logPipeline.utils.report.warn("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke." +
+                                               "Antar at den skal det: {}".format(source))
+            return True
+
+        return (
+            Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
+            and not Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
+        )
 
 
 if __name__ == "__main__":
