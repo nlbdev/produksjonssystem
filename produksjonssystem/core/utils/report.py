@@ -79,7 +79,7 @@ class Report():
             self._report_dir = report_dir
         return self._report_dir
 
-    def add_message(self, severity, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+    def log_to_logging(self, severity, message):
         if severity == "DEBUG":
             logging.debug(message)
         elif severity == "INFO":
@@ -93,6 +93,9 @@ class Report():
         else:
             logging.warning("Unknown message severity: " + str(severity))
             logging.warning(message)
+
+    def add_message(self, severity, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+        self.log_to_logging(severity, message)
 
         lines = None
         if isinstance(message, list):
@@ -488,7 +491,7 @@ class DummyReport(Report):
     pipeline = None
 
     def add_message(self, severity, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
-        logging.debug("[" + str(severity) + "] " + str(message))
+        self.log_to_logging(severity, str(message))
 
     def attachment(self, content, path, severity):
-        logging.debug("attachment: " + (str(content)[:100]) + ("..." if len(str(content)) > 100 else "") + "|" + str(path) + "|" + str(severity))
+        logging.info("attachment: " + (str(content)[:100]) + ("..." if len(str(content)) > 100 else "") + "|" + str(path) + "|" + str(severity))
