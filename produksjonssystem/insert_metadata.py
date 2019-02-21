@@ -101,7 +101,8 @@ class InsertMetadata(Pipeline):
             return True
 
         return (
-            Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
+            Metadata.is_in_quickbase(self.logPipeline.utils.report, epub.identifier())
+            and Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
             and not Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
         )
 
