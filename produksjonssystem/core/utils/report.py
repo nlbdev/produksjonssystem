@@ -65,7 +65,6 @@ class Report():
             self.pipeline.book = {}
             self.pipeline.uid = uid
             self.pipeline.dir_base = dir_base
-        logging.basicConfig(stream=sys.stdout, format="%(asctime)s %(levelname)-8s [%(threadName)-40s] %(message)s")
 
     def reportDir(self):
         # Lag rapport-mappe

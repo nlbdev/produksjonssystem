@@ -723,6 +723,6 @@ class Produksjonssystem():
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
-    debug = "debug" in sys.argv
+    debug = "debug" in sys.argv or os.environ.get("DEBUG", "1") == "1"
     produksjonssystem = Produksjonssystem()
     produksjonssystem.run(debug=debug)
