@@ -225,18 +225,17 @@ class Produksjonssystem():
             [NordicToNlbpub(retry_missing=True,
                             overwrite=False,
                             during_working_hours=True,
-                            during_night_and_weekend=True),   "master",              "nlbpub"],
+                            during_night_and_weekend=True) ,   "master",              "nlbpub"],
 
             # Grunnlagsfiler
-            [NlbpubPrevious(retry_missing=True),              "nlbpub",              "nlbpub-previous"],
+            [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
             # [UpdateMetadata(),                                "metadata",            "nlbpub"],
-            [HtmlToDtbook(),                                  "nlbpub",              "dtbook"],
+            [HtmlToDtbook(),                                   "nlbpub",              "dtbook"],
 
             # EPUB
             # [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
             [InsertMetadataXhtml(retry_missing=True,
                                  check_identifiers=True,
                                  during_working_hours=True),    "nlbpub",              "pub-in-ebook"],
@@ -252,9 +251,10 @@ class Produksjonssystem():
             [NLBpubToDocx(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True),           "pub-ready-docx",      "docx"],
+            [Newsletter(during_working_hours=True,
+                        during_night_and_weekend=True),         None,                  "pub-ready-braille"],
 
             # punktskrift
-            [CheckPef(),                                      "pef",                 "pef-checked"],
             [InsertMetadataBraille(retry_missing=True,
                                    check_identifiers=True,
                                    during_working_hours=True),  "nlbpub",              "pub-in-braille"],
@@ -264,6 +264,7 @@ class Produksjonssystem():
             [NlbpubToPef(retry_missing=True,
                          check_identifiers=True,
                          during_working_hours=True),            "pub-ready-braille",   "pef"],
+            [CheckPef(),                                        "pef",                 "pef-checked"],
 
             # innlest lydbok
             [InsertMetadataDaisy202(retry_missing=True,
@@ -273,14 +274,14 @@ class Produksjonssystem():
                                    check_identifiers=True,
                                    during_working_hours=True),  "pub-in-audio",        "epub_narration"],
             [DummyPipeline("Innlesing med Hindenburg",
-                           labels=["Lydbok", "Statped"]),     "epub_narration",      "daisy202"],
+                           labels=["Lydbok", "Statped"]),       "epub_narration",      "daisy202"],
 
             # TTS-lydbok
             [EpubToDtbookAudio(retry_missing=True,
                                check_identifiers=True,
                                during_working_hours=True),      "master",              "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
-                           labels=["Lydbok"]),                "dtbook_tts",          "daisy202"],
+                           labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
 
             # e-bok basert på DTBook
             # [EpubToDtbookHTML(),                              "master",              "dtbook_html"],
@@ -296,7 +297,9 @@ class Produksjonssystem():
             [Audio_Abstract(retry_missing=True,
                             during_working_hours=True,
                             during_night_and_weekend=True),     "daisy202",            "abstracts"],
-            [GenerateResources(during_working_hours=True, during_night_and_weekend=True),                             "daisy202",            None],
+
+            [GenerateResources(during_working_hours=True,
+                               during_night_and_weekend=True),  "daisy202",            None],
         ]
 
     # ---------------------------------------------------------------------------
