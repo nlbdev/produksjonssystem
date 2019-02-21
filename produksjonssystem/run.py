@@ -236,28 +236,42 @@ class Produksjonssystem():
             # [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
 
             # e-bok
-            [PrepareForEbook(retry_missing=True, check_identifiers=True),             "pub-in-ebook",        "pub-ready-ebook"],
-            [PrepareForDocx(retry_missing=True, check_identifiers=True),              "pub-in-ebook",        "pub-ready-docx"],
-            [NlbpubToHtml(retry_missing=True, check_identifiers=True),                "pub-ready-ebook",     "html"],
-            [NLBpubToDocx(retry_missing=True, check_identifiers=True),                "pub-ready-docx",      "docx"],
             [Newsletter(during_working_hours=True, during_night_and_weekend=True),   None,                    "pub-ready-braille"],
             [InsertMetadataXhtml(retry_missing=True,
                                  check_identifiers=True,
                                  during_working_hours=True),    "nlbpub",              "pub-in-ebook"],
+            [PrepareForEbook(retry_missing=True,
+                             check_identifiers=True,
+                             during_working_hours=True),        "pub-in-ebook",        "pub-ready-ebook"],
+            [PrepareForDocx(retry_missing=True,
+                            check_identifiers=True,
+                            during_working_hours=True),         "pub-in-ebook",        "pub-ready-docx"],
+            [NlbpubToHtml(retry_missing=True,
+                          check_identifiers=True,
+                          during_working_hours=True),           "pub-ready-ebook",     "html"],
+            [NLBpubToDocx(retry_missing=True,
+                          check_identifiers=True,
+                          during_working_hours=True),           "pub-ready-docx",      "docx"],
 
             # punktskrift
-            [PrepareForBraille(retry_missing=True, check_identifiers=True),           "pub-in-braille",      "pub-ready-braille"],
-            [NlbpubToPef(retry_missing=True, check_identifiers=True),                 "pub-ready-braille",   "pef"],
             [CheckPef(),                                      "pef",                 "pef-checked"],
             [InsertMetadataBraille(retry_missing=True,
                                    check_identifiers=True,
                                    during_working_hours=True),  "nlbpub",              "pub-in-braille"],
+            [PrepareForBraille(retry_missing=True,
+                               check_identifiers=True,
+                               during_working_hours=True),      "pub-in-braille",      "pub-ready-braille"],
+            [NlbpubToPef(retry_missing=True,
+                         check_identifiers=True,
+                         during_working_hours=True),            "pub-ready-braille",   "pef"],
 
             # innlest lydbok
-            [NlbpubToNarrationEpub(retry_missing=True, check_identifiers=True),       "pub-in-audio",        "epub_narration"],
             [InsertMetadataDaisy202(retry_missing=True,
                                     check_identifiers=True,
                                     during_working_hours=True), "nlbpub",              "pub-in-audio"],
+            [NlbpubToNarrationEpub(retry_missing=True,
+                                   check_identifiers=True,
+                                   during_working_hours=True),  "pub-in-audio",        "epub_narration"],
             [DummyPipeline("Innlesing med Hindenburg",
                            labels=["Lydbok", "Statped"]),     "epub_narration",      "daisy202"],
 
@@ -279,7 +293,9 @@ class Produksjonssystem():
             #               labels=["Punktskrift"]),           "dtbook_braille",      None],
 
             # lydutdrag
-            [Audio_Abstract(retry_missing=True),              "daisy202",            "abstracts"],
+            [Audio_Abstract(retry_missing=True,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),     "daisy202",            "abstracts"],
             [GenerateResources(during_working_hours=True, during_night_and_weekend=True),                             "daisy202",            None],
         ]
 
