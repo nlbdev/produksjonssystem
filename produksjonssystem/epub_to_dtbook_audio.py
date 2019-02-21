@@ -60,7 +60,7 @@ class EpubToDtbookAudio(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        should_produce, metadata_valid = Metadata.should_produce(self, epub, self.publication_format)
+        should_produce, metadata_valid = Metadata.should_produce(self.utils.report, epub, self.publication_format)
         if not metadata_valid:
             self.utils.report.info("{} har feil i metadata for lydbok. Avbryter.".format(epub.identifier()))
             self.utils.report.title = ("{}: {} har feil i metadata for {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
@@ -83,7 +83,7 @@ class EpubToDtbookAudio(Pipeline):
         nordic_epub = Epub(self, nordic_epubdir)
 
         self.utils.report.info("Oppdaterer metadata...")
-        updated = Metadata.update(self, nordic_epub, publication_format=self.publication_format)
+        updated = Metadata.update(self.utils.report, nordic_epub, publication_format=self.publication_format)
         if isinstance(updated, bool) and updated is False:
             return False
         nordic_epub.refresh_metadata()

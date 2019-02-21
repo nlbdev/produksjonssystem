@@ -53,7 +53,7 @@ class InsertMetadata(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        should_produce, metadata_valid = Metadata.should_produce(self, epub, self.publication_format)
+        should_produce, metadata_valid = Metadata.should_produce(self.utils.report, epub, self.publication_format)
         if not metadata_valid:
             self.utils.report.info("{} har feil i metadata for {}. Avbryter.".format(epub.identifier(), self.publication_format))
             self.utils.report.title = ("{}: {} har feil i metadata for {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
@@ -70,7 +70,7 @@ class InsertMetadata(Pipeline):
         temp_epub = Epub(self, temp_epubdir)
 
         self.utils.report.info("Oppdaterer metadata...")
-        updated = Metadata.update(self, temp_epub, publication_format=self.publication_format, insert=True)
+        updated = Metadata.update(self.utils.report, temp_epub, publication_format=self.publication_format, insert=True)
         if isinstance(updated, bool) and updated is False:
             library = epub.meta("schema:library")
             if library is not None and library.lower() == "statped":

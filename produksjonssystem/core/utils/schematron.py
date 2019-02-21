@@ -21,7 +21,7 @@ class Schematron():
     _cache_lock = RLock()
 
     def __init__(self, pipeline=None, schematron=None, source=None, report=None, cwd=None, attach_report=True):
-        assert pipeline or report and cwd
+        assert pipeline or report and (report.pipeline or cwd)
         assert schematron and "/" in schematron and os.path.isfile(schematron)
         assert source and "/" in source and os.path.isfile(source)
 
