@@ -231,6 +231,9 @@ class Metadata:
                             i_normalized = re.sub(r"[^\d]", "", i)
                             f = sorted(list(set(line_split[2].split())))  # formats
                             fmt = " ".join(f)
+                            if not i_normalized or not re.sub(r"0", "", i_normalized):
+                                # ignore empty or "0" isbn
+                                continue
                             if i_normalized not in Metadata.original_isbn:
                                 Metadata.original_isbn[i_normalized] = {"pretty": i, "books": {}}
 
