@@ -696,6 +696,7 @@ class Metadata:
                 if f.endswith(".xml"):
                     marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
             for marcxchange_path in marcxchange_paths:
+                normarc_report.info("<br/>")
                 normarc_report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
                 format_from_normarc, marc019b = Metadata.get_format_from_normarc(normarc_report, marcxchange_path)
                 if not format_from_normarc and marc019b:
@@ -708,9 +709,12 @@ class Metadata:
                                  cwd=metadata_dir,
                                  schematron=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/validate/normarc.sch"),
                                  source=marcxchange_path)
-                if not sch.success:
+                if sch.success:
+                    normarc_report.info("Bibliofil-metadata er valid.")
+                else:
                     normarc_report.error("Validering av Bibliofil-metadata feilet")
                     normarc_success = False
+                normarc_report.info("<br/><br/>")
 
             # Send rapport
             normarc_report.attachLog()
