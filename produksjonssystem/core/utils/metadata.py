@@ -1027,10 +1027,17 @@ class Metadata:
                 report.info("Fant ingen signaturer.")
             else:
                 report.info("<dl>")
+                already_reported = {}
                 for e in signatures:
                     source = e.attrib["{http://www.nlb.no/}metadata-source"]
                     source = source.replace("Quickbase Record@{} ".format(identifier), "")
                     value = e.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in e.attrib else e.text
+
+                    if source in already_reported and already_reported[source] == value:
+                        continue
+                    else:
+                        already_reported[source] = value
+
                     report.info("<dt>{}</dt>".format(source))
                     report.info("<dd>{}</dd>".format(value))
                 report.info("</dl>")
