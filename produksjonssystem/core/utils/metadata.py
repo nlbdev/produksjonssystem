@@ -10,6 +10,7 @@ import zipfile
 
 import requests
 from lxml import etree as ElementTree
+from pathlib import Path
 
 from core.config import Config
 from core.utils.epub import Epub
@@ -503,6 +504,18 @@ class Metadata:
                     if not xslt.success:
                         return False
                     rdf_files.append('quickbase/' + os.path.basename(rdf_path))
+
+            # ========== Clean up old files from sources ==========
+
+            allowed_identifiers = identifiers + publication_identifiers
+            for root, dirs, files in os.walk(metadata_dir):
+                for file in files:
+                    file_identifier = [i for i in Path(file).stem.split("-") if re.match(r"^\d\d\d+$", i)]
+                    file_identifier = file_identifier[0] if file_identifier else None
+                    if file_identifier and file_identifier not in allowed_identifiers:
+                        path = os.path.join(root, file)
+                        report.debug("Deleting outdated metadata file: {}".format(path))
+                        os.remove(path)
 
             # ========== Combine metadata ==========
 
