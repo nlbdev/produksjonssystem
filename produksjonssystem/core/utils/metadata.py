@@ -940,14 +940,23 @@ class Metadata:
     @staticmethod
     def get_bibliofil(report, book_id, target):
         report.debug("Henter metadata fra Bibliofil for " + str(book_id) + "...")
-        url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
-        url += book_id
-        request = requests.get(url)
-        if "<SRU:numberOfRecords>0</SRU:numberOfRecords>" in str(request.content, 'utf-8'):
+        sru_url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
+        sru_url += book_id
+        sru_request = requests.get(sru_url)
+        if "<SRU:numberOfRecords>0</SRU:numberOfRecords>" in str(sru_request.content, 'utf-8'):
             report.debug("Ingen katalogpost funnet for {}".format(book_id))
-        else:
-            with open(target, "wb") as target_file:
-                target_file.write(request.content)
+            return
+
+        report.debug("Sjekker om metadata fra Bibliofil for " + str(book_id) + " er slettet...")
+        rest_url = "http://websok.nlb.no/cgi-bin/rest_service/nlb_metadata/1.0/"
+        rest_url += book_id
+        rest_request = requests.get(rest_url)
+        if "<success>false</success>" in str(rest_request.content, 'utf-8'):
+            report.debug("Katalogposten er slettet: {}".format(book_id))
+            return
+
+        with open(target, "wb") as target_file:
+            target_file.write(sru_request.content)
 
     @staticmethod
     def get_format_from_normarc(report, marcxchange_path):
