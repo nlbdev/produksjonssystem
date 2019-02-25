@@ -172,11 +172,14 @@ class EpubToDtbookAudio(Pipeline):
                                                "Antar at den skal det: {}".format(source))
             return True
 
-        return (
-            Metadata.is_in_quickbase(self.logPipeline.utils.report, epub.identifier())
-            and Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
-            and not Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
-        )
+        if not Metadata.is_in_quickbase(self.logPipeline.utils.report, epub.identifier()):
+            self.utils.report.error("{} finnes ikke i Quickbase, kan ikke avgjøre om den skal trigges eller ikke.".format(epub.identifier()) +
+                                    "Antar at den ikke skal det.")
+            return False
+
+        should_produce, _ = Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
+        production_complete, _ = Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
+        return should_produce and not production_complete
 
 
 if __name__ == "__main__":
