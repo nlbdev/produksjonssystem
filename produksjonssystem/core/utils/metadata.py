@@ -719,6 +719,8 @@ class Metadata:
                     normarc_report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0],
                                                                                                         marc019b))
                 if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
+                    normarc_report.info("Hopper over validering. Vi er ikke interessert i dette formatet akkurat nå (\"{}\" = \"{}\").".format(
+                        marc019b, format_from_normarc))
                     continue
 
                 sch = Schematron(report=normarc_report,
