@@ -171,7 +171,7 @@
         <title>ISBN for bøker</title>
         <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($library = 'statped' and not($is-audiobook))]">
             <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i `*020$a`.
-            <value-of select="if (exists(marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a'])) concat('(Det finnes et ISSN-nummer i `*022$a`, men ', $identifier, ' er ikke katalogisert som periodika.') else ''"/></assert>
+            <value-of select="if (exists(marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a'])) then concat('(Det finnes et ISSN-nummer i `*022$a`, men ', $identifier, ' er ikke katalogisert som periodika.') else ''"/></assert>
         </rule>
     </pattern>
     <pattern>
