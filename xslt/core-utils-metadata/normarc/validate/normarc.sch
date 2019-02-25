@@ -148,13 +148,15 @@
     <pattern>
         <title>Formatering av ISBN for originalen (antall siffer)</title>
         <rule context="marcxchange:record[not($is-periodical)]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
-            <assert test="matches(replace(text(),'[^0-9xX]',''), '^(\d{9}|\d{12})[\dxX]$')">ISBN i *596$f må bestå av enten 10 eller 13 siffer. Det siste sifferet kan være "X". (var: '<value-of select="text()"/>').</assert>
+            <assert test="matches(replace(text(),'[^0-9xX]',''), '^(\d{9}|\d{12})[\dxX]$')">ISBN i *596$f må bestå av enten 10 eller 13 siffer. Det siste sifferet kan være "X". (var: '<value-of select="text()"/>').
+            <value-of select="if (string-length(replace(text(),'[^0-9xX]','')) lt 9) then concat('Dette ser mer ut som et ISSN-nummer enn et ISBN-nummer, men ', $identifier, ' er ikke katalogisert som periodika.') else ''"/></assert>
         </rule>
     </pattern>
     <pattern>
         <title>Formatering av ISSN for originalen (antall siffer)</title>
         <rule context="marcxchange:record[$is-periodical]/marcxchange:datafield[@tag='596']/marcxchange:subfield[@code='f']">
-            <assert test="matches(replace(text(),'[^0-9xX]',''), '^\d{7}[\dxX]$')">ISSN i *596$f må bestå av 8 siffer (var: '<value-of select="text()"/>').</assert>
+            <assert test="matches(replace(text(),'[^0-9xX]',''), '^\d{7}[\dxX]$')">ISSN i *596$f må bestå av 8 siffer (var: '<value-of select="text()"/>').
+            <value-of select="if (string-length(replace(text(),'[^0-9xX]','')) ge 9) then concat('Dette ser mer ut som et ISBN-nummer enn et ISSN-nummer, men ', $identifier, ' er katalogisert som periodika.') else ''"/></assert>
         </rule>
     </pattern>
     <pattern>
@@ -168,7 +170,8 @@
     <pattern>
         <title>ISBN for bøker</title>
         <rule context="marcxchange:record[$is-publication and not($is-periodical) and not($library = 'statped' and not($is-audiobook))]">
-            <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a</assert>
+            <assert test="marcxchange:datafield[@tag='020']/marcxchange:subfield[@code='a']">ISBN for utgaven må være definert i *020$a.
+            <value-of select="if (exists(marcxchange:datafield[@tag='022']/marcxchange:subfield[@code='a'])) concat('(Det finnes et ISSN-nummer i *022$a, men ', $identifier, ' er ikke katalogisert som periodika.') else ''"/></assert>
         </rule>
     </pattern>
     <pattern>
