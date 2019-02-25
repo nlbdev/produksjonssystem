@@ -732,7 +732,7 @@ class Metadata:
                 else:
                     normarc_report.error("Validering av Bibliofil-metadata feilet")
                     normarc_success = False
-                normarc_report.info("<br/><br/>")
+            normarc_report.info("<br/>")
 
             # Send rapport
             normarc_report.attachLog()
