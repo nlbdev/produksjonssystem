@@ -284,7 +284,7 @@ class Metadata:
             filtered_edition_identifiers = []
             filtered_publication_identifiers = []
             for publication_identifier in publication_identifiers:
-                if not Metadata.bibliofil_metadata_deleted(report, book_id):
+                if not Metadata.bibliofil_metadata_deleted(report, publication_identifier):
                     filtered_publication_identifiers.append(publication_identifier)
                     for edition_identifier in edition_identifiers:
                         if publication_identifier == edition_identifier[:6]:
