@@ -281,6 +281,17 @@ class Metadata:
                             edition_identifiers.append(fmt_bookid)
                             publication_identifiers.append(fmt_bookid[:6])
 
+            filtered_edition_identifiers = []
+            filtered_publication_identifiers = []
+            for publication_identifier in publication_identifiers:
+                if not Metadata.bibliofil_metadata_deleted(report, book_id):
+                    filtered_publication_identifiers.append(publication_identifier)
+                    for edition_identifier in edition_identifiers:
+                        if publication_identifier == edition_identifier[:6]:
+                            filtered_edition_identifiers.append(edition_identifier)
+            edition_identifiers = filtered_edition_identifiers
+            publication_identifiers = filtered_publication_identifiers
+
             return sorted(set(edition_identifiers)), sorted(set(publication_identifiers))
 
     @staticmethod
@@ -713,7 +724,11 @@ class Metadata:
                     marcxchange_paths.append(os.path.join(metadata_dir, "bibliofil", f))
             for marcxchange_path in marcxchange_paths:
                 normarc_report.info("<br/>")
-                normarc_report.info("**Validerer NORMARC ({})**".format(os.path.basename(marcxchange_path).split(".")[0]))
+                marcxchange_path_identifier = os.path.basename(marcxchange_path).split(".")[0]
+                normarc_report.info("**Validerer NORMARC ({})**".format(marcxchange_path_identifier))
+                if Metadata.bibliofil_metadata_deleted(normarc_report, marcxchange_path_identifier):
+                    normarc_report.info("Hopper over validering. Denne katalogposten ser ut til å være slettet.")
+                    continue
                 format_from_normarc, marc019b = Metadata.get_format_from_normarc(normarc_report, marcxchange_path)
                 if not format_from_normarc and marc019b:
                     normarc_report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0],
@@ -953,6 +968,18 @@ class Metadata:
         return xslt.success
 
     @staticmethod
+    def bibliofil_metadata_deleted(report, book_id):
+        report.debug("Sjekker om metadata fra Bibliofil for " + str(book_id) + " er slettet...")
+        rest_url = "http://websok.nlb.no/cgi-bin/rest_service/nlb_metadata/1.0/"
+        rest_url += book_id
+        rest_request = requests.get(rest_url)
+        if "<success>false</success>" in str(rest_request.content, 'utf-8'):
+            report.debug("Katalogposten er slettet: {}".format(book_id))
+            return True
+        else:
+            return False
+
+    @staticmethod
     def get_bibliofil(report, book_id, target):
         report.debug("Henter metadata fra Bibliofil for " + str(book_id) + "...")
         sru_url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
@@ -962,12 +989,7 @@ class Metadata:
             report.debug("Ingen katalogpost funnet for {}".format(book_id))
             return
 
-        report.debug("Sjekker om metadata fra Bibliofil for " + str(book_id) + " er slettet...")
-        rest_url = "http://websok.nlb.no/cgi-bin/rest_service/nlb_metadata/1.0/"
-        rest_url += book_id
-        rest_request = requests.get(rest_url)
-        if "<success>false</success>" in str(rest_request.content, 'utf-8'):
-            report.debug("Katalogposten er slettet: {}".format(book_id))
+        if Metadata.bibliofil_metadata_deleted(report, book_id):
             return
 
         with open(target, "wb") as target_file:
