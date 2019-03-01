@@ -302,7 +302,6 @@ class Metadata:
             report.error("Can only read and update metadata from EPUBs")
             return False
 
-        report.debug("Metadata.update venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
         metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         with Metadata.get_dir_lock(metadata_dir):
             report.debug("Metadata.update fikk metadata-låsen for {}.".format(epub.identifier()))
@@ -349,7 +348,6 @@ class Metadata:
             report.error("Can only read metadata from EPUBs")
             return False
 
-        report.debug("Metadata.get_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
         metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         with Metadata.get_dir_lock(metadata_dir):
             report.debug("Metadata.get_metadata fikk metadata-låsen for {}.".format(epub.identifier()))
@@ -674,7 +672,6 @@ class Metadata:
             report.error("Can only read metadata from EPUBs")
             return False
 
-        report.debug("Metadata.validate_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
         metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         with Metadata.get_dir_lock(metadata_dir):
             report.debug("Metadata.validate_metadata fikk metadata-låsen for {}.".format(epub.identifier()))
@@ -835,7 +832,6 @@ class Metadata:
             report.error("Finner ikke metadata for formatet \"{}\".".format(publication_format))
             return False
 
-        report.debug("Metadata.insert_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
         opf_metadata_obj = tempfile.NamedTemporaryFile()
         html_metadata_obj = tempfile.NamedTemporaryFile()
         with Metadata.get_dir_lock(metadata_dir):
@@ -1032,7 +1028,6 @@ class Metadata:
 
     @staticmethod
     def add_production_info(report, identifier, publication_format=""):
-        report.debug("Metadata.add_production_info venter på at metadata-låsen for {} skal være ledig...".format(identifier))
         metadata_dir = Metadata.get_metadata_dir(identifier)
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
         rdf_path_obj = tempfile.NamedTemporaryFile()
@@ -1104,7 +1099,6 @@ class Metadata:
 
         Metadata.update(report, epub, publication_format=publication_format, insert=False, force_update=force_metadata_update)
 
-        report.debug("Metadata.should_produce venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
         metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
         rdf_path_obj = tempfile.NamedTemporaryFile()
@@ -1197,7 +1191,6 @@ class Metadata:
 
         Metadata.update(report, epub, publication_format=publication_format, insert=False, force_update=force_metadata_update)
 
-        report.debug("Metadata.production_complete venter på at metadata-låsen for {} skal være ledig...".format(epub.identifier()))
         metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
         rdf_path_obj = tempfile.NamedTemporaryFile()
@@ -1472,7 +1465,6 @@ class Metadata:
     def _get_cached_rdf_metadata(epub_identifier):
         metadata = []
 
-        logging.debug("Metadata.get_cached_rdf_metadata venter på at metadata-låsen for {} skal være ledig...".format(epub_identifier))
         metadata_dir = Metadata.get_metadata_dir(epub_identifier)
         rdf_file = os.path.join(metadata_dir, "metadata.rdf")
         rdf_file_obj = tempfile.NamedTemporaryFile()
