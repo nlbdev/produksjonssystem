@@ -33,6 +33,10 @@ I GitKraken, trykk på pilen ved siden av "Pull", og trykk deretter på den lill
 
 ![Skjermbilde som viser hvor i GitKraken man skal trykke](gitkraken-pull-rebase.png)
 
+I Atom bør man bruke Pylama. Installer pakken `linter-pylama` i Atom. Under Settings - Packages - Linter Pylama,
+bruk "internal"-versjon, sett interpreter til "python3", bruk "Use pylama config" for konfigurasjonsfil, og ignorer
+gjerne feilmeldingskodene "D203,D212,D213,D404".
+
 ## Installasjon
 
 - installer java 8 JDK: `sudo apt install openjdk-8-jdk`
