@@ -737,6 +737,7 @@ class Metadata:
                     normarc_report.info("Hopper over validering. Vi er ikke interessert i dette formatet akkurat nå (\"{}\" = \"{}\").".format(
                         marc019b, format_from_normarc))
                     continue
+                normarc_report.info(f"Format: {format_from_normarc if format_from_normarc else '(Ukjent)'}")
 
                 sch = Schematron(report=normarc_report,
                                  cwd=metadata_dir,
