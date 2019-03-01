@@ -284,7 +284,7 @@ class Metadata:
             filtered_edition_identifiers = []
             filtered_publication_identifiers = []
             for publication_identifier in publication_identifiers:
-                if not Metadata.bibliofil_metadata_deleted(report, publication_identifier):
+                if Metadata.bibliofil_record_exists(report, publication_identifier):
                     filtered_publication_identifiers.append(publication_identifier)
                     for edition_identifier in edition_identifiers:
                         if publication_identifier == edition_identifier[:6]:
@@ -726,7 +726,7 @@ class Metadata:
                 normarc_report.info("<br/>")
                 marcxchange_path_identifier = os.path.basename(marcxchange_path).split(".")[0]
                 normarc_report.info("**Validerer NORMARC ({})**".format(marcxchange_path_identifier))
-                if Metadata.bibliofil_metadata_deleted(normarc_report, marcxchange_path_identifier):
+                if not Metadata.bibliofil_record_exists(normarc_report, marcxchange_path_identifier):
                     normarc_report.info("Hopper over validering. Denne katalogposten ser ut til å være slettet.")
                     continue
                 format_from_normarc, marc019b = Metadata.get_format_from_normarc(normarc_report, marcxchange_path)
@@ -968,16 +968,25 @@ class Metadata:
         return xslt.success
 
     @staticmethod
-    def bibliofil_metadata_deleted(report, book_id):
-        report.debug("Sjekker om metadata fra Bibliofil for " + str(book_id) + " er slettet...")
-        rest_url = "http://websok.nlb.no/cgi-bin/rest_service/nlb_metadata/1.0/"
-        rest_url += book_id
-        rest_request = requests.get(rest_url)
-        if "<success>false</success>" in str(rest_request.content, 'utf-8'):
-            report.debug("Katalogposten er slettet: {}".format(book_id))
-            return True
-        else:
+    def bibliofil_record_exists(report, book_id, marcxchange=None):
+        report.debug(f"Sjekker om Bibliofil inneholder metadata for {book_id}...")
+
+        if not marcxchange:
+            sru_url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
+            sru_url += book_id
+            sru_request = requests.get(sru_url)
+            marcxchange = str(sru_request.content, 'utf-8')
+
+        if "<SRU:numberOfRecords>0</SRU:numberOfRecords>" in marcxchange:
+            report.debug(f"Ingen katalogpost funnet for {book_id}")
             return False
+
+        if re.search(r"<marcxchange:controlfield[^>]*tag=\"000\"[^>]*>[^<]{5}d", marcxchange):
+            report.debug(f"Katalogposten er slettet: {book_id}")
+            return False
+
+        report.debug(f"Boken er tilgjengelig: {book_id}")
+        return True
 
     @staticmethod
     def get_bibliofil(report, book_id, target):
@@ -985,11 +994,8 @@ class Metadata:
         sru_url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
         sru_url += book_id
         sru_request = requests.get(sru_url)
-        if "<SRU:numberOfRecords>0</SRU:numberOfRecords>" in str(sru_request.content, 'utf-8'):
-            report.debug("Ingen katalogpost funnet for {}".format(book_id))
-            return
 
-        if Metadata.bibliofil_metadata_deleted(report, book_id):
+        if not Metadata.bibliofil_record_exists(report, book_id, str(sru_request.content, 'utf-8')):
             return
 
         with open(target, "wb") as target_file:
