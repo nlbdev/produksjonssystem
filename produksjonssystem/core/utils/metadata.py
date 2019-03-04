@@ -1283,6 +1283,17 @@ class Metadata:
             for meta in cached_rdf_metadata:
                 if meta not in book_metadata:
                     book_metadata[meta] = cached_rdf_metadata[meta]
+
+        # if not explicitly defined in the metadata, assign library based on the identifier
+        if "library" not in book_metadata and "identifier" in book_metadata:
+            if book_metadata["identifier"][:2] in ["85", "86", "87", "88"]:
+                book_metadata["library"] = "StatPed"
+            elif book_metadata["identifier"][:2] in ["80", "81", "82", "83", "84"]:
+                book_metadata["library"] = "KABB"
+            else:
+                book_metadata["library"] = "NLB"
+            pipeline.utils.report.info(f"Velger '{book_metadata['library']}' som bibliotek basert på boknummer: {book_metadata['identifier']}")
+
         return book_metadata
 
     @staticmethod
