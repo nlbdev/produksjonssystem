@@ -3,21 +3,15 @@ common:
    - Ammar@nlb.no
    - Espen@nlb.no
    - Jostein@nlb.no
-   - Olav@nlb.no
-   - Per@nlb.no
 
 incoming-nordic:
   - ammar.usama@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
 
 nordic-epub-to-nlbpub:
   - jostein@nlb.no
-  - olav.indergaard@nlb.no
-  - per.sennels@nlb.no
 
 update-metadata:
   - jostein@nlb.no
@@ -41,7 +35,6 @@ insert-metadata-daisy202:
 nlbpub-to-narration-epub:
   - eivind.haugen@nlb.no
   - jostein@nlb.no
-  - per.sennels@nlb.no
 
 insert-metadata-xhtml:
   - jostein@nlb.no
@@ -53,7 +46,6 @@ nlbpub-to-html:
   - ammar.usama@nlb.no
   - espen.solhjem@nlb.no
   - jostein@nlb.no
-  - olav.indergaard@nlb.no
 
 nlbpub-to-docx:
   - espen.solhjem@nlb.no
@@ -76,24 +68,18 @@ epub-to-dtbook:
   - ammar.usama@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
 
 epub-to-dtbook-HTML:
   - ammar.usama@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
 
 epub-to-dtbook-braille:
   - ammar.usama@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
 
 create-abstracts:
@@ -104,15 +90,12 @@ dummy_innlesingmedhindenburg:
   - eivind.haugen@nlb.no
   - espen.solhjem@nlb.no
   - jostein@nlb.no
-  - per.sennels@nlb.no
 
 dummy_pipeline1ogammarsskript:
   - ammar.usama@nlb.no
   - espen.solhjem@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
 
 dummy_punktskriftmednorbraille:
@@ -120,8 +103,6 @@ dummy_punktskriftmednorbraille:
   - espen.solhjem@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
 
 dummy_talesynteseipipeline1:
@@ -129,6 +110,4 @@ dummy_talesynteseipipeline1:
   - espen.solhjem@nlb.no
   - jostein@nlb.no
   - mari.myksvoll@nlb.no
-  - olav.indergaard@nlb.no
-  - sobia.awan@nlb.no
   - thomas.tsigaridas@nlb.no
