@@ -32,7 +32,14 @@
                 <rdf:type rdf:resource="http://schema.org/Person"/>
                 <xsl:for-each select="@*[starts-with(local-name(), 'ln_')]">
                     <xsl:element name="nlbbib:{local-name()}">
-                        <xsl:attribute name="rdf:name" select="."/>
+                        <xsl:choose>
+                            <xsl:when test="local-name() = 'ln_kat'">
+                                <xsl:attribute name="rdf:name" select="f:ln_kat(.)"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="rdf:name" select="."/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:element>
                 </xsl:for-each>
                 <xsl:for-each select="lnel/row/@*[starts-with(local-name(), 'lnel_')]">
@@ -72,6 +79,11 @@
         <xsl:call-template name="lmarc">
             <xsl:with-param name="name" select="'nr'"/>
         </xsl:call-template>
+        <xsl:call-template name="institution-and-disability">
+            <xsl:with-param name="lmarc402a" select="../datafield[@tag='402']/subfield[@code='a']/text()"/>
+            <xsl:with-param name="lmarc465d" select="../datafield[@tag='465']/subfield[@code='d']/text()"/>
+            <xsl:with-param name="lmarc466a" select="../datafield[@tag='466']/subfield[@code='a']/text()"/>
+        </xsl:call-template>
     </xsl:template>
     
     <xsl:template match="datafield[@tag='140']" mode="lmarc">
@@ -80,6 +92,12 @@
                 <xsl:when test="@code = 'a'">
                     <xsl:call-template name="lmarc">
                         <xsl:with-param name="name" select="'library'"/>
+                        <xsl:with-param name="value" select="
+                            if (. = ('OL','OS')) then 'NLB' else
+                            if (. = 'SPED') then 'Statped' else
+                            if (. = 'KABB') then 'Kabb' else .
+                        "/>
+                        <xsl:with-param name="context" select="."/>
                     </xsl:call-template>
                 </xsl:when>
                 <xsl:when test="@code = 'i'">
@@ -87,7 +105,10 @@
                     <xsl:for-each select="tokenize(text(), '\s+')">
                         <xsl:call-template name="lmarc">
                             <xsl:with-param name="name" select="'libraryAccess'"/>
-                            <xsl:with-param name="value" select="."/>
+                            <xsl:with-param name="value" select="
+                                if (. = 'SPED') then 'Statped' else
+                                if (. = 'KABB') then 'Kabb' else .
+                            "/>
                             <xsl:with-param name="context" select="$context"/>
                         </xsl:call-template>
                     </xsl:for-each>
@@ -131,16 +152,7 @@
     </xsl:template>
     
     <xsl:template match="datafield[@tag='402']" mode="lmarc">
-        <xsl:for-each select="subfield">
-            <xsl:choose>
-                <xsl:when test="@code = 'a' and text() = 'HER'">
-                    <xsl:call-template name="lmarc">
-                        <xsl:with-param name="name" select="'test_patron'"/>
-                        <xsl:with-param name="value" select="'true'"/>
-                    </xsl:call-template>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:for-each>
+        <!-- NOTE: 402$a checked by the template "institution-and-disability" -->
     </xsl:template>
     
     <xsl:template match="datafield[@tag='465']" mode="lmarc">
@@ -152,8 +164,13 @@
                         <xsl:with-param name="value" select="'true'"/>
                     </xsl:call-template>
                 </xsl:when>
+                <!-- NOTE: 465$d handled by the template "institution-and-disability" -->
             </xsl:choose>
         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="datafield[@tag='466']" mode="lmarc">
+        <!-- NOTE: 466$a handled by the template "institution-and-disability" -->
     </xsl:template>
     
     <xsl:template match="datafield[@tag='468']" mode="lmarc">
@@ -199,6 +216,58 @@
         </xsl:if>
     </xsl:template>
     
+    <xsl:template name="institution-and-disability">
+        <xsl:param name="lmarc402a" as="xs:string*"/>
+        <xsl:param name="lmarc465d" as="xs:string*"/>
+        <xsl:param name="lmarc466a" as="xs:string*"/>
+        
+        <xsl:if test="$lmarc402a = 'HER' or $lmarc465d = 'TS'">
+            <xsl:call-template name="lmarc">
+                <xsl:with-param name="name" select="'test_patron'"/>
+                <xsl:with-param name="value" select="'true'"/>
+            </xsl:call-template>
+        </xsl:if>
+        
+        <xsl:variable name="disability" as="xs:string" select="
+            if ($lmarc466a = 'D') then 'Dysleksi' else
+            if ($lmarc466a = 'AL') then 'Andre lesevansker' else
+            if ($lmarc466a = 'FF') then 'Fysisk funksjonshemming' else
+            if ($lmarc466a = 'ME') then 'ME - utmattelsessyndrom' else
+            if ($lmarc466a = 'MH') then 'Multihandikap' else
+            if ($lmarc466a = 'PU') then 'Psykisk utviklingshemming' else
+            if ($lmarc466a = 'A') then 'Afasi' else
+
+            if ($lmarc465d = 'ME') then 'ME - utmattelsessyndrom' else
+            if ($lmarc465d = 'S') then 'Synshemmet' else
+            if ($lmarc465d = 'AH') then 'Annet handikap' else
+            
+            'Ukjent'
+        "/>
+        
+        <xsl:variable name="institution" as="xs:string" select="
+            if ($lmarc466a = 'IBIB') then 'Bibliotek' else
+            if ($lmarc466a = 'ISHAH') then 'Sykehjem-Aldershjem' else
+            if ($lmarc466a = 'IBH') then 'Barnehager' else
+            if ($lmarc466a = 'IS') then 'Sykehus' else
+            if ($lmarc466a = 'IA') then 'Andre' else
+            
+            if ($lmarc465d = 'I') then 'Andre' else
+            if ($lmarc465d = 'AN') then 'Andre' else
+            
+            'Ingen'
+        "/>
+        
+        <xsl:call-template name="lmarc">
+            <xsl:with-param name="name" select="'institution'"/>
+            <xsl:with-param name="value" select="$institution"/>
+        </xsl:call-template>
+        
+        <xsl:call-template name="lmarc">
+            <xsl:with-param name="name" select="'disability'"/>
+            <xsl:with-param name="value" select="$disability"/>
+        </xsl:call-template>
+    </xsl:template>
+    
     <xsl:template name="lmarc">
         <xsl:param name="name" as="xs:string"/>
         <xsl:param name="value" select="()" as="xs:string?"/>
@@ -215,5 +284,44 @@
         <xsl:param name="context" select="." as="element()"/>
         <!--<nlbbib:source rdf:name="{if ($context/self::subfield) then concat($context/../@tag, '$', $context/@code) else $context/@tag}"/>-->
     </xsl:template>
+    
+    <xsl:function name="f:ln_kat">
+        <xsl:param name="ln_kat" as="xs:string?"/>
+        <xsl:choose>
+            <xsl:when test="$ln_kat = 'l'">
+                <xsl:value-of select="'Institusjon'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'b'">
+                <xsl:value-of select="'Barn'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'ele'">
+                <xsl:value-of select="'Elevlåner'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'sped_ansatt'">
+                <xsl:value-of select="'Statped Ansatt'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'sped_elev'">
+                <xsl:value-of select="'Statped Elev'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'sped_larer'">
+                <xsl:value-of select="'Statped Lærer'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'sped_skole'">
+                <xsl:value-of select="'Statped Skole'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'ue'">
+                <xsl:value-of select="'Utgått elev'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'v'">
+                <xsl:value-of select="'Voksen'"/>
+            </xsl:when>
+            <xsl:when test="$ln_kat = 'u'">
+                <xsl:value-of select="'Ukjent'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'Ukjent'"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
     
 </xsl:stylesheet>
