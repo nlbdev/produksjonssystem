@@ -734,7 +734,7 @@ class Metadata:
                     normarc_report.info("Hopper over validering. Vi er ikke interessert i dette formatet akkurat nå (\"{}\" = \"{}\").".format(
                         marc019b, format_from_normarc))
                     continue
-                normarc_report.info(f"Format: {format_from_normarc if format_from_normarc else '(Ukjent)'}")
+                normarc_report.info("Format: {}".format(format_from_normarc if format_from_normarc else '(Ukjent)'))
 
                 sch = Schematron(report=normarc_report,
                                  cwd=metadata_dir,
@@ -966,7 +966,7 @@ class Metadata:
 
     @staticmethod
     def bibliofil_record_exists(report, book_id, marcxchange=None):
-        report.debug(f"Sjekker om Bibliofil inneholder metadata for {book_id}...")
+        report.debug("Sjekker om Bibliofil inneholder metadata for {}...".format(book_id))
 
         if not marcxchange:
             sru_url = "http://websok.nlb.no/cgi-bin/sru?version=1.2&operation=searchRetrieve&recordSchema=bibliofilmarcnoholdings&query=bibliofil.tittelnummer="
@@ -975,14 +975,14 @@ class Metadata:
             marcxchange = str(sru_request.content, 'utf-8')
 
         if "<SRU:numberOfRecords>0</SRU:numberOfRecords>" in marcxchange:
-            report.debug(f"Ingen katalogpost funnet for {book_id}")
+            report.debug("Ingen katalogpost funnet for {}".format(book_id))
             return False
 
         if re.search(r"<marcxchange:controlfield[^>]*tag=\"000\"[^>]*>[^<]{5}d", marcxchange):
-            report.debug(f"Katalogposten er slettet: {book_id}")
+            report.debug("Katalogposten er slettet: {}".format(book_id))
             return False
 
-        report.debug(f"Boken er tilgjengelig: {book_id}")
+        report.debug("Boken er tilgjengelig: {}".format(book_id))
         return True
 
     @staticmethod
@@ -1292,7 +1292,7 @@ class Metadata:
                 book_metadata["library"] = "KABB"
             else:
                 book_metadata["library"] = "NLB"
-            pipeline.utils.report.info(f"Velger '{book_metadata['library']}' som bibliotek basert på boknummer: {book_metadata['identifier']}")
+            pipeline.utils.report.info("Velger '{}' som bibliotek basert på boknummer: {}".format(book_metadata['library'], book_metadata['identifier']))
 
         return book_metadata
 
