@@ -1010,6 +1010,7 @@ class Metadata:
             return None, marc019b
 
         split = marc019b.split(",")
+        split = [val for val in split if val not in ['j', 'jn', 'jp']]  # ignore codes declaring periodicals
 
         if [val for val in split if val in ['za', 'c']]:
             return "Braille", marc019b
@@ -1023,7 +1024,7 @@ class Metadata:
         if [val for val in split if val in ['gt', 'nb']]:
             return "EPUB", marc019b
 
-        report.warn("Ukjent format i `*019$b` for {}: {}".format(os.path.basename(marcxchange_path), marc019b))
+        report.warn("Ukjent format i `*019$b` for {}: \"{}\"".format(os.path.basename(marcxchange_path), marc019b))
         return None, marc019b
 
     @staticmethod
