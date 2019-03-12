@@ -962,4 +962,24 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Deleted patron">
+        <x:context>
+            <laaner>
+                <row ln_nr="12345" ln_navn="!!Lnr. slettet 12/03/2019"/>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="12345">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:ln_nr rdf:name="12345"/>
+                        <nlbbib:ln_navn rdf:name="Slettet"/>
+                        <nlbbib:ln_slettet rdf:name="12/03/2019"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

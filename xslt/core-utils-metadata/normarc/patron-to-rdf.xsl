@@ -31,16 +31,7 @@
             <rdf:Description rdf:ID="{@ln_nr}">
                 <rdf:type rdf:resource="http://schema.org/Person"/>
                 <xsl:for-each select="@*[starts-with(local-name(), 'ln_')]">
-                    <xsl:element name="nlbbib:{local-name()}">
-                        <xsl:choose>
-                            <xsl:when test="local-name() = 'ln_kat'">
-                                <xsl:attribute name="rdf:name" select="f:ln_kat(.)"/>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:attribute name="rdf:name" select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:element>
+                    <xsl:apply-templates select="."/>
                 </xsl:for-each>
                 <xsl:for-each select="lnel/row/@*[starts-with(local-name(), 'lnel_')]">
                     <xsl:element name="nlbbib:{local-name()}">
@@ -64,6 +55,30 @@
                 </xsl:for-each>
             </rdf:Description>
         </rdf:RDF>
+    </xsl:template>
+    
+    <xsl:template match="@*[starts-with(local-name(), 'ln_')]" priority="0">
+        <xsl:element name="nlbbib:{local-name()}">
+            <xsl:attribute name="rdf:name" select="."/>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="@ln_navn">
+        <xsl:choose>
+            <xsl:when test="starts-with(lower-case(.), '!!lnr. slettet')">
+                <nlbbib:ln_navn rdf:name="Slettet"/>
+                <nlbbib:ln_slettet rdf:name="{normalize-space(substring-after(lower-case(.),'!!lnr. slettet'))}"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="@ln_kat">
+        <xsl:element name="nlbbib:{local-name()}">
+            <xsl:attribute name="rdf:name" select="f:ln_kat(.)"/>
+        </xsl:element>
     </xsl:template>
     
     <xsl:template match="controlfield | datafield" mode="lmarc">
