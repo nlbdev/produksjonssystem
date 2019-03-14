@@ -137,14 +137,14 @@
             
             <xsl:variable name="language" select="(ancestor-or-self::*/(@xml:lang/string(.), @lang/string(.)), /*/head/meta[@name='dc:language']/@content/string(.))[1]" as="xs:string"/>
             <xsl:choose>
-                <xsl:when test="$language = 'no' or ends-with($language, '-NO')">
-                    <xsl:text>Side </xsl:text>
-                    <xsl:value-of select="@title"/>
-                </xsl:when>
                 <xsl:when test="$language = 'en' or starts-with($language, 'en-')">
                     <xsl:text>Page </xsl:text>
                     <xsl:value-of select="@title"/>  
                 </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text>Side </xsl:text>
+                    <xsl:value-of select="@title"/>
+                </xsl:otherwise>
             </xsl:choose>
         </xsl:copy>
     </xsl:template> 
