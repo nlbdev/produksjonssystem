@@ -33,6 +33,7 @@ from incoming_nordic import IncomingNordic
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
                              InsertMetadataXhtml)
 from make_abstracts import Audio_Abstract
+from newspaper_schibsted import NewspaperSchibsted
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
@@ -104,6 +105,7 @@ class Produksjonssystem():
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
+        Config.set("newsfeed_dir", os.path.join(book_archive_dirs["news"], "schibsted/avisfeeder"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
@@ -142,7 +144,7 @@ class Produksjonssystem():
         # self.dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["nlbpub"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["epub_from_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook")
-
+        self.dirs_ranked[-1]["dirs"]["news"] = Config.get("newsfeed_dir")
         self.dirs_ranked.append({
             "id": "version-control",
             "name": "Versjonskontroll",
@@ -174,6 +176,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
         self.dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
         self.dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
+        self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["news"], "schibsted/dtbookfiler")
 
         self.dirs_ranked.append({
             "id": "publication-out",
@@ -253,7 +256,8 @@ class Produksjonssystem():
                           during_working_hours=True),           "pub-ready-docx",      "docx"],
             [Newsletter(during_working_hours=True,
                         during_night_and_weekend=True),         None,                  "pub-ready-braille"],
-
+            [NewspaperSchibsted(during_working_hours=True,
+                                during_night_and_weekend=True),         "news",                  "dtbook_news"],
             # punktskrift
             [InsertMetadataBraille(retry_missing=True,
                                    check_identifiers=True,
@@ -282,6 +286,8 @@ class Produksjonssystem():
                                during_working_hours=True),      "master",              "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
+            [DummyPipeline("Talesyntese i Pipeline 1 for aviser",
+                           labels=["Lydbok"]),                  "dtbook_news",          "daisy202"],
 
             # e-bok basert på DTBook
             # [EpubToDtbookHTML(),                              "master",              "dtbook_html"],

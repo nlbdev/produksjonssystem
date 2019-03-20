@@ -56,7 +56,8 @@ environment = {
     "BOOK_ARCHIVE_DIRS": " ".join([
         "master={}/prodsys-archive".format(target_path),
         "share={}/prodsys-daisy202".format(target_path),
-        "distribution={}/prodsys-distribution".format(target_path)
+        "distribution={}/prodsys-distribution".format(target_path),
+        "news={}/prodsys-news".format(target_path)
     ]),  # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
     "REPORTS_DIR": "/tmp/prodsys-rapporter".format(target_path),  # always the same, so that it's easier to view the dashboard(s)
