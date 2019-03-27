@@ -105,7 +105,7 @@ class Produksjonssystem():
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
-        Config.set("newsfeed_dir", os.path.join(book_archive_dirs["news"], "schibsted/avisfeeder"))
+        Config.set("newsfeed_dir", os.path.join(book_archive_dirs["news"], "avisfeeder"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
@@ -176,7 +176,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
         self.dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
         self.dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
-        self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["news"], "schibsted/dtbookfiler")
+        self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["news"], "dtbookfiler")
 
         self.dirs_ranked.append({
             "id": "publication-out",
@@ -257,7 +257,7 @@ class Produksjonssystem():
             [Newsletter(during_working_hours=True,
                         during_night_and_weekend=True),         None,                  "pub-ready-braille"],
             [NewspaperSchibsted(during_working_hours=True,
-                                during_night_and_weekend=True),         "news",                  "dtbook_news"],
+                                during_night_and_weekend=True), "news",                "dtbook_news"],
             # punktskrift
             [InsertMetadataBraille(retry_missing=True,
                                    check_identifiers=True,
