@@ -378,7 +378,7 @@ class Filesystem():
                     return re.sub("^//", "smb://", l[0])
 
         x_dir = os.getenv("XDG_RUNTIME_DIR")
-        if x_dir:
+        if x_dir and os.path.isdir(os.listdir(os.path.join(x_dir, "gvfs")):
             for mount in [os.path.join(x_dir, "gvfs", m) for m in os.listdir(os.path.join(x_dir, "gvfs"))]:
                 if mount == path:
                     # path == "$XDG_RUNTIME_DIR/gvfs/smb-share:server=x.x.x.x,share=sharename"
