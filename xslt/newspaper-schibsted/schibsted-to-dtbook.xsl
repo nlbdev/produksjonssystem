@@ -12,6 +12,7 @@
     <xsl:output indent="yes"/>
     
     <xsl:param name="identifier" as="xs:string"/>
+    <xsl:param name="title" select="/*/npx:origin/npx:organization/text()" as="xs:string"/> <!-- optional but recommended -->
     <xsl:param name="date" select="replace(string(current-date()),'\+.*','')" as="xs:string"/> <!-- optional, YYYY-MM-DD -->
     
     <xsl:variable name="year" select="tokenize($date,'-')[1]"/>
@@ -45,9 +46,9 @@
     <xsl:variable name="identifier-with-date" select="concat($identifier, substring($year,3), $month, $day)"/>
     
     <xsl:variable name="article-part-mapping" as="element()*">
-        <map organization="Aftenposten" department="A-magasinet" part-name="A-magasinet"/>
-        <map organization="Aftenposten" section="Kultur" part-number="2"/>
-        <map organization="Aftenposten" section="Sport" part-number="2"/>
+        <map newspaper-title="Aftenposten" department="A-magasinet" part-name="A-magasinet"/>
+        <map newspaper-title="Aftenposten" section="Kultur" part-number="2"/>
+        <map newspaper-title="Aftenposten" section="Sport" part-number="2"/>
     </xsl:variable>
     
     <xsl:variable name="section-name-mapping" as="element()*">
@@ -57,9 +58,15 @@
         <map section="Cover" use="Omslag"/>
     </xsl:variable>
     
+    <!-- by default, copy everything -->
+    <xsl:template match="@* | node()" mode="#all">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <!-- main entry point (npx:npexchange is the root element) -->
     <xsl:template match="npx:npexchange">
-        <xsl:variable name="title" select="/*/npx:origin/npx:organization/text()"/>
         <xsl:variable name="title-long" select="concat($title, ', ', $day-of-week-name, ' ', $day-of-month, '. ', $month-name, ' ', $year)"/>
         
         <dtbook>
@@ -132,40 +139,29 @@
                     <xsl:for-each select="$part-ids">
                         <xsl:sort select="."/>
                         <xsl:variable name="part-id" select="." as="xs:string"/>
-                        <level1 id="{$part-id}" class="part">
-                            <xsl:variable name="part-headline" select="f:part-headline($part-id, $unique-articles)"/>
-                            <xsl:if test="$part-headline">
-                                <h1><xsl:value-of select="$part-headline"/></h1>
-                            </xsl:if>
-                            
-                            <xsl:variable name="part-articles" select="$unique-articles[f:part-id(.) = $part-id]"/>
-                            
-                            <xsl:for-each-group select="$part-articles" group-adjacent="npx:page_id/@section">
-                                <level2 id="{$part-id}_section-{position()}">
-                                    <h2><xsl:value-of select="f:section-headline(current-grouping-key())"/></h2>
+                        <xsl:variable name="part-headline" select="f:part-headline($part-id, $unique-articles)"/>
+                        <xsl:choose>
+                            <xsl:when test="$part-headline">
+                                <level1 id="{$part-id}" class="part">
+                                    <xsl:if test="$part-headline">
+                                        <h1><xsl:value-of select="$part-headline"/></h1>
+                                    </xsl:if>
                                     
-                                    <xsl:variable name="section-articles" select="current-group()"/>
-                                    <xsl:variable name="pages" select="distinct-values($section-articles/npx:page_id/@firstPagin/xs:integer(.))"/>
-                                    
-                                    <!-- for each page -->
-                                    <xsl:for-each select="$pages">
-                                        <xsl:sort select="."/>
-                                        <xsl:variable name="page-nr" select="."/>
-                                        
-                                        <xsl:variable name="pageArticles" select="$section-articles[npx:page_id/@firstPagin = string($page-nr)]"/>
-                                        
-                                        <!-- for each article -->
-                                        <xsl:for-each select="$pageArticles">
-                                            <xsl:call-template name="article">
-                                                <xsl:with-param name="page-nr" select="if (position() = 1) then $page-nr else ()"/>
-                                            </xsl:call-template>
-                                        </xsl:for-each>
-                                    </xsl:for-each>
-                                    
-                                </level2>
-                            </xsl:for-each-group>
-                            
-                        </level1>
+                                    <xsl:call-template name="part">
+                                        <xsl:with-param name="part-id" select="$part-id"/>
+                                        <xsl:with-param name="part-articles" select="$unique-articles[f:part-id(.) = $part-id]"></xsl:with-param>
+                                        <xsl:with-param name="level" select="2"/>
+                                    </xsl:call-template>
+                                </level1>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:call-template name="part">
+                                    <xsl:with-param name="part-id" select="$part-id"/>
+                                    <xsl:with-param name="part-articles" select="$unique-articles[f:part-id(.) = $part-id]"></xsl:with-param>
+                                    <xsl:with-param name="level" select="1"/>
+                                </xsl:call-template>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:for-each>
                     
                 </bodymatter>
@@ -173,15 +169,41 @@
         </dtbook>
     </xsl:template>
     
-    <!-- by default, copy everything -->
-    <xsl:template match="@* | node()" mode="#all">
-        <xsl:copy>
-            <xsl:apply-templates select="@* | node()" mode="#current"/>
-        </xsl:copy>
+    <xsl:template name="part">
+        <xsl:param name="part-id" as="xs:string"/>
+        <xsl:param name="part-articles" as="element()*"/>
+        <xsl:param name="level" as="xs:integer"/>
+        
+        <xsl:for-each-group select="$part-articles" group-adjacent="npx:page_id/@section">
+            <xsl:element name="level{$level}">
+                <xsl:attribute name="id" select="concat($part-id, '_section-', position())"/>
+                <xsl:element name="h{$level}"><xsl:value-of select="f:section-headline(current-grouping-key())"/></xsl:element>
+                
+                <xsl:variable name="section-articles" select="current-group()"/>
+                <xsl:variable name="pages" select="distinct-values($section-articles/npx:page_id/@firstPagin/xs:integer(.))"/>
+                
+                <!-- for each page -->
+                <xsl:for-each select="$pages">
+                    <xsl:sort select="."/>
+                    <xsl:variable name="page-nr" select="."/>
+                    
+                    <xsl:variable name="pageArticles" select="$section-articles[npx:page_id/@firstPagin = string($page-nr)]"/>
+                    
+                    <!-- for each article -->
+                    <xsl:for-each select="$pageArticles">
+                        <xsl:call-template name="article">
+                            <xsl:with-param name="page-nr" select="if (position() = 1) then $page-nr else ()"/>
+                            <xsl:with-param name="level" select="$level + 1"/>
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </xsl:for-each>
+            </xsl:element>
+        </xsl:for-each-group>
     </xsl:template>
     
     <xsl:template name="article">
         <xsl:param name="page-nr" as="xs:integer?"/>
+        <xsl:param name="level" as="xs:integer"/>
         
         <xsl:variable name="main-npdoc" select="npx:articleparts/npx:articlepart[1]/npx:data/npdoc:npdoc"/>
         <xsl:variable name="other-npdocs" select="npx:articleparts/npx:articlepart[position() gt 1 and not(npx:article_part_type_id='Sitat')]/npx:data/npdoc:npdoc"/>
@@ -190,7 +212,8 @@
         
         <xsl:if test="$article-has-content">
             <xsl:variable name="level3-id" select="concat('uuid_', @uuid)"/>
-            <level3 id="{$level3-id}">
+            <xsl:element name="level{$level}">
+                <xsl:attribute name="id" select="$level3-id"/>
                 <xsl:copy-of select="$main-npdoc/@xml:lang"/>
                 
                 <xsl:if test="$page-nr">
@@ -199,19 +222,25 @@
                 
                 <xsl:call-template name="article-head">
                     <xsl:with-param name="npdoc" select="$main-npdoc"/>
+                    <xsl:with-param name="level" select="$level"/>
                 </xsl:call-template>
                 
                 <xsl:for-each-group select="$main-npdoc/npdoc:body/*" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
                     <xsl:variable name="level4-id" select="concat($level3-id,'-main-',position())"/>
                     <xsl:choose>
                         <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
-                            <level4 id="{$level4-id}">
-                                <xsl:apply-templates select="current-group()"/>
-                            </level4>
+                            <xsl:element name="level{$level + 1}">
+                                <xsl:attribute name="id" select="$level4-id"/>
+                                
+                                <xsl:apply-templates select="current-group()">
+                                    <xsl:with-param name="level" select="$level + 1" tunnel="yes"/>
+                                </xsl:apply-templates>
+                            </xsl:element>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:apply-templates select="current-group()">
                                 <xsl:with-param name="headline-as-paragraph" select="true()" tunnel="yes"/>
+                                <xsl:with-param name="level" select="$level + 1" tunnel="yes"/>
                             </xsl:apply-templates>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -220,40 +249,47 @@
                     <xsl:variable name="level4-id" select="concat($level3-id,'-other-',position())"/>
                     <xsl:choose>
                         <xsl:when test="exists(* except (npdoc:headline | npdoc:madmansrow | npdoc:pagedateline))">
-                            <level4 id="{$level4-id}">
+                            <xsl:element name="level{$level + 1}">
+                                <xsl:attribute name="id" select="$level4-id"/>
+                                
                                 <xsl:call-template name="article-head">
                                     <xsl:with-param name="npdoc" select="."/>
+                                    <xsl:with-param name="level" select="$level + 1"/>
                                 </xsl:call-template>
                                 
                                 <xsl:for-each-group select="npdoc:body/*" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
                                     <xsl:choose>
                                         <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
-                                            <level5 id="{$level4-id}-section-{position()}">
-                                                <xsl:apply-templates select="current-group()"/>
-                                            </level5>
+                                            <xsl:element name="level{$level + 2}">
+                                                <xsl:attribute name="id" select="concat($level4-id, '-section-', position())"/>
+                                                <xsl:apply-templates select="current-group()">
+                                                    <xsl:with-param name="level" select="$level + 2" tunnel="yes"/>
+                                                </xsl:apply-templates>
+                                            </xsl:element>
                                         </xsl:when>
                                         <xsl:otherwise>
                                             <xsl:apply-templates select="current-group()">
                                                 <xsl:with-param name="headline-as-paragraph" select="true()" tunnel="yes"/>
+                                                <xsl:with-param name="level" select="$level + 2" tunnel="yes"/>
                                             </xsl:apply-templates>
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:for-each-group>
-                            </level4>
+                            </xsl:element>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:for-each>
-            </level3>
+            </xsl:element>
         </xsl:if>
     </xsl:template>
     
     <xsl:template name="article-head">
         <xsl:param name="npdoc" as="element()"/>
-        
-        <xsl:variable name="level" select="if (count(ancestor-or-self::npx:articlepart/preceding-sibling::npx:articlepart) gt 0) then 4 else 3"/>
+        <xsl:param name="level" as="xs:integer"/>
         
         <xsl:call-template name="headline">
             <xsl:with-param name="npdoc" select="$npdoc"/>
+            <xsl:with-param name="level" select="$level"/>
         </xsl:call-template>
         <xsl:apply-templates select="$npdoc/npdoc:drophead"/>
         <xsl:apply-templates select="$npdoc/npdoc:leadin"/>
@@ -262,13 +298,12 @@
     
     <xsl:template name="headline">
         <xsl:param name="npdoc" as="element()"/>
+        <xsl:param name="level" as="xs:integer"/>
         
         <xsl:variable name="headline" select="$npdoc/npdoc:headline/npdoc:p[1]" as="element()?"/>
         <xsl:variable name="subtitles" select="$npdoc/npdoc:headline/npdoc:p[position() gt 1]" as="element()*"/>
         <xsl:variable name="madmansrow" select="$npdoc/npdoc:madmansrow" as="element()?"/>
         <xsl:variable name="pagedateline" select="$npdoc/npdoc:pagedateline" as="element()?"/>
-        
-        <xsl:variable name="level" select="if (count($npdoc/ancestor-or-self::npx:articlepart/preceding-sibling::npx:articlepart) gt 0) then 4 else 3"/>
         
         <xsl:choose>
             <xsl:when test="count(($headline, $madmansrow, $pagedateline)) gt 0">
@@ -360,15 +395,27 @@
     </xsl:template>
     
     <xsl:template match="npdoc:i">
-        <em><xsl:apply-templates select="@* | node()"/></em>
+        <em>
+            <xsl:apply-templates select="@* | node()"/>
+        </em>
     </xsl:template>
     
     <xsl:template match="npdoc:b">
-        <strong><xsl:apply-templates select="@* | node()"/></strong>
+        <strong>
+            <xsl:apply-templates select="@* | node()"/>
+        </strong>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:u">
+        <span class="{f:classes(., 'underline')}">
+            <xsl:apply-templates select="node()"/>
+        </span>
     </xsl:template>
     
     <xsl:template match="npdoc:sub">
-        <sub><xsl:apply-templates select="@* | node()"/></sub>
+        <sub>
+            <xsl:apply-templates select="@* | node()"/>
+        </sub>
     </xsl:template>
     
     <xsl:template match="npdoc:caption">
@@ -380,6 +427,7 @@
     
     <xsl:template match="npdoc:subheadline1 | npdoc:subheadline2">
         <xsl:param name="headline-as-paragraph" select="false()" tunnel="yes"/>
+        <xsl:param name="level" as="xs:integer" tunnel="yes"/>
         
         <xsl:choose>
             <xsl:when test="$headline-as-paragraph">
@@ -395,7 +443,6 @@
                 
             </xsl:when>
             <xsl:otherwise>
-                <xsl:variable name="level" select="if (count(ancestor-or-self::npx:articlepart/preceding-sibling::npx:articlepart) gt 0) then 5 else 4"/>
                 <xsl:element name="h{$level}">
                     <xsl:apply-templates select="@* | node()"/>
                 </xsl:element>
@@ -411,6 +458,7 @@
         <xsl:variable name="headline" as="element()*">
             <xsl:call-template name="headline">
                 <xsl:with-param name="npdoc" select="$npdoc"/>
+                <xsl:with-param name="level" select="1"/>
             </xsl:call-template>
         </xsl:variable>
         
@@ -463,14 +511,14 @@
         <xsl:param name="article" as="element()?"/>
         
         <xsl:if test="exists($article)">
-            <xsl:variable name="organization" select="$article/../npx:origin/npx:organization" as="xs:string"/>
+            <xsl:variable name="newspaper-title" select="$title" as="xs:string"/>
             <xsl:variable name="department" select="$article/npx:department_id" as="xs:string"/>
             <xsl:variable name="section" select="$article/npx:page_id/@section" as="xs:string"/>
             
             <xsl:variable name="matching-part-mappings" as="element()*">
                 <xsl:for-each select="$article-part-mapping">
                     <xsl:if test="(
-                        $organization = @organization
+                        $newspaper-title = @newspaper-title
                         and (@department = $department or string(@department) = '')
                         and (@section = $section or string(@section) = '')
                         )">

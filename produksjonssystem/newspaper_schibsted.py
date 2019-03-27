@@ -4,6 +4,7 @@
 import datetime
 import logging
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -11,10 +12,11 @@ import threading
 import time
 
 from dotmap import DotMap
-from core.utils.filesystem import Filesystem
-from core.utils.report import Report
+
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
+from core.utils.filesystem import Filesystem
+from core.utils.report import Report
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -61,10 +63,10 @@ class NewspaperSchibsted(Pipeline):
                 continue
 
             last_check = time.time()
-            today = time.strftime('%Y-%m-%d')
-            if today in os.listdir(self.dir_in):
-                logging.info("Lager avis for: " + today)
-                self.trigger(today)
+            for date in os.listdir(self.dir_in):
+                if re.match(r"^\d\d\d\d-\d\d-\d\d$", date):
+                    logging.info("Lager avis for: " + date)
+                    self.trigger(date)
 
     def on_book_deleted(self):
         return True
@@ -79,25 +81,45 @@ class NewspaperSchibsted(Pipeline):
         return True
 
     def on_book(self):
-        today = time.strftime('%Y%m%d')
-        newspapers = {"Aftenposten": "611823", "Bergens_tidende": "618720", "Faedrelandsvennen": "618363", "Stavanger_aftenblad": "618360"}
+        date = re.sub(r"[^\d]", "", self.book["name"])
+        if len(date) <= 0:
+            self.utils.report.error("Ingen tall i mappenavn: {}".format(self.book["name"]))
+            return False
+
+        newspapers = {
+            "Aftenposten": {
+                "id": "611823",
+                "title": "Aftenposten"
+            },
+            "Bergens_Tidende": {
+                "id": "618720",
+                "title": "Bergens Tidende"
+            },
+            "Faedrelandsvennen": {
+                "id": "618363",
+                "title": "Fedrelandsvennen"
+            },
+            "Stavanger_Aftenblad": {
+                "id": "618360",
+                "title": "Stavanger Aftenblad"
+            }
+        }
         files = os.listdir(self.book["source"])
-        newspapers_config = {}
         for paper in newspapers:
             files_paper = ""
             for file in files:
                 if file.startswith(paper):
                     files_paper += file + ","
-            newspapers_config[paper] = files_paper
+            newspapers[paper]["files"] = files_paper
 
         # Use xslt to transform to correct dc:identifier
-        for paper in newspapers_config:
+        for paper in newspapers:
             self.utils.report.info("Henter feed for " + paper)
             temp_xml_obj = tempfile.NamedTemporaryFile()
             temp_xml = temp_xml_obj.name
             self.utils.report.info("Setter sammen feed for " + paper)
             xslt = Xslt(self,
-                        parameters={"files": newspapers_config[paper], "basepath": self.book["source"]},
+                        parameters={"files": newspapers[paper]["files"], "basepath": self.book["source"]},
                         stylesheet=os.path.join(Xslt.xslt_dir, self.uid, "schibsted-join.xsl"),
                         template="main",
                         target=temp_xml)
@@ -111,6 +133,11 @@ class NewspaperSchibsted(Pipeline):
             temp_dtbook = temp_dtbook_obj.name
             self.utils.report.info("Lager dtbook med xslt for " + paper)
             xslt = Xslt(self,
+                        parameters={
+                            "identifier": newspapers[paper]["id"],
+                            "title": newspapers[paper]["title"],
+                            "date": time.strftime('%Y-%m-%d')
+                        },
                         stylesheet=os.path.join(Xslt.xslt_dir, self.uid, "schibsted-to-dtbook.xsl"),
                         source=temp_xml,
                         target=temp_dtbook)
@@ -121,15 +148,17 @@ class NewspaperSchibsted(Pipeline):
                 return False
 
             archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
-                                                                    newspapers[paper] + today,
+                                                                    newspapers[paper]["id"] + date,
                                                                     parentdir=self.parentdirs["archive"],
                                                                     file_extension="xml")
             self.utils.report.attachment(None, archived_path, "DEBUG")
-            archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
-                                                                    paper,
-                                                                    parentdir=self.parentdirs["latest"],
-                                                                    file_extension="xml")
-            self.utils.report.attachment(None, archived_path, "DEBUG")
+
+            if date == time.strftime('%Y%m%d'):
+                archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
+                                                                        paper,
+                                                                        parentdir=self.parentdirs["latest"],
+                                                                        file_extension="xml")
+                self.utils.report.attachment(None, archived_path, "DEBUG")
 
         self.utils.filesystem.deleteSource()
         self.utils.report.attachment(None, archived_path, "DEBUG")

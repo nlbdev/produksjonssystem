@@ -2,6 +2,7 @@
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns="http://www.daisy.org/z3986/2005/dtbook/" stylesheet="schibsted-to-dtbook.xsl">
     
     <x:param name="identifier" select="'123456'"/>
+    <x:param name="title" select="'Aftenposten'"/>
     <x:param name="date" select="'2019-03-15'"/>
     
     <x:scenario label="Basic test">
