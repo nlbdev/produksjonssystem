@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:npdoc="http://www.infomaker.se/npdoc/2.1"
+                xmlns:npx="http://www.infomaker.se/npexchange/3.5"
+                xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+                xpath-default-namespace="http://www.daisy.org/z3986/2005/dtbook/"
+                xmlns:f="#"
+                exclude-result-prefixes="#all"
+                version="2.0">
+    
+    <xsl:output indent="yes"/>
+    
+    <xsl:param name="identifier" as="xs:string"/>
+    <xsl:param name="date" select="replace(string(current-date()),'\+.*','')" as="xs:string"/> <!-- optional, YYYY-MM-DD -->
+    
+    <xsl:variable name="year" select="tokenize($date,'-')[1]"/>
+    <xsl:variable name="month" select="tokenize($date,'-')[2]"/>
+    <xsl:variable name="day" select="tokenize($date,'-')[3]"/>
+    
+    <xsl:variable name="month-name" select="if ($month = '01') then 'januar'
+                                            else if ($month = '02') then 'februar'
+                                            else if ($month = '03') then 'mars'
+                                            else if ($month = '04') then 'april'
+                                            else if ($month = '05') then 'mai'
+                                            else if ($month = '06') then 'juni'
+                                            else if ($month = '07') then 'juli'
+                                            else if ($month = '08') then 'august'
+                                            else if ($month = '09') then 'september'
+                                            else if ($month = '10') then 'oktober'
+                                            else if ($month = '11') then 'november'
+                                            else if ($month = '12') then 'desember'
+                                            else $month"/>
+    <xsl:variable name="day-of-week" select="xs:integer((xs:date($date) - xs:date('1901-01-06')) div xs:dayTimeDuration('P1D')) mod 7"/>
+    <xsl:variable name="day-of-week-name" select="if ($day-of-week = 0) then 'søndag'
+                                                  else if ($day-of-week = 1) then 'mandag'
+                                                  else if ($day-of-week = 2) then 'tirsdag'
+                                                  else if ($day-of-week = 3) then 'onsdag'
+                                                  else if ($day-of-week = 4) then 'torsdag'
+                                                  else if ($day-of-week = 5) then 'fredag'
+                                                  else if ($day-of-week = 6) then 'lørdag'
+                                                  else $day-of-week"/>
+    <xsl:variable name="day-of-month" select="xs:integer($day)"/>
+    
+    <xsl:variable name="identifier-with-date" select="concat($identifier, substring($year,3), $month, $day)"/>
+    
+    <xsl:variable name="article-part-mapping" as="element()*">
+        <map organization="Aftenposten" department="A-magasinet" part-name="A-magasinet"/>
+        <map organization="Aftenposten" section="Kultur" part-number="2"/>
+        <map organization="Aftenposten" section="Sport" part-number="2"/>
+    </xsl:variable>
+    
+    <xsl:variable name="section-name-mapping" as="element()*">
+        <map section="Nyhet" use="Nyheter"/>
+        <map section="Striper_spill" use="Striper &amp; spill"/>
+        <map section="Navneside" use="Navn"/>
+        <map section="Cover" use="Omslag"/>
+    </xsl:variable>
+    
+    <!-- main entry point (npx:npexchange is the root element) -->
+    <xsl:template match="npx:npexchange">
+        <xsl:variable name="title" select="/*/npx:origin/npx:organization/text()"/>
+        <xsl:variable name="title-long" select="concat($title, ', ', $day-of-week-name, ' ', $day-of-month, '. ', $month-name, ' ', $year)"/>
+        
+        <dtbook>
+            <head>
+                <meta name="dtb:uid" content="{$identifier-with-date}"/>
+                <meta name="dc:Identifier" content="{$identifier-with-date}"/>
+                <meta name="dc:Title" content="{$title-long}"/>
+                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Language" content="nb-NO"/>
+                <meta name="generator" content="schibsted-to-dtbook.xsl"/>
+                <meta name="description" content="Input document for Daisy production"/>
+                <link href="dtbook.2005.basic.css" rel="stylesheet" type="text/css"/>
+            </head>
+            <book>
+                <frontmatter>
+                    <doctitle>
+                        <xsl:value-of select="$title-long"/>
+                    </doctitle>
+                    <level1 class="preface" id="about">
+                        <h1>
+                            <xsl:text>Om NLBs lydversjon av </xsl:text>
+                            <xsl:value-of select="$title"/>
+                        </h1>
+                        <p>Lydversjonen er basert på det redaksjonelle innholdet i papirutgaven av avisen.</p>
+                        <p>Lydversjonen er tilgjengelig syv dager i uken, enten som nedlastbar fil eller gjennom strømming.
+                            Lydversjonen distribueres også på CD, men da bare for de utgavene som kommer på ukedager. CD-en vil normalt komme per post én dag etter
+                            papirutgaven. Hvis du velger å høre på avisen ved å laste ned eller strømme, vil du få lydversjonen samtidig med at andre lesere får
+                            papirutgaven.</p>
+                        <p>Den automatiske produksjonen av lydversjonen av avisen medfører at navn på artikkelforfattere av og til presenteres på en feilaktig eller misvisende måte.</p>
+                        <p>Det kan også forekomme andre feil i lydversjonen, enten som et
+                            resultat av den automatiske produksjonen, eller på grunn av
+                            svakheter i det datamaterialet som danner grunnlaget for NLBs
+                            produksjon. Vi beklager dette, og jobber kontinuerlig med å forbedre
+                            produktet.</p>
+                        <p>Kontakt oss, fortrinnsvis på lydavis@nlb.no, dersom du har spørsmål
+                            om lydavisen.</p>
+                    </level1>
+                </frontmatter>
+                <bodymatter>
+                    
+                    <xsl:variable name="all-articles" select="npx:article" as="element()*"/>
+                    
+                    <xsl:variable name="unique-articles" as="element()*">
+                        <xsl:for-each select="distinct-values($all-articles/f:article-headline(npx:articleparts/npx:articlepart[1]/npx:data/npdoc:npdoc))">
+                            <xsl:variable name="headline" select="."/>
+                            
+                            <!-- get all revisions of this article, and sort them by updated_date (sortable ISO datetime string) -->
+                            <xsl:variable name="article-revisions" as="element()*">
+                                <xsl:for-each select="$all-articles[f:article-headline(npx:articleparts/npx:articlepart[1]/npx:data/npdoc:npdoc) = $headline]">
+                                    <xsl:sort select="npx:updated_date/string(.)"/>
+                                    <xsl:sequence select="."/>
+                                </xsl:for-each>
+                            </xsl:variable>
+                            
+                            <!-- select the revision that most recently updated -->
+                            <xsl:sequence select="$article-revisions[last()]"/>
+                        </xsl:for-each>
+                    </xsl:variable>
+                    <xsl:variable name="unique-articles" as="element()*">
+                        <!-- sort by page number, then id -->
+                        <xsl:for-each select="$unique-articles">
+                            <xsl:sort select="npx:page_id/@firstPagin/xs:integer(.)"/>
+                            <xsl:sort select="npx:page_id/@id"/>
+                            <xsl:sequence select="."/>
+                        </xsl:for-each>
+                    </xsl:variable>
+                    
+                    <!-- for each part -->
+                    <xsl:variable name="part-ids" select="distinct-values($unique-articles/f:part-id(.))"/>
+                    <xsl:for-each select="$part-ids">
+                        <xsl:sort select="."/>
+                        <xsl:variable name="part-id" select="." as="xs:string"/>
+                        <level1 id="{$part-id}" class="part">
+                            <xsl:variable name="part-headline" select="f:part-headline($part-id, $unique-articles)"/>
+                            <xsl:if test="$part-headline">
+                                <h1><xsl:value-of select="$part-headline"/></h1>
+                            </xsl:if>
+                            
+                            <xsl:variable name="part-articles" select="$unique-articles[f:part-id(.) = $part-id]"/>
+                            
+                            <xsl:for-each-group select="$part-articles" group-adjacent="npx:page_id/@section">
+                                <level2 id="{$part-id}_section-{position()}">
+                                    <h2><xsl:value-of select="f:section-headline(current-grouping-key())"/></h2>
+                                    
+                                    <xsl:variable name="section-articles" select="current-group()"/>
+                                    <xsl:variable name="pages" select="distinct-values($section-articles/npx:page_id/@firstPagin/xs:integer(.))"/>
+                                    
+                                    <!-- for each page -->
+                                    <xsl:for-each select="$pages">
+                                        <xsl:sort select="."/>
+                                        <xsl:variable name="page-nr" select="."/>
+                                        
+                                        <xsl:variable name="pageArticles" select="$section-articles[npx:page_id/@firstPagin = string($page-nr)]"/>
+                                        
+                                        <!-- for each article -->
+                                        <xsl:for-each select="$pageArticles">
+                                            <xsl:call-template name="article">
+                                                <xsl:with-param name="page-nr" select="if (position() = 1) then $page-nr else ()"/>
+                                            </xsl:call-template>
+                                        </xsl:for-each>
+                                    </xsl:for-each>
+                                    
+                                </level2>
+                            </xsl:for-each-group>
+                            
+                        </level1>
+                    </xsl:for-each>
+                    
+                </bodymatter>
+            </book>
+        </dtbook>
+    </xsl:template>
+    
+    <!-- by default, copy everything -->
+    <xsl:template match="@* | node()" mode="#all">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template name="article">
+        <xsl:param name="page-nr" as="xs:integer?"/>
+        
+        <xsl:variable name="main-npdoc" select="npx:articleparts/npx:articlepart[1]/npx:data/npdoc:npdoc"/>
+        <xsl:variable name="other-npdocs" select="npx:articleparts/npx:articlepart[position() gt 1 and not(npx:article_part_type_id='Sitat')]/npx:data/npdoc:npdoc"/>
+        
+        <xsl:variable name="article-has-content" select="exists(($main-npdoc | $other-npdocs)/*//text()[normalize-space()] except $main-npdoc/(npdoc:headline | npdoc:madmansrow | npdoc:pagedateline)//text()[normalize-space()])"/>
+        
+        <xsl:if test="$article-has-content">
+            <xsl:variable name="level3-id" select="concat('uuid_', @uuid)"/>
+            <level3 id="{$level3-id}">
+                <xsl:copy-of select="$main-npdoc/@xml:lang"/>
+                
+                <xsl:if test="$page-nr">
+                    <pagenum id="page_{@uuid}_{$page-nr}" page="normal"><xsl:value-of select="$page-nr"/></pagenum>
+                </xsl:if>
+                
+                <xsl:call-template name="article-head">
+                    <xsl:with-param name="npdoc" select="$main-npdoc"/>
+                </xsl:call-template>
+                
+                <xsl:for-each-group select="$main-npdoc/npdoc:body/*" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
+                    <xsl:variable name="level4-id" select="concat($level3-id,'-main-',position())"/>
+                    <xsl:choose>
+                        <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
+                            <level4 id="{$level4-id}">
+                                <xsl:apply-templates select="current-group()"/>
+                            </level4>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="current-group()">
+                                <xsl:with-param name="headline-as-paragraph" select="true()" tunnel="yes"/>
+                            </xsl:apply-templates>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each-group>
+                <xsl:for-each select="$other-npdocs">
+                    <xsl:variable name="level4-id" select="concat($level3-id,'-other-',position())"/>
+                    <xsl:choose>
+                        <xsl:when test="exists(* except (npdoc:headline | npdoc:madmansrow | npdoc:pagedateline))">
+                            <level4 id="{$level4-id}">
+                                <xsl:call-template name="article-head">
+                                    <xsl:with-param name="npdoc" select="."/>
+                                </xsl:call-template>
+                                
+                                <xsl:for-each-group select="npdoc:body/*" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
+                                    <xsl:choose>
+                                        <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
+                                            <level5 id="{$level4-id}-section-{position()}">
+                                                <xsl:apply-templates select="current-group()"/>
+                                            </level5>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:apply-templates select="current-group()">
+                                                <xsl:with-param name="headline-as-paragraph" select="true()" tunnel="yes"/>
+                                            </xsl:apply-templates>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:for-each-group>
+                            </level4>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:for-each>
+            </level3>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template name="article-head">
+        <xsl:param name="npdoc" as="element()"/>
+        
+        <xsl:variable name="level" select="if (count(ancestor-or-self::npx:articlepart/preceding-sibling::npx:articlepart) gt 0) then 4 else 3"/>
+        
+        <xsl:call-template name="headline">
+            <xsl:with-param name="npdoc" select="$npdoc"/>
+        </xsl:call-template>
+        <xsl:apply-templates select="$npdoc/npdoc:drophead"/>
+        <xsl:apply-templates select="$npdoc/npdoc:leadin"/>
+        <xsl:apply-templates select="$npdoc/npdoc:dateline"/>
+    </xsl:template>
+    
+    <xsl:template name="headline">
+        <xsl:param name="npdoc" as="element()"/>
+        
+        <xsl:variable name="headline" select="$npdoc/npdoc:headline/npdoc:p[1]" as="element()?"/>
+        <xsl:variable name="subtitles" select="$npdoc/npdoc:headline/npdoc:p[position() gt 1]" as="element()*"/>
+        <xsl:variable name="madmansrow" select="$npdoc/npdoc:madmansrow" as="element()?"/>
+        <xsl:variable name="pagedateline" select="$npdoc/npdoc:pagedateline" as="element()?"/>
+        
+        <xsl:variable name="level" select="if (count($npdoc/ancestor-or-self::npx:articlepart/preceding-sibling::npx:articlepart) gt 0) then 4 else 3"/>
+        
+        <xsl:choose>
+            <xsl:when test="count(($headline, $madmansrow, $pagedateline)) gt 0">
+                <xsl:element name="h{$level}" exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="$madmansrow"/>
+                    <xsl:apply-templates select="$pagedateline"/>
+                    
+                    <xsl:value-of select="normalize-space($headline)"/>
+                </xsl:element>
+            </xsl:when>
+            <xsl:when test="not(exists($npdoc/ancestor::npx:articlepart/preceding-sibling::npx:articlepart))">
+                <!-- articles should always have a headline, use the first sentence, max 100 characters, as fallback -->
+                <xsl:element name="h{$level}" exclude-result-prefixes="#all">
+                    <xsl:variable name="inferred-headline" select="($npdoc//text()[normalize-space()])[1]"/>
+                    <xsl:value-of select="if (string-length($inferred-headline) gt 100) then concat(substring($inferred-headline, 1, 100), '…') else $inferred-headline"/>
+                </xsl:element>
+            </xsl:when>
+        </xsl:choose>
+        
+        <xsl:for-each select="$subtitles">
+            <p class="subtitle"><xsl:value-of select="normalize-space(.)"/></p>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:madmansrow">
+        <xsl:variable name="madmansrow" select="normalize-space(.)"/>
+        
+        <span class="madmansrow">
+            <xsl:value-of select="$madmansrow"/>
+            
+            <xsl:if test="not(ends-with($madmansrow, ':')) and exists(../npdoc:headline)">
+                <xsl:text>:</xsl:text>
+            </xsl:if>
+        </span>
+        
+        <xsl:if test="exists(../npdoc:headline)">
+            <xsl:text> </xsl:text>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:pagedateline">
+        <xsl:variable name="pagedateline" select="normalize-space(.)"/>
+        
+        <span class="pagedateline">
+            <xsl:value-of select="$pagedateline"/>
+            
+            <xsl:if test="not(ends-with($pagedateline, ':')) and exists(../npdoc:headline)">
+                <xsl:text>:</xsl:text>
+            </xsl:if>
+        </span>
+        
+        <xsl:if test="exists(../npdoc:headline)">
+            <xsl:text> </xsl:text>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:*/@customName">
+        <xsl:attribute name="class" select="f:classes(parent::*, ())"/>
+    </xsl:template>
+    
+    <xsl:function name="f:classes">
+        <xsl:param name="context" as="element()"/>
+        <xsl:param name="classes" as="xs:string*"/>
+        <xsl:variable name="customName-class" select="if ($context/@customName) then replace(normalize-space(lower-case($context/@customName)),'[^a-z]','_') else ()" as="xs:string?"/>
+        
+        <xsl:value-of select="string-join(($classes, $customName-class), ' ')"/>
+    </xsl:function>
+    
+    <xsl:template match="npdoc:p">
+        <p><xsl:apply-templates select="@* | node()"/></p>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:leadin">
+        <div class="{f:classes(., 'leadin')}">
+            <xsl:apply-templates select="node()"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:drophead">
+        <div class="{f:classes(., 'drophead')}">
+            <xsl:apply-templates select="node()"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:dateline">
+        <div class="{f:classes(., 'dateline')}">
+            <xsl:apply-templates select="node()"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:i">
+        <em><xsl:apply-templates select="@* | node()"/></em>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:b">
+        <strong><xsl:apply-templates select="@* | node()"/></strong>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:sub">
+        <sub><xsl:apply-templates select="@* | node()"/></sub>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:caption">
+        <div class="{f:classes(., 'caption')}">
+            <xsl:text>Bildetekst: </xsl:text>
+            <xsl:apply-templates select="node()"/>
+        </div>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:subheadline1 | npdoc:subheadline2">
+        <xsl:param name="headline-as-paragraph" select="false()" tunnel="yes"/>
+        
+        <xsl:choose>
+            <xsl:when test="$headline-as-paragraph">
+                <p class="{f:classes(., 'subheadline')}">
+                    <xsl:if test="@customName">
+                        <span class="customName">
+                            <xsl:value-of select="@customName"/>
+                            <xsl:text>: </xsl:text>
+                        </span>
+                    </xsl:if>
+                    <xsl:apply-templates select="node()"/>
+                </p>
+                
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="level" select="if (count(ancestor-or-self::npx:articlepart/preceding-sibling::npx:articlepart) gt 0) then 5 else 4"/>
+                <xsl:element name="h{$level}">
+                    <xsl:apply-templates select="@* | node()"/>
+                </xsl:element>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    <!-- ========== functions ========== -->
+    
+    <xsl:function name="f:article-headline" as="xs:string">
+        <xsl:param name="npdoc" as="element()"/>
+        
+        <xsl:variable name="headline" as="element()*">
+            <xsl:call-template name="headline">
+                <xsl:with-param name="npdoc" select="$npdoc"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        <xsl:value-of select="normalize-space($headline[1])"/>
+    </xsl:function>
+    
+    <xsl:function name="f:section-headline" as="xs:string">
+        <xsl:param name="section" as="xs:string"/>
+        <xsl:value-of select="($section-name-mapping[@section = $section]/@use, $section)[1]"/>
+    </xsl:function>
+    
+    <xsl:function name="f:part-headline" as="xs:string?">
+        <xsl:param name="part-id" as="xs:string"/>
+        <xsl:param name="articles" as="element()*"/>
+        
+        <xsl:variable name="matching-article-part-mapping" select="f:find-article-part-mapping(($articles[f:part-id(.) = $part-id])[1])" as="element()?"/>
+        
+        <xsl:choose>
+            <xsl:when test="exists($matching-article-part-mapping) and $matching-article-part-mapping/@part-name">
+                <xsl:value-of select="$matching-article-part-mapping/@part-name"/>
+            </xsl:when>
+            <xsl:when test="exists($matching-article-part-mapping) and $matching-article-part-mapping/@part-number[not(.='1')]">
+                <xsl:value-of select="concat('Del ', $matching-article-part-mapping/@part-number)"/>
+            </xsl:when>
+            <xsl:when test="count(distinct-values($articles/f:part-id(.))[matches(.,'^part-\d+$')]) gt 1">
+                <xsl:value-of select="'Del 1'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- Nothing: don't split into parts -->
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="f:part-id" as="xs:string">
+        <xsl:param name="article" as="element()"/>
+        
+        <xsl:variable name="matching-article-part-mapping" select="f:find-article-part-mapping($article)" as="element()?"/>
+        
+        <xsl:choose>
+            <xsl:when test="exists($matching-article-part-mapping)">
+                <xsl:value-of select="$matching-article-part-mapping/concat('part-', (@part-number, replace(lower-case(@part-name), '[^a-z0-9]', '_'))[1])"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'part-1'"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="f:find-article-part-mapping" as="element()?">
+        <xsl:param name="article" as="element()?"/>
+        
+        <xsl:if test="exists($article)">
+            <xsl:variable name="organization" select="$article/../npx:origin/npx:organization" as="xs:string"/>
+            <xsl:variable name="department" select="$article/npx:department_id" as="xs:string"/>
+            <xsl:variable name="section" select="$article/npx:page_id/@section" as="xs:string"/>
+            
+            <xsl:variable name="matching-part-mappings" as="element()*">
+                <xsl:for-each select="$article-part-mapping">
+                    <xsl:if test="(
+                        $organization = @organization
+                        and (@department = $department or string(@department) = '')
+                        and (@section = $section or string(@section) = '')
+                        )">
+                        
+                        <xsl:sequence select="."/>
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:variable>
+            <xsl:if test="count($matching-part-mappings) gt 0">
+                <xsl:sequence select="$matching-part-mappings[1]"/>
+            </xsl:if>
+        </xsl:if>
+    </xsl:function>
+    
+</xsl:stylesheet>

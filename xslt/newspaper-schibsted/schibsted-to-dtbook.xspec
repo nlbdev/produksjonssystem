@@ -1,0 +1,1329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns="http://www.daisy.org/z3986/2005/dtbook/" stylesheet="schibsted-to-dtbook.xsl">
+    
+    <x:param name="identifier" select="'123456'"/>
+    <x:param name="date" select="'2019-03-15'"/>
+    
+    <x:scenario label="Basic test">
+        <x:context href="test-resources/aftenposten-joined-2019-03-15.xml"/>
+        
+        <!--
+            test notes:
+            - level2 id attributes match the same as the article uuid attributes in the source
+            - some articles have multiple versions. for these, we use the most recent version based on the updated_date
+            - the comments in this test does not have to be in the actual output
+        -->
+        <x:expect label="The headlines should be as expected" test="//*[matches(local-name(),'h\d')]">
+            <h1>Om NLBs lydversjon av Aftenposten</h1>
+            <h1>Del 1</h1>
+            <h2>Nyheter</h2>
+            <h3><span class="pagedateline">å Kommentar Andreas Slettholm:</span> En absurd utvikling i trusselsaken</h3>
+            <h3>Historien om da justisminister Waras samboer ble siktet for å ha oppdiktet en straffbar handling</h3>
+            <h3><span class="pagedateline">Under streken</span></h3>
+            <h4>Alt var bedre før</h4>
+            <h4>Vy akkurat nå</h4>
+            <h4>Journalistisk utvikling</h4>
+            <h3>Konkurransekraften må prioriteres</h3>
+            <h3>En absurd utvikling i saken om truslene mot Wara</h3>
+            <h4>Andre kan stå bak tidligere angrep</h4>
+            <h4>Stiller teaterkritikk i annet lys</h4>
+            <h4>Uheldig for Solberg</h4>
+            <h4>Ikke dagen for konklusjoner</h4>
+            <h3>Da Wara våknet i går, var truslene mot familiens hjem «et angrep mot demokratiet». Da han la seg, var hans egen samboer siktet.</h3>
+            <h4>Lamslått, satt ut, sjokk</h4>
+            <h4>Den lange veien mot siktelse</h4>
+            <h4>«En røverhistorie»</h4>
+            <h4>Hakekors og RASISIT</h4>
+            <h4>«Teknisk svikt»</h4>
+            <h3>Waras samboer langet ut på Facebook - nå er hun selv siktet</h3>
+            <h4>Kritiserte støtteerklæring</h4>
+            <h4>Anmeldte teater</h4>
+            <h4>Kritiserte far til skolebarn</h4>
+            <h4>Flere tilfeller de siste månedene</h4>
+            <h3>Erna Solberg: - Jeg må si at dette var et sjokk for meg</h3>
+            <h4>- Håper PST tar feil</h4>
+            <h4>- Menneskelig tragedie</h4>
+            <h4>Sandberg: - Trist</h4>
+            <h3>- Stor lettelse for Black Box-regissørene</h3>
+            <h4>Teaterregissør i avhør</h4>
+            <h4>Filmet teaterregissør to ganger</h4>
+            <h3>Vil ha Ring 4 rundt Oslo - godt utenfor sentrum</h3>
+            <h4>Vil gå gjennom 30 kommuner</h4>
+            <h4><span class="madmansrow">Fakta:</span> Disse veiene kan inngå i Ring 4</h4>
+            <h3>Google føyer seg etter Putin</h3>
+            <h4>Lang konflikt</h4>
+            <h4>Bøyer seg</h4>
+            <h4>Sjeikene får styre konene</h4>
+            <h4>Stanser kritikk</h4>
+            <h4><span class="madmansrow">Fakta:</span> Svartelister nettsider</h4>
+            <h3>Økt radikal nasjonalisme</h3>
+            <h3>Fengslet for kniv- angrep mot nordmenn</h3>
+            <h3>Muligheten som har ligget der hele tiden</h3>
+            <h4>Snart må NSB slåss også om Oslo</h4>
+            <h4>Gevinstene står i kø</h4>
+            <h4>Hvorfor har man ikke gjort dette før?</h4>
+            <h3>Nytt oljeforslag gjør naturvernere rasende</h3>
+            <h4>Streik for klimaet</h4>
+            <h4>Ikke interessert i møte</h4>
+            <h4>- En bærebjelke</h4>
+            <h3><span class="madmansrow">Fakta:</span> Brexit</h3>
+            <h3>Storbritannia kommer ikke til å forlate EU 29. mars.</h3>
+            <h4>Tok tilbake kontrollen</h4>
+            <h4>Dette stemte Underhuset over</h4>
+            <h3>581.000</h3>
+            <h3>Etterlatte forlot møte i sinne</h3>
+            <h3>Alvorlig ­skadet av ku</h3>
+            <h3>Frykter meslingutbrudd vil ramme millioner</h3>
+            <h3>Nesten 100 ulver registrert</h3>
+            <h3>Kvinne omkom i togpåkjørsel</h3>
+            <h3>Høyre: Vil ta fordeler fra el-bileierne. Nå skal alle betale for å bruke veien.</h3>
+            <h4>Jobber i det stille</h4>
+            <h4>Valgkampsak i 2021</h4>
+            <h4>To problemer må løses samtidig</h4>
+            <h4>Fra kjøp til bruk</h4>
+            <h4>Veiprising</h4>
+            <h3>Feirer på slagmarken</h3>
+            <h3>Tannlegene med flere bekymrings- meldinger</h3>
+            <h3>Aina (42) hadde ikke jogget på ti år.</h3>
+            <h4>Startet lett</h4>
+            <h4>200 km i måneden</h4>
+            <h4>Mental trening</h4>
+            <h4>Hold høy frekvens</h4>
+            <h4>Neste steg: Maraton</h4>
+            <h4><span class="madmansrow">Fakta:</span> Ainas ti råd</h4>
+            <h3>DNB med ny salgsvri: Du slipper kostnader om boligen ikke blir solgt.</h3>
+            <h4>Diskusjoner i bransjen</h4>
+            <h4>- En skal ikke la seg blende</h4>
+            <h4>Vilkårene</h4>
+            <h3>Han kalles SvDs</h3>
+            <h4><span class="madmansrow">Fakta:</span> Debatt om grasrotopprørene</h4>
+            <h4><span class="madmansrow">Profil:</span> Mattias Karlsson</h4>
+            <h3>Mattias Karlsson (41) regnes som en av arkitektene bak Sverigedemokraternas vekst, men vil ikke kall…</h3>
+            <h4>Vil lage tankesmier</h4>
+            <h4>«Seier eller død»</h4>
+            <h4>Ikke lenger swexit</h4>
+            <h2>Debatt</h2>
+            <h3>Kulturpersonligheter og akademikere gjør opprør</h3>
+            <h4>Opprørserklæring</h4>
+            <h4>Økende hungersnød og tørke</h4>
+            <h4>Vår plikt å handle nå</h4>
+            <h4>Vi krever å bli hørt</h4>
+            <h3>Ni tips til fremtidens studenter</h3>
+            <h4>Ikke kutt det sosiale</h4>
+            <h4>Ikke undervurder deg selv</h4>
+            <h4>Gode rutiner lønner seg</h4>
+            <h4>Lær å ta økonomisk ansvar</h4>
+            <h4>Du er fremtiden</h4>
+            <h4>Du er ikke alene</h4>
+            <h4>Du er god nok som du er</h4>
+            <h4>Intelligens er ikke alt</h4>
+            <h4>Å feile er ikke verdens undergang</h4>
+            <h3><span class="pagedateline">Kort sagt:</span> Politiet ­endrer seg for å møte endringer i krimi­naliteten</h3>
+            <h3>Ingen ­hjemmel til å be om lagring av personvern­opplysninger</h3>
+            <h3>Aftenposten er oljeblinde</h3>
+            <h3><span class="pagedateline">Kort sagt:</span> Helse Sør-Øst trikser med «utredningen» av Ullevål</h3>
+            <h3>Manglende kommunikasjon bidro til publikums «sjokk»</h3>
+            <h4>Digitalisering endret designprosessen</h4>
+            <h4>Hvorfor kun én tegning?</h4>
+            <h4>Pressen bør etterspørre informasjon</h4>
+            <h4>Konkurransen om Operaen</h4>
+            <h3>Kvinnekampen ga kvinner bukser, nå må vi gi menn skjørt</h3>
+            <h4>Fjern tabuene</h4>
+            <h4>Alle brukte skjørt før</h4>
+            <h4>Skjegg og skjørt</h4>
+            <h2>Striper &amp; spill</h2>
+            <h3>Russisk komet</h3>
+            <h3>En uventet finte</h3>
+            <h2>Navn</h2>
+            <h3><span class="pagedateline">Kongehuset</span></h3>
+            <h3><span class="pagedateline">Navnedag:</span> Christer, Chris, Christel</h3>
+            <h3><span class="pagedateline">På denne dag</span></h3>
+            <h3><span class="pagedateline">Fødselsdager:</span> Unni Merete Steinsmo</h3>
+            <h3><span class="pagedateline">Jubilanter</span></h3>
+            <h4 class="tall">100</h4>
+            <h4 class="tall">75</h4>
+            <h2>Dødsfall</h2>
+            <h3><span class="pagedateline">Nekrologer:</span> Xxx Xxx</h3>
+            <h3>Yyy Yyy Yyy</h3>
+            <h2>Radio TV</h2>
+            <h3>1. Hvor la…</h3>
+            <h1>Del 2</h1>
+            <h2>Kultur</h2>
+            <h3>Åpner dørene til Vigelands praktleilighet</h3>
+            <h4>Et smykke av en leilighet</h4>
+            <h4>Vigelands fingeravtrykk</h4>
+            <h4>Munch versus Vigeland</h4>
+            <h4>Vil gjøre Vigeland like stor som Munch</h4>
+            <h4><span class="madmansrow">profil:</span> Gustav Vigeland (1869-1943)</h4>
+            <h3>- Brexit er en fryktelig katastrofe</h3>
+            <h4>- Katastrofe</h4>
+            <h4>- Vrangforestillinger</h4>
+            <h4>Verdensborger</h4>
+            <h4><span class="madmansrow">Profil:</span> Paul Gilroy</h4>
+            <h3>Går til krig mot teknologigigantene</h3>
+            <h4>Må dele selskaper</h4>
+            <h4>- Mindre inntekter? Buhu!</h4>
+            <h4>- Investerer fortsatt i unge selskaper</h4>
+            <h4>Siste utvei</h4>
+            <h4><span class="madmansrow">Profil:</span> Elizabeth Warren</h4>
+            <h3>Twitter vurderer en «takk»-knapp</h3>
+            <h4>Vurderer å fjerne «like»-knappen</h4>
+            <h4>Vurderer å innføre en «takk»-knapp</h4>
+            <h4><span class="madmansrow">Fakta:</span> Twitter</h4>
+            <h3>Grunn til optimisme</h3>
+            <h4>Godt skuespill løfter sketsjene</h4>
+            <h4>Lydproblemer i fellesnumrene</h4>
+            <h4>Kunne kuttet mer</h4>
+            <h4>Skolerevy</h4>
+            <h3>Facebook-­tjenester på vei tilbake</h3>
+            <h3>Høvrings alpefiol reiser ut i verden</h3>
+            <h3>Nordin spiller Wisting på TV</h3>
+            <h3>Prisdryss over Blindsone</h3>
+            <h3>8</h3>
+            <h3>Mannen med eget lydbilde</h3>
+            <h4>Et halvt århundre</h4>
+            <h4>Klassikere i Rainbow Studio</h4>
+            <h4>Lyden og musikken som vil skinne</h4>
+            <h3>På grensen til genial</h3>
+            <h4>Moden og sårbar</h4>
+            <h4>Smart kyniker</h4>
+            <h4>Livsvisdom og tristesse</h4>
+            <h4>På grensen til genial</h4>
+            <h4>TV</h4>
+            <h3>Glimrende ­gisseldrama</h3>
+            <h4>Et direktesendt mareritt</h4>
+            <h4>Sensasjonelt godt skuespill</h4>
+            <h4>Tett på virkeligheten</h4>
+            <h4>TV-serie</h4>
+            <h2>Sport</h2>
+            <h3>Dette skjer i hodene deres når melkesyren river og lungene verker</h3>
+            <h4>Roper til seg selv</h4>
+            <h4>Psykolog eller ikke</h4>
+            <h4>Den fordømte skytingen</h4>
+            <h4>Legger planer underveis</h4>
+            <h4><span class="madmansrow">Fakta:</span> VM-øvelsene i helgen</h4>
+            <h3>Hadde du valgt Ronaldo eller Messi på ditt lag?</h3>
+            <h4>- Best når det gjelder</h4>
+            <h4>- Umulig å velge</h4>
+            <h4>Lionel Messi</h4>
+            <h4><span class="madmansrow">Profiler:</span> Cristiano Ronaldo</h4>
+            <h3>Den råeste av alle i Raw Air</h3>
+            <h4>Historisk seier</h4>
+            <h4>Opseth og Bråten bommet</h4>
+            <h4><span class="madmansrow">Profil:</span> Maren Lundby</h4>
+            <h3>Tre av fire unge er innom idretten</h3>
+            <h3>Paris brøt norsk hegemoni</h3>
+            <h3>Nok en kule til suverene Shiffrin</h3>
+            <h3>Månedens utøver i februar</h3>
+            <h2>Kultur</h2>
+            <h3>I år er de…</h3>
+            <h2>Sport</h2>
+            <h3>- Villdyret i meg våknet</h3>
+            <h4>Enkelt til slutt</h4>
+            <h4>Opptur for Røiseland</h4>
+            <h4><span class="madmansrow">Fakta:</span> Slik er single mixedstafett</h4>
+            <h3><span class="pagedateline">VM I SKISKYTING:</span> I det tunge hodet på en skiskytter</h3>
+            <h1>A-magasinet</h1>
+            <h2>Omslag</h2>
+            <h3>De nye hjemløse</h3>
+            <h2>Innhold</h2>
+            <h3><span class="pagedateline">Leder:</span> Europas nye hjemløse</h3>
+            <h2>Samfunn</h2>
+            <h3><span class="pagedateline">Ralph McTell (74) Visesanger:</span> En salme for</h3>
+            <h4>RALPH MCTELL</h4>
+            <h4>«STREETS OF LONDON»</h4>
+            <h3><span class="pagedateline">«STREETS OF LONDON»:</span> Gatesangen som</h3>
+            <h3>Hjemlengsel</h3>
+            <h4>SLIK HAR VI JOBBET</h4>
+            <h3>«Barna har ingen drømmer, for de har aldri opplevd noe annet liv»</h3>
+            <h4>Irland</h4>
+            <h3>«Det er vanskelig å få styr på livet når man ikke har styr på noenting»</h3>
+            <h4>Danmark</h4>
+            <h4>PSYKISK SYKDOM</h4>
+            <h3>«Jeg husker da barna gikk på forskjellige aktiviteter. Vi hadde et godt liv.»</h3>
+            <h4>Spania</h4>
+            <h3>«Du må lære deg å sove med ett øye åpent»</h3>
+            <h4>Frankrike</h4>
+            <h2>Kultur</h2>
+            <h3>Vikingene var mer jålete enn Game of Thrones vil ha deg til å tro</h3>
+            <h4>VIKINGR</h4>
+            <h2>Samfunn</h2>
+            <h3>Fem hovedretter i Michelin-kokkens liv</h3>
+            <h4>Heidi bjerkan</h4>
+            <h4>CREDO</h4>
+            <h2>Kultur</h2>
+            <h3><span class="pagedateline">KORRUPSJON:</span> Man- hattans mørkeste gater</h3>
+            <h3>Filmes av Ridley Scott</h3>
+            <h3>KRIMINELT GODT SAGT</h3>
+            <h3><span class="pagedateline">TIPS:</span> Mer grensekrim</h3>
+            <h3><span class="pagedateline">Don Winslows The border:</span> Følger Trump til Mexicos grense</h3>
+            <h2>Mat og drikke</h2>
+            <h3><span class="pagedateline">Sesong Jordskokk:</span> Vårtegn i grønnsakdisken</h3>
+            <h4><span class="pagedateline">OPPSKRIFTER:</span> Jordskokkstappe med stekt raspeball</h4>
+            <h4>Bakte jord- skokker med bearnaise</h4>
+            <h3>Jordskokken er en flerårig urt</h3>
+            <h3>Smaken sitter i skallet</h3>
+            <h3><span class="pagedateline">Pontus Dahlström (38):</span> Byttet Michelin mot hverdag</h3>
+            <h4>Min meny:</h4>
+            <h4>Beste matminne</h4>
+            <h3><span class="pagedateline">Fascinerende Dyre:</span> Hva er greia med Pinot Noir?</h3>
+            <h3>Vinanbefal…</h3>
+            <h2>Ute</h2>
+            <h3>Truet hardhaus</h3>
+            <h4>Pingviner</h4>
+            <h2>Relasjon</h2>
+            <h3><span class="pagedateline">Familieliv Karriere:</span> Er han arbeids- narkoman?</h3>
+            <h3><span class="pagedateline">Siste ord Christine Koht:</span> Hei, det er velferdsstaten som ringer</h3>
+            <h2>Kryssord/sudoku</h2>
+            <h3>15 spørsmå…</h3>
+        </x:expect>
+        
+        <x:expect label="All levels should have an id" test="//*[matches(local-name(),'level\d') and not(@id)]"/>
+        
+        <x:expect label="The levels should be ordered as expected"
+                  test="//*[matches(local-name(),'level\d')]/xs:string(@id)"
+                  select="(
+                           'about',
+                           'part-1',
+                           'part-1_section-1',
+                           'uuid_12f2e093-545c-4f3c-9421-cde0c7dcc88a',
+                           'uuid_ccb8bfc9-3368-4377-b987-cfbe59e6f2ff',
+                           'uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10',
+                           'uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10-main-1',
+                           'uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10-main-2',
+                           'uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10-main-3',
+                           'uuid_9f3935e8-0f8d-4d07-a3bd-99c20f791943',
+                           'uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db',
+                           'uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-2',
+                           'uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-3',
+                           'uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-4',
+                           'uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-5',
+                           'uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385',
+                           'uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-2',
+                           'uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-3',
+                           'uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-4',
+                           'uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-5',
+                           'uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-6',
+                           'uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7',
+                           'uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-2',
+                           'uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-3',
+                           'uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-4',
+                           'uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-5',
+                           'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5',
+                           'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-2',
+                           'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-3',
+                           'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-4',
+                           'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-other-1',
+                           'uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e',
+                           'uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e-main-2',
+                           'uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e-main-3',
+                           'uuid_d73062ea-1728-435a-997c-f3cbc0490476',
+                           'uuid_d73062ea-1728-435a-997c-f3cbc0490476-main-2',
+                           'uuid_d73062ea-1728-435a-997c-f3cbc0490476-other-1',
+                           'uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf',
+                           'uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-2',
+                           'uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-3',
+                           'uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-4',
+                           'uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-5',
+                           'uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-other-1',
+                           'uuid_920a4c4f-a6fa-4886-b4e9-05e535181def',
+                           'uuid_deca4da8-e54b-4480-9d63-8a7bed2fbafb',
+                           'uuid_4d698f32-9ab4-43dc-b10c-1d8270040094',
+                           'uuid_4d698f32-9ab4-43dc-b10c-1d8270040094-main-2',
+                           'uuid_4d698f32-9ab4-43dc-b10c-1d8270040094-main-3',
+                           'uuid_4d698f32-9ab4-43dc-b10c-1d8270040094-main-4',
+                           'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf',
+                           'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-2',
+                           'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-3',
+                           'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-4',
+                           'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-other-1',
+                           'uuid_69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8',
+                           'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d',
+                           'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-main-2',
+                           'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-main-3',
+                           'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-other-1',
+                           'uuid_aec8d4a0-5ada-4c51-827b-81e1fd2e7273',
+                           'uuid_c3f52886-bfab-40ff-9789-b2b0de5051e9',
+                           'uuid_3724523f-96fd-4e53-a464-db2ce3abc392',
+                           'uuid_b3a1b150-f44b-4443-8124-4a717e882607',
+                           'uuid_0bd1a31a-010d-4b13-9a18-1e65ab2110aa',
+                           'uuid_e440870f-5a42-4499-bda0-e6be5372935a',
+                           'uuid_dc079c45-7057-40f2-a832-b1f883329a7e',
+                           'uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-2',
+                           'uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-3',
+                           'uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-4',
+                           'uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-5',
+                           'uuid_dc079c45-7057-40f2-a832-b1f883329a7e-other-1',
+                           'uuid_a4164986-9b85-476b-a17c-d2f3c89ef89c',
+                           'uuid_a9366363-93df-4720-8b56-66cdfa67d765',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-2',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-3',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-4',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-5',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-6',
+                           'uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-other-1',
+                           'uuid_c0f1a332-2d2f-4ff4-b490-f20861692635',
+                           'uuid_c0f1a332-2d2f-4ff4-b490-f20861692635-main-2',
+                           'uuid_c0f1a332-2d2f-4ff4-b490-f20861692635-main-3',
+                           'uuid_c0f1a332-2d2f-4ff4-b490-f20861692635-main-4',
+                           'uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039',
+                           'uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039-other-1',
+                           'uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039-other-2',
+                           'uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03',
+                           'uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03-main-2',
+                           'uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03-main-3',
+                           'uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03-main-4',
+                           'part-1_section-2',
+                           'uuid_a8a5d33f-1be4-4681-b981-93d48ebe1b57',
+                           'uuid_a8a5d33f-1be4-4681-b981-93d48ebe1b57-main-2',
+                           'uuid_a8a5d33f-1be4-4681-b981-93d48ebe1b57-main-3',
+                           'uuid_a8a5d33f-1be4-4681-b981-93d48ebe1b57-main-4',
+                           'uuid_a8a5d33f-1be4-4681-b981-93d48ebe1b57-main-5',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-2',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-3',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-4',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-5',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-6',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-7',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-8',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-9',
+                           'uuid_81856ba0-b8b7-46bb-abcb-e77093468fd6-main-10',
+                           'uuid_303b3de4-029a-4d3b-90e5-85649ce761af',
+                           'uuid_e68bb197-9b22-4f0c-ac35-523efc7dd150',
+                           'uuid_693320d4-f53d-4849-be5f-c83c52d07cf1',
+                           'uuid_c720112c-2181-4b86-abe6-167a34fca0d5',
+                           'uuid_ba309f80-e675-42ad-99fb-8c57808a206a',
+                           'uuid_ba309f80-e675-42ad-99fb-8c57808a206a-main-2',
+                           'uuid_ba309f80-e675-42ad-99fb-8c57808a206a-main-3',
+                           'uuid_ba309f80-e675-42ad-99fb-8c57808a206a-main-4',
+                           'uuid_ba309f80-e675-42ad-99fb-8c57808a206a-main-5',
+                           'uuid_df94ecf9-50a6-4ed4-87f2-2927a2b6d01a',
+                           'uuid_df94ecf9-50a6-4ed4-87f2-2927a2b6d01a-main-2',
+                           'uuid_df94ecf9-50a6-4ed4-87f2-2927a2b6d01a-main-3',
+                           'uuid_df94ecf9-50a6-4ed4-87f2-2927a2b6d01a-main-4',
+                           'part-1_section-3',
+                           'uuid_bd476b3b-cad2-4ceb-a232-ee05c104a5a6',
+                           'uuid_20a4edee-3296-4494-adde-1fe3758fef67',
+                           'part-1_section-4',
+                           'uuid_c7090dfb-4499-4022-981e-eb73aa24a932',
+                           'uuid_0f238a59-94ad-491a-999d-b2d5ad399e86',
+                           'uuid_f31bb46f-26d2-45eb-9c91-67975b7f4bf9',
+                           'uuid_8935a0f4-b2cb-4e85-9dc3-52b71287c5da',
+                           'uuid_bf7b46f3-2e30-400a-8409-4cb98152e953',
+                           'uuid_bf7b46f3-2e30-400a-8409-4cb98152e953-main-1',
+                           'uuid_bf7b46f3-2e30-400a-8409-4cb98152e953-main-2',
+                           'part-1_section-5',
+                           'uuid_64e5a8c0-201a-45e6-a418-63146d831941',
+                           'uuid_8d6cbb73-de4a-4afe-a7ce-eebb121f1836',
+                           'part-1_section-6',
+                           'uuid_05e2131e-6a24-4d16-8e7e-15dabf3ec939',
+                           'part-2',
+                           'part-2_section-1',
+                           'uuid_8491026f-506a-4da0-b232-3a9f605bc65e',
+                           'uuid_8491026f-506a-4da0-b232-3a9f605bc65e-main-2',
+                           'uuid_8491026f-506a-4da0-b232-3a9f605bc65e-main-3',
+                           'uuid_8491026f-506a-4da0-b232-3a9f605bc65e-main-4',
+                           'uuid_8491026f-506a-4da0-b232-3a9f605bc65e-main-5',
+                           'uuid_8491026f-506a-4da0-b232-3a9f605bc65e-other-1',
+                           'uuid_7eb1144f-72da-4a51-bee4-676322c482d1',
+                           'uuid_7eb1144f-72da-4a51-bee4-676322c482d1-main-2',
+                           'uuid_7eb1144f-72da-4a51-bee4-676322c482d1-main-3',
+                           'uuid_7eb1144f-72da-4a51-bee4-676322c482d1-main-4',
+                           'uuid_7eb1144f-72da-4a51-bee4-676322c482d1-other-1',
+                           'uuid_ca47e7b9-99cc-4dde-89eb-5020c2c0cad3',
+                           'uuid_ca47e7b9-99cc-4dde-89eb-5020c2c0cad3-main-2',
+                           'uuid_ca47e7b9-99cc-4dde-89eb-5020c2c0cad3-main-3',
+                           'uuid_ca47e7b9-99cc-4dde-89eb-5020c2c0cad3-main-4',
+                           'uuid_ca47e7b9-99cc-4dde-89eb-5020c2c0cad3-main-5',
+                           'uuid_ca47e7b9-99cc-4dde-89eb-5020c2c0cad3-other-1',
+                           'uuid_3a8b7d56-7fb9-43c8-a3cb-855d350c58d5',
+                           'uuid_3a8b7d56-7fb9-43c8-a3cb-855d350c58d5-main-2',
+                           'uuid_3a8b7d56-7fb9-43c8-a3cb-855d350c58d5-main-3',
+                           'uuid_3a8b7d56-7fb9-43c8-a3cb-855d350c58d5-other-1',
+                           'uuid_dc0717ec-46fa-4321-8025-6b12ac5b5ad1',
+                           'uuid_dc0717ec-46fa-4321-8025-6b12ac5b5ad1-main-2',
+                           'uuid_dc0717ec-46fa-4321-8025-6b12ac5b5ad1-main-3',
+                           'uuid_dc0717ec-46fa-4321-8025-6b12ac5b5ad1-main-4',
+                           'uuid_dc0717ec-46fa-4321-8025-6b12ac5b5ad1-other-1',
+                           'uuid_fc2e5cec-9058-4fd6-bde2-b5b535f8dffd',
+                           'uuid_e70a305e-43d9-4785-b877-5075f5525e7a',
+                           'uuid_ad7a6f3d-b245-4ae6-8532-237a508aeac0',
+                           'uuid_336833a4-6fc7-461c-860f-cc204c953bb8',
+                           'uuid_cd5806bb-2e13-421e-a31e-3195969a029e',
+                           'uuid_8032a3a3-7226-470d-99b5-11b31923a074',
+                           'uuid_8032a3a3-7226-470d-99b5-11b31923a074-main-2',
+                           'uuid_8032a3a3-7226-470d-99b5-11b31923a074-main-3',
+                           'uuid_8032a3a3-7226-470d-99b5-11b31923a074-main-4',
+                           'uuid_8fad08e3-1aae-497e-86db-8a2d2ab84e4b',
+                           'uuid_8fad08e3-1aae-497e-86db-8a2d2ab84e4b-main-2',
+                           'uuid_8fad08e3-1aae-497e-86db-8a2d2ab84e4b-main-3',
+                           'uuid_8fad08e3-1aae-497e-86db-8a2d2ab84e4b-main-4',
+                           'uuid_8fad08e3-1aae-497e-86db-8a2d2ab84e4b-main-5',
+                           'uuid_8fad08e3-1aae-497e-86db-8a2d2ab84e4b-other-1',
+                           'uuid_248efd35-47b7-4ab1-8f8a-bb87ca950002',
+                           'uuid_248efd35-47b7-4ab1-8f8a-bb87ca950002-main-2',
+                           'uuid_248efd35-47b7-4ab1-8f8a-bb87ca950002-main-3',
+                           'uuid_248efd35-47b7-4ab1-8f8a-bb87ca950002-main-4',
+                           'uuid_248efd35-47b7-4ab1-8f8a-bb87ca950002-other-1',
+                           'part-2_section-2',
+                           'uuid_0f340847-04a5-4e6b-ab73-7956087f4673',
+                           'uuid_0f340847-04a5-4e6b-ab73-7956087f4673-main-2',
+                           'uuid_0f340847-04a5-4e6b-ab73-7956087f4673-main-3',
+                           'uuid_0f340847-04a5-4e6b-ab73-7956087f4673-main-4',
+                           'uuid_0f340847-04a5-4e6b-ab73-7956087f4673-main-5',
+                           'uuid_0f340847-04a5-4e6b-ab73-7956087f4673-other-1',
+                           'uuid_7c7ed7de-8966-4cac-9e78-ef8a66deb85e',
+                           'uuid_7c7ed7de-8966-4cac-9e78-ef8a66deb85e-main-2',
+                           'uuid_7c7ed7de-8966-4cac-9e78-ef8a66deb85e-main-3',
+                           'uuid_7c7ed7de-8966-4cac-9e78-ef8a66deb85e-other-1',
+                           'uuid_7c7ed7de-8966-4cac-9e78-ef8a66deb85e-other-2',
+                           'uuid_4aa5558b-4718-4331-b511-94ac30158af9',
+                           'uuid_4aa5558b-4718-4331-b511-94ac30158af9-main-2',
+                           'uuid_4aa5558b-4718-4331-b511-94ac30158af9-main-3',
+                           'uuid_4aa5558b-4718-4331-b511-94ac30158af9-other-1',
+                           'uuid_dfce817d-da70-4f8a-a1a0-763f2348a0fa',
+                           'uuid_31454f80-38cb-45ac-bcbc-fa131f32962a',
+                           'uuid_fa41dcf3-be80-43f3-aeeb-cb59689d2950',
+                           'uuid_28ccfe26-a8d0-47cb-862f-e51e688a6919',
+                           'part-2_section-3',
+                           'uuid_d38c1bed-4ffa-4636-9e00-980f1583f820',
+                           'part-2_section-4',
+                           'uuid_b8bad6f7-5cac-4e62-90ca-12985eae6b04',
+                           'uuid_b8bad6f7-5cac-4e62-90ca-12985eae6b04-main-2',
+                           'uuid_b8bad6f7-5cac-4e62-90ca-12985eae6b04-main-3',
+                           'uuid_b8bad6f7-5cac-4e62-90ca-12985eae6b04-other-1',
+                           'uuid_fc71c791-f3c3-45b9-845e-0379d8353dc3',
+                           'part-a_magasinet',
+                           'part-a_magasinet_section-1',
+                           'uuid_2b5e24bd-afd7-4515-8bef-9d7a187b4f0d',
+                           'part-a_magasinet_section-2',
+                           'uuid_43f54d9f-50b4-41b7-8bd1-39f1c6aa8503',
+                           'part-a_magasinet_section-3',
+                           'uuid_e37e1a70-41ab-4674-b2c9-3b4feb651c04',
+                           'uuid_e37e1a70-41ab-4674-b2c9-3b4feb651c04-other-1',
+                           'uuid_e37e1a70-41ab-4674-b2c9-3b4feb651c04-other-2',
+                           'uuid_60d07287-5d51-4200-9e0f-3fbc1338df9f',
+                           'uuid_3e15bf21-cd17-4982-bb5a-3759088f8e06',
+                           'uuid_3e15bf21-cd17-4982-bb5a-3759088f8e06-other-1',
+                           'uuid_5c5ad6c3-115b-40f2-9601-decccd15e7d0',
+                           'uuid_5c5ad6c3-115b-40f2-9601-decccd15e7d0-other-1',
+                           'uuid_9d11c508-c5b0-41b1-be46-f9a05bdca122',
+                           'uuid_9d11c508-c5b0-41b1-be46-f9a05bdca122-other-1',
+                           'uuid_9d11c508-c5b0-41b1-be46-f9a05bdca122-other-2',
+                           'uuid_ed3d4542-f421-48c5-95f5-f0f4af2b4a47',
+                           'uuid_ed3d4542-f421-48c5-95f5-f0f4af2b4a47-other-1',
+                           'uuid_abe70cf2-c25f-4cc7-9032-348d56777ff2',
+                           'uuid_abe70cf2-c25f-4cc7-9032-348d56777ff2-other-1',
+                           'part-a_magasinet_section-4',
+                           'uuid_ab9bced1-fb0e-449d-989a-3fb21631ab78',
+                           'uuid_ab9bced1-fb0e-449d-989a-3fb21631ab78-other-1',
+                           'part-a_magasinet_section-5',
+                           'uuid_945d8ce1-9d53-4b6d-9fc5-8fa40ee168fd',
+                           'uuid_945d8ce1-9d53-4b6d-9fc5-8fa40ee168fd-other-1',
+                           'uuid_945d8ce1-9d53-4b6d-9fc5-8fa40ee168fd-other-2',
+                           'part-a_magasinet_section-6',
+                           'uuid_b6c208d4-c9f7-4b48-a225-523e370ba92a',
+                           'uuid_6646be17-8024-47e2-82b7-1b522755e5d7',
+                           'uuid_1bfd9179-6bfc-4f55-a602-82d85308dc41',
+                           'uuid_69347beb-006b-4e7c-bbd4-814f77dd2769',
+                           'uuid_ad35628f-5c47-48fb-bdee-5bbfbf4d0008',
+                           'part-a_magasinet_section-7',
+                           'uuid_17b8f2c6-594d-4b2b-940c-9d0e05965745',
+                           'uuid_17b8f2c6-594d-4b2b-940c-9d0e05965745-other-1',
+                           'uuid_17b8f2c6-594d-4b2b-940c-9d0e05965745-other-2',
+                           'uuid_ade31742-03fb-4261-a669-aff62e5fe773',
+                           'uuid_29abbdae-7a13-4efd-b083-b42a6733a9a3',
+                           'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2',
+                           'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2-other-1',
+                           'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2-other-2',
+                           'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2-other-3',
+                           'uuid_1a90eec1-8a4e-40fb-83bf-728626b535be',
+                           'uuid_53c3df57-3c45-47da-a007-3f07cc9ff0e8',
+                           'part-a_magasinet_section-8',
+                           'uuid_3066ce23-2b53-40c9-a7b3-0fef44964479',
+                           'uuid_3066ce23-2b53-40c9-a7b3-0fef44964479-other-1',
+                           'part-a_magasinet_section-9',
+                           'uuid_4bf18479-0c1b-42fa-9b81-133780addee5',
+                           'uuid_3f451333-d6cb-4729-b969-1e6782912b93',
+                           'part-a_magasinet_section-10',
+                           'uuid_4d603d14-36cf-4c44-b7dc-c6e7262a89f9'
+                  )"/>
+        
+        <x:expect label="The metadata should be as expected" test="/*/*[local-name()='head']">
+            <head>
+                <meta name="dtb:uid" content="123456190315"/>
+                <meta name="dc:Identifier" content="123456190315"/>
+                <meta name="dc:Title" content="Aftenposten, fredag 15. mars 2019"/>
+                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Language" content="nb-NO"/>
+                <meta name="generator" content="schibsted-to-dtbook.xsl"/>
+                <meta name="description" content="Input document for Daisy production"/>
+                <link href="dtbook.2005.basic.css" rel="stylesheet" type="text/css"/>
+            </head>
+        </x:expect>
+        
+        <x:expect label="The frontmatter should be as expected" test="/*/*[local-name()='book']/*[local-name()='frontmatter']">
+            <frontmatter>
+                <doctitle>Aftenposten, fredag 15. mars 2019</doctitle>
+                <level1 class="preface" id="...">
+                    <h1>Om NLBs lydversjon av Aftenposten</h1>
+                    <p>...</p>
+                    <p>...</p>
+                    <p>...</p>
+                    <p>...</p>
+                    <p>...</p>
+                </level1>
+            </frontmatter>
+        </x:expect>
+        
+        <x:expect label="Nyheter" test="/*/*/*/*/*[*[local-name()='h2']/text() = 'Nyheter']">
+            <level2 id="part-1_section-1">
+               <h2>Nyheter</h2>
+               <level3 id="uuid_12f2e093-545c-4f3c-9421-cde0c7dcc88a" xml:lang="nb">
+                  <pagenum id="page_12f2e093-545c-4f3c-9421-cde0c7dcc88a_1" page="normal">1</pagenum>
+                  <h3>
+                     <span class="pagedateline">å Kommentar Andreas Slettholm:</span> En absurd utvikling i trusselsaken</h3>
+                  <p>Meninger s…</p>
+               </level3>
+               <level3 id="uuid_ccb8bfc9-3368-4377-b987-cfbe59e6f2ff" xml:lang="nb">
+                  <h3>Historien om da justisminister Waras samboer ble siktet for å ha oppdiktet en straffbar handling</h3>
+                  <p>NYHETER si…</p>
+               </level3>
+               <level3 id="uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10" xml:lang="nb">
+                  <pagenum id="page_ffea9be8-8683-4d67-9685-d8d825d4ec10_2" page="normal">2</pagenum>
+                  <h3>
+                     <span class="pagedateline">Under streken</span>
+                  </h3>
+                  <level4 id="uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10-main-1">
+                     <h4>Alt var bedre før</h4>
+                     <p>Et leserin…</p>
+                     <p>Leseren me…</p>
+                  </level4>
+                  <level4 id="uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10-main-2">
+                     <h4>Vy akkurat nå</h4>
+                     <p>Støvet har…</p>
+                     <p>Han kom me…</p>
+                  </level4>
+                  <level4 id="uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10-main-3">
+                     <h4>Journalistisk utvikling</h4>
+                     <p>Journalist…</p>
+                     <p>I 2016 skr…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_9f3935e8-0f8d-4d07-a3bd-99c20f791943" xml:lang="nb">
+                  <h3>Konkurransekraften må prioriteres</h3>
+                  <p>Lønnsoppgj…</p>
+                  <p>Partene er…</p>
+               </level3>
+               <level3 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db" xml:lang="nb">
+                  <pagenum id="page_fa57ccbb-2914-4d69-95b7-3e77d30ba0db_3" page="normal">3</pagenum>
+                  <h3>En absurd utvikling i saken om truslene mot Wara</h3>
+                  <div class="leadin">
+                            <p>Justisminister Tor Mikkel Wara (Frp) kalte det et «angrep mot demokratiet». To dager senere ble samboeren pågrepet.</p>
+                        </div>
+                  <p>Vi pressef…</p>
+                  <p>Men at <em>utrolig</em> er et dek…</p>
+                  <level4 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-2">
+                     <h4>Andre kan stå bak tidligere angrep</h4>
+                     <p>Dette var …</p>
+                     <p>Dette bety…</p>
+                  </level4>
+                  <level4 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-3">
+                     <h4>Stiller teaterkritikk i annet lys</h4>
+                     <p>Forholdet …<em>Ways of Seeing </em>på Black B…</p>
+                     <p>Denne uken…</p>
+                  </level4>
+                  <level4 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-4">
+                     <h4>Uheldig for Solberg</h4>
+                     <p>Hun er imi…</p>
+                     <p>Om formåle…</p>
+                  </level4>
+                  <level4 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db-main-5">
+                     <h4>Ikke dagen for konklusjoner</h4>
+                     <p>Tor Mikkel…</p>
+                     <p>Det er ikk…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385" xml:lang="nb">
+                  <h3>Da Wara våknet i går, var truslene mot familiens hjem «et angrep mot demokratiet». Da han la seg, var hans egen samboer siktet.</h3>
+                  <div class="leadin">
+                            <p>Justisminister Tor Mikkel Wara ante ingenting. Men denne kalde, grå marsdagen skulle livet slik han kjente det bli fullstendig endret.</p>
+                        </div>
+                  <p>Mens han s…</p>
+                  <p>Tor Mikkel…</p>
+                  <level4 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-2">
+                     <h4>Lamslått, satt ut, sjokk</h4>
+                     <p>Samboeren …</p>
+                     <p>Noen minut…</p>
+                  </level4>
+                  <level4 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-3">
+                     <h4>Den lange veien mot siktelse</h4>
+                     <p>Veien frem…</p>
+                     <p>Etter hver…</p>
+                  </level4>
+                  <level4 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-4">
+                     <h4>«En røverhistorie»</h4>
+                     <p>Den politi…</p>
+                     <p>«Gjennom v…</p>
+                  </level4>
+                  <level4 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-5">
+                     <h4>Hakekors og RASISIT</h4>
+                     <p>Seks dager…</p>
+                     <p>Noen så ut…</p>
+                  </level4>
+                  <level4 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385-main-6">
+                     <h4>«Teknisk svikt»</h4>
+                     <p>Hvorfor bl…</p>
+                     <p>Bilbrannen…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7" xml:lang="nb">
+                  <pagenum id="page_56eff0d7-a6b3-4858-96d2-a6d8e12038c7_6" page="normal">6</pagenum>
+                  <h3>Waras samboer langet ut på Facebook - nå er hun selv siktet</h3>
+                  <div class="leadin">
+                            <p>- Alle disse konspirasjonsteoriene og løgnene er en stor ekstra belastning i tillegg til all terroren vi utsettes for. Det skrev Tor Mikkel Waras samboer på sin egen
+                                Fa…</p>
+                        </div>
+                  <p>Laila Anit…</p>
+                  <p>Kort tid e…</p>
+                  <level4 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-2">
+                     <h4>Kritiserte støtteerklæring</h4>
+                     <p>I det samm…</p>
+                     <p>«Kjære Tri…</p>
+                  </level4>
+                  <level4 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-3">
+                     <h4>Anmeldte teater</h4>
+                     <p>Den sikted…<em>Ways of Seeing</em>.</p>
+                     <p>Regissør P…</p>
+                  </level4>
+                  <level4 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-4">
+                     <h4>Kritiserte far til skolebarn</h4>
+                     <p>Bertheusse…</p>
+                     <p>11. februa…</p>
+                  </level4>
+                  <level4 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7-main-5">
+                     <h4>Flere tilfeller de siste månedene</h4>
+                     <p>De siste t…</p>
+                     <p>Waras samb…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5" xml:lang="nb">
+                  <pagenum id="page_ce2a984e-3a58-40a3-b96a-92124d0c0da5_8" page="normal">8</pagenum>
+                  <h3>Erna Solberg: - Jeg må si at dette var et sjokk for meg</h3>
+                  <div class="leadin">
+                            <p>Erna Solberg måtte selv fortelle justisministeren at samboeren hans var pågrepet av PST. Statsministeren sier siktelsen kom som et sjokk på hele regjeringen.</p>
+                        </div>
+                  <p>Justismini…</p>
+                  <p>Knapt en t…</p>
+                  <level4 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-2">
+                     <h4>- Håper PST tar feil</h4>
+                     <p>Politikere…</p>
+                     <p>Ord som «j…</p>
+                  </level4>
+                  <level4 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-3">
+                     <h4>- Menneskelig tragedie</h4>
+                     <p>På kontore…</p>
+                     <p>Arbeiderpa…</p>
+                  </level4>
+                  <level4 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-4">
+                     <h4>Sandberg: - Trist</h4>
+                     <p>- Erna Sol…</p>
+                     <p>Tidligere …</p>
+                  </level4>
+                  <level4 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-other-1">
+                     <p/>
+                  </level4>
+               </level3>
+               <level3 id="uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e" xml:lang="nb">
+                  <pagenum id="page_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e_9" page="normal">9</pagenum>
+                  <h3>- Stor lettelse for Black Box-regissørene</h3>
+                  <div class="leadin">
+                            <p>Regissørene som har fått kritikk for å ha vist et klipp av Tor Mikkel Waras hus, er lettet over utviklingen i saken.</p>
+                        </div>
+                  <p>Advokat Jo…</p>
+                  <p>- Det er e…</p>
+                  <level4 id="uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e-main-2">
+                     <h4>Teaterregissør i avhør</h4>
+                     <p>Onsdag kve…</p>
+                     <p>- Hun fikk…</p>
+                  </level4>
+                  <level4 id="uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e-main-3">
+                     <h4>Filmet teaterregissør to ganger</h4>
+                     <p>Ifølge adv…</p>
+                     <p>Ved begge …</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_d73062ea-1728-435a-997c-f3cbc0490476" xml:lang="nb">
+                  <pagenum id="page_d73062ea-1728-435a-997c-f3cbc0490476_10" page="normal">10</pagenum>
+                  <h3>Vil ha Ring 4 rundt Oslo - godt utenfor sentrum</h3>
+                  <div class="leadin">
+                            <p>Fylkesordførerne i Buskerud og Østfold ønsker debatt om mulighetene for Ring 4 rundt Oslo. Her er forslaget.</p>
+                        </div>
+                  <p>V eier som…</p>
+                  <p>Fredag sam…</p>
+                  <level4 id="uuid_d73062ea-1728-435a-997c-f3cbc0490476-main-2">
+                     <h4>Vil gå gjennom 30 kommuner</h4>
+                     <p>Poenget ti…</p>
+                     <p>Ole Haabet…</p>
+                  </level4>
+                  <level4 id="uuid_d73062ea-1728-435a-997c-f3cbc0490476-other-1">
+                     <h4>
+                        <span class="madmansrow">Fakta:</span> Disse veiene kan inngå i Ring 4</h4>
+                     <p>Oslofjordt…</p>
+                     <p>Rv. 35 Hok…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf" xml:lang="nb">
+                  <pagenum id="page_f4c578e2-d483-443e-a1a6-168f78a5dfaf_12" page="normal">12</pagenum>
+                  <h3>Google føyer seg etter Putin</h3>
+                  <div class="leadin">
+                            <p>I Russland viser Google nå Krim-halvøya som russisk på kart. I tillegg har Google, ifølge russiske myndigheter, begynt å følge landets sensurkrav.</p>
+                        </div>
+                  <p>I februar …</p>
+                  <p>Tidligere …</p>
+                  <level4 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-2">
+                     <h4>Lang konflikt</h4>
+                     <p>Google har…</p>
+                     <p>Siden har …</p>
+                  </level4>
+                  <level4 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-3">
+                     <h4>Bøyer seg</h4>
+                     <p>Nå skal de…</p>
+                     <p>- Vi er fu…</p>
+                  </level4>
+                  <level4 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-4">
+                     <h4>Sjeikene får styre konene</h4>
+                     <p>Apple og G…</p>
+                     <p>Forrige uk…</p>
+                  </level4>
+                  <level4 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-main-5">
+                     <h4>Stanser kritikk</h4>
+                     <p>Kritikerne…</p>
+                     <p>I en rappo…</p>
+                  </level4>
+                  <level4 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf-other-1">
+                     <h4>
+                        <span class="madmansrow">Fakta:</span> Svartelister nettsider</h4>
+                     <p>Hvert år b…</p>
+                     <p>Ifølge myn…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_920a4c4f-a6fa-4886-b4e9-05e535181def" xml:lang="nb">
+                  <pagenum id="page_920a4c4f-a6fa-4886-b4e9-05e535181def_13" page="normal">13</pagenum>
+                  <h3>Økt radikal nasjonalisme</h3>
+                  <div class="dateline sted_tema">
+                            <p>Säpo</p>
+                        </div>
+                  <p>Svensk sik…</p>
+                  <p>Det kom fr…</p>
+               </level3>
+               <level3 id="uuid_deca4da8-e54b-4480-9d63-8a7bed2fbafb" xml:lang="nb">
+                  <h3>Fengslet for kniv- angrep mot nordmenn</h3>
+                  <div class="dateline sted_tema">
+                            <p>Murcia</p>
+                        </div>
+                  <p>En spansk …</p>
+                  <p>Fotballspi…</p>
+               </level3>
+               <level3 id="uuid_4d698f32-9ab4-43dc-b10c-1d8270040094" xml:lang="nb">
+                  <pagenum id="page_4d698f32-9ab4-43dc-b10c-1d8270040094_14" page="normal">14</pagenum>
+                  <h3>Muligheten som har ligget der hele tiden</h3>
+                  <div class="leadin">
+                            <p>NSB skal undersøke hva som skal til for å ta i bruk tog som står parkert store deler av dagen. Dette er de mulige gevinstene.</p>
+                        </div>
+                  <p>Mandag skr…</p>
+                  <p>At mulighe…</p>
+                  <level4 id="uuid_4d698f32-9ab4-43dc-b10c-1d8270040094-main-2">
+                     <h4>Snart må NSB slåss også om Oslo</h4>
+                     <p>Strakstilt…<em>flying start</em>. Akkurat …</p>
+                     <p>En helt av…</p>
+                  </level4>
+                  <level4 id="uuid_4d698f32-9ab4-43dc-b10c-1d8270040094-main-3">
+                     <h4>Gevinstene står i kø</h4>
+                     <p>. NSB-sjef…</p>
+                     <p>. Jon Geor…</p>
+                  </level4>
+                  <level4 id="uuid_4d698f32-9ab4-43dc-b10c-1d8270040094-main-4">
+                     <h4>Hvorfor har man ikke gjort dette før?</h4>
+                     <p>Økonomi pe…</p>
+                     <p>Det er ogs…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf" xml:lang="nb">
+                  <pagenum id="page_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf_16" page="normal">16</pagenum>
+                  <h3>Nytt oljeforslag gjør naturvernere rasende</h3>
+                  <div class="leadin">
+                            <p>Naturvernorganisasjoner reagerer sterkt på at Olje- og energidepartementet i går åpnet for oljeleting i 90 nye blokker i det såkalte TFO-området.</p>
+                        </div>
+                  <p>Omfanget e…</p>
+                  <p>TFO står f…</p>
+                  <level4 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-2">
+                     <h4>Streik for klimaet</h4>
+                     <p>Også Natur…</p>
+                     <p>- Vi må ku…</p>
+                  </level4>
+                  <level4 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-3">
+                     <h4>Ikke interessert i møte</h4>
+                     <p>Det er ikk…</p>
+                     <p>- Denne re…</p>
+                  </level4>
+                  <level4 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-4">
+                     <h4>- En bærebjelke</h4>
+                     <p>- Tildelin…</p>
+                     <p>Den foresl…</p>
+                  </level4>
+                  <level4 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-other-1">
+                     <p/>
+                  </level4>
+               </level3>
+               <level3 id="uuid_69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8" xml:lang="nb">
+                  <h3>
+                     <span class="madmansrow">Fakta:</span> Brexit</h3>
+                  <p>Storbritan…</p>
+                  <p>I stedet b…</p>
+               </level3>
+               <level3 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d" xml:lang="nb">
+                  <h3>Storbritannia kommer ikke til å forlate EU 29. mars.</h3>
+                  <div class="leadin">
+                            <p>Storbritannia kommer likevel ikke til å forlate EU den 29. mars! Det britiske underhuset stemte med overveldende flertall ja til å utsette brexitavtalen.</p>
+                        </div>
+                  <p>Den histor…</p>
+                  <p>412 repres…</p>
+                  <level4 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-main-2">
+                     <h4>Tok tilbake kontrollen</h4>
+                     <p>I motsetni…</p>
+                     <p>Hun vant d…</p>
+                  </level4>
+                  <level4 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-main-3">
+                     <h4>Dette stemte Underhuset over</h4>
+                     <p>Dette var …</p>
+                     <p>1. Storbri…</p>
+                  </level4>
+                  <level4 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-other-1">
+                     <p/>
+                  </level4>
+               </level3>
+               <level3 id="uuid_aec8d4a0-5ada-4c51-827b-81e1fd2e7273" xml:lang="nb">
+                  <pagenum id="page_aec8d4a0-5ada-4c51-827b-81e1fd2e7273_17" page="normal">17</pagenum>
+                  <h3>581.000</h3>
+                  <p>I fjor søk…</p>
+                  <p>De fleste …</p>
+               </level3>
+               <level3 id="uuid_c3f52886-bfab-40ff-9789-b2b0de5051e9" xml:lang="nb">
+                  <h3>Etterlatte forlot møte i sinne</h3>
+                  <div class="dateline sted_tema">
+                            <p>FLYSTYRTEN I ETIOPIA</p>
+                        </div>
+                  <p>Rundt 200 …</p>
+                  <p>157 mennes…</p>
+               </level3>
+               <level3 id="uuid_3724523f-96fd-4e53-a464-db2ce3abc392" xml:lang="nb">
+                  <h3>Alvorlig ­skadet av ku</h3>
+                  <div class="dateline sted_tema">
+                            <p>TELEMARK</p>
+                        </div>
+                  <p>I Morgedal…</p>
+                  <p>Personen s…</p>
+               </level3>
+               <level3 id="uuid_b3a1b150-f44b-4443-8124-4a717e882607" xml:lang="nb">
+                  <h3>Frykter meslingutbrudd vil ramme millioner</h3>
+                  <div class="dateline sted_tema">
+                            <p>FILIPPINENE</p>
+                        </div>
+                  <p>Ifølge Rød…</p>
+                  <p>Den siste …</p>
+               </level3>
+               <level3 id="uuid_0bd1a31a-010d-4b13-9a18-1e65ab2110aa" xml:lang="nb">
+                  <h3>Nesten 100 ulver registrert</h3>
+                  <div class="dateline sted_tema">
+                            <p>VILTTELLING</p>
+                        </div>
+                  <p>Pr. 1. feb…</p>
+                  <p>I forrige …</p>
+               </level3>
+               <level3 id="uuid_e440870f-5a42-4499-bda0-e6be5372935a" xml:lang="nb">
+                  <h3>Kvinne omkom i togpåkjørsel</h3>
+                  <div class="dateline sted_tema">
+                            <p>TYSKLAND</p>
+                        </div>
+                  <p>En tysk kv…</p>
+                  <p>- Begge dø…</p>
+               </level3>
+               <level3 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e" xml:lang="nb">
+                  <pagenum id="page_dc079c45-7057-40f2-a832-b1f883329a7e_18" page="normal">18</pagenum>
+                  <h3>Høyre: Vil ta fordeler fra el-bileierne. Nå skal alle betale for å bruke veien.</h3>
+                  <div class="leadin">
+                            <p>Høyre er bekymret for at bompengene slår sosialt skjevt ut og at el-bilsuksessen tapper statskassen for penger. Nå skal det snekres et nytt bærekraftig avgiftssystem for
+                              …</p>
+                        </div>
+                  <p>Dagens sys…</p>
+                  <p>I dag åpne…</p>
+                  <level4 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-2">
+                     <h4>Jobber i det stille</h4>
+                     <p>I det stil…</p>
+                     <p>Målet er å…</p>
+                  </level4>
+                  <level4 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-3">
+                     <h4>Valgkampsak i 2021</h4>
+                     <p>- Vi må la…</p>
+                     <p>Dagens avg…</p>
+                  </level4>
+                  <level4 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-4">
+                     <h4>To problemer må løses samtidig</h4>
+                     <p>Det er to …</p>
+                     <p>De to Høyr…</p>
+                  </level4>
+                  <level4 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e-main-5">
+                     <h4>Fra kjøp til bruk</h4>
+                     <p>Datatilsyn…</p>
+                     <p>Orten sier…</p>
+                  </level4>
+                  <level4 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e-other-1">
+                     <h4>Veiprising</h4>
+                     <p>Et avgifts…</p>
+                     <p>Satellittb…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_a4164986-9b85-476b-a17c-d2f3c89ef89c" xml:lang="nb">
+                  <pagenum id="page_a4164986-9b85-476b-a17c-d2f3c89ef89c_19" page="normal">19</pagenum>
+                  <h3>Feirer på slagmarken</h3>
+                  <div class="dateline sted_tema">
+                            <p>JUBILEUM</p>
+                        </div>
+                  <p>Lørdag fyl…</p>
+                  <p>- Jeg har …</p>
+               </level3>
+               <level3 id="uuid_a9366363-93df-4720-8b56-66cdfa67d765" xml:lang="nb">
+                  <h3>Tannlegene med flere bekymrings- meldinger</h3>
+                  <div class="dateline sted_tema">
+                            <p>mulig omsorgssvikt</p>
+                        </div>
+                  <p>I fjor mel…</p>
+                  <p>- De aller…</p>
+               </level3>
+               <level3 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e" xml:lang="nb">
+                  <pagenum id="page_58baba19-89f6-4bfe-aa44-ecf796b0391e_20" page="normal">20</pagenum>
+                  <h3>Aina (42) hadde ikke jogget på ti år.</h3>
+                  <p class="subtitle">Slik fant hun glede i å løpe langt.</p>
+                  <div class="leadin">
+                            <p>Nesten hele livet har VM-vinneren i dans spradet rundt på høye hæler og pleiet dansekarrieren. Nå er parketten byttet ut med tartandekke og vei, og danseskoene er byttet
+                              …</p>
+                        </div>
+                  <p>I november…</p>
+                  <p>Det var ik…</p>
+                  <level4 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-2">
+                     <h4>Startet lett</h4>
+                     <p>I starten …</p>
+                     <p>- Vanligvi…</p>
+                  </level4>
+                  <level4 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-3">
+                     <h4>200 km i måneden</h4>
+                     <p>Frem mot j…</p>
+                     <p>I løpet av…</p>
+                  </level4>
+                  <level4 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-4">
+                     <h4>Mental trening</h4>
+                     <p>«Hemmeligh…</p>
+                     <p>- Her tok …</p>
+                  </level4>
+                  <level4 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-5">
+                     <h4>Hold høy frekvens</h4>
+                     <p>Å jobbe me…</p>
+                     <p>- Er det n…</p>
+                  </level4>
+                  <level4 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-main-6">
+                     <h4>Neste steg: Maraton</h4>
+                     <p>Da speaker…</p>
+                     <p>- Jeg hadd…</p>
+                  </level4>
+                  <level4 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e-other-1">
+                     <h4>
+                        <span class="madmansrow">Fakta:</span> Ainas ti råd</h4>
+                     <p>1. Finn ro…</p>
+                     <p>2. Planleg…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_c0f1a332-2d2f-4ff4-b490-f20861692635" xml:lang="nb">
+                  <pagenum id="page_c0f1a332-2d2f-4ff4-b490-f20861692635_22" page="normal">22</pagenum>
+                  <h3>DNB med ny salgsvri: Du slipper kostnader om boligen ikke blir solgt.</h3>
+                  <div class="leadin">
+                            <p>Forbruker- tilsynet: - En salgsgaranti kan være en fristende faktor, men en skal ikke la seg blende.</p>
+                        </div>
+                  <p>Den nye tj…</p>
+                  <p>- Om vi ik…</p>
+                  <level4 id="uuid_c0f1a332-2d2f-4ff4-b490-f20861692635-main-2">
+                     <h4>Diskusjoner i bransjen</h4>
+                     <p>Det finnes…</p>
+                     <p>- Det er r…</p>
+                  </level4>
+                  <level4 id="uuid_c0f1a332-2d2f-4ff4-b490-f20861692635-main-3">
+                     <h4>- En skal ikke la seg blende</h4>
+                     <p>Ifølge Ton…</p>
+                     <p>- De spiss…</p>
+                  </level4>
+                  <level4 id="uuid_c0f1a332-2d2f-4ff4-b490-f20861692635-main-4">
+                     <h4>Vilkårene</h4>
+                     <p>Tore Bråth…</p>
+                     <p>Hans gener…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039" xml:lang="nb">
+                  <h3>Han kalles SvDs</h3>
+                  <p class="subtitle">partiideolog</p>
+                  <level4 id="uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039-other-1">
+                     <h4>
+                        <span class="madmansrow">Fakta:</span> Debatt om grasrotopprørene</h4>
+                     <p>Mandag 18.…</p>
+                     <p>Hva er års…</p>
+                  </level4>
+                  <level4 id="uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039-other-2">
+                     <h4>
+                        <span class="madmansrow">Profil:</span> Mattias Karlsson</h4>
+                     <p>Oppvokst i…</p>
+                     <p>Folkevalgt…</p>
+                  </level4>
+               </level3>
+               <level3 id="uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03" xml:lang="nb">
+                  <h3>Mattias Karlsson (41) regnes som en av arkitektene bak Sverigedemokraternas vekst, men vil ikke kall…</h3>
+                  <div class="leadin">
+                            <p>Mattias Karlsson (41) regnes som en av arkitektene bak Sverigedemokraternas vekst, men vil ikke kalle partiet protestparti.</p>
+                        </div>
+                  <p>Mandag del…</p>
+                  <p>På spørsmå…</p>
+                  <level4 id="uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03-main-2">
+                     <h4>Vil lage tankesmier</h4>
+                     <p>Da Jimmie …</p>
+                     <p>Anders San…</p>
+                  </level4>
+                  <level4 id="uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03-main-3">
+                     <h4>«Seier eller død»</h4>
+                     <p>Karlsson h…</p>
+                     <p>I innlegge…</p>
+                  </level4>
+                  <level4 id="uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03-main-4">
+                     <h4>Ikke lenger swexit</h4>
+                     <p>Med 17,6 p…</p>
+                     <p>- Dels for…</p>
+                  </level4>
+               </level3>
+            </level2>
+        </x:expect>
+    </x:scenario>
+    
+    <!-- Based on the order in the paper version: -->
+    <!--<bodymatter>
+        <level1 class="part">
+            <h1 id="...">Del 1</h1>
+            
+            <!-\- Forside -\->
+            <!-\-<level2 id="cf6a52e2-fb72-48a8-81b3-bcb7e5f2a926"><h2>En absurd utvikling i trusselsaken</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:15:37+01:00 -\->
+            <level2 id="12f2e093-545c-4f3c-9421-cde0c7dcc88a"><h2>En absurd utvikling i trusselsaken</h2>...</level2> <!-\- updated_date: 2019-03-14T19:19:22+01:00 -\->
+            <!-\-<level2 id="d054efbc-1317-41ad-ae92-78780fc74dee"><h2>Historien om da justisminister Waras samboer ble siktet for å ha oppdiktet en straffbar handling</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:15:38+01:00 -\->
+            <level2 id="ccb8bfc9-3368-4377-b987-cfbe59e6f2ff"><h2>Historien om da justisminister Waras samboer ble siktet for å ha oppdiktet en straffbar handling</h2>...</level2> <!-\- updated_date: 2019-03-14T19:19:23+01:00 -\->
+            
+            <!-\- Leder &amp; kommentar -\->
+            <!-\-<level2 id="a1506fe1-4a74-4ed8-91ad-e26da941446b"><h2>Konkurransekraften må prioriteres</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:13:26+01:00 -\->
+            <level2 id="9f3935e8-0f8d-4d07-a3bd-99c20f791943"><h2>Konkurransekraften må prioriteres</h2>...</level2> <!-\- updated_date: 2019-03-14T17:39:25+01:00 -\->
+            <!-\-<level2 id="a1711d30-ee46-49be-b961-b79eba3a6c6e"><h2>Under streken</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:13:25+01:00 -\->
+            <level2 id="ffea9be8-8683-4d67-9685-d8d825d4ec10"><h2>Under streken</h2>...</level2> <!-\- updated_date: 2019-03-14T17:39:24+01:00 -\->
+            
+            <!-\- Nyheter / Trusselsaken -\->
+            <!-\-<level2 id="f22889cc-d514-48aa-ba19-55003c9ec513"><h2>En absurd utvikling i saken om truslene mot Wara</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:11:23+01:00 -\->
+            <level2 id="fa57ccbb-2914-4d69-95b7-3e77d30ba0db"><h2>En absurd utvikling i saken om truslene mot Wara</h2>...</level2> <!-\- updated_date: 2019-03-14T19:18:17+01:00 -\->
+            <!-\-<level2 id="9b5adca7-8d4a-4b51-b531-d426fd979d04"><h2>Da Wara våknet i går, var truslene mot familiens hjem «et angrep mot demokratiet». Da han la seg, var hans egen samboer siktet.</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:37:29+01:00 -\->
+            <level2 id="ca0932f6-3e80-4ed4-9125-0cb929e80385"><h2>Da Wara våknet i går, var truslene mot familiens hjem «et angrep mot demokratiet». Da han la seg, var hans egen samboer siktet.</h2>...</level2> <!-\- updated_date: 2019-03-14T20:04:52+01:00 -\->
+            <!-\-<level2 id="fe7207a2-9890-45a9-bea4-2303d2e78279"><h2><!-/- ikke noe innhold - bilde? -/-></h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:37:25+01:00 -\->
+            <level2 id="48bd8564-9934-43aa-a87f-3f8dd6de8ffa"><h2><!-\- ikke noe innhold - bilde? -\-></h2>...</level2> <!-\- updated_date: 2019-03-14T20:04:49+01:00 -\->
+            <level2 id="56eff0d7-a6b3-4858-96d2-a6d8e12038c7"><h2>Waras samboer langet ut på Facebook - nå er hun selv siktet</h2>...</level2> <!-\- updated_date: 2019-03-14T19:37:28+01:00 -\->
+            <level2 id="ce2a984e-3a58-40a3-b96a-92124d0c0da5"><h2>Erna Solberg: - Jeg må si at dette var et sjokk for meg</h2>...</level2> <!-\- updated_date: 2019-03-14T19:48:28+01:00 -\->
+            <level2 id="d59356b3-1e27-4a58-8e4c-f35c8d0ed89e"><h2>- Stor lettelse for Black Box-regissørene</h2>...</level2> <!-\- updated_date: 2019-03-14T19:48:29+01:00 -\->
+            
+            <!-\- Nyheter -\->
+            <level2 id="d73062ea-1728-435a-997c-f3cbc0490476"><h2>Vil ha Ring 4 rundt Oslo - godt utenfor sentrum</h2>...</level2> <!-\- updated_date: 2019-03-14T18:19:44+01:00 -\->
+            <level2 id="f4c578e2-d483-443e-a1a6-168f78a5dfaf"><h2>Google føyer seg etter Putin</h2>...</level2> <!-\- updated_date: 2019-03-14T14:56:29+01:00 -\->
+            <level2 id="920a4c4f-a6fa-4886-b4e9-05e535181def"><h2>Økt radikal nasjonalisme</h2>...</level2> <!-\- updated_date: 2019-03-14T14:56:27+01:00 -\->
+            <level2 id="deca4da8-e54b-4480-9d63-8a7bed2fbafb"><h2>Fengslet for kniv- angrep mot nordmenn</h2>...</level2> <!-\- updated_date: 2019-03-14T14:56:28+01:00 -\->
+            <!-\-<level2 id="3a2da7df-5672-44ab-8237-dc60f122ed12"><h2>Muligheten som har ligget der hele tiden</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:28:20+01:00 -\->
+            <!-\-<level2 id="af792e0b-0a7c-444e-93f1-3c7b6ef9c7a1"><h2>Muligheten som har ligget der hele tiden</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:29:00+01:00 -\->
+            <level2 id="4d698f32-9ab4-43dc-b10c-1d8270040094"><h2>Muligheten som har ligget der hele tiden</h2>...</level2> <!-\- updated_date: 2019-03-14T15:30:37+01:00 -\->
+            <level2 id="c506ecdc-3a68-4f60-903e-f89ef813ac6d"><h2>Storbritannia kommer ikke til å forlate EU 29. mars.</h2>...</level2> <!-\- updated_date: 2019-03-14T20:34:42+01:00 -\->
+            <level2 id="69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8"><h2>Brexit</h2>...</level2> <!-\- updated_date: 2019-03-14T20:34:39+01:00 -\->
+            <level2 id="102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf"><h2>Nytt oljeforslag gjør naturvernere rasende</h2>...</level2> <!-\- updated_date: 2019-03-14T19:10:18+01:00 / finnes ikke i papirutgaven -\->
+            <level2 id="c3f52886-bfab-40ff-9789-b2b0de5051e9"><h2>Etterlatte forlot møte i sinne</h2>...</level2> <!-\- updated_date: 2019-03-14T19:14:19+01:00 -\->
+            <level2 id="3724523f-96fd-4e53-a464-db2ce3abc392"><h2>Alvorlig ­skadet av ku</h2>...</level2> <!-\- updated_date: 2019-03-14T19:14:21+01:00 -\->
+            <level2 id="b3a1b150-f44b-4443-8124-4a717e882607"><h2>Frykter meslingutbrudd vil ramme millioner</h2>...</level2> <!-\- updated_date: 2019-03-14T19:14:22+01:00 -\->
+            <level2 id="e440870f-5a42-4499-bda0-e6be5372935a"><h2>Kvinne omkom i togpåkjørsel</h2>...</level2> <!-\- updated_date: 2019-03-14T19:14:24+01:00 -\->
+            <level2 id="0bd1a31a-010d-4b13-9a18-1e65ab2110aa"><h2>Nesten 100 ulver registrert</h2>...</level2> <!-\- updated_date: 2019-03-14T19:14:23+01:00 -\->
+            <level2 id="aec8d4a0-5ada-4c51-827b-81e1fd2e7273"><h2>581.000</h2>...</level2> <!-\- updated_date: 2019-03-14T19:14:18+01:00 -\->
+            <level2 id="dc079c45-7057-40f2-a832-b1f883329a7e"><h2>Høyre: Vil ta fordeler fra el-bileierne. Nå skal alle betale for å bruke veien.</h2>...</level2> <!-\- updated_date: 2019-03-14T18:32:43+01:00 -\->
+            <level2 id="a9366363-93df-4720-8b56-66cdfa67d765"><h2>Tannlegene med flere bekymrings- meldinger</h2>...</level2> <!-\- updated_date: 2019-03-14T18:32:42+01:00 -\->
+            <level2 id="a4164986-9b85-476b-a17c-d2f3c89ef89c"><h2>Feirer på slagmarken</h2>...</level2> <!-\- updated_date: 2019-03-14T18:32:41+01:00 -\->
+            <!-\-<level2 id="b616fa02-abfa-49fb-ba80-b1ecfa1994a1"><h2>Aina (42) hadde ikke jogget på ti år. Slik fant hun glede i å løpe langt.</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T16:35:57+01:00 -\->
+            <level2 id="58baba19-89f6-4bfe-aa44-ecf796b0391e"><h2>Aina (42) hadde ikke jogget på ti år. Slik fant hun glede i å løpe langt.</h2>...</level2> <!-\- updated_date: 2019-03-14T16:36:55+01:00 -\->
+            <!-\-<level2 id="0d6440a0-6e0d-4bb4-afab-87b5cb3ac33e"><h2>Han kalles SvDs partiideolog</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:20:54+01:00 -\->
+            <!-\-<level2 id="b5f64319-9a20-4f1d-bab3-bcfad08a5a03"><h2>Han kalles SvDs partiideolog</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:53:16+01:00 -\->
+            <level2 id="11d8bbf7-76d8-4816-aedc-37d0561f9039"><h2>Han kalles SvDs partiideolog</h2>...</level2> <!-\- updated_date: 2019-03-14T18:53:18+01:00 -\->
+            <!-\-<level2 id="c0f1a332-2d2f-4ff4-b490-f20861692635"><h2>DNB med ny salgsvri: Du slipper kostnader om boligen ikke blir solgt.</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:16:18+01:00 / finnes ikke i papirutgaven -\->
+            
+            <!-\- Debatt &amp; meninger -\->
+            <!-\-<level2 id="814077d7-eb9f-41d7-bef3-c78a9ab8ea77"><h2>Kulturpersonligheter og akademikere gjør opprør Vi støtter skolestreiken</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T17:05:32+01:00 -\->
+            <level2 id="a8a5d33f-1be4-4681-b981-93d48ebe1b57"><h2>Kulturpersonligheter og akademikere gjør opprør Vi støtter skolestreiken</h2>...</level2> <!-\- updated_date: 2019-03-14T17:06:18+01:00 -\->
+            <!-\-<level2 id="ab669f18-82da-4bb8-9d48-294f36cf45c0"><h2>Ni tips til fremtidens studenter</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T17:03:19+01:00 -\->
+            <level2 id="81856ba0-b8b7-46bb-abcb-e77093468fd6"><h2>Ni tips til fremtidens studenter</h2>...</level2> <!-\- updated_date: 2019-03-14T17:05:08+01:00 -\->
+            <!-\-<level2 id="3e5cd51c-75d6-4f7e-82c1-77b3016525e3"><h2>Politiet ­endrer seg for å møte endringer i krimi­naliteten</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T17:03:29+01:00 -\->
+            <level2 id="303b3de4-029a-4d3b-90e5-85649ce761af"><h2>Politiet ­endrer seg for å møte endringer i krimi­naliteten</h2>...</level2> <!-\- updated_date: 2019-03-14T17:05:09+01:00 -\->
+            <!-\-<level2 id="37f56777-fe60-4e11-ab2d-1ff5677a983b"><h2>Ingen ­hjemmel til å be om lagring av personvern­opplysninger</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T17:03:35+01:00 -\->
+            <level2 id="e68bb197-9b22-4f0c-ac35-523efc7dd150"><h2>Ingen ­hjemmel til å be om lagring av personvern­opplysninger</h2>...</level2> <!-\- updated_date: 2019-03-14T17:05:10+01:00 -\->
+            <!-\-<level2 id="06fcf997-24fc-4c42-a4f2-ab10f733d877"><h2>Aftenposten er oljeblinde</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T17:04:26+01:00 -\->
+            <level2 id="693320d4-f53d-4849-be5f-c83c52d07cf1"><h2>Aftenposten er oljeblinde</h2>...</level2> <!-\- updated_date: 2019-03-14T17:05:12+01:00 -\->
+            <level2 id="c720112c-2181-4b86-abe6-167a34fca0d5"><h2>Helse Sør-Øst trikser med «utredningen» av Ullevål</h2>...</level2> <!-\- updated_date: 2019-03-14T17:32:00+01:00 -\->
+            <level2 id="ba309f80-e675-42ad-99fb-8c57808a206a"><h2>Manglende kommunikasjon bidro til publikums «sjokk»</h2>...</level2> <!-\- updated_date: 2019-03-14T17:32:01+01:00 -\->
+            <level2 id="df94ecf9-50a6-4ed4-87f2-2927a2b6d01a"><h2>Kvinnekampen ga kvinner bukser, nå må vi gi menn skjørt</h2>...</level2> <!-\- updated_date: 2019-03-14T15:05:22+01:00 -\->
+            <level2 id="b947c094-7b41-4d46-a322-deb0fe1e14e4"><h2>Illustrasjon: Linn Isabel Eielsen (18)</h2>...</level2> <!-\- updated_date: 2019-03-14T15:05:24+01:00 -\->
+            
+            <!-\- Striper &amp; spill / Sjakk -\->
+            <level2 id="bd476b3b-cad2-4ceb-a232-ee05c104a5a6"><h2>Russisk komet</h2>...</level2> <!-\- updated_date: 2019-03-14T14:34:32+01:00 -\->
+            
+            <!-\- Striper &amp; spill / Bridge -\->
+            <level2 id="20a4edee-3296-4494-adde-1fe3758fef67"><h2>En uventet finte</h2>...</level2> <!-\- updated_date: 2019-03-14T14:34:33+01:00 -\->
+            
+            <!-\- Navn / Fødselsdager -\->
+            <!-\-<level2 id="6e3b9384-f856-4d8d-968c-9c93accc1885"><h2>Unni Merete Steinsmo</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T11:06:09+01:00 -\->
+            <level2 id="8935a0f4-b2cb-4e85-9dc3-52b71287c5da"><h2>Unni Merete Steinsmo</h2>...</level2> <!-\- updated_date: 2019-03-14T17:36:08+01:00 -\->
+            
+            <!-\- Navn / Navnedag -\->
+            <!-\-<level2 id="57565a45-673b-4d43-bef0-8e791ab09ce3"><h2>Christer, Chris, Christel</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T11:06:07+01:00 -\->
+            <level2 id="0f238a59-94ad-491a-999d-b2d5ad399e86"><h2>Christer, Chris, Christel</h2>...</level2> <!-\- updated_date: 2019-03-14T17:36:06+01:00 -\->
+            
+            <!-\- Navn / Jubilanter -\->
+            <!-\-<level2 id="9d4bdd70-d75c-4645-bd11-200768ac42bd"><h2>Jubilanter</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T11:06:10+01:00 -\->
+            <level2 id="bf7b46f3-2e30-400a-8409-4cb98152e953"><h2>Jubilanter</h2>...</level2> <!-\- updated_date: 2019-03-14T17:36:09+01:00 -\->
+            
+            <!-\- Navn / Kongehuset -\->
+            <!-\-<level2 id="19b9aaad-5564-4f0b-8520-bd8783ceab3d"><h2>Kongehuset</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T11:06:05+01:00 -\->
+            <level2 id="c7090dfb-4499-4022-981e-eb73aa24a932"><h2>Kongehuset</h2>...</level2> <!-\- updated_date: 2019-03-14T17:36:05+01:00 -\->
+            
+            <!-\- Navn / På denne dag -\->
+            <!-\-<level2 id="ed13886a-e552-404f-889f-0092bdb65fdf"><h2>På denne dag</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T11:06:08+01:00 -\->
+            <level2 id="f31bb46f-26d2-45eb-9c91-67975b7f4bf9"><h2>På denne dag</h2>...</level2> <!-\- updated_date: 2019-03-14T17:36:07+01:00 -\->
+            
+            <!-\- Dødsfall / Nekrologer -\->
+            <!-\-<level2 id="dc06df78-94bb-4480-9baa-1ae5fe7cb9f9"><h2>Xxx Xxx</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:17:39+01:00 -\->
+            <level2 id="64e5a8c0-201a-45e6-a418-63146d831941"><h2>Xxx Xxx</h2>...</level2> <!-\- updated_date: 2019-03-14T15:18:24+01:00 -\->
+            <!-\-<level2 id="0e7d0296-6a29-41f4-a11e-9ab02218a777"><h2>Yyy Yyy Yyy</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:17:44+01:00 -\->
+            <level2 id="8d6cbb73-de4a-4afe-a7ce-eebb121f1836"><h2>Yyy Yyy Yyy</h2>...</level2> <!-\- updated_date: 2019-03-14T15:18:25+01:00 -\->
+            
+            <!-\- Radio og TV -\->
+            <level2 id="05e2131e-6a24-4d16-8e7e-15dabf3ec939"><h2>På kryss&amp;quiz</h2>...</level2> <!-\- updated_date: 2019-03-14T17:12:30+01:00 -\->
+        </level1>
+        <level1 class="part">
+            <h1 id="...">Del 2</h1>
+            
+            <!-\- Forside -\->
+            <!-\-<level2 id="29b9e08d-d4b7-42b9-be9a-95d3c52592aa"><h2>Bli med inn i Gustav Vigelands leilighet</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:26:55+01:00 -\->
+            <level2 id="d38c1bed-4ffa-4636-9e00-980f1583f820"><h2>Bli med inn i Gustav Vigelands leilighet</h2>...</level2> <!-\- updated_date: 2019-03-14T17:35:16+01:00 -\->
+            
+            <!-\- Kultur -\->
+            <level2 id="8491026f-506a-4da0-b232-3a9f605bc65e"><h2>Åpner dørene til Vigelands praktleilighet</h2>...</level2> <!-\- updated_date: 2019-03-14T15:21:16+01:00 -\->
+            <!-\-<level2 id="bead58ea-b4d2-406a-98ac-ee44aaa41b5b"><h2>- Brexit er en fryktelig katastrofe</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:45:34+01:00 -\->
+            <level2 id="7eb1144f-72da-4a51-bee4-676322c482d1"><h2>- Brexit er en fryktelig katastrofe</h2>...</level2> <!-\- updated_date: 2019-03-14T18:46:17+01:00 -\->
+            <level2 id="ca47e7b9-99cc-4dde-89eb-5020c2c0cad3"><h2>Går til krig mot teknologigigantene</h2>...</level2> <!-\- updated_date: 2019-03-14T15:30:05+01:00 -\->
+            <level2 id="3a8b7d56-7fb9-43c8-a3cb-855d350c58d5"><h2>Twitter vurderer en «takk»-knapp</h2>...</level2> <!-\- updated_date: 2019-03-14T15:17:46+01:00 -\->
+            <level2 id="dc0717ec-46fa-4321-8025-6b12ac5b5ad1"><h2>Grunn til optimisme</h2>...</level2> <!-\- updated_date: 2019-03-14T15:50:06+01:00 -\->
+            <!-\-<level2 id="64545749-7b3c-4337-88e7-75e6b8cf9c80"><h2>Høvrings alpefiol reiser ut i verden</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:01:51+01:00 -\->
+            <level2 id="e70a305e-43d9-4785-b877-5075f5525e7a"><h2>Høvrings alpefiol reiser ut i verden</h2>...</level2> <!-\- updated_date: 2019-03-14T18:02:59+01:00 -\->
+            <!-\-<level2 id="a2ac7f9f-fe2a-4473-aa08-1b908e40d1c6"><h2>Nordin spiller Wisting på TV</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:02:00+01:00 -\->
+            <level2 id="ad7a6f3d-b245-4ae6-8532-237a508aeac0"><h2>Nordin spiller Wisting på TV</h2>...</level2> <!-\- updated_date: 2019-03-14T18:02:58+01:00 -\->
+            <!-\-<level2 id="886a64b7-6047-4082-8bc5-f9e7b962cd30"><h2>Facebook-­tjenester på vei tilbake</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:01:38+01:00 -\->
+            <level2 id="fc2e5cec-9058-4fd6-bde2-b5b535f8dffd"><h2>Facebook-­tjenester på vei tilbake</h2>...</level2> <!-\- updated_date: 2019-03-14T18:02:56+01:00 -\->
+            <!-\-<level2 id="392582c6-fbcf-482a-900e-f2c009c40941"><h2>Prisdryss over Blindsone</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:02:10+01:00 -\->
+            <level2 id="336833a4-6fc7-461c-860f-cc204c953bb8"><h2>Prisdryss over Blindsone</h2>...</level2> <!-\- updated_date: 2019-03-14T18:02:55+01:00 -\->
+            <!-\-<level2 id="9e2269d2-982e-4a3b-a2b6-b7d2d615115d"><h2>8</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T18:02:18+01:00 -\->
+            <level2 id="cd5806bb-2e13-421e-a31e-3195969a029e"><h2>8</h2>...</level2> <!-\- updated_date: 2019-03-14T18:02:54+01:00 -\->
+            <level2 id="8032a3a3-7226-470d-99b5-11b31923a074"><h2>Mannen med eget lydbilde</h2>...</level2> <!-\- updated_date: 2019-03-14T16:36:13+01:00 -\->
+            <!-\-<level2 id="b232a247-1e99-4c97-93de-436ed2ce2207"><h2>På grensen til genial</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:16:56+01:00 -\->
+            <level2 id="8fad08e3-1aae-497e-86db-8a2d2ab84e4b"><h2>På grensen til genial</h2>...</level2> <!-\- updated_date: 2019-03-14T17:19:15+01:00 -\->
+            <!-\-<level2 id="9521c77e-e2fc-4f2b-a5f6-6e2734367ba3"><h2>Glimrende ­gisseldrama</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:17:57+01:00 -\->
+            <level2 id="248efd35-47b7-4ab1-8f8a-bb87ca950002"><h2>Glimrende ­gisseldrama</h2>...</level2> <!-\- updated_date: 2019-03-14T15:18:28+01:00 -\->
+            
+            <!-\- Sport -\->
+            <!-\-<level2 id="86264850-28b5-4637-b32d-2e24671244c2"><h2>Dette skjer i hodene deres når melkesyren river og lungene verker Tenketanken</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T15:19:41+01:00 -\->
+            <level2 id="0f340847-04a5-4e6b-ab73-7956087f4673"><h2>Dette skjer i hodene deres når melkesyren river og lungene verker Tenketanken</h2>...</level2> <!-\- updated_date: 2019-03-14T16:05:51+01:00 -\->
+            <level2 id="7c7ed7de-8966-4cac-9e78-ef8a66deb85e"><h2>Hadde du valgt Ronaldo eller Messi på ditt lag?</h2>...</level2> <!-\- updated_date: 2019-03-14T15:28:49+01:00 -\->
+            <level2 id="4aa5558b-4718-4331-b511-94ac30158af9"><h2>Den råeste av alle i Raw Air</h2>...</level2> <!-\- updated_date: 2019-03-14T17:56:30+01:00 -\->
+            <level2 id="28ccfe26-a8d0-47cb-862f-e51e688a6919"><h2>Månedens utøver i februar</h2>...</level2> <!-\- updated_date: 2019-03-14T19:13:23+01:00 -\->
+            <level2 id="31454f80-38cb-45ac-bcbc-fa131f32962a"><h2>Paris brøt norsk hegemoni</h2>...</level2> <!-\- updated_date: 2019-03-14T19:13:21+01:00 -\->
+            <level2 id="fa41dcf3-be80-43f3-aeeb-cb59689d2950"><h2>Nok en kule til suverene Shiffrin</h2>...</level2> <!-\- updated_date: 2019-03-14T19:13:22+01:00 -\->
+            <level2 id="dfce817d-da70-4f8a-a1a0-763f2348a0fa"><h2>Tre av fire unge er innom idretten</h2>...</level2> <!-\- updated_date: 2019-03-14T19:13:19+01:00 -\->
+            <!-\-<level2 id="6b358875-9ba0-460a-b0c3-5ed443e168f7"><h2>- Villdyret i meg våknet</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:13:17+01:00 -\->
+            <level2 id="b8bad6f7-5cac-4e62-90ca-12985eae6b04"><h2>- Villdyret i meg våknet</h2>...</level2> <!-\- updated_date: 2019-03-14T19:17:55+01:00 -\->
+            
+            <!-\- Henvisning fra bakside -\->
+            <!-\-<level2 id="668aa8eb-b6ce-4bf3-8650-1438ff55e9b4"><h2>I det tunge hodet på en skiskytter</h2>...</level2>-\-> <!-\- updated_date: 2019-03-14T19:13:16+01:00 -\->
+            <level2 id="fc71c791-f3c3-45b9-845e-0379d8353dc3"><h2>I det tunge hodet på en skiskytter</h2>...</level2> <!-\- updated_date: 2019-03-14T19:17:53+01:00 -\->
+        </level1>
+        <level1 class="part">
+            <h1 id="...">A-magasinet</h1>
+            
+            <!-\- Forsiden -\->
+            <!-\- Forsiden -\->
+            <level2 id="2b5e24bd-afd7-4515-8bef-9d7a187b4f0d"><h2>De nye hjemløse</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:00+01:00 -\->
+            
+            <!-\- Innholdsfortegnelse -\->
+            
+            <!-\- Leder -\->
+            <level2 id="43f54d9f-50b4-41b7-8bd1-39f1c6aa8503"><h2>Europas nye hjemløse</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:02+01:00 -\->
+            
+            <!-\- Samfunn / Intervjuet -\->
+            <level2 id="e37e1a70-41ab-4674-b2c9-3b4feb651c04"><h2>En salme for de hjemløse</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:07+01:00 -\->
+            <level2 id="60d07287-5d51-4200-9e0f-3fbc1338df9f"><h2>Gatesangen som lever sitt eget liv</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:09+01:00 -\->
+            
+            <!-\- Samfunn / Hjemløse -\->
+            <level2 id="3e15bf21-cd17-4982-bb5a-3759088f8e06"><h2>Hjemlengsel</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:10+01:00 -\->
+            <level2 id="abe70cf2-c25f-4cc7-9032-348d56777ff2"><h2>«Du må lære deg å sove med ett øye åpent»</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:12+01:00 -\->
+            <level2 id="5c5ad6c3-115b-40f2-9601-decccd15e7d0"><h2>«Barna har ingen drømmer, for de har aldri opplevd noe annet liv» Sinead Flynn (33) Hjemløs alenemor i Dublin</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:10+01:00 -\->
+            <level2 id="ed3d4542-f421-48c5-95f5-f0f4af2b4a47"><h2>«Jeg husker da barna gikk på forskjellige aktiviteter. Vi hadde et godt liv.» Mercedes Villar Hjemløs mor i Madrid</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:11+01:00 -\->
+            <level2 id="9d11c508-c5b0-41b1-be46-f9a05bdca122"><h2>«Det er vanskelig å få styr på livet når man ikke har styr på noenting» Nicklas Larsen (23) Hjemløs student i København</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:11+01:00 -\->
+            
+            <!-\- Kultur / Historie -\->
+            <level2 id="ab9bced1-fb0e-449d-989a-3fb21631ab78"><h2>Vikingene var mer jålete enn Game of Thrones vil ha deg til å tro</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:09+01:00 -\->
+            
+            <!-\- Kultur / Mat -\->
+            <level2 id="945d8ce1-9d53-4b6d-9fc5-8fa40ee168fd"><h2>Fem hovedretter i Michelin-kokkens liv</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:10+01:00 -\->
+            
+            <!-\- Spenning -\->
+            <level2 id="b6c208d4-c9f7-4b48-a225-523e370ba92a"><h2>Man- hattans mørkeste gater</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:02+01:00 -\->
+            <level2 id="6646be17-8024-47e2-82b7-1b522755e5d7"><h2>Filmes av Ridley Scott</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:03+01:00 -\->
+            <level2 id="ad35628f-5c47-48fb-bdee-5bbfbf4d0008"><h2>Følger Trump til Mexicos grense</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:04+01:00 -\->
+            <level2 id="69347beb-006b-4e7c-bbd4-814f77dd2769"><h2>Mer grensekrim</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:03+01:00 -\->
+            <level2 id="1bfd9179-6bfc-4f55-a602-82d85308dc41"><h2>KRIMINELT GODT SAGT We are all investors. We are all the cartel.</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:03+01:00 -\->
+            
+            <!-\- Mat &amp; drikke / Matskolen -\->
+            <level2 id="17b8f2c6-594d-4b2b-940c-9d0e05965745"><h2>Vårtegn i grønnsakdisken</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:05+01:00 -\->
+            
+            <!-\- Mat &amp; drikke / Kjøkkenveien -\->
+            <level2 id="ebb2d0c2-dce4-40d8-bf91-90c554327df2"><h2>Byttet Michelin mot hverdag</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:05+01:00 -\->
+            <level2 id="ade31742-03fb-4261-a669-aff62e5fe773"><h2>Jordskokken er en flerårig urt</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:06+01:00 -\->
+            <level2 id="29abbdae-7a13-4efd-b083-b42a6733a9a3"><h2>Smaken sitter i skallet</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:06+01:00 -\->
+            
+            <!-\- Mat &amp; drikke / Vinskolen -\->
+            <level2 id="1a90eec1-8a4e-40fb-83bf-728626b535be"><h2>Hva er greia med Pinot Noir?</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:04+01:00 -\->
+            <level2 id="53c3df57-3c45-47da-a007-3f07cc9ff0e8"><h2>Vinanbefalinger</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:05+01:00 -\->
+            
+            <!-\- Ute / Pingviner -\->
+            <level2 id="3066ce23-2b53-40c9-a7b3-0fef44964479"><h2>Truet hardhaus</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:06+01:00 -\->
+            
+            <!-\- Relasjon / Leve sammen -\->
+            <level2 id="4bf18479-0c1b-42fa-9b81-133780addee5"><h2>Er han arbeids- narkoman?</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:01+01:00 -\->
+            
+            <!-\- Relasjon / Spaltist -\->
+            <level2 id="3f451333-d6cb-4729-b969-1e6782912b93"><h2>Hei, det er velferdsstaten som ringer</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:02+01:00 -\->
+            
+            <!-\- Kryssord/sudoku -\->
+            <level2 id="4d603d14-36cf-4c44-b7dc-c6e7262a89f9"><h2>15 spørsmål</h2>...</level2> <!-\- updated_date: 2019-03-15T00:30:02+01:00 -\->
+        </level1>
+    </bodymatter>-->
+    
+</x:description>

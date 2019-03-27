@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<npexchange xmlns="http://www.infomaker.se/npexchange/3.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5">
+    <origin>
+        <user id="14">mediaeksport TYPE_SERVICE</user>
+        <organization id="2">Schibsted Norge</organization>
+        <systemId>6e7044656661756c74</systemId>
+        <systemVersion>4.9.33</systemVersion>
+        <systemRelease/>
+    </origin>
+    <article guid="urn:uuid:bd476b3b-cad2-4ceb-a232-ee05c104a5a6" id="65954" refType="Article" uuid="bd476b3b-cad2-4ceb-a232-ee05c104a5a6">
+        <archive_id>1</archive_id>
+        <article_type_id id="85">Sjakk</article_type_id>
+        <background_material>false</background_material>
+    </article>
+</npexchange>

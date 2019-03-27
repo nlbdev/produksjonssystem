@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="schibsted-join.xsl">
+    
+    <x:param name="files" select="''"/>
+    <x:param name="basepath" select="resolve-uri('test-resources/join/', base-uri())"/>
+    
+    <x:scenario label="Basic test">
+        <x:call template="main">
+            <x:param name="files_test" select="'Aftenposten_65634.xml,Aftenposten_65635.xml,Aftenposten_65954.xml,'"/>
+        </x:call>
+
+        <x:expect label="the result should be as expected">
+            <npexchange xmlns="http://www.infomaker.se/npexchange/3.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5">
+                <origin>
+                    <user id="14">mediaeksport TYPE_SERVICE</user>
+                    <organization id="2">Schibsted Norge</organization>
+                    <systemId>6e7044656661756c74</systemId>
+                    <systemVersion>4.9.33</systemVersion>
+                    <systemRelease/>
+                </origin>
+                <article guid="urn:uuid:6e3b9384-f856-4d8d-968c-9c93accc1885" id="65634" refType="Article" uuid="6e3b9384-f856-4d8d-968c-9c93accc1885">
+                    <archive_id>1</archive_id>
+                    <article_type_id id="82">Fødselsdager</article_type_id>
+                    <background_material>false</background_material>
+                </article>
+                <article guid="urn:uuid:9d4bdd70-d75c-4645-bd11-200768ac42bd" id="65635" refType="Article" uuid="9d4bdd70-d75c-4645-bd11-200768ac42bd">
+                    <archive_id>1</archive_id>
+                    <article_type_id id="77">Jubilanter</article_type_id>
+                    <background_material>false</background_material>
+                </article>
+                <article guid="urn:uuid:bd476b3b-cad2-4ceb-a232-ee05c104a5a6" id="65954" refType="Article" uuid="bd476b3b-cad2-4ceb-a232-ee05c104a5a6">
+                    <archive_id>1</archive_id>
+                    <article_type_id id="85">Sjakk</article_type_id>
+                    <background_material>false</background_material>
+                </article>
+            </npexchange>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="1 article">
+        <x:call template="main">
+            <x:param name="files_test" select="'Aftenposten_65634.xml,'"/>
+        </x:call>
+        
+        <x:expect label="the result should be as expected">
+            <npexchange xmlns="http://www.infomaker.se/npexchange/3.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5">
+                <origin>
+                    <user id="14">mediaeksport TYPE_SERVICE</user>
+                    <organization id="2">Schibsted Norge</organization>
+                    <systemId>6e7044656661756c74</systemId>
+                    <systemVersion>4.9.33</systemVersion>
+                    <systemRelease/>
+                </origin>
+                <article guid="urn:uuid:6e3b9384-f856-4d8d-968c-9c93accc1885" id="65634" refType="Article" uuid="6e3b9384-f856-4d8d-968c-9c93accc1885">
+                    <archive_id>1</archive_id>
+                    <article_type_id id="82">Fødselsdager</article_type_id>
+                    <background_material>false</background_material>
+                </article>
+            </npexchange>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="0 articles">
+        <x:call template="main">
+            <x:param name="files_test" select="''"/>
+        </x:call>
+        
+        <x:expect label="the result should be as expected">
+            <npexchange xmlns="http://www.infomaker.se/npexchange/3.5"/>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
