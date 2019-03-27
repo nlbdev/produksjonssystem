@@ -69,7 +69,7 @@
     <xsl:template match="npx:npexchange">
         <xsl:variable name="title-long" select="concat($title, ', ', $day-of-week-name, ' ', $day-of-month, '. ', $month-name, ' ', $year)"/>
         
-        <dtbook>
+        <dtbook version="2005-3" xml:lang="no">
             <head>
                 <meta name="dtb:uid" content="{$identifier-with-date}"/>
                 <meta name="dc:Identifier" content="{$identifier-with-date}"/>
