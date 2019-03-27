@@ -97,7 +97,7 @@ class NewspaperSchibsted(Pipeline):
             },
             "Faedrelandsvennen": {
                 "id": "618363",
-                "title": "Fedrelandsvennen"
+                "title": "Fædrelandsvennen"
             },
             "Stavanger_Aftenblad": {
                 "id": "618360",
