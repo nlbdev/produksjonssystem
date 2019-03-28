@@ -22,7 +22,6 @@ class NewspaperSchibsted(Pipeline):
     title = "Avisproduksjon Schibsted"
     labels = ["Daisy 2.02"]
     logPipeline = None
-    year_month = ""
     publication_format = "Lydbok"
     expected_processing_time = 20
     parentdirs = {
@@ -32,7 +31,7 @@ class NewspaperSchibsted(Pipeline):
 
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
-        self._triggerNewspaperThread = threading.Thread(target=self._trigger_Newspaper_thread, name="Newspaper thread")
+        self._triggerNewspaperThread = threading.Thread(target=self._trigger_Newspaper_thread, name=self.uid + "-watcher")
         self._triggerNewspaperThread.setDaemon(True)
         self._triggerNewspaperThread.start()
 
@@ -51,15 +50,21 @@ class NewspaperSchibsted(Pipeline):
         # If feed found trigger newspaper
         while self._dirsAvailable and self._shouldRun:
             time.sleep(5)
-            max_update_interval = 60 * 5
+            max_update_interval = 60
             if time.time() - last_check < max_update_interval:
                 continue
 
             last_check = time.time()
             for date in os.listdir(self.dir_in):
                 if re.match(r"^\d\d\d\d-\d\d-\d\d$", date):
-                    logging.info("Lager avis for: " + date)
-                    self.trigger(date)
+                    date_numbers = re.sub(r"^\d\d(\d\d)-(\d\d)-(\d\d)$", r"\1\2\3", date)
+                    already_produced = False
+                    for book in os.listdir(os.path.join(self.dir_out, self.parentdirs["archive"])):
+                        if book.endswith(date_numbers+".xml"):
+                            already_produced = True
+                    if not already_produced:
+                        logging.info("Lager avis for: " + date)
+                        self.trigger(date)
 
     def on_book_deleted(self):
         return True
@@ -74,10 +79,11 @@ class NewspaperSchibsted(Pipeline):
         return True
 
     def on_book(self):
-        date = re.sub(r"[^\d]", "", self.book["name"])
-        if len(date) <= 0:
-            self.utils.report.error("Ingen tall i mappenavn: {}".format(self.book["name"]))
+        date_iso = self.book["name"]
+        if not re.match(r"^\d\d\d\d-\d\d-\d\d$", date_iso):
+            self.utils.report.error("Ugyldig mappenavn: {}".format(self.book["name"]))
             return False
+        date_numbers = re.sub(r"^\d\d(\d\d)-(\d\d)-(\d\d)$", r"\1\2\3", date_iso)
 
         newspapers = {
             "Aftenposten": {
@@ -129,7 +135,7 @@ class NewspaperSchibsted(Pipeline):
                         parameters={
                             "identifier": newspapers[paper]["id"],
                             "title": newspapers[paper]["title"],
-                            "date": time.strftime('%Y-%m-%d')
+                            "date": date_iso
                         },
                         stylesheet=os.path.join(Xslt.xslt_dir, self.uid, "schibsted-to-dtbook.xsl"),
                         source=temp_xml,
@@ -141,19 +147,18 @@ class NewspaperSchibsted(Pipeline):
                 return False
 
             archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
-                                                                    newspapers[paper]["id"] + date,
+                                                                    newspapers[paper]["id"] + date_numbers,
                                                                     parentdir=self.parentdirs["archive"],
                                                                     file_extension="xml")
             self.utils.report.attachment(None, archived_path, "DEBUG")
 
-            if date == time.strftime('%Y%m%d'):
+            if date_numbers == time.strftime('%y%m%d'):
                 archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
                                                                         paper,
                                                                         parentdir=self.parentdirs["latest"],
                                                                         file_extension="xml")
                 self.utils.report.attachment(None, archived_path, "DEBUG")
 
-        self.utils.filesystem.deleteSource()
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.info("Dagens Schibsted aviser er ferdig produsert")
         self.utils.report.title = self.title + ": " + " dagens Schibsted aviser ble produsert 👍😄"
