@@ -33,7 +33,7 @@ from incoming_nordic import IncomingNordic
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
                              InsertMetadataXhtml)
 from make_abstracts import Audio_Abstract
-from newspaper_schibsted import NewspaperSchibsted
+from newspaper_schibsted import NewspaperSchibsted, DummyTtsNewspaperSchibsted
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
@@ -286,8 +286,8 @@ class Produksjonssystem():
                                during_working_hours=True),      "master",              "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
-            [DummyPipeline("Talesyntese i Pipeline 1 for aviser",
-                           labels=["Lydbok"]),                  "dtbook_news",          "daisy202"],
+            [DummyTtsNewspaperSchibsted("Talesyntese i Pipeline 1 for aviser",
+                                        labels=["Lydbok"]),     "dtbook_news",          "daisy202"],
 
             # e-bok basert på DTBook
             # [EpubToDtbookHTML(),                              "master",              "dtbook_html"],

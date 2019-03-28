@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import datetime
 import logging
 import os
 import re
-import shutil
 import sys
 import tempfile
 import threading
 import time
 
-from dotmap import DotMap
-
 from core.pipeline import DummyPipeline, Pipeline
-from core.utils.daisy_pipeline import DaisyPipelineJob
-from core.utils.filesystem import Filesystem
-from core.utils.report import Report
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -165,6 +158,61 @@ class NewspaperSchibsted(Pipeline):
         self.utils.report.info("Dagens Schibsted aviser er ferdig produsert")
         self.utils.report.title = self.title + ": " + " dagens Schibsted aviser ble produsert 👍😄"
         return True
+
+
+class DummyTtsNewspaperSchibsted(DummyPipeline):
+    working_dir = None
+
+    def start(self, *args, **kwargs):
+        super().start(*args, **kwargs)
+        self.working_dir = os.path.normpath(os.path.join(self.dir_in, '..', 'daisy'))
+
+    def get_status(self):
+        if self.working_dir and os.path.isdir(self.working_dir):
+            for newspaper in os.listdir(self.working_dir):
+                temp_dir = os.path.join(self.working_dir, newspaper, "pipeline__temp", "speechgen")
+                if not os.path.isdir(temp_dir):
+                    continue
+                for root, dirs, files in os.walk(temp_dir):
+                    for file in files:
+                        path = os.path.join(root, file)
+                        if not file.endswith(".wav"):
+                            # ignore non-audio file
+                            continue
+                        if time.time() - os.stat(path).st_mtime > 60:
+                            # ignore old file
+                            continue
+
+                        # this newspaper has a newly modified wav file: assume that it's currently being produced
+                        return newspaper
+
+        return super().get_status()
+
+    def get_progress(self):
+        newspaper = self.get_status()  # status is the name of the newspaper, if a newspaper is being processed
+
+        if self.working_dir and os.path.isdir(self.working_dir) and newspaper in os.listdir(self.working_dir):
+            temp_dir = os.path.join(self.working_dir, newspaper, "pipeline__temp", "speechgen")
+            if os.path.isdir(temp_dir):
+                done = 0
+                not_done = 0
+                for root, dirs, files in os.walk(temp_dir):
+                    for file in files:
+                        path = os.path.join(root, file)
+                        if not file.endswith(".wav"):
+                            # ignore non-audio file
+                            continue
+
+                        if os.stat(path).st_size == 0:
+                            not_done += 1
+                        else:
+                            done += 1
+
+                total = done + not_done
+                if total > 0:
+                    return "{} %".format(round(done / total * 100))
+
+        return super().get_progress()
 
 
 if __name__ == "__main__":
