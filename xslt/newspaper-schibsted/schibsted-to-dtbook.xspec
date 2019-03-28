@@ -314,7 +314,6 @@
                            'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-2',
                            'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-3',
                            'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-main-4',
-                           'uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-other-1',
                            'uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e',
                            'uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e-main-2',
                            'uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e-main-3',
@@ -337,12 +336,10 @@
                            'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-2',
                            'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-3',
                            'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-main-4',
-                           'uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-other-1',
                            'uuid_69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8',
                            'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d',
                            'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-main-2',
                            'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-main-3',
-                           'uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-other-1',
                            'uuid_aec8d4a0-5ada-4c51-827b-81e1fd2e7273',
                            'uuid_c3f52886-bfab-40ff-9789-b2b0de5051e9',
                            'uuid_3724523f-96fd-4e53-a464-db2ce3abc392',
@@ -537,7 +534,6 @@
                            'uuid_ade31742-03fb-4261-a669-aff62e5fe773',
                            'uuid_29abbdae-7a13-4efd-b083-b42a6733a9a3',
                            'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2',
-                           'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2-other-1',
                            'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2-other-2',
                            'uuid_ebb2d0c2-dce4-40d8-bf91-90c554327df2-other-3',
                            'uuid_1a90eec1-8a4e-40fb-83bf-728626b535be',
@@ -559,6 +555,7 @@
                 <meta name="dc:Title" content="Aftenposten, fredag 15. mars 2019"/>
                 <meta name="dc:Publisher" content="NLB"/>
                 <meta name="dc:Language" content="nb-NO"/>
+                <meta name="dc:Date" content="2019-03-15"/>
                 <meta name="generator" content="schibsted-to-dtbook.xsl"/>
                 <meta name="description" content="Input document for Daisy production"/>
                 <link href="dtbook.2005.basic.css" rel="stylesheet" type="text/css"/>
@@ -733,9 +730,6 @@
                      <p>- Erna Sol…</p>
                      <p>Tidligere …</p>
                   </level4>
-                  <level4 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5-other-1">
-                     <p/>
-                  </level4>
                </level3>
                <level3 id="uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e" xml:lang="nb">
                   <pagenum id="page_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e_9" page="normal">9</pagenum>
@@ -875,9 +869,6 @@
                      <p>- Tildelin…</p>
                      <p>Den foresl…</p>
                   </level4>
-                  <level4 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf-other-1">
-                     <p/>
-                  </level4>
                </level3>
                <level3 id="uuid_69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8" xml:lang="nb">
                   <h3>
@@ -901,9 +892,6 @@
                      <h4>Dette stemte Underhuset over</h4>
                      <p>Dette var …</p>
                      <p>1. Storbri…</p>
-                  </level4>
-                  <level4 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d-other-1">
-                     <p/>
                   </level4>
                </level3>
                <level3 id="uuid_aec8d4a0-5ada-4c51-827b-81e1fd2e7273" xml:lang="nb">
@@ -1110,6 +1098,178 @@
                   </level4>
                </level3>
             </level2>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="regression test: empty level3 elements">
+        <x:context>
+            <npexchange xmlns="http://www.infomaker.se/npexchange/3.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5">
+                <origin>
+                    <organization id="2">Schibsted Norge</organization>
+                </origin>
+                <article guid="urn:uuid:93bbe44a-187e-4c86-842a-95dd8d704503" id="77063" refType="Article" uuid="93bbe44a-187e-4c86-842a-95dd8d704503">
+                    <department_id id="23">Redaksjonen - BT</department_id>
+                    <page_id documentName="BTHAZ1_20190328_E1_1_1_002.indd" edition="E1" firstPagin="2" guid="urn:uuid:72e963fd-c28c-4fe5-bcd7-046d4465de94" id="38629" multiPageCount="2" multiPagePos="0" part="1"
+                        product="BT Bergens Tidende" productShort="BTHA" publicationDate="2019-03-28" section="Leder" sectionShort="" subProduct="BT Bergens Tidende" subProductShort="Z1"
+                        uuid="72e963fd-c28c-4fe5-bcd7-046d4465de94"/>
+                    <updated_date>2019-03-27T17:27:16+01:00</updated_date>
+                    <articleparts>
+                        <articlepart guid="urn:uuid:89299ea4-3028-487b-8e3b-3220d19e50a7" id="456849" refType="ArticlePart" uuid="89299ea4-3028-487b-8e3b-3220d19e50a7">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <pagedateline>
+                                        <p>Å Vestland</p>
+                                    </pagedateline>
+                                    <body>
+                                        <p>Kvar er det folkelege …</p>
+                                    </body>
+                                </npdoc>
+                            </data>
+                            <imagecontainers>
+                                <imagecontainer guid="urn:uuid:72ecce96-4954-4a84-9d36-918630c9eb84" id="895284" refType="ImageContainer" uuid="72ecce96-4954-4a84-9d36-918630c9eb84">
+                                    <article_id guid="urn:uuid:93bbe44a-187e-4c86-842a-95dd8d704503" id="77063" uuid="93bbe44a-187e-4c86-842a-95dd8d704503"/>
+                                    <article_part_id guid="urn:uuid:89299ea4-3028-487b-8e3b-3220d19e50a7" id="456849" uuid="89299ea4-3028-487b-8e3b-3220d19e50a7"/>
+                                </imagecontainer>
+                            </imagecontainers>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:2054e33c-263c-473a-a725-096b4f29717b" id="456857" refType="ArticlePart" uuid="2054e33c-263c-473a-a725-096b4f29717b">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="nb">
+                                    <dateline customName="Signatur">
+                                        <p/>
+                                    </dateline>
+                                    <body>
+                                        <p/>
+                                    </body>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:07d3d801-d164-4bae-9634-634d7474e348" id="456858" refType="ArticlePart" uuid="07d3d801-d164-4bae-9634-634d7474e348">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="nb">
+                                    <dateline customName="Signatur">
+                                        <p/>
+                                    </dateline>
+                                    <body>
+                                        <p/>
+                                    </body>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:2d511cc2-f765-4ae4-9def-912d7438551d" id="456859" refType="ArticlePart" uuid="2d511cc2-f765-4ae4-9def-912d7438551d">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="nb">
+                                    <dateline customName="Signatur">
+                                        <p/>
+                                    </dateline>
+                                    <body>
+                                        <p/>
+                                    </body>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:e0dc5155-b47b-446f-bebb-3af07dbe8325" id="456850" refType="ArticlePart" uuid="e0dc5155-b47b-446f-bebb-3af07dbe8325">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <dateline customName="Signatur">
+                                        <p>Magne Misje, Sunnhordland</p>
+                                    </dateline>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:33e771e5-9b57-4fa6-bc3c-50e2a086d84f" id="456851" refType="ArticlePart" uuid="33e771e5-9b57-4fa6-bc3c-50e2a086d84f">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <body>
+                                        <p>Heller ikkje mediene i fylket har …</p>
+                                    </body>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:44e9c6cf-96fe-4636-8816-a46a461c3cad" id="456852" refType="ArticlePart" uuid="44e9c6cf-96fe-4636-8816-a46a461c3cad">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <dateline customName="Signatur">
+                                        <p>Leiar i Firdaposten</p>
+                                    </dateline>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:83342166-0296-4300-83a7-c19fa91ea69a" id="456853" refType="ArticlePart" uuid="83342166-0296-4300-83a7-c19fa91ea69a">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <body>
+                                        <p>Ford S-Max vart "fødestova” for …</p>
+                                    </body>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:21116e3b-9b48-4a45-b1d2-20857ba631b8" id="456854" refType="ArticlePart" uuid="21116e3b-9b48-4a45-b1d2-20857ba631b8">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <dateline customName="Signatur">
+                                        <p>Ingress i Kvinnheringen</p>
+                                    </dateline>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:08af53c5-ad15-49d0-b795-1bae61e147c3" id="456855" refType="ArticlePart" uuid="08af53c5-ad15-49d0-b795-1bae61e147c3">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <body>
+                                        <p>Igjen utfordrer jeg …</p>
+                                    </body>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                        <articlepart guid="urn:uuid:f9a93de8-1a85-4ab4-a0e8-b6726b7078cd" id="456856" refType="ArticlePart" uuid="f9a93de8-1a85-4ab4-a0e8-b6726b7078cd">
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <dateline customName="Signatur">
+                                        <p>Rune Chr. Tollefsen, Nordhordland</p>
+                                    </dateline>
+                                </npdoc>
+                            </data>
+                        </articlepart>
+                    </articleparts>
+                </article>
+            </npexchange>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <dtbook version="2005-3" xml:lang="no">
+                <head>...</head>
+                <book>
+                    <frontmatter>...</frontmatter>
+                    <bodymatter>
+                        <level1 id="part-1_section-1">
+                            <h1>Leder</h1>
+                            <level2 id="uuid_93bbe44a-187e-4c86-842a-95dd8d704503" xml:lang="en">
+                                <pagenum id="page_93bbe44a-187e-4c86-842a-95dd8d704503_2" page="normal">2</pagenum>
+                                <h2>
+                                    <span class="pagedateline">Å Vestland</span>
+                                </h2>
+                                <p>Kvar er det folkelege …</p>
+                                <div class="dateline signatur">
+                                    <p>Magne Misje, Sunnhordland</p>
+                                </div>
+                                <p>Heller ikkje mediene i fylket har …</p>
+                                <div class="dateline signatur">
+                                    <p>Leiar i Firdaposten</p>
+                                </div>
+                                <p>Ford S-Max vart "fødestova” for …</p>
+                                <div class="dateline signatur">
+                                    <p>Ingress i Kvinnheringen</p>
+                                </div>
+                                <p>Igjen utfordrer jeg …</p>
+                                <div class="dateline signatur">
+                                    <p>Rune Chr. Tollefsen, Nordhordland</p>
+                                </div>
+                            </level2>
+                        </level1>
+                    </bodymatter>
+                </book>
+            </dtbook>
         </x:expect>
     </x:scenario>
     

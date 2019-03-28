@@ -10,6 +10,7 @@
                 version="2.0">
     
     <xsl:output indent="yes"/>
+    <!--<xsl:output indent="yes" doctype-public="-//NISO//DTD dtbook 2005-3//EN" doctype-system="http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd"/>-->
     
     <xsl:param name="identifier" as="xs:string"/>
     <xsl:param name="title" select="/*/npx:origin/npx:organization/text()" as="xs:string"/> <!-- optional but recommended -->
@@ -213,7 +214,7 @@
         <xsl:param name="page-type" as="xs:string"/>
         
         <xsl:variable name="main-npdoc" select="npx:articleparts/npx:articlepart[1]/npx:data/npdoc:npdoc"/>
-        <xsl:variable name="other-npdocs" select="npx:articleparts/npx:articlepart[position() gt 1 and not(npx:article_part_type_id='Sitat')]/npx:data/npdoc:npdoc"/>
+        <xsl:variable name="other-npdocs" select="npx:articleparts/npx:articlepart[position() gt 1 and not(npx:article_part_type_id='Sitat') and normalize-space(npx:data/npdoc:npdoc)]/npx:data/npdoc:npdoc"/>
         
         <xsl:variable name="article-has-content" select="exists(($main-npdoc | $other-npdocs)/*//text()[normalize-space()] except $main-npdoc/(npdoc:headline | npdoc:madmansrow | npdoc:pagedateline)//text()[normalize-space()])"/>
         
@@ -255,7 +256,7 @@
                 <xsl:for-each select="$other-npdocs">
                     <xsl:variable name="level4-id" select="concat($level3-id,'-other-',position())"/>
                     <xsl:choose>
-                        <xsl:when test="exists(* except (npdoc:headline | npdoc:madmansrow | npdoc:pagedateline))">
+                        <xsl:when test="exists((npdoc:headline | npdoc:madmansrow | npdoc:pagedateline)[normalize-space()]) and exists(* except (npdoc:headline | npdoc:madmansrow | npdoc:pagedateline))">
                             <xsl:element name="level{$level + 1}">
                                 <xsl:attribute name="id" select="$level4-id"/>
                                 
@@ -284,6 +285,26 @@
                                 </xsl:for-each-group>
                             </xsl:element>
                         </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:for-each-group select="npdoc:body/* | *[not(self::npdoc:body)]" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
+                                <xsl:choose>
+                                    <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
+                                        <xsl:element name="level{$level + 1}">
+                                            <xsl:attribute name="id" select="concat($level4-id, '-section-', position())"/>
+                                            <xsl:apply-templates select="current-group()">
+                                                <xsl:with-param name="level" select="$level + 1" tunnel="yes"/>
+                                            </xsl:apply-templates>
+                                        </xsl:element>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:apply-templates select="current-group()">
+                                            <xsl:with-param name="headline-as-paragraph" select="true()" tunnel="yes"/>
+                                            <xsl:with-param name="level" select="$level + 1" tunnel="yes"/>
+                                        </xsl:apply-templates>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:for-each-group>
+                        </xsl:otherwise>
                     </xsl:choose>
                 </xsl:for-each>
             </xsl:element>
