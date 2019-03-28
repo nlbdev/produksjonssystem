@@ -140,6 +140,7 @@
                         <xsl:sort select="."/>
                         <xsl:variable name="part-id" select="." as="xs:string"/>
                         <xsl:variable name="part-headline" select="f:part-headline($part-id, $unique-articles)"/>
+                        <xsl:variable name="page-type" select="if (position() = 1) then 'normal' else 'special'"/>
                         <xsl:choose>
                             <xsl:when test="$part-headline">
                                 <level1 id="{$part-id}" class="part">
@@ -151,6 +152,7 @@
                                         <xsl:with-param name="part-id" select="$part-id"/>
                                         <xsl:with-param name="part-articles" select="$unique-articles[f:part-id(.) = $part-id]"></xsl:with-param>
                                         <xsl:with-param name="level" select="2"/>
+                                        <xsl:with-param name="page-type" select="$page-type"/>
                                     </xsl:call-template>
                                 </level1>
                             </xsl:when>
@@ -159,6 +161,7 @@
                                     <xsl:with-param name="part-id" select="$part-id"/>
                                     <xsl:with-param name="part-articles" select="$unique-articles[f:part-id(.) = $part-id]"></xsl:with-param>
                                     <xsl:with-param name="level" select="1"/>
+                                    <xsl:with-param name="page-type" select="$page-type"/>
                                 </xsl:call-template>
                             </xsl:otherwise>
                         </xsl:choose>
@@ -173,6 +176,7 @@
         <xsl:param name="part-id" as="xs:string"/>
         <xsl:param name="part-articles" as="element()*"/>
         <xsl:param name="level" as="xs:integer"/>
+        <xsl:param name="page-type" as="xs:string"/>
         
         <xsl:for-each-group select="$part-articles" group-adjacent="npx:page_id/@section">
             <xsl:element name="level{$level}">
@@ -194,6 +198,7 @@
                         <xsl:call-template name="article">
                             <xsl:with-param name="page-nr" select="if (position() = 1) then $page-nr else ()"/>
                             <xsl:with-param name="level" select="$level + 1"/>
+                            <xsl:with-param name="page-type" select="$page-type"/>
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:for-each>
@@ -204,6 +209,7 @@
     <xsl:template name="article">
         <xsl:param name="page-nr" as="xs:integer?"/>
         <xsl:param name="level" as="xs:integer"/>
+        <xsl:param name="page-type" as="xs:string"/>
         
         <xsl:variable name="main-npdoc" select="npx:articleparts/npx:articlepart[1]/npx:data/npdoc:npdoc"/>
         <xsl:variable name="other-npdocs" select="npx:articleparts/npx:articlepart[position() gt 1 and not(npx:article_part_type_id='Sitat')]/npx:data/npdoc:npdoc"/>
@@ -217,7 +223,7 @@
                 <xsl:copy-of select="$main-npdoc/@xml:lang"/>
                 
                 <xsl:if test="$page-nr">
-                    <pagenum id="page_{@uuid}_{$page-nr}" page="normal"><xsl:value-of select="$page-nr"/></pagenum>
+                    <pagenum id="page_{@uuid}_{$page-nr}" page="{$page-type}"><xsl:value-of select="$page-nr"/></pagenum>
                 </xsl:if>
                 
                 <xsl:call-template name="article-head">
