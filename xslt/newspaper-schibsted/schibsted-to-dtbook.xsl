@@ -242,7 +242,7 @@
                 <xsl:with-param name="level" select="$level"/>
             </xsl:call-template>
             
-            <xsl:for-each-group select="$main-npdoc/npdoc:body/*" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
+            <xsl:for-each-group select="$main-npdoc/npdoc:body/*[normalize-space()]" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
                 <xsl:variable name="level4-id" select="concat($level3-id,'-main-',position())"/>
                 <xsl:choose>
                     <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
@@ -274,7 +274,7 @@
                                 <xsl:with-param name="level" select="$level + 1"/>
                             </xsl:call-template>
                             
-                            <xsl:for-each-group select="npdoc:body/*" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
+                            <xsl:for-each-group select="npdoc:body/*[normalize-space()]" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
                                 <xsl:choose>
                                     <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
                                         <xsl:element name="level{$level + 2}">
@@ -295,7 +295,7 @@
                         </xsl:element>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:for-each-group select="(*[not(self::npdoc:body)], npdoc:body/*)" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
+                        <xsl:for-each-group select="(*[not(self::npdoc:body) and normalize-space() != ''], npdoc:body/*[normalize-space()])" group-starting-with="*[starts-with(local-name(), 'subheadline')]">
                             <xsl:choose>
                                 <xsl:when test="current-group()[1][starts-with(local-name(), 'subheadline')] and count(current-group()) gt 1">
                                     <xsl:element name="level{$level + 1}">
@@ -337,10 +337,10 @@
         <xsl:param name="level" as="xs:integer"/>
         <xsl:param name="headline-as-paragraph" select="false()" as="xs:boolean"/>
         
-        <xsl:variable name="headline" select="$npdoc/npdoc:headline/npdoc:p[1]" as="element()?"/>
-        <xsl:variable name="subtitles" select="$npdoc/npdoc:headline/npdoc:p[position() gt 1]" as="element()*"/>
-        <xsl:variable name="madmansrow" select="$npdoc/npdoc:madmansrow" as="element()?"/>
-        <xsl:variable name="pagedateline" select="$npdoc/npdoc:pagedateline" as="element()?"/>
+        <xsl:variable name="headline" select="($npdoc/npdoc:headline/npdoc:p[normalize-space()])[1]" as="element()?"/>
+        <xsl:variable name="subtitles" select="($npdoc/npdoc:headline/npdoc:p[normalize-space()])[position() gt 1]" as="element()*"/>
+        <xsl:variable name="madmansrow" select="$npdoc/npdoc:madmansrow[normalize-space()]" as="element()?"/>
+        <xsl:variable name="pagedateline" select="$npdoc/npdoc:pagedateline[normalize-space()]" as="element()?"/>
         
         <xsl:choose>
             <xsl:when test="count(($headline, $madmansrow, $pagedateline)) gt 0">
@@ -372,8 +372,8 @@
     <xsl:template match="npdoc:headline">
         <!-- NOTE: headlines are normally not handled here. They are only handled here if there are no body. -->
         
-        <xsl:variable name="headline" select="npdoc:p[1]" as="element()?"/>
-        <xsl:variable name="subtitles" select="npdoc:p[position() gt 1]" as="element()*"/>
+        <xsl:variable name="headline" select="(npdoc:p[normalize-space()])[1]" as="element()?"/>
+        <xsl:variable name="subtitles" select="(npdoc:p[normalize-space()])[position() gt 1]" as="element()*"/>
         
         <p class="{f:classes(., 'headline')}">
             <xsl:value-of select="$headline"/>
@@ -391,17 +391,19 @@
         
         <xsl:variable name="madmansrow" select="normalize-space(.)"/>
         
-        <xsl:element name="{if ($headline-as-paragraph) then 'p' else 'span'}">
-            <xsl:attribute name="class" select="'madmansrow'"/>
-            <xsl:value-of select="$madmansrow"/>
+        <xsl:if test="$madmansrow">
+            <xsl:element name="{if ($headline-as-paragraph) then 'p' else 'span'}">
+                <xsl:attribute name="class" select="'madmansrow'"/>
+                <xsl:value-of select="$madmansrow"/>
+                
+                <xsl:if test="not(ends-with($madmansrow, ':')) and exists(../npdoc:headline[normalize-space()])">
+                    <xsl:text>:</xsl:text>
+                </xsl:if>
+            </xsl:element>
             
-            <xsl:if test="not(ends-with($madmansrow, ':')) and exists(../npdoc:headline)">
-                <xsl:text>:</xsl:text>
+            <xsl:if test="exists(../npdoc:headline)">
+                <xsl:text> </xsl:text>
             </xsl:if>
-        </xsl:element>
-        
-        <xsl:if test="exists(../npdoc:headline)">
-            <xsl:text> </xsl:text>
         </xsl:if>
     </xsl:template>
     
@@ -410,17 +412,19 @@
         
         <xsl:variable name="pagedateline" select="normalize-space(.)"/>
         
-        <xsl:element name="{if ($headline-as-paragraph) then 'p' else 'span'}">
-            <xsl:attribute name="class" select="'pagedateline'"/>
-            <xsl:value-of select="$pagedateline"/>
+        <xsl:if test="$pagedateline">
+            <xsl:element name="{if ($headline-as-paragraph) then 'p' else 'span'}">
+                <xsl:attribute name="class" select="'pagedateline'"/>
+                <xsl:value-of select="$pagedateline"/>
+                
+                <xsl:if test="not(ends-with($pagedateline, ':')) and exists(../npdoc:headline)">
+                    <xsl:text>:</xsl:text>
+                </xsl:if>
+            </xsl:element>
             
-            <xsl:if test="not(ends-with($pagedateline, ':')) and exists(../npdoc:headline)">
-                <xsl:text>:</xsl:text>
+            <xsl:if test="exists(../npdoc:headline)">
+                <xsl:text> </xsl:text>
             </xsl:if>
-        </xsl:element>
-        
-        <xsl:if test="exists(../npdoc:headline)">
-            <xsl:text> </xsl:text>
         </xsl:if>
     </xsl:template>
     
@@ -437,62 +441,82 @@
     </xsl:function>
     
     <xsl:template match="npdoc:p">
-        <p><xsl:apply-templates select="@* | node()"/></p>
+        <xsl:if test="normalize-space()">
+            <p><xsl:apply-templates select="@* | node()"/></p>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:leadin">
-        <div class="{f:classes(., 'leadin')}">
-            <xsl:apply-templates select="node()"/>
-        </div>
+        <xsl:if test="normalize-space()">
+            <div class="{f:classes(., 'leadin')}">
+                <xsl:apply-templates select="node()"/>
+            </div>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:drophead">
-        <div class="{f:classes(., 'drophead')}">
-            <xsl:apply-templates select="node()"/>
-        </div>
+        <xsl:if test="normalize-space()">
+            <div class="{f:classes(., 'drophead')}">
+                <xsl:apply-templates select="node()"/>
+            </div>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:dateline">
-        <div class="{f:classes(., 'dateline')}">
-            <xsl:apply-templates select="node()"/>
-        </div>
+        <xsl:if test="normalize-space()">
+            <div class="{f:classes(., 'dateline')}">
+                <xsl:apply-templates select="node()"/>
+            </div>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:i">
-        <em>
-            <xsl:apply-templates select="@* | node()"/>
-        </em>
+        <xsl:if test="normalize-space()">
+            <em>
+                <xsl:apply-templates select="@* | node()"/>
+            </em>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:b">
-        <strong>
-            <xsl:apply-templates select="@* | node()"/>
-        </strong>
+        <xsl:if test="normalize-space()">
+            <strong>
+                <xsl:apply-templates select="@* | node()"/>
+            </strong>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:u">
-        <span class="{f:classes(., 'underline')}">
-            <xsl:apply-templates select="node()"/>
-        </span>
+        <xsl:if test="normalize-space()">
+            <span class="{f:classes(., 'underline')}">
+                <xsl:apply-templates select="node()"/>
+            </span>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:sub">
-        <sub>
-            <xsl:apply-templates select="@* | node()"/>
-        </sub>
+        <xsl:if test="normalize-space()">
+            <sub>
+                <xsl:apply-templates select="@* | node()"/>
+            </sub>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:a">
-        <a>
-            <xsl:apply-templates select="@* | node()"/>
-        </a>
+        <xsl:if test="normalize-space()">
+            <a>
+                <xsl:apply-templates select="@* | node()"/>
+            </a>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:caption">
-        <div class="{f:classes(., 'caption')}">
-            <xsl:text>Bildetekst: </xsl:text>
-            <xsl:apply-templates select="node()"/>
-        </div>
+        <xsl:if test="normalize-space()">
+            <div class="{f:classes(., 'caption')}">
+                <xsl:text>Bildetekst: </xsl:text>
+                <xsl:apply-templates select="node()"/>
+            </div>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="npdoc:*[starts-with(local-name(), 'subheadline')]">
