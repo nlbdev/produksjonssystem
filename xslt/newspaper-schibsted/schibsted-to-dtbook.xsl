@@ -192,6 +192,13 @@
         <xsl:param name="level" as="xs:integer"/>
         <xsl:param name="page-type" as="xs:string"/>
         
+        <!-- list of articles that should start with a pagenum -->
+        <xsl:variable name="paged-articles" as="element()*">
+            <xsl:for-each select="distinct-values($part-articles/npx:page_id/@firstPagin/xs:integer(.))">
+                <xsl:sequence select="($part-articles[npx:page_id/@firstPagin/xs:integer(.) = current()])[1]"/>
+            </xsl:for-each>
+        </xsl:variable>
+        
         <xsl:for-each-group select="$part-articles" group-adjacent="npx:page_id/@section">
             <xsl:element name="level{$level}">
                 <xsl:attribute name="id" select="concat($part-id, '_section-', position())"/>
@@ -210,7 +217,7 @@
                     <!-- for each article -->
                     <xsl:for-each select="$pageArticles">
                         <xsl:call-template name="article">
-                            <xsl:with-param name="page-nr" select="if (position() = 1) then $page-nr else ()"/>
+                            <xsl:with-param name="page-nr" select="if (. intersect $paged-articles) then $page-nr else ()"/>
                             <xsl:with-param name="level" select="$level + 1"/>
                             <xsl:with-param name="page-type" select="$page-type"/>
                         </xsl:call-template>
