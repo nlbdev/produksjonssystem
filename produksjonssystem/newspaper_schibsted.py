@@ -210,7 +210,7 @@ class DummyTtsNewspaperSchibsted(DummyPipeline):
                             # ignore non-audio file
                             continue
 
-                        if os.stat(path).st_size == 0:
+                        if os.path.isfile(path) and os.stat(path).st_size == 0:
                             not_done += 1
                         else:
                             done += 1
