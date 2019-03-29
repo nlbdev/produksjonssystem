@@ -328,6 +328,7 @@
             <xsl:with-param name="level" select="$level"/>
         </xsl:call-template>
         <xsl:apply-templates select="$npdoc/npdoc:drophead"/>
+        <xsl:apply-templates select="$npdoc/npdoc:preleadin"/>
         <xsl:apply-templates select="$npdoc/npdoc:leadin"/>
         <xsl:apply-templates select="$npdoc/npdoc:dateline"/>
     </xsl:template>
@@ -446,6 +447,14 @@
         </xsl:if>
     </xsl:template>
     
+    <xsl:template match="npdoc:preleadin">
+        <xsl:if test="normalize-space()">
+            <div class="{f:classes(., 'preleadin')}">
+                <xsl:apply-templates select="node()"/>
+            </div>
+        </xsl:if>
+    </xsl:template>
+    
     <xsl:template match="npdoc:leadin">
         <xsl:if test="normalize-space()">
             <div class="{f:classes(., 'leadin')}">
@@ -499,6 +508,14 @@
             <sub>
                 <xsl:apply-templates select="@* | node()"/>
             </sub>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:sup">
+        <xsl:if test="normalize-space()">
+            <sup>
+                <xsl:apply-templates select="@* | node()"/>
+            </sup>
         </xsl:if>
     </xsl:template>
     
