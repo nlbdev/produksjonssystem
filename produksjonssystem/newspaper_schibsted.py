@@ -116,6 +116,8 @@ class NewspaperSchibsted(Pipeline):
             self.utils.report.info("Henter feed for " + paper)
             temp_xml_obj = tempfile.NamedTemporaryFile()
             temp_xml = temp_xml_obj.name
+            if os.path.isdir("/tmp"):
+                temp_xml = "/tmp/{}_{}_joined.xml".format(date_iso, paper)  # for easier debugging
             self.utils.report.info("Setter sammen feed for " + paper)
             xslt = Xslt(self,
                         parameters={"files": newspapers[paper]["files"], "basepath": self.book["source"]},
