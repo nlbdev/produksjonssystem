@@ -113,6 +113,12 @@ class NewspaperSchibsted(Pipeline):
 
         # Use xslt to transform to correct dc:identifier
         for paper in newspapers:
+            if len(newspapers[paper]["files"]) == 0:
+                self.utils.report.info("Ingen artikler for {} i dag. {} blir ikke produsert for {}.".format(newspapers[paper]["title"],
+                                                                                                            newspapers[paper]["title"],
+                                                                                                            date_iso))
+                continue
+
             self.utils.report.info("Henter feed for " + paper)
             temp_xml_obj = tempfile.NamedTemporaryFile()
             temp_xml = temp_xml_obj.name
@@ -161,9 +167,8 @@ class NewspaperSchibsted(Pipeline):
                                                                         file_extension="xml")
                 self.utils.report.attachment(None, archived_path, "DEBUG")
 
-        self.utils.report.attachment(None, archived_path, "DEBUG")
-        self.utils.report.info("Dagens Schibsted aviser er ferdig produsert")
-        self.utils.report.title = self.title + ": " + " dagens Schibsted aviser ble produsert 👍😄"
+        self.utils.report.info("Dagens Schibsted-aviser er ferdig produsert")
+        self.utils.report.title = self.title + ": " + " dagens Schibsted-aviser ble produsert 👍😄"
         return True
 
 
@@ -180,18 +185,24 @@ class DummyTtsNewspaperSchibsted(DummyPipeline):
                 temp_dir = os.path.join(self.working_dir, newspaper, "pipeline__temp", "speechgen")
                 if not os.path.isdir(temp_dir):
                     continue
-                for root, dirs, files in os.walk(temp_dir):
-                    for file in files:
-                        path = os.path.join(root, file)
-                        if not file.endswith(".wav"):
-                            # ignore non-audio file
-                            continue
-                        if time.time() - os.stat(path).st_mtime > 60:
-                            # ignore old file
-                            continue
+                try:
+                    for root, dirs, files in os.walk(temp_dir):
+                        for file in files:
+                            path = os.path.join(root, file)
+                            if not file.endswith(".wav"):
+                                # ignore non-audio file
+                                continue
+                            if not os.path.isfile(path):
+                                # skip file if it's been deleted (mitigate race condition)
+                                continue
+                            if time.time() - os.stat(path).st_mtime > 60:
+                                # ignore old file
+                                continue
 
-                        # this newspaper has a newly modified wav file: assume that it's currently being produced
-                        return newspaper
+                            # this newspaper has a newly modified wav file: assume that it's currently being produced
+                            return newspaper
+                except FileNotFoundError:
+                    pass  # ignore
 
         return super().get_status()
 
@@ -210,7 +221,7 @@ class DummyTtsNewspaperSchibsted(DummyPipeline):
                             # ignore non-audio file
                             continue
 
-                        if os.path.isfile(path):
+                        if os.path.isfile(path):  # mitigate race condition where files are deleted
                             if os.stat(path).st_size == 0:
                                 not_done += 1
                             else:
