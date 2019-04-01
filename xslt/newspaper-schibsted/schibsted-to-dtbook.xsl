@@ -238,7 +238,6 @@
         <xsl:variable name="level3-id" select="concat('uuid_', @uuid)"/>
         <xsl:element name="level{$level}">
             <xsl:attribute name="id" select="$level3-id"/>
-            <xsl:copy-of select="$main-npdoc/@xml:lang"/>
             
             <xsl:if test="$page-nr">
                 <pagenum id="page_{@uuid}_{$page-nr}" page="{$page-type}"><xsl:value-of select="$page-nr"/></pagenum>

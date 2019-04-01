@@ -579,17 +579,17 @@
         <x:expect label="Nyheter" test="/*/*/*/*/*[*[local-name()='h2']/text() = 'Nyheter']">
             <level2 id="part-1_section-1">
                <h2>Nyheter</h2>
-               <level3 id="uuid_12f2e093-545c-4f3c-9421-cde0c7dcc88a" xml:lang="nb">
+               <level3 id="uuid_12f2e093-545c-4f3c-9421-cde0c7dcc88a">
                   <pagenum id="page_12f2e093-545c-4f3c-9421-cde0c7dcc88a_1" page="normal">1</pagenum>
                   <h3>
                      <span class="pagedateline">å Kommentar Andreas Slettholm:</span> En absurd utvikling i trusselsaken</h3>
                   <p>Meninger s…</p>
                </level3>
-               <level3 id="uuid_ccb8bfc9-3368-4377-b987-cfbe59e6f2ff" xml:lang="nb">
+               <level3 id="uuid_ccb8bfc9-3368-4377-b987-cfbe59e6f2ff">
                   <h3>Historien om da justisminister Waras samboer ble siktet for å ha oppdiktet en straffbar handling</h3>
                   <p>NYHETER si…</p>
                </level3>
-               <level3 id="uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10" xml:lang="nb">
+               <level3 id="uuid_ffea9be8-8683-4d67-9685-d8d825d4ec10">
                   <pagenum id="page_ffea9be8-8683-4d67-9685-d8d825d4ec10_2" page="normal">2</pagenum>
                   <h3>
                      <span class="pagedateline">Under streken</span>
@@ -610,12 +610,12 @@
                      <p>I 2016 skr…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_9f3935e8-0f8d-4d07-a3bd-99c20f791943" xml:lang="nb">
+               <level3 id="uuid_9f3935e8-0f8d-4d07-a3bd-99c20f791943">
                   <h3>Konkurransekraften må prioriteres</h3>
                   <p>Lønnsoppgj…</p>
                   <p>Partene er…</p>
                </level3>
-               <level3 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db" xml:lang="nb">
+               <level3 id="uuid_fa57ccbb-2914-4d69-95b7-3e77d30ba0db">
                   <pagenum id="page_fa57ccbb-2914-4d69-95b7-3e77d30ba0db_3" page="normal">3</pagenum>
                   <h3>En absurd utvikling i saken om truslene mot Wara</h3>
                   <div class="leadin">
@@ -644,7 +644,7 @@
                      <p>Det er ikk…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385" xml:lang="nb">
+               <level3 id="uuid_ca0932f6-3e80-4ed4-9125-0cb929e80385">
                   <pagenum id="page_ca0932f6-3e80-4ed4-9125-0cb929e80385_4" page="normal">4</pagenum>
                   <h3>Da Wara våknet i går, var truslene mot familiens hjem «et angrep mot demokratiet». Da han la seg, var hans egen samboer siktet.</h3>
                   <div class="leadin">
@@ -678,7 +678,7 @@
                      <p>Bilbrannen…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7" xml:lang="nb">
+               <level3 id="uuid_56eff0d7-a6b3-4858-96d2-a6d8e12038c7">
                   <pagenum id="page_56eff0d7-a6b3-4858-96d2-a6d8e12038c7_6" page="normal">6</pagenum>
                   <h3>Waras samboer langet ut på Facebook - nå er hun selv siktet</h3>
                   <div class="leadin">
@@ -708,7 +708,7 @@
                      <p>Waras samb…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5" xml:lang="nb">
+               <level3 id="uuid_ce2a984e-3a58-40a3-b96a-92124d0c0da5">
                   <pagenum id="page_ce2a984e-3a58-40a3-b96a-92124d0c0da5_8" page="normal">8</pagenum>
                   <h3>Erna Solberg: - Jeg må si at dette var et sjokk for meg</h3>
                   <div class="leadin">
@@ -732,7 +732,7 @@
                      <p>Tidligere …</p>
                   </level4>
                </level3>
-               <level3 id="uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e" xml:lang="nb">
+               <level3 id="uuid_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e">
                   <pagenum id="page_d59356b3-1e27-4a58-8e4c-f35c8d0ed89e_9" page="normal">9</pagenum>
                   <h3>- Stor lettelse for Black Box-regissørene</h3>
                   <div class="leadin">
@@ -751,7 +751,7 @@
                      <p>Ved begge …</p>
                   </level4>
                </level3>
-               <level3 id="uuid_d73062ea-1728-435a-997c-f3cbc0490476" xml:lang="nb">
+               <level3 id="uuid_d73062ea-1728-435a-997c-f3cbc0490476">
                   <pagenum id="page_d73062ea-1728-435a-997c-f3cbc0490476_10" page="normal">10</pagenum>
                   <h3>Vil ha Ring 4 rundt Oslo - godt utenfor sentrum</h3>
                   <div class="leadin">
@@ -771,7 +771,7 @@
                      <p>Rv. 35 Hok…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf" xml:lang="nb">
+               <level3 id="uuid_f4c578e2-d483-443e-a1a6-168f78a5dfaf">
                   <pagenum id="page_f4c578e2-d483-443e-a1a6-168f78a5dfaf_12" page="normal">12</pagenum>
                   <h3>Google føyer seg etter Putin</h3>
                   <div class="leadin">
@@ -806,7 +806,7 @@
                      <p>Ifølge myn…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_920a4c4f-a6fa-4886-b4e9-05e535181def" xml:lang="nb">
+               <level3 id="uuid_920a4c4f-a6fa-4886-b4e9-05e535181def">
                   <pagenum id="page_920a4c4f-a6fa-4886-b4e9-05e535181def_13" page="normal">13</pagenum>
                   <h3>Økt radikal nasjonalisme</h3>
                   <div class="dateline sted_tema">
@@ -815,7 +815,7 @@
                   <p>Svensk sik…</p>
                   <p>Det kom fr…</p>
                </level3>
-               <level3 id="uuid_deca4da8-e54b-4480-9d63-8a7bed2fbafb" xml:lang="nb">
+               <level3 id="uuid_deca4da8-e54b-4480-9d63-8a7bed2fbafb">
                   <h3>Fengslet for kniv- angrep mot nordmenn</h3>
                   <div class="dateline sted_tema">
                             <p>Murcia</p>
@@ -823,7 +823,7 @@
                   <p>En spansk …</p>
                   <p>Fotballspi…</p>
                </level3>
-               <level3 id="uuid_4d698f32-9ab4-43dc-b10c-1d8270040094" xml:lang="nb">
+               <level3 id="uuid_4d698f32-9ab4-43dc-b10c-1d8270040094">
                   <pagenum id="page_4d698f32-9ab4-43dc-b10c-1d8270040094_14" page="normal">14</pagenum>
                   <h3>Muligheten som har ligget der hele tiden</h3>
                   <div class="leadin">
@@ -847,7 +847,7 @@
                      <p>Det er ogs…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf" xml:lang="nb">
+               <level3 id="uuid_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf">
                   <pagenum id="page_102a2a8d-82c4-4ee0-9c38-6718ffbbf8bf_16" page="normal">16</pagenum>
                   <h3>Nytt oljeforslag gjør naturvernere rasende</h3>
                   <div class="leadin">
@@ -871,13 +871,13 @@
                      <p>Den foresl…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8" xml:lang="nb">
+               <level3 id="uuid_69ce7727-f5d6-4de5-9ec8-dcd12d1f8bc8">
                   <h3>
                      <span class="madmansrow">Fakta:</span> Brexit</h3>
                   <p>Storbritan…</p>
                   <p>I stedet b…</p>
                </level3>
-               <level3 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d" xml:lang="nb">
+               <level3 id="uuid_c506ecdc-3a68-4f60-903e-f89ef813ac6d">
                   <h3>Storbritannia kommer ikke til å forlate EU 29. mars.</h3>
                   <div class="leadin">
                             <p>Storbritannia kommer likevel ikke til å forlate EU den 29. mars! Det britiske underhuset stemte med overveldende flertall ja til å utsette brexitavtalen.</p>
@@ -895,13 +895,13 @@
                      <p>1. Storbri…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_aec8d4a0-5ada-4c51-827b-81e1fd2e7273" xml:lang="nb">
+               <level3 id="uuid_aec8d4a0-5ada-4c51-827b-81e1fd2e7273">
                   <pagenum id="page_aec8d4a0-5ada-4c51-827b-81e1fd2e7273_17" page="normal">17</pagenum>
                   <h3>581.000</h3>
                   <p>I fjor søk…</p>
                   <p>De fleste …</p>
                </level3>
-               <level3 id="uuid_c3f52886-bfab-40ff-9789-b2b0de5051e9" xml:lang="nb">
+               <level3 id="uuid_c3f52886-bfab-40ff-9789-b2b0de5051e9">
                   <h3>Etterlatte forlot møte i sinne</h3>
                   <div class="dateline sted_tema">
                             <p>FLYSTYRTEN I ETIOPIA</p>
@@ -909,7 +909,7 @@
                   <p>Rundt 200 …</p>
                   <p>157 mennes…</p>
                </level3>
-               <level3 id="uuid_3724523f-96fd-4e53-a464-db2ce3abc392" xml:lang="nb">
+               <level3 id="uuid_3724523f-96fd-4e53-a464-db2ce3abc392">
                   <h3>Alvorlig ­skadet av ku</h3>
                   <div class="dateline sted_tema">
                             <p>TELEMARK</p>
@@ -917,7 +917,7 @@
                   <p>I Morgedal…</p>
                   <p>Personen s…</p>
                </level3>
-               <level3 id="uuid_b3a1b150-f44b-4443-8124-4a717e882607" xml:lang="nb">
+               <level3 id="uuid_b3a1b150-f44b-4443-8124-4a717e882607">
                   <h3>Frykter meslingutbrudd vil ramme millioner</h3>
                   <div class="dateline sted_tema">
                             <p>FILIPPINENE</p>
@@ -925,7 +925,7 @@
                   <p>Ifølge Rød…</p>
                   <p>Den siste …</p>
                </level3>
-               <level3 id="uuid_0bd1a31a-010d-4b13-9a18-1e65ab2110aa" xml:lang="nb">
+               <level3 id="uuid_0bd1a31a-010d-4b13-9a18-1e65ab2110aa">
                   <h3>Nesten 100 ulver registrert</h3>
                   <div class="dateline sted_tema">
                             <p>VILTTELLING</p>
@@ -933,7 +933,7 @@
                   <p>Pr. 1. feb…</p>
                   <p>I forrige …</p>
                </level3>
-               <level3 id="uuid_e440870f-5a42-4499-bda0-e6be5372935a" xml:lang="nb">
+               <level3 id="uuid_e440870f-5a42-4499-bda0-e6be5372935a">
                   <h3>Kvinne omkom i togpåkjørsel</h3>
                   <div class="dateline sted_tema">
                             <p>TYSKLAND</p>
@@ -941,7 +941,7 @@
                   <p>En tysk kv…</p>
                   <p>- Begge dø…</p>
                </level3>
-               <level3 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e" xml:lang="nb">
+               <level3 id="uuid_dc079c45-7057-40f2-a832-b1f883329a7e">
                   <pagenum id="page_dc079c45-7057-40f2-a832-b1f883329a7e_18" page="normal">18</pagenum>
                   <h3>Høyre: Vil ta fordeler fra el-bileierne. Nå skal alle betale for å bruke veien.</h3>
                   <div class="leadin">
@@ -976,7 +976,7 @@
                      <p>Satellittb…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_a4164986-9b85-476b-a17c-d2f3c89ef89c" xml:lang="nb">
+               <level3 id="uuid_a4164986-9b85-476b-a17c-d2f3c89ef89c">
                   <pagenum id="page_a4164986-9b85-476b-a17c-d2f3c89ef89c_19" page="normal">19</pagenum>
                   <h3>Feirer på slagmarken</h3>
                   <div class="dateline sted_tema">
@@ -985,7 +985,7 @@
                   <p>Lørdag fyl…</p>
                   <p>- Jeg har …</p>
                </level3>
-               <level3 id="uuid_a9366363-93df-4720-8b56-66cdfa67d765" xml:lang="nb">
+               <level3 id="uuid_a9366363-93df-4720-8b56-66cdfa67d765">
                   <h3>Tannlegene med flere bekymrings- meldinger</h3>
                   <div class="dateline sted_tema">
                             <p>mulig omsorgssvikt</p>
@@ -993,7 +993,7 @@
                   <p>I fjor mel…</p>
                   <p>- De aller…</p>
                </level3>
-               <level3 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e" xml:lang="nb">
+               <level3 id="uuid_58baba19-89f6-4bfe-aa44-ecf796b0391e">
                   <pagenum id="page_58baba19-89f6-4bfe-aa44-ecf796b0391e_20" page="normal">20</pagenum>
                   <h3>Aina (42) hadde ikke jogget på ti år.</h3>
                   <p class="subtitle">Slik fant hun glede i å løpe langt.</p>
@@ -1035,7 +1035,7 @@
                      <p>2. Planleg…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_c0f1a332-2d2f-4ff4-b490-f20861692635" xml:lang="nb">
+               <level3 id="uuid_c0f1a332-2d2f-4ff4-b490-f20861692635">
                   <pagenum id="page_c0f1a332-2d2f-4ff4-b490-f20861692635_22" page="normal">22</pagenum>
                   <h3>DNB med ny salgsvri: Du slipper kostnader om boligen ikke blir solgt.</h3>
                   <div class="leadin">
@@ -1059,7 +1059,7 @@
                      <p>Hans gener…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039" xml:lang="nb">
+               <level3 id="uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039">
                   <h3>Han kalles SvDs</h3>
                   <p class="subtitle">partiideolog</p>
                   <level4 id="uuid_11d8bbf7-76d8-4816-aedc-37d0561f9039-other-1">
@@ -1075,7 +1075,7 @@
                      <p>Folkevalgt…</p>
                   </level4>
                </level3>
-               <level3 id="uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03" xml:lang="nb">
+               <level3 id="uuid_b5f64319-9a20-4f1d-bab3-bcfad08a5a03">
                   <h3>Mattias Karlsson (41) regnes som en av arkitektene bak Sverigedemokraternas vekst, men vil ikke kall…</h3>
                   <div class="leadin">
                             <p>Mattias Karlsson (41) regnes som en av arkitektene bak Sverigedemokraternas vekst, men vil ikke kalle partiet protestparti.</p>
@@ -1245,7 +1245,7 @@
                     <bodymatter>
                         <level1 id="part-1_section-1">
                             <h1>Leder</h1>
-                            <level2 id="uuid_93bbe44a-187e-4c86-842a-95dd8d704503" xml:lang="en">
+                            <level2 id="uuid_93bbe44a-187e-4c86-842a-95dd8d704503">
                                 <pagenum id="page_93bbe44a-187e-4c86-842a-95dd8d704503_2" page="normal">2</pagenum>
                                 <h2>
                                     <span class="pagedateline">Å Vestland</span>
