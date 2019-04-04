@@ -283,7 +283,24 @@
             <xsl:when test="$issue">
                 <xsl:copy exclude-result-prefixes="#all">
                     <xsl:apply-templates select="@* | node()" mode="#current"/>
-                    <xsl:value-of select="concat(' ',replace($issue,'^(..)(....)$','$1/$2'))"/>
+                    <xsl:choose>
+                        <xsl:when test="xs:integer(substring($issue,3,2)) gt 12">
+                            <!-- IIYYYY (where II = issue number) -->
+                            <xsl:variable name="number" select="substring($issue,1,2)"/>
+                            <xsl:variable name="year" select="substring($issue,3)"/>
+                            
+                            <xsl:value-of select="concat(' ',$number,'/',$year)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!-- YYMMDD -->
+                            <xsl:variable name="year" select="substring($issue,1,2)"/>
+                            <xsl:variable name="year" select="concat(if (xs:integer($year) gt xs:integer(replace(string(current-date()),'^..(..).*$','$1'))) then '19' else '20', $year)"/>
+                            <xsl:variable name="month" select="substring($issue,3,2)"/>
+                            <xsl:variable name="day" select="substring($issue,5,2)"/>
+                            
+                            <xsl:value-of select="concat(' ',$year,'-',$month,'-',$day)"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
