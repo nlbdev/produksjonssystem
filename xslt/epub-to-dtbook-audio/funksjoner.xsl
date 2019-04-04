@@ -112,6 +112,9 @@
             <xsl:when test="starts-with($isbn, 'urn:isbn:')">
                 <xsl:value-of select="normalize-space(substring-after($isbn, 'urn:isbn:'))"/>
             </xsl:when>
+            <xsl:when test="starts-with($isbn, 'urn:issn:')">
+                <xsl:value-of select="normalize-space(substring-after($isbn, 'urn:issn:'))"/>
+            </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="normalize-space($isbn)"/>
             </xsl:otherwise>
