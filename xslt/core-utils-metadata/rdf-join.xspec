@@ -413,6 +413,7 @@
                     <dc:publisher.original nlb:metadata-source="Bibliofil@562318 *596$b">Sage</dc:publisher.original>
                     <dc:source nlb:metadata-source="Bibliofil@562318 *596$f">urn:isbn:9781446274026</dc:source>
                     <schema:isbn nlb:metadata-source="Bibliofil@562318 *596$f">978-1-4462-7402-6</schema:isbn>
+                    <schema:isbn.ean nlb:metadata-source="Bibliofil@562318 *596$f">9781446274026</schema:isbn.ean>
                     <schema:bookEdition nlb:metadata-source="Bibliofil@562318 *245">1</schema:bookEdition>
                     <schema:bookEdition.original nlb:metadata-source="Bibliofil@562318 *596$d">3. utg</schema:bookEdition.original>
                     <nlbprod:addRecord nlb:metadata-source="Quickbase Record@562318 Add Record">https://...</nlbprod:addRecord>
@@ -500,6 +501,7 @@
                     <dc:type.genre nlb:metadata-source="Bibliofil@225518 *850$a">textbook</dc:type.genre>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026" />
                     <schema:isbn nlb:metadata-source="Bibliofil@225518 *020$a">978-82-16-26685-4</schema:isbn>
+                    <schema:isbn.ean nlb:metadata-source="Bibliofil@225518 *020$a">9788216266854</schema:isbn.ean>
                     <schema:audience nlb:metadata-source="Bibliofil@225518 *008">Adult</schema:audience>
                     <schema:audience nlb:metadata-source="Bibliofil@225518 *850$a">Student</schema:audience>
                     <schema:library nlb:metadata-source="Bibliofil@225518 *850$a">NLB</schema:library>
@@ -1072,6 +1074,7 @@
                     <schema:exampleOfWork rdf:resource="#creativeWork_1355170780100_d1e1"/>
                     <schema:audience nlb:metadata-source="Bibliofil@624594 *008">Adult</schema:audience>
                     <schema:issn nlb:metadata-source="Bibliofil@624594 *022$a">0042-4951</schema:issn>
+                    <schema:issn.ean nlb:metadata-source="Bibliofil@624594 *022$a">9770042495003</schema:issn.ean>
                     <schema:library nlb:metadata-source="Bibliofil@624594 *850$a">NLB</schema:library>
                     <schema:typicalAgeRange nlb:metadata-source="Bibliofil@624594 *008">17-</schema:typicalAgeRange>
                     <nlbbib:magazine nlb:metadata-source="Bibliofil@624594 *650">true</nlbbib:magazine>
@@ -1235,7 +1238,7 @@
                     <nordic:supplier nlb:metadata-source="EPUB">Technofunda</nordic:supplier>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="urn:isbn:03328457" _source="quickbase">
+                <rdf:Description rdf:about="urn:issn:03328457" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
                     <nlbprod:dateCreated xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Date Created">2017-11-30T08:03:18</nlbprod:dateCreated>
                     <nlbprod:publisher xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Forlag">Utdanningsforbundet</nlbprod:publisher>
@@ -1262,7 +1265,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624592042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"></schema:exampleOfWork>
                     <nlbprod:narratedTimeInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Innlest tid i timer">0.00</nlbprod:narratedTimeInHours>
                     <nlbprod:preparationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Forberedelsestid">0:00:00</nlbprod:preparationTime>
                     <nlbprod:additionalNightAndWeekend xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Kvelds- og helgetillegg">0:00:00</nlbprod:additionalNightAndWeekend>
@@ -1327,7 +1330,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558292042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"></schema:exampleOfWork>
                     <nlbprod:identifier.epub xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Tilvekstnummer EPUB">558292042018</nlbprod:identifier.epub>
                     <nlbprod:epubCatalogued xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 EPUB ferdig katalogisert">true</nlbprod:epubCatalogued>
                     <nlbprod:sourceFileReceived xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 PDF/grunnlagsfil mottatt og lagret">true</nlbprod:sourceFileReceived>
@@ -1389,7 +1392,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115492042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"></schema:exampleOfWork>
                     <nlbprod:brailleReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Punktskrift klar for utlån">false</nlbprod:brailleReadyForLoan>
                     <nlbprod:formatNotes xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Format: Noter">false</nlbprod:formatNotes>
                     <nlbprod:formatBrailleClub xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Format: Punktklubb">false</nlbprod:formatBrailleClub>
@@ -1409,7 +1412,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356892042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"></schema:exampleOfWork>
                     <nlbprod:ebookReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
                     <nlbprod:identifier.ebook xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Tilvekstnummer e-bok">356892042018</nlbprod:identifier.ebook>
                     <nlbprod:formatEbook xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Format: E-bok">false</nlbprod:formatEbook>
@@ -1417,7 +1420,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:ID="record_1547384730100external_d3d2e0" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"></schema:exampleOfWork>
                     <nlbprod:formatDaisy202externalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Format: DAISY 2.02 ekstern produksjon">false</nlbprod:formatDaisy202externalProduction>
                     <nlbprod:formatEbookExternalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Format: E-bok ekstern produksjon">false</nlbprod:formatEbookExternalProduction>
                     <nlbprod:formatAudioCDWAVExternalProduction xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Format: Audio CD WAV ekstern produksjon">false</nlbprod:formatAudioCDWAVExternalProduction>
@@ -1536,7 +1539,7 @@
                      xmlns:nlbbib="http://www.nlb.no/bibliographic"
                      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                      xmlns:nordic="http://www.mtm.se/epub/">
-                <rdf:Description rdf:about="urn:isbn:03328457">
+                <rdf:Description rdf:about="urn:issn:03328457">
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
                     <dc:title nlb:metadata-source="Bibliofil@624592 *245$a">Spesialpedagogikk 04/2018</dc:title>
                     <dc:language nlb:metadata-source="Bibliofil@624592 *008">nob</dc:language>
@@ -1578,7 +1581,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115492042018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"/>
                     <nlbprod:brailleClubProductionComplete nlb:metadata-source="Quickbase Record@558292042018 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
                     <nlbprod:brailleClubReadyForLoan nlb:metadata-source="Quickbase Record@558292042018 Punktklubb klar for utlån">false</nlbprod:brailleClubReadyForLoan>
                     <nlbprod:brailleProductionComplete nlb:metadata-source="Quickbase Record@558292042018 Punktskrift ferdig produsert">false</nlbprod:brailleProductionComplete>
@@ -1598,7 +1601,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356892042018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"/>
                     <nlbprod:ebookProductionComplete nlb:metadata-source="Quickbase Record@558292042018 E-bok ferdig produsert">false</nlbprod:ebookProductionComplete>
                     <nlbprod:ebookReadyForLoan nlb:metadata-source="Quickbase Record@558292042018 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
                     <nlbprod:formatEbook nlb:metadata-source="Quickbase Record@558292042018 Format: E-bok">false</nlbprod:formatEbook>
@@ -1608,7 +1611,7 @@
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">558292042018</dc:identifier>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"/>
                     <nlbprod:agency nlb:metadata-source="Quickbase Record@558292042018 Agency">NLB</nlbprod:agency>
                     <nlbprod:alternateSourceFileURL nlb:metadata-source="Quickbase Record@558292042018 Alternate source file URL">https://...</nlbprod:alternateSourceFileURL>
                     <nlbprod:asciimath nlb:metadata-source="Quickbase Record@558292042018 ASCIIMath">false</nlbprod:asciimath>
@@ -1706,9 +1709,10 @@
                     </dc:subject.keyword>
                     <dc:type.genre nlb:metadata-source="Bibliofil@624592 *008">Non-fiction</dc:type.genre>
                     <dc:type.genre nlb:metadata-source="Bibliofil@624592 *008">Non-biography</dc:type.genre>
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457"/>
                     <schema:audience nlb:metadata-source="Bibliofil@624592 *008">Adult</schema:audience>
                     <schema:issn nlb:metadata-source="Bibliofil@624592 *022$a">0332-8457</schema:issn>
+                    <schema:issn.ean nlb:metadata-source="Bibliofil@624592 *022$a">9770332845006</schema:issn.ean>
                     <schema:library nlb:metadata-source="Bibliofil@624592 *850$a">NLB</schema:library>
                     <schema:typicalAgeRange nlb:metadata-source="Bibliofil@624592 *008">17-</schema:typicalAgeRange>
                     <nlbbib:magazine nlb:metadata-source="Bibliofil@624592 *650">true</nlbbib:magazine>
@@ -1778,15 +1782,15 @@
                 </rdf:Description>
                 <rdf:Description rdf:ID="book_1547474610100_d1e1">
                     <rdf:type rdf:resource="http://schema.org/Book" />
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457" />
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457" />
                 </rdf:Description>
                 <rdf:Description rdf:ID="book_1547532350100_d1e1">
                     <rdf:type rdf:resource="http://schema.org/Book" />
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457" />
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457" />
                 </rdf:Description>
                 <rdf:Description rdf:ID="book_1547591720100_d1e1">
                     <rdf:type rdf:resource="http://schema.org/Book" />
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457" />
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457" />
                 </rdf:Description>
                 <rdf:Description rdf:ID="isbn_1547445590100_book_d1e1">
                     <rdf:type rdf:resource="http://schema.org/Book" />
@@ -1802,7 +1806,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:ID="record_1547384730100external_d3d2e0">
                     <rdf:type rdf:resource="http://schema.org/Book" />
-                    <schema:exampleOfWork rdf:resource="urn:isbn:03328457" />
+                    <schema:exampleOfWork rdf:resource="urn:issn:03328457" />
                     <nlbprod:externalProductionProductionComplete nlb:metadata-source="Quickbase Record@558292042018 Ekstern produksjon ferdig produsert">false</nlbprod:externalProductionProductionComplete>
                     <nlbprod:formatAudioCDMP3ExternalProduction nlb:metadata-source="Quickbase Record@558292042018 Format: Audio CD MP3 ekstern produksjon">false</nlbprod:formatAudioCDMP3ExternalProduction>
                     <nlbprod:formatAudioCDWAVExternalProduction nlb:metadata-source="Quickbase Record@558292042018 Format: Audio CD WAV ekstern produksjon">false</nlbprod:formatAudioCDWAVExternalProduction>

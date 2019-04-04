@@ -5,9 +5,14 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:schema="http://schema.org/"
                 xmlns:nlb="http://www.nlb.no/"
+                xmlns:isbn="urn:isbn"
+                xmlns:issn="urn:issn"
                 xmlns:f="#"
                 exclude-result-prefixes="#all"
                 version="2.0">
+    
+    <xsl:import href="isbn-issn/isbn.xsl"/>
+    <xsl:import href="isbn-issn/issn.xsl"/>
     
     <xsl:output indent="yes"/>
     
@@ -307,6 +312,46 @@
                 <xsl:next-match/>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="schema:isbn" mode="post-process">
+        <xsl:copy>
+            <xsl:copy-of select="@*"/>
+            <xsl:value-of select="isbn:format(text(), '-', false())"/>
+        </xsl:copy>
+        
+        <xsl:element name="schema:isbn.ean" exclude-result-prefixes="#all">
+            <xsl:copy-of select="@*"/>
+            <xsl:value-of select="isbn:compact(isbn:to_isbn13(text()), ())"/>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="schema:issn" mode="post-process">
+        <xsl:copy>
+            <xsl:copy-of select="@*"/>
+            <xsl:value-of select="issn:format(text())"/>
+        </xsl:copy>
+        
+        <xsl:element name="schema:issn.ean" exclude-result-prefixes="#all">
+            <xsl:copy-of select="@*"/>
+            <xsl:value-of select="issn:compact(issn:to_ean(text(), ()))"/>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:about[starts-with(.,'#urn:isbn')]" mode="post-process">
+        <xsl:attribute name="rdf:about" select="concat('#urn:isbn:', isbn:compact(tokenize(.,':')[last()], true()))"/>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:about[starts-with(.,'#urn:issn')]" mode="post-process">
+        <xsl:attribute name="rdf:about" select="concat('#urn:issn:', issn:compact(tokenize(.,':')[last()]))"/>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:resource[starts-with(.,'urn:isbn')]" mode="post-process">
+        <xsl:attribute name="rdf:resource" select="concat('urn:isbn:', isbn:compact(tokenize(.,':')[last()], true()))"/>
+    </xsl:template>
+    
+    <xsl:template match="@rdf:resource[starts-with(.,'urn:issn')]" mode="post-process">
+        <xsl:attribute name="rdf:resource" select="concat('urn:issn:', issn:compact(tokenize(.,':')[last()]))"/>
     </xsl:template>
     
 </xsl:stylesheet>
