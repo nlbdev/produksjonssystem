@@ -16,7 +16,7 @@
     <x:scenario label="Basic test (book)">
         <x:call template="main-testable">
             <x:param name="descriptions">
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=562318" _source="epub">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_562318" _source="epub">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">562318</dc:identifier>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
@@ -57,7 +57,7 @@
                         
                     </nlbprod:author>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=225518" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_225518" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026"></schema:exampleOfWork>
                     <nlbprod:narratedTimeInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Innlest tid i timer">0.00</nlbprod:narratedTimeInHours>
@@ -125,7 +125,7 @@
                     <nlbprod:feePreparationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Honorar forberedelsestid">0.00</nlbprod:feePreparationTime>
                     <nlbprod:additionalFeeNightAndWeekend xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Tillegg kveld og helg">0.00</nlbprod:additionalFeeNightAndWeekend>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=562318" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_562318" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026"></schema:exampleOfWork>
                     <nlbprod:identifier.epub xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Tilvekstnummer EPUB">562318</nlbprod:identifier.epub>
@@ -176,7 +176,7 @@
                     <nlbprod:sourceFileFormat xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 PDF/Grunnlagsfil format">PDF Image</nlbprod:sourceFileFormat>
                     <nlbprod:epubDTBookOrdered xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 EPUB/DTBook ordered">true</nlbprod:epubDTBookOrdered>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=119518" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_119518" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026"></schema:exampleOfWork>
                     <nlbprod:brailleReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Punktskrift klar for utlån">false</nlbprod:brailleReadyForLoan>
@@ -195,7 +195,7 @@
                     <nlbprod:tactilePrintProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Taktilt trykk ferdig produsert">false</nlbprod:tactilePrintProductionComplete>
                     <nlbprod:brailleProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 Punktskrift ferdig produsert">false</nlbprod:brailleProductionComplete>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=360918" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_360918" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026"></schema:exampleOfWork>
                     <nlbprod:ebookReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@562318 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
@@ -230,7 +230,7 @@
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=225518" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_225518" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <nlbprod:isbn.created xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase ISBN@225518 Date Created">2017-03-01T09:21:03</nlbprod:isbn.created>
                     <nlbprod:isbn.user xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase ISBN@225518 User">Lll, Hhh</nlbprod:isbn.user>
@@ -284,7 +284,7 @@
                     <schema:isbn xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@562318 *596$f">978-1-4462-7402-6</schema:isbn>
                     <dc:source xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@562318 *596$f">urn:isbn:9781446274026</dc:source>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=562318" _source="bibliofil">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_562318" _source="bibliofil">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026"></schema:exampleOfWork>
                     <dc:identifier xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@562318 *001">562318</dc:identifier>
@@ -337,7 +337,7 @@
                     <schema:isbn xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@225518 *596$f">978-1-4462-7402-6</schema:isbn>
                     <dc:source xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@225518 *596$f">urn:isbn:9781446274026</dc:source>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=225518" _source="bibliofil">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_225518" _source="bibliofil">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026"></schema:exampleOfWork>
                     <dc:identifier xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@225518 *001">225518</dc:identifier>
@@ -445,7 +445,7 @@
                     <nlbprod:title nlb:metadata-source="Quickbase Record@562318 Tittel">An introduction to child development</nlbprod:title>
                     <nlbprod:title2 nlb:metadata-source="Quickbase Record@562318 Title">An introduction to child development</nlbprod:title2>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=119518">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_119518">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026" />
                     <nlbprod:brailleClubProductionComplete nlb:metadata-source="Quickbase Record@562318 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
@@ -464,7 +464,7 @@
                     <nlbprod:tactilePrintProductionComplete nlb:metadata-source="Quickbase Record@562318 Taktilt trykk ferdig produsert">false</nlbprod:tactilePrintProductionComplete>
                     <nlbprod:tactilePrintReadyForLoan nlb:metadata-source="Quickbase Record@562318 Taktilt trykk klar for utlån">false</nlbprod:tactilePrintReadyForLoan>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=225518">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_225518">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <dc:identifier nlb:metadata-source="Bibliofil@225518 *001">225518</dc:identifier>
                     <dc:format nlb:metadata-source="Bibliofil@225518 *245$h">DAISY 2.02</dc:format>
@@ -581,7 +581,7 @@
                     <nlbprod:totalSumFee nlb:metadata-source="Quickbase Record@562318 Total sum honorar">0.00</nlbprod:totalSumFee>
                     <nlbprod:waitingBecauseOfTechnicalProblemsInHours nlb:metadata-source="Quickbase Record@562318 Venting pga teknisk feil i timer">0.00</nlbprod:waitingBecauseOfTechnicalProblemsInHours>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=360918">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_360918">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9781446274026" />
                     <nlbprod:ebookProductionComplete nlb:metadata-source="Quickbase Record@562318 E-bok ferdig produsert">false</nlbprod:ebookProductionComplete>
@@ -589,7 +589,7 @@
                     <nlbprod:formatEbook nlb:metadata-source="Quickbase Record@562318 Format: E-bok">false</nlbprod:formatEbook>
                     <nlbprod:identifier.ebook nlb:metadata-source="Quickbase Record@562318 Tilvekstnummer e-bok">360918</nlbprod:identifier.ebook>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=562318">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_562318">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <dc:identifier nlb:metadata-source="EPUB">562318</dc:identifier>
                     <dc:format nlb:metadata-source="Bibliofil@562318 *245$h">EPUB</dc:format>
@@ -699,7 +699,7 @@
     <x:scenario label="Basic test (periodical)">
         <x:call template="main-testable">
             <x:param name="descriptions">
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558294072018" _source="epub">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558294072018" _source="epub">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">558294072018</dc:identifier>
                     <dc:format>EPUB</dc:format>
@@ -711,7 +711,6 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
                     <nlbprod:dateCreated nlb:metadata-source="Quickbase Record@558294072018 Date Created">2017-11-30T08:03:18</nlbprod:dateCreated>
                     <nlbprod:publisher nlb:metadata-source="Quickbase Record@558294072018 Forlag">Hjemmet Mortensen</nlbprod:publisher>
-                    <schema:isbn nlb:metadata-source="Quickbase Record@558294072018 Original ISBN">ISBN</schema:isbn>
                     <nlbprod:translator nlb:metadata-source="Quickbase Record@558294072018 Oversetter">Etternavn, Fornavn Mellomnavn</nlbprod:translator>
                     <nlbprod:language nlb:metadata-source="Quickbase Record@558294072018 Språk">Språk</nlbprod:language>
                     <nlbprod:category nlb:metadata-source="Quickbase Record@558294072018 Kategori">Voksen</nlbprod:category>
@@ -727,7 +726,7 @@
                     <nlbprod:addRecord nlb:metadata-source="Quickbase Record@558294072018 Add Record">https://...</nlbprod:addRecord>
                     <nlbprod:author nlb:metadata-source="Quickbase Record@558294072018 Forfatter">Øystå, Alexander</nlbprod:author>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624594072018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624594072018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="#record_1355153430100creativeWork_d3d2e0"></schema:exampleOfWork>
                     <nlbprod:narratedTimeInHours nlb:metadata-source="Quickbase Record@558294072018 Innlest tid i timer">0.00</nlbprod:narratedTimeInHours>
@@ -785,7 +784,7 @@
                     <nlbprod:feePreparationTime nlb:metadata-source="Quickbase Record@558294072018 Honorar forberedelsestid">0.00</nlbprod:feePreparationTime>
                     <nlbprod:additionalFeeNightAndWeekend nlb:metadata-source="Quickbase Record@558294072018 Tillegg kveld og helg">0.00</nlbprod:additionalFeeNightAndWeekend>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558294072018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558294072018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="#record_1355153430100creativeWork_d3d2e0"></schema:exampleOfWork>
                     <nlbprod:identifier.epub nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer EPUB">558294072018</nlbprod:identifier.epub>
@@ -813,7 +812,7 @@
                     <nlbprod:forManualPreparationInNLB nlb:metadata-source="Quickbase Record@558294072018 Til manuell tilrettelegging i NLB">false</nlbprod:forManualPreparationInNLB>
                     <nlbprod:epubDTBookOrdered nlb:metadata-source="Quickbase Record@558294072018 EPUB/DTBook ordered">false</nlbprod:epubDTBookOrdered>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115494072018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115494072018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="#record_1355153430100creativeWork_d3d2e0"></schema:exampleOfWork>
                     <nlbprod:brailleReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 Punktskrift klar for utlån">false</nlbprod:brailleReadyForLoan>
@@ -832,7 +831,7 @@
                     <nlbprod:tactilePrintProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Taktilt trykk ferdig produsert">false</nlbprod:tactilePrintProductionComplete>
                     <nlbprod:brailleProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Punktskrift ferdig produsert">false</nlbprod:brailleProductionComplete>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356894072018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356894072018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="#record_1355153430100creativeWork_d3d2e0"></schema:exampleOfWork>
                     <nlbprod:ebookReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
@@ -925,7 +924,7 @@
                     <dc:publisher nlb:metadata-source="Bibliofil@624594 *596$b">Hjemmet Mortensen</dc:publisher>
                     <schema:bookEdition nlb:metadata-source="Bibliofil@624594 *596">1</schema:bookEdition>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624594072018" _source="bibliofil">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624594072018" _source="bibliofil">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="#creativeWork_1355170780100_d1e1"></schema:exampleOfWork>
                     <frbr:translationOf rdf:resource="#original_1355170780100_d1e1"></frbr:translationOf>
@@ -977,7 +976,7 @@
                      xmlns:nlb="http://www.nlb.no/"
                      xmlns:nordic="http://www.mtm.se/epub/">
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115494072018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115494072018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="#creativeWork_1355170780100_d1e1"/>
                     <nlbprod:brailleClubProductionComplete nlb:metadata-source="Quickbase Record@558294072018 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
@@ -997,7 +996,7 @@
                     <nlbprod:tactilePrintReadyForLoan nlb:metadata-source="Quickbase Record@558294072018 Taktilt trykk klar for utlån">false</nlbprod:tactilePrintReadyForLoan>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356894072018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356894072018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="#creativeWork_1355170780100_d1e1"/>
                     <nlbprod:ebookProductionComplete nlb:metadata-source="Quickbase Record@558294072018 E-bok ferdig produsert">false</nlbprod:ebookProductionComplete>
@@ -1006,7 +1005,7 @@
                     <nlbprod:identifier.ebook nlb:metadata-source="Quickbase Record@558294072018 Tilvekstnummer e-bok">356894072018</nlbprod:identifier.ebook>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558294072018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558294072018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">558294072018</dc:identifier>
                     <dc:format>EPUB</dc:format>
@@ -1039,7 +1038,7 @@
                     <nordic:supplier nlb:metadata-source="EPUB">Technofunda</nordic:supplier>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624594072018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624594072018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <frbr:translationOf rdf:resource="#original_1355170780100_d1e1"/>
                     <dc:identifier nlb:metadata-source="Bibliofil@624594 *001">624594072018</dc:identifier>
@@ -1162,7 +1161,6 @@
                         schema:name="Brage Talesyntese">
                         <nlbbib:bibliofil-id nlb:metadata-source="Bibliofil@624594 *511$3">19209900</nlbbib:bibliofil-id>
                     </dc:contributor.narrator>
-                    <schema:isbn nlb:metadata-source="Quickbase Record@558294072018 Original ISBN">ISBN</schema:isbn>
                     <schema:bookEdition nlb:metadata-source="Bibliofil@624594 *245">1</schema:bookEdition>
                     <nlbprod:addRecord nlb:metadata-source="Quickbase Record@558294072018 Add Record">https://...</nlbprod:addRecord>
                     <nlbprod:author nlb:metadata-source="Quickbase Record@558294072018 Forfatter">Øystå, Alexander</nlbprod:author>
@@ -1229,7 +1227,7 @@
     <x:scenario label="Regression test">
         <x:call template="main-testable">
             <x:param name="descriptions">
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558292042018" _source="epub">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558292042018" _source="epub">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">558292042018</dc:identifier>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
@@ -1241,7 +1239,6 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"></rdf:type>
                     <nlbprod:dateCreated xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Date Created">2017-11-30T08:03:18</nlbprod:dateCreated>
                     <nlbprod:publisher xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Forlag">Utdanningsforbundet</nlbprod:publisher>
-                    <schema:isbn xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Original ISBN">ISBN</schema:isbn>
                     <nlbprod:language xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Språk">no</nlbprod:language>
                     <nlbprod:category xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Kategori">Voksen</nlbprod:category>
                     <nlbprod:numberOfImages xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Number of images">0</nlbprod:numberOfImages>
@@ -1263,7 +1260,7 @@
                     <nlbprod:addRecord xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Add Record">https://...</nlbprod:addRecord>
                     <nlbprod:author xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Forfatter">Ruud, Ellen B.</nlbprod:author>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624592042018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624592042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
                     <nlbprod:narratedTimeInHours xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Innlest tid i timer">0.00</nlbprod:narratedTimeInHours>
@@ -1328,7 +1325,7 @@
                     <nlbprod:feePreparationTime xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Honorar forberedelsestid">0.00</nlbprod:feePreparationTime>
                     <nlbprod:additionalFeeNightAndWeekend xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Tillegg kveld og helg">0.00</nlbprod:additionalFeeNightAndWeekend>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558292042018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558292042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
                     <nlbprod:identifier.epub xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Tilvekstnummer EPUB">558292042018</nlbprod:identifier.epub>
@@ -1390,7 +1387,7 @@
                     <nlbprod:sourceFileFormat xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 PDF/Grunnlagsfil format">PDF Image</nlbprod:sourceFileFormat>
                     <nlbprod:epubDTBookOrdered xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 EPUB/DTBook ordered">true</nlbprod:epubDTBookOrdered>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115492042018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115492042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
                     <nlbprod:brailleReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Punktskrift klar for utlån">false</nlbprod:brailleReadyForLoan>
@@ -1410,7 +1407,7 @@
                     <nlbprod:brailleProductionComplete xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Punktskrift ferdig produsert">false</nlbprod:brailleProductionComplete>
                     <nlbprod:volumeNumber xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 Hefte nr">4</nlbprod:volumeNumber>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356892042018" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356892042018" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="urn:isbn:03328457"></schema:exampleOfWork>
                     <nlbprod:ebookReadyForLoan xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Quickbase Record@558292042018 E-bok klar for utlån">false</nlbprod:ebookReadyForLoan>
@@ -1485,7 +1482,7 @@
                     <schema:bookEdition xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624592 *245">1</schema:bookEdition>
                     <schema:bookEdition.original xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624592 *596">1</schema:bookEdition.original>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624592042018" _source="bibliofil">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624592042018" _source="bibliofil">
                     <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                     <schema:exampleOfWork rdf:resource="#creativeWork_1547415690100_d1e1"></schema:exampleOfWork>
                     <dc:identifier xmlns:nlb="http://www.nlb.no/" nlb:metadata-source="Bibliofil@624592 *001">624592042018</dc:identifier>
@@ -1554,7 +1551,6 @@
                     <dc:date.issued.original nlb:metadata-source="Bibliofil@624592 *596$c">2016</dc:date.issued.original>
                     <dc:publisher.location.original nlb:metadata-source="Bibliofil@624592 *596$a">Oslo</dc:publisher.location.original>
                     <dc:publisher.original nlb:metadata-source="Bibliofil@624592 *596$b">Utdanningsforbundet</dc:publisher.original>
-                    <schema:isbn nlb:metadata-source="Quickbase Record@558292042018 Original ISBN">ISBN</schema:isbn>
                     <schema:bookEdition nlb:metadata-source="Bibliofil@624592 *245">1</schema:bookEdition>
                     <schema:bookEdition.original nlb:metadata-source="Bibliofil@624592 *596">1</schema:bookEdition.original>
                     <nlbprod:addRecord nlb:metadata-source="Quickbase Record@558292042018 Add Record">https://...</nlbprod:addRecord>
@@ -1580,7 +1576,7 @@
                     <nlbprod:title nlb:metadata-source="Quickbase Record@558292042018 Tittel">Spesialpedagogikk  04/2018</nlbprod:title>
                     <nlbprod:title2 nlb:metadata-source="Quickbase Record@558292042018 Title">Spesialpedagogikk  04/2018</nlbprod:title2>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115492042018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115492042018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="urn:isbn:03328457"/>
                     <nlbprod:brailleClubProductionComplete nlb:metadata-source="Quickbase Record@558292042018 Punktklubb ferdig produsert">false</nlbprod:brailleClubProductionComplete>
@@ -1600,7 +1596,7 @@
                     <nlbprod:tactilePrintReadyForLoan nlb:metadata-source="Quickbase Record@558292042018 Taktilt trykk klar for utlån">false</nlbprod:tactilePrintReadyForLoan>
                     <nlbprod:volumeNumber nlb:metadata-source="Quickbase Record@558292042018 Hefte nr">4</nlbprod:volumeNumber>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356892042018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356892042018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="urn:isbn:03328457"/>
                     <nlbprod:ebookProductionComplete nlb:metadata-source="Quickbase Record@558292042018 E-bok ferdig produsert">false</nlbprod:ebookProductionComplete>
@@ -1608,7 +1604,7 @@
                     <nlbprod:formatEbook nlb:metadata-source="Quickbase Record@558292042018 Format: E-bok">false</nlbprod:formatEbook>
                     <nlbprod:identifier.ebook nlb:metadata-source="Quickbase Record@558292042018 Tilvekstnummer e-bok">356892042018</nlbprod:identifier.ebook>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558292042018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558292042018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">558292042018</dc:identifier>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
@@ -1674,7 +1670,7 @@
                     <nordic:guidelines nlb:metadata-source="EPUB">2015-1</nordic:guidelines>
                     <nordic:supplier nlb:metadata-source="EPUB">Technofunda</nordic:supplier>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=624592042018">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_624592042018">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="Bibliofil@624592 *001">624592042018</dc:identifier>
                     <dc:format nlb:metadata-source="Bibliofil@624592 *245$h">DAISY 2.02</dc:format>
@@ -1821,7 +1817,7 @@
     <x:scenario label="Test with no editions">
         <x:call template="main-testable">
             <x:param name="descriptions">
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=551103" _source="epub">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_551103" _source="epub">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <dc:identifier nlb:metadata-source="EPUB">551103</dc:identifier>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
@@ -1838,7 +1834,7 @@
         
         <x:expect label="The result should be as expected">
             <rdf:RDF>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=551103">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_551103">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <dc:identifier nlb:metadata-source="EPUB">551103</dc:identifier>
                     <dc:format nlb:metadata-source="EPUB">EPUB</dc:format>
@@ -1861,14 +1857,14 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork" />
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558237" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
                     <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <dc:format.extent.pages>962</dc:format.extent.pages>
@@ -1877,7 +1873,7 @@
                     <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="bibliofil">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437" _source="bibliofil">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <dc:format.extent.pages>1000</dc:format.extent.pages>
@@ -1894,7 +1890,7 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork" />
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <dc:identifier>115437</dc:identifier>
                     <dc:format.extent.pages>1000</dc:format.extent.pages>
@@ -1905,7 +1901,7 @@
                     <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558237">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
@@ -1922,14 +1918,14 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork" />
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="quickbase">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437" _source="quickbase">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <dc:identifier>861001</dc:identifier>
                     <schema:library>NLB</schema:library>
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437" _source="bibliofil">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437" _source="bibliofil">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                     <dc:identifier>861001</dc:identifier>
@@ -1944,7 +1940,7 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork" />
                 </rdf:Description>
                 
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437">
                     <rdf:type rdf:resource="http://schema.org/Book" />
                     <dc:identifier>861001</dc:identifier>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />

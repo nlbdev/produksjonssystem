@@ -278,7 +278,7 @@
     </xsl:template>
     
     <xsl:template match="dc:title" mode="post-process">
-        <xsl:variable name="issue" select="(ancestor::rdf:RDF/rdf:Description/@rdf:about[matches(.,'^.*websok.tnr=\d{12}$')]/replace(.,'^.*websok.tnr=\d{6}',''))[1]" as="xs:string?"/>
+        <xsl:variable name="issue" select="(ancestor::rdf:RDF/rdf:Description/@rdf:about[matches(.,'^urn:nbn:no-nb_nlb_\d{12}$')]/replace(.,'^urn:nbn:no-nb_nlb_\d{6}',''))[1]" as="xs:string?"/>
         <xsl:choose>
             <xsl:when test="$issue">
                 <xsl:copy exclude-result-prefixes="#all">

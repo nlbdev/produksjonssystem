@@ -20,7 +20,7 @@
     </xsl:template>
     
     <xsl:template match="metadata">
-        <xsl:variable name="resource" select="concat('http://websok.nlb.no/cgi-bin/websok?tnr=', (dc:identifier[not(@refines)])[1]/text())"/>
+        <xsl:variable name="resource" select="concat('urn:nbn:no-nb_nlb_', (dc:identifier[not(@refines)])[1]/text())"/>
         
         <xsl:variable name="result" as="element()">
             <rdf:RDF>
