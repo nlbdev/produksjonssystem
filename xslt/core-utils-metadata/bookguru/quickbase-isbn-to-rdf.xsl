@@ -40,7 +40,7 @@
         </xsl:variable>
         
         <xsl:variable name="identifier" select="($metadata[self::html:dd[@property = 'nlbprod:isbn.identifier' and normalize-space(.)]])[1]/normalize-space(.)"/>
-        <xsl:variable name="resource" select="if ($identifier) then concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier) else concat('isbn_',($rid,replace(string(current-time()),'[^\d]',''))[1],'_book_', generate-id())"/>
+        <xsl:variable name="resource" select="if ($identifier) then concat('urn:nbn:no-nb_nlb_', $identifier) else concat('isbn_',($rid,replace(string(current-time()),'[^\d]',''))[1],'_book_', generate-id())"/>
         
         <xsl:choose>
             <xsl:when test="$output-rdfa">

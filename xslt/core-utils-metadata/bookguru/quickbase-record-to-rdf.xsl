@@ -261,12 +261,20 @@ section dl {
         <xsl:param name="type-id" as="xs:string"/>
         <xsl:variable name="identifier-elements" select="f:identifier-elements($metadata, $type-id)"/>
         <xsl:variable name="identifier" select="$identifier-elements[1]/normalize-space(.)"/>
+        
+        <xsl:variable name="bookUrn" select="f:format-nlb-urn($identifier)" as="xs:string?"/>
+        <xsl:variable name="workIsbnUrn" select="($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])[1]/f:format-isbn-urn(.)" as="xs:string?"/>
+        <xsl:variable name="workIssnUrn" select="($metadata[self::html:dd[@property=('nlbprod:originalISSN') and normalize-space(.)]])[1]/f:format-issn-urn(.)" as="xs:string?"/>
+        
         <xsl:choose>
             <xsl:when test="$identifier">
-                <xsl:value-of select="concat('http://websok.nlb.no/cgi-bin/websok?tnr=', $identifier)"/>
+                <xsl:value-of select="$bookUrn"/>
             </xsl:when>
-            <xsl:when test="$type-id = 'creativeWork' and count($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])">
-                <xsl:value-of select="concat('urn:isbn:', ($metadata[self::html:dd[@property=('nlbprod:originalISBN', 'nlbprod:dcSourceUrnIsbn') and normalize-space(.)]])[1]/replace(normalize-space(.),'[^\d]',''))"/>
+            <xsl:when test="$workIssnUrn and $type-id = 'creativeWork'">
+                <xsl:value-of select="$workIssnUrn"/>
+            </xsl:when>
+            <xsl:when test="$workIsbnUrn and $type-id = 'creativeWork'">
+                <xsl:value-of select="$workIsbnUrn"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat('record_',replace(string(current-time()),'[^\d]',''), $type-id, '_', ($metadata[1]/generate-id(), '')[1])"/>
@@ -416,7 +424,9 @@ section dl {
         <!-- "Original ISBN" -->
         <!-- String -->
         <dd property="schema:isbn" _type-id="creativeWork">
-            <xsl:value-of select="."/>
+            <xsl:if test="matches(.,'.*\d.*')">
+                <xsl:value-of select="."/>
+            </xsl:if>
         </dd>
     </xsl:template>
     
@@ -2140,7 +2150,9 @@ section dl {
         <!-- "Original ISSN" -->
         <!-- String -->
         <dd property="nlbprod:originalISSN" _type-id="creativeWork">
-            <xsl:value-of select="."/>
+            <xsl:if test="matches(.,'.*\d.*')">
+                <xsl:value-of select="."/>
+            </xsl:if>
         </dd>
     </xsl:template>
     
@@ -2155,8 +2167,10 @@ section dl {
     <xsl:template match="f[@id='431']" mode="nlb statped">
         <!-- "<dc:source>urn:isbn:" -->
         <!-- String -->
-        <dd property="nlbprod:dcSourceUrnIsbn" _type-id="epub">
-            <xsl:value-of select="."/>
+        <dd property="nlbprod:dcSourceUrnIsbn" _type-id="creativeWork">
+            <xsl:if test="matches(.,'.*\d.*')">
+                <xsl:value-of select="."/>
+            </xsl:if>
         </dd>
     </xsl:template>
     
@@ -2699,5 +2713,37 @@ section dl {
             <xsl:value-of select="."/>
         </dd>
     </xsl:template>
+    
+    <xsl:function name="f:format-issn-urn" as="xs:string?">
+        <xsl:param name="unformatted" as="xs:string"/>
+        
+        <xsl:variable name="issn" select="upper-case(normalize-space($unformatted))"/>
+        <xsl:variable name="issn" select="replace($issn, '[^\dX]', '')"/>
+        
+        <xsl:if test="$issn">
+            <xsl:value-of select="concat('urn:issn:', $issn)"/>
+        </xsl:if>
+    </xsl:function>
+    
+    <xsl:function name="f:format-isbn-urn" as="xs:string?">
+        <xsl:param name="unformatted" as="xs:string"/>
+        
+        <xsl:variable name="isbn" select="upper-case(normalize-space($unformatted))"/>
+        <xsl:variable name="isbn" select="replace($isbn, '[^\dX]', '')"/>
+        
+        <xsl:if test="$isbn">
+            <xsl:value-of select="concat('urn:isbn:', $isbn)"/>
+        </xsl:if>
+    </xsl:function>
+    
+    <xsl:function name="f:format-nlb-urn" as="xs:string">
+        <xsl:param name="unformatted" as="xs:string"/>
+        
+        <xsl:variable name="identifier" select="normalize-space($unformatted)"/>
+        
+        <xsl:if test="$identifier">
+            <xsl:value-of select="concat('urn:nbn:no-nb_nlb_', $identifier)"/>
+        </xsl:if>
+    </xsl:function>
 
 </xsl:stylesheet>

@@ -641,6 +641,8 @@
                             <dd property="nlbprod:title2">Valg og velgere</dd>
                             <dt title="nlbprod:author2"/>
                             <dd property="nlbprod:author2">Author</dd>
+                            <dt title="nlbprod:dcSourceUrnIsbn"/>
+                            <dd property="nlbprod:dcSourceUrnIsbn">978-82-02-48434-7</dd>
                             <dt title="nlbprod:signatureRegistration"/>
                             <dd property="nlbprod:signatureRegistration">lk@nlb.no</dd>
                             <dt title="nlbprod:newRegistration"/>
@@ -660,7 +662,7 @@
                             <dt title="nlbprod:author"/>
                             <dd property="nlbprod:author">Author</dd>
                         </dl>
-                        <section vocab="http://schema.org/" typeof="Book" about="http://websok.nlb.no/cgi-bin/websok?tnr=221437">
+                        <section vocab="http://schema.org/" typeof="Book" about="urn:nbn:no-nb_nlb_221437">
                             <link property="exampleOfWork" href="urn:isbn:9788202484347" />
                             <h2>audio</h2>
                             <dl>
@@ -784,7 +786,7 @@
                                 <dd property="nlbprod:additionalFeeNightAndWeekend">0.00</dd>
                             </dl>
                         </section>
-                        <section vocab="http://schema.org/" typeof="Book" about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                        <section vocab="http://schema.org/" typeof="Book" about="urn:nbn:no-nb_nlb_558237">
                             <link property="exampleOfWork" href="urn:isbn:9788202484347" />
                             <h2>epub</h2>
                             <dl>
@@ -852,8 +854,6 @@
                                 <dd property="nlbprod:pages">280</dd>
                                 <dt title="nlbprod:signatureApprovedProduction"/>
                                 <dd property="nlbprod:signatureApprovedProduction">eh@nlb.no</dd>
-                                <dt title="nlbprod:dcSourceUrnIsbn"/>
-                                <dd property="nlbprod:dcSourceUrnIsbn">978-82-02-48434-7</dd>
                                 <dt title="nlbprod:urgentProduction"/>
                                 <dd property="nlbprod:urgentProduction">false</dd>
                                 <dt title="nlbprod:epub3"/>
@@ -896,7 +896,7 @@
                                 <dd property="nlbprod:epubDTBookOrdered">true</dd>
                             </dl>
                         </section>
-                        <section vocab="http://schema.org/" typeof="Book" about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                        <section vocab="http://schema.org/" typeof="Book" about="urn:nbn:no-nb_nlb_115437">
                             <link property="exampleOfWork" href="urn:isbn:9788202484347" />
                             <h2>braille</h2>
                             <dl>
@@ -948,7 +948,7 @@
                                 <dd property="nlbprod:brailleProductionCompleteDate">2017-05-29</dd>
                             </dl>
                         </section>
-                        <section vocab="http://schema.org/" typeof="Book" about="http://websok.nlb.no/cgi-bin/websok?tnr=356837">
+                        <section vocab="http://schema.org/" typeof="Book" about="urn:nbn:no-nb_nlb_356837">
                             <link property="exampleOfWork" href="urn:isbn:9788202484347" />
                             <h2>ebook</h2>
                             <dl>
@@ -1018,6 +1018,7 @@
                         <nlbprod:recordOwner>Librarian</nlbprod:recordOwner>
                         <nlbprod:title2>Valg og velgere</nlbprod:title2>
                         <nlbprod:author2>Author</nlbprod:author2>
+                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
                         <nlbprod:signatureRegistration>lk@nlb.no</nlbprod:signatureRegistration>
                         <nlbprod:newRegistration>true</nlbprod:newRegistration>
                         <nlbprod:lastModifiedBy>kg@nlb.no</nlbprod:lastModifiedBy>
@@ -1028,7 +1029,7 @@
                         <nlbprod:addRecord>https://...</nlbprod:addRecord>
                         <nlbprod:author>Author</nlbprod:author>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=221437">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_221437">
                         <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347"></schema:exampleOfWork>
                         <nlbprod:narratedTimeInHours>0.00</nlbprod:narratedTimeInHours>
@@ -1091,7 +1092,7 @@
                         <nlbprod:feePreparationTime>0.00</nlbprod:feePreparationTime>
                         <nlbprod:additionalFeeNightAndWeekend>0.00</nlbprod:additionalFeeNightAndWeekend>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558237">
                         <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347"></schema:exampleOfWork>
                         <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
@@ -1126,7 +1127,6 @@
                         <nlbprod:signatureForDownload>eh@nlb.no</nlbprod:signatureForDownload>
                         <nlbprod:pages>280</nlbprod:pages>
                         <nlbprod:signatureApprovedProduction>eh@nlb.no</nlbprod:signatureApprovedProduction>
-                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
                         <nlbprod:urgentProduction>false</nlbprod:urgentProduction>
                         <nlbprod:epub3>&lt;img src="http://..."&gt;</nlbprod:epub3>
                         <nlbprod:bokbasen>false</nlbprod:bokbasen>
@@ -1148,7 +1148,7 @@
                         <nlbprod:sourceFileFormat>Open PDF</nlbprod:sourceFileFormat>
                         <nlbprod:epubDTBookOrdered>true</nlbprod:epubDTBookOrdered>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437">
                         <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347"></schema:exampleOfWork>
                         <nlbprod:brailleReadyForLoan>true</nlbprod:brailleReadyForLoan>
@@ -1175,7 +1175,7 @@
                         <nlbprod:braille>&lt;img src="https://..."&gt;</nlbprod:braille>
                         <nlbprod:brailleProductionCompleteDate>2017-05-29</nlbprod:brailleProductionCompleteDate>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=356837">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_356837">
                         <rdf:type rdf:resource="http://schema.org/Book"></rdf:type>
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347"></schema:exampleOfWork>
                         <nlbprod:ebookReadyForLoan>true</nlbprod:ebookReadyForLoan>
@@ -1234,8 +1234,8 @@
                 <html xmlns="http://www.w3.org/1999/xhtml">...</html>
                 <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
                     <rdf:Description rdf:about="urn:isbn:9788202484347">...</rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">...</rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558237">...</rdf:Description>
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <dc:format.extent.pages>962</dc:format.extent.pages>
@@ -1311,31 +1311,31 @@
                     xmlns:nlb="http://www.nlb.no/">
                     <rdf:Description rdf:about="urn:isbn:9788202484347">
                         <rdf:type rdf:resource="http://schema.org/CreativeWork" />
+                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=558237">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_558237">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.epub>558237</nlbprod:identifier.epub>
-                        <nlbprod:dcSourceUrnIsbn>978-82-02-48434-7</nlbprod:dcSourceUrnIsbn>
                         <nlbprod:controlStarted>false</nlbprod:controlStarted>
                         <nlbprod:controlStartedDate>2018-06-25</nlbprod:controlStartedDate>
                         <nlbprod:signatureControlStarted>x@nlb.no</nlbprod:signatureControlStarted>
                         <nlbprod:pdfFromNb>false</nlbprod:pdfFromNb>
                         <nlbprod:triggerEpub>false</nlbprod:triggerEpub>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=200000">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_200000">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.daisy202>200000</nlbprod:identifier.daisy202>
                         <nlbprod:triggerTts>false</nlbprod:triggerTts>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=115437">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_115437">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.braille>115437</nlbprod:identifier.braille>
                         <nlbprod:triggerBraille>false</nlbprod:triggerBraille>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=300000">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_300000">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788202484347" />
                         <nlbprod:identifier.ebook>300000</nlbprod:identifier.ebook>
@@ -1753,6 +1753,7 @@
                         <nlbprod:title2>Title</nlbprod:title2>
                         <nlbprod:author2>Author1 Author2 Author3</nlbprod:author2>
                         <nlbprod:language2>en</nlbprod:language2>
+                        <nlbprod:dcSourceUrnIsbn>9788211008152</nlbprod:dcSourceUrnIsbn>
                         <nlbprod:signatureRegistration>x@nlb.no</nlbprod:signatureRegistration>
                         <nlbprod:newRegistration>true</nlbprod:newRegistration>
                         <nlbprod:dcCreator>Author1 Author2 Author3</nlbprod:dcCreator>
@@ -1764,7 +1765,7 @@
                         <nlbprod:addRecord>https://…</nlbprod:addRecord>
                         <nlbprod:author>…</nlbprod:author>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861021">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_861021">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
                         <nlbprod:productionTurnaroundTime>7</nlbprod:productionTurnaroundTime>
@@ -1783,7 +1784,7 @@
                         <nlbprod:identifier.daisy202.tts>861022</nlbprod:identifier.daisy202.tts>
                         <nlbprod:narrationComplete>false</nlbprod:narrationComplete>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861020">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_861020">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
                         <nlbprod:identifier.epub>861020</nlbprod:identifier.epub>
@@ -1818,7 +1819,6 @@
                         <nlbprod:downloadedDate>2018-12-07</nlbprod:downloadedDate>
                         <nlbprod:pages>246</nlbprod:pages>
                         <nlbprod:signatureReturnedProduction>x@nlb.no</nlbprod:signatureReturnedProduction>
-                        <nlbprod:dcSourceUrnIsbn>9788211008152</nlbprod:dcSourceUrnIsbn>
                         <nlbprod:pricePerPage>1</nlbprod:pricePerPage>
                         <nlbprod:totalPriceForEpubProduction>246</nlbprod:totalPriceForEpubProduction>
                         <nlbprod:ocrChecked>false</nlbprod:ocrChecked>
@@ -1836,7 +1836,7 @@
                         <nlbprod:sourceFileFormat>PDF Image</nlbprod:sourceFileFormat>
                         <nlbprod:epubDTBookOrdered>true</nlbprod:epubDTBookOrdered>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861023">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_861023">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
                         <nlbprod:brailleReadyForLoan>false</nlbprod:brailleReadyForLoan>
@@ -1851,7 +1851,7 @@
                         <nlbprod:brailleProductionComplete>false</nlbprod:brailleProductionComplete>
                         <nlbprod:triggerBraille>false</nlbprod:triggerBraille>
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861024">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_861024">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
                         <nlbprod:ebookReadyForLoan>false</nlbprod:ebookReadyForLoan>
@@ -1865,13 +1865,106 @@
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
                     </rdf:Description>
-                    <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=861026">
+                    <rdf:Description rdf:about="urn:nbn:no-nb_nlb_861026">
                         <rdf:type rdf:resource="http://schema.org/Book" />
                         <schema:exampleOfWork rdf:resource="urn:isbn:9788211008152" />
                         <nlbprod:identifier.reserved>861026</nlbprod:identifier.reserved>
                         <nlbprod:identifier.reserved>861027</nlbprod:identifier.reserved>
                         <nlbprod:identifier.reserved>861028</nlbprod:identifier.reserved>
                         <nlbprod:identifier.reserved>861029</nlbprod:identifier.reserved>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Record without ISBN but with ISSN">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="429" field_type="text" base_type="text"/>
+                            <field id="431" field_type="text" base_type="text"/>
+                        </fields>
+                        <records>
+                            <record rid="8185">
+                                <f id="429">0803-141x</f>
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should use ISSN for resource URI">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:about="urn:issn:0803141X">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                        <nlbprod:originalISSN>0803-141x</nlbprod:originalISSN>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Record without ISBN and ISSN">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="429" field_type="text" base_type="text"/>
+                            <field id="431" field_type="text" base_type="text"/>
+                        </fields>
+                        <records>
+                            <record rid="8185"/>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should not use ISBN or ISSN for resource URI">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:ID="...">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Record with bad ISBN and ISSN">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="429" field_type="text" base_type="text"/>
+                            <field id="431" field_type="text" base_type="text"/>
+                        </fields>
+                        <records>
+                            <record rid="8185">
+                                <f id="429">ISSN</f>
+                                <f id="431">ISBN</f>
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should not use ISBN or ISSN for resource URI">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:ID="...">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
                     </rdf:Description>
                 </rdf:RDF>
             </_>
