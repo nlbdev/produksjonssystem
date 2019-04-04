@@ -238,8 +238,15 @@
                         <xsl:attribute name="opf:role" select="$marcrel"/>
                     </xsl:if>
                     
-                    <xsl:if test="$property = 'dc:source' and starts-with($value, 'urn:isbn')">
-                        <xsl:attribute name="opf:scheme" select="'isbn'"/>
+                    <xsl:if test="$property = 'dc:source'">
+                        <xsl:choose>
+                            <xsl:when test="starts-with($value, 'urn:isbn')">
+                                <xsl:attribute name="opf:scheme" select="'isbn'"/>
+                            </xsl:when>
+                            <xsl:when test="starts-with($value, 'urn:issn')">
+                                <xsl:attribute name="opf:scheme" select="'issn'"/>
+                            </xsl:when>
+                        </xsl:choose>
                     </xsl:if>
                 </xsl:if>
                 
