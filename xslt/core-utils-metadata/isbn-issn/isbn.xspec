@@ -1,0 +1,1466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:isbn="urn:isbn" stylesheet="isbn.xsl">
+    
+    <x:scenario label="isbn:compact">
+        <x:scenario label="978-82-16-14607-1 (with hyphen and surrounding spaces)">
+            <x:call function="isbn:compact">
+                <x:param name="number" select="' 978  - 82-   16 -14607-1 '"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the compact number" select="'9788216146071'"/>
+        </x:scenario>
+        
+        <x:scenario label="978-82-16-14607-1 (already compact)">
+            <x:call function="isbn:compact">
+                <x:param name="number" select="'9788216146071'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the compact number" select="'9788216146071'"/>
+        </x:scenario>
+        
+        <x:scenario label="1-85798-218-5 (keep as ISBN 10, convert=())">
+            <x:call function="isbn:compact">
+                <x:param name="number" select="'1-85798-218-5'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the compact number" select="'1857982185'"/>
+        </x:scenario>
+        
+        <x:scenario label="1-85798-218-5 (keep as ISBN 10, convert=false())">
+            <x:call function="isbn:compact">
+                <x:param name="number" select="'1-85798-218-5'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the compact number" select="'1857982185'"/>
+        </x:scenario>
+        
+        <x:scenario label="1-85798-218-5 (convert to ISBN 13)">
+            <x:call function="isbn:compact">
+                <x:param name="number" select="'1-85798-218-5'"/>
+                <x:param name="convert" select="true()"/>
+            </x:call>
+            <x:expect label="the compact number" select="'9781857982183'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:calc_isbn10_check_digit">
+        <x:scenario label="0-306-40615-2">
+            <x:call function="isbn:calc_isbn10_check_digit">
+                <x:param name="number" select="'0-306-40615-2'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'2'"/>
+        </x:scenario>
+        
+        <x:scenario label="0-306-40615-4 (wrong check digit in input)">
+            <x:call function="isbn:calc_isbn10_check_digit">
+                <x:param name="number" select="'0-306-40615-4'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'2'"/>
+        </x:scenario>
+        
+        <x:scenario label="0-306-40615 (9 digits)">
+            <x:call function="isbn:calc_isbn10_check_digit">
+                <x:param name="number" select="'0-306-40615'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'2'"/>
+        </x:scenario>
+        
+        <x:scenario label="019852663 (9 digits)">
+            <x:call function="isbn:calc_isbn10_check_digit">
+                <x:param name="number" select="'019852663'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'6'"/>
+        </x:scenario>
+        
+        <x:scenario label="902453827 (9 digits)">
+            <x:call function="isbn:calc_isbn10_check_digit">
+                <x:param name="number" select="'902453827'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'0'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:isbn_type">
+        <x:scenario label="ISBN 13">
+            <x:call function="isbn:isbn_type">
+                <x:param name="number" select="'978-0-471-11709-4'"/>
+            </x:call>
+            <x:expect label="ISBN 13" select="'ISBN13'"/>
+        </x:scenario>
+        
+        <x:scenario label="ISBN 10">
+            <x:call function="isbn:isbn_type">
+                <x:param name="number" select="'1-85798-218-5'"/>
+            </x:call>
+            <x:expect label="ISBN 10" select="'ISBN10'"/>
+        </x:scenario>
+        
+        <x:scenario label="invalid length">
+            <x:call function="isbn:isbn_type">
+                <x:param name="number" select="'978-902453827'"/>
+            </x:call>
+            <x:expect label="nothing" select="()"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:validate -- Tests for mangling and incorrect check digits">
+        <x:scenario label="added X in the middle">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="'08515x-629-2'"/>
+            </x:call>
+            <x:expect label="InvalidFormat" select="'Invalid format'"/>
+        </x:scenario>
+        
+        <x:scenario label="incorrect check digit">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="'85152-629-1'"/>
+            </x:call>
+            <x:expect label="InvalidChecksum" select="'Invalid check digit'"/>
+        </x:scenario>
+        
+        <x:scenario label="ISBN13 with X check digit">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="'978-902453827X'"/>
+            </x:call>
+            <x:expect label="InvalidFormat" select="'Invalid format'"/>
+        </x:scenario>
+        
+        <x:scenario label="invalid length">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="'978-902453827'"/>
+            </x:call>
+            <x:expect label="InvalidLength" select="'Invalid length'"/>
+        </x:scenario>
+        
+        <x:scenario label="valid EAN, unknown bookland code">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="'7501031311309'"/>
+            </x:call>
+            <x:expect label="InvalidComponent" select="'Invalid component'"/>
+        </x:scenario>
+        
+        <x:scenario label="9 digit ISBNs can also be validated">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="'12-345678-9'"/>
+            </x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        
+        <x:scenario label="9 digit ISBNs can also be validated after converting to ISBN 13">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="isbn:to_isbn13('12-345678-9')"/>
+            </x:call>
+            <x:expect label="should be valid" select="()"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:is_valid">
+        <x:scenario label="added X in the middle">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="'08515x-629-2'"/>
+            </x:call>
+            <x:expect label="InvalidFormat" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="incorrect check digit">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="'85152-629-1'"/>
+            </x:call>
+            <x:expect label="InvalidChecksum" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="ISBN13 with X check digit">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="'978-902453827X'"/>
+            </x:call>
+            <x:expect label="InvalidFormat" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="invalid length">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="'978-902453827'"/>
+            </x:call>
+            <x:expect label="InvalidLength" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="valid EAN, unknown bookland code">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="'7501031311309'"/>
+            </x:call>
+            <x:expect label="InvalidComponent" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="9 digit ISBNs can also be validated after converting to ISBN 13">
+            <x:call function="isbn:is_valid">
+                <x:param name="number" select="isbn:to_isbn13('12-345678-9')"/>
+            </x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:is_valid -- These have been found online and should all be valid numbers">
+        <x:scenario label="isbn:is_valid - test #1">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-19-963209-X'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #2">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-201-75041-4'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #3">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-7503-0197-X'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #4">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-7506-9275-8'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #5">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-8412-0473-X'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #6">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-8493-0464-4'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #7">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0-8493-0504-7'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #8">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'0080423906'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #9">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'013036004X'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #10">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'2-225-30547-1'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #11">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9284401348'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #12">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-1-4200-4561-1'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #13">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-1-4200-8032-2'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #14">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-1-4397-3244-1'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #15">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-1-4398-2494-8'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #16">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-1-4398-8929-9'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #17">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-1-55156-438-8'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #18">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-208-3866-4'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #19">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-208-5330-8'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #20">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-0790-7'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #21">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-1183-6'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #22">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-1341-0'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #23">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-2135-4'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #24">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-2248-1'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #25">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-3025-7'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #26">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-3239-8'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #27">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-3629-7'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #28">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-4767-5'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #29">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-4770-5'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #30">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-4934-1'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #31">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-5216-7'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #32">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-5632-5'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #33">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-90-345-6767-3'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #34">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'978-963-88880-5-1'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #35">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780 8872 76743'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #36">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780231501132'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #37">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780231506236'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #38">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780231507387'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #39">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780231508360'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #40">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780231527682'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #41">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780252092022'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #42">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780271055206'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #43">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780271055480'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #44">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780271056289'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #45">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780292717664'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #46">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780292752252'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #47">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300058024'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #48">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300091960'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #49">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300097474'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #50">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300110654'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #51">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300115406'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #52">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300133523'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #53">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780300156263'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #54">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470010037'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #55">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470012536'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #56">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470026977'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #57">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470027257'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #58">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470027424'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #59">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470058084'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #60">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470149676'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #61">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470180907'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #62">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470317372'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #63">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470358139'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #64">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470358184'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #65">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470358849'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #66">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470519578'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #67">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470706459'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #68">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470707296'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #69">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470723807'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #70">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470757659'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #71">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470760123'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #72">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470773154'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #73">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470774618'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #74">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470841785'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #75">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470863343'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #76">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470869697'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #77">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470987056'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #78">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780470996027'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #79">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471024033'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #80">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471206910'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #81">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471221951'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #82">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471444541'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #83">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471445340'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #84">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471619772'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #85">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471623793'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #86">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471713425'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #87">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471718161'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #88">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471723950'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #89">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471740452'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #90">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780471790594'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #91">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520205802'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #92">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520217676'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #93">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520230453'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #94">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520238879'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #95">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520238961'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #96">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520244306'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #97">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520255791'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #98">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520911543'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #99">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520928572'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #100">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520937529'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #101">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520939431'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #102">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520939769'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #103">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520945227'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #104">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780520945821'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #105">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780631211532'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #106">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780631224068'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #107">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780631225799'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #108">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780632038961'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #109">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780674061910'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #110">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780727917867'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #111">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780748621651'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #112">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780748625208'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #113">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780748633340'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #114">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773506688'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #115">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773528499'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #116">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773528673'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #117">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773530843'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #118">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773563438'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #119">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773563629'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #120">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773566217'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #121">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773567221'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #122">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773570498'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #123">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773572966'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #124">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773574533'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #125">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773582712'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #126">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780773587861'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #127">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780801447518'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #128">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780801467677'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #129">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780802009685'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #130">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780802043108'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #131">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780802078636'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #132">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780802081544'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #133">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780802088161'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #134">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780802096456'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #135">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780807845837'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #136">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780807871584'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #137">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780807871935'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #138">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780807872192'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #139">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780815730347'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #140">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816604777'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #141">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816606597'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #142">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816647774'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #143">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816655281'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #144">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816659760'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #145">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816665976'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #146">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780816681600'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #147">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780833035202'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #148">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780833048646'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #149">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780833059949'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #150">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780833077851'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #151">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9780871545183'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #152">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781111525545'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #153">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400821600'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #154">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400822232'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #155">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400826414'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #156">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400828623'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #157">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400828647'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #158">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400840861'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #159">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400842483'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #160">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781400845934'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #161">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781405131902'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #162">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781405175791'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #163">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442602380'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #164">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442612877'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #165">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442613140'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #166">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442641198'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #167">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442644335'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #168">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442670174'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #169">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442670747'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #170">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442674202'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #171">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442685376'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #172">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442688636'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #173">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442693517'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #174">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781442696716'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #175">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781469606309'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #176">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781571136329'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #177">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781571138392'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #178">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781610447775'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #179">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9781846156243'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #180">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527283217'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #181">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527298365'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #182">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527305797'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #183">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527307258'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #184">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527311125'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #185">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527406371'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #186">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527602803'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #187">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527604296'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #188">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527606757'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #189">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527615186'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #190">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527615759'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #191">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527619771'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #192">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783527621781'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #193">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9783826334054'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #194">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9789622091252'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #195">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9789622099760'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #196">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9789814319089'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #197">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9789888052509'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #198">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9789888139590'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #199">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'981-02-1046-9'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+        <x:scenario label="isbn:is_valid - test #200">
+            <x:call function="isbn:is_valid"><x:param name="number" select="'9814 253065'"/></x:call>
+            <x:expect label="should be valid" select="true()"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:to_isbn13 -- See if ISBN10 to 13 conversion works">
+        <x:scenario label="ISBN13 should stay ISBN13">
+            <x:call function="isbn:to_isbn13">
+                <x:param name="number" select="'978-9024538270'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-9024538270'"/>
+        </x:scenario>
+        
+        <x:scenario label="Conversion of 9 digit ISBN to ISBN13 also works">
+            <x:call function="isbn:to_isbn13">
+                <x:param name="number" select="'12-345678-9'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'9780123456786'"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #1">
+            <x:call function="isbn:to_isbn13">
+                <x:param name="number" select="'1 85798218 5'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978 1 85798218 3'"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #2">
+            <x:call function="isbn:to_isbn13">
+                <x:param name="number" select="'1857982185'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'9781857982183'"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #3">
+            <x:call function="isbn:to_isbn13">
+                <x:param name="number" select="'1-85798-218-5'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-1-85798-218-3'"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #4">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="isbn:to_isbn13('1 85798218 5')"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="()"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #5">
+            <x:call function="isbn:compact">
+                <x:param name="number" select="'1 85798218 5'"/>
+                <x:param name="convert" select="true()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'9781857982183'"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #6">
+            <x:call function="isbn:validate">
+                <x:param name="number" select="'1 85798218 5'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="()"/>
+        </x:scenario>
+        
+        <x:scenario label="to_isbn13 test #7: 1-85798-218-5">
+            <x:call function="isbn:to_isbn13">
+                <x:param name="number" select="'1-85798-218-5'"/>
+            </x:call>
+            <x:expect label="the compact number" select="'978-1-85798-218-3'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:to_isbn10 -- See if ISBN13 to 10 conversion works">
+        <x:scenario label="ISBN10 should stay ISBN10">
+            <x:call function="isbn:to_isbn10">
+                <x:param name="number" select="'1-85798-218-5'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'1-85798-218-5'"/>
+        </x:scenario>
+        
+        <x:scenario label="isbn:to_isbn10: test #1">
+            <x:call function="isbn:to_isbn10">
+                <x:param name="number" select="'978 1 85798218 3'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'1 85798218 5'"/>
+        </x:scenario>
+        
+        <x:scenario label="isbn:to_isbn10: test #2">
+            <x:call function="isbn:to_isbn10">
+                <x:param name="number" select="'9781857982183'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'1857982185'"/>
+        </x:scenario>
+        
+        <x:scenario label="isbn:to_isbn10: test #3">
+            <x:call function="isbn:to_isbn10">
+                <x:param name="number" select="'978-1-85798-218-3'"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'1-85798-218-5'"/>
+        </x:scenario>
+        
+        <x:scenario label="Invalid check digit">
+            <x:call function="isbn:to_isbn10">
+                <x:param name="number" select="'979-20-1234567-8'"/>
+            </x:call>
+            <x:expect label="InvalidFormat" select="()"/>
+        </x:scenario>
+        
+        <x:scenario label="Not in Bookland">
+            <x:call function="isbn:to_isbn10">
+                <x:param name="number" select="'9791843123391'"/>
+            </x:call>
+            <x:expect label="InvalidComponent" select="()"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="isbn:split -- Regrouping tests">
+        <x:scenario label="normal ISBN10">
+            <x:call function="isbn:split">
+                <x:param name="number" select="'9024538270'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="('', '90', '245', '3827', '0')"/>
+        </x:scenario>
+        
+        <x:scenario label="ISBN10, unknown publisher in group">
+            <x:call function="isbn:split">
+                <x:param name="number" select="'9999678270'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="('', '99996', '', '7827', '0')"/>
+        </x:scenario>
+        
+        <x:scenario label="979-20-1234567-8">
+            <x:call function="isbn:split">
+                <x:param name="number" select="'979-20-1234567-8'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="('979', '', '', '201234567', '8')"/>
+        </x:scenario>
+        
+        <x:scenario label="valid check digit, unknown prefix">
+            <x:call function="isbn:split">
+                <x:param name="number" select="'5413170121522'"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="('541', '', '', '317012152', '2')"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="Formatting ISBN 10">
+        <x:scenario label="test #1">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'504005601X'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'5-04-005601-X'"/>
+        </x:scenario>
+        <x:scenario label="test #2">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'5699155392'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'5-699-15539-2'"/>
+        </x:scenario>
+        <x:scenario label="test #3">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'5781515305'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'5-7815-1530-5'"/>
+        </x:scenario>
+        <x:scenario label="test #4">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'5932380020'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'5-93238-002-0'"/>
+        </x:scenario>
+        <x:scenario label="test #5">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'2916170243'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'2-916170-24-3'"/>
+        </x:scenario>
+        <x:scenario label="test #6">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'0968418600'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'0-9684186-0-0'"/>
+        </x:scenario>
+        <x:scenario label="test #7">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9147049170'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'91-47-04917-0'"/>
+        </x:scenario>
+        <x:scenario label="test #8">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9289310626'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'92-893-1062-6'"/>
+        </x:scenario>
+        <x:scenario label="test #9">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9179709753'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'91-7970-975-3'"/>
+        </x:scenario>
+        <x:scenario label="test #10">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9188948048'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'91-88948-04-8'"/>
+        </x:scenario>
+        <x:scenario label="test #11">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9197435236'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'91-974352-3-6'"/>
+        </x:scenario>
+        <x:scenario label="test #12">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9241561025'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'92-4-156102-5'"/>
+        </x:scenario>
+        <x:scenario label="test #13">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9724610942'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'972-46-1094-2'"/>
+        </x:scenario>
+        <x:scenario label="test #14">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9774245776'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'977-424-577-6'"/>
+        </x:scenario>
+        <x:scenario label="test #15">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9729354006'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'972-9354-00-6'"/>
+        </x:scenario>
+        <x:scenario label="test #16">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9519519890'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'951-95198-9-0'"/>
+        </x:scenario>
+        <x:scenario label="test #17">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9721002151'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'972-1-00215-1'"/>
+        </x:scenario>
+        <x:scenario label="test #18">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9966468234'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'9966-46-823-4'"/>
+        </x:scenario>
+        <x:scenario label="test #19">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9985203712'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'9985-2-0371-2'"/>
+        </x:scenario>
+        <x:scenario label="test #20">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9985827694'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'9985-827-69-4'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="Formatting ISBN 13">
+        <x:scenario label="test #1">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9788131719534'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-81-317-1953-4'"/>
+        </x:scenario>
+        <x:scenario label="test #2">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9789992195741'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-99921-95-74-1'"/>
+        </x:scenario>
+        <x:scenario label="test #3">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9789949944422'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-9949-9444-2-2'"/>
+        </x:scenario>
+        <x:scenario label="test #4">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9789927118074'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-9927-118-07-4'"/>
+        </x:scenario>
+        <x:scenario label="test #5">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9789949157860'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-9949-15-786-0'"/>
+        </x:scenario>
+        <x:scenario label="test #6">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9788193078051'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-81-930780-5-1'"/>
+        </x:scenario>
+        <x:scenario label="test #7">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9789814577090'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-981-4577-09-0'"/>
+        </x:scenario>
+        <x:scenario label="test #8">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9786144190593'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-614-419-059-3'"/>
+        </x:scenario>
+        <x:scenario label="test #9">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9786140105232'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-614-01-0523-2'"/>
+        </x:scenario>
+        <x:scenario label="test #10">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9788282632614'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-82-8263-261-4'"/>
+        </x:scenario>
+        <x:scenario label="test #11">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9789113021744'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-91-1-302174-4'"/>
+        </x:scenario>
+        <x:scenario label="test #12">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9788290552171'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-82-90552-17-1'"/>
+        </x:scenario>
+        <x:scenario label="test #13">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9788202366025'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-82-02-36602-5'"/>
+        </x:scenario>
+        <x:scenario label="test #14">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9780913573112'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-0-913573-11-2'"/>
+        </x:scenario>
+        <x:scenario label="test #15">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9780851319889'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-0-85131-988-9'"/>
+        </x:scenario>
+        <x:scenario label="test #16">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9780701183899'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-0-7011-8389-9'"/>
+        </x:scenario>
+        <x:scenario label="test #17">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9780335221462'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-0-335-22146-2'"/>
+        </x:scenario>
+        <x:scenario label="test #18">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9780006479888'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-0-00-647988-8'"/>
+        </x:scenario>
+        <x:scenario label="test #19">
+            <x:call function="isbn:format">
+                <x:param name="number" select="'9780955318351'"/>
+                <x:param name="separator" select="()"/>
+                <x:param name="convert" select="()"/>
+            </x:call>
+            <x:expect label="the result should be as expected" select="'978-0-9553183-5-1'"/>
+        </x:scenario>
+    </x:scenario>
+    
+</x:description>

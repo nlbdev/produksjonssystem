@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:issn="urn:issn" stylesheet="issn.xsl">
+    
+    <x:scenario label="issn:compact">
+        <x:scenario label="1502-4334 (with hyphen and surrounding spaces)">
+            <x:call function="issn:compact">
+                <x:param name="number" select="' 1502 - 4334 '"/>
+            </x:call>
+            <x:expect label="the compact number" select="'15024334'"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334 (already compact)">
+            <x:call function="issn:compact">
+                <x:param name="number" select="'15024334'"/>
+            </x:call>
+            <x:expect label="the compact number" select="'15024334'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:calc_check_digit">
+        <x:scenario label="1502-4334">
+            <x:call function="issn:calc_check_digit">
+                <x:param name="number" select="'15024334'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'4'"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4337 (wrong check digit in input)">
+            <x:call function="issn:calc_check_digit">
+                <x:param name="number" select="'15024337'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'4'"/>
+        </x:scenario>
+        
+        <x:scenario label="1894-5775 (input includes hyphen)">
+            <x:call function="issn:calc_check_digit">
+                <x:param name="number" select="'1894-5775'"/>
+            </x:call>
+            <x:expect label="the check digit" select="'5'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:format">
+        <x:scenario label="1502-4334">
+            <x:call function="issn:format">
+                <x:param name="number" select="'15024334'"/>
+            </x:call>
+            <x:expect label="the formatted number" select="'1502-4334'"/>
+        </x:scenario>
+        
+        <x:scenario label="too short number">
+            <x:call function="issn:format">
+                <x:param name="number" select="'1502'"/>
+            </x:call>
+            <x:expect label="the formatted number" select="'1502'"/>
+        </x:scenario>
+        
+        <x:scenario label="1894-5775 (input includes hyphen)">
+            <x:call function="issn:format">
+                <x:param name="number" select="'1894-5775'"/>
+            </x:call>
+            <x:expect label="the formatted number" select="'1894-5775'"/>
+        </x:scenario>
+        
+        <x:scenario label="9772434561006">
+            <x:call function="issn:format">
+                <x:param name="number" select="'9772434561006'"/>
+            </x:call>
+            <x:expect label="the result" select="'977-2434-561-00-6'"/>
+        </x:scenario>
+        
+        <x:scenario label="9772434561198">
+            <x:call function="issn:format">
+                <x:param name="number" select="'9772434561198'"/>
+            </x:call>
+            <x:expect label="the result" select="'977-2434-561-19-8'"/>
+        </x:scenario>
+        
+        <x:scenario label="977-150243300-9">
+            <x:call function="issn:format">
+                <x:param name="number" select="'977-150243300-9'"/>
+            </x:call>
+            <x:expect label="the result" select="'977-1502-433-00-9'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:validate">
+        <x:scenario label="1502-4334">
+            <x:call function="issn:validate">
+                <x:param name="number" select="'1502-4334'"/>
+            </x:call>
+            <x:expect label="the error message" select="()"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334">
+            <x:call function="issn:validate">
+                <x:param name="number" select="'1502-433'"/>
+            </x:call>
+            <x:expect label="the error message" select="'Invalid length'"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334">
+            <x:call function="issn:validate">
+                <x:param name="number" select="'1502-43X3'"/>
+            </x:call>
+            <x:expect label="the error message" select="'Invalid format'"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334">
+            <x:call function="issn:validate">
+                <x:param name="number" select="'1502-4335'"/>
+            </x:call>
+            <x:expect label="the error message" select="'Invalid check digit'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:is_valid">
+        <x:scenario label="1502-4334">
+            <x:call function="issn:is_valid">
+                <x:param name="number" select="'1502-4334'"/>
+            </x:call>
+            <x:expect label="the result" select="true()"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334">
+            <x:call function="issn:is_valid">
+                <x:param name="number" select="'1502-433'"/>
+            </x:call>
+            <x:expect label="the result" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334">
+            <x:call function="issn:is_valid">
+                <x:param name="number" select="'1502-43X3'"/>
+            </x:call>
+            <x:expect label="the result" select="false()"/>
+        </x:scenario>
+        
+        <x:scenario label="1502-4334">
+            <x:call function="issn:is_valid">
+                <x:param name="number" select="'1502-4335'"/>
+            </x:call>
+            <x:expect label="the result" select="false()"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:to_ean">
+        <x:scenario label="1502-4335">
+            <x:call function="issn:to_ean">
+                <x:param name="number" select="'1502-4335'"/>
+                <x:param name="issue_code" select="()"/>
+            </x:call>
+            <x:expect label="the result" select="'9771502433009'"/>
+        </x:scenario>
+        
+        <x:scenario label="2434-561X">
+            <x:call function="issn:to_ean">
+                <x:param name="number" select="'2434-561X'"/>
+                <x:param name="issue_code" select="()"/>
+            </x:call>
+            <x:expect label="the result" select="'9772434561006'"/>
+        </x:scenario>
+        
+        <x:scenario label="2434-561X (with custom code)">
+            <x:call function="issn:to_ean">
+                <x:param name="number" select="'2434-561X'"/>
+                <x:param name="issue_code" select="'19'"/>
+            </x:call>
+            <x:expect label="the result" select="'9772434561198'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:to_issn8">
+        <x:scenario label="1502-4335">
+            <x:call function="issn:to_issn8">
+                <x:param name="number" select="'1502-4335'"/>
+            </x:call>
+            <x:expect label="the result" select="'1502-4335'"/>
+        </x:scenario>
+        
+        <x:scenario label="977150243300">
+            <x:call function="issn:to_issn8">
+                <x:param name="number" select="'9771502433009'"/>
+            </x:call>
+            <x:expect label="the result" select="'1502-4334'"/>
+        </x:scenario>
+        
+        <x:scenario label="977243456100">
+            <x:call function="issn:to_issn8">
+                <x:param name="number" select="'9772434561006'"/>
+            </x:call>
+            <x:expect label="the result" select="'2434-561X'"/>
+        </x:scenario>
+        
+        <x:scenario label="977243456119">
+            <x:call function="issn:to_issn8">
+                <x:param name="number" select="'9772434561198'"/>
+            </x:call>
+            <x:expect label="the result" select="'2434-561X'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:ean_calc_check_digit">
+        <x:scenario label="1502-4335">
+            <x:call function="issn:ean_calc_check_digit">
+                <x:param name="number" select="'977150243300'"/>
+            </x:call>
+            <x:expect label="the result" select="'9'"/>
+        </x:scenario>
+        
+        <x:scenario label="2434-561X">
+            <x:call function="issn:ean_calc_check_digit">
+                <x:param name="number" select="'977243456100'"/>
+            </x:call>
+            <x:expect label="the result" select="'6'"/>
+        </x:scenario>
+        
+        <x:scenario label="2434-561X (with custom code)">
+            <x:call function="issn:ean_calc_check_digit">
+                <x:param name="number" select="'977243456119'"/>
+            </x:call>
+            <x:expect label="the result" select="'8'"/>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="issn:to_urn">
+        <x:scenario label="1502-4334">
+            <x:call function="issn:to_urn">
+                <x:param name="number" select="'15024334'"/>
+            </x:call>
+            <x:expect label="the formatted number" select="'urn:issn:15024334'"/>
+        </x:scenario>
+        
+        <x:scenario label="1894-5775 (input includes hyphen)">
+            <x:call function="issn:to_urn">
+                <x:param name="number" select="'1894-5775'"/>
+            </x:call>
+            <x:expect label="the formatted number" select="'urn:issn:18945775'"/>
+        </x:scenario>
+        
+        <x:scenario label="9772434561006">
+            <x:call function="issn:to_urn">
+                <x:param name="number" select="'9772434561006'"/>
+            </x:call>
+            <x:expect label="the result" select="'urn:issn:2434561X'"/>
+        </x:scenario>
+        
+        <x:scenario label="9772434561198">
+            <x:call function="issn:to_urn">
+                <x:param name="number" select="'9772434561198'"/>
+            </x:call>
+            <x:expect label="the result" select="'urn:issn:2434561X'"/>
+        </x:scenario>
+        
+        <x:scenario label="977-1502-433-00-9">
+            <x:call function="issn:to_urn">
+                <x:param name="number" select="'977-1502-433-00-9'"/>
+            </x:call>
+            <x:expect label="the result" select="'urn:issn:15024334'"/>
+        </x:scenario>
+    </x:scenario>
+    
+</x:description>

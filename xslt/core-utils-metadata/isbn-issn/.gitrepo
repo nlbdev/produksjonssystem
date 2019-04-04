@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/nlbdev/xslt-isbn-issn.git
+	branch = master
+	commit = 0623f4a98a1eb47ce03bdaf8d6f4b1ef1327a8ff
+	parent = 38f099282551cacf2fe1062013ebffc831dff7d0
+	cmdver = 0.3.1

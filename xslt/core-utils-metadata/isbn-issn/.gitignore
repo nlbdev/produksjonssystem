@@ -1,0 +1,8 @@
+*.swp
+
+# XSpec
+*-result.html
+*-result.xml
+**/xspec/*-result.html
+**/xspec/*-result.xml
+**/xspec/*.xsl
