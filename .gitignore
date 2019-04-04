@@ -7,11 +7,9 @@ __pycache__
 target
 *.swp
 
-#XSpec
-**/xspec/*-result.html
-**/xspec/*-result.xml
-**/xspec/*.xsl
+# XSpec
+**/xspec/*
 xslt/**/*-result.html
 xslt/**/*-result.xml
 
-xslt/core-utils-epub/xspec/
+
