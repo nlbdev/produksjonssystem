@@ -1971,4 +1971,36 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Record with ISSN in ISBN field">
+        <x:call template="test">
+            <x:param name="qdbapi">
+                <qdbapi>
+                    <table>
+                        <fields>
+                            <field id="429" field_type="text" base_type="text"/>
+                            <field id="431" field_type="text" base_type="text"/>
+                        </fields>
+                        <records>
+                            <record rid="8185">
+                                <f id="431">0803-141x</f>
+                            </record>
+                        </records>
+                    </table>
+                </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="Should use urn:issn for resource URI">
+            <_ xmlns="">
+                <html xmlns="http://www.w3.org/1999/xhtml">...</html>
+                <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production" xmlns:nlb="http://www.nlb.no/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                    <rdf:Description rdf:about="urn:issn:0803141X">
+                        <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                        <nlbprod:dcSourceUrnIsbn>0803-141x</nlbprod:dcSourceUrnIsbn>
+                    </rdf:Description>
+                </rdf:RDF>
+            </_>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

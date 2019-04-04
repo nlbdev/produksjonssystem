@@ -2731,9 +2731,14 @@ section dl {
         <xsl:variable name="isbn" select="upper-case(normalize-space($unformatted))"/>
         <xsl:variable name="isbn" select="replace($isbn, '[^\dX]', '')"/>
         
-        <xsl:if test="$isbn">
-            <xsl:value-of select="concat('urn:isbn:', $isbn)"/>
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="string-length($isbn) = 8">
+                <xsl:value-of select="f:format-issn-urn($isbn)"/>
+            </xsl:when>
+            <xsl:when test="$isbn">
+                <xsl:value-of select="concat('urn:isbn:', $isbn)"/>
+            </xsl:when>
+        </xsl:choose>
     </xsl:function>
     
     <xsl:function name="f:format-nlb-urn" as="xs:string">
