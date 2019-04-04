@@ -186,4 +186,50 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="CreativeWork with ISBN">
+        <x:context>
+            <opf:metadata>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="periodical" content="false"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                    <nlbbib:periodical>false</nlbbib:periodical>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="CreativeWork with ISSN">
+        <x:context>
+            <opf:metadata>
+                <meta name="issn.original" content="1234-5678"/>
+                <meta name="periodical" content="true"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:issn:12345678">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:issn>1234-5678</schema:issn>
+                    <dc:source>urn:issn:12345678</dc:source>
+                    <nlbbib:periodical>true</nlbbib:periodical>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:12345678"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

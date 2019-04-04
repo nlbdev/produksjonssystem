@@ -49,7 +49,7 @@
                     <dc:title>At the water's edge</dc:title>
                     <schema:isbn>978-82-8087-665-2</schema:isbn>
                 </rdf:Description>
-                <rdf:Description rdf:about="http://websok.nlb.no/cgi-bin/websok?tnr=626512">
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_626512">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="urn:isbn:9788280876652"/>
                     <frbr:translationOf rdf:resource="#original_d4e1"/>
@@ -120,7 +120,7 @@
                     <title name="At the water's edge"/>
                     <isbn name="978-82-8087-665-2"/>
                 </Book>
-                <Book about="http://websok.nlb.no/cgi-bin/websok?tnr=626512">
+                <Book about="urn:nbn:no-nb_nlb_626512">
                     <exampleOfWork resource="urn:isbn:9788280876652"/>
                     <translationOf resource="#original_d4e1"/>
                     <identifier name="626512"/>

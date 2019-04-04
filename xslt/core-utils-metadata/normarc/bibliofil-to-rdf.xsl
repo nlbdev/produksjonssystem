@@ -30,9 +30,15 @@
         
         <xsl:variable name="identifier" select="$metadata/dc:identifier"/>
         
-        <xsl:variable name="urn" select="concat('urn:',if ($metadata/*[@name='periodical']/@content = 'true') then 'issn' else 'isbn',':')"/>
-        <xsl:variable name="resource-creativeWork" select="($metadata/*[@name='isbn.original' and normalize-space(@content)]/concat($urn, replace(normalize-space(@content),'[^\d]','')), concat('creativeWork_',replace(string(current-time()),'[^\d]',''),'_',generate-id()))[1]"/>
-        <xsl:variable name="resource-book" select="($metadata/dc:identifier[normalize-space(@content)]/concat('http://websok.nlb.no/cgi-bin/websok?tnr=', normalize-space(@content), $edition-identifier), concat('book_',replace(string(current-time()),'[^\d]',''),'_',generate-id()))[1]"/>
+        <xsl:variable name="resource-creativeWork" select="(
+                                                                $metadata/*[@name='isbn.original' and matches(@content, '.*\d.*')]/concat('urn:isbn:', replace(@content,'[^\d]','')),
+                                                                $metadata/*[@name='issn.original' and matches(@content, '.*\d.*')]/concat('urn:issn:', replace(@content,'[^\d]','')),
+                                                                concat('creativeWork_',replace(string(current-time()),'[^\d]',''),'_',generate-id())
+                                                            )[1]"/>
+        <xsl:variable name="resource-book" select="(
+                                                        $metadata/dc:identifier[normalize-space(@content)]/concat('urn:nbn:no-nb_nlb_', normalize-space(@content), $edition-identifier),
+                                                        concat('book_',replace(string(current-time()),'[^\d]',''),'_',generate-id())
+                                                    )[1]"/>
         
         <xsl:variable name="html" as="element()">
             <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
@@ -193,6 +199,7 @@
         <xsl:param name="nested" as="xs:boolean" select="false()" required="no"/>
         
         <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'dc:subject', 'dc:type.genre',
+                                                             'nlbbib:series.issn', 'nlbbib:series.position', 'nlbbib:periodical', 'nlbbib:periodicity', 'nlbbib:magazine', 'nlbbib:newspaper',
                                                              $metadata//*[starts-with(@name,'dc:title.')]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:contributor.') and not(@name='dc:contributor.narrator')]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:subject.')]/string(@name))"/>
@@ -228,21 +235,32 @@
                 </xsl:when>
                 <xsl:when test="$type = 'creativeWork'">
                     <xsl:if test="$name = $creativeWorkProperties or ends-with($name, '.original')">
+                        <!--
+                            Åndsverk fra bibliofil har ikke schema:isbn, kun schema:isbn.original.
+                            Dvs. 5xx-bøker katalogiseres ikke med ISBN i *020$a, men om de hadde
+                            hatt det så måtte det vært det samme som i *596$f.
+                        -->
                         <xsl:choose>
                             <xsl:when test="$name = 'schema:isbn.original'">
-                                <!--
-                                    Åndsverk fra bibliofil har ikke schema:isbn, kun schema:isbn.original.
-                                    Dvs. 5xx-bøker katalogiseres ikke med ISBN i *020$a, men om de hadde
-                                    hatt det så måtte det vært det samme som i *596$f.
-                                -->
                                 <xsl:element name="schema:isbn">
                                     <xsl:copy-of select="$element/(@* | node())"/>
                                 </xsl:element>
                                 <xsl:element name="dc:source">
                                     <xsl:copy-of select="@nlb:metadata-source"/>
-                                    <xsl:copy-of select="concat('urn:',if ($metadata/*[@name='periodical']/@content = 'true') then 'issn' else 'isbn',':',replace($element/text()[1],'[^\d]',''))"/>
+                                    <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\d]',''))"/>
                                 </xsl:element>
                             </xsl:when>
+                            
+                            <xsl:when test="$name = 'schema:issn.original'">
+                                <xsl:element name="schema:issn">
+                                    <xsl:copy-of select="$element/(@* | node())"/>
+                                </xsl:element>
+                                <xsl:element name="dc:source">
+                                    <xsl:copy-of select="@nlb:metadata-source"/>
+                                    <xsl:copy-of select="concat('urn:issn:',replace($element/text()[1],'[^\d]',''))"/>
+                                </xsl:element>
+                            </xsl:when>
+                            
                             <xsl:otherwise>
                                 <xsl:sequence select="$element"/>
                             </xsl:otherwise>

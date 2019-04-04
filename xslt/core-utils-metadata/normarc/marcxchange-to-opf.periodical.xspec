@@ -14,6 +14,12 @@
         <x:context>
             <marcxchange:record>
                 <marcxchange:controlfield tag="001">612345</marcxchange:controlfield>
+                <marcxchange:datafield tag="650" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Avis</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="f">0018-2842</marcxchange:subfield>
+                </marcxchange:datafield>
             </marcxchange:record>
         </x:context>
         
@@ -22,6 +28,11 @@
                 <dc:identifier nlb:metadata-source="Bibliofil@612345 *001" id="pub-id">612345022018</dc:identifier>
                 <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued">2018</meta>
                 <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued.original">2018</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *650" property="dc:subject.keyword">Avis</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *596" property="bookEdition.original">1</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *596$f" property="issn.original">0018-2842</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *650" property="newspaper">true</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *650" property="periodical">true</meta>
             </metadata>
         </x:expect>
     </x:scenario>
