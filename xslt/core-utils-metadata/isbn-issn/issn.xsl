@@ -2,9 +2,99 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:schema="http://schema.org/"
                 xmlns:issn="urn:issn"
                 exclude-result-prefixes="#all"
                 version="2.0">
+    
+    <xsl:param name="rdf-format-issn" select="false()" as="xs:boolean"/>
+    <xsl:param name="rdf-add-ean" select="false()" as="xs:boolean"/>
+    <xsl:param name="rdf-normalize-urns" select="false()" as="xs:boolean"/>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Identity template.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="@* | node()" mode="#all">
+        <xsl:choose>
+            <xsl:when test="($rdf-format-issn, $rdf-add-ean, $rdf-normalize-urns) = true()">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@* | node()" mode="#current"/>
+                </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Template that formats (hyphenates) the ISBN found in schema:issn.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="schema:issn/@rdf:name | schema:issn/text()[normalize-space()]" mode="#all">
+        <xsl:choose>
+            <xsl:when test="$rdf-format-issn = true()">
+                <xsl:choose>
+                    <xsl:when test="self::text() and not($rdf-add-ean = true())">
+                        <xsl:value-of select="issn:format(.)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="rdf:name" select="issn:format(.)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Template that adds the ISBN using converted to the compact ISBN-13 syntax as a schema:gtin13 element.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="schema:issn" mode="#all">
+        <xsl:choose>
+            <xsl:when test="$rdf-add-ean = true()">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:apply-templates select="text()[normalize-space()]"/>
+                    <schema:gtin13>
+                        <xsl:value-of select="issn:compact(issn:to_ean((@rdf:name, text()[normalize-space()])[1],()))"/>
+                    </schema:gtin13>
+                    <xsl:apply-templates select="node() except text()[normalize-space()]"/>
+                </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Template that normalizes urn:issn URNs by using the compact ISBN-13 syntax.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="@rdf:ID | @rdf:resource | @rdf:about" mode="#all">
+        <xsl:choose>
+            <xsl:when test="$rdf-normalize-urns = true() and starts-with(.,'urn:issn:')">
+                <xsl:attribute name="{name()}" exclude-result-prefixes="#all" select="concat('urn:issn:', issn:compact((issn:to_issn8(.), .)[1]))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
     
     
     <xd:doc scope="stylesheet">
@@ -26,6 +116,7 @@
         
         <xsl:value-of select="if ($check ge 10) then 'X' else string($check)"/>
     </xsl:function>
+    
     
     <xd:doc scope="stylesheet">
         <xd:desc>

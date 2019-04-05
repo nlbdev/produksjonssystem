@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:issn="urn:issn" stylesheet="issn.xsl">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:schema="http://schema.org/"
+               xmlns:issn="urn:issn"
+               stylesheet="issn.xsl">
+
+    <x:param name="rdf-format-issn" select="true()"/>
+    <x:param name="rdf-add-ean" select="true()"/>
+    <x:param name="rdf-normalize-urns" select="true()"/>
     
     <x:scenario label="issn:compact">
         <x:scenario label="1502-4334 (with hyphen and surrounding spaces)">
@@ -258,6 +266,36 @@
             </x:call>
             <x:expect label="the result" select="'urn:issn:15024334'"/>
         </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="basic template test">
+        <x:context>
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:issn:18945-775">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:issn>18-94-5775</schema:issn>
+                </rdf:Description>
+                <rdf:Description rdf:ID="urn:issn:2434-561X">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:18945-775"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:context>
+        
+        <x:expect label="the ISBN should be formatted and the EAN should be added">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:issn:18945775">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:issn rdf:name="1894-5775">
+                        <schema:gtin13>9771894577008</schema:gtin13>
+                    </schema:issn>
+                </rdf:Description>
+                <rdf:Description rdf:ID="urn:issn:2434561X">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:18945775"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
     </x:scenario>
     
 </x:description>

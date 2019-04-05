@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:isbn="urn:isbn" stylesheet="isbn.xsl">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:schema="http://schema.org/"
+               xmlns:isbn="urn:isbn"
+               stylesheet="isbn.xsl">
+    
+    <x:param name="rdf-format-isbn" select="true()"/>
+    <x:param name="rdf-add-ean" select="true()"/>
+    <x:param name="rdf-normalize-urns" select="true()"/>
     
     <x:scenario label="isbn:compact">
         <x:scenario label="978-82-16-14607-1 (with hyphen and surrounding spaces)">
@@ -1461,6 +1469,36 @@
             </x:call>
             <x:expect label="the result should be as expected" select="'978-0-9553183-5-1'"/>
         </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="basic template test">
+        <x:context>
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:8216256019">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>82-1625-60-19</schema:isbn>
+                </rdf:Description>
+                <rdf:Description rdf:ID="urn:isbn:82-489-16456">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:8216256019"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:context>
+        
+        <x:expect label="the ISBN should be formatted and the EAN should be added">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:9788216256015">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn rdf:name="82-1625-60-19">
+                        <schema:gtin13>9788216256015</schema:gtin13>
+                    </schema:isbn>
+                </rdf:Description>
+                <rdf:Description rdf:ID="urn:isbn:9788248916451">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:9788216256015"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
     </x:scenario>
     
 </x:description>

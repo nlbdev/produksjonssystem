@@ -2,11 +2,103 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:schema="http://schema.org/"
                 xmlns:isbn="urn:isbn"
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:variable name="isbn-ranges" select="document('isbn-ranges.xml')/*" as="element()"/>
+    <xsl:param name="rdf-format-isbn" select="false()" as="xs:boolean"/>
+    <xsl:param name="rdf-add-ean" select="false()" as="xs:boolean"/>
+    <xsl:param name="rdf-normalize-urns" select="false()" as="xs:boolean"/>
+    <xsl:param name="isbn-ranges-path" select="resolve-uri('isbn-ranges.xml', static-base-uri())" as="xs:string"/>
+    
+    <xsl:variable name="isbn-ranges" select="document($isbn-ranges-path)/*" as="element()"/>
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Identity template.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="@* | node()" mode="#all">
+        <xsl:choose>
+            <xsl:when test="($rdf-format-isbn, $rdf-add-ean, $rdf-normalize-urns) = true()">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@* | node()" mode="#current"/>
+                </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Template that formats (hyphenates) the ISBN found in schema:isbn.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="schema:isbn/@rdf:name | schema:isbn/text()[normalize-space()]" mode="#all">
+        <xsl:choose>
+            <xsl:when test="$rdf-format-isbn = true()">
+                <xsl:choose>
+                    <xsl:when test="self::text() and not($rdf-add-ean = true())">
+                        <xsl:value-of select="isbn:format(., '-', false())"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="rdf:name" select="isbn:format(., '-', false())"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Template that adds the ISBN using converted to the compact ISBN-13 syntax as a schema:gtin13 element.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="schema:isbn" mode="#all">
+        <xsl:choose>
+            <xsl:when test="$rdf-add-ean = true()">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:apply-templates select="text()[normalize-space()]"/>
+                    <xsl:attribute name="rdf:name" select="(@rdf:name, text()[normalize-space()])[1]"/>
+                    <schema:gtin13>
+                        <xsl:value-of select="isbn:compact((@rdf:name, text()[normalize-space()])[1], true())"/>
+                    </schema:gtin13>
+                    <xsl:apply-templates select="node() except text()[normalize-space()]"/>
+                </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc scope="stylesheet">
+        <xd:desc>
+            <xd:p>Template that normalizes urn:isbn URNs by using the compact ISBN-13 syntax.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="@rdf:ID | @rdf:resource | @rdf:about" mode="#all">
+        <xsl:choose>
+            <xsl:when test="$rdf-normalize-urns = true() and starts-with(.,'urn:isbn:')">
+                <xsl:attribute name="{name()}" exclude-result-prefixes="#all" select="concat('urn:isbn:', isbn:compact(.,true()))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
     
     <xd:doc scope="stylesheet">
         <xd:desc>
@@ -27,6 +119,7 @@
         
         <xsl:value-of select="if ($check ge 10) then 'X' else string($check)"/>
     </xsl:function>
+    
     
     <xd:doc scope="stylesheet">
         <xd:desc>
