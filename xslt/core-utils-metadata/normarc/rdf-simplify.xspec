@@ -37,7 +37,9 @@
                         <nlbbib:bibliofil-id>19090100</nlbbib:bibliofil-id>
                         <schema:file-as>Vormeland, Hedda</schema:file-as>
                     </dc:contributor.translator>
-                    <schema:isbn>978-82-8087-665-2</schema:isbn>
+                    <schema:isbn rdf:name="978-82-8087-665-2">
+                        <schema:gtin13>9788280876652</schema:gtin13>
+                    </schema:isbn>
                     <dc:source>urn:isbn:9788280876652</dc:source>
                 </rdf:Description>
                 <rdf:Description rdf:ID="original_d4e1">
@@ -109,7 +111,9 @@
                         <bibliofil-id name="19090100"/>
                         <file-as name="Vormeland, Hedda"/>
                     </contributor.translator>
-                    <isbn name="978-82-8087-665-2"/>
+                    <isbn name="978-82-8087-665-2">
+                        <gtin13 name="9788280876652"/>
+                    </isbn>
                     <source name="urn:isbn:9788280876652"/>
                 </CreativeWork>
                 <Book ID="original_d4e1">

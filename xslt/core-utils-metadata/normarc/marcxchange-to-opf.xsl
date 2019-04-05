@@ -1383,10 +1383,7 @@
             <xsl:for-each select="*:subfield[@code='f']">
                 <xsl:variable name="length" select="string-length(replace(text(),'[^0-9xX]',''))" as="xs:integer"/>
                 <xsl:if test="not(text() = '0') and $length gt 0">
-                    <xsl:variable name="is-periodical" select="exists(../../marcxchange:datafield[@tag='019']/marcxchange:subfield[@code='b' and text() = ('jp','jn','j')]) or
-                                                               exists(../../marcxchange:datafield[@tag='650']/marcxchange:subfield[@code='a' and text() = ('Tidsskrifter', 'Avis')])"/>
-                    
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="concat(if ($is-periodical) then 'issn' else 'isbn', '.original')"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="concat(if ($length lt 9) then 'issn' else 'isbn', '.original')"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
         </xsl:if>
