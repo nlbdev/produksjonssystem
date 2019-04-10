@@ -559,4 +559,15 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="fix 501444">
+        <x:context>
+            <li><lic>6 APPOSITION</lic> <lic>257</lic>>
+                <list type="pl"><li>…</li></list></li>
+        </x:context>
+        <x:expect>
+            <li><lic>6 APPOSITION</lic> <lic>257</lic>
+                <list type="pl"><li>…</li></list></li>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

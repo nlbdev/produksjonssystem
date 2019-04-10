@@ -147,7 +147,7 @@ class NordicDTBookToEpub(Pipeline):
                 return False
 
             if dtbook_validate_status == "WARN":
-                self.utils.report.warn("EPUBen er ikke valid, men vi fortsetter alikevel.")
+                self.utils.report.warn("DTBoken er ikke valid, men vi fortsetter alikevel.")
 
         self.utils.report.info("Konverterer fra Nordisk DTBook til Nordisk EPUB3...")
         temp_epub_file_obj = tempfile.NamedTemporaryFile()
@@ -203,13 +203,16 @@ class NordicDTBookToEpub(Pipeline):
                     report_doc = ElementTree.parse(report_file)
                     errors = report_doc.xpath('//*[@class="error" or @class="message-error"]')
                     for error in errors:
-                        error_text = error.xpath('.//text()[normalize-space()]')[0]
+                        error_text = " ".join([e.strip() for e in error.xpath('.//text()')]).strip()
                         error_text = " ".join(error_text.split()).strip() if bool(error_text) else error_text
 
                         if (bool(error_text) and (
-                                error_text.startswith("[nordic280]")
+                                error_text.startswith("[nordic280]") or
+                                "PKG-021: Corrupted image file encountered." in error_text
                                 )):
                             continue  # ignorer disse feilmeldingene
+                        else:
+                            self.utils.report.warn("Not ignoring: {}".format(error_text))
 
                         if error_text.startswith("Incorrect file signature"):
                             magic_number = error.xpath('*[@class="message-details"]/*[last()]/*[last()]/text()')[0]

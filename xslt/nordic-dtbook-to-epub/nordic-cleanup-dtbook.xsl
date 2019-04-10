@@ -194,7 +194,14 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:*" priority="2">
+    <xsl:template match="dtbook:li">
+        <xsl:copy>
+            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates select="node()[not(normalize-space()='&gt;')]"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="dtbook:*" priority="3">
         <xsl:choose>
             <!-- based on xpath from mtm2015-1.sch in nordic migrator -->
             <xsl:when test="not(false() = (for $node in (descendant-or-self::node()) return (normalize-space($node)='' and not($node/self::dtbook:img or $node/self::dtbook:br or $node/self::dtbook:meta or $node/self::dtbook:link or $node/self::dtbook:col or $node/self::dtbook:th or $node/self::dtbook:td or $node/self::dtbook:dd or $node/self::dtbook:pagenum[@page='special']))))"/>
