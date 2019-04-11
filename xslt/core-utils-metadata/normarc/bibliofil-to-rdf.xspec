@@ -7,6 +7,7 @@
                xmlns:schema="http://schema.org/"
                xmlns:frbr="http://purl.org/vocab/frbr/core#"
                xmlns:nlbbib="http://www.nlb.no/bibliographic"
+               xmlns:owl="http://www.w3.org/2002/07/owl#"
                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                xmlns="http://www.idpf.org/2007/opf"
                stylesheet="bibliofil-to-rdf.xsl">
@@ -227,6 +228,29 @@
                 <rdf:Description rdf:ID="...">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="urn:issn:12345678"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Edition identifier">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="612345"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="periodical" content="false"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">...</rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                    <owl:sameAs rdf:resource="urn:isbn:1234565555"/>
+                    <dc:identifier>612345</dc:identifier>
+                    <schema:isbn>1234-56-5555</schema:isbn>
                 </rdf:Description>
             </rdf:RDF>
         </x:expect>

@@ -9,6 +9,7 @@
                 xmlns:schema="http://schema.org/"
                 xmlns:frbr="http://purl.org/vocab/frbr/core#"
                 xmlns:nlbbib="http://www.nlb.no/bibliographic"
+                xmlns:owl="http://www.w3.org/2002/07/owl#"
                 xmlns:nlb="http://www.nlb.no/"
                 xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns:f="#"
@@ -41,7 +42,7 @@
                                                     )[1]"/>
         
         <xsl:variable name="html" as="element()">
-            <html xmlns:nlb="http://nlb.no/" nlb:source="quickbase-record">
+            <html xmlns:nlb="http://nlb.no/" nlb:source="bibliofil-record">
                 <head>
                     <title><xsl:value-of select="($metadata/dc:title/@content, 'Bibliofil')[1]"/></title>
                     <style>
@@ -94,6 +95,10 @@
                             <section vocab="http://schema.org/" typeof="Book">
                                 <xsl:attribute name="{if (matches($resource-book,'^(http|urn)')) then 'about' else 'id'}" select="$resource-book"/>
                                 <link property="exampleOfWork" href="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                                <xsl:if test="exists($metadata/*[@name = ('isbn', 'issn')])">
+                                    <xsl:variable name="isbn-issn" select="($metadata/*[@name = ('isbn', 'issn')])[1]" as="element()"/>
+                                    <link property="owl:sameAs" href="urn:{$isbn-issn/@name}:{replace($isbn-issn/@content,'[^0-9X]','')}"/>
+                                </xsl:if>
                                 
                                 <h1><xsl:value-of select="$metadata/dc:format/@content"/></h1>
                                 
@@ -127,6 +132,10 @@
                             <xsl:attribute name="rdf:{if (matches($resource-book,'^(http|urn)')) then 'about' else 'ID'}" select="$resource-book"/>
                             <rdf:type rdf:resource="http://schema.org/Book"/>
                             <schema:exampleOfWork rdf:resource="{if (matches($resource-creativeWork,'^(http|urn)')) then $resource-creativeWork else concat('#',$resource-creativeWork)}"/>
+                            <xsl:if test="exists($metadata/*[@name = ('isbn', 'issn')])">
+                                <xsl:variable name="isbn-issn" select="($metadata/*[@name = ('isbn', 'issn')])[1]" as="element()"/>
+                                <owl:sameAs rdf:resource="urn:{$isbn-issn/@name}:{replace($isbn-issn/@content,'[^0-9X]','')}"/>
+                            </xsl:if>
                             <xsl:call-template name="list-metadata-rdfxml">
                                 <xsl:with-param name="metadata" select="$metadata"/>
                                 <xsl:with-param name="type" select="'book'"/>
