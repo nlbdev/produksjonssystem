@@ -77,6 +77,8 @@
                 </xsl:for-each>
             </rdf:RDF>
         </xsl:variable>
+        
+        <!-- when a description occurs more than once, only keep the first one -->
         <xsl:variable name="result" as="element()">
             <xsl:for-each select="$result">
                 <xsl:copy exclude-result-prefixes="#all">
@@ -85,20 +87,19 @@
                 </xsl:copy>
             </xsl:for-each>
         </xsl:variable>
+        
+        <!-- sort descriptions -->
         <xsl:variable name="result" as="element()">
             <xsl:for-each select="$result">
                 <xsl:copy exclude-result-prefixes="#all">
                     <xsl:copy-of select="namespace::* | @*" exclude-result-prefixes="#all"/>
-                    <xsl:for-each select="*[starts-with(@rdf:about,'urn')]">
-                        <xsl:sort select="@rdf:about"/>
-                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
-                    </xsl:for-each>
-                    <xsl:for-each select="*[@rdf:about and not(starts-with(@rdf:about,'urn'))]">
-                        <xsl:sort select="@rdf:about"/>
-                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
-                    </xsl:for-each>
-                    <xsl:for-each select="*[not(@rdf:about)]">
-                        <xsl:sort select="@rdf:ID"/>
+                    <xsl:for-each select="*">
+                        <xsl:sort select="rdf:type/@rdf:resource = 'http://schema.org/CreativeWork'" order="descending"/> <!-- Descriptions representing the CreativeWork first -->
+                        <xsl:sort select="@rdf:about[matches(., '^(urn|http)')]" order="descending"/>
+                        <xsl:sort select="@rdf:about" order="descending"/>
+                        <xsl:sort select="@rdf:ID" order="descending"/>
+                        <!-- using order=descending so that empty strings are sorted last -->
+                        
                         <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                     </xsl:for-each>
                 </xsl:copy>
@@ -189,24 +190,24 @@
             </xsl:when>
             <xsl:otherwise>
                 <!-- Sort properties by namespace in this order -->
-                <xsl:variable name="ordered-namespaces" select="distinct-values(('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'http://purl.org/vocab/frbr/core#', 'http://purl.org/dc/elements/1.1/',
+                <xsl:variable name="ordered-namespaces" select="distinct-values(('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'http://www.w3.org/2002/07/owl#', 'http://purl.org/vocab/frbr/core#', 'http://purl.org/dc/elements/1.1/',
                                                                                  'http://schema.org/', 'http://www.nlb.no/bibliographic', 'http://www.nlb.no/production',
                                                                                  $merged/namespace-uri()))"/>
                 
                 <!-- Within each namespace; sort elements in this order -->
+                <xsl:variable name="ordered-head" select="('rdf:type','schema:exampleOfWork','owl:sameAs','frbr:translationOf','schema:isbn','schema:issn','dc:identifier','dc:title','dc:creator','dc:format','dc:language')" as="xs:string*"/>
                 <xsl:variable name="ordered-elements" as="xs:string*">
-                    <xsl:for-each select="$merged/name()">
+                    <xsl:for-each select="$merged[not(name() = $ordered-head)]/name()">
                         <xsl:sort select="."/>
                         <xsl:sequence select="."/>
                     </xsl:for-each>
                 </xsl:variable>
-                <xsl:variable name="ordered-elements" select="distinct-values((
-                                                                           ('rdf:type'),
-                                                                           ('frbr:translationOf'),
-                                                                           ('dc:identifier','dc:title','dc:creator','dc:format','dc:language'),
-                                                                           ('schema:exampleOfWork','schema:isbn'),
-                                                                           $ordered-elements))"/>
+                <xsl:variable name="ordered-elements" select="distinct-values($ordered-elements)"/>
                 
+                
+                <xsl:for-each select="$ordered-head">
+                    <xsl:sequence select="$merged[name() = current()]"/>
+                </xsl:for-each>
                 <xsl:for-each select="$ordered-namespaces">
                     <xsl:variable name="namespace" select="."/>
                     <xsl:for-each select="$ordered-elements">
