@@ -228,7 +228,7 @@ class Produksjonssystem():
             [NordicToNlbpub(retry_missing=True,
                             overwrite=False,
                             during_working_hours=True,
-                            during_night_and_weekend=True) ,   "master",              "nlbpub"],
+                            during_night_and_weekend=True),   "master",              "nlbpub"],
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
@@ -550,15 +550,18 @@ class Produksjonssystem():
         for pipeline in self.pipelines:
             if "dummy" in pipeline[0].uid or not pipeline[0].running:
                 continue
-            if len(pipeline[0].get_queue()) > 0 or pipeline[0].book is not None:
+            if pipeline[0].book is not None:
                 return False
         return True
 
     def _system_status_thread(self):
         # Update system status
+        idle_start_time = time.time()
         while self.shouldRun:
             time.sleep(5)
-            Config.set("system.idle", self.is_idle())
+            if not self.is_idle():
+                idle_start_time = time.time()
+            Config.set("system.idle", int(time.time() - idle_start_time))
 
     def _daily_report_thread(self):
         # Checks for reports in daily report dir for each pipeline. Only sends mail once each day after 7

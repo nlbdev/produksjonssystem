@@ -509,7 +509,7 @@ class Pipeline():
 
     # Whether or not to process autotriggered books
     def should_handle_autotriggered_books(self):
-        if self.should_retry_only_when_idle and self.config and not Config.get("system.idle"):
+        if self.should_retry_only_when_idle and Config.get("system.idle", 0) < self._inactivity_timeout * 2:
             return False
 
         if Pipeline.is_working_hours():
