@@ -704,8 +704,8 @@
                                 <dd property="nlbprod:formatDaisy202narrated">false</dd>
                                 <dt title="nlbprod:formatDaisy202tts"/>
                                 <dd property="nlbprod:formatDaisy202tts">false</dd>
-                                <dt title="nlbprod:identifier.daisy202.student"/>
-                                <dd property="nlbprod:identifier.daisy202.student" id="identifier-daisy202student">221437</dd>
+                                <dt title="nlbprod:identifier.daisy202"/>
+                                <dd property="nlbprod:identifier.daisy202">221437</dd>
                                 <dt title="nlbprod:nlbIsbnDaisy202student"/>
                                 <dd property="nlbprod:nlbIsbnDaisy202student">978-82-16-22610-0</dd>
                                 <dt title="nlbprod:formatDaisy202narratedStudent"/>
@@ -1051,7 +1051,7 @@
                         <nlbprod:feeExtraPreparationTime>0.00</nlbprod:feeExtraPreparationTime>
                         <nlbprod:formatDaisy202narrated>false</nlbprod:formatDaisy202narrated>
                         <nlbprod:formatDaisy202tts>false</nlbprod:formatDaisy202tts>
-                        <nlbprod:identifier.daisy202.student>221437</nlbprod:identifier.daisy202.student>
+                        <nlbprod:identifier.daisy202>221437</nlbprod:identifier.daisy202>
                         <nlbprod:nlbIsbnDaisy202student>978-82-16-22610-0</nlbprod:nlbIsbnDaisy202student>
                         <nlbprod:formatDaisy202narratedStudent>false</nlbprod:formatDaisy202narratedStudent>
                         <nlbprod:generateFee>false</nlbprod:generateFee>
@@ -2000,6 +2000,36 @@
                     </rdf:Description>
                 </rdf:RDF>
             </_>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Make sure that the correct identifier is used (2xxxxx vs 6xxxxx)">
+        <x:call template="test">
+            <x:param name="qdbapi">
+            <qdbapi>
+                <table>
+                    <name>Records</name>
+                    <records>
+                        <record rid="14411">
+                            <f id="20">630709</f> <!-- identifier.daisy202 (nlb) --> <!--.narrated-->
+                            <f id="22">0</f> <!-- formatDaisy202narrated (nlb) -->
+                            <f id="23">0</f> <!-- formatDaisy202tts (nlb) -->
+                            <f id="24">227609</f> <!-- identifier.daisy202.student (nlb) | identifier.daisy202[.narrated] (statped)--> <!---.student-->
+                            <f id="26">0</f> <!-- formatDaisy202narratedStudent (nlb) | formatDaisy202narrated (statped) -->
+                            <f id="27">1</f> <!-- formatDaisy202ttsStudent (nlb) | formatDaisy202tts (statped) -->
+                            <f id="31">413009</f> <!-- identifier.reserved -->
+                            <f id="33">0</f> <!-- formatDaisy202narratedFulltext -->
+                            <!-- 503: identifier.daisy202[.tts] (statped) -->
+                        </record>
+                    </records>
+                </table>
+            </qdbapi>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="the result should be as expected" test="//*[starts-with(name(),'nlbprod:identifier.daisy202')]" xmlns:nlbprod="http://www.nlb.no/production">
+            <nlbprod:identifier.daisy202.fiction>630709</nlbprod:identifier.daisy202.fiction>
+            <nlbprod:identifier.daisy202>227609</nlbprod:identifier.daisy202>
         </x:expect>
     </x:scenario>
     

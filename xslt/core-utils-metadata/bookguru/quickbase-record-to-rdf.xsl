@@ -497,7 +497,14 @@ section dl {
     <xsl:template match="f[@id='20']" mode="nlb">
         <!-- "Tilvekstnummer DAISY 2.02 Skjønnlitteratur" -->
         <!-- Integer -->
-        <dd property="nlbprod:identifier.daisy202" _type-id="audio">
+        
+        <!--
+            Hvis dette er en skjønnlitterær bok, bruk 'nlbprod:identifier.daisy202', ellers 'nlbprod:identifier.daisy202.fiction'.
+            Dette er for å sikre at det er riktig boknummer som brukes (ikke studielitteratur-boknummer på skjønnlitterære bøker og omvendt).
+        -->
+        <xsl:variable name="formatDaisy202Student" select="../f[@id=('26','27')]/text() = '1'" as="xs:boolean"/>
+        
+        <dd property="nlbprod:identifier.daisy202{if ($formatDaisy202Student) then '.fiction' else ''}" _type-id="audio">
             <xsl:value-of select="."/>
         </dd>
     </xsl:template>
@@ -529,9 +536,17 @@ section dl {
     <xsl:template match="f[@id='24']" mode="nlb">
         <!-- "Tilvekstnummer DAISY 2.02 Studielitteratur" -->
         <!-- Integer -->
-        <dd property="nlbprod:identifier.daisy202.student" _type-id="audio" id="identifier-daisy202student">
+        
+        <!--
+            Hvis dette er en skjønnlitterær bok, bruk 'nlbprod:identifier.daisy202', ellers 'nlbprod:identifier.daisy202.fiction'.
+            Dette er for å sikre at det er riktig boknummer som brukes (ikke studielitteratur-boknummer på skjønnlitterære bøker og omvendt).
+        -->
+        <xsl:variable name="formatDaisy202Student" select="../f[@id=('26','27')]/text() = '1'" as="xs:boolean"/>
+        
+        <dd property="nlbprod:identifier.daisy202{if ($formatDaisy202Student) then '' else '.student'}" _type-id="audio">
             <xsl:value-of select="."/>
         </dd>
+        
         <!--<dd property="dcterms:audience" _type-id="audio" refines="#identifier-daisy202student">Student</dd>-->
     </xsl:template>
     
