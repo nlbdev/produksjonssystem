@@ -70,59 +70,75 @@
         </xsl:element>
     </xsl:template>
     
+    <xsl:template match="book">
+        <xsl:next-match>
+            <xsl:with-param name="toc-count" select="count(*/level1[f:is-toc(.)])" as="xs:integer" tunnel="yes"/>
+        </xsl:next-match>
+    </xsl:template>
+    
     <xsl:template match="*[matches(local-name(),'(level\d?|sidebar)')]">
+        <xsl:param name="include-always" select="false()" tunnel="yes" as="xs:boolean"/>
+        <xsl:param name="toc-count" select="0" tunnel="yes" as="xs:integer"/>
+        
         <xsl:variable name="level" select="f:level(.)"/>
         
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@* except @class"/>
-            
-            <xsl:variable name="classes" select="tokenize(@class,'\s+')" as="xs:string*"/>
-
-            <!-- xpath expressions based on expressions in dtbook-to-epub3.xsl in nordic migrator -->
-            <xsl:variable name="one-of-multiple-tocs" select="exists(list[tokenize(@class,'\s+')='toc']) and count(//list[tokenize(@class,'\s+')='toc']) gt 1"/>
-            <xsl:variable name="classes" select="($classes, if ($one-of-multiple-tocs) then 'toc-brief' else ())"/>
-            
-            <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (note[not(//table//noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::frontmatter) then false() else true() else false()"/>
-            <xsl:variable name="implicit-toc" select="if (not($one-of-multiple-tocs) and exists(list[tokenize(@class,'\s+')='toc'])) then true() else false()"/>
-            <xsl:variable name="classes" select="($classes, if (not($implicit-footnotes-or-rearnotes or $implicit-toc or $one-of-multiple-tocs) and (parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and count($classes) = 0) then 'chapter' else ())" as="xs:string*"/>
-            
-            <xsl:variable name="classes" select="($classes, if (list/tokenize(@class,'\s+') = 'index') then 'index' else ())" as="xs:string*"/>
-            
-            <xsl:variable name="level" select="f:level(.)"/>
-            <xsl:variable name="is-note-level" select="exists(//note[f:level(.) = $level])" as="xs:boolean"/>
-            
-            <xsl:if test="count($classes)">
-                <xsl:attribute name="class" select="string-join($classes, ' ')"/>
-            </xsl:if>
-            
-            <!-- text nodes and pagenum can be before headlines -->
-            <xsl:variable name="before-headline" select="if ($is-note-level) then () else node() intersect (*[not(local-name()='pagenum')])[1]/preceding-sibling::node()" as="node()*"/>
-            <xsl:apply-templates select="$before-headline"/>
-            
-            <!-- conditionally insert headline -->
-            <xsl:if test="tokenize(@class,'\s+') = 'colophon' and not(exists(*[matches(local-name(),'h[d\d]')]))">
-                <xsl:element name="h{$level}" exclude-result-prefixes="#all">
-                    <xsl:text>Kolofon</xsl:text>
-                </xsl:element>
-            </xsl:if>
-            
-            <!-- content before subchapters -->
-            <xsl:variable name="child-chapters" select="*[matches(local-name(),'(level\d?|sidebar)')]/(self::* | following-sibling::*)"/>
-            <xsl:variable name="content" select="if (exists($child-chapters)) then node() except $child-chapters[1]/(self::* | following-sibling::node()) else node()"/>
-            <xsl:apply-templates select="$content except $before-headline"/>
-            
-            <!-- pagenums in subchapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
-            <xsl:variable name="child-chapters-with-notes" select="$child-chapters[exists(.//note[f:level(.) = f:level(current())])] except $child-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | preceding-sibling::*)"/>
-            <xsl:copy-of select="$child-chapters-with-notes//pagenum"/>
-            
-            <!-- subchapters -->
-            <xsl:apply-templates select="$child-chapters"/>
-            
-            <!-- pagenums in following chapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
-            <xsl:variable name="following-chapters" select="following-sibling::*[matches(local-name(),'(level\d?|sidebar)')]"/>
-            <xsl:variable name="following-chapters-with-notes" select="$following-chapters[exists(.//note[f:level(.) = f:level(current())])] except $following-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | following-sibling::*)"/>
-            <xsl:copy-of select="$following-chapters-with-notes//pagenum"/>
-        </xsl:copy>
+        <xsl:if test="not(f:move-to-frontmatter(., $toc-count)) or $include-always">
+            <xsl:copy exclude-result-prefixes="#all">
+                <xsl:apply-templates select="@* except @class"/>
+                
+                <xsl:variable name="classes" select="tokenize(@class,'\s+')" as="xs:string*"/>
+    
+                <!-- xpath expressions based on expressions in dtbook-to-epub3.xsl in nordic migrator -->
+                <xsl:variable name="classes" select="($classes, if (f:is-main-toc(., $toc-count)) then 'toc' else if (f:is-toc(.)) then 'toc-brief' else ())"/>
+                <xsl:variable name="classes" select="if ($classes[.='toc-brief']) then $classes[not(.='toc')] else $classes"/>  <!-- remove toc class if there's a toc-brief class -->
+                
+                <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (note[not(//table//noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::frontmatter) then false() else true() else false()"/>
+                <xsl:variable name="classes" select="($classes, if (not($implicit-footnotes-or-rearnotes or f:is-toc(.)) and (parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and count($classes) = 0) then 'chapter' else ())" as="xs:string*"/>
+                
+                <xsl:variable name="classes" select="($classes, if (list/tokenize(@class,'\s+') = 'index') then 'index' else ())" as="xs:string*"/>
+                
+                <xsl:variable name="level" select="f:level(.)"/>
+                <xsl:variable name="is-note-level" select="exists(//note[f:level(.) = $level])" as="xs:boolean"/>
+                
+                <xsl:if test="count($classes)">
+                    <xsl:attribute name="class" select="string-join(distinct-values($classes), ' ')"/>
+                </xsl:if>
+                
+                <!-- text nodes and pagenum can be before headlines -->
+                <xsl:variable name="before-headline" select="if ($is-note-level) then () else node() intersect (*[not(local-name()='pagenum')])[1]/preceding-sibling::node()" as="node()*"/>
+                <xsl:apply-templates select="$before-headline">
+                    <xsl:with-param name="toc-count" select="$toc-count" as="xs:integer" tunnel="yes"/>
+                </xsl:apply-templates>
+                
+                <!-- conditionally insert headline -->
+                <xsl:if test="tokenize(@class,'\s+') = 'colophon' and not(exists(*[matches(local-name(),'h[d\d]')]))">
+                    <xsl:element name="h{$level}" exclude-result-prefixes="#all">
+                        <xsl:text>Kolofon</xsl:text>
+                    </xsl:element>
+                </xsl:if>
+                
+                <!-- content before subchapters -->
+                <xsl:variable name="child-chapters" select="*[matches(local-name(),'(level\d?|sidebar)')]/(self::* | following-sibling::*)"/>
+                <xsl:variable name="content" select="if (exists($child-chapters)) then node() except $child-chapters[1]/(self::* | following-sibling::node()) else node()"/>
+                <xsl:apply-templates select="$content except $before-headline">
+                    <xsl:with-param name="toc-count" select="$toc-count" as="xs:integer" tunnel="yes"/>
+                </xsl:apply-templates>
+                
+                <!-- pagenums in subchapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
+                <xsl:variable name="child-chapters-with-notes" select="$child-chapters[exists(.//note[f:level(.) = f:level(current())])] except $child-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | preceding-sibling::*)"/>
+                <xsl:copy-of select="$child-chapters-with-notes//pagenum"/>
+                
+                <!-- subchapters -->
+                <xsl:apply-templates select="$child-chapters">
+                    <xsl:with-param name="toc-count" select="$toc-count" as="xs:integer" tunnel="yes"/>
+                </xsl:apply-templates>
+                
+                <!-- pagenums in following chapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
+                <xsl:variable name="following-chapters" select="following-sibling::*[matches(local-name(),'(level\d?|sidebar)')]"/>
+                <xsl:variable name="following-chapters-with-notes" select="$following-chapters[exists(.//note[f:level(.) = f:level(current())])] except $following-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | following-sibling::*)"/>
+                <xsl:copy-of select="$following-chapters-with-notes//pagenum"/>
+            </xsl:copy>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="pagenum" priority="2">
@@ -174,18 +190,20 @@
     <xsl:template match="pagenum[parent::list]"/>
     
     <xsl:template match="list[tokenize(@class,'\s+') = 'toc']">
+        <xsl:param name="toc-count" select="0" tunnel="yes" as="xs:integer"/>
+        
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* except @class"/>
             
-            <xsl:variable name="multiple-tocs" select="count(//list[tokenize(@class,'\s+')='toc']) gt 1"/>
             <xsl:choose>
-                <xsl:when test="$multiple-tocs">
-                    <xsl:if test="normalize-space(@class) != 'toc'">
-                        <xsl:attribute name="class" select="tokenize(@class,'\s+')[not(.='toc')]"/>
-                    </xsl:if>
+                <xsl:when test="exists(parent::*[f:is-main-toc(., $toc-count)])">
+                    <xsl:apply-templates select="@class"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:apply-templates select="@class"/>
+                    <xsl:variable name="filtered-classes" select="for $class in tokenize(@class,'\s+') return if ($class = 'toc') then () else $class"/>
+                    <xsl:if test="count($filtered-classes) gt 0">
+                        <xsl:attribute name="class" select="string-join($filtered-classes, ' ')"/>
+                    </xsl:if>
                 </xsl:otherwise>
             </xsl:choose>
             
@@ -262,8 +280,12 @@
     </xsl:template>
     
     <xsl:template match="frontmatter">
+        <xsl:param name="toc-count" select="0" as="xs:integer" tunnel="yes"/>
+        
         <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@* | node()"/>
+            <xsl:apply-templates select="@* | node()">
+                <xsl:with-param name="toc-count" select="$toc-count" as="xs:integer" tunnel="yes"/>
+            </xsl:apply-templates>
             
             <xsl:if test="not(exists(level1))">
                 <level1 class="titlepage">
@@ -273,12 +295,34 @@
                     </xsl:for-each>
                 </level1>
             </xsl:if>
+            
+            <xsl:apply-templates select="../bodymatter/level1[f:move-to-frontmatter(., $toc-count)]">
+                <xsl:with-param name="include-always" select="true()" tunnel="yes"/>
+                <xsl:with-param name="toc-count" select="$toc-count" as="xs:integer" tunnel="yes"/>
+            </xsl:apply-templates>
         </xsl:copy>
     </xsl:template>
     
     <xsl:template match="img/@src">
         <xsl:attribute name="src" select="lower-case(.)"/>
     </xsl:template>
+    
+    <xsl:function name="f:move-to-frontmatter" as="xs:boolean">
+        <xsl:param name="level" as="element()"/>
+        <xsl:param name="toc-count" as="xs:integer"/>
+        <xsl:value-of select="$level[parent::bodymatter] and not($level/preceding-sibling::level1) and f:is-toc($level) and $toc-count = 1"/>
+    </xsl:function>
+    
+    <xsl:function name="f:is-main-toc" as="xs:boolean">
+        <xsl:param name="level" as="element()"/>
+        <xsl:param name="toc-count" as="xs:integer"/>
+        <xsl:value-of select="f:is-toc($level) and $toc-count = 1 and ($level/parent::frontmatter or f:move-to-frontmatter($level, $toc-count))"/>
+    </xsl:function>
+    
+    <xsl:function name="f:is-toc" as="xs:boolean">
+        <xsl:param name="level" as="element()"/>
+        <xsl:value-of select="exists($level/list[tokenize(@class,'\s+')='toc'])"/>
+    </xsl:function>
     
     <xsl:function name="f:level" as="xs:integer">
         <xsl:param name="context" as="element()"/>

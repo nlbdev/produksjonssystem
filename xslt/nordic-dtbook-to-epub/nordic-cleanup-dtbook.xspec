@@ -121,53 +121,61 @@
     <x:scenario label="Missing top-level types">
         <x:context>
             <book>
-                <level1>
-                    <list class="toc">...</list>
-                </level1>
-                <level1 class="part">
-                    <level2 class="abstract">...</level2>
-                    <level2 class="acknowledgments">...</level2>
-                    <level2>...</level2>
-                    <level2 class="chapter">...</level2>
-                    <level2 class="">...</level2>
-                    <level2 class="appendix">...</level2>
-                </level1>
-                <level1 class="abstract">...</level1>
-                <level1 class="acknowledgments">...</level1>
-                <level1>...</level1>
-                <level1 class="chapter">...</level1>
-                <level1 class="">...</level1>
-                <level1 class="appendix">...</level1>
-                <level1>
-                    <h1>Note</h1>
-                    <note id="noteid">...</note>
-                </level1>
+                <frontmatter>
+                    <level1>
+                        <list class="toc">...</list>
+                    </level1>
+                </frontmatter>
+                <bodymatter>
+                    <level1 class="part">
+                        <level2 class="abstract">...</level2>
+                        <level2 class="acknowledgments">...</level2>
+                        <level2>...</level2>
+                        <level2 class="chapter">...</level2>
+                        <level2 class="">...</level2>
+                        <level2 class="appendix">...</level2>
+                    </level1>
+                    <level1 class="abstract">...</level1>
+                    <level1 class="acknowledgments">...</level1>
+                    <level1>...</level1>
+                    <level1 class="chapter">...</level1>
+                    <level1 class="">...</level1>
+                    <level1 class="appendix">...</level1>
+                    <level1>
+                        <h1>Note</h1>
+                        <note id="noteid">...</note>
+                    </level1>
+                </bodymatter>
             </book>
         </x:context>
         
         <x:expect label="result">
             <book>
-                <level1>
-                    <list class="toc">...</list>
-                </level1>
-                <level1 class="part">
-                    <level2 class="abstract">...</level2>
-                    <level2 class="acknowledgments">...</level2>
-                    <level2 class="chapter">...</level2>
-                    <level2 class="chapter">...</level2>
-                    <level2 class="chapter">...</level2>
-                    <level2 class="appendix">...</level2>
-                </level1>
-                <level1 class="abstract">...</level1>
-                <level1 class="acknowledgments">...</level1>
-                <level1 class="chapter">...</level1>
-                <level1 class="chapter">...</level1>
-                <level1 class="chapter">...</level1>
-                <level1 class="appendix">...</level1>
-                <level1>
-                    <h1>Note</h1>
-                    <note id="noteid">...</note>
-                </level1>
+                <frontmatter>
+                    <level1 class="toc">
+                        <list class="toc">...</list>
+                    </level1>
+                </frontmatter>
+                <bodymatter>
+                    <level1 class="part">
+                        <level2 class="abstract">...</level2>
+                        <level2 class="acknowledgments">...</level2>
+                        <level2 class="chapter">...</level2>
+                        <level2 class="chapter">...</level2>
+                        <level2 class="chapter">...</level2>
+                        <level2 class="appendix">...</level2>
+                    </level1>
+                    <level1 class="abstract">...</level1>
+                    <level1 class="acknowledgments">...</level1>
+                    <level1 class="chapter">...</level1>
+                    <level1 class="chapter">...</level1>
+                    <level1 class="chapter">...</level1>
+                    <level1 class="appendix">...</level1>
+                    <level1>
+                        <h1>Note</h1>
+                        <note id="noteid">...</note>
+                    </level1>
+                </bodymatter>
             </book>
         </x:expect>
     </x:scenario>
@@ -307,7 +315,7 @@
         <x:expect label="result">
             <book>
                 <frontmatter>
-                    <level1>
+                    <level1 class="toc">
                         <list class="toc">...</list>
                     </level1>
                     <level1 class="chapter">...</level1>
@@ -763,6 +771,128 @@
         <x:expect label="the result should be as expected">
             <img src="p117-001.jpg"/>
         </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="change the toc class to toc-brief for toc that is not in frontmatter, or move to frontmatter when possible">
+        <x:scenario label="move to frontmatter">
+            <x:context>
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="toc toc-1"><list class="toc">…</list></level1>
+                        <level1 class="chapter"><p>…</p></level1>
+                    </bodymatter>
+                </book>
+            </x:context>
+            
+            <x:expect label="the result should be as expected">
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                        <level1 class="toc toc-1"><list class="toc">…</list></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="chapter"><p>…</p></level1>
+                    </bodymatter>
+                </book>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="don't move to frontmatter if not first">
+            <x:context>
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="chapter"><p>…</p></level1>
+                        <level1 class="toc toc-2"><list class="toc">…</list></level1>
+                    </bodymatter>
+                </book>
+            </x:context>
+            
+            <x:expect label="the result should be as expected">
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="chapter"><p>…</p></level1>
+                        <level1 class="toc-2 toc-brief"><list>…</list></level1>
+                    </bodymatter>
+                </book>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="don't move from rearmatter">
+            <x:context>
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="chapter"><p>…</p></level1>
+                    </bodymatter>
+                    <rearmatter>
+                        <level1 class="toc toc-3"><list class="toc">…</list></level1>
+                        <level1 class="index"><p>…</p></level1>
+                    </rearmatter>
+                </book>
+            </x:context>
+            
+            <x:expect label="the result should be as expected">
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="chapter"><p>…</p></level1>
+                    </bodymatter>
+                    <rearmatter>
+                        <level1 class="toc-3 toc-brief"><list>…</list></level1>
+                        <level1 class="index"><p>…</p></level1>
+                    </rearmatter>
+                </book>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="don't move if multiple tocs">
+            <x:context>
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="toc toc-1"><list class="toc">…</list></level1>
+                        <level1 class="chapter"><p>…</p></level1>
+                        <level1 class="toc toc-2"><list class="toc">…</list></level1>
+                    </bodymatter>
+                    <rearmatter>
+                        <level1 class="toc toc-3"><list class="toc">…</list></level1>
+                        <level1 class="index"><p>…</p></level1>
+                    </rearmatter>
+                </book>
+            </x:context>
+            
+            <x:expect label="the result should be as expected">
+                <book>
+                    <frontmatter>
+                        <level1 class="jacketcopy"><p>…</p></level1>
+                    </frontmatter>
+                    <bodymatter>
+                        <level1 class="toc-1 toc-brief"><list>…</list></level1>
+                        <level1 class="chapter"><p>…</p></level1>
+                        <level1 class="toc-2 toc-brief"><list>…</list></level1>
+                    </bodymatter>
+                    <rearmatter>
+                        <level1 class="toc-3 toc-brief"><list>…</list></level1>
+                        <level1 class="index"><p>…</p></level1>
+                    </rearmatter>
+                </book>
+            </x:expect>
+        </x:scenario>
     </x:scenario>
     
 </x:description>
