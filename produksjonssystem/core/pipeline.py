@@ -1100,31 +1100,32 @@ class Pipeline():
     def get_main_event(book):
         created_seq = []
         deleted_seq = []
-        event = "modified"
+        event = None
 
         for e in range(0, len(book["events"])):
-            event = book["events"][e]
+            this_event = book["events"][e]
+            if this_event == "autotriggered":
+                # only use "autotriggered" if there are no other known event
+                if not event:
+                    event = this_event
+            else:
+                # always prefer "triggered" over other events
+                if event != "triggered":
+                    event = this_event
+
+            # remember in which order a book was created/deleted
             if event == "created":
                 created_seq.append(e)
             elif event == "deleted":
                 deleted_seq.append(e)
 
-        if created_seq and deleted_seq and book["source"]:
-            if max(deleted_seq) > max(created_seq) or not os.path.exists(book["source"]):
-                event = "deleted"
-            else:
-                event = "created"
-        elif "created" in book["events"]:
-            event = "created"
-        elif "deleted" in book["events"]:
-            event = "deleted"
-        elif "autotriggered" in book["events"] and len(set(book["events"])) == 1:
-            event = "autotriggered"
-        elif "triggered" in book["events"]:
-            event = "triggered"
-
-        if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
+        # use the event "crete_before_delete" if the book was first created and then deleted
+        if event in ["created", "deleted"] and created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
             event = "create_before_delete"
+
+        # default to "modified"
+        if not event:
+            event = "modified"
 
         return event
 
