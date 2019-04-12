@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="nordic-cleanup-html.xsl">
+    
+    <x:scenario label="Fix issue with table notes (regression for book 501444)">
+        <x:context>
+            <section id="level1_23" epub:type="backmatter footnotes">
+                <ol epub:type="footnotes">
+                    <li id="fn_21_1" class="notebody" epub:type="footnote">
+                        <p>1 Wenn solche Verben im Stamm auf -<em>t</em> auslauten, sind sie in der 3. Pers. Sing. endungslos: fech<em>t</em>en -e<em>r</em> ficht; flech<em>t</em>en &#x2013; er flicht</p>
+                    </li>
+                    <li id="fn_113_1" class="notebody" epub:type="footnote">
+                        <p>1 Als vorausweisendes Demonstrativpronomen in der Form <em>derer.</em> Wir gedenken <em>derer,</em> die durch die Flut umgefkommen sind.</p>
+                    </li>
+                    <li id="fn_162_1" class="notebody" epub:type="footnote">
+                        <p>1 Einige Artikelw&#xf6;rter verf&#xfc;gen &#xfc;ber Varianten, die deren Bedeutung modifizieren und/oder nur in bestimmten Umgebungen m&#xf6;glich sind. Diese Varianten stehen
+                            neben dem betreffenden Artikelwort. Die in () stehenden Artikelw&#xf6;rter bzw. Varianten k&#xf6;nnen nur vor bestimmten Substantiven im Singular stehen.</p>
+                    </li>
+                </ol>
+                <aside id="fn_113_1" class="notebody" epub:type="note">
+                    <p>1 Als vorausweisendes Demonstrativpronomen in der Form <em>derer.</em> Wir gedenken <em>derer,</em> die durch die Flut umgekommen sind.</p>
+                </aside>
+                <aside id="fn_162_1" class="notebody" epub:type="note">
+                    <p>1 Einige Artikelw&#xf6;rter verf&#xfc;gen &#xfc;ber Varianten, die deren Bedeutung modifizieren und/oder nur in bestimmten Umgebungen m&#xf6;glich sind. Diese Varianten stehen neben
+                        dem betreffenden Artikelwort. Die in () stehenden Artikelw&#xf6;rter bzw. Varianten k&#xf6;nnen nur vor bestimmten Substantiven im Singular stehen.</p>
+                </aside>
+            </section>
+        </x:context>
+
+        <x:expect label="the result should be as expected">
+            <section id="level1_23" epub:type="backmatter footnotes">
+                <ol epub:type="footnotes">
+                    <li id="fn_21_1" class="notebody" epub:type="footnote">
+                        <p>1 Wenn solche Verben im Stamm auf -<em>t</em> auslauten, sind sie in der 3. Pers. Sing. endungslos: fech<em>t</em>en -e<em>r</em> ficht; flech<em>t</em>en &#x2013; er flicht</p>
+                    </li>
+                    <li id="fn_113_1" class="notebody" epub:type="footnote">
+                        <p>1 Als vorausweisendes Demonstrativpronomen in der Form <em>derer.</em> Wir gedenken <em>derer,</em> die durch die Flut umgefkommen sind.</p>
+                    </li>
+                    <li id="fn_162_1" class="notebody" epub:type="footnote">
+                        <p>1 Einige Artikelw&#xf6;rter verf&#xfc;gen &#xfc;ber Varianten, die deren Bedeutung modifizieren und/oder nur in bestimmten Umgebungen m&#xf6;glich sind. Diese Varianten stehen
+                            neben dem betreffenden Artikelwort. Die in () stehenden Artikelw&#xf6;rter bzw. Varianten k&#xf6;nnen nur vor bestimmten Substantiven im Singular stehen.</p>
+                    </li>
+                </ol>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

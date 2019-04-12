@@ -53,8 +53,8 @@ class NordicDTBookToEpub(Pipeline):
             self.utils.report.info("Boknummer for {} er: {}".format(self.book["name"], metadata["identifier"]))
 
         self.utils.report.info("Lager en kopi av DTBoken")
-        temp_dtbookdir_obj = tempfile.TemporaryDirectory()
-        temp_dtbookdir = temp_dtbookdir_obj.name
+        #temp_dtbookdir_obj = tempfile.TemporaryDirectory()
+        temp_dtbookdir = "/tmp/temp_dtbookdir" #temp_dtbookdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_dtbookdir)
 
         dtbook = None
@@ -149,16 +149,65 @@ class NordicDTBookToEpub(Pipeline):
             if dtbook_validate_status == "WARN":
                 self.utils.report.warn("DTBoken er ikke valid, men vi fortsetter alikevel.")
 
-        self.utils.report.info("Konverterer fra Nordisk DTBook til Nordisk EPUB3...")
+        self.utils.report.info("Konverterer fra Nordisk DTBook til Nordisk HTML...")
+        #temp_htmldir_obj = tempfile.TemporaryDirectory()
+        temp_htmldir = "/tmp/temp_htmldir" #temp_htmldir_obj.name
+        temp_htmlfile = None
+        with DaisyPipelineJob(self, "nordic-dtbook-to-html", {"dtbook": dtbook,
+                                                              "fail-on-error": "false",
+                                                              "no-legacy": "false"}) as dp2_job_dtbook_to_html:
+            convert_status = "SUCCESS" if dp2_job_dtbook_to_html.status == "DONE" else "ERROR"
+
+            convert_report_file = os.path.join(dp2_job_dtbook_to_html.dir_output, "html-report/report.xhtml")
+
+            if convert_status != "SUCCESS":
+                self.utils.report.error("Klarte ikke å konvertere boken fra DTBook til HTML")
+
+                # get conversion report
+                if os.path.isfile(convert_report_file):
+                    with open(convert_report_file, 'r') as result_report:
+                        self.utils.report.attachment(result_report.readlines(),
+                                                     os.path.join(self.utils.report.reportDir(), "report-dtbook-to-html.html"),
+                                                     convert_status)
+
+                return False
+
+            for root, dirs, files in os.walk(dp2_job_dtbook_to_html.dir_output):
+                self.utils.report.info("{} | {} | {}".format(root, dirs, files))
+
+            dp2_html_dir = os.path.join(dp2_job_dtbook_to_html.dir_output, "output-dir")
+
+            if not os.path.isdir(dp2_html_dir):
+                self.utils.report.error("Finner ikke 'output-dir' for den konverterte boken: {}".format(dp2_html_dir))
+                return False
+
+            self.utils.filesystem.copy(dp2_html_dir, temp_htmldir)
+            temp_htmlfile = os.path.join(temp_htmldir, metadata["identifier"] + ".xhtml")
+
+        if not os.path.isfile(temp_htmlfile):
+            self.utils.report.error("Finner ikke den konverterte boken: {}".format(temp_htmlfile))
+            self.utils.report.info("Kanskje filnavnet er forskjellig fra IDen?")
+            return False
+
+        self.utils.report.info("Rydder opp i nordisk HTML")
+        temp_html_xslt_output_obj = tempfile.NamedTemporaryFile()
+        temp_html_xslt_output = temp_html_xslt_output_obj.name
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(NordicDTBookToEpub.xslt_dir, NordicDTBookToEpub.uid, "nordic-cleanup-html.xsl"),
+                    source=temp_htmlfile,
+                    target=temp_html_xslt_output)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_html_xslt_output, temp_htmlfile)
+
+        self.utils.report.info("Konverterer fra Nordisk HTML til Nordisk EPUB3...")
         temp_epub_file_obj = tempfile.NamedTemporaryFile()
         temp_epub_file = temp_epub_file_obj.name
-        with DaisyPipelineJob(self, "nordic-dtbook-to-epub3", {"dtbook": dtbook,
-                                                               "fail-on-error": "false",
-                                                               "no-legacy": "false",
-                                                               "discard-intermediary-html": "false"}) as dp2_job_convert:
-            convert_status = "SUCCESS" if dp2_job_convert.status == "DONE" else "ERROR"
+        with DaisyPipelineJob(self, "nordic-html-to-epub3", {"html": temp_htmlfile,
+                                                             "fail-on-error": "false"}) as dp2_job_html_to_epub:
+            convert_status = "SUCCESS" if dp2_job_html_to_epub.status == "DONE" else "ERROR"
 
-            convert_report_file = os.path.join(dp2_job_convert.dir_output, "html-report/report.xhtml")
+            convert_report_file = os.path.join(dp2_job_html_to_epub.dir_output, "html-report/report.xhtml")
 
             if convert_status != "SUCCESS":
                 self.utils.report.error("Klarte ikke å konvertere boken")
@@ -167,12 +216,12 @@ class NordicDTBookToEpub(Pipeline):
                 if os.path.isfile(convert_report_file):
                     with open(convert_report_file, 'r') as result_report:
                         self.utils.report.attachment(result_report.readlines(),
-                                                     os.path.join(self.utils.report.reportDir(), "report-conversion.html"),
+                                                     os.path.join(self.utils.report.reportDir(), "report-html-to-epub3.html"),
                                                      convert_status)
 
                 return False
 
-            dp2_epub_file = os.path.join(dp2_job_convert.dir_output, "output-dir", metadata["identifier"] + ".epub")
+            dp2_epub_file = os.path.join(dp2_job_html_to_epub.dir_output, "output-dir", metadata["identifier"] + ".epub")
 
             if not os.path.isfile(dp2_epub_file):
                 self.utils.report.error("Finner ikke den konverterte boken: {}".format(dp2_epub_file))
@@ -188,15 +237,10 @@ class NordicDTBookToEpub(Pipeline):
                 if epub_validate_status == "ERROR":
 
                     # attach intermediary file from conversion
-                    intermediary_html = os.path.join(dp2_job_convert.dir_output, "output-dir", metadata["identifier"], metadata["identifier"] + ".xhtml")
-                    if os.path.isfile(intermediary_html):
-                        with open(intermediary_html, 'r') as result_report:
-                            self.utils.report.attachment(result_report.readlines(),
-                                                         os.path.join(self.utils.report.reportDir(), "intermediary-html.html"),
-                                                         "DEBUG")
-                    else:
-                        self.utils.report.warn("Could not find intermediary HTML file at {}".format(os.path.relpath(intermediary_html,
-                                                                                                                    dp2_job_convert.dir_output)))
+                    with open(temp_htmlfile, 'r') as intermediary_htmlfile:
+                        self.utils.report.attachment(intermediary_htmlfile.readlines(),
+                                                     os.path.join(self.utils.report.reportDir(), "intermediary-html.html"),
+                                                     "DEBUG")
 
                     epub_validate_status = "WARN"
 

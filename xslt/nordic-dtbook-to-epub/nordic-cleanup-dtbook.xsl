@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                xmlns:dtbook="http://www.daisy.org/z3986/2005/dtbook/"
                 xmlns:f="#"
                 xmlns="http://www.daisy.org/z3986/2005/dtbook/"
                 xpath-default-namespace="http://www.daisy.org/z3986/2005/dtbook/"
@@ -16,7 +15,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:head">
+    <xsl:template match="head">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
             
@@ -36,7 +35,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:meta[@name=('dc:Identifier','dtb:uid')]">
+    <xsl:template match="meta[@name=('dc:Identifier','dtb:uid')]">
         <xsl:variable name="test" select="starts-with(@content, 'TEST')" as="xs:boolean"/>
         <xsl:variable name="identifier" select="replace(@content, '[^\d]', '')" as="xs:string"/>
         <xsl:variable name="content" select="concat(if ($test) then @content else '', $identifier)"/>
@@ -51,19 +50,19 @@
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="dtbook:meta[@name='track:Guidelines' and not(@content=('2011-1','2011-2','2015-1'))]">
+    <xsl:template match="meta[@name='track:Guidelines' and not(@content=('2011-1','2011-2','2015-1'))]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@* except @content" exclude-result-prefixes="#all"/>
             <xsl:attribute name="content" select="'2015-1'"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:meta[@name='dt:version']"/>
+    <xsl:template match="meta[@name='dt:version']"/>
     
-    <xsl:template match="dtbook:hd">
-        <xsl:variable name="ancestor-levels" select="ancestor::*/dtbook:*[matches(local-name(),'(level\d?|sidebar)')]"/>
+    <xsl:template match="hd">
+        <xsl:variable name="ancestor-levels" select="ancestor::*/*[matches(local-name(),'(level\d?|sidebar)')]"/>
         <xsl:variable name="parent-level" select="if (count($ancestor-levels)) then max(for $levelx in $ancestor-levels return xs:integer(
-                                                                                            if (not(matches($levelx/local-name(), 'level\d'))) then count($levelx/ancestor-or-self::dtbook:*[matches(local-name(),'(level\d?|sidebar)')])
+                                                                                            if (not(matches($levelx/local-name(), 'level\d'))) then count($levelx/ancestor-or-self::*[matches(local-name(),'(level\d?|sidebar)')])
                                                                                             else replace($levelx/local-name(), '[^\d]', '')
                                                                                         )) else 1" as="xs:integer"/>
         <xsl:element name="h{f:level(.)}" namespace="http://www.daisy.org/z3986/2005/dtbook/">
@@ -71,7 +70,7 @@
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="dtbook:*[matches(local-name(),'(level\d?|sidebar)')]">
+    <xsl:template match="*[matches(local-name(),'(level\d?|sidebar)')]">
         <xsl:variable name="level" select="f:level(.)"/>
         
         <xsl:copy exclude-result-prefixes="#all">
@@ -80,42 +79,53 @@
             <xsl:variable name="classes" select="tokenize(@class,'\s+')" as="xs:string*"/>
 
             <!-- xpath expressions based on expressions in dtbook-to-epub3.xsl in nordic migrator -->
-            <xsl:variable name="one-of-multiple-tocs" select="exists(dtbook:list[tokenize(@class,'\s+')='toc']) and count(//dtbook:list[tokenize(@class,'\s+')='toc']) gt 1"/>
+            <xsl:variable name="one-of-multiple-tocs" select="exists(list[tokenize(@class,'\s+')='toc']) and count(//list[tokenize(@class,'\s+')='toc']) gt 1"/>
             <xsl:variable name="classes" select="($classes, if ($one-of-multiple-tocs) then 'toc-brief' else ())"/>
             
-            <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (dtbook:note[not(//dtbook:table//dtbook:noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::dtbook:frontmatter) then false() else true() else false()"/>
-            <xsl:variable name="implicit-toc" select="if (not($one-of-multiple-tocs) and exists(dtbook:list[tokenize(@class,'\s+')='toc'])) then true() else false()"/>
+            <xsl:variable name="implicit-footnotes-or-rearnotes" select="if (note[not(//table//noteref/substring-after(@idref,'#')=@id)]) then if (ancestor::frontmatter) then false() else true() else false()"/>
+            <xsl:variable name="implicit-toc" select="if (not($one-of-multiple-tocs) and exists(list[tokenize(@class,'\s+')='toc'])) then true() else false()"/>
             <xsl:variable name="classes" select="($classes, if (not($implicit-footnotes-or-rearnotes or $implicit-toc or $one-of-multiple-tocs) and (parent::*/tokenize(@class,'\s+') = 'part' or self::level1 or parent::book) and count($classes) = 0) then 'chapter' else ())" as="xs:string*"/>
             
-            <xsl:variable name="classes" select="($classes, if (dtbook:list/tokenize(@class,'\s+') = 'index') then 'index' else ())" as="xs:string*"/>
+            <xsl:variable name="classes" select="($classes, if (list/tokenize(@class,'\s+') = 'index') then 'index' else ())" as="xs:string*"/>
+            
+            <xsl:variable name="level" select="f:level(.)"/>
+            <xsl:variable name="is-note-level" select="exists(//note[f:level(.) = $level])" as="xs:boolean"/>
             
             <xsl:if test="count($classes)">
                 <xsl:attribute name="class" select="string-join($classes, ' ')"/>
             </xsl:if>
             
             <!-- text nodes and pagenum can be before headlines -->
-            <xsl:variable name="before-headline" select="node() intersect (*[not(local-name()='pagenum')])[1]/preceding-sibling::node()" as="node()*"/>
+            <xsl:variable name="before-headline" select="if ($is-note-level) then () else node() intersect (*[not(local-name()='pagenum')])[1]/preceding-sibling::node()" as="node()*"/>
             <xsl:apply-templates select="$before-headline"/>
             
             <!-- conditionally insert headline -->
-            <xsl:if test="tokenize(@class,'\s+') = 'colophon' and not(exists(dtbook:*[matches(local-name(),'h[d\d]')]))">
+            <xsl:if test="tokenize(@class,'\s+') = 'colophon' and not(exists(*[matches(local-name(),'h[d\d]')]))">
                 <xsl:element name="h{$level}" exclude-result-prefixes="#all">
                     <xsl:text>Kolofon</xsl:text>
                 </xsl:element>
             </xsl:if>
             
-            <!-- remaining elements and other nodes -->
-            <xsl:apply-templates select="node() except $before-headline"/>
+            <!-- content before subchapters -->
+            <xsl:variable name="child-chapters" select="*[matches(local-name(),'(level\d?|sidebar)')]/(self::* | following-sibling::*)"/>
+            <xsl:variable name="content" select="if (exists($child-chapters)) then node() except $child-chapters[1]/(self::* | following-sibling::node()) else node()"/>
+            <xsl:apply-templates select="$content except $before-headline"/>
             
-            <xsl:if test="not(exists(.//note[f:level(.) = $level])) and exists(following-sibling::*[1]//note[f:level(.) = $level])">
-                <xsl:for-each select="(following-sibling::* intersect following-sibling::*[not(exists(.//note[f:level(.) = $level]))][1]/preceding-sibling::*)//pagenum">
-                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
-                </xsl:for-each>
-            </xsl:if>
+            <!-- pagenums in subchapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
+            <xsl:variable name="child-chapters-with-notes" select="$child-chapters[exists(.//note[f:level(.) = f:level(current())])] except $child-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | preceding-sibling::*)"/>
+            <xsl:copy-of select="$child-chapters-with-notes//pagenum"/>
+            
+            <!-- subchapters -->
+            <xsl:apply-templates select="$child-chapters"/>
+            
+            <!-- pagenums in following chapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
+            <xsl:variable name="following-chapters" select="following-sibling::*[matches(local-name(),'(level\d?|sidebar)')]"/>
+            <xsl:variable name="following-chapters-with-notes" select="$following-chapters[exists(.//note[f:level(.) = f:level(current())])] except $following-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | following-sibling::*)"/>
+            <xsl:copy-of select="$following-chapters-with-notes//pagenum"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:pagenum" priority="2">
+    <xsl:template match="pagenum" priority="2">
         <xsl:variable name="level" select="f:level(.)"/>
         <xsl:variable name="notes-on-same-level" select="ancestor::*[f:level(.) = $level]/descendant::*[self::note and f:level(.) = $level]" as="element()*"/>
         <xsl:if test="not(exists($notes-on-same-level))">
@@ -123,21 +133,21 @@
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="dtbook:p[../dtbook:lic]">
+    <xsl:template match="p[../lic]">
         <lic>
             <xsl:apply-templates select="@* | node()"/>
         </lic>
     </xsl:template>
     
-    <xsl:template match="dtbook:p[parent::dtbook:sidebar]">
+    <xsl:template match="p[parent::sidebar]">
         <xsl:variable name="this" select="."/>
         
         <xsl:variable name="p" as="element()?">
             <xsl:next-match/>
         </xsl:variable>
         
-        <xsl:variable name="following-adjacent-pagebreaks" select="following-sibling::dtbook:pagenum intersect following-sibling::*[not(self::dtbook:pagenum)][1]/preceding-sibling::* | (if (not(exists(following-sibling::* except following-sibling::dtbook:pagenum))) then following-sibling::dtbook:pagenum else ())" as="element()*"/>
-        <xsl:variable name="preceding-adjacent-pagebreaks" select="preceding-sibling::dtbook:pagenum intersect preceding-sibling::*[not(self::dtbook:pagenum)][1]/following-sibling::* | (if (not(exists(preceding-sibling::* except preceding-sibling::dtbook:pagenum))) then preceding-sibling::dtbook:pagenum else ())" as="element()*"/>
+        <xsl:variable name="following-adjacent-pagebreaks" select="following-sibling::pagenum intersect following-sibling::*[not(self::pagenum)][1]/preceding-sibling::* | (if (not(exists(following-sibling::* except following-sibling::pagenum))) then following-sibling::pagenum else ())" as="element()*"/>
+        <xsl:variable name="preceding-adjacent-pagebreaks" select="preceding-sibling::pagenum intersect preceding-sibling::*[not(self::pagenum)][1]/following-sibling::* | (if (not(exists(preceding-sibling::* except preceding-sibling::pagenum))) then preceding-sibling::pagenum else ())" as="element()*"/>
         <xsl:variable name="preceding-adjacent-pagebreaks" select="$preceding-adjacent-pagebreaks[not(preceding-sibling::*[1]/local-name() = 'p')]" as="element()*"/>
         
         <xsl:choose>
@@ -160,13 +170,14 @@
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="dtbook:pagenum[parent::dtbook:sidebar and (preceding-sibling::*[1], following-sibling::*[1])/local-name() = 'p']"/>
+    <xsl:template match="pagenum[parent::sidebar and (preceding-sibling::*[1], following-sibling::*[1])/local-name() = 'p']"/>
+    <xsl:template match="pagenum[parent::list]"/>
     
-    <xsl:template match="dtbook:list[tokenize(@class,'\s+') = 'toc']">
+    <xsl:template match="list[tokenize(@class,'\s+') = 'toc']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* except @class"/>
             
-            <xsl:variable name="multiple-tocs" select="count(//dtbook:list[tokenize(@class,'\s+')='toc']) gt 1"/>
+            <xsl:variable name="multiple-tocs" select="count(//list[tokenize(@class,'\s+')='toc']) gt 1"/>
             <xsl:choose>
                 <xsl:when test="$multiple-tocs">
                     <xsl:if test="normalize-space(@class) != 'toc'">
@@ -182,7 +193,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:list[tokenize(@class,'\s+') = 'index']">
+    <xsl:template match="list[tokenize(@class,'\s+') = 'index']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* except @class"/>
             
@@ -194,28 +205,55 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:li">
+    <xsl:template match="list" priority="2">
+        <xsl:variable name="level" select="f:level(.)" as="xs:integer"/>
+        <xsl:variable name="is-note-level" select="exists(ancestor::*[matches(local-name(),'^(level\d|sidebar)') and exists(.//note[f:level(.) = $level])])" as="xs:boolean"/>
+        
+        <!-- pagenums at the beginning of the list should be moved out of the list -->
+        <xsl:variable name="leading-pagenums" select="pagenum[not(preceding-sibling::li)]" as="element()*"/>
+        <xsl:if test="not($is-note-level)">
+           <xsl:copy-of select="$leading-pagenums" exclude-result-prefixes="#all"/>
+        </xsl:if>
+        
+        <xsl:next-match/>
+        
+        <!-- pagenums at the end of the list should be moved out of the list -->
+        <xsl:if test="not($is-note-level)">
+            <xsl:apply-templates select="pagenum[not(following-sibling::li)] except $leading-pagenums"/>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="li">
+        <xsl:variable name="level" select="f:level(.)" as="xs:integer"/>
+        <xsl:variable name="is-note-level" select="exists(ancestor::*[matches(local-name(),'^(level\d|sidebar)') and exists(.//note[f:level(.) = $level])])" as="xs:boolean"/>
+        
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
+            
+            <!-- move preceding pagenums into the list item -->
+            <xsl:if test="not($is-note-level)">
+                <xsl:copy-of select="preceding-sibling::li[1]/following-sibling::pagenum intersect preceding-sibling::pagenum"/>
+            </xsl:if>
+            
             <xsl:apply-templates select="node()[not(normalize-space()='&gt;')]"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="dtbook:*" priority="3">
+    <xsl:template match="*" priority="3">
         <xsl:choose>
             <!-- based on xpath from mtm2015-1.sch in nordic migrator -->
-            <xsl:when test="not(false() = (for $node in (descendant-or-self::node()) return (normalize-space($node)='' and not($node/self::dtbook:img or $node/self::dtbook:br or $node/self::dtbook:meta or $node/self::dtbook:link or $node/self::dtbook:col or $node/self::dtbook:th or $node/self::dtbook:td or $node/self::dtbook:dd or $node/self::dtbook:pagenum[@page='special']))))"/>
+            <xsl:when test="not(false() = (for $node in (descendant-or-self::node()) return (normalize-space($node)='' and not($node/self::img or $node/self::br or $node/self::meta or $node/self::link or $node/self::col or $node/self::th or $node/self::td or $node/self::dd or $node/self::pagenum[@page='special']))))"/>
             <xsl:otherwise>
                 <xsl:next-match/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="dtbook:h1/text() | dtbook:h2/text() | dtbook:h3/text() | dtbook:h4/text() | dtbook:h5/text() | dtbook:h6/text() | dtbook:hd/text()">
+    <xsl:template match="h1/text() | h2/text() | h3/text() | h4/text() | h5/text() | h6/text() | hd/text()">
         <xsl:value-of select="normalize-space()"/>
     </xsl:template>
     
-    <xsl:template match="dtbook:byline">
+    <xsl:template match="byline">
         <p>
             <xsl:apply-templates select="@* except @class"/>
             <xsl:attribute name="class" select="string-join((tokenize(@class,'\s+'), 'byline'),' ')"/>
@@ -223,14 +261,14 @@
         </p>
     </xsl:template>
     
-    <xsl:template match="dtbook:frontmatter">
+    <xsl:template match="frontmatter">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
             
-            <xsl:if test="not(exists(dtbook:level1))">
+            <xsl:if test="not(exists(level1))">
                 <level1 class="titlepage">
-                    <h1 class="title fulltitle"><xsl:value-of select="normalize-space(string-join(dtbook:doctitle//text(),' '))"/></h1>
-                    <xsl:for-each select="dtbook:docauthor">
+                    <h1 class="title fulltitle"><xsl:value-of select="normalize-space(string-join(doctitle//text(),' '))"/></h1>
+                    <xsl:for-each select="docauthor">
                         <p class="docauthor author"><xsl:value-of select="normalize-space(string-join(.//text(),' '))"/></p>
                     </xsl:for-each>
                 </level1>

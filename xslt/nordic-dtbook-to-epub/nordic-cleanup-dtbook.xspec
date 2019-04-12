@@ -570,4 +570,189 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="fix 501444 (moving pagenums)">
+        <x:context>
+            <level1 class="chapter">
+                <level2 class="subchapter">
+                    <p>previous chapter</p>
+                </level2>
+                <level2 class="subchapter">
+                    <table>
+                        <tr>
+                            <td>&#x2013;, negativ</td>
+                            <td>ohne dass/ohne ... zu</td>
+                            <td>-</td>
+                        </tr>
+                        <pagenum id="page-191" page="normal">191</pagenum>
+                        <tr>
+                            <td><p>Konzessiv</p>
+                                <p>Kopulativ</p></td>
+                            <td><p>obwohl, trotzdem, wie auch, soviel ... "auch", wenn auch ... so doch,</p>
+                                <p>-</p></td>
+                            <td><p>ob ... oder</p>
+                                <p>und, sowie, auch, nicht nur ... sondern auch, sowohl ... als/wie, auch, weder ... noch</p></td>
+                        </tr>
+                    </table>
+                    <note id="fn_190_01">
+                        <p>1 Die in der folgenden Liste in Anführungszeichen eingeschlossenen Wörter vor der Subjunktion sind obl. Korrelate zu den Subjunktionen im übergeordneten Satz. In
+                            Anführungszeichen eingeschlossene Wörter hinter einer Subjunktion sind obl. auftretende Partikeln.</p>
+                    </note>
+                </level2>
+            </level1>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <level1 class="chapter">
+                <level2 class="subchapter">
+                    <p>previous chapter</p>
+                    <pagenum id="page-191" page="normal">191</pagenum>
+                </level2>
+                <level2 class="subchapter">
+                    <table>
+                        <tr>
+                            <td>&#x2013;, negativ</td>
+                            <td>ohne dass/ohne ... zu</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><p>Konzessiv</p>
+                                <p>Kopulativ</p></td>
+                            <td><p>obwohl, trotzdem, wie auch, soviel ... "auch", wenn auch ... so doch,</p>
+                                <p>-</p></td>
+                            <td><p>ob ... oder</p>
+                                <p>und, sowie, auch, nicht nur ... sondern auch, sowohl ... als/wie, auch, weder ... noch</p></td>
+                        </tr>
+                    </table>
+                    <note id="fn_190_01">
+                        <p>1 Die in der folgenden Liste in Anführungszeichen eingeschlossenen Wörter vor der Subjunktion sind obl. Korrelate zu den Subjunktionen im übergeordneten Satz. In
+                            Anführungszeichen eingeschlossene Wörter hinter einer Subjunktion sind obl. auftretende Partikeln.</p>
+                    </note>
+                </level2>
+            </level1>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="fix 501444 (moving pagenums in lists)">
+        <x:context>
+            <level1 class="chapter">
+                <list type="pl">
+                    <pagenum id="page-120" page="normal">120</pagenum>
+                    <li>Er erinnert sich <em>an den Vorfall.</em></li>
+                    <li>→ <em>Woran/*An was</em> erinnert er sich?</li>
+                    <li>Er erinnert sich <em>an das Ereignis.</em></li>
+                    <li>→ <em>Woran/*An was</em> erinnert er sich?</li>
+                    <pagenum id="page-121" page="normal">121</pagenum>
+                    <li>Er zweifelt <em>an dem Ergebnis.</em></li>
+                    <li><em>→ Woran/*An was</em> zweifelt er?</li>
+                </list>
+            </level1>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <level1 class="chapter">
+                <pagenum id="page-120" page="normal">120</pagenum>
+                <list type="pl">
+                    <li>Er erinnert sich <em>an den Vorfall.</em></li>
+                    <li>→ <em>Woran/*An was</em> erinnert er sich?</li>
+                    <li>Er erinnert sich <em>an das Ereignis.</em></li>
+                    <li>→ <em>Woran/*An was</em> erinnert er sich?</li>
+                    <li><pagenum id="page-121" page="normal">121</pagenum>Er zweifelt <em>an dem Ergebnis.</em></li>
+                    <li><em>→ Woran/*An was</em> zweifelt er?</li>
+                </list>
+            </level1>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="fix 501444 (notes)">
+        <x:context>
+            <book>
+                <bodymatter>
+                    <level1 class="chapter">
+                        <level2>
+                            <h2>3.2.3 DEMONSTRATIVPRONOMEN</h2>
+                            <p>Die Demonstrativpronomina dienen wie das Personalpronomen der 3. Person zur allgemeinen Bezeichnung des Besprochenen. Sie unterscheiden sich vom Personalpronomen jedoch
+                                durch ihren Hinweischarakter. Innerhalb der Demonstrativpronomina ist noch zwischen solchen mit reinem Hinweischarakter (<em>der, derjenige</em>) und solchen mit einer
+                                konkretisierenden Nebenbedeutung (<em>dieser, jener, ein solcher/solche</em>) zu unterscheiden. In der Deklination verhalten sich die substantivischen
+                                Demonstrativpronomina wie die gleichlautenden Artikelwörter (vgl. "Artikelwörter" 2). Eine Ausnahme bildet lediglich das Pronomen <em>der,</em> das sich sowohl durch
+                                eine stärkere Betonung als auch durch einige besondere Deklinationsformen vom bestimmten Artikel unterscheidet.</p>
+                            <table>
+                                <tr>
+                                    <td rowspan="1" colspan="1">G</td>
+                                    <td rowspan="1" colspan="1"><strong><em>dessen</em></strong></td>
+                                    <td rowspan="1" colspan="1"><strong><em>dessen</em></strong></td>
+                                    <td rowspan="1" colspan="1"><strong><em>deren</em></strong></td>
+                                    <td rowspan="1" colspan="1"><strong><em>deren</em><noteref idref="#fn_113_1">1</noteref></strong></td>
+                                </tr>
+                            </table>
+                        </level2>
+                    </level1>
+                </bodymatter>
+                <rearmatter>
+                    <level1>
+                        <note id="fn_21_1">
+                            <p>1 Wenn solche Verben im Stamm auf -<em>t</em> auslauten, sind sie in der 3. Pers. Sing. endungslos: fech<em>t</em>en -e<em>r</em> ficht; flech<em>t</em>en – er flicht</p>
+                        </note>
+                        <note id="fn_61_1">
+                            <p>1 bzw. Prät. Konj. (bei <em>dürfen</em>)</p>
+                        </note>
+                        <note id="fn_106_1">
+                            <p>1 Der Plural endet auf -<em>n</em>, wenn das Wort auf einen Vokal (außer -<em>ei</em>, -<em>au</em>) oder auf die Suffixe -<em>el, -er</em> ausgeht.</p>
+                        </note>
+                        <note id="fn_109_1">
+                            <p>1 Das betrifft nicht die <em>substantivierten Adjektive,</em> d. h. die mithilfe von Wortbildungsmitteln von Adjektiven abgeleiteten Substantive wie <em>die Größe, die
+                                Schönheit, das Gut, der Stoz.</em> Diese folgen der Deklination der Substantive.</p>
+                        </note>
+                        <note id="fn_113_1">
+                            <p>1 Als vorausweisendes Demonstrativpronomen in der Form <em>derer.</em> Wir gedenken <em>derer,</em> die durch die Flut umgekommen sind.</p>
+                        </note>
+                    </level1>
+                </rearmatter>
+            </book>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <book>
+                <bodymatter>
+                    <level1 class="chapter">
+                        <level2>
+                            <h2>3.2.3 DEMONSTRATIVPRONOMEN</h2>
+                            <p>Die Demonstrativpronomina dienen wie das Personalpronomen der 3. Person zur allgemeinen Bezeichnung des Besprochenen. Sie unterscheiden sich vom Personalpronomen jedoch
+                                durch ihren Hinweischarakter. Innerhalb der Demonstrativpronomina ist noch zwischen solchen mit reinem Hinweischarakter (<em>der, derjenige</em>) und solchen mit einer
+                                konkretisierenden Nebenbedeutung (<em>dieser, jener, ein solcher/solche</em>) zu unterscheiden. In der Deklination verhalten sich die substantivischen
+                                Demonstrativpronomina wie die gleichlautenden Artikelwörter (vgl. "Artikelwörter" 2). Eine Ausnahme bildet lediglich das Pronomen <em>der,</em> das sich sowohl durch
+                                eine stärkere Betonung als auch durch einige besondere Deklinationsformen vom bestimmten Artikel unterscheidet.</p>
+                            <table>
+                                <tr>
+                                    <td rowspan="1" colspan="1">G</td>
+                                    <td rowspan="1" colspan="1"><strong><em>dessen</em></strong></td>
+                                    <td rowspan="1" colspan="1"><strong><em>dessen</em></strong></td>
+                                    <td rowspan="1" colspan="1"><strong><em>deren</em></strong></td>
+                                    <td rowspan="1" colspan="1"><strong><em>deren</em><noteref idref="#fn_113_1">1</noteref></strong></td>
+                                </tr>
+                            </table>
+                        </level2>
+                    </level1>
+                </bodymatter>
+                <rearmatter>
+                    <level1>
+                        <note id="fn_21_1">
+                            <p>1 Wenn solche Verben im Stamm auf -<em>t</em> auslauten, sind sie in der 3. Pers. Sing. endungslos: fech<em>t</em>en -e<em>r</em> ficht; flech<em>t</em>en – er flicht</p>
+                        </note>
+                        <note id="fn_61_1">
+                            <p>1 bzw. Prät. Konj. (bei <em>dürfen</em>)</p>
+                        </note>
+                        <note id="fn_106_1">
+                            <p>1 Der Plural endet auf -<em>n</em>, wenn das Wort auf einen Vokal (außer -<em>ei</em>, -<em>au</em>) oder auf die Suffixe -<em>el, -er</em> ausgeht.</p>
+                        </note>
+                        <note id="fn_109_1">
+                            <p>1 Das betrifft nicht die <em>substantivierten Adjektive,</em> d. h. die mithilfe von Wortbildungsmitteln von Adjektiven abgeleiteten Substantive wie <em>die Größe, die
+                                Schönheit, das Gut, der Stoz.</em> Diese folgen der Deklination der Substantive.</p>
+                        </note>
+                        <note id="fn_113_1">
+                            <p>1 Als vorausweisendes Demonstrativpronomen in der Form <em>derer.</em> Wir gedenken <em>derer,</em> die durch die Flut umgekommen sind.</p>
+                        </note>
+                    </level1>
+                </rearmatter>
+            </book>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
