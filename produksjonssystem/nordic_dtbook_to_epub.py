@@ -53,8 +53,8 @@ class NordicDTBookToEpub(Pipeline):
             self.utils.report.info("Boknummer for {} er: {}".format(self.book["name"], metadata["identifier"]))
 
         self.utils.report.info("Lager en kopi av DTBoken")
-        #temp_dtbookdir_obj = tempfile.TemporaryDirectory()
-        temp_dtbookdir = "/tmp/temp_dtbookdir" #temp_dtbookdir_obj.name
+        temp_dtbookdir_obj = tempfile.TemporaryDirectory()
+        temp_dtbookdir = temp_dtbookdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_dtbookdir)
 
         dtbook = None
@@ -150,8 +150,8 @@ class NordicDTBookToEpub(Pipeline):
                 self.utils.report.warn("DTBoken er ikke valid, men vi fortsetter alikevel.")
 
         self.utils.report.info("Konverterer fra Nordisk DTBook til Nordisk HTML...")
-        #temp_htmldir_obj = tempfile.TemporaryDirectory()
-        temp_htmldir = "/tmp/temp_htmldir" #temp_htmldir_obj.name
+        temp_htmldir_obj = tempfile.TemporaryDirectory()
+        temp_htmldir = temp_htmldir_obj.name
         temp_htmlfile = None
         with DaisyPipelineJob(self, "nordic-dtbook-to-html", {"dtbook": dtbook,
                                                               "fail-on-error": "false",
