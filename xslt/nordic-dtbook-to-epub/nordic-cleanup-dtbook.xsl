@@ -276,6 +276,10 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="img/@src">
+        <xsl:attribute name="src" select="lower-case(.)"/>
+    </xsl:template>
+    
     <xsl:function name="f:level" as="xs:integer">
         <xsl:param name="context" as="element()"/>
         <xsl:variable name="numbered-level" select="($context/ancestor-or-self::*[matches(local-name(),'level\d') or *[matches(local-name(),'h\d')]])[last()]" as="element()?"/>

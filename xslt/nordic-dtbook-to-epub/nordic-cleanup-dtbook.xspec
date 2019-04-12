@@ -755,4 +755,14 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="rename image files to lower case">
+        <x:context>
+            <img src="P117-001.jpg"/>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <img src="p117-001.jpg"/>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

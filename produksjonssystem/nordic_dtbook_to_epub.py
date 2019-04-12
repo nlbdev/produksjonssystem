@@ -57,6 +57,7 @@ class NordicDTBookToEpub(Pipeline):
         temp_dtbookdir = temp_dtbookdir_obj.name
         self.utils.filesystem.copy(self.book["source"], temp_dtbookdir)
 
+        # find DTBook XML
         dtbook = None
         for root, dirs, files in os.walk(temp_dtbookdir):
             for f in files:
@@ -70,6 +71,13 @@ class NordicDTBookToEpub(Pipeline):
         if not dtbook:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne DTBook")
             return False
+
+        # rename all files to lower case
+        for root, dirs, files in os.walk(temp_dtbookdir):
+            for f in files:
+                if not f.lower() == f:
+                    self.utils.report.warn("renaming to lowercase: {}".format(f))
+                    shutil.move(os.path.join(root, f), os.path.join(root, f.lower()))
 
         temp_dtbook_file_obj = tempfile.NamedTemporaryFile()
         temp_dtbook_file = temp_dtbook_file_obj.name
@@ -171,9 +179,6 @@ class NordicDTBookToEpub(Pipeline):
                                                      convert_status)
 
                 return False
-
-            for root, dirs, files in os.walk(dp2_job_dtbook_to_html.dir_output):
-                self.utils.report.info("{} | {} | {}".format(root, dirs, files))
 
             dp2_html_dir = os.path.join(dp2_job_dtbook_to_html.dir_output, "output-dir")
 
