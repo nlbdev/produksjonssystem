@@ -1506,6 +1506,7 @@ class Metadata:
                 if property == "rdf:type":
                     continue
                 value = meta.xpath("@schema:name", namespaces=meta.nsmap) + meta.xpath("text()[1]")
+                value = value[0] if value else meta.xpath("@rdf:resource", namespaces=meta.nsmap)
                 value = value[0] if value else ""
                 metadata.append({
                     "property": property,
@@ -1523,6 +1524,7 @@ class Metadata:
                     if property == "rdf:type":
                         continue
                     value = meta.xpath("@schema:name", namespaces=meta.nsmap) + meta.xpath("text()[1]")
+                    value = value[0] if value else meta.xpath("@rdf:resource", namespaces=meta.nsmap)
                     value = value[0] if value else ""
                     metadata.append({
                         "property": property,
