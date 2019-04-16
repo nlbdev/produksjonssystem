@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import multiprocessing
+import threading
+import traceback
 from multiprocessing import Pipe, Process
 from threading import RLock, Thread
 
@@ -21,12 +24,27 @@ class Bus():
     connections = None  # list of connections to child processes
 
     def __init__(self):
+        logging.debug("initializing Bus instance (should not happen!)")
         raise Exception("Bus should not be instantiated.")
+
+    @staticmethod
+    def get_unique_thread_name(prefix=None, suffix=None, max_length=11):
+        # give the thread a descriptive and unique name
+        thread_names = [t.getName() for t in threading.enumerate()]
+        for i in range(0, max(0, 10**(max_length - (len(prefix)+1 if prefix else 0) - (len(suffix)+1 if suffix else 0)))):
+            new_thread_name = "{}{}{}".format("{}-".format(prefix) if prefix else "",
+                                              i,
+                                              "-{}".format(suffix) if suffix else "")
+            if new_thread_name not in thread_names:
+                return new_thread_name
+        return None
 
     @staticmethod
     def init(connection=None):
         if Bus.current_process == multiprocessing.current_process():
+            #logging.debug("Bus is already initialized for process: {}".format(multiprocessing.current_process()))
             return
+        logging.debug("Initializing bus with {} as upstream connection".format(connection))
 
         Bus.current_process = multiprocessing.current_process()
 
@@ -36,16 +54,19 @@ class Bus():
         Bus.connections_lock = RLock()
         Bus.connections = []
 
-        Bus.connection = connection
-        if Bus.connection:
-            Bus.child_thread = Thread(target=Bus._recv_down, args=(), daemon=True)
+        Bus.connection = {"pipe": connection, "open": bool(connection)}
+        if Bus.connection["open"]:
+            Bus.child_thread = Thread(target=Bus._recv_down,
+                                      daemon=True,
+                                      name=Bus.get_unique_thread_name(prefix="bus_down"),
+                                      args=())
             Bus.child_thread.start()
-
 
     @staticmethod
     def subscribe(topic, fn):
         """Register a function to handle messages about the given topic. Starts a listener that runs in the child process."""
         Bus.init()
+        logging.debug("Subscribing {} to topic {}".format(fn, topic))
         with Bus.listeners_lock:
             Bus.listeners.append({
                 "topic": topic,
@@ -56,21 +77,30 @@ class Bus():
     def send(topic, data):
         """Send data to the bus on the given topic."""
         Bus.init()
-        if Bus.connection:
+        if Bus.connection["open"]:
             # sends to parent process
-            Bus.connection.send([topic, data])
+            #logging.debug("Send data to parent process for topic {} from process {}".format(topic, multiprocessing.current_process()))
+            Bus.connection["pipe"].send([topic, data])
         else:
             # sends to current process and child processes
+            #logging.debug("Send data to current and child process(es) for topic {} from process {}".format(topic, multiprocessing.current_process()))
             Bus.send_down([topic, data])
 
     @staticmethod
     def send_down(data):
         Bus.init()
+        #logging.debug("Send data downwards in process {}".format(multiprocessing.current_process()))
 
         # sends to all child processes
         with Bus.connections_lock:
             for connection in Bus.connections:
-                connection.send(data)
+                try:
+                    #logging.debug("Send data downwards in process {} through connection {}".format(multiprocessing.current_process(), connection))
+                    connection["pipe"].send(data)
+                except BrokenPipeError:
+                    logging.warn("Broken pipe, unable to send message down the bus")
+                    connection["open"] = False
+                    break
 
         # sends to all subscribed functions in current process
         assert isinstance(data, list), "Message bus data must be a list"
@@ -85,31 +115,59 @@ class Bus():
     def _recv(connection):
         """Thread that listens for messages sent from the child process and broadcasts it to all processes. Runs in parent process."""
         Bus.init()
-        while True:
+        connection = {"pipe": connection, "open": bool(connection)}
+        logging.debug("Start listening for messages sent from child process on connection {}".format(connection))
+        if threading.current_thread().getName().startswith("Thread-"):
+            logging.debug("{}".format("".join(traceback.format_stack())))
+        while connection["open"]:
             try:
-                data = connection.recv()  # Blocks until there is something to receive from the process
+                data = connection["pipe"].recv()  # Blocks until there is something to receive from the process
+                #logging.debug("Received data from child process on connection {} in process {}".format(connection, multiprocessing.current_process()))
                 assert isinstance(data, list), "Message bus data must be a list"
                 assert len(data) == 2, "Message bus data must have to items: [topic, data]"
                 [topic, data] = data
                 Bus.send(topic, data)
 
             except EOFError:
-                print("Pipe was closed from other end of connection")
-                break
+                logging.warn("Pipe was closed from other end of connection")
+                connection["open"] = False
+            except ConnectionResetError as e:
+                logging.exception("Pipe was reset", e)
+                connection["open"] = False
+            except BrokenPipeError as e:
+                logging.exception("Broken pipe", e)
+                connection["open"] = False
 
     @staticmethod
     def _recv_down():
         """Thread that listens for messages sent from the parent process and forwards it to all listeners. Runs in child process."""
         Bus.init()
+        logging.debug("Start listening for messages sent from parent process on connection {}".format(Bus.connection))
         while True:
             try:
-                data = Bus.connection.recv()  # Blocks until there is something to receive
+                data = Bus.connection["pipe"].recv()  # Blocks until there is something to receive
+                #logging.debug("Received data from parent process on connection {} in process {}".format(Bus.connection, multiprocessing.current_process()))
                 Bus.send_down(data)
 
             except EOFError:
-                print("Pipe was closed from other end of connection")
+                logging.warn("Pipe was closed from other end of connection")
+                Bus.connection["open"] = False
                 break
+            except ConnectionResetError:
+                logging.warn("Pipe was reset")
+                Bus.connection["open"] = False
+                raise
+                #break
+            except BrokenPipeError:
+                logging.warn("Broken pipe")
+                Bus.connection["open"] = False
+                raise
+                #break
 
+    @staticmethod
+    def join():
+        # TODO
+        pass
 
 class BusProcess(Process):
     """
@@ -128,7 +186,10 @@ class BusProcess(Process):
     bus_parent_thread = None
 
     def __init__(self, kwargs={}, *args, **keyword_args):
+        threading.current_thread().setName("main")
+        logging.debug("Initializing new BusProcess")
         parentConnection, childConnection = Pipe()
+        logging.debug("Creating Pipe pair {} / {}".format(parentConnection, childConnection))
 
         kwargs["bus_connection"] = childConnection
 
@@ -136,7 +197,17 @@ class BusProcess(Process):
 
         Bus.init()
         with Bus.connections_lock:
-            Bus.connections.append(parentConnection)
+            logging.debug("Appending {} to set of connections".format(parentConnection))
+            Bus.connections.append({"pipe": parentConnection, "open": True})
 
-        self.bus_parent_thread = Thread(target=Bus._recv, args=(parentConnection,), daemon=True)
+        self.bus_parent_thread = Thread(target=Bus._recv,
+                                        daemon=True,
+                                        name=Bus.get_unique_thread_name(prefix="bus_up"),
+                                        args=(parentConnection,))
         self.bus_parent_thread.start()
+
+    def run(self):
+        Bus.init(self._kwargs.pop("bus_connection", None))
+        logging.debug("Recieved bus connection {}".format(Bus.connection["pipe"]))
+        super().run()
+        # TODO: close connection here after run?
