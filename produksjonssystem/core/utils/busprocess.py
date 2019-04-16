@@ -93,14 +93,16 @@ class Bus():
 
         # sends to all child processes
         with Bus.connections_lock:
-            for connection in Bus.connections:
+            # iterate using position and in reverse order so that we can delete connections while iterating
+            for i in list(reversed(range(0, len(Bus.connections)))):
+                connection = Bus.connections[i]
                 try:
                     #logging.debug("Send data downwards in process {} through connection {}".format(multiprocessing.current_process(), connection))
                     connection["pipe"].send(data)
                 except BrokenPipeError:
-                    logging.warn("Broken pipe, unable to send message down the bus")
+                    logging.warn("Broken pipe, unable to send message down the bus.")
                     connection["open"] = False
-                    break
+                    del Bus.connections[i]
 
         # sends to all subscribed functions in current process
         assert isinstance(data, list), "Message bus data must be a list"
@@ -112,7 +114,7 @@ class Bus():
                     listener["function"](data)
 
     @staticmethod
-    def _recv(connection):
+    def _recv(connection, kill_process=None):
         """Thread that listens for messages sent from the child process and broadcasts it to all processes. Runs in parent process."""
         Bus.init()
         connection = {"pipe": connection, "open": bool(connection)}
@@ -129,7 +131,7 @@ class Bus():
                 Bus.send(topic, data)
 
             except EOFError:
-                logging.warn("Pipe was closed from other end of connection")
+                logging.warn("Pipe was closed from other end of connection.")
                 connection["open"] = False
             except ConnectionResetError as e:
                 logging.exception("Pipe was reset", e)
@@ -137,6 +139,10 @@ class Bus():
             except BrokenPipeError as e:
                 logging.exception("Broken pipe", e)
                 connection["open"] = False
+
+        del connection["pipe"]
+        if kill_process:
+            kill_process.terminate()
 
     @staticmethod
     def _recv_down():
@@ -163,6 +169,8 @@ class Bus():
                 Bus.connection["open"] = False
                 raise
                 #break
+
+        del Bus.connection["pipe"]
 
     @staticmethod
     def join():
@@ -192,6 +200,10 @@ class BusProcess(Process):
         logging.debug("Creating Pipe pair {} / {}".format(parentConnection, childConnection))
 
         kwargs["bus_connection"] = childConnection
+        kill_when_broken_bus_connection = True
+        if "kill_when_broken_bus_connection" in kwargs:
+            kill_when_broken_bus_connection = bool(kwargs["kill_when_broken_bus_connection"])
+            del kwargs["kill_when_broken_bus_connection"]
 
         super().__init__(*args, kwargs=kwargs, **keyword_args)
 
@@ -202,8 +214,8 @@ class BusProcess(Process):
 
         self.bus_parent_thread = Thread(target=Bus._recv,
                                         daemon=True,
-                                        name=Bus.get_unique_thread_name(prefix="bus_up"),
-                                        args=(parentConnection,))
+                                        name=Bus.get_unique_thread_name(prefix="bus_kill"),
+                                        args=(parentConnection, self if kill_when_broken_bus_connection else None))
         self.bus_parent_thread.start()
 
     def run(self):
