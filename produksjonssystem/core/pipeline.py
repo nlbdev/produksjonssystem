@@ -16,6 +16,7 @@ from copy import deepcopy
 from pathlib import Path
 from threading import RLock, Thread
 
+from core.config import Config
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from core.utils.report import DummyReport, Report
@@ -39,6 +40,8 @@ class Pipeline():
     _dir_trigger_obj = None  # store TemporaryDirectory object in instance so that it's not cleaned up
     pipelines = []
 
+    config = None  # Config instance
+
     # The current book
     book = None
 
@@ -53,10 +56,6 @@ class Pipeline():
     # These ones are meant for use in static contexts
     dirs = None  # dirs are built in Pipeline.start_common: Pipeline.dirs[uid][in|out|reports|trigger]
     dirs_ranked = None  # dirs_ranked are built by the coordinator thread (i.e. Produksjonssystem in run.py)
-
-    # Other configuration
-    config = None    # instance config
-    environment = {}  # global config
 
     # constants (set during instantiation)
     running = False
@@ -109,6 +108,8 @@ class Pipeline():
                  _title=None,
                  _group_title=None):
 
+        self.config = Config()
+
         # Parameters starting with underscore are only meant to be used in tests.
         if _uid:
             self.uid = _uid
@@ -142,21 +143,14 @@ class Pipeline():
             self._queue = []
         super().__init__()
 
-    def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
-        if not dir_in:
-            dir_in = os.environ.get("DIR_IN")
-        if not dir_out:
-            dir_out = os.environ.get("DIR_OUT")
-        if not dir_reports:
-            dir_reports = os.environ.get("DIR_REPORTS")
-        if not email_settings:
-            email_settings = {
-                "smtp": {},
-                "sender": "prodsys@example.org",
-                "recipients": []
-            }
-        if not dir_base:
-            dir_base = os.getenv("BASE_DIR", dir_in)
+    def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
+        if not self.config.wait_until_initialized():
+            return
+
+        dir_in = self.config.get(dir_in, default=os.environ.get("DIR_IN"))
+        dir_out = self.config.get(dir_out, default=os.environ.get("DIR_OUT"))
+        dir_reports = self.config.get(dir_reports, default=os.environ.get("DIR_REPORTS"))
+        dir_base = self.config.get(dir_base, default=os.environ.get("BASE_DIR", dir_in))
 
         stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
 
@@ -191,8 +185,6 @@ class Pipeline():
             self.dir_out = str(os.path.normpath(dir_out)) + '/'
         self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
         self.dir_base = dir_base
-        self.email_settings = email_settings
-        self.config = config if config else {}
 
         # progress variable for this pipeline instance
         self.progress_text = ""
@@ -200,16 +192,12 @@ class Pipeline():
         self.progress_start = -1
 
         # make dirs available from static contexts
-        if not Pipeline.dirs:
-            Pipeline.dirs = {}
-        if self.uid not in Pipeline.dirs:
-            Pipeline.dirs[self.uid] = {}
-        Pipeline.dirs[self.uid]["in"] = self.dir_in
-        Pipeline.dirs[self.uid]["out"] = self.dir_out
-        Pipeline.dirs[self.uid]["reports"] = self.dir_reports
-        Pipeline.dirs[self.uid]["base"] = self.dir_base
+        self.config.set("pipeline.{}.in".format(self.uid), self.dir_in)
+        self.config.set("pipeline.{}.out".format(self.uid), self.dir_out)
+        self.config.set("pipeline.{}.reports".format(self.uid), self.dir_reports)
+        self.config.set("pipeline.{}.base".format(self.uid), self.dir_base)
 
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
         logging.info("Pipeline \"" + str(self.title) + "\" starting...")
 
         # common code shared with DummyPipeline
@@ -217,9 +205,7 @@ class Pipeline():
                           dir_in=dir_in,
                           dir_out=dir_out,
                           dir_reports=dir_reports,
-                          email_settings=email_settings,
-                          dir_base=dir_base,
-                          config=config)
+                          dir_base=dir_base)
 
         assert (self.dir_in is None or os.path.isdir(self.dir_in)), "The input directory, if specified, must point to a directory."
         assert (self.dir_out is None or os.path.isdir(self.dir_out)), "The output directory, if specified, must point to a directory."
@@ -242,15 +228,12 @@ class Pipeline():
             self._dir_trigger_obj = tempfile.TemporaryDirectory(prefix="produksjonssystem-", suffix="-trigger-" + self.uid)
             self.dir_trigger = self._dir_trigger_obj.name
 
-        # make trigger dir available from static contexts
-        Pipeline.dirs[self.uid]["trigger"] = self.dir_trigger
-
-        type(self).dir_in = self.dir_in
-        type(self).dir_out = self.dir_out
-        type(self).dir_reports = self.dir_reports
-        type(self).dir_base = self.dir_base
-        type(self).email_settings = self.email_settings
-        type(self).config = self.config
+        # store directories in config (making it available from static contexts)
+        self.config.set("pipeline.{}.trigger".format(self.uid), self.dir_trigger)
+        self.config.set("pipeline.{}.dir_in".format(self.uid), self.dir_in)
+        self.config.set("pipeline.{}.dir_out".format(self.uid), self.dir_out)
+        self.config.set("pipeline.{}.dir_reports".format(self.uid), self.dir_reports)
+        self.config.set("pipeline.{}.dir_base".format(self.uid), self.dir_base)
 
         if self.dir_in is not None:
             if Filesystem.ismount(self.dir_in):
@@ -338,6 +321,7 @@ class Pipeline():
 
         if exit:
             self._shouldRun = False
+            self.set_pipeline_config("shouldRun", self._shouldRun)
 
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
@@ -451,6 +435,12 @@ class Pipeline():
     def get_queue(self):
         with self._queue_lock:
             return deepcopy(self._queue)
+
+    def get_pipeline_config(self, name, default=None):
+        return self.config.get("pipeline.{}.{}".format(self.uid, name), default=default)
+
+    def set_pipeline_config(self, name, value):
+        self.config.set("pipeline.{}.{}".format(self.uid, name), value)
 
     def get_status(self):
         if self._shouldRun and not self.running:
@@ -741,7 +731,7 @@ class Pipeline():
                 try:
                     Report.emailPlainText("En feil oppstod ved overvåking av " +
                                           str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""),
-                                          traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                                          traceback.format_exc(), self.config.get("email.smtp"), Address(self.config.get("email.sender")), self.email_settings["recipients"])
                 except Exception:
                     logging.exception("Could not e-mail exception")
 
@@ -822,6 +812,7 @@ class Pipeline():
     def _handle_book_events_thread(self):
         while self._dirsAvailable and self._shouldRun:
             self.running = True
+            self.set_pipeline_config("running", self.running)
 
             try:
                 if self.dir_out is not None and not Pipeline.directory_watchers_ready(self.dir_out):
@@ -947,8 +938,8 @@ class Pipeline():
                             if self._stopAfterFirstJob:
                                 self.stop(exit=True)
                             try:
-                                self.utils.report.email(self.email_settings["smtp"],
-                                                        self.email_settings["sender"],
+                                self.utils.report.email(self.config.get("email.smtp"),
+                                                        Address(self.config.get("email.sender")),
                                                         Report.filterEmailAddresses(self.email_settings["recipients"],
                                                                                     library=book_metadata["library"] if "library" in book_metadata else None),
                                                         should_email=self.utils.report.should_email,
@@ -967,7 +958,7 @@ class Pipeline():
                 try:
                     Report.emailPlainText("En feil oppstod ved håndtering av bokhendelse" +
                                           (": " + str(self.book["name"]) if self.book and "name" in self.book else ""),
-                                          traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                                          traceback.format_exc(), self.config.get("email.smtp"), Address(self.config.get("email.sender")), self.email_settings["recipients"])
                 except Exception:
                     logging.exception("Could not e-mail exception")
 
@@ -975,28 +966,30 @@ class Pipeline():
                 time.sleep(1)
 
         self.running = False
+        self.set_pipeline_config("running", self.running)
 
     def daily_report(self, message):
-        report_daily = Report(self)
-        report_daily._messages["message"].append({'time': time.strftime("%Y-%m-%d %H:%M:%S"),
-                                                  'severity': "INFO",
-                                                  'text': message,
-                                                  'time_seconds': (time.time()),
-                                                  'preformatted': False})
-        report_daily.title = "Dagsrapport for " + self.title
-        recipients_daily = []
-        for key in self.config:
-            if key == "daily":
-                for recipient_daily in self.config[key]:
-                    recipients_daily.append(recipient_daily)
-        try:
-            report_daily.email(self.email_settings["smtp"],
-                               self.email_settings["sender"],
-                               recipients_daily + self.email_settings["recipients"],
-                               should_attach_log=False)
-        except Exception:
-                logging.info("Failed sending daily email")
-                logging.info(traceback.format_exc())
+        pass
+#        report_daily = Report(self)
+#        report_daily._messages["message"].append({'time': time.strftime("%Y-%m-%d %H:%M:%S"),
+#                                                  'severity': "INFO",
+#                                                  'text': message,
+#                                                  'time_seconds': (time.time()),
+#                                                  'preformatted': False})
+#        report_daily.title = "Dagsrapport for " + self.title
+#        recipients_daily = []
+#        for key in self.config.get("pipeline.{}".format(self.uid)):
+#            if key == "daily":
+#                for recipient_daily in self.config.get("pipeline.{}.{}".format(self.uid, key)):
+#                    recipients_daily.append(recipient_daily)
+#        try:
+#            report_daily.email(self.config.get("email.smtp"),
+#                               Address(self.config.get("email.sender")),
+#                               recipients_daily + self.email_settings["recipients"],
+#                               should_attach_log=False)
+#        except Exception:
+#                logging.info("Failed sending daily email")
+#                logging.info(traceback.format_exc())
 
     def write_to_daily(self):
         error = ""
@@ -1139,6 +1132,7 @@ class DummyPipeline(Pipeline):
         self._queue_lock = RLock()
         self._md5_lock = RLock()
         self._shouldRun = False
+        self.set_pipeline_config("shouldRun", self._shouldRun)
 
         if inherit_config_from:
             assert (inspect.isclass(inherit_config_from) and issubclass(inherit_config_from, Pipeline) or
@@ -1148,18 +1142,17 @@ class DummyPipeline(Pipeline):
             self.dir_reports = inherit_config_from.dir_reports
             self.dir_base = inherit_config_from.dir_base
             self.email_settings = inherit_config_from.email_settings
-            self.config = inherit_config_from.config
+            #self.config = inherit_config_from.config
 
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
+    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
         self._shouldRun = True
+        self.set_pipeline_config("shouldRun", self._shouldRun)
 
         self.start_common(inactivity_timeout=inactivity_timeout,
                           dir_in=dir_in,
                           dir_out=dir_out,
                           dir_reports=dir_reports,
-                          email_settings=email_settings,
-                          dir_base=dir_base,
-                          config=config)
+                          dir_base=dir_base)
 
         self.running = True
 

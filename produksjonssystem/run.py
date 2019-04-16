@@ -52,156 +52,148 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class Produksjonssystem():
 
-    book_archive_dirs = None
-    email = None
-    dirs = None
+    config = None
     pipelines = None
-    environment = None
-    emailDoc = []
 
     def __init__(self, environment=None):
-        logging.basicConfig(stream=sys.stdout,
-                            level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO,
-                            format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+        self.config = Config()
 
         # Set environment variables (mainly useful when testing)
         if environment:
             assert isinstance(environment, dict)
             for name in environment:
                 os.environ[name] = environment[name]
-            self.environment = environment
+            environment = environment
         else:
-            self.environment = {}
-        Pipeline.environment = self.environment  # Make environment available from pipelines
+            environment = {}
+
         # Check that archive dirs is defined
+        book_archive_dirs = {}
         assert os.environ.get("BOOK_ARCHIVE_DIRS"), (
             "The book archives must be defined as a space separated list in the environment variable BOOK_ARCHIVE_DIRS (as name=path pairs)")
-        self.book_archive_dirs = {}
+        book_archive_dirs = {}
         for d in os.environ.get("BOOK_ARCHIVE_DIRS").split(" "):
             assert "=" in d, "Book archives must be specified as name=path. For instance: master=/media/archive. Note that paths can not contain spaces."
             archive_name = d.split("=")[0]
             archive_path = os.path.normpath(d.split("=")[1]) + "/"
-            self.book_archive_dirs[archive_name] = archive_path
-
-        # for convenience; both method variable and instance variable so you don't have to
-        # write "self." all the time during initialization.
-        book_archive_dirs = self.book_archive_dirs
+            book_archive_dirs[archive_name] = archive_path
+        self.config.set("book_archive_dirs", book_archive_dirs)
 
         # Configure email
-        self.email = {
-            "smtp": {},
-            "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no")
-        }
+        email_smtp = {}
         if os.environ.get("MAIL_SERVER", None):
-            self.email["smtp"]["host"] = os.environ.get("MAIL_SERVER", None)
+            email_smtp["host"] = os.environ.get("MAIL_SERVER", None)
         if os.environ.get("MAIL_PORT", None):
-            self.email["smtp"]["port"] = os.environ.get("MAIL_PORT", None)
+            email_smtp["port"] = os.environ.get("MAIL_PORT", None)
         if os.environ.get("MAIL_USERNAME", None):
-            self.email["smtp"]["user"] = os.environ.get("MAIL_USERNAME", None)
+            email_smtp["user"] = os.environ.get("MAIL_USERNAME", None)
         if os.environ.get("MAIL_PASSWORD", None):
-            self.email["smtp"]["pass"] = os.environ.get("MAIL_PASSWORD", None)
+            email_smtp["pass"] = os.environ.get("MAIL_PASSWORD", None)
+        self.config.set("email.smtp", email_smtp)
+        self.config.set("email.sender", ["NLBs Produksjonssystem", "produksjonssystem", "nlb.no"])
 
         # Special directories
-        Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
-        Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
-        Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
+        self.config.set("dir.master", os.path.join(book_archive_dirs["master"], "master/EPUB"))
+        self.config.set("dir.reports", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
+        self.config.set("dir.metadata", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
         # Define directories (using OrderedDicts to preserve order when plotting)
-        self.dirs_ranked = []
+        dirs_ranked = []
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "incoming",
             "name": "Mottak",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
+        dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
+        dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
+        dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "source-in",
             "name": "Ubehandlet kildefil",
             "dirs": OrderedDict()
         })
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "source-out",
             "name": "Behandlet kildefil",
             "dirs": OrderedDict()
         })
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "master",
             "name": "Grunnlagsfil",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["master"] = Config.get("master_dir")
-        self.dirs_ranked[-1]["dirs"]["metadata"] = Config.get("metadata_dir")
-        self.dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["nlbpub"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
-        self.dirs_ranked[-1]["dirs"]["epub_from_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook")
+        dirs_ranked[-1]["dirs"]["master"] = self.config.get("dir.master")
+        dirs_ranked[-1]["dirs"]["metadata"] = self.config.get("dir.metadata")
+        dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
+        dirs_ranked[-1]["dirs"]["nlbpub"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB")
+        dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
+        dirs_ranked[-1]["dirs"]["epub_from_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook")
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "version-control",
             "name": "Versjonskontroll",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["nlbpub-previous"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere")
+        dirs_ranked[-1]["dirs"]["nlbpub-previous"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB-tidligere")
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
                 "id": "publication-in",
                 "name": "Format-spesifikk metadata",
                 "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["pub-in-epub"] = os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB")
-        self.dirs_ranked[-1]["dirs"]["pub-in-braille"] = os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift")
-        self.dirs_ranked[-1]["dirs"]["pub-in-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst")
-        self.dirs_ranked[-1]["dirs"]["pub-in-audio"] = os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok")
+        dirs_ranked[-1]["dirs"]["pub-in-epub"] = os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB")
+        dirs_ranked[-1]["dirs"]["pub-in-braille"] = os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift")
+        dirs_ranked[-1]["dirs"]["pub-in-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst")
+        dirs_ranked[-1]["dirs"]["pub-in-audio"] = os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok")
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "publication-ready",
             "name": "Klar for produksjon",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["dtbook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook")
-        self.dirs_ranked[-1]["dirs"]["newsletter-in"] = os.path.join(book_archive_dirs["master"], "nyhetsbrev/inn")
-        self.dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
-        self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
-        self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
-        self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
-        self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
-        self.dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
-        self.dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
+        dirs_ranked[-1]["dirs"]["dtbook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook")
+        dirs_ranked[-1]["dirs"]["newsletter-in"] = os.path.join(book_archive_dirs["master"], "nyhetsbrev/inn")
+        dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
+        dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
+        dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
+        dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
+        dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
+        dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
+        dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "publication-out",
             "name": "Ferdig produsert",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
-        self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
-        self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
-        self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
+        dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
+        dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
+        dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
+        dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
 
-        self.dirs_ranked.append({
+        dirs_ranked.append({
             "id": "distribution",
             "name": "Klar til distribusjon",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
-        self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
+        dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+        dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
 
-        # also make dirs available from static contexts
-        Pipeline.dirs_ranked = self.dirs_ranked
+        # make dirs available from anywhere
+        self.config.set("dirs_ranked", dirs_ranked)
 
         # Make a key/value version of dirs_ranked for convenience
-        self.dirs = {
-            "reports": Config.get("reports_dir")
+        dirs = {
+            "reports": self.config.get("dir.reports")
         }
-        for rank in self.dirs_ranked:
+        for rank in dirs_ranked:
             for dir in rank["dirs"]:
-                self.dirs[dir] = rank["dirs"][dir]
+                dirs[dir] = rank["dirs"][dir]
+        self.config.set("dir", dirs)
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
@@ -329,9 +321,10 @@ class Produksjonssystem():
 
         # Some useful output to stdout before starting everything else
         print("")
-        print("Dashboard: file://" + os.path.join(Config.get("reports_dir"), "dashboard.html"))
-        for d in self.book_archive_dirs:
-            print("Book archive \"{}\": file://{}".format(d, self.book_archive_dirs[d]))
+        print("Dashboard: file://" + os.path.join(self.config.get("dir.reports"), "dashboard.html"))
+        book_archive_dirs = self.config.get("book_archive_dirs")
+        for d in book_archive_dirs:
+            print("Book archive \"{}\": file://{}".format(d, book_archive_dirs[d]))
         print("")
 
         # Make directories
@@ -380,11 +373,11 @@ class Produksjonssystem():
                                   pipeline_config
                                   ))
 
-            thread.setDaemon(True)
+        self.config.set("system.shouldRun", True)
             thread.start()
             threads.append(thread)
 
-        self.shouldRun = True
+        configProcess = BusProcess(target=self.config_process, name="config", daemon=True)
         self._configThread = Thread(target=self._config_thread, name="config")
         self._configThread.setDaemon(True)
         self._configThread.start()
@@ -413,9 +406,9 @@ class Produksjonssystem():
                 time.sleep(1)
 
                 if os.path.exists(stopfile):
-                    self.info("Sender stoppsignal til alle pipelines...")
+                    self.info("Sender stoppsignal til hele systemet...")
                     os.remove(stopfile)
-                    for pipeline in self.pipelines:
+                    self.config.set("system.shouldRun", False)
                         pipeline[0].stop(exit=True)
 
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
@@ -466,7 +459,7 @@ class Produksjonssystem():
 
         self.info("Venter på at plotteren skal stoppe...")
         time.sleep(5)  # gi plotteren litt tid på slutten
-        plotter.should_run = False
+        self.config.set("plotter.shouldRun", False)
         if graph_thread:
             logging.debug("joining {}".format(graph_thread.name))
         graph_thread.join()
@@ -694,7 +687,15 @@ class Produksjonssystem():
 
 
 if __name__ == "__main__":
+    log_level = logging.INFO
+    if "debug" in sys.argv or os.environ.get("DEBUG", "1") == "1":
+        log_level = logging.DEBUG
+
+    config = Config()
+    config.set("logging.level", log_level)
+    config.set("logging.format", "%(asctime)s %(levelname)-8s [%(processName)-25s] [%(threadName)-11s] %(message)s")
+    Config.init_logging(config)
     threading.current_thread().setName("main thread")
-    debug = "debug" in sys.argv
+
     produksjonssystem = Produksjonssystem()
-    produksjonssystem.run(debug=debug)
+    produksjonssystem.run()

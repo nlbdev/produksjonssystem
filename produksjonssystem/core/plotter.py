@@ -8,6 +8,7 @@ import sys
 import threading
 import time
 
+from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
@@ -30,12 +31,14 @@ class Plotter():
     should_run = True
     book_count = {}
     threads = None
+    config = None
 
     debug_logging = False
 
-    def __init__(self, pipelines, report_dir):
-        self.pipelines = pipelines
-        self.report_dir = report_dir
+    def __init__(self):
+        logging.info("created plotter")
+        logging.info("initializing config for plotter")
+        self.config = Config()
 
     def get_book_count(self, dir, parentdirs=None):
         if not isinstance(dir, str):
@@ -241,33 +244,33 @@ class Plotter():
 
             dot.subgraph(subgraph)
 
-        dot.render(os.path.join(self.report_dir, name + "_"))
+        dot.render(os.path.join(reports_dir, name + "_"))
 
         # there seems to be some race condition when doing this across a mounted network drive,
         # so if we get an exception we retry a few times and hope that it works.
         # see: https://github.com/nlbdev/produksjonssystem/issues/81
         for t in reversed(range(10)):
             try:
-                shutil.copyfile(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+                shutil.copyfile(os.path.join(reports_dir, name + "_.png"), os.path.join(reports_dir, name + ".png"))
                 break
             except Exception as e:
-                logging.debug(" Unable to copy plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
+                logging.debug(" Unable to copy plot image: {}".format(os.path.join(reports_dir, name + "_.png")))
                 time.sleep(0.5)
                 if t == 0:
                     raise e
 
-        dashboard_file = os.path.join(self.report_dir, name + ".html")
+        dashboard_file = os.path.join(reports_dir, name + ".html")
         if not os.path.isfile(dashboard_file):
             dashboard_template = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../dashboard.html'))
-            if not os.path.exists(self.report_dir):
-                os.makedirs(self.report_dir)
+            if not os.path.exists(reports_dir):
+                os.makedirs(reports_dir)
             shutil.copyfile(dashboard_template, dashboard_file)
 
     def run(self):
         self.threads = []
 
-        plotter_thread = threading.Thread(target=self._generate_plots_thread, name="graph plotter")
-        plotter_thread.setDaemon(True)
+        while plotter.config.get("system.shouldRun", default=True):
+            logging.info("plotter should run")
         plotter_thread.start()
         self.threads.append(plotter_thread)
 
@@ -276,8 +279,8 @@ class Plotter():
         book_count_thread.start()
         self.threads.append(book_count_thread)
 
-        while self.should_run:
             time.sleep(1)
+        logging.info("plotter should not run")
 
         self.join()
 
@@ -313,6 +316,8 @@ class Plotter():
             try:
                 self.debug_logging = False
                 times = []
+
+                pipelines = self.config.get("pipeline")
 
                 if not isinstance(self.pipelines, list):
                     logging.warn("self.pipelines is not a list: {}".format(self.pipelines))

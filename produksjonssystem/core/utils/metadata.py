@@ -689,8 +689,8 @@ class Metadata:
             library = library[0]["value"] if len(library) > 0 else None
 
             Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
-            normarc_report.email(pipeline.email_settings["smtp"],
-                                 pipeline.email_settings["sender"],
+            normarc_report.email(self.config.get("email.smtp"),
+                                 Address(*self.config.get("email.sender")),
                                  Report.filterEmailAddresses(signatureRegistrationAddress, library=library),
                                  subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
             pipeline.utils.report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(

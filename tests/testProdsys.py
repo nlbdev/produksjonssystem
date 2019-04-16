@@ -34,9 +34,13 @@ logfile = "{0}/{1}.log".format(target_path, "test")
 if os.path.exists(logfile):
     os.remove(logfile)
 fileHandler = logging.FileHandler(logfile)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(processName)-25s] [%(threadName)-11s] %(message)s")
 fileHandler.setFormatter(logFormatter)
 logging.getLogger().addHandler(fileHandler)
+if os.environ["DEBUG"] == "1":
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    logging.getLogger().addHandler(consoleHandler)
 
 # store results in test-results.txt
 test_results_file = os.path.join(target_path, "test-results.txt")
@@ -72,10 +76,12 @@ for d in environment["BOOK_ARCHIVE_DIRS"].split(" "):
     assert "=" in d
     book_archive_dirs[d.split("=")[0]] = d.split("=")[1]
 
+environment["CONFIG_CONTINUOUS_DUMP_DIR"] = os.path.join(target_path, "config-continuous-dump")
+
 threading.current_thread().setName("test thread")
 print("Initializing the system...")
 prodsys = run.Produksjonssystem(environment=environment)
-prodsys_thread = threading.Thread(target=prodsys.run, name="produksjonssystem", kwargs={"debug": True})
+prodsys_thread = threading.Thread(target=prodsys.run, name="prodsys", kwargs={"debug": True})
 prodsys_thread.setDaemon(True)
 print("Starting the system...")
 prodsys_thread.start()
