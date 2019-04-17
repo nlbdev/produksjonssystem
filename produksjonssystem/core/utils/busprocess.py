@@ -194,7 +194,6 @@ class BusProcess(Process):
     bus_parent_thread = None
 
     def __init__(self, kwargs={}, *args, **keyword_args):
-        threading.current_thread().setName("main")
         logging.debug("Initializing new BusProcess")
         parentConnection, childConnection = Pipe()
         logging.debug("Creating Pipe pair {} / {}".format(parentConnection.__hash__(), childConnection.__hash__()))
