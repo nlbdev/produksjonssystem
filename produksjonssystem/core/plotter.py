@@ -7,12 +7,12 @@ import shutil
 import sys
 import threading
 import time
-import multiprocessing
+
+from graphviz import Digraph
 
 from core.config import Config
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
-from graphviz import Digraph
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -78,7 +78,7 @@ class Plotter():
         return None
 
     def plot(self, uids, name):
-        self.reports_dir = self.config.get("dir.reports")
+        self.reports_dir = self.config.get("dir.reports.path")
         if not self.reports_dir:
             logging.info("no reports dir, skipping plot")
 
@@ -88,8 +88,6 @@ class Plotter():
         node_ranks = {}
         for rank in self.config.get("dirs_ranked"):
             node_ranks[rank["id"]] = []
-
-        dirs = self.config.get("dir")
 
         # remember edges so that we don't plot them twice
         edges = {}
@@ -103,13 +101,11 @@ class Plotter():
             title = pipeline.get("title", "(ukjent)")
             should_retry = pipeline.get("should_retry", True)
             queue = pipeline.get("queue", [])
-            dir_in_id = None
-            dir_out_id = None
-            for dir in dirs:
-                if os.path.normpath(pipeline.get("dir_in", "")) == os.path.normpath(dirs[dir]):
-                    dir_in_id = dir
-                if os.path.normpath(pipeline.get("dir_out", "")) == os.path.normpath(dirs[dir]):
-                    dir_out_id = dir
+            dir_in_name = self.config.get("pipeline.{}.dir.in.name".format(uid))
+            dir_in_path = self.config.get("pipeline.{}.dir.in.path".format(uid))
+            dir_out_name = self.config.get("pipeline.{}.dir.out.name".format(uid))
+            dir_out_path = self.config.get("pipeline.{}.dir.out.path".format(uid))
+            dir_base = self.config.get("book_archive_dirs")
 
             queue_created = len([book for book in queue if book["main_event"] == "created"]) if queue else 0
             queue_deleted = len([book for book in queue if book["main_event"] == "deleted"]) if queue else 0
@@ -136,68 +132,69 @@ class Plotter():
                     queue_size -= queue_autotriggered
             book = Metadata.pipeline_book_shortname(pipeline.get("book", None))
 
+            # if there's a input directory, get some info about it
             relpath_in = None
             netpath_in = ""
             rank_in = None
-            if pipeline.get("dir_in"):
+            if dir_in_name:
+                # determine dir "rank" (for instance "incoming", "master", etc. - the way pipelines are grouped in the graph)
                 for rank in self.config.get("dirs_ranked"):
                     for dir in rank["dirs"]:
-                        if os.path.normpath(pipeline.get("dir_in")) == os.path.normpath(rank["dirs"][dir]):
+                        if dir_in_name == dir:
                             rank_in = rank["id"]
                             break
-            if pipeline.get("dir_in") and not pipeline.get("dir_base"):
-                relpath_in = os.path.basename(os.path.dirname(pipeline.get("dir_in")))
-            elif pipeline.get("dir_in") and pipeline.get("dir_base"):
-                base_path = Filesystem.get_base_path(pipeline.get("dir_in"), pipeline.get("dir_base"))
-                relpath_in = os.path.relpath(pipeline.get("dir_in"), base_path)
-                if "master" in pipeline.get("dir_base") and pipeline.get("dir_base")["master"] == base_path:
-                    pass
-                else:
-                    if pipeline.get("dir_in") not in self.buffered_network_paths:
-                        smb, file, unc = Filesystem.networkpath(pipeline.get("dir_in"))
-                        host = Filesystem.get_host_from_url(smb)
-                        self.buffered_network_paths[pipeline.get("dir_in")] = smb
-                        self.buffered_network_hosts[pipeline.get("dir_in")] = host
-                    netpath_in = self.buffered_network_hosts[pipeline.get("dir_in")]
-                    if not netpath_in:
-                        netpath_in = self.buffered_network_paths[pipeline.get("dir_in")]
-            book_count_in = self.get_book_count(pipeline.get("dir_in"))
+
+                # determine relative path in book archive
+                base_path = Filesystem.get_base_path(dir_in_path, dir_base)
+                relpath_in = os.path.relpath(dir_in_path, base_path)
+
+                # determine network host/path
+                if dir_in_path not in self.buffered_network_paths:
+                    smb, file, unc = Filesystem.networkpath(dir_in_path)
+                    host = Filesystem.get_host_from_url(smb)
+                    self.buffered_network_paths[dir_in_path] = smb
+                    self.buffered_network_hosts[dir_in_path] = host
+                netpath_in = self.buffered_network_hosts[dir_in_path]
+                if not netpath_in:
+                    netpath_in = self.buffered_network_paths[dir_in_path]
+            book_count_in = self.get_book_count(dir_in_path)
             label_in = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_in,
                 "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_in, "bok" if book_count_in == 1 else "bøker"),
                 "\n<br/><i><font point-size='20'>{}</font></i>".format(netpath_in.replace("\\", "\\\\")) if netpath_in else "")
 
+            # if there's a output directory, get some info about it
             relpath_out = None
             netpath_out = ""
             rank_out = None
-            if pipeline.get("dir_out"):
+            if dir_out_path:
+                # determine dir "rank" (for instance "incoming", "master", etc. - the way pipelines are grouped in the graph)
                 for rank in self.config.get("dirs_ranked"):
                     for dir in rank["dirs"]:
-                        if os.path.normpath(pipeline.get("dir_out")) == os.path.normpath(rank["dirs"][dir]):
+                        if dir_out_name == dir:
                             rank_out = rank["id"]
                             break
-            if pipeline.get("dir_out") and not pipeline.get("dir_base"):
-                relpath_out = os.path.basename(os.path.dirname(pipeline.get("dir_out")))
-            elif pipeline.get("dir_out") and pipeline.get("dir_base"):
-                base_path = Filesystem.get_base_path(pipeline.get("dir_out"), pipeline.get("dir_base"))
-                relpath_out = os.path.relpath(pipeline.get("dir_out"), base_path)
-                if "master" in pipeline.get("dir_base") and pipeline.get("dir_base")["master"] == base_path:
-                    pass
-                else:
-                    if pipeline.get("dir_out") not in self.buffered_network_paths:
-                        smb, file, unc = Filesystem.networkpath(pipeline.get("dir_out"))
-                        host = Filesystem.get_host_from_url(smb)
-                        self.buffered_network_paths[pipeline.get("dir_out")] = unc
-                        self.buffered_network_hosts[pipeline.get("dir_out")] = host
-                    netpath_out = self.buffered_network_hosts[pipeline.get("dir_out")]
-                    if not netpath_out:
-                        netpath_out = self.buffered_network_paths[pipeline.get("dir_out")]
-            book_count_out = self.get_book_count(pipeline.get("dir_out"), pipeline.get("parentdirs"))
+
+                # determine relative path in book archive
+                base_path = Filesystem.get_base_path(dir_out_path, dir_base)
+                relpath_out = os.path.relpath(dir_out_path, base_path)
+
+                # determine network host/path
+                if dir_out_path not in self.buffered_network_paths:
+                    smb, file, unc = Filesystem.networkpath(dir_out_path)
+                    host = Filesystem.get_host_from_url(smb)
+                    self.buffered_network_paths[dir_out_path] = unc
+                    self.buffered_network_hosts[dir_out_path] = host
+                netpath_out = self.buffered_network_hosts[dir_out_path]
+                if not netpath_out:
+                    netpath_out = self.buffered_network_paths[dir_out_path]
+            book_count_out = self.get_book_count(dir_out_path, pipeline.get("parentdirs"))
             label_out = "< <font point-size='24'>{}</font>{}{} >".format(
                 relpath_out,
                 "\n<br/><i><font point-size='20'>{} {}</font></i>".format(book_count_out, "bok" if book_count_out == 1 else "bøker"),
                 "\n<br/><i><font point-size='20'>{}</font></i>".format(netpath_out.replace("\\", "\\\\")) if netpath_out else "")
 
+            # add pipeline to rank (i.e. group of pipelines to be plotted at the same level/rank)
             if rank_out:
                 node_ranks[rank_out].append(pipeline_id)
             elif rank_in:
@@ -207,6 +204,7 @@ class Plotter():
                 else:
                     node_ranks[rank_in].append(pipeline_id)
 
+            # get som info about the pipeline itself, useful for plotting
             status = pipeline.get("status")
             progress_text = pipeline.get("progress")
             pipeline_label = "< <font point-size='26'>{}</font>{} >".format(
@@ -216,36 +214,36 @@ class Plotter():
             fillcolor = "lightskyblue1"
             if book or queue_size:
                 fillcolor = "lightslateblue"
-            if not pipeline.get("running") or pipeline.get("instance") == "DummyPipeline":
+            if not pipeline.get("running") or "DummyPipeline" in pipeline.get("instance"):
                 fillcolor = "white"
             dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
             dot.node(pipeline_id, pipeline_label.replace("\\", "\\\\"))
 
-            if dir_in_id:
+            if dir_in_name:
                 fillcolor = "wheat"
                 if not pipeline.get("directory_watchers_ready", {}).get("dir_in"):
                     fillcolor = "white"
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
-                dot.node(dir_in_id, label_in)
-                if dir_in_id not in edges:
-                    edges[dir_in_id] = []
-                if pipeline_id not in edges[dir_in_id]:
-                    edges[dir_in_id].append(pipeline_id)
-                    dot.edge(dir_in_id, pipeline_id)
-                node_ranks[rank_in].append(dir_in_id)
+                dot.node(dir_in_name, label_in)
+                if dir_in_name not in edges:
+                    edges[dir_in_name] = []
+                if pipeline_id not in edges[dir_in_name]:
+                    edges[dir_in_name].append(pipeline_id)
+                    dot.edge(dir_in_name, pipeline_id)
+                node_ranks[rank_in].append(dir_in_name)
 
-            if dir_out_id:
+            if dir_out_name:
                 fillcolor = "wheat"
                 if not pipeline.get("directory_watchers_ready", {}).get("dir_out"):
                     fillcolor = "white"
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
-                dot.node(dir_out_id, label_out)
+                dot.node(dir_out_name, label_out)
                 if pipeline_id not in edges:
                     edges[pipeline_id] = []
-                if dir_out_id not in edges[pipeline_id]:
-                    edges[pipeline_id].append(dir_out_id)
-                    dot.edge(pipeline_id, dir_out_id)
-                node_ranks[rank_out].append(dir_out_id)
+                if dir_out_name not in edges[pipeline_id]:
+                    edges[pipeline_id].append(dir_out_name)
+                    dot.edge(pipeline_id, dir_out_name)
+                node_ranks[rank_out].append(dir_out_name)
 
         for rank in node_ranks:
             subgraph = Digraph("cluster_" + rank, graph_attr={"style": "dotted"})
@@ -260,7 +258,6 @@ class Plotter():
 
             dot.subgraph(subgraph)
 
-        print("rendering {}".format(os.path.join(self.reports_dir, name + "_")))
         dot.render(os.path.join(self.reports_dir, name + "_"))
 
         # there seems to be some race condition when doing this across a mounted network drive,
@@ -288,12 +285,9 @@ class Plotter():
         plotter = Plotter()
 
         while plotter.config.get("system.shouldRun", default=True):
-            logging.info("plotter should run")
             time.sleep(1)
-        logging.info("plotter should not run")
 
         plotter.join()
-        logging.info("PROCESS: Process {} ended (plotter)".format(multiprocessing.current_process()))
 
     def join(self):
         for thread in Plotter.threads:
@@ -311,7 +305,7 @@ class Plotter():
                     thread.join(timeout=60)
 
     def _generate_plots_thread(self):
-        reports_dir = self.config.get("dir.reports")
+        reports_dir = self.config.get("dir.reports.path")
 
         # while loop that waits until reports_dir is available
         while True:
@@ -322,7 +316,7 @@ class Plotter():
             else:
                 logging.info("system.shouldRun: {}".format(self.config.get("system.shouldRun")))
 
-            reports_dir = self.config.get("dir.reports")
+            reports_dir = self.config.get("dir.reports.path")
             if not reports_dir:
                 logging.debug("wait for reports_dir to be available: {}".format(reports_dir))
                 # wait for reports_dir to be available
@@ -345,7 +339,6 @@ class Plotter():
             logging.exception("An error occurred while deleting existing HTML files")
 
         while self.config.get("system.shouldRun", True):
-            logging.info("_generate_plots_thread should run")
             time.sleep(1)
             try:
                 self.debug_logging = False
