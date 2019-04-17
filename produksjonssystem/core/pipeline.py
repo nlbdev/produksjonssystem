@@ -8,6 +8,7 @@ import math
 import multiprocessing
 import os
 import re
+import signal
 import sys
 import tempfile
 import threading
@@ -100,6 +101,9 @@ class Pipeline():
                  _uid=None,
                  _gid=None,
                  _title=None):
+
+        signal.signal(signal.SIGINT, self.signal_stop)
+        signal.signal(signal.SIGTERM, self.signal_stop)
 
         self.config = Config()
 
@@ -303,6 +307,10 @@ class Pipeline():
         else:
             logging.info("Pipeline \"" + str(self.title) + "\" started")
 
+    def signal_stop(self, signum, frame):
+        self.stop(exit=True)
+
+    # exit: also signals that the process should be stopped
     def stop(self, exit=False):
         self._dirsAvailable = False
 
