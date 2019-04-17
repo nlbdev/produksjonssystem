@@ -44,7 +44,7 @@ class Bus():
         if Bus.current_process == multiprocessing.current_process():
             #logging.debug("Bus is already initialized for process: {}".format(multiprocessing.current_process()))
             return
-        logging.debug("Initializing bus with {} as upstream connection".format(connection))
+        logging.debug("Initializing bus with {} as upstream connection".format(connection.__hash__() if connection else connection))
 
         Bus.current_process = multiprocessing.current_process()
 
@@ -66,7 +66,7 @@ class Bus():
     def subscribe(topic, fn):
         """Register a function to handle messages about the given topic. Starts a listener that runs in the child process."""
         Bus.init()
-        logging.debug("Subscribing {} to topic {}".format(fn, topic))
+        logging.debug("Subscribing {} to topic {}".format(fn.__name__ if fn else fn, topic))
         with Bus.listeners_lock:
             Bus.listeners.append({
                 "topic": topic,
@@ -118,7 +118,7 @@ class Bus():
         """Thread that listens for messages sent from the child process and broadcasts it to all processes. Runs in parent process."""
         Bus.init()
         connection = {"pipe": connection, "open": bool(connection)}
-        logging.debug("Start listening for messages sent from child process on connection {}".format(connection))
+        logging.debug("Start listening for messages sent from child process on connection {}".format(connection["pipe"].__hash__() if connection["pipe"] else connection["pipe"]))
         if threading.current_thread().getName().startswith("Thread-"):
             logging.debug("{}".format("".join(traceback.format_stack())))
         while connection["open"]:
@@ -148,7 +148,7 @@ class Bus():
     def _recv_down():
         """Thread that listens for messages sent from the parent process and forwards it to all listeners. Runs in child process."""
         Bus.init()
-        logging.debug("Start listening for messages sent from parent process on connection {}".format(Bus.connection))
+        logging.debug("Start listening for messages sent from parent process on connection {}".format(Bus.connection["pipe"].__hash__() if Bus.connection else Bus.connection))
         while True:
             try:
                 data = Bus.connection["pipe"].recv()  # Blocks until there is something to receive
@@ -197,7 +197,7 @@ class BusProcess(Process):
         threading.current_thread().setName("main")
         logging.debug("Initializing new BusProcess")
         parentConnection, childConnection = Pipe()
-        logging.debug("Creating Pipe pair {} / {}".format(parentConnection, childConnection))
+        logging.debug("Creating Pipe pair {} / {}".format(parentConnection.__hash__(), childConnection.__hash__()))
 
         kwargs["bus_connection"] = childConnection
         kill_when_broken_bus_connection = True
@@ -209,7 +209,7 @@ class BusProcess(Process):
 
         Bus.init()
         with Bus.connections_lock:
-            logging.debug("Appending {} to set of connections".format(parentConnection))
+            logging.debug("Appending {} to set of connections".format(parentConnection.__hash__()))
             Bus.connections.append({"pipe": parentConnection, "open": True})
 
         self.bus_parent_thread = Thread(target=Bus._recv,
@@ -220,6 +220,6 @@ class BusProcess(Process):
 
     def run(self):
         Bus.init(self._kwargs.pop("bus_connection", None))
-        logging.debug("Recieved bus connection {}".format(Bus.connection["pipe"]))
+        logging.debug("Recieved bus connection {}".format(Bus.connection["pipe"].__hash__()))
         super().run()
         # TODO: close connection here after run?
