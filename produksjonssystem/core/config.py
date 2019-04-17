@@ -22,14 +22,6 @@ class Config:
         self.lock = RLock()
         self.config = {}
 
-        # give the thread a descriptive and unique name
-        thread_names = [t.getName() for t in threading.enumerate()]
-        for i in range(0, 10000):
-            config_thread_name = "config-{}".format(i)
-            if config_thread_name not in thread_names:
-                threading.current_thread().setName(config_thread_name)
-                break
-
         self.continuous_dump_file = None
         if os.environ.get("CONFIG_CONTINUOUS_DUMP_DIR"):
             logging.warn("Enabling continuous dumping of config to JSON files (CONFIG_CONTINUOUS_DUMP_DIR is set)."
