@@ -140,7 +140,10 @@ class Config:
                 Config._merge_dicts(a[key], b[key], report_change=False)
 
             else:
-                a[key] = b[key]
+                if key in a and isinstance(a[key], dict):
+                    logging.warn("overwriting dict:")
+                    logging.warn("before: {}".format(a[key]))
+                    logging.warn("after: {}".format(b[key]))
                 a[key] = copy.deepcopy(b[key])
 
         if report_change:
