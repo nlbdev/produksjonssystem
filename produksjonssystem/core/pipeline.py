@@ -144,7 +144,8 @@ class Pipeline():
         super().__init__()
 
     def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
-        if not self.config.wait_until_initialized():
+        if not self.config.wait_until_available("pipeline.{}.shouldRun".format(self.uid), timeout=15):
+            logging.error("Configuration for {} never arrived (waited for pipeline.{}.shouldRun)".format(self.uid, self.uid))
             return
 
         dir_in = self.config.get(dir_in, default=os.environ.get("DIR_IN"))

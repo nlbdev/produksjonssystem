@@ -35,16 +35,20 @@ class Config:
         Bus.subscribe("config.init", self._init)
         Bus.send("config.init", None)
 
-    def wait_until_initialized(self, while_true_or_missing="system.shouldRun"):
-        # note: this will block forever if nothing is added to the config
-        while True:
-            if not self.get(while_true_or_missing, default=True):
-                return False
-
-            if bool(self.config):
-                return True
+    # Block until `name` is available in `self.config` and is not `None`, then return `True`.
+    # If `timeout` is set, return `False` after `timeout` seconds.
+    def wait_until_available(self, name, timeout=None):
+        start = time.time()
+        while timeout is None or time.time() - start < timeout:
+            with self.lock:
+                if self.get(name, None) is not None:
+                    return True
+                else:
+                    logging.info("{} still not available".format(name))
 
             time.sleep(1)
+
+        return False  # timed out
 
     def _as_dict(self, name, value):
         # make a dict based on the name. for instance {"a.b": 1} becomes {"a": {"b": 1}}
