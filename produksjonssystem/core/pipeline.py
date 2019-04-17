@@ -142,21 +142,19 @@ class Pipeline():
 
         super().__init__()
 
-    def start_common(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
+    def start_common(self, inactivity_timeout=10):
         if not self.config.wait_until_available("pipeline.{}.shouldRun".format(self.uid), timeout=15):
             logging.error("Configuration for {} never arrived (waited for pipeline.{}.shouldRun)".format(self.uid, self.uid))
             return
 
-        dir_in = self.config.get(dir_in, default=os.environ.get("DIR_IN"))
-        dir_out = self.config.get(dir_out, default=os.environ.get("DIR_OUT"))
-        dir_reports = self.config.get(dir_reports, default=os.environ.get("DIR_REPORTS"))
-        dir_base = self.config.get(dir_base, default=os.environ.get("BASE_DIR", dir_in))
+        dir_base = self.config.get("book_archive_dirs")
+        dir_reports = self.get_pipeline_config("dir.reports.name")
+        dir_reports_path = self.get_pipeline_config("dir.reports.path")
 
         stop_after_first_job = os.getenv("STOP_AFTER_FIRST_JOB", False)
 
-        assert (
-            dir_reports is not None and len(dir_reports) > 0 and os.path.exists(dir_reports)
-            ), "The environment variable DIR_REPORTS must be specified, and must point to a directory that exists."
+        assert (dir_reports is not None and len(dir_reports) > 0), "dir_reports must be specified"
+        assert (os.path.isdir(dir_reports_path)), "dir_reports must exist and be a directory"
         assert isinstance(dir_base, str) or isinstance(dir_base, dict), "Base directories could not be determined"
         assert (
             not stop_after_first_job or stop_after_first_job in ["1", "true", "0", "false"]
@@ -179,33 +177,16 @@ class Pipeline():
         if stop_after_first_job in ["true", "1"]:
             self._stopAfterFirstJob = True
 
-        if dir_in:
-            self.dir_in = str(os.path.normpath(dir_in)) + '/'
-        if dir_out:
-            self.dir_out = str(os.path.normpath(dir_out)) + '/'
-        self.dir_reports = str(os.path.normpath(dir_reports)) + '/'
-        self.dir_base = dir_base
-
         # progress variable for this pipeline instance
         self.progress_text = ""
         self.progress_log = []
         self.progress_start = -1
 
-        # make dirs available from static contexts
-        self.config.set("pipeline.{}.in".format(self.uid), self.dir_in)
-        self.config.set("pipeline.{}.out".format(self.uid), self.dir_out)
-        self.config.set("pipeline.{}.reports".format(self.uid), self.dir_reports)
-        self.config.set("pipeline.{}.base".format(self.uid), self.dir_base)
-
     def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
         logging.info("Pipeline \"" + str(self.title) + "\" starting...")
 
         # common code shared with DummyPipeline
-        self.start_common(inactivity_timeout=inactivity_timeout,
-                          dir_in=dir_in,
-                          dir_out=dir_out,
-                          dir_reports=dir_reports,
-                          dir_base=dir_base)
+        self.start_common(inactivity_timeout=inactivity_timeout)
 
         assert (self.dir_in is None or os.path.isdir(self.dir_in)), "The input directory, if specified, must point to a directory."
         assert (self.dir_out is None or os.path.isdir(self.dir_out)), "The output directory, if specified, must point to a directory."
@@ -257,7 +238,7 @@ class Pipeline():
             md5_count = 0
             self.progress_text = "0 / {}".format(len(dir_list))
             for f in dir_list:
-                if not (self._dirsAvailable and self._shouldRun):
+                if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                     with self._md5_lock:
                         self._md5 = {}
                     return  # break loop if we're shutting down the system
@@ -296,11 +277,11 @@ class Pipeline():
         self._bookHandlerThread.start()
         self.threads.append(self._bookHandlerThread)
 
-        if not Pipeline._triggerDirThread:
-            Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
-            Pipeline._triggerDirThread.setDaemon(True)
-            Pipeline._triggerDirThread.start()
-            self.threads.append(Pipeline._triggerDirThread)
+        #if not Pipeline._triggerDirThread:
+        #    Pipeline._triggerDirThread = Thread(target=Pipeline._trigger_dir_thread, name="trigger dir monitor")
+        #    Pipeline._triggerDirThread.setDaemon(True)
+        #    Pipeline._triggerDirThread.start()
+        #    self.threads.append(Pipeline._triggerDirThread)
 
         if self.dir_in is not None:
             logging.info("Pipeline \"" + str(self.title) + "\" started watching " + self.dir_in)
@@ -325,23 +306,23 @@ class Pipeline():
 
         if exit:
             self._shouldRun = False
-            self.set_pipeline_config("shouldRun", self._shouldRun)
+            self.set_pipeline_config("shouldRun", False)
 
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
-    def run(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
-        """
-        Run in a blocking manner (useful from command line)
-        """
-        self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings, dir_base, config)
+    @staticmethod
+    def run(pipeline_class, inactivity_timeout=10, kwargs=None):
+        pipeline = pipeline_class(**kwargs)
+        pipeline.start(inactivity_timeout)
         try:
-            while self._shouldRun:
+            logging.info("{}: {}".format("pipeline.{}.shouldRun".format(pipeline.uid), pipeline.get_pipeline_config("shouldRun")))
+            while pipeline.get_pipeline_config("shouldRun"):
 
                 available = {}
-                if self.dir_in is not None:
-                    available[self.dir_in] = False
-                if self.dir_out is not None:
-                    available[self.dir_out] = False
+                if pipeline.dir_in is not None:
+                    available[pipeline.dir_in] = False
+                if pipeline.dir_out is not None:
+                    available[pipeline.dir_out] = False
                 for dir in available:
                     is_mount = Filesystem.ismount(dir)
                     contains_books = False
@@ -353,25 +334,26 @@ class Pipeline():
                     available[dir] = os.path.isdir(dir) and mount_is_mounted
 
                 if False in [available[dir] for dir in available]:
-                    if self._dirsAvailable:
+                    if pipeline._dirsAvailable:
                         for dir in [d for d in available if not available[d]]:
                             logging.warning("{} is not available. Stop watching...".format(dir))
-                        self.stop()
+                        pipeline.stop()
 
                     else:
                         for dir in [d for d in available if not available[d]]:
                             logging.warning("{} is still not available...".format(dir))
 
                 else:
-                    if not self._dirsAvailable:
+                    if not pipeline._dirsAvailable:
                         logging.info("All directories are available again. Start watching...")
                         for dir in available:
                             logging.info("Available: {}".format(dir))
-                        self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
+                        pipeline.start(pipeline._inactivity_timeout, pipeline.dir_in, pipeline.dir_out, pipeline.dir_reports, pipeline.dir_base)
 
                 time.sleep(1)
 
         except KeyboardInterrupt:
+            logging.info("KeyboardInterrupt")
             pass
 
         self.stop()
@@ -422,11 +404,13 @@ class Pipeline():
         self.config.set("pipeline.{}.{}".format(self.uid, name), value)
 
     def get_status(self):
-        if self._shouldRun and not self.running:
+        shouldRun = self.get_pipeline_config("shouldRun")
+        running = self.get_pipeline_config("running")
+        if shouldRun and not running:
             return "Starter..."
-        elif not self._shouldRun and self.running:
+        elif not shouldRun and running:
             return "Stopper..."
-        elif not self.running and not isinstance(self, DummyPipeline):
+        elif not running and not isinstance(self, DummyPipeline):
             return "Stoppet"
         elif self.book:
             return str(Metadata.pipeline_book_shortname(self))
@@ -524,6 +508,7 @@ class Pipeline():
                 "modified": modified,
             }
 
+    # TODO: make this into a separate process instead
     @staticmethod
     def _trigger_dir_thread():
         _trigger_dir_obj = None
@@ -593,7 +578,7 @@ class Pipeline():
             _trigger_dir_obj.cleanup()
 
     def _monitor_book_triggers_thread(self):
-        while self._dirsAvailable and self._shouldRun:
+        while self._dirsAvailable and self.get_pipeline_config("shouldRun"):
             time.sleep(10)
 
             if not os.path.isdir(self.dir_trigger):
@@ -619,7 +604,7 @@ class Pipeline():
                         logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
 
     def _monitor_book_events_thread(self):
-        while self._dirsAvailable and self._shouldRun:
+        while self._dirsAvailable and self.get_pipeline_config("shouldRun"):
             try:
                 if self.shouldHandleBooks:
                     # books that are recently changed (check often in case of new file changes)
@@ -645,7 +630,7 @@ class Pipeline():
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                     dirlist = os.listdir(self.dir_in)
                     for f in dirlist:
-                        if not (self._dirsAvailable and self._shouldRun):
+                        if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                             break  # break loop if we're shutting down the system
 
                         with self._md5_lock:
@@ -687,7 +672,7 @@ class Pipeline():
                                                           if time.time() - self._md5[f]["modified"] > self._inactivity_timeout],
                                                          key=lambda f: f["md5"]["deep_checked"])
                         for b in long_time_since_checked[:10]:
-                            if not (self._dirsAvailable and self._shouldRun):
+                            if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                                 break  # break loop if we're shutting down the system
 
                             f = b["name"]
@@ -717,7 +702,7 @@ class Pipeline():
     def _retry_all_books_thread(self):
         last_check = 0
 
-        while self._dirsAvailable and self._shouldRun:
+        while self._dirsAvailable and self.get_pipeline_config("shouldRun"):
             time.sleep(5)
             max_update_interval = 60 * 60  # 1 hour
 
@@ -726,13 +711,13 @@ class Pipeline():
 
             last_check = time.time()
             for filename in os.listdir(self.dir_in):
-                if not (self._dirsAvailable and self._shouldRun):
+                if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                     break  # break loop if we're shutting down the system
                 self.trigger(filename)
 
     def _retry_missing_books_thread(self):
         last_check = 0
-        while self._dirsAvailable and self._shouldRun:
+        while self._dirsAvailable and self.get_pipeline_config("shouldRun"):
             time.sleep(5)
             max_update_interval = 60 * 60 * 4
 
@@ -745,7 +730,7 @@ class Pipeline():
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
             for modification_time, path in reversed(sorted(filenames)):
 
-                if not (self._dirsAvailable and self._shouldRun):
+                if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                     break  # break loop if we're shutting down the system
                 fileName = Path(path).name
                 fileStem = Path(path).stem
@@ -767,7 +752,7 @@ class Pipeline():
                         for key in self.parentdirs:
                             for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
 
-                                if not (self._dirsAvailable and self._shouldRun):
+                                if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                                     break  # break loop if we're shutting down the system
                                 if Path(fileInDirOut).stem in edition:
                                     file_exists = True
@@ -775,7 +760,7 @@ class Pipeline():
                     else:
                         for fileInOut in os.listdir(self.dir_out):
 
-                            if not (self._dirsAvailable and self._shouldRun):
+                            if not (self._dirsAvailable and self.get_pipeline_config("shouldRun")):
                                 break  # break loop if we're shutting down the system
                             if Path(fileInOut).stem in edition:
                                 file_exists = True
@@ -789,9 +774,8 @@ class Pipeline():
                     self.trigger(fileName)
 
     def _handle_book_events_thread(self):
-        while self._dirsAvailable and self._shouldRun:
-            self.running = True
-            self.set_pipeline_config("running", self.running)
+        while self._dirsAvailable and self.get_pipeline_config("shouldRun"):
+            self.set_pipeline_config("running", True)
 
             try:
                 if self.dir_out is not None and not Pipeline.directory_watchers_ready(self.dir_out):
@@ -936,8 +920,7 @@ class Pipeline():
             finally:
                 time.sleep(1)
 
-        self.running = False
-        self.set_pipeline_config("running", self.running)
+        self.set_pipeline_config("running", False)
 
     def daily_report(self, message):
         pass
@@ -1102,8 +1085,7 @@ class DummyPipeline(Pipeline):
         self.utils.filesystem = Filesystem(self)
         self._queue_lock = RLock()
         self._md5_lock = RLock()
-        self._shouldRun = False
-        self.set_pipeline_config("shouldRun", self._shouldRun)
+        self.set_pipeline_config("running", False)
 
         if inherit_config_from:
             assert (inspect.isclass(inherit_config_from) and issubclass(inherit_config_from, Pipeline) or
@@ -1115,25 +1097,18 @@ class DummyPipeline(Pipeline):
             self.email_settings = inherit_config_from.email_settings
             #self.config = inherit_config_from.config
 
-    def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, dir_base=None):
-        self._shouldRun = True
-        self.set_pipeline_config("shouldRun", self._shouldRun)
+    def start(self, inactivity_timeout=10):
+        self.start_common(inactivity_timeout=inactivity_timeout)
 
-        self.start_common(inactivity_timeout=inactivity_timeout,
-                          dir_in=dir_in,
-                          dir_out=dir_out,
-                          dir_reports=dir_reports,
-                          dir_base=dir_base)
-
-        self.running = True
+        self.set_pipeline_config("running", True)
 
     def stop(self, *args, **kwargs):
-        self._shouldRun = False
+        self.set_pipeline_config("shouldRun", False)
         self.running = False
 
     def run(self, *args, **kwargs):
         self.start(*args, **kwargs)
-        while self._shouldRun:
+        while self.get_pipeline_config("shouldRun"):
             if self._stopAfterFirstJob:
                 self.stop()
                 break
