@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import hashlib
 import json
 import logging
@@ -70,8 +71,10 @@ class Config:
 
         with self.lock:
             if not name:
-                return None
+                return copy.deepcopy(self.config)
 
+            # Look up value based on name. For instance, if name is "x.y.z", and
+            # self.config is {"x": {"y": {"z": "value"}}}, then return "value".
             result = self.config
             for part in name.split("."):
                 if part in result:
@@ -79,7 +82,7 @@ class Config:
                 else:
                     result = default
                     break
-            return result
+            return copy.deepcopy(result)
 
     def _init(self, data):
         with self.lock:
@@ -138,6 +141,7 @@ class Config:
 
             else:
                 a[key] = b[key]
+                a[key] = copy.deepcopy(b[key])
 
         if report_change:
             hash_after = Config._dict_hash(a)
