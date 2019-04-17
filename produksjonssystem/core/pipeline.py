@@ -250,29 +250,29 @@ class Pipeline():
         self.shouldHandleBooks = True
 
         if self.dir_in is not None:
-            self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
+            self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="events")
             self._bookMonitorThread.setDaemon(True)
             self._bookMonitorThread.start()
             self.threads.append(self._bookMonitorThread)
 
             if (self.retry_all):
-                self._bookRetryThread = Thread(target=self._retry_all_books_thread, name="retry all for {}".format(self.uid))
+                self._bookRetryThread = Thread(target=self._retry_all_books_thread, name="retry all")
                 self._bookRetryThread.setDaemon(True)
                 self._bookRetryThread.start()
                 self.threads.append(self._bookRetryThread)
 
             if (self.retry_missing):
-                self._bookRetryInNotOutThread = Thread(target=self._retry_missing_books_thread, name="retry missing for {}".format(self.uid))
+                self._bookRetryInNotOutThread = Thread(target=self._retry_missing_books_thread, name="retry miss")
                 self._bookRetryInNotOutThread.setDaemon(True)
                 self._bookRetryInNotOutThread.start()
                 self.threads.append(self._bookRetryInNotOutThread)
 
-        self._bookTriggerThread = Thread(target=self._monitor_book_triggers_thread, name="trigger in {}".format(self.uid))
+        self._bookTriggerThread = Thread(target=self._monitor_book_triggers_thread, name="trigger")
         self._bookTriggerThread.setDaemon(True)
         self._bookTriggerThread.start()
         self.threads.append(self._bookTriggerThread)
 
-        self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="book in {}".format(self.uid))
+        self._bookHandlerThread = Thread(target=self._handle_book_events_thread, name="handler")
         self._bookHandlerThread.setDaemon(True)
         self._bookHandlerThread.start()
         self.threads.append(self._bookHandlerThread)
