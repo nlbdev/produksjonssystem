@@ -421,17 +421,21 @@ class Filesystem():
                 smb = smb + path[len(possible_mount_point):]
                 break
 
-        if not smb:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            localhost = s.getsockname()[0]
-            s.close()
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        localhost = s.getsockname()[0]
+        s.close()
+
+        if smb is None:
             smb = "smb://" + localhost + path
 
-        smb = re.sub("^(smb:/+[^/]+).*", "\\1", smb) + urllib.request.pathname2url(re.sub("^smb:/+[^/]+/*(/.*)$", "\\1", smb))
+        elif not re.match(r"^(smb|nfs):/+[^/]+/.*", smb):
+            smb = "smb://{}/{}".format(localhost, smb)
 
-        file = re.sub("^smb:", "file:", smb)
-        unc = re.sub("/", r"\\", re.sub("^smb:", "", smb))
+        smb = re.sub(r"^((smb|nfs):/+[^/]+).*", r"\1", smb) + urllib.request.pathname2url(re.sub(r"^(smb|nfs):/+[^/]+/*(/.*)$", r"\2", smb))
+
+        file = re.sub("^{}/".format(localhost), r"", re.sub(r"^(smb|nfs):", r"file:", smb))
+        unc = re.sub("/", r"\\", re.sub(r"^(smb|nfs):", r"", smb))
         return smb, file, unc
 
     @staticmethod
