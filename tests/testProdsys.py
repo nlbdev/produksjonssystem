@@ -22,6 +22,7 @@ prodsys_path = os.path.join(project_root, "produksjonssystem")
 sys.path.insert(0, prodsys_path)
 from produksjonssystem import run
 from core.pipeline import DummyPipeline
+from core.config import Config
 
 # make target directory
 target_path = os.path.join(project_root, "target", "system")
@@ -175,27 +176,18 @@ def check_dirs(last_run=False):
 
 
 start_time = int(time.time())
-idle = False
-while prodsys_thread.is_alive() and t > 0:
-    t -= 1
+while prodsys_thread.is_alive() and Config.get("system.idle", 0) < 30:
     prodsys_thread.join(timeout=1)
     check_dirs()
-    idle = prodsys.is_idle()
-    if idle:
-        t -= 5
-        prodsys_thread.join(timeout=5)
-        idle = prodsys.is_idle()
-        if idle:
-            print("--- System is idle. Aborting. ---")
-            break
 end_time = int(time.time())
 
-if t <= 0:
-    print("--- Timeout. ---")
+idle_timeout = Config.get("system.idle", 0) >= 30
+if idle_timeout:
+    print("--- System is idle. Aborting. ---")
 
 success = check_dirs(last_run=True)
 
-if idle:
+if idle_timeout:
     print("The tests were stopped due to inactivity after {} seconds".format(end_time - start_time))
 elif prodsys_thread.is_alive():
     print("The tests timed out after {} seconds".format(end_time - start_time))

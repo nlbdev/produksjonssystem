@@ -548,9 +548,7 @@ class Produksjonssystem():
 
     def is_idle(self):
         for pipeline in self.pipelines:
-            if "dummy" in pipeline[0].uid or not pipeline[0].running:
-                continue
-            if pipeline[0].book is not None:
+            if not pipeline[0].is_idle():
                 return False
         return True
 

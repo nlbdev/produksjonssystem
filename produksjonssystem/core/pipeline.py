@@ -460,19 +460,40 @@ class Pipeline():
         with self._queue_lock:
             return deepcopy(self._queue)
 
-    def get_status(self):
+    def get_state(self):
         if self._shouldRun and not self.running:
-            return "Starter..."
+            return "starting"
         elif not self._shouldRun and self.running:
-            return "Stopper..."
+            return "stopping"
         elif not self.running and not isinstance(self, DummyPipeline):
-            return "Stoppet"
+            return "stopped"
         elif self.book:
-            return str(Metadata.pipeline_book_shortname(self))
+            return "processing"
         elif isinstance(self, DummyPipeline):
-            return "Manuelt steg"
+            return "manual"
         else:
+            return "waiting"
+
+    def get_status(self):
+        state = self.get_state()
+        if state == "starting":
+            return "Starter..."
+        elif state == "stopping":
+            return "Stopper..."
+        elif state == "stopped":
+            return "Stoppet"
+        elif state == "processing":
+            return str(Metadata.pipeline_book_shortname(self))
+        elif state == "manual":
+            return "Manuelt steg"
+        elif state == "waiting":
             return "Venter"
+        else:
+            return state
+
+    def is_idle(self):
+        if self.get_state() in ["stopped", "manual", "waiting"]:
+            return True
 
     def get_progress(self):
         # exactly 10 messages in log
