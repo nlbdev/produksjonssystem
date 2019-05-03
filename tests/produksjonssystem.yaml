@@ -1,113 +1,143 @@
 common:
- - administrators:
-   - Ammar@nlb.no
-   - Espen@nlb.no
-   - Jostein@nlb.no
+  - administrators:
+    - Ammar@nlb.no
+    - Gaute@nlb.no
+    - Espen@nlb.no
+    - Jostein@nlb.no
 
 incoming-nordic:
-  - ammar.usama@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 nordic-epub-to-nlbpub:
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 update-metadata:
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
   - librarians:
-    - anya.hartmark@nlb.no
-    - eli.frisvold@nlb.no
-    - eli.hafskjold@nlb.no
-    - hanne.lillevold@nlb.no
-    - ingvild.aanesen@nlb.no
-    - kari.gjolstadaas@nlb.no
-    - kari.kummeneje@nlb.no
-    - therese.solbjorg@nlb.no
-    - wenche.andresen@nlb.no
-    - eli.hafskjold@nlb.no
+    - Ammar@nlb.no
+    - Gaute@nlb.no
+    - Espen@nlb.no
+    - Jostein@nlb.no
   - default_librarian:
-    - eli.hafskjold@nlb.no
+    - Jostein@nlb.no
 
 insert-metadata-daisy202:
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 nlbpub-to-narration-epub:
-  - eivind.haugen@nlb.no
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 insert-metadata-xhtml:
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 insert-metadata-epub:
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 nlbpub-to-html:
-  - ammar.usama@nlb.no
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 nlbpub-to-docx:
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 insert-metadata-braille:
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 prepare-for-braille:
-  - ammar.usama@nlb.no
-  - jostein@nlb.no
-  - kari.rudjord@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 nlbpub-to-pef:
-  - ammar.usama@nlb.no
-  - jostein@nlb.no
-  - kari.rudjord@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 epub-to-dtbook:
-  - ammar.usama@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 epub-to-dtbook-HTML:
-  - ammar.usama@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 epub-to-dtbook-braille:
-  - ammar.usama@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 create-abstracts:
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 dummy_innlesingmedhindenburg:
-  - eivind.haugen@nlb.no
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 dummy_pipeline1ogammarsskript:
-  - ammar.usama@nlb.no
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 dummy_punktskriftmednorbraille:
-  - ammar.usama@nlb.no
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
 
 dummy_talesynteseipipeline1:
-  - ammar.usama@nlb.no
-  - espen.solhjem@nlb.no
-  - jostein@nlb.no
-  - mari.myksvoll@nlb.no
-  - thomas.tsigaridas@nlb.no
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
+
+generate-resources:
+  #- url_issue_content:
+  #  - http://websok.nlb.no/cgi-bin/rest_service/nlb_issue_content/1.0/
+  #- test_user:
+  #  - "88293"
+  - Ammar@nlb.no
+  - Gaute@nlb.no
+  - Espen@nlb.no
+  - Jostein@nlb.no
