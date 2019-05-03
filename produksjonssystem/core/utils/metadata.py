@@ -1505,9 +1505,15 @@ class Metadata:
                 property = meta.xpath("name()")
                 if property == "rdf:type":
                     continue
-                value = meta.xpath("@schema:name", namespaces=meta.nsmap) + meta.xpath("text()[1]")
-                value = value[0] if value else meta.xpath("@rdf:resource", namespaces=meta.nsmap)
-                value = value[0] if value else ""
+                value = meta.xpath("@schema:name", namespaces=meta.nsmap)
+                if not value:
+                    value = meta.xpath("text()[1]")
+                if not value:
+                    value = meta.xpath("@rdf:resource", namespaces=meta.nsmap)
+                if not value:
+                    value = ""
+                if isinstance(value, list):
+                    value = value[0]
                 metadata.append({
                     "property": property,
                     "value": value,
@@ -1523,9 +1529,15 @@ class Metadata:
                     property = meta.xpath("name()")
                     if property == "rdf:type":
                         continue
-                    value = meta.xpath("@schema:name", namespaces=meta.nsmap) + meta.xpath("text()[1]")
-                    value = value[0] if value else meta.xpath("@rdf:resource", namespaces=meta.nsmap)
-                    value = value[0] if value else ""
+                    value = meta.xpath("@schema:name", namespaces=meta.nsmap)
+                    if not value:
+                        value = meta.xpath("text()[1]")
+                    if not value:
+                        value = meta.xpath("@rdf:resource", namespaces=meta.nsmap)
+                    if not value:
+                        value = ""
+                    if isinstance(value, list):
+                        value = value[0]
                     metadata.append({
                         "property": property,
                         "value": value,
