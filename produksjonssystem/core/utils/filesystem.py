@@ -8,7 +8,6 @@ import shutil
 import socket
 import subprocess
 import tempfile
-import threading
 import time
 import traceback
 import urllib.parse
@@ -22,9 +21,9 @@ class Filesystem():
 
     pipeline = None
     last_reported_md5 = None  # avoid reporting change for same book multiple times
-    hosts = {} # hosts cache
+    hosts = {}  # hosts cache
 
-    shutil_ignore_patterns = shutil.ignore_patterns( # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
+    shutil_ignore_patterns = shutil.ignore_patterns(  # supports globs: shutil.ignore_patterns('*.pyc', 'tmp*')
         "Thumbs.db", "*.swp", "ehthumbs.db", "ehthumbs_vista.db", "*.stackdump", "Desktop.ini", "desktop.ini",
         "$RECYCLE.BIN", "*~", ".fuse_hidden*", ".directory", ".Trash-*", ".nfs*", ".DS_Store", ".AppleDouble",
         ".LSOverride", "._*", ".DocumentRevisions-V100", ".fseventsd", ".Spotlight-V100", ".TemporaryItems",
@@ -208,7 +207,10 @@ class Filesystem():
             try:
                 if os.path.exists(destination):
                     if os.listdir(destination):
-                        self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(os.path.basename(destination), os.path.dirname(destination)))
+                        self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(
+                            os.path.basename(destination),
+                            os.path.dirname(destination))
+                        )
                     shutil.rmtree(destination, ignore_errors=True)
                 self.copytree(source, destination)
             except shutil.Error as errors:
@@ -219,7 +221,7 @@ class Filesystem():
                         warnings.append("WARN: Unable to set permissions on manually mounted samba shares")
                     else:
                         warnings.append(None)
-                warnings = list(set(warnings)) # distinct warnings
+                warnings = list(set(warnings))  # distinct warnings
                 for warning in warnings:
                     if warning is not None:
                         self.pipeline.utils.report.warn(warning)
@@ -233,10 +235,10 @@ class Filesystem():
         assert book_id
         assert book_id.strip()
         assert book_id != "."
-        assert not ".." in book_id
-        assert not "/" in book_id
-        assert not parentdir or not ".." in parentdir
-        assert not parentdir or not "/" in parentdir
+        assert ".." not in book_id
+        assert "/" not in book_id
+        assert not parentdir or ".." not in parentdir
+        assert not parentdir or "/" not in parentdir
         if not dir_out:
             assert self.pipeline.dir_out is not None, (
                 "When storing a book from a pipeline with no output directory, " +
@@ -254,7 +256,7 @@ class Filesystem():
         if os.path.isfile(source) and file_extension:
             target += "." + str(file_extension)
         if os.path.exists(target):
-            if overwrite == True:
+            if overwrite is True:
                 self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(book_id, dir_nicename))
                 try:
                     if os.path.isdir(target):
@@ -262,7 +264,9 @@ class Filesystem():
                     else:
                         os.remove(target)
                 except (OSError, NotADirectoryError):
-                    self.pipeline.utils.report.error("En feil oppstod ved sletting av mappen {}. Kanskje noen har en fil eller mappe åpen på datamaskinen sin?".format(target))
+                    self.pipeline.utils.report.error(
+                        "En feil oppstod ved sletting av mappen {}. Kanskje noen har en fil eller mappe åpen på datamaskinen sin?".format(target)
+                    )
                     self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                     raise
             else:
@@ -296,7 +300,16 @@ class Filesystem():
         return Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)
 
     @staticmethod
-    def run_static(args, cwd, report, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, timeout=600, check=True, stdout_level="DEBUG", stderr_level="DEBUG"):
+    def run_static(args,
+                   cwd,
+                   report,
+                   stdout=subprocess.PIPE,
+                   stderr=subprocess.PIPE,
+                   shell=False,
+                   timeout=600,
+                   check=True,
+                   stdout_level="DEBUG",
+                   stderr_level="DEBUG"):
         """Convenience method for subprocess.run, with our own defaults"""
 
         report.debug("Kjører: "+(" ".join(args) if isinstance(args, list) else args))
@@ -323,8 +336,7 @@ class Filesystem():
         assert directory, "zip: directory must be specified: "+str(directory)
         assert os.path.isdir(directory), "zip: directory must exist and be a directory: "+directory
         assert file, "zip: file must be specified: "+str(file)
-        dirpath = pathlib.Path(directory)
-        filepath = pathlib.Path(file)
+        dirpath = Path(directory)
         with zipfile.ZipFile(file, 'w') as archive:
             for f in dirpath.rglob('*'):
                 relative = str(f.relative_to(dirpath))
@@ -369,13 +381,19 @@ class Filesystem():
     def getdevice(path):
         path = os.path.normpath(path)
 
-        with open('/proc/mounts','r') as f:
+        with open('/proc/mounts', 'r') as f:
             for line in f.readlines():
-                l = line.split()
-                if l[0].startswith("/") and l[1] == path:
-                    #l[0] = "//x.x.x.x/sharename/optionalsubpath"
-                    #l[1] = "/mount/point"
-                    return re.sub("^//", "smb://", l[0])
+                line = line.split()
+                if line[1] == path:
+                    # line[1] = "/mount/point"
+
+                    if line[2] == "nfs":
+                        # line[0] = a.b.c:/path/subpath
+                        return "nfs://{}".format(line[0])
+
+                    elif line[0].startswith("/") and line[1] == path:
+                        # line[0] = "//x.x.x.x/sharename/optionalsubpath"
+                        return re.sub("^//", "smb://", line[0])
 
         x_dir = os.getenv("XDG_RUNTIME_DIR")
         if x_dir and os.path.isdir(os.path.join(x_dir, "gvfs")):
