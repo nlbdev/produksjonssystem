@@ -104,15 +104,6 @@
     <xsl:template match="meta">
         <!-- Rydder opp litt i metadata, blant annet fjerner en del som ikke lenger er nødvendige -->
         <xsl:choose>
-            <xsl:when
-                test="@name eq 'dc:identifier' and exists($metadata[@name eq 'nlbprod:identifier.daisy202.fulltext'])">
-                <xsl:copy>
-                    <xsl:copy-of select="@name"/>
-                    <xsl:copy-of
-                        select="$metadata[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"/>
-                    <!--                    <xsl:attribute name="content" select="//meta[@name eq 'nlbprod:identifier.daisy202.fulltext'][1]/@content"></xsl:attribute>-->
-                </xsl:copy>
-            </xsl:when>
             <xsl:when test="@name eq 'nlbprod:identifier.epub'">
                 <xsl:copy-of select="."/>
             </xsl:when>
