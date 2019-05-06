@@ -183,15 +183,15 @@ class Metadata:
             else:
                 continue
             found_rdf_file = False
-            identifiers = []
+            found_identifiers = []
             for rdf_path in rdf_paths:
                 if os.path.isfile(rdf_path):
                     found_rdf_file = True
                     rdf = ElementTree.parse(rdf_path).getroot()
-                    identifiers.append(rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap))
+                    found_identifiers.append(rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap))
             if not found_rdf_file:
                 report.info("Finner ikke Quickbase-metadata for {}.".format(identifier))
-            elif identifiers:
+            elif found_identifiers:
                 report.info("{} finnes i Quickbase".format(identifier))
                 return True
             else:
