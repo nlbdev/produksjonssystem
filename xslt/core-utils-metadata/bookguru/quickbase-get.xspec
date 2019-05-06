@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="quickbase-get.xsl">
+    
+    <x:param name="book-id" select="'501031'"/>
+    <x:param name="book-id-rows" select="'13 20'"/>
+    
+    <x:scenario label="Basic test">
+        <x:context>
+            <qdbapi>
+                <action>API_DoQuery</action>
+                <errcode>0</errcode>
+                <errtext>No error</errtext>
+                <qid>-1</qid>
+                <qname></qname>
+                <table>
+                    <name>Records</name>
+                    <original/>
+                    <queries/>
+                    <fields>
+                        <field id="13" field_type="float" base_type="float">
+                            <label>Tilvekstnummer EPUB</label>
+                        </field>
+                    </fields>
+                    <lastluserid>0</lastluserid>
+                    <lusers>
+                        <luser id="0"/>
+                    </lusers>
+                    <records>
+                        <record rid="14555">
+                            <f id="8">Deutsche Literaturgeschichte</f>
+                            <f id="9">Wucherpfennig, Wolf</f>
+                            <f id="67">Studielitteratur</f>
+                            <f id="170">Voksen</f>
+                            <f id="10">Klett</f>
+                            <f id="481">0</f>
+                            <f id="51">DTB-501445</f>
+                            <f id="13">501445</f>
+                            <f id="20">630853</f>
+                            <f id="22">0</f>
+                            <f id="23">0</f>
+                            <f id="77">0</f>
+                            <f id="24">227753</f>
+                            <f id="26">0</f>
+                        </record>
+                        <record rid="14556">
+                            <f id="8">Tolking i offentlig sektor : kompendium 1</f>
+                            <f id="67">Studielitteratur</f>
+                            <f id="170">Voksen</f>
+                            <f id="10">Høgskolen i Oslo og Akershus</f>
+                            <f id="481">0</f>
+                            <f id="51">DTB-501031</f>
+                            <f id="13">501031</f>
+                            <f id="20">630854</f>
+                            <f id="22">0</f>
+                            <f id="23">0</f>
+                            <f id="77">0</f>
+                            <f id="24">227754</f>
+                            <f id="26">0</f>
+                            <f id="27">0</f>
+                            <f id="28">121754</f>
+                            <f id="30">0</f>
+                            <f id="32">363154</f>
+                            <f id="37">1</f>
+                            <f id="46">0</f>
+                            <f id="65"/>
+                            <f id="71"/>
+                            <f id="68">0</f>
+                            <f id="64">0</f>
+                            <f id="69"/>
+                            <f id="41">0</f>
+                            <f id="85"/>
+                        </record>
+                    </records>
+                </table>
+            </qdbapi>
+        </x:context>
+
+        <x:expect label="The result should be as expected">
+            <qdbapi>
+                <table>
+                    <name>Records</name>
+                    <original/>
+                    <fields>
+                        <field id="13" field_type="float" base_type="float">
+                            <label>Tilvekstnummer EPUB</label>
+                        </field>
+                    </fields>
+                    <lastluserid>0</lastluserid>
+                    <lusers>
+                        <luser id="0"/>
+                    </lusers>
+                    <records>
+                        <record rid="14556">
+                            <f id="8">Tolking i offentlig sektor : kompendium 1</f>
+                            <f id="67">Studielitteratur</f>
+                            <f id="170">Voksen</f>
+                            <f id="10">Høgskolen i Oslo og Akershus</f>
+                            <f id="481">0</f>
+                            <f id="51">DTB-501031</f>
+                            <f id="13">501031</f>
+                            <f id="20">630854</f>
+                            <f id="22">0</f>
+                            <f id="23">0</f>
+                            <f id="77">0</f>
+                            <f id="24">227754</f>
+                            <f id="26">0</f>
+                            <f id="27">0</f>
+                            <f id="28">121754</f>
+                            <f id="30">0</f>
+                            <f id="32">363154</f>
+                            <f id="37">1</f>
+                            <f id="46">0</f>
+                            <f id="65"/>
+                            <f id="71"/>
+                            <f id="68">0</f>
+                            <f id="64">0</f>
+                            <f id="69"/>
+                            <f id="41">0</f>
+                            <f id="85"/>
+                        </record>
+                    </records>
+                </table>
+            </qdbapi>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
