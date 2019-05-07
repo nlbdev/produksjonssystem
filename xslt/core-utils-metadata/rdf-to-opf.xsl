@@ -164,7 +164,7 @@
             
             <xsl:for-each select="$meta">
                 <xsl:sort select="name()"/>
-                <xsl:sort select="(@schema:name, text())[1]"/>
+                <xsl:sort select="(@schema:name, text(), '')[1]"/>
                 
                 <xsl:choose>
                     <xsl:when test="self::nlbprod:narrator">
@@ -201,12 +201,12 @@
         <xsl:param name="rename" as="xs:string?"/>
         <xsl:param name="id" as="xs:string?"/>
         <xsl:variable name="property" select="$rdf-property/name()" as="xs:string"/>
-        <xsl:variable name="value" select="$rdf-property/(@schema:name, text())[1]" as="xs:string"/>
+        <xsl:variable name="value" select="$rdf-property/(@schema:name, text(), '')[1]" as="xs:string"/>
         <xsl:variable name="marcrel" select="if ($epub-version = '3.1' and starts-with($property,'dc:contributor.')) then nlb:role-to-marcrel(substring-after($property,'dc:contributor.')) else ()" as="xs:string?"/>
         <xsl:variable name="property" select="if ($marcrel) then 'dc:contributor' else $property" as="xs:string"/>
         <xsl:variable name="authority" select="if (count($rdf-property/nlbbib:bibliofil-id)) then 'http://ns.nb.no/normarc' else ()" as="xs:string?"/>
         <xsl:variable name="term" select="$rdf-property/nlbbib:bibliofil-id" as="xs:string?"/>
-        <xsl:variable name="translation" select="$rdf-property/../*[name() = concat($property,'.no')]/(@schema:name, text())[1]"/>
+        <xsl:variable name="translation" select="$rdf-property/../*[name() = concat($property,'.no')]/(@schema:name, text(), '')[1]"/>
         <xsl:variable name="metadata-source" select="($rdf-property/ancestor-or-self::*/@nlb:metadata-source)[1]"/>
         
         <xsl:if test="$value and not($property = 'dcterms:modified') and not(ends-with($property,'.no'))">
