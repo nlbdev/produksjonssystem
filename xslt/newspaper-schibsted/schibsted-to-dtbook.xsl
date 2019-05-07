@@ -201,7 +201,7 @@
             </xsl:for-each>
         </xsl:variable>
         
-        <xsl:for-each-group select="$part-articles" group-adjacent="npx:page_id/@section">
+        <xsl:for-each-group select="$part-articles" group-adjacent="if (exists(npx:page_id/@section)) then npx:page_id/@section else $default-section">
             <xsl:element name="level{$level}">
                 <xsl:attribute name="id" select="concat($part-id, '_section-', position())"/>
                 <xsl:element name="h{$level}"><xsl:value-of select="f:section-headline(current-grouping-key())"/></xsl:element>

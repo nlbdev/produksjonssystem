@@ -1488,7 +1488,7 @@
         </level1>
     </bodymatter>-->
     
-    <x:scenario label="regression for: XTTE0570: An empty sequence is not allowed as the value of variable $section" focus="">
+    <x:scenario label="regression for: XTTE0570: An empty sequence is not allowed as the value of variable $section">
         <x:context>
             <npexchange xmlns="http://www.infomaker.se/npexchange/3.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5">
                 <origin>
