@@ -142,6 +142,7 @@ class NordicToNlbpub(Pipeline):
                             error_text.startswith("[nordic_opf") or
                             error_text.startswith("[nordic280]") or
                             "missing required attribute \"epub:prefix\"" in error_text or
+                            "value of attribute \"epub:prefix\" is invalid" in error_text or
                             "element \"title\" not allowed yet" in error_text or
                             "element \"style\" not allowed yet" in error_text or
                             "element \"meta\" not allowed yet" in error_text or
@@ -149,6 +150,13 @@ class NordicToNlbpub(Pipeline):
                             "Only UTF-8 and UTF-16 encodings are allowed" in error_text
                             )):
                         continue  # ignorer disse feilmeldingene; de forsvinner når vi konverterer til XHTML5
+
+                    if "PKG-021: Corrupted image file encountered." in error_text:
+                        # Ignore this. It seems to be a bug with epubcheck: https://github.com/w3c/epubcheck/issues/567
+                        # We validate the "magic number" / "file signature" as well, which should be sufficient
+                        # when converting from EPUB to NLBPUB. This will still be an error for *new* EPUBs,
+                        # where it will be caught by the incoming validator ("incoming-nordic") so this should not happen for newer books.
+                        continue
 
                     if error_text.startswith("Incorrect file signature"):
                         magic_number = error.xpath('*[@class="message-details"]/*[last()]/*[last()]/text()')[0]
