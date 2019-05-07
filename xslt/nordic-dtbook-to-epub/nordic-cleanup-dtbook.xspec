@@ -895,4 +895,85 @@
         </x:scenario>
     </x:scenario>
     
+    <x:scenario label="regression for duplicate page ID">
+        <x:context>
+            <dtbook xml:lang="en" version="2005-3" xmlns="http://www.daisy.org/z3986/2005/dtbook/">
+                <book>
+                    <bodymatter>
+                        <level1>
+                            <pagenum page="normal" id="page-1">1</pagenum>
+                            <h1>…</h1>
+                            <p>…</p>
+                        </level1>
+                    </bodymatter>
+                    <rearmatter>
+                        <level1>
+                            <pagenum page="normal" id="page-273">273</pagenum>
+                            <h1>Notes</h1>
+                            <level2>
+                                <h2>Chapter 2. Rule Following</h2>
+                                <note id="c02001"><p>…</p></note>
+                            </level2>
+                            <level2>
+                                <h2>Chapters 3. Multiple Actors: Teams and Partners</h2>
+                                <note id="c03001"><p>…</p></note>
+                            </level2>
+                            <level2>
+                                <h2>Chapter 5. Ambiguity and Interpretation</h2>
+                                <note id="c05003"><p>…</p></note>
+                                <note id="c05004"><p>…before-pagenum… <pagenum page="normal" id="page-274">274</pagenum> …after-pagenum…</p></note>
+                                <note id="c05005"><p>…</p></note>
+                            </level2>
+                        </level1>
+                        <level1>
+                            <pagenum page="normal" id="page-275">275</pagenum>
+                            <h1>…</h1>
+                            <p>…</p>
+                        </level1>
+                    </rearmatter>
+                </book>
+            </dtbook>
+        </x:context>
+
+        <x:expect>
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" xml:lang="en" version="2005-3">
+                <book>
+                    <bodymatter>
+                        <level1 class="chapter">
+                            <pagenum page="normal" id="page-1">1</pagenum>
+                            <h1>…</h1>
+                            <p>…</p>
+                        </level1>
+                    </bodymatter>
+                    <rearmatter>
+                        <level1 class="chapter">
+                            <pagenum page="normal" id="page-273">273</pagenum>
+                            <h1>Notes</h1>
+                            <pagenum page="normal" id="page-274">274</pagenum>
+                            <level2>
+                                <h2>Chapter 2. Rule Following</h2>
+                                <note id="c02001"><p>…</p></note>
+                            </level2>
+                            <level2>
+                                <h2>Chapters 3. Multiple Actors: Teams and Partners</h2>
+                                <note id="c03001"><p>…</p></note>
+                            </level2>
+                            <level2>
+                                <h2>Chapter 5. Ambiguity and Interpretation</h2>
+                                <note id="c05003"><p>…</p></note>
+                                <note id="c05004"><p>…before-pagenum…  …after-pagenum…</p></note>
+                                <note id="c05005"><p>…</p></note>
+                            </level2>
+                        </level1>
+                        <level1 class="chapter">
+                            <pagenum page="normal" id="page-275">275</pagenum>
+                            <h1>…</h1>
+                            <p>…</p>
+                        </level1>
+                    </rearmatter>
+                </book>
+            </dtbook>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

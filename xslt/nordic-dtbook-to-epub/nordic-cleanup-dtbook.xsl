@@ -98,14 +98,14 @@
                 <xsl:variable name="classes" select="($classes, if (list/tokenize(@class,'\s+') = 'index') then 'index' else ())" as="xs:string*"/>
                 
                 <xsl:variable name="level" select="f:level(.)"/>
-                <xsl:variable name="is-note-level" select="exists(//note[f:level(.) = $level])" as="xs:boolean"/>
+                <xsl:variable name="notes-on-same-level" select="f:notes-on-same-level(.)" as="xs:boolean"/>
                 
                 <xsl:if test="count($classes)">
                     <xsl:attribute name="class" select="string-join(distinct-values($classes), ' ')"/>
                 </xsl:if>
                 
                 <!-- text nodes and pagenum can be before headlines -->
-                <xsl:variable name="before-headline" select="if ($is-note-level) then () else node() intersect (*[not(local-name()='pagenum')])[1]/preceding-sibling::node()" as="node()*"/>
+                <xsl:variable name="before-headline" select="if ($notes-on-same-level) then () else node() intersect (*[not(local-name()='pagenum')])[1]/preceding-sibling::node()" as="node()*"/>
                 <xsl:apply-templates select="$before-headline">
                     <xsl:with-param name="toc-count" select="$toc-count" as="xs:integer" tunnel="yes"/>
                 </xsl:apply-templates>
@@ -125,8 +125,14 @@
                 </xsl:apply-templates>
                 
                 <!-- pagenums in subchapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
-                <xsl:variable name="child-chapters-with-notes" select="$child-chapters[exists(.//note[f:level(.) = f:level(current())])] except $child-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | preceding-sibling::*)"/>
-                <xsl:copy-of select="$child-chapters-with-notes//pagenum"/>
+                <xsl:if test="not($notes-on-same-level)">
+                    <xsl:variable name="child-chapters-with-notes" select="$child-chapters[f:notes-on-same-level(.)] except $child-chapters[not(f:notes-on-same-level(.))]/(self::* | following-sibling::*)"/>
+                    <!--<xsl:if test="exists($child-chapters-with-notes//pagenum)">
+                        <xsl:text>  </xsl:text>
+                        <xsl:comment select="' moving pagenum(s) here from child chapters with notes '"/>
+                    </xsl:if>-->
+                    <xsl:copy-of select="$child-chapters-with-notes//pagenum"/>
+                </xsl:if>
                 
                 <!-- subchapters -->
                 <xsl:apply-templates select="$child-chapters">
@@ -134,20 +140,29 @@
                 </xsl:apply-templates>
                 
                 <!-- pagenums in following chapters containing notes (but only note chapters without preceding sibling chapters that are not note chapters) -->
-                <xsl:variable name="following-chapters" select="following-sibling::*[matches(local-name(),'(level\d?|sidebar)')]"/>
-                <xsl:variable name="following-chapters-with-notes" select="$following-chapters[exists(.//note[f:level(.) = f:level(current())])] except $following-chapters[not(exists(.//note[f:level(.) = f:level(current())]))]/(self::* | following-sibling::*)"/>
-                <xsl:copy-of select="$following-chapters-with-notes//pagenum"/>
+                <xsl:if test="not($notes-on-same-level)">
+                    <xsl:variable name="following-chapters" select="following-sibling::*[matches(local-name(),'(level\d?|sidebar)')]"/>
+                    <xsl:variable name="following-chapters-with-notes" select="$following-chapters[f:notes-on-same-level(.)] except $following-chapters[not(f:notes-on-same-level(.))]/(self::* | following-sibling::*)"/>
+                    <!--<xsl:if test="exists($following-chapters-with-notes//pagenum)">
+                        <xsl:text>  </xsl:text>
+                        <xsl:comment select="' moving pagenum(s) here from following chapters with notes '"/>
+                    </xsl:if>-->
+                    <xsl:copy-of select="$following-chapters-with-notes//pagenum"/>
+                </xsl:if>
             </xsl:copy>
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="pagenum" priority="2">
-        <xsl:variable name="level" select="f:level(.)"/>
-        <xsl:variable name="notes-on-same-level" select="ancestor::*[f:level(.) = $level]/descendant::*[self::note and f:level(.) = $level]" as="element()*"/>
-        <xsl:if test="not(exists($notes-on-same-level))">
-            <xsl:next-match/>
-        </xsl:if>
-    </xsl:template>
+    <!-- remove pagenums which has notes on the same level as itself (they will be moved to a preceding level in another template) -->
+    <xsl:template match="pagenum[f:notes-on-same-level(.)]" priority="2"/>
+    
+    <xsl:function name="f:notes-on-same-level" as="xs:boolean">
+        <xsl:param name="context" as="element()"/>
+        <xsl:variable name="level" select="f:level($context)"/>
+        <xsl:variable name="level-element" select="$context/ancestor-or-self::*[local-name() = ('level1', 'level2', 'level3', 'level4', 'level5', 'level6', 'level', 'sidebar') and f:level(.) = $level]"/>
+        <xsl:variable name="notes-on-same-level" select="$level-element//note[f:level(.) = $level]"/>
+        <xsl:value-of select="exists($notes-on-same-level)"/>
+    </xsl:function>
     
     <xsl:template match="p[../lic]">
         <lic>
