@@ -59,6 +59,8 @@
         <map section="Cover" use="Omslag"/>
     </xsl:variable>
     
+    <xsl:variable name="default-section" select="'Nyheter'"/>
+    
     <!-- by default, copy everything -->
     <xsl:template match="@* | node()" mode="#all">
         <xsl:copy>
@@ -630,7 +632,7 @@
         <xsl:if test="exists($article)">
             <xsl:variable name="newspaper-title" select="$title" as="xs:string"/>
             <xsl:variable name="department" select="$article/npx:department_id" as="xs:string"/>
-            <xsl:variable name="section" select="$article/npx:page_id/@section" as="xs:string"/>
+            <xsl:variable name="section" select="($article/npx:page_id/@section, $article/preceding::npx:page_id/@section, $default-section)[1]" as="xs:string"/>
             
             <xsl:variable name="matching-part-mappings" as="element()*">
                 <xsl:for-each select="$article-part-mapping">

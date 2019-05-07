@@ -1488,4 +1488,139 @@
         </level1>
     </bodymatter>-->
     
+    <x:scenario label="regression for: XTTE0570: An empty sequence is not allowed as the value of variable $section" focus="">
+        <x:context>
+            <npexchange xmlns="http://www.infomaker.se/npexchange/3.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5">
+                <origin>
+                    <user id="14">mediaeksport TYPE_SERVICE</user>
+                    <organization id="2">Schibsted Norge</organization>
+                    <systemId>6e7044656661756c74</systemId>
+                    <systemVersion>4.9.37</systemVersion>
+                    <systemRelease/>
+                </origin>
+                <article guid="urn:uuid:e84b60da-8449-42c4-a1ad-7e71e9cd55e2" id="56797" refType="Article" uuid="e84b60da-8449-42c4-a1ad-7e71e9cd55e2">
+                    <archive_id>1</archive_id>
+                    <article_type_id id="154">C-sak</article_type_id>
+                    <background_material>false</background_material>
+                    <backup_version>0</backup_version>
+                    <char_size_factor>0.0</char_size_factor>
+                    <created_date>2019-03-05T12:28:27+01:00</created_date>
+                    <created_user_id cellular="90012278" email="svein.versland@fvn.no" firstName="Svein" id="173" lastName="Versland" phone="90012278" titleinfo="desksjef">Svein Versland</created_user_id>
+                    <data_version>10</data_version>
+                    <department_id id="20">Redaksjonen - FV</department_id>
+                    <dirty_flag>0</dirty_flag>
+                    <flags>
+                        <entity_flag id="1024">tvunget arkiv</entity_flag>
+                        <entity_flag id="1016">Retriever</entity_flag>
+                        <entity_flag id="1017">arkiv SNO</entity_flag>
+                        <entity_flag id="1019">Factiva</entity_flag>
+                        <entity_flag id="1020">Visiolink</entity_flag>
+                    </flags>
+                    <guid>urn:uuid:e84b60da-8449-42c4-a1ad-7e71e9cd55e2</guid>
+                    <inherit_layout>false</inherit_layout>
+                    <job_id guid="urn:uuid:7c8cf044-7c5c-4b88-b691-7c938a087c5b" id="34382" uuid="7c8cf044-7c5c-4b88-b691-7c938a087c5b"/>
+                    <label>0</label>
+                    <layout_properties>
+                        <layout_properties>
+                            <template generator="se.infomaker.newspilot.server.restore.IdmsLayoutRestorer" id="154" include_assigment_data="false" layout-id="0" name="C-sak" version="2.0"/>
+                            <job_properties article_bottom="26.395" article_left="0.0" article_offsetx="3.0E-5" article_offsety="31.21466" article_right="153.07087" article_top="0.0"/>
+                            <section number="1" type="Artikkel">
+                                <box_properties autosize="Don't Resize" box_bottom="26.395" box_boxshape="rectangular" box_cornerradius="12" box_create_order="1" box_elementtype="headline" box_left="0.0"
+                                    box_objectid="0" box_right="153.07087" box_top="0.0" boxtype="text" object_style="[Normal Text Frame]" runaround="no runaround" text_columns="1" text_textinset_bottom="0"
+                                    text_textinset_left="0" text_textinset_right="0" text_textinset_top="0">
+                                    <paragraph tag="headline"/>
+                                </box_properties>
+                            </section>
+                        </layout_properties>
+                    </layout_properties>
+                    <layout_status>0</layout_status>
+                    <layout_type>0</layout_type>
+                    <layout_type_changed>false</layout_type_changed>
+                    <media_id id="1" shortName="PRT">Print</media_id>
+                    <name>dagen i dag</name>
+                    <organization_id id="2" shortName="SNO">Schibsted Norge</organization_id>
+                    <page_span_count>0</page_span_count>
+                    <prio>0</prio>
+                    <product_id id="3" shortName="FVHA">FV Fædrelandsvennen</product_id>
+                    <pub_start>2019-05-06T00:00:00+02:00</pub_start>
+                    <pub_stop>future</pub_stop>
+                    <publication_date_id id="1597" publicationDate="2019-05-06">06.05.19</publication_date_id>
+                    <removed_date>future</removed_date>
+                    <removed_flag>false</removed_flag>
+                    <resp_user_id cellular="90012278" email="svein.versland@fvn.no" firstName="Svein" id="173" lastName="Versland" phone="90012278" titleinfo="desksjef">Svein Versland</resp_user_id>
+                    <restored_date>2019-04-08T15:37:44+02:00</restored_date>
+                    <restored_flag>0</restored_flag>
+                    <secret>false</secret>
+                    <section_hierarchy>
+                        <section_id id="72" name="Nært" shortName="NÆ"/>
+                    </section_hierarchy>
+                    <section_id id="72" shortName="NÆ">Nært</section_id>
+                    <slug>29. april er den 119. dagen i å</slug>
+                    <status id="10">Arkivert</status>
+                    <sub_product_id id="6" shortName="Z1">FV Fædrelandsvennen</sub_product_id>
+                    <updated_date>2019-05-05T21:23:59+02:00</updated_date>
+                    <updated_user_id custom2="false" custom3="false" firstName="mediaeksport" id="14" lastName="TYPE_SERVICE">mediaeksport TYPE_SERVICE</updated_user_id>
+                    <articleparts>
+                        <articlepart guid="urn:uuid:9f7f81d0-00fc-46a6-b095-7ac908edd1d9" id="523340" refType="ArticlePart" uuid="9f7f81d0-00fc-46a6-b095-7ac908edd1d9">
+                            <article_id guid="urn:uuid:e84b60da-8449-42c4-a1ad-7e71e9cd55e2" id="56797" uuid="e84b60da-8449-42c4-a1ad-7e71e9cd55e2"/>
+                            <article_part_type_id category="article" id="1">Artikkel</article_part_type_id>
+                            <char_size_factor>0.0</char_size_factor>
+                            <created_date>2019-04-08T15:37:44+02:00</created_date>
+                            <created_user_id cellular="91777479" email="nicolai.olsen@fvn.no" firstName="Nicolai" id="183" initials="NO" lastName="Olsen" phone="91777479">Nicolai Olsen</created_user_id>
+                            <guid>urn:uuid:9f7f81d0-00fc-46a6-b095-7ac908edd1d9</guid>
+                            <layout_id>1</layout_id>
+                            <secret>false</secret>
+                            <sortkey>0.5</sortkey>
+                            <textlength>3874</textlength>
+                            <textlength_mm>0</textlength_mm>
+                            <total_textlength>3848</total_textlength>
+                            <updated_date>2019-04-26T11:20:02+02:00</updated_date>
+                            <updated_user_id cellular="91777479" email="nicolai.olsen@fvn.no" firstName="Nicolai" id="183" initials="NO" lastName="Olsen" phone="91777479">Nicolai Olsen</updated_user_id>
+                            <data>
+                                <npdoc xmlns="http://www.infomaker.se/npdoc/2.1" version="2.1" xml:lang="en">
+                                    <madmansrow>
+                                        <p>Dagen i dag</p>
+                                    </madmansrow>
+                                    <headline>
+                                        <p/>
+                                    </headline>
+                                    <body>
+                                        <p><b>29. april </b>er den 119. dagen i året, den 120. i skuddår. Det er 246 dager igjen av året.</p>
+                                        <subheadline1>Navnedag</subheadline1>
+                                        <p>Torolf, Toralf</p>
+                                        <subheadline1>Historie</subheadline1>
+                                        <p><b>1945</b> – Adolf Hitler gifter seg med Eva Braun i en bunker i Berlin, og utnevner storadmiral Karl Dönitz som sin etterfølger.</p>
+                                        <p><b>1945</b> – De tyske troppene i Italia kapitulerer.</p>
+                                        <p>…</p>
+                                        <subheadline1>Fødsler</subheadline1>
+                                        <p>1817 – Vincent Benedetti, fransk diplomat (d. 1900)</p>
+                                        <p>1823 – Joseph-Alfred Foulon, fransk katolsk kardinal (d. 1893)</p>
+                                        <p>1823 – Konrad von Maurer, tysk professor i rettshistorie (d. 1902)</p>
+                                        <p>1831 – Hertug Fredrik I av Anhalt (d. 1904)</p>
+                                        <p>…</p>
+                                    </body>
+                                </npdoc>
+                            </data>
+                            <bylines>
+                                <byline id="1350089" refType="Byline">
+                                    <article_part_id guid="urn:uuid:9f7f81d0-00fc-46a6-b095-7ac908edd1d9" id="523340" uuid="9f7f81d0-00fc-46a6-b095-7ac908edd1d9"/>
+                                    <byline_type_id id="14">Byline liten navn</byline_type_id>
+                                    <sortkey>0.0</sortkey>
+                                    <userinfo>
+                                        <userdata>
+                                            <firstname>wikipedia</firstname>
+                                        </userdata>
+                                    </userinfo>
+                                </byline>
+                            </bylines>
+                        </articlepart>
+                    </articleparts>
+                    <userdata>
+                        <userdata/>
+                    </userdata>
+                </article>
+            </npexchange>
+        </x:context>
+    </x:scenario>
+    
 </x:description>
