@@ -23,7 +23,7 @@ img {
 }
 
 h1 { font-size: 2.5vh; margin: 0.1em auto; }
-p#uid { font-size: 1.5vh; margin: 0.1em auto; }
+p#uid, p.time { font-size: 1.5vh; margin: 0.1em auto; }
 
 /* bakgrunnsbilde
 html {
@@ -41,6 +41,7 @@ html {
 
 <h1>NLBs produksjonssystem</h1>
 <p id="uid"></p>
+<p class="time"></p>
 
 <figure>
 <img id="graph" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Diagram over NLBs produksjonssystem."/>
@@ -60,20 +61,39 @@ window.onload = function() {
     if (imagefile != "dashboard") {
         document.getElementById("uid").textContent = imagefile;
     }
+    scriptfile = imagefile + ".js";
     imagefile = imagefile + ".png";
     image.src = imagefile;
     imageLoad.src = imagefile;
     
-    function updateImage() {
+    setInterval(function(){
+        // update image
         imageLoad.src = imageLoad.src.split("?")[0] + "?" + new Date().getTime();
         imageLoad.onload = function () {
             image.src = imageLoad.src;
         };
-    }
+        
+        // update timestamp
+        script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
+        script.setAttribute("src", scriptfile + "?" + new Date().getTime());
+        
+        jsloadcontainer = document.getElementById("jsloadcontainer");
+        jsloadcontainer.innerHTML = "";
+        jsloadcontainer.appendChild(script);
+    }, 1000);
     
-    setInterval(updateImage, 1000);
+}
+
+// function invoked by external javascript for updating the timestamp
+setTime = function(time) {
+    timeElements = document.getElementsByClassName("time");
+    for (i = 0; i < timeElements.length; i++) {
+        timeElements[i].innerHTML = time;
+    }
 }
 </script>
 
+<div id="jsloadcontainer"></div>
 </body>
 </html>

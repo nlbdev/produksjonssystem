@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import datetime
 import logging
 import os
 import shutil
@@ -8,10 +9,11 @@ import sys
 import threading
 import time
 
+from graphviz import Digraph
+
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
-from graphviz import Digraph
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -249,6 +251,8 @@ class Plotter():
         for t in reversed(range(10)):
             try:
                 shutil.copyfile(os.path.join(self.report_dir, name + "_.png"), os.path.join(self.report_dir, name + ".png"))
+                with open(os.path.join(self.report_dir, name + ".js"), "w") as javascript_file:
+                    javascript_file.write("setTime(\"{}\");".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 break
             except Exception as e:
                 logging.debug(" Unable to copy plot image: {}".format(os.path.join(self.report_dir, name + "_.png")))
