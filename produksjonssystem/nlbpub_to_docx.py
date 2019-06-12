@@ -48,14 +48,19 @@ class NLBpubToDocx(Pipeline):
             epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
-
+# language must be exctracted from epub or else docx default language (nb) wil be used in the converted file
+        language = ""
+        try:
+            language = " (" + epub.meta("dc:language") + ") "
+        except Exception:
+            pass
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         if not epub.identifier():
-            self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
+            self.utils.report.error(self.book["name"] + ": Klarte ikke Ã¥ bestemme boknummer basert pÃ¥ dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
@@ -68,7 +73,7 @@ class NLBpubToDocx(Pipeline):
 
         opf_path = temp_epub.opf_path()
         if not opf_path:
-            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne OPF-fila i EPUBen.")
+            self.utils.report.error(self.book["name"] + ": Klarte ikke Ã¥ finne OPF-fila i EPUBen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
         opf_path = os.path.join(temp_epubdir, opf_path)
@@ -77,16 +82,16 @@ class NLBpubToDocx(Pipeline):
         html_file = opf_xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
         html_file = html_file[0] if html_file else None
         if not html_file:
-            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila i OPFen.")
+            self.utils.report.error(self.book["name"] + ": Klarte ikke Ã¥ finne HTML-fila i OPFen.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
         html_file = os.path.join(os.path.dirname(opf_path), html_file)
         if not os.path.isfile(html_file):
-            self.utils.report.error(self.book["name"] + ": Klarte ikke å finne HTML-fila.")
+            self.utils.report.error(self.book["name"] + ": Klarte ikke Ã¥ finne HTML-fila.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
 
-        # ---------- konverter HTML-fila til DOCX ----------
+                # ---------- konverter HTML-fila til DOCX ----------
 
         temp_docxdir_obj = tempfile.TemporaryDirectory()
         temp_docxdir = temp_docxdir_obj.name
@@ -100,12 +105,13 @@ class NLBpubToDocx(Pipeline):
                                                  "--toc-threshold=0",
                                                  "--docx-page-size=a4",
                                              #   "--linearize-tables",
-                                             #    "--extra-css=/home/tage/Dokumenter/produksjonssystem/produksjonssystem/extra.css",
+                                                 "--extra-css=/home/statped/Dokumenter/produksjonssystem/produksjonssystem/extra.css",
                                                  "--embed-font-family=Verdana",   # microsoft fonts must be installed (sudo apt-get install ttf-mscorefonts-installer)
                                                  "--docx-page-margin-top=42",
                                                  "--docx-page-margin-bottom=42",
                                                  "--docx-page-margin-left=70",
                                                  "--docx-page-margin-right=56",
+						 "--language="+language,
                                                  "--base-font-size=13",
                                                  "--font-size-mapping=13,13,13,13,13,13,13,13"])
 
@@ -118,7 +124,7 @@ class NLBpubToDocx(Pipeline):
                 return False
 
         except subprocess.TimeoutExpired:
-            self.utils.report.error("Det tok for lang tid å konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
+            self.utils.report.error("Det tok for lang tid Ã¥ konvertere " + epub.identifier() + " til DOCX, og Calibre-prosessen ble derfor stoppet.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
 
