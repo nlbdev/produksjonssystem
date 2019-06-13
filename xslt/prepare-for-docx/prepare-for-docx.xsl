@@ -408,9 +408,7 @@
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="node()"/>
-                <xsl:element name="style">  
-                    div.pagebreak {page-break-after:avoid;}             
-                </xsl:element>
+                <xsl:element name="style">div.pagebreak { page-break-after:avoid; }</xsl:element>
             </xsl:copy>
     </xsl:template> 
     

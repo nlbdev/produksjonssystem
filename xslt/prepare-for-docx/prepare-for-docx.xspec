@@ -39,9 +39,7 @@
         <x:expect label="Pagebreak avoided">
             <head>
                 <meta charset="UTF-8" />
-                <style>  
-                    div.pagebreak {page-break-after:avoid;}                    
-                </style>
+                <style>div.pagebreak { page-break-after:avoid; }</style>
             </head>
         </x:expect>
     </x:scenario>
