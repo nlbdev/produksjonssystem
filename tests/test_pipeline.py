@@ -59,60 +59,60 @@ class PipelineTest(unittest.TestCase):
         time.sleep(2)
         self.assertEqual(len(self.pipeline._md5), 0)
 
-        Path(os.path.join(self.dir_in, 'foo.epub')).touch()
+        Path(os.path.join(self.dir_in, '1_foo.epub')).touch()
         time.sleep(2)
         self.assertEqual(len(self.pipeline._md5), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'foo.epub']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '1_foo.epub']), 1)
         self.assertEqual(len(self.pipeline._queue), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'foo.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_foo.epub']), 1)
 
-        with open(os.path.join(self.dir_in, 'foo.epub'), "a") as f:
-            f.write("bar")
+        with open(os.path.join(self.dir_in, '1_foo.epub'), "a") as f:
+            f.write("2_bar")
         time.sleep(2)
         self.assertEqual(len(self.pipeline._md5), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'foo.epub']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '1_foo.epub']), 1)
         self.assertEqual(len(self.pipeline._queue), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'foo.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_foo.epub']), 1)
 
-        shutil.move(os.path.join(self.dir_in, 'foo.epub'), os.path.join(self.dir_in, 'bar.epub'))
+        shutil.move(os.path.join(self.dir_in, '1_foo.epub'), os.path.join(self.dir_in, '2_bar.epub'))
         time.sleep(2)
         self.assertEqual(len(self.pipeline._md5), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'bar.epub']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '2_bar.epub']), 1)
         self.assertEqual(len(self.pipeline._queue), 2)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'foo.epub']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'bar.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_foo.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '2_bar.epub']), 1)
 
-        with open(os.path.join(self.dir_in, 'baz.epub'), "a") as f:
-            f.write("baz")
+        with open(os.path.join(self.dir_in, '3_baz.epub'), "a") as f:
+            f.write("3_baz")
         time.sleep(2)
         self.assertEqual(len(self.pipeline._md5), 2)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'bar.epub']), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'baz.epub']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '2_bar.epub']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '3_baz.epub']), 1)
         self.assertEqual(len(self.pipeline._queue), 3)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'foo.epub']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'bar.epub']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'baz.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_foo.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '2_bar.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_baz.epub']), 1)
 
-        os.remove(os.path.join(self.dir_in, 'bar.epub'))
+        os.remove(os.path.join(self.dir_in, '2_bar.epub'))
         time.sleep(2)
         self.assertEqual(len(self.pipeline._md5), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'baz.epub']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '3_baz.epub']), 1)
         self.assertEqual(len(self.pipeline._queue), 3)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'foo.epub']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'bar.epub']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'baz.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_foo.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '2_bar.epub']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_baz.epub']), 1)
 
     def test_folder(self):
         print("TEST: " + inspect.stack()[0][3])
 
         # create three books before starting the pipeline
-        os.makedirs(os.path.join(self.dir_in, 'book1'))
-        Path(os.path.join(self.dir_in, 'book1/ncc.html')).touch()
-        os.makedirs(os.path.join(self.dir_in, 'book2'))
-        Path(os.path.join(self.dir_in, 'book2/ncc.html')).touch()
-        Path(os.path.join(self.dir_in, 'book2/image.png')).touch()
-        os.makedirs(os.path.join(self.dir_in, 'book3'))
-        Path(os.path.join(self.dir_in, 'book3/ncc.html')).touch()
+        os.makedirs(os.path.join(self.dir_in, '1_book'))
+        Path(os.path.join(self.dir_in, '1_book/ncc.html')).touch()
+        os.makedirs(os.path.join(self.dir_in, '2_book'))
+        Path(os.path.join(self.dir_in, '2_book/ncc.html')).touch()
+        Path(os.path.join(self.dir_in, '2_book/image.png')).touch()
+        os.makedirs(os.path.join(self.dir_in, '3_book'))
+        Path(os.path.join(self.dir_in, '3_book/ncc.html')).touch()
         time.sleep(1)
 
         # start the pipeline
@@ -124,33 +124,33 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(len(self.pipeline._queue), 0)
 
         # modify the book
-        Path(os.path.join(self.dir_in, 'book1/audio1.mp3')).touch()
-        Path(os.path.join(self.dir_in, 'book1/audio2.mp3')).touch()
-        Path(os.path.join(self.dir_in, 'book1/content.html')).touch()
-        Path(os.path.join(self.dir_in, 'book1/image.png')).touch()
+        Path(os.path.join(self.dir_in, '1_book/audio1.mp3')).touch()
+        Path(os.path.join(self.dir_in, '1_book/audio2.mp3')).touch()
+        Path(os.path.join(self.dir_in, '1_book/content.html')).touch()
+        Path(os.path.join(self.dir_in, '1_book/image.png')).touch()
         time.sleep(2)
 
         # there should be 1 books in the queue
         self.assertEqual(len(self.pipeline._md5), 3)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'book1']), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'book2']), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'book3']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '1_book']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '2_book']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '3_book']), 1)
         self.assertEqual(len(self.pipeline._queue), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book1']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_book']), 1)
 
-        # move a file from book2 to book3
-        shutil.move(os.path.join(self.dir_in, 'book2/image.png'), os.path.join(self.dir_in, 'book3/image.png'))
+        # move a file from 2_book to 3_book
+        shutil.move(os.path.join(self.dir_in, '2_book/image.png'), os.path.join(self.dir_in, '3_book/image.png'))
         time.sleep(2)
 
         # now there should be 3 books in the queue
         self.assertEqual(len(self.pipeline._md5), 3)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'book1']), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'book2']), 1)
-        self.assertEqual(len([b for b in self.pipeline._md5 if b == 'book3']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '1_book']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '2_book']), 1)
+        self.assertEqual(len([b for b in self.pipeline._md5 if b == '3_book']), 1)
         self.assertEqual(len(self.pipeline._queue), 3)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book1']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book2']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book3']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_book']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '2_book']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_book']), 1)
 
     def test_queue_handler(self):
         print("TEST: " + inspect.stack()[0][3])
@@ -166,33 +166,33 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(len(self.pipeline._queue), 0)
 
         # Create a book
-        Path(os.path.join(self.dir_in, 'book1')).touch()
+        Path(os.path.join(self.dir_in, '1_book')).touch()
         time.sleep(3)
         self.assertEqual(len(self.pipeline._queue), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book1']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_book']), 1)
 
         # Create two more books while the first one is being processed
-        Path(os.path.join(self.dir_in, 'book3')).touch()
+        Path(os.path.join(self.dir_in, '3_book')).touch()
         time.sleep(0.5)
-        Path(os.path.join(self.dir_in, 'book2')).touch()
+        Path(os.path.join(self.dir_in, '2_book')).touch()
         time.sleep(3)
-        self.assertEqual(self.pipeline.get_status(), "book1")
+        self.assertEqual(self.pipeline.get_status(), "1_book")
         self.assertEqual(len(self.pipeline._queue), 2)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book2']), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book3']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '2_book']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_book']), 1)
 
-        # wait until book1 should have been processed and book2 have started
+        # wait until 1_book should have been processed and 2_book have started
         time.sleep(6)
-        self.assertEqual(self.pipeline.get_status(), "book2")
+        self.assertEqual(self.pipeline.get_status(), "2_book")
         self.assertEqual(len(self.pipeline._queue), 1)
-        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == 'book3']), 1)
+        self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_book']), 1)
 
-        # wait until book2 should have been processed and book3 have started
+        # wait until 2_book should have been processed and 3_book have started
         time.sleep(9)
-        self.assertEqual(self.pipeline.get_status(), "book3")
+        self.assertEqual(self.pipeline.get_status(), "3_book")
         self.assertEqual(len(self.pipeline._queue), 0)
 
-        # wait until book3 should have finished
+        # wait until 3_book should have finished
         time.sleep(9)
         self.assertEqual(self.pipeline.get_status(), "Venter")
         self.assertEqual(len(self.pipeline._queue), 0)
