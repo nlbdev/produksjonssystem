@@ -111,6 +111,11 @@ for pipeline in prodsys.pipelines:
     if pipeline[0].uid == "nordic-dtbook-to-epub":
         pipeline[0].stop(exit=True)
 
+# Don't test pipeline for creating newsletter
+for pipeline in prodsys.pipelines:
+    if pipeline[0].uid == "newsletter-to-braille":
+        pipeline[0].stop(exit=True)
+
 expect_dirs = {}
 for pipeline in prodsys.pipelines:
     if (not pipeline[0].uid in ["update-metadata", "incoming-NLBPUB", "NLBPUB-incoming-validator", "NLBPUB-incoming-warning", "NLBPUB-validator-final",
