@@ -72,7 +72,7 @@ class Pipeline():
     _bookRetryInNotOutThread = None
     _dirsAvailable = False
     _shouldRun = True
-    _stopAfterFirstJob = False
+    stopAfterNJobs = -1
 
     # static (shared by all pipelines)
     _triggerDirThread = None
@@ -189,9 +189,9 @@ class Pipeline():
                 base_dirs[archive_name] = archive_path
             dir_base = base_dirs
 
-        self._stopAfterFirstJob = False
+        self.stopAfterNJobs = -1
         if stop_after_first_job in ["true", "1"]:
-            self._stopAfterFirstJob = True
+            self.stopAfterNJobs = 1
 
         if dir_in:
             self.dir_in = str(os.path.normpath(dir_in)) + '/'
@@ -989,8 +989,11 @@ class Pipeline():
                             self.progress_log.append({"start": self.progress_start, "end": progress_end})
                             self.utils.report.debug("Finished: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
-                            if self._stopAfterFirstJob:
+                            if self.stopAfterNJobs > 0:
+                                self.stopAfterNJobs -= 1
+                            if self.stopAfterNJobs == 0:
                                 self.stop(exit=True)
+
                             try:
                                 self.utils.report.email(self.email_settings["smtp"],
                                                         self.email_settings["sender"],
@@ -1223,7 +1226,7 @@ class DummyPipeline(Pipeline):
     def run(self, *args, **kwargs):
         self.start(*args, **kwargs)
         while self._shouldRun:
-            if self._stopAfterFirstJob:
+            if self.stopAfterNJobs == 0:
                 self.stop()
                 break
             time.sleep(1)

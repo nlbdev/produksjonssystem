@@ -67,15 +67,19 @@ class NewspaperSchibsted(Pipeline):
                         self.trigger(date)
 
     def on_book_deleted(self):
+        self.stopAfterNJobs += 1
         return True
 
     def on_book_modified(self):
         if "autotriggered" not in self.book["events"]:
             self.utils.report.should_email = False
+            self.utils.report.info("Newpaper was automatically triggered. Ignoring.")
+            self.stopAfterNJobs += 1
             return True
         return self.on_book()
 
     def on_book_created(self):
+        self.stopAfterNJobs += 1
         return True
 
     def on_book(self):

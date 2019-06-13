@@ -88,12 +88,16 @@ else:
     sys.exit(1)
 
 audio_identifier = "624328"
-identifiers = ["558237", "115437", "221437", "356837", "406837", "624328"]
+news_identifier = "611823190315"
+identifiers = ["558237", "115437", "221437", "356837", "406837", audio_identifier, news_identifier]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
 copyfile(file_path, os.path.join(prodsys.dirs["incoming"], os.path.basename(file_path)))
 
 audio_path = os.path.join(os.path.dirname(__file__), audio_identifier)
 copytree(audio_path, os.path.join(book_archive_dirs["share"], "daisy202", audio_identifier))
+
+news_path = os.path.join(project_root, "xslt", "newspaper-schibsted", "test-resources", "join")
+copytree(news_path, os.path.join(prodsys.dirs["news"], "2019-03-15"))
 
 # TODO: Make testing of incoming NLBPUB production line work
 #       For now, they are disabled during testing.
@@ -131,8 +135,8 @@ for pipeline in prodsys.pipelines:
 
 t = 1000
 
-print("Starting test of NLB production system. Verifies distribution formats for {} and daisy202: {} in {} seconds \n"
-      .format(os.path.basename(file_path), audio_identifier, t))
+print("Starting test of NLBs production system…")
+print("")
 
 
 def check_dirs(last_run=False):
