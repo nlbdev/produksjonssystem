@@ -367,7 +367,7 @@ class Plotter():
                         books = []
                         for d in dirs:
                             if os.path.isdir(d):
-                                books += [name for name in os.listdir(d) if name[0] in "0123456789" or name.startswith("TEST")]
+                                books += Pipeline.list_book_dir(d)
                         self.book_count[dir]["modified"] = time.time()
                         self.book_count[dir]["count"] = len(set(books))
 

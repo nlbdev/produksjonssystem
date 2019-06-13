@@ -88,7 +88,7 @@ class UpdateMetadata(Pipeline):
                         continue
 
                 # find a book_id where we haven't retrieved updated metadata in a while
-                for book_id in os.listdir(self.dir_out):
+                for book_id in Pipeline.list_book_dir(self.dir_out):
                     if not self._shouldRun:
                         break
 

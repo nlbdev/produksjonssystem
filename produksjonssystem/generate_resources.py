@@ -79,7 +79,7 @@ class GenerateResources(Pipeline):
                     list_books_dod.append(book)
             if len(list_books_dod) < 2:
                 continue
-            for folder in os.listdir(self.dir_in):
+            for folder in Pipeline.list_book_dir(self.dir_in):
                 if folder.isdigit():
                     if folder not in list_books_dod:
                         logging.info("Trigger ressursgenerering for " + folder)

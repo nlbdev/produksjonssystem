@@ -278,7 +278,7 @@ class Pipeline():
         with self._md5_lock:
             self._md5 = {}
         if self.dir_in is not None:
-            dir_list = os.listdir(self.dir_in)
+            dir_list = Pipeline.list_book_dir(self.dir_in)
             md5_count = 0
             self.progress_text = "0 / {}".format(len(dir_list))
             for f in dir_list:
@@ -711,7 +711,7 @@ class Pipeline():
 
                 if self.shouldHandleBooks:
                     # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
-                    dirlist = os.listdir(self.dir_in)
+                    dirlist = Pipeline.list_book_dir(self.dir_in)
                     for f in dirlist:
                         if not (self._dirsAvailable and self._shouldRun):
                             break  # break loop if we're shutting down the system
@@ -796,7 +796,7 @@ class Pipeline():
                 continue
 
             last_check = time.time()
-            for filename in os.listdir(self.dir_in):
+            for filename in Pipeline.list_book_dir(self.dir_in):
                 if not (self._dirsAvailable and self._shouldRun):
                     break  # break loop if we're shutting down the system
                 self.trigger(filename)
@@ -812,7 +812,7 @@ class Pipeline():
 
             last_check = time.time()
 
-            filenames = (os.path.join(self.dir_in, fileName) for fileName in os.listdir(self.dir_in))
+            filenames = (os.path.join(self.dir_in, fileName) for fileName in Pipeline.list_book_dir(self.dir_in))
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
             for modification_time, path in reversed(sorted(filenames)):
 
@@ -836,7 +836,7 @@ class Pipeline():
                 try:
                     if self.parentdirs:
                         for key in self.parentdirs:
-                            for fileInDirOut in os.listdir(os.path.join(self.dir_out, self.parentdirs[key])):
+                            for fileInDirOut in Pipeline.list_book_dir(os.path.join(self.dir_out, self.parentdirs[key])):
 
                                 if not (self._dirsAvailable and self._shouldRun):
                                     break  # break loop if we're shutting down the system
@@ -844,7 +844,7 @@ class Pipeline():
                                     file_exists = True
                                     break
                     else:
-                        for fileInOut in os.listdir(self.dir_out):
+                        for fileInOut in Pipeline.list_book_dir(self.dir_out):
 
                             if not (self._dirsAvailable and self._shouldRun):
                                 break  # break loop if we're shutting down the system
@@ -1112,6 +1112,20 @@ class Pipeline():
 
         except Exception:
             logging.info(traceback.format_exc())
+
+    @staticmethod
+    def list_book_dir(dir):
+        dirlist = os.listdir(dir)
+        filtered = []
+        for dirname in dirlist:
+            if Filesystem.should_ignore(os.path.join(dir, dirname)):
+                # Filter out common system files
+                continue
+            if len(dirname) == 0 or (dirname[0] not in "0123456789" and not dirname.startswith("TEST")):
+                # Book identifiers must start with a number
+                continue
+            filtered.append(dirname)
+        return filtered
 
     @staticmethod
     def append_write(path):

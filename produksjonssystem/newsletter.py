@@ -62,7 +62,7 @@ class Newsletter(Pipeline):
             self.newsletter_identifier = "120209"
             self.newsletter_identifier += time.strftime("%m%Y")
             self.year_month = datetime.datetime.today().strftime('%Y-%m')
-            if self.newsletter_identifier not in os.listdir(self.dir_out):
+            if self.newsletter_identifier not in Pipeline.list_book_dir(self.dir_out):
                 logging.info("Lager nyhetsbrev for: " + self.year_month)
                 self.trigger(self.newsletter_identifier)
 
