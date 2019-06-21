@@ -5,7 +5,6 @@ import datetime
 import logging
 import os
 import shutil
-import sys
 import threading
 import time
 
@@ -14,10 +13,6 @@ from graphviz import Digraph
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
-
-if sys.version_info[0] != 3 or sys.version_info[1] < 5:
-    print("# This script requires Python version 3.5+")
-    sys.exit(1)
 
 
 class Plotter():
