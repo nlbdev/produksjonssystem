@@ -8,16 +8,19 @@ import sys
 import threading
 import time
 import traceback
-import yaml
-import psutil
 from collections import OrderedDict
 from email.headerregistry import Address
 from threading import Thread
+
+import psutil
+import yaml
+
+from core.api import API
 from core.config import Config
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
-from core.utils.slack import Slack
 from core.utils.filesystem import Filesystem
+from core.utils.slack import Slack
 
 # Import pipelines
 from check_pef import CheckPef
@@ -60,6 +63,7 @@ class Produksjonssystem():
     pipelines = None
     environment = None
     emailDoc = []
+    api = None
 
     def __init__(self, environment=None):
         logging.basicConfig(stream=sys.stdout,
@@ -196,9 +200,6 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
         self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
 
-        # also make dirs available from static contexts
-        Pipeline.dirs_ranked = self.dirs_ranked
-
         # Make a key/value version of dirs_ranked for convenience
         self.dirs = {
             "reports": Config.get("reports_dir")
@@ -206,6 +207,10 @@ class Produksjonssystem():
         for rank in self.dirs_ranked:
             for dir in rank["dirs"]:
                 self.dirs[dir] = rank["dirs"][dir]
+
+        # also make dirs available from static contexts
+        Pipeline.dirs_ranked = self.dirs_ranked
+        Pipeline.dirs_flat = self.dirs
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
@@ -393,6 +398,23 @@ class Produksjonssystem():
             for common_key in common:
                 Config.set(common_key, common[common_key])
 
+        self.shouldRun = True
+
+        self.api = API()
+        self.api.start(hot_reload=False)
+
+        self._configThread = Thread(target=self._config_thread, name="config")
+        self._configThread.setDaemon(True)
+        self._configThread.start()
+
+        self._dailyReportThread = Thread(target=self._daily_report_thread, name="daily report")
+        self._dailyReportThread.setDaemon(True)
+        self._dailyReportThread.start()
+
+        self._systemStatusThread = Thread(target=self._system_status_thread, name="system status")
+        self._systemStatusThread.setDaemon(True)
+        self._systemStatusThread.start()
+
         for pipeline in self.pipelines:
             email_settings = {
                 "smtp": self.email["smtp"],
@@ -421,19 +443,6 @@ class Produksjonssystem():
             thread.setDaemon(True)
             thread.start()
             threads.append(thread)
-
-        self.shouldRun = True
-        self._configThread = Thread(target=self._config_thread, name="config")
-        self._configThread.setDaemon(True)
-        self._configThread.start()
-
-        self._dailyReportThread = Thread(target=self._daily_report_thread, name="daily report")
-        self._dailyReportThread.setDaemon(True)
-        self._dailyReportThread.start()
-
-        self._systemStatusThread = Thread(target=self._system_status_thread, name="system status")
-        self._systemStatusThread.setDaemon(True)
-        self._systemStatusThread.start()
 
         plotter = Plotter(self.pipelines, report_dir=self.dirs["reports"])
         graph_thread = Thread(target=plotter.run, name="graph")
@@ -525,6 +534,9 @@ class Produksjonssystem():
 
         self.info("Venter på at systemstatus-tråden skal stoppe...")
         self._systemStatusThread.join()
+
+        self.info("Venter på at API-tråden skal stoppe...")
+        self.api.join()
 
     def wait_until_running(self, timeout=60):
         start_time = time.time()
