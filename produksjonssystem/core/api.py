@@ -158,9 +158,9 @@ class API():
         dir_in_id = None
         dir_out_id = None
         for dir in Pipeline.dirs_flat:
-            if os.path.isdir(pipeline.dir_in) and os.path.normpath(pipeline.dir_in) == os.path.normpath(Pipeline.dirs_flat[dir]):
+            if pipeline.dir_in and os.path.normpath(pipeline.dir_in) == os.path.normpath(Pipeline.dirs_flat[dir]):
                 dir_in_id = dir
-            if os.path.isdir(pipeline.dir_out) and os.path.normpath(pipeline.dir_out) == os.path.normpath(Pipeline.dirs_flat[dir]):
+            if pipeline.dir_out and os.path.normpath(pipeline.dir_out) == os.path.normpath(Pipeline.dirs_flat[dir]):
                 dir_out_id = dir
 
         return jsonify({
@@ -244,7 +244,7 @@ class API():
 
     # endpoint: /directories/<directory_id>
     def directory(self, directory_id):
-        path = os.path.normpath(Pipeline.dirs_flat.get(directory_id, None))
+        path = os.path.normpath(Pipeline.dirs_flat[directory_id]) if directory_id in Pipeline.dirs_flat else None
         if path:
             result = {
                 "path": Pipeline.dirs_flat.get(directory_id, None),
@@ -252,9 +252,9 @@ class API():
                 "output_pipelines": []
             }
             for pipeline in Pipeline.pipelines:
-                if os.path.normpath(pipeline.dir_out) == path:
+                if pipeline.dir_out and os.path.normpath(pipeline.dir_out) == path:
                     result["input_pipelines"].append(pipeline.uid)
-                if os.path.normpath(pipeline.dir_in) == path:
+                if pipeline.dir_in and os.path.normpath(pipeline.dir_in) == path:
                     result["output_pipelines"].append(pipeline.uid)
             return jsonify(result)
         else:
@@ -274,7 +274,7 @@ class API():
 
     # endpoint: /directories/<directory_id>/editions/<edition_id>
     def directory_edition(self, directory_id, edition_id):
-        path = os.path.normpath(Pipeline.dirs_flat.get(directory_id, None))
+        path = os.path.normpath(Pipeline.dirs_flat[directory_id]) if directory_id in Pipeline.dirs_flat else None
 
         if not path:
             return Response(None, status=404)
@@ -298,7 +298,7 @@ class API():
 
     # endpoint: /directories/<directory_id>/editions/<edition_id>/trigger
     def directory_trigger(self, directory_id, edition_id):
-        path = os.path.normpath(Pipeline.dirs_flat.get(directory_id, None))
+        path = os.path.normpath(Pipeline.dirs_flat[directory_id]) if directory_id in Pipeline.dirs_flat else None
 
         if not path:
             return Response(None, status=404)
@@ -309,7 +309,7 @@ class API():
 
         result = []
         for pipeline in Pipeline.pipelines:
-            if os.path.normpath(pipeline.dir_in) == path:
+            if pipeline.dir_in and os.path.normpath(pipeline.dir_in) == path:
                 pipeline.trigger(edition_id, auto=False)
                 result.append(pipeline.uid)
         return jsonify(result)
