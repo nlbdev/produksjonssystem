@@ -270,7 +270,7 @@ class API():
             return Response(None, status=404)
 
         else:
-            return jsonify([Path(file).stem for file in os.listdir(path)])
+            return jsonify([Path(file).stem for file in Pipeline.list_book_dir(path)])
 
     # endpoint: /directories/<directory_id>/editions/<edition_id>
     def directory_edition(self, directory_id, edition_id):
@@ -280,7 +280,7 @@ class API():
             return Response(None, status=404)
 
         book_path = None
-        for name in os.listdir(path):
+        for name in Pipeline.list_book_dir(path):
             if Path(name).stem == edition_id:
                 book_path = os.path.join(path, name)
                 break
@@ -303,7 +303,7 @@ class API():
         if not path:
             return Response(None, status=404)
 
-        file_stems = [Path(file).stem for file in os.listdir(path)]
+        file_stems = [Path(file).stem for file in Pipeline.list_book_dir(path)]
         if edition_id not in file_stems:
             return Response(None, status=404)
 
