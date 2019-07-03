@@ -319,13 +319,17 @@ class API():
         """
         Root endpoint. Lists all possible endpoints.
         """
+
         endpoint = request.url[len(request.url_root)-1:]
         if endpoint != self.root_path+"/":
             return redirect(self.root_path+"/", code=302)
         else:
             rules = []
             for rule in self.app.url_map.iter_rules():
-                rules.append(str(rule))
+                path = str(rule)[len(self.root_path)+1:]
+                if not path or path.startswith("kill") or "/" not in path:
+                    continue
+                rules.append(path)  # strips self.root_path, making the result a path relative to root
             return jsonify(rules)
 
     # endpoint: /kill
