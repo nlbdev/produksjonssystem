@@ -152,7 +152,7 @@ class Directory():
         if not cache_dir:
             cache_dir = os.getenv("CACHE_DIR", os.path.join(tempfile.gettempdir(), "prodsys-cache"))
             if not os.path.isdir(cache_dir):
-                os.makedirs(cache_dir, exist_ok=False)
+                os.makedirs(cache_dir, exist_ok=True)
             Config.set("cache_dir", cache_dir)
 
         self.cache_file = None
@@ -300,6 +300,10 @@ class Directory():
                         continue
 
                 time.sleep(1)  # unless anything has recently changed, give the system time to breathe between each iteration
+
+                if not self.is_available():
+                    time.sleep(5)
+                    continue
 
                 dirlist = Filesystem.list_book_dir(self.dir_path)
                 sorted_dirlist = []
