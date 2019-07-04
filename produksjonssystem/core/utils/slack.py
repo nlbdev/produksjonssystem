@@ -1,7 +1,7 @@
 import logging
 import os
 
-import slack
+from slacker import Slacker
 
 
 class Slack():
@@ -19,26 +19,24 @@ class Slack():
 
         # If not authenticated: try to authenticate and test authorization
         if not Slack._slack_authed or Slack._slack is None:
-            logging.info("Connecting to Slack…")
-            Slack._slack = slack.WebClient(token=os.environ['SLACK_BOT_TOKEN'])
+            Slack._slack = Slacker(os.getenv("SLACK_TOKEN"))
             try:
-                logging.info("Verifying connection to Slack…")
-                auth = Slack._slack.auth_test()
-                if auth.data.get("ok"):
-                    logging.info("Slack authenticated as \"{}\" as part of the team \"{}\"".format(auth.data.get("user"), auth.data.get("team")))
+                auth = Slack._slack.auth.test()
+                if auth.successful:
+                    logging.info("Slack authorized as \"{}\" as part of the team \"{}\"".format(auth.body.get("user"), auth.body.get("team")))
                     Slack._slack_authed = True
                 else:
-                    logging.warning("Failed to authenticate to Slack")
+                    logging.warning("Failed to authorize to Slack")
                     Slack._slack_authed = False
 
             except Exception:
-                logging.exception("Failed to authenticate to Slack")
+                logging.exception("Failed to authorize to Slack")
                 Slack._slack_authed = False
 
         # Try to send
         if Slack._slack_authed:
             try:
-                Slack._slack.chat_postMessage(channel=Slack._slack_channel, text=text)  # TODO: fix attachments with slack library
+                Slack._slack.chat.post_message(channel=Slack._slack_channel, as_user=True, text=text, attachments=attachments)
             except Exception:
                 Slack._slack = None  # set to None so that we try to create a new connection when sending the next message
                 if retry:
@@ -47,5 +45,5 @@ class Slack():
                     logging.exception("An exception occured while trying to send a message to Slack")
 
         else:
-            logging.warning("Not authenticated to send messages to Slack")
+            logging.warning("Not authorized to send messages to Slack")
             logging.warning("Tried to send message to {}: {}".format(Slack._slack_channel, text))
