@@ -10,6 +10,7 @@ from random import random
 import requests
 from flask import Flask, Response, jsonify, redirect, request
 
+from core.directory import Directory
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
@@ -157,10 +158,10 @@ class API():
 
         dir_in_id = None
         dir_out_id = None
-        for dir in Pipeline.dirs_flat:
-            if pipeline.dir_in and os.path.normpath(pipeline.dir_in) == os.path.normpath(Pipeline.dirs_flat[dir]):
+        for dir in Directory.dirs_flat:
+            if pipeline.dir_in and os.path.normpath(pipeline.dir_in) == os.path.normpath(Directory.dirs_flat[dir]):
                 dir_in_id = dir
-            if pipeline.dir_out and os.path.normpath(pipeline.dir_out) == os.path.normpath(Pipeline.dirs_flat[dir]):
+            if pipeline.dir_out and os.path.normpath(pipeline.dir_out) == os.path.normpath(Directory.dirs_flat[dir]):
                 dir_out_id = dir
 
         return jsonify({
@@ -190,7 +191,7 @@ class API():
             return Response(None, status=404)
 
         else:
-            directory_id = [dir for dir in Pipeline.dirs_flat if os.path.normpath(Pipeline.dirs_flat[dir]) == os.path.normpath(pipeline.dir_out)][:1]
+            directory_id = [dir for dir in Directory.dirs_flat if os.path.normpath(Directory.dirs_flat[dir]) == os.path.normpath(pipeline.dir_out)][:1]
             directory_id = directory_id[0] if directory_id else None
             return self.directory_editions(directory_id)
 
@@ -203,7 +204,7 @@ class API():
             return Response(None, status=404)
 
         else:
-            directory_id = [dir for dir in Pipeline.dirs_flat if os.path.normpath(Pipeline.dirs_flat[dir]) == os.path.normpath(pipeline.dir_out)][:1]
+            directory_id = [dir for dir in Directory.dirs_flat if os.path.normpath(Directory.dirs_flat[dir]) == os.path.normpath(pipeline.dir_out)][:1]
             directory_id = directory_id[0] if directory_id else None
             return self.directory_edition(directory_id, edition_id)
 
@@ -224,14 +225,14 @@ class API():
         structure = request.args.get('structure', 'simple')
 
         if structure == "ranked":
-            return jsonify(Pipeline.dirs_ranked)
+            return jsonify(Directory.dirs_ranked)
 
         elif structure == "resolved":
             dirs = {}
 
-            for dir in Pipeline.dirs_flat:
+            for dir in Directory.dirs_flat:
                 if dir not in self.buffered_network_paths:
-                    smb, file, unc = Filesystem.networkpath(Pipeline.dirs_flat[dir])
+                    smb, file, unc = Filesystem.networkpath(Directory.dirs_flat[dir])
                     host = Filesystem.get_host_from_url(smb)
                     self.buffered_network_paths[dir] = smb
                     self.buffered_network_hosts[dir] = host
@@ -240,14 +241,14 @@ class API():
             return jsonify(dirs)
 
         else:
-            return jsonify(Pipeline.dirs_flat)
+            return jsonify(Directory.dirs_flat)
 
     # endpoint: /directories/<directory_id>
     def directory(self, directory_id):
-        path = os.path.normpath(Pipeline.dirs_flat[directory_id]) if directory_id in Pipeline.dirs_flat else None
+        path = os.path.normpath(Directory.dirs_flat[directory_id]) if directory_id in Directory.dirs_flat else None
         if path:
             result = {
-                "path": Pipeline.dirs_flat.get(directory_id, None),
+                "path": Directory.dirs_flat.get(directory_id, None),
                 "input_pipelines": [],
                 "output_pipelines": []
             }
@@ -262,7 +263,7 @@ class API():
 
     # endpoint: /directories/<directory_id>/editions
     def directory_editions(self, directory_id):
-        path = Pipeline.dirs_flat.get(directory_id, None)
+        path = Directory.dirs_flat.get(directory_id, None)
         if not path:
             return Response(None, status=404)
 
@@ -270,17 +271,17 @@ class API():
             return Response(None, status=404)
 
         else:
-            return jsonify([Path(file).stem for file in Pipeline.list_book_dir(path)])
+            return jsonify([Path(file).stem for file in Filesystem.list_book_dir(path)])
 
     # endpoint: /directories/<directory_id>/editions/<edition_id>
     def directory_edition(self, directory_id, edition_id):
-        path = os.path.normpath(Pipeline.dirs_flat[directory_id]) if directory_id in Pipeline.dirs_flat else None
+        path = os.path.normpath(Directory.dirs_flat[directory_id]) if directory_id in Directory.dirs_flat else None
 
         if not path:
             return Response(None, status=404)
 
         book_path = None
-        for name in Pipeline.list_book_dir(path):
+        for name in Filesystem.list_book_dir(path):
             if Path(name).stem == edition_id:
                 book_path = os.path.join(path, name)
                 break
@@ -298,12 +299,12 @@ class API():
 
     # endpoint: /directories/<directory_id>/editions/<edition_id>/trigger
     def directory_trigger(self, directory_id, edition_id):
-        path = os.path.normpath(Pipeline.dirs_flat[directory_id]) if directory_id in Pipeline.dirs_flat else None
+        path = os.path.normpath(Directory.dirs_flat[directory_id]) if directory_id in Directory.dirs_flat else None
 
         if not path:
             return Response(None, status=404)
 
-        file_stems = [Path(file).stem for file in Pipeline.list_book_dir(path)]
+        file_stems = [Path(file).stem for file in Filesystem.list_book_dir(path)]
         if edition_id not in file_stems:
             return Response(None, status=404)
 

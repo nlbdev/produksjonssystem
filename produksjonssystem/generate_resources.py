@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import datetime
-import os
 import logging
+import os
 import subprocess
 import sys
 import tempfile
-import time
 import threading
+import time
 import traceback
 import urllib.request
 import xml.etree.ElementTree as ET
 
-from core.pipeline import Pipeline
 from lxml import etree as ElementTree
+
+from core.pipeline import Pipeline
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -51,7 +52,7 @@ class GenerateResources(Pipeline):
         Trigger books in folder but not in DOD database
         """
         last_check = 0
-        while self._dirsAvailable and self._shouldRun:
+        while self.dirsAvailable and self.shouldRun:
             time.sleep(5)
             max_update_interval = 60 * 60 * 24
 
@@ -79,7 +80,7 @@ class GenerateResources(Pipeline):
                     list_books_dod.append(book)
             if len(list_books_dod) < 2:
                 continue
-            for folder in Pipeline.list_book_dir(self.dir_in):
+            for folder in Filesystem.list_book_dir(self.dir_in):
                 if folder.isdigit():
                     if folder not in list_books_dod:
                         logging.info("Trigger ressursgenerering for " + folder)

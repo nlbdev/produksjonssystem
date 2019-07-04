@@ -5,7 +5,6 @@ import os
 import re
 import shutil
 import smtplib
-import sys
 import tempfile
 import time
 from datetime import datetime, timedelta, timezone
@@ -13,11 +12,11 @@ from email.headerregistry import Address
 from email.message import EmailMessage
 
 import markdown
+from dotmap import DotMap
 
 from core.config import Config
 from core.utils.filesystem import Filesystem
 from core.utils.slack import Slack
-from dotmap import DotMap
 
 
 class Report():
@@ -203,12 +202,18 @@ class Report():
             return tuple(addresses)
 
     @staticmethod
-    def emailPlainText(subject, message, smtp, sender, recipients, should_email=True):
+    def emailPlainText(subject, message, recipients, should_email=True):
         assert isinstance(subject, str)
         assert isinstance(message, str)
-        assert isinstance(smtp, dict)
-        assert isinstance(sender, str) or isinstance(sender, Address)
         assert isinstance(recipients, str) or isinstance(recipients, list)
+
+        smtp = {
+            "host": Config.get("email.smtp.host", None),
+            "port": Config.get("email.smtp.port", None),
+            "user": Config.get("email.smtp.user", None),
+            "pass": Config.get("email.smtp.pass", None)
+        }
+        sender = Address(Config.get("email.sender.name", "undefined"), addr_spec=Config.get("email.sender.address", "undefined@example.net"))
 
         if isinstance(recipients, str):
             recipients = [recipients]
@@ -219,7 +224,7 @@ class Report():
             # 1. build e-mail
             msg = EmailMessage()
             msg['Subject'] = subject
-            msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
+            msg['From'] = sender
             msg['To'] = Report.emailStringsToAddresses(recipients)
             msg.set_content(message)
 
@@ -242,10 +247,18 @@ class Report():
 
         Slack.slack(text=subject, attachments=None)
 
-    def email(self, smtp, sender, recipients, subject=None, should_email=True, should_message_slack=True, should_attach_log=True):
+    def email(self, recipients, subject=None, should_email=True, should_message_slack=True, should_attach_log=True):
         if not subject:
             assert isinstance(self.title, str) or self.pipeline is not None, "either title or pipeline must be specified when subject is missing"
             subject = self.title if self.title else self.pipeline.title
+
+        smtp = {
+            "host": Config.get("email.smtp.host", None),
+            "port": Config.get("email.smtp.port", None),
+            "user": Config.get("email.smtp.user", None),
+            "pass": Config.get("email.smtp.pass", None)
+        }
+        sender = Address(Config.get("email.sender.name", "undefined"), addr_spec=Config.get("email.sender.address", "undefined@example.net"))
 
         # 0. Create attachment with complete log (including DEBUG statements)
         if should_attach_log is True:
@@ -281,7 +294,7 @@ class Report():
 
         try:
             assert isinstance(smtp, dict), "smtp must be a dict"
-            assert isinstance(sender, str) or isinstance(sender, Address), "sender must be a str or Address"
+            assert isinstance(sender, Address), "sender must be a Address"
             assert isinstance(recipients, str) or isinstance(recipients, list) or isinstance(recipients, tuple), "recipients must be a str, list or tuple"
             assert isinstance(self.title, str) or self.pipeline and isinstance(self.pipeline.title, str), "title or pipeline.title must be a str"
 
@@ -349,7 +362,6 @@ class Report():
                     markdown_text.append(li)
                 markdown_text.append("</ul>\n")
                 label_string = ""
-                filter_status = ""
                 for label in self.pipeline.labels:
                     label_string += "[{}] ".format(label)
                 markdown_text.append("\n[{}] {} [{}] [status:{}]".format(self.pipeline.uid, label_string, self.pipeline.publication_format, status))
@@ -375,20 +387,20 @@ class Report():
                 # 3. build e-mail
                 msg = EmailMessage()
                 msg['Subject'] = re.sub(r"\s", " ", subject).strip()
-                msg['From'] = sender if isinstance(sender, Address) else Report.emailStringsToAddresses(sender)
+                msg['From'] = sender
                 msg['To'] = Report.emailStringsToAddresses(recipients)
                 msg.set_content(markdown_text)
                 msg.add_alternative(markdown_html, subtype="html")
                 logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
 
                 # 4. send e-mail
-                if "host" in smtp and "port" in smtp:
+                if smtp["host"] and smtp["port"]:
                     smtp_server = "{}:{}".format(smtp["host"], smtp["port"])
                     logging.info("SMTP server: {}".format(smtp_server))
                     with smtplib.SMTP(smtp_server) as s:
                         s.ehlo()
                         s.starttls()
-                        if "user" in smtp and "pass" in smtp:
+                        if smtp["user"] and smtp["pass"]:
                             s.login(smtp["user"], smtp["pass"])
                         else:
                             logging.debug("email user/pass not configured")

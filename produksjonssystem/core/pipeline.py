@@ -16,11 +16,13 @@ from copy import deepcopy
 from pathlib import Path
 from threading import RLock, Thread
 
+from dotmap import DotMap
+
 from core.config import Config
+from core.directory import Directory
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from core.utils.report import DummyReport, Report
-from dotmap import DotMap
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -42,8 +44,11 @@ class Pipeline():
 
     # The current book
     book = None
+    considering_retry_book = None
 
     # Directories
+    dir_in_obj = None
+    dir_out_obj = None
     dir_in = None
     dir_out = None
     dir_reports = None
@@ -53,7 +58,6 @@ class Pipeline():
 
     # These ones are meant for use in static contexts
     dirs = None  # dirs are built in Pipeline.start_common: Pipeline.dirs[uid][in|out|reports|trigger]
-    dirs_ranked = None  # dirs_ranked are built by the coordinator thread (i.e. Produksjonssystem in run.py)
 
     # Other configuration
     config = None    # instance config
@@ -70,8 +74,7 @@ class Pipeline():
     _bookRetryThread = None
     _bookMonitorThread = None
     _bookRetryInNotOutThread = None
-    _dirsAvailable = False
-    _shouldRun = True
+    shouldRun = True
     stopAfterNJobs = -1
 
     # static (shared by all pipelines)
@@ -159,8 +162,6 @@ class Pipeline():
             dir_reports = os.environ.get("DIR_REPORTS")
         if not email_settings:
             email_settings = {
-                "smtp": {},
-                "sender": "prodsys@example.org",
                 "recipients": []
             }
         if not dir_base:
@@ -193,6 +194,8 @@ class Pipeline():
         if stop_after_first_job in ["true", "1"]:
             self.stopAfterNJobs = 1
 
+        self.dir_in_obj = None
+        self.dir_out_obj = None
         if dir_in:
             self.dir_in = str(os.path.normpath(dir_in)) + '/'
         if dir_out:
@@ -271,34 +274,32 @@ class Pipeline():
                 return
         self._inactivity_timeout = inactivity_timeout
 
-        self._dirsAvailable = True
-
         self.threads = []
 
-        with self._md5_lock:
-            self._md5 = {}
+        # start a directory watcher for the output directory
+        if self.dir_out is not None:
+            self.dir_out_obj = Directory.start_watching(self.dir_out)
+
+        # start a directory watcher for the input directory
         if self.dir_in is not None:
-            dir_list = Pipeline.list_book_dir(self.dir_in)
-            md5_count = 0
-            self.progress_text = "0 / {}".format(len(dir_list))
-            for f in dir_list:
-                if not (self._dirsAvailable and self._shouldRun):
-                    with self._md5_lock:
-                        self._md5 = {}
-                    return  # break loop if we're shutting down the system
-                self._update_md5(f)
-                md5_count += 1
-                self.progress_text = "{} / {}".format(md5_count, len(dir_list))
+            self.dir_in_obj = Directory.start_watching(self.dir_in, inactivity_timeout=self._inactivity_timeout)
+            self.dir_in_obj.add_book_event_handler(self._add_book_to_queue)
+
+        # wait for directory watchers to be ready
+        while (self.dir_in_obj and self.dir_in_obj.is_starting() or
+                self.dir_out_obj and self.dir_out_obj.is_starting()):
+            self.progress_text = " , ".join([text for text in [
+                self.dir_in_obj.get_progress_text() if self.dir_in_obj else None,
+                self.dir_out_obj.get_progress_text() if self.dir_out_obj else None
+            ] if text])
+
+            time.sleep(1)
+
         self.progress_text = ""
 
         self.shouldHandleBooks = True
 
         if self.dir_in is not None:
-            self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.uid))
-            self._bookMonitorThread.setDaemon(True)
-            self._bookMonitorThread.start()
-            self.threads.append(self._bookMonitorThread)
-
             if (self.retry_all):
                 self._bookRetryThread = Thread(target=self._retry_all_books_thread, name="retry all for {}".format(self.uid))
                 self._bookRetryThread.setDaemon(True)
@@ -332,20 +333,20 @@ class Pipeline():
         else:
             logging.info("Pipeline \"" + str(self.title) + "\" started")
 
-    def stop(self, exit=False):
-        self._dirsAvailable = False
-
+    def stop(self):
         # Remove autotriggered books, as these may have mistakenly been added
         # because of a network station becoming unavailable.
         with self._queue_lock:
             new_queue = []
+            for book in self._queue:
+                if Pipeline.get_main_event(book) != "autotriggered":
+                    new_queue.append(book)
             if len(new_queue) < len(self._queue):
                 logging.info("Removed {} books from the queue that may have been added because the network station was unavailable.".format(
                     len(self._queue) - len(new_queue)))
                 self._queue = new_queue
 
-        if exit:
-            self._shouldRun = False
+        self.shouldRun = False
 
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
@@ -355,40 +356,7 @@ class Pipeline():
         """
         self.start(inactivity_timeout, dir_in, dir_out, dir_reports, email_settings, dir_base, config)
         try:
-            while self._shouldRun:
-
-                available = {}
-                if self.dir_in is not None:
-                    available[self.dir_in] = False
-                if self.dir_out is not None:
-                    available[self.dir_out] = False
-                for dir in available:
-                    is_mount = Filesystem.ismount(dir)
-                    contains_books = False
-                    if is_mount:
-                        for entry in os.scandir(dir):
-                            contains_books = True
-                            break
-                    mount_is_mounted = not is_mount or contains_books
-                    available[dir] = os.path.isdir(dir) and mount_is_mounted
-
-                if False in [available[dir] for dir in available]:
-                    if self._dirsAvailable:
-                        for dir in [d for d in available if not available[d]]:
-                            logging.warning("{} is not available. Stop watching...".format(dir))
-                        self.stop()
-
-                    else:
-                        for dir in [d for d in available if not available[d]]:
-                            logging.warning("{} is still not available...".format(dir))
-
-                else:
-                    if not self._dirsAvailable:
-                        logging.info("All directories are available again. Start watching...")
-                        for dir in available:
-                            logging.info("Available: {}".format(dir))
-                        self.start(self._inactivity_timeout, self.dir_in, self.dir_out, self.dir_reports, self.email_settings, self.dir_base, config)
-
+            while self.shouldRun:
                 time.sleep(1)
 
         except KeyboardInterrupt:
@@ -400,6 +368,9 @@ class Pipeline():
     def join(self):
         with self._queue_lock:
             self._queue = []
+
+        if self.dir_in is not None:
+            Directory.stop(self.dir_in)
 
         for thread in self.threads:
             if thread:
@@ -444,31 +415,23 @@ class Pipeline():
             return None
 
     def trigger(self, name, auto=True):
-        path = os.path.join(self.dir_trigger, name)
-        if auto:
-            with open(path, "w") as triggerfile:
-                triggerfile.write("autotriggered")
-        else:
-            Path(path).touch()
-            with self._md5_lock:
-                if name not in self._md5:
-                    self._update_md5(name)
-                else:
-                    self._md5[name]["modified"] = time.time()
+        self._add_book_to_queue(name, "autotriggered" if auto else "triggered")
 
     def get_queue(self):
         with self._queue_lock:
             return deepcopy(self._queue)
 
     def get_state(self):
-        if self._shouldRun and not self.running:
+        if self.shouldRun and not self.running:
             return "starting"
-        elif not self._shouldRun and self.running:
+        elif not self.shouldRun and self.running:
             return "stopping"
         elif not self.running and not isinstance(self, DummyPipeline):
             return "stopped"
         elif self.book:
             return "processing"
+        elif self.considering_retry_book:
+            return "considering"
         elif isinstance(self, DummyPipeline):
             return "manual"
         else:
@@ -484,6 +447,8 @@ class Pipeline():
             return "Stoppet"
         elif state == "processing":
             return str(Metadata.pipeline_book_shortname(self))
+        elif state == "considering":
+            return "Vurderer: {}".format(os.path.basename(self.considering_retry_book) if self.considering_retry_book else "(ukjent)")
         elif state == "manual":
             return "Manuelt steg"
         elif state == "waiting":
@@ -542,14 +507,13 @@ class Pipeline():
     def should_retry_book(self, source):
         return True
 
-    @staticmethod
-    def directory_watchers_ready(directory):
-        if directory is None:
-            return True
+    # Whether or not input/output directories are available (in case of network problems)
+    def dirsAvailable(self):
+        if self.dir_in_obj and not self.dir_in_obj.is_available():
+            return False
 
-        for p in Pipeline.pipelines:
-            if directory == p.dir_in and p._shouldRun and not p.running:
-                return False
+        if self.dir_out_obj and not self.dir_out_obj.is_available():
+            return False
 
         return True
 
@@ -573,25 +537,6 @@ class Pipeline():
                 })
                 logging.debug("added book to queue: " + name)
 
-    def _update_md5(self, name):
-        assert self.dir_in is not None, "Cannot get MD5 checksum for {} when there is no input directory".format(name)
-
-        path = os.path.join(self.dir_in, name)
-
-        assert "/" not in name
-
-        with self._md5_lock:
-            shallow_md5, _ = Filesystem.path_md5(path=path, shallow=True, expect=self._md5[name]["shallow"] if name in self._md5 else None)
-            deep_md5, modified = Filesystem.path_md5(path=path, shallow=False, expect=self._md5[name]["deep"] if name in self._md5 else None)
-            modified = max(modified if modified else 0, self._md5[name]["modified"] if name in self._md5 else 0)
-            self._md5[name] = {
-                "shallow": shallow_md5,
-                "shallow_checked": int(time.time()),
-                "deep": deep_md5,
-                "deep_checked": int(time.time()),
-                "modified": modified,
-            }
-
     @staticmethod
     def _trigger_dir_thread():
         _trigger_dir_obj = None
@@ -607,7 +552,7 @@ class Pipeline():
 
             ready = 0
             for pipeline in Pipeline.pipelines:
-                if pipeline.running or pipeline._shouldRun and pipeline.dir_in:
+                if pipeline.running or pipeline.shouldRun and pipeline.dir_in:
                     ready += 1
 
             if ready == 0:
@@ -661,7 +606,7 @@ class Pipeline():
             _trigger_dir_obj.cleanup()
 
     def _monitor_book_triggers_thread(self):
-        while self._dirsAvailable and self._shouldRun:
+        while self.shouldRun:
             time.sleep(10)
 
             if not os.path.isdir(self.dir_trigger):
@@ -686,125 +631,34 @@ class Pipeline():
                     except Exception:
                         logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
 
-    def _monitor_book_events_thread(self):
-        while self._dirsAvailable and self._shouldRun:
-            try:
-                if self.shouldHandleBooks:
-                    # books that are recently changed (check often in case of new file changes)
-                    with self._md5_lock:
-                        recently_changed = sorted([f for f in self._md5 if time.time() - self._md5[f]["modified"] < self._inactivity_timeout],
-                                                  key=lambda rc: self._md5[rc]["modified"])
-                        if recently_changed:
-                            for f in recently_changed:
-                                deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f), shallow=False)
-                                self._md5[f]["deep_checked"] = int(time.time())
-                                if deep_md5 != self._md5[f]["deep"]:
-                                    self._md5[f]["modified"] = int(time.time())
-                                    self._update_md5(f)
-                                    self._add_book_to_queue(f, "modified")
-                                    logging.debug("book modified (and was recently modified, might be in the middle of a copy operation): " + f)
-
-                            time.sleep(0.1)  # a small nap
-                            continue
-
-                time.sleep(1)  # unless anything has recently changed, give the system time to breathe between each iteration
-
-                if self.shouldHandleBooks:
-                    # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
-                    dirlist = Pipeline.list_book_dir(self.dir_in)
-                    for f in dirlist:
-                        if not (self._dirsAvailable and self._shouldRun):
-                            break  # break loop if we're shutting down the system
-
-                        if Filesystem.should_ignore(os.path.join(self.dir_in, f)):
-                            continue
-
-                        with self._md5_lock:
-                            if not os.path.exists(os.path.join(self.dir_in, f)):
-                                # iterating over all books can take a lot of time,
-                                # and the book may have been deleted by the time we get to it.
-                                self._add_book_to_queue(f, "deleted")
-                                logging.debug("book deleted: " + f)
-                                del self._md5[f]
-                                continue
-
-                            if f not in self._md5:
-                                self._update_md5(f)
-                                self._add_book_to_queue(f, "created")
-                                logging.debug("book created: " + f)
-                                continue
-
-                            shallow_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
-                                                                 shallow=True,
-                                                                 expect=self._md5[f]["shallow"] if f in self._md5 else None)
-                            if shallow_md5 != self._md5[f]["shallow"]:
-                                self._update_md5(f)
-                                self._add_book_to_queue(f, "modified")
-                                logging.debug("book modified (top-level dir/file modified): " + f)
-                                continue
-
-                    with self._md5_lock:
-                        deleted = [f for f in self._md5 if f not in dirlist]
-                        for f in deleted:
-                            self._add_book_to_queue(f, "deleted")
-                            logging.debug("book deleted: " + f)
-                            del self._md5[f]
-                        if deleted:
-                            continue
-
-                    # do a deep check (size/time etc. of files in subdirectories) of up to 10 books that haven't been checked in a while
-                    with self._md5_lock:
-                        long_time_since_checked = sorted([{"name": f, "md5": self._md5[f]} for f in self._md5
-                                                          if time.time() - self._md5[f]["modified"] > self._inactivity_timeout],
-                                                         key=lambda f: f["md5"]["deep_checked"])
-                        for b in long_time_since_checked[:10]:
-                            if not (self._dirsAvailable and self._shouldRun):
-                                break  # break loop if we're shutting down the system
-
-                            f = b["name"]
-                            deep_md5, _ = Filesystem.path_md5(path=os.path.join(self.dir_in, f),
-                                                              shallow=False,
-                                                              expect=self._md5[f]["deep"] if f in self._md5 else None)
-                            if f not in self._md5:
-                                self._update_md5(f)
-                            else:
-                                self._md5[f]["deep_checked"] = int(time.time())
-                                if deep_md5 != self._md5[f]["deep"]:
-                                    self._md5[f]["modified"] = int(time.time())
-                                    self._update_md5(f)
-                                    self._add_book_to_queue(f, "modified")
-                                    logging.debug("book modified: " + f)
-
-            except Exception:
-                logging.exception("En feil oppstod ved overvåking av " +
-                                  str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""))
-                try:
-                    Report.emailPlainText("En feil oppstod ved overvåking av " +
-                                          str(self.dir_in) + (" (" + self.book["name"] + ")" if self.book and "name" in self.book else ""),
-                                          traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
-                except Exception:
-                    logging.exception("Could not e-mail exception")
-
     def _retry_all_books_thread(self):
         last_check = 0
 
-        while self._dirsAvailable and self._shouldRun:
+        while self.shouldRun:
             time.sleep(5)
+
+            if not self.dirsAvailable():
+                continue
+
             max_update_interval = 60 * 60  # 1 hour
 
             if time.time() - last_check < max_update_interval:
                 continue
 
             last_check = time.time()
-            for filename in Pipeline.list_book_dir(self.dir_in):
-                if not (self._dirsAvailable and self._shouldRun):
-                    break  # break loop if we're shutting down the system
+            for filename in Filesystem.list_book_dir(self.dir_in):
+                if not (self.dirsAvailable() and self.shouldRun):
+                    break  # break loop if we're shutting down the system or directory is not available
                 self.trigger(filename)
 
     def _retry_missing_books_thread(self):
         last_check = 0
-        while self._dirsAvailable and self._shouldRun:
+        while self.shouldRun:
             time.sleep(5)
+
+            if not self.dirsAvailable():
+                continue
+
             max_update_interval = 60 * 60 * 4
 
             if time.time() - last_check < max_update_interval:
@@ -812,12 +666,12 @@ class Pipeline():
 
             last_check = time.time()
 
-            filenames = (os.path.join(self.dir_in, fileName) for fileName in Pipeline.list_book_dir(self.dir_in))
+            filenames = (os.path.join(self.dir_in, fileName) for fileName in Filesystem.list_book_dir(self.dir_in))
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
             for modification_time, path in reversed(sorted(filenames)):
 
-                if not (self._dirsAvailable and self._shouldRun):
-                    break  # break loop if we're shutting down the system
+                if not (self.dirsAvailable() and self.shouldRun):
+                    break  # break loop if we're shutting down the system or directory is unavailable
                 fileName = Path(path).name
                 fileStem = Path(path).stem
                 edition = [fileStem]
@@ -836,18 +690,18 @@ class Pipeline():
                 try:
                     if self.parentdirs:
                         for key in self.parentdirs:
-                            for fileInDirOut in Pipeline.list_book_dir(os.path.join(self.dir_out, self.parentdirs[key])):
+                            for fileInDirOut in Filesystem.list_book_dir(os.path.join(self.dir_out, self.parentdirs[key])):
 
-                                if not (self._dirsAvailable and self._shouldRun):
-                                    break  # break loop if we're shutting down the system
+                                if not (self.dirsAvailable() and self.shouldRun):
+                                    break  # break loop if we're shutting down the system or directory is unavailable
                                 if Path(fileInDirOut).stem in edition:
                                     file_exists = True
                                     break
                     else:
-                        for fileInOut in Pipeline.list_book_dir(self.dir_out):
+                        for fileInOut in Filesystem.list_book_dir(self.dir_out):
 
-                            if not (self._dirsAvailable and self._shouldRun):
-                                break  # break loop if we're shutting down the system
+                            if not (self.dirsAvailable() and self.shouldRun):
+                                break  # break loop if we're shutting down the system or directory is unavailable
                             if Path(fileInOut).stem in edition:
                                 file_exists = True
                                 break
@@ -856,18 +710,26 @@ class Pipeline():
                     logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
 
                 if not file_exists:
-                    if self.should_retry_book(path):
+                    self.considering_retry_book = path
+                    should_retry = self.should_retry_book(path)
+                    self.considering_retry_book = None
+
+                    if should_retry:
                         logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
                         self.trigger(fileName)
                     else:
                         logging.info(fileName + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
 
     def _handle_book_events_thread(self):
-        while self._dirsAvailable and self._shouldRun:
+        while self.shouldRun:
             self.running = True
 
+            if not self.dirsAvailable():
+                time.sleep(5)
+                continue
+
             try:
-                if self.dir_out is not None and not Pipeline.directory_watchers_ready(self.dir_out):
+                if self.dir_out_obj is not None and not self.dir_out_obj.is_available():
                     time.sleep(10)
                     continue
 
@@ -992,12 +854,10 @@ class Pipeline():
                             if self.stopAfterNJobs > 0:
                                 self.stopAfterNJobs -= 1
                             if self.stopAfterNJobs == 0:
-                                self.stop(exit=True)
+                                self.stop()
 
                             try:
-                                self.utils.report.email(self.email_settings["smtp"],
-                                                        self.email_settings["sender"],
-                                                        Report.filterEmailAddresses(self.email_settings["recipients"],
+                                self.utils.report.email(Report.filterEmailAddresses(self.email_settings["recipients"],
                                                                                     library=book_metadata["library"] if "library" in book_metadata else None),
                                                         should_email=self.utils.report.should_email,
                                                         should_message_slack=self.utils.report.should_message_slack)
@@ -1015,7 +875,7 @@ class Pipeline():
                 try:
                     Report.emailPlainText("En feil oppstod ved håndtering av bokhendelse" +
                                           (": " + str(self.book["name"]) if self.book and "name" in self.book else ""),
-                                          traceback.format_exc(), self.email_settings["smtp"], self.email_settings["sender"], self.email_settings["recipients"])
+                                          traceback.format_exc(), self.email_settings["recipients"])
                 except Exception:
                     logging.exception("Could not e-mail exception")
 
@@ -1045,9 +905,7 @@ class Pipeline():
             else:
                 recipients_daily.append(rec)
         try:
-            report_daily.email(self.email_settings["smtp"],
-                               self.email_settings["sender"],
-                               recipients_daily,
+            report_daily.email(recipients_daily,
                                should_attach_log=False)
         except Exception:
                 logging.info("Failed sending daily email")
@@ -1114,20 +972,6 @@ class Pipeline():
             logging.info(traceback.format_exc())
 
     @staticmethod
-    def list_book_dir(dir):
-        dirlist = os.listdir(dir)
-        filtered = []
-        for dirname in dirlist:
-            if Filesystem.should_ignore(os.path.join(dir, dirname)):
-                # Filter out common system files
-                continue
-            if len(dirname) == 0 or (dirname[0] not in "0123456789" and not dirname.startswith("TEST")):
-                # Book identifiers must start with a number
-                continue
-            filtered.append(dirname)
-        return filtered
-
-    @staticmethod
     def append_write(path):
         if os.path.exists(path):
             return 'a'  # append if already exists
@@ -1191,6 +1035,7 @@ class DummyPipeline(Pipeline):
     labels = []
     publication_format = None
     book = {}
+    considering_retry_book = None
 
     utils = None
     running = True
@@ -1208,20 +1053,24 @@ class DummyPipeline(Pipeline):
         self.utils.filesystem = Filesystem(self)
         self._queue_lock = RLock()
         self._md5_lock = RLock()
-        self._shouldRun = False
+        self.shouldRun = False
+        self.book = None
+        self.considering_retry_book = None
 
         if inherit_config_from:
             assert (inspect.isclass(inherit_config_from) and issubclass(inherit_config_from, Pipeline) or
                     not inspect.isclass(inherit_config_from) and issubclass(type(inherit_config_from), Pipeline))
             self.dir_in = inherit_config_from.dir_in
             self.dir_out = inherit_config_from.dir_out
+            self.dir_in_obj = inherit_config_from.dir_in_obj
+            self.dir_out_obj = inherit_config_from.dir_out_obj
             self.dir_reports = inherit_config_from.dir_reports
             self.dir_base = inherit_config_from.dir_base
             self.email_settings = inherit_config_from.email_settings
             self.config = inherit_config_from.config
 
     def start(self, inactivity_timeout=10, dir_in=None, dir_out=None, dir_reports=None, email_settings=None, dir_base=None, config=None):
-        self._shouldRun = True
+        self.shouldRun = True
 
         self.start_common(inactivity_timeout=inactivity_timeout,
                           dir_in=dir_in,
@@ -1234,12 +1083,12 @@ class DummyPipeline(Pipeline):
         self.running = True
 
     def stop(self, *args, **kwargs):
-        self._shouldRun = False
+        self.shouldRun = False
         self.running = False
 
     def run(self, *args, **kwargs):
         self.start(*args, **kwargs)
-        while self._shouldRun:
+        while self.shouldRun:
             if self.stopAfterNJobs == 0:
                 self.stop()
                 break

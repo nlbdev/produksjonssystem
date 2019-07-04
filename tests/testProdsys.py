@@ -61,12 +61,13 @@ environment = {
         "news={}/prodsys-news".format(target_path)
     ]),  # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
-    "REPORTS_DIR": "/tmp/prodsys-rapporter".format(target_path),  # always the same, so that it's easier to view the dashboard(s)
+    "REPORTS_DIR": "/tmp/prodsys-rapporter",  # always the same, so that it's easier to view the dashboard(s)
     "DEBUG": "true",
     "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
     "CONFIG_FILE": os.path.join(os.path.dirname(__file__), "produksjonssystem.yaml"),
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
-    "STOP_AFTER_FIRST_JOB": "true"
+    "STOP_AFTER_FIRST_JOB": "true",
+    "CACHE_DIR": "{}/cache".format(target_path)
 }
 
 book_archive_dirs = {}
@@ -103,22 +104,22 @@ copytree(news_path, os.path.join(prodsys.dirs["news"], "2019-03-15"))
 #       For now, they are disabled during testing.
 for pipeline in prodsys.pipelines:
     if pipeline[0].uid in ["incoming-NLBPUB", "NLBPUB-incoming-validator", "NLBPUB-incoming-warning", "NLBPUB-validator-final"]:
-        pipeline[0].stop(exit=True)
+        pipeline[0].stop()
 
 # TODO: disable testing of PEF production until braille script is improved
 for pipeline in prodsys.pipelines:
     if pipeline[0].uid in ["nlbpub-to-pef", "check-pef"]:
-        pipeline[0].stop(exit=True)
+        pipeline[0].stop()
 
 # Don't test pipeline for upgrading old DTBooks (it's temporary)
 for pipeline in prodsys.pipelines:
     if pipeline[0].uid == "nordic-dtbook-to-epub":
-        pipeline[0].stop(exit=True)
+        pipeline[0].stop()
 
 # Don't test pipeline for creating newsletter
 for pipeline in prodsys.pipelines:
     if pipeline[0].uid == "newsletter-to-braille":
-        pipeline[0].stop(exit=True)
+        pipeline[0].stop()
 
 expect_dirs = {}
 for pipeline in prodsys.pipelines:

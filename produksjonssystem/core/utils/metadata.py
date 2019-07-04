@@ -7,10 +7,10 @@ import tempfile
 import threading
 import time
 import zipfile
+from pathlib import Path
 
 import requests
 from lxml import etree as ElementTree
-from pathlib import Path
 
 from core.config import Config
 from core.utils.epub import Epub
@@ -777,9 +777,7 @@ class Metadata:
                 Metadata.add_production_info(normarc_report, epub.identifier(), publication_format=publication_format)
                 signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
 
-                normarc_report.email(report.pipeline.email_settings["smtp"],
-                                     report.pipeline.email_settings["sender"],
-                                     signatureRegistrationAddress,
+                normarc_report.email(signatureRegistrationAddress,
                                      subject="Validering av katalogpost: {} og tilhørende utgaver".format(epub.identifier()))
                 report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
                     ", ".join([addr.lower() for addr in signatureRegistrationAddress])))

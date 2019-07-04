@@ -10,11 +10,9 @@ import tempfile
 import threading
 import time
 
-from dotmap import DotMap
-from core.utils.filesystem import Filesystem
-from core.utils.report import Report
-from core.pipeline import DummyPipeline, Pipeline
+from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
+from core.utils.filesystem import Filesystem
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -51,7 +49,7 @@ class Newsletter(Pipeline):
     def _trigger_newsletter_thread(self):
         last_check = 0
         # If no newsletter this month, trigger newsletter
-        while self._dirsAvailable and self._shouldRun:
+        while self.dirsAvailable and self.shouldRun:
             time.sleep(5)
             max_update_interval = 60 * 60
 
@@ -62,7 +60,7 @@ class Newsletter(Pipeline):
             self.newsletter_identifier = "120209"
             self.newsletter_identifier += time.strftime("%m%Y")
             self.year_month = datetime.datetime.today().strftime('%Y-%m')
-            if self.newsletter_identifier not in Pipeline.list_book_dir(self.dir_out):
+            if self.newsletter_identifier not in Filesystem.list_book_dir(self.dir_out):
                 logging.info("Lager nyhetsbrev for: " + self.year_month)
                 self.trigger(self.newsletter_identifier)
 

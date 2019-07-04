@@ -10,6 +10,7 @@ import time
 
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.epub import Epub
+from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -71,14 +72,14 @@ class UpdateMetadata(Pipeline):
         return Metadata.queue
 
     def _watch_metadata_thread(self):
-        while self._shouldRun:
+        while self.shouldRun:
             self.running = True
 
             try:
                 time.sleep(1)
 
                 if self._stopAfterFirstJob:
-                    self.stop(exit=True)
+                    self.stop()
 
                 if self.throttle_metadata_emails:
                     # only update metadata in working hours
@@ -88,8 +89,8 @@ class UpdateMetadata(Pipeline):
                         continue
 
                 # find a book_id where we haven't retrieved updated metadata in a while
-                for book_id in Pipeline.list_book_dir(self.dir_out):
-                    if not self._shouldRun:
+                for book_id in Filesystem.list_book_dir(self.dir_out):
+                    if not self.shouldRun:
                         break
 
                     now = int(time.time())

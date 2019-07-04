@@ -9,7 +9,6 @@ import threading
 import time
 import traceback
 from collections import OrderedDict
-from email.headerregistry import Address
 from threading import Thread
 
 import psutil
@@ -17,6 +16,7 @@ import yaml
 
 from core.api import API
 from core.config import Config
+from core.directory import Directory
 from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
 from core.utils.filesystem import Filesystem
@@ -36,7 +36,8 @@ from incoming_nordic import IncomingNordic
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
                              InsertMetadataXhtml)
 from make_abstracts import Audio_Abstract
-from newspaper_schibsted import NewspaperSchibsted, DummyTtsNewspaperSchibsted
+from newsletter import Newsletter
+from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
@@ -48,7 +49,6 @@ from prepare_for_braille import PrepareForBraille
 from prepare_for_docx import PrepareForDocx
 from prepare_for_ebook import PrepareForEbook
 # from update_metadata import UpdateMetadata
-from newsletter import Newsletter
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -94,18 +94,12 @@ class Produksjonssystem():
         book_archive_dirs = self.book_archive_dirs
 
         # Configure email
-        self.email = {
-            "smtp": {},
-            "sender": Address("NLBs Produksjonssystem", "produksjonssystem", "nlb.no")
-        }
-        if os.environ.get("MAIL_SERVER", None):
-            self.email["smtp"]["host"] = os.environ.get("MAIL_SERVER", None)
-        if os.environ.get("MAIL_PORT", None):
-            self.email["smtp"]["port"] = os.environ.get("MAIL_PORT", None)
-        if os.environ.get("MAIL_USERNAME", None):
-            self.email["smtp"]["user"] = os.environ.get("MAIL_USERNAME", None)
-        if os.environ.get("MAIL_PASSWORD", None):
-            self.email["smtp"]["pass"] = os.environ.get("MAIL_PASSWORD", None)
+        Config.set("email.sender.name", "NLBs Produksjonssystem")
+        Config.set("email.sender.address", "produksjonssystem@nlb.no")
+        Config.set("email.smtp.host", os.environ.get("MAIL_SERVER", None))
+        Config.set("email.smtp.port", os.environ.get("MAIL_PORT", None))
+        Config.set("email.smtp.user", os.environ.get("MAIL_USERNAME", None))
+        Config.set("email.smtp.pass", os.environ.get("MAIL_PASSWORD", None))
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
@@ -209,8 +203,8 @@ class Produksjonssystem():
                 self.dirs[dir] = rank["dirs"][dir]
 
         # also make dirs available from static contexts
-        Pipeline.dirs_ranked = self.dirs_ranked
-        Pipeline.dirs_flat = self.dirs
+        Directory.dirs_ranked = self.dirs_ranked
+        Directory.dirs_flat = self.dirs
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
@@ -417,8 +411,6 @@ class Produksjonssystem():
 
         for pipeline in self.pipelines:
             email_settings = {
-                "smtp": self.email["smtp"],
-                "sender": self.email["sender"],
                 "recipients": []
             }
             pipeline_config = {}
@@ -467,7 +459,7 @@ class Produksjonssystem():
                     self.info("Sender stoppsignal til alle pipelines...")
                     os.remove(stopfile)
                     for pipeline in self.pipelines:
-                        pipeline[0].stop(exit=True)
+                        pipeline[0].stop()
 
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
@@ -493,7 +485,7 @@ class Produksjonssystem():
             pass
 
         for pipeline in self.pipelines:
-            pipeline[0].stop(exit=True)
+            pipeline[0].stop()
 
         self.info("Venter på at alle pipelinene skal stoppe...")
         for thread in threads:
@@ -544,7 +536,7 @@ class Produksjonssystem():
         while time.time() - start_time < timeout:
             waiting = 0
             for pipeline in self.pipelines:
-                if pipeline[0]._shouldRun and not pipeline[0].running:
+                if pipeline[0].shouldRun and not pipeline[0].running:
                     waiting += 1
             if waiting == 0:
                 return True

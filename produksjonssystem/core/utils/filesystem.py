@@ -281,6 +281,9 @@ class Filesystem():
 
         self.pipeline.utils.report.info("{} ble lagt til i {}.".format(book_id, dir_nicename))
 
+        if self.pipeline and self.pipeline.dir_out_obj:
+            self.pipeline.dir_out_obj.suggest_rescan(book_id)
+
         return target, True
 
     def deleteSource(self):
@@ -465,3 +468,17 @@ class Filesystem():
             if not relpath.startswith("../"):
                 return base_dirs[d]
         return None
+
+    @staticmethod
+    def list_book_dir(dir):
+        dirlist = os.listdir(dir)
+        filtered = []
+        for dirname in dirlist:
+            if Filesystem.should_ignore(os.path.join(dir, dirname)):
+                # Filter out common system files
+                continue
+            if len(dirname) == 0 or (dirname[0] not in "0123456789" and not dirname.startswith("TEST")):
+                # Book identifiers must start with a number
+                continue
+            filtered.append(dirname)
+        return filtered

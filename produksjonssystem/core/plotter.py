@@ -10,6 +10,7 @@ import time
 
 from graphviz import Digraph
 
+from core.directory import Directory
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
@@ -48,14 +49,14 @@ class Plotter():
         return self.book_count[dir]["count"]
 
     def rank_name(self, rank_id):
-        for rank in Pipeline.dirs_ranked:
+        for rank in Directory.dirs_ranked:
             if rank["id"] == rank_id:
                 return rank["name"]
         return None
 
     def next_rank(self, rank_id):
         use_next = False
-        for rank in Pipeline.dirs_ranked:
+        for rank in Directory.dirs_ranked:
             if use_next:
                 return rank["id"]
             elif rank["id"] == rank_id:
@@ -67,7 +68,7 @@ class Plotter():
         dot.graph_attr["bgcolor"] = "transparent"
 
         node_ranks = {}
-        for rank in Pipeline.dirs_ranked:
+        for rank in Directory.dirs_ranked:
             node_ranks[rank["id"]] = []
 
         # remember edges so that we don't plot them twice
@@ -118,7 +119,7 @@ class Plotter():
             netpath_in = ""
             rank_in = None
             if pipeline[0].dir_in:
-                for rank in Pipeline.dirs_ranked:
+                for rank in Directory.dirs_ranked:
                     for dir in rank["dirs"]:
                         if os.path.normpath(pipeline[0].dir_in) == os.path.normpath(rank["dirs"][dir]):
                             rank_in = rank["id"]
@@ -149,7 +150,7 @@ class Plotter():
             netpath_out = ""
             rank_out = None
             if pipeline[0].dir_out:
-                for rank in Pipeline.dirs_ranked:
+                for rank in Directory.dirs_ranked:
                     for dir in rank["dirs"]:
                         if os.path.normpath(pipeline[0].dir_out) == os.path.normpath(rank["dirs"][dir]):
                             rank_out = rank["id"]
@@ -185,6 +186,7 @@ class Plotter():
                 else:
                     node_ranks[rank_in].append(pipeline_id)
 
+            state = group_pipeline.get_state()
             status = group_pipeline.get_status()
             progress_text = group_pipeline.get_progress()
             pipeline_label = "< <font point-size='26'>{}</font>{} >".format(
@@ -194,14 +196,18 @@ class Plotter():
             fillcolor = "lightskyblue1"
             if book or queue_size:
                 fillcolor = "lightslateblue"
-            if not group_pipeline.running or isinstance(group_pipeline, DummyPipeline):
+            if state == "considering":
+                fillcolor = "lightskyblue3"
+            if not group_pipeline.running:
                 fillcolor = "white"
+            elif isinstance(group_pipeline, DummyPipeline):
+                fillcolor = "snow"
             dot.attr("node", shape="box", style="filled", fillcolor=fillcolor)
             dot.node(pipeline_id, pipeline_label.replace("\\", "\\\\"))
 
             if relpath_in:
                 fillcolor = "wheat"
-                if not Pipeline.directory_watchers_ready(pipeline[0].dir_in):
+                if not pipeline[0].dir_in_obj or not pipeline[0].dir_in_obj.is_available():
                     fillcolor = "white"
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[1], label_in)
@@ -214,7 +220,7 @@ class Plotter():
 
             if relpath_out:
                 fillcolor = "wheat"
-                if not Pipeline.directory_watchers_ready(pipeline[0].dir_out):
+                if not pipeline[0].dir_out_obj or not pipeline[0].dir_out_obj.is_available():
                     fillcolor = "white"
                 dot.attr("node", shape="folder", style="filled", fillcolor=fillcolor)
                 dot.node(pipeline[2], label_out)
@@ -362,7 +368,7 @@ class Plotter():
                         books = []
                         for d in dirs:
                             if os.path.isdir(d):
-                                books += Pipeline.list_book_dir(d)
+                                books += Filesystem.list_book_dir(d)
                         self.book_count[dir]["modified"] = time.time()
                         self.book_count[dir]["count"] = len(set(books))
 
