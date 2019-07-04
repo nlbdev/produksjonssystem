@@ -289,8 +289,8 @@ class Pipeline():
         while (self.dir_in_obj and self.dir_in_obj.is_starting() or
                 self.dir_out_obj and self.dir_out_obj.is_starting()):
             self.progress_text = " , ".join([text for text in [
-                self.dir_in_obj.get_progress_text() if self.dir_in_obj else None,
-                self.dir_out_obj.get_progress_text() if self.dir_out_obj else None
+                self.dir_in_obj.get_status_text() if self.dir_in_obj else None,
+                self.dir_out_obj.get_status_text() if self.dir_out_obj else None
             ] if text])
 
             time.sleep(1)

@@ -64,8 +64,6 @@ class Directory():
         with self._md5_lock:
             self._md5 = {}
 
-        self.initialize_checksums()
-
         self.threads = []
 
         self._bookMonitorThread = Thread(target=self._monitor_book_events_thread, name="event in {}".format(self.dir_id))
@@ -154,7 +152,7 @@ class Directory():
         if not cache_dir:
             cache_dir = os.getenv("CACHE_DIR", os.path.join(tempfile.gettempdir(), "prodsys-cache"))
             if not os.path.isdir(cache_dir):
-                os.makedirs(cache_dir)
+                os.makedirs(cache_dir, exist_ok=False)
             Config.set("cache_dir", cache_dir)
 
         self.cache_file = None
@@ -280,6 +278,8 @@ class Directory():
             }
 
     def _monitor_book_events_thread(self):
+        self.initialize_checksums()
+
         while self.shouldRun:
             try:
                 # books that are recently changed (check often in case of new file changes)
