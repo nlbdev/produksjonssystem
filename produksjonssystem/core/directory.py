@@ -187,6 +187,8 @@ class Directory():
             self._update_md5(book)
             md5_count += 1
             self.status_text = "{} / {}".format(md5_count, len(dir_list))
+            if md5_count == 1 or md5_count % 100 == 0:
+                logging.info(self.status_text)
 
         self.starting = False
         self.status_text = None
