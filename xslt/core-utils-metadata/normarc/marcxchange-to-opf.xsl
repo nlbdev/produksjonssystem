@@ -313,20 +313,28 @@
             </xsl:if>
         </xsl:if>
         
-        <xsl:choose>
-            <xsl:when test="$POS22='a'">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
-            </xsl:when>
-            <xsl:when test="$POS22='j'">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Juvenile'"/></xsl:call-template>
-            </xsl:when>
-        </xsl:choose>
+        <!--  If not audience is "Student" based on 850$a, then set audience to either "Adult" or "Juvenile" based on 008 POS 22 -->
+        <xsl:variable name="tag850" as="element()*">
+            <xsl:apply-templates select="../*:datafield[@tag='850']"/>
+        </xsl:variable>
+        <xsl:if test="not(exists($tag850[@property='audience']))">
+            <xsl:choose>
+                <xsl:when test="$POS22='a'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$POS22='j'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Juvenile'"/></xsl:call-template>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:if>
     
         <xsl:choose>
             <xsl:when test="$POS33='0'">
+                <meta property="dc:type.fiction">false</meta>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Non-fiction'"/></xsl:call-template>
             </xsl:when>
             <xsl:when test="$POS33='1'">
+                <meta property="dc:type.fiction">true</meta>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Fiction'"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
@@ -399,28 +407,7 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='019']">
-        <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:variable name="context" select="."/>
-            <xsl:for-each select="tokenize(replace(text(),'\s',''),'[,\.\-_]')">
-                <xsl:choose>
-                    <xsl:when test=".='a'">
-                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 0-5'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test=".='b'">
-                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 6-8'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test=".='bu'">
-                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 9-10'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test=".='u'">
-                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 11-12'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test=".='mu'">
-                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Ages 13+'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:for-each>
-        </xsl:for-each>
+        <!-- *019$a handled in template for *008 -->
     
         <xsl:variable name="b" as="element()*">
             <xsl:for-each select="*:subfield[@code='b']">

@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/nlbdev/normarc.git
 	branch = master
-	commit = a089eaf468d3567b4106930aa744fec835b9e682
-	parent = 7d2182f1adafb5fcf581391ff889a61ac073cd63
+	commit = 588d7c4d2a4e222a4cb3f2a702c058983bdb4e1d
+	parent = 7ea22670f9a01c6a35a3e0ebce1f0dd7513b70fc
 	cmdver = 0.3.1
