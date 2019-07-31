@@ -334,19 +334,19 @@
         
         <x:expect label="the metadata should be extracted as expected">
             <meta property="dc:date.registered">2017-12-20</meta>
+            <meta property="typicalAgeRange">17-</meta>
             <meta property="audience">Adult</meta>
             <meta property="dc:type.fiction">true</meta>
             <meta property="dc:type.genre">Fiction</meta>
             <meta property="dc:type.genre">Non-biography</meta>
             <dc:language>nob</dc:language>
-            <meta property="typicalAgeRange">17-</meta>
             
             <meta property="dc:date.registered">2017-12-20</meta>
+            <meta property="typicalAgeRange">17-</meta>
             <meta property="audience">Adult</meta>
             <meta property="dc:type.fiction">true</meta>
             <meta property="dc:type.genre">Fiction</meta>
             <meta property="dc:type.genre">Non-biography</meta>
-            <meta property="typicalAgeRange">17-</meta>
             <dc:language>eng</dc:language>
             <dc:language>sve</dc:language>
             
@@ -939,6 +939,30 @@
                 <meta property="audience">Student</meta>
                 <meta property="library">NLB</meta>
                 <meta property="typicalAgeRange">17-</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Child audience">
+        <x:context>
+            <marcxchange:record format="normarc" type="Bibliographic">
+                <marcxchange:controlfield tag="008">171220                j          10nob</marcxchange:controlfield>
+                
+                <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">b,bu</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:language>nob</dc:language>
+                <meta property="dc:date.registered">2017-12-20</meta>
+                <meta property="dc:type.fiction">true</meta>
+                <meta property="dc:type.genre">Fiction</meta>
+                <meta property="dc:type.genre">Non-biography</meta>
+                <meta property="audience">Child</meta>
+                <meta property="typicalAgeRange">6-10</meta>
             </metadata>
         </x:expect>
     </x:scenario>

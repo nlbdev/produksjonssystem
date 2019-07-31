@@ -313,17 +313,58 @@
             </xsl:if>
         </xsl:if>
         
-        <!--  If not audience is "Student" based on 850$a, then set audience to either "Adult" or "Juvenile" based on 008 POS 22 -->
+        <xsl:variable name="ageRanges" as="xs:string*">
+            <xsl:sequence select="if ($POS22 = 'a') then '17-INF' else ()"/>
+            <xsl:for-each select="../*:datafield[@tag='019']/*:subfield[@code='a']/tokenize(replace(text(),'\s',''),'[,\.\-_]')">
+                <xsl:choose>
+                    <xsl:when test=".='a'">
+                        <xsl:sequence select="'0-5'"/>
+                    </xsl:when>
+                    <xsl:when test=".='b'">
+                        <xsl:sequence select="'6-7'"/>
+                    </xsl:when>
+                    <xsl:when test=".='bu'">
+                        <xsl:sequence select="'8-10'"/>
+                    </xsl:when>
+                    <xsl:when test=".='u'">
+                        <xsl:sequence select="'11-12'"/>
+                    </xsl:when>
+                    <xsl:when test=".='mu'">
+                        <xsl:sequence select="'13-16'"/>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="ageRangeFrom" select="if (count($ageRanges) = 0) then '' else xs:integer(min(for $range in ($ageRanges) return xs:double(tokenize($range,'-')[1])))"/>
+        <xsl:variable name="ageMax" select="if (count($ageRanges) = 0) then '' else max(for $range in ($ageRanges) return xs:double(tokenize($range,'-')[2]))"/>
+        <xsl:variable name="ageRangeTo" select="if ($ageMax and $ageMax = xs:double('INF')) then '' else $ageMax"/>
+        
+        <xsl:if test="$ageRangeFrom or $ageRangeTo">
+            <xsl:call-template name="meta"><xsl:with-param name="property" select="'typicalAgeRange'"/><xsl:with-param name="value" select="concat($ageRangeFrom,'-',$ageRangeTo)"/></xsl:call-template>
+        </xsl:if>
+        
+        <!-- 
+            - if audience is "Student" based on 850$a, then use "Student"
+            - if 008 POS 22 is 'a', or ageRangeFrom > 13, then use "Adult"
+            - if ageRangeFrom = 13, then use "Adolescent"
+            - if ageRangeFrom < 13, then use "Child"
+        -->
         <xsl:variable name="tag850" as="element()*">
             <xsl:apply-templates select="../*:datafield[@tag='850']"/>
         </xsl:variable>
         <xsl:if test="not(exists($tag850[@property='audience']))">
             <xsl:choose>
-                <xsl:when test="$POS22='a'">
+                <xsl:when test="$tag850[@property='dc:type.genre']/text() = 'textbook'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Student'"/></xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$ageRangeFrom and $ageRangeFrom gt 13 or $POS22='a'">
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
                 </xsl:when>
-                <xsl:when test="$POS22='j'">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Juvenile'"/></xsl:call-template>
+                <xsl:when test="$ageRangeFrom and $ageRangeFrom = 13">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adolescent'"/></xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$ageRangeFrom and $ageRangeFrom lt 13 or $POS22='j'">
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Child'"/></xsl:call-template>
                 </xsl:when>
             </xsl:choose>
         </xsl:if>
@@ -368,36 +409,6 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:language'"/><xsl:with-param name="value" select="$POS35-37"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
-        
-        <xsl:variable name="ageRanges" as="xs:string*">
-            <xsl:sequence select="if ($POS22 = 'a') then '17-INF' else ()"/>
-            <xsl:for-each select="../*:datafield[@tag='019']/*:subfield[@code='a']/tokenize(replace(text(),'\s',''),'[,\.\-_]')">
-                <xsl:choose>
-                    <xsl:when test=".='a'">
-                        <xsl:sequence select="'0-5'"/>
-                    </xsl:when>
-                    <xsl:when test=".='b'">
-                        <xsl:sequence select="'6-7'"/>
-                    </xsl:when>
-                    <xsl:when test=".='bu'">
-                        <xsl:sequence select="'8-10'"/>
-                    </xsl:when>
-                    <xsl:when test=".='u'">
-                        <xsl:sequence select="'11-12'"/>
-                    </xsl:when>
-                    <xsl:when test=".='mu'">
-                        <xsl:sequence select="'13-16'"/>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:for-each>
-        </xsl:variable>
-        <xsl:variable name="ageRangeFrom" select="if (count($ageRanges) = 0) then '' else xs:integer(min(for $range in ($ageRanges) return xs:double(tokenize($range,'-')[1])))"/>
-        <xsl:variable name="ageMax" select="if (count($ageRanges) = 0) then '' else max(for $range in ($ageRanges) return xs:double(tokenize($range,'-')[2]))"/>
-        <xsl:variable name="ageRangeTo" select="if ($ageMax and $ageMax = xs:double('INF')) then '' else $ageMax"/>
-        
-        <xsl:if test="$ageRangeFrom or $ageRangeTo">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'typicalAgeRange'"/><xsl:with-param name="value" select="concat($ageRangeFrom,'-',$ageRangeTo)"/></xsl:call-template>
-        </xsl:if>
     </xsl:template>
     
     <!-- 010 - 04X KONTROLLNUMMER OG KODER -->
@@ -1962,7 +1973,6 @@
     <xsl:template match="*:datafield[@tag='850']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="text()=('NLB/S')">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Student'"/></xsl:call-template>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/></xsl:call-template>
             </xsl:if>
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'library'"/><xsl:with-param name="value" select="tokenize(text(),'/')[1]"/></xsl:call-template>
