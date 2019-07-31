@@ -982,4 +982,82 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Patron allowed to borrow braille books">
+        <x:context>
+            <laaner>
+                <row>
+                    <lmarc>
+                        <record>
+                            <datafield tag="465" ind1=" " ind2=" ">
+                                <subfield code="h" type="VARCHAR(1)">P</subfield>
+                            </datafield>
+                        </record>
+                    </lmarc>
+                </row>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:lmarc_braille_patron rdf:name="true"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Patron with production right">
+        <x:context>
+            <laaner>
+                <row>
+                    <lmarc>
+                        <record>
+                            <datafield tag="466" ind1=" " ind2=" ">
+                                <subfield code="b" type="VARCHAR(2)">PR</subfield>
+                            </datafield>
+                        </record>
+                    </lmarc>
+                </row>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:lmarc_production_right rdf:name="true"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Patron with automated loans">
+        <x:context>
+            <laaner>
+                <row>
+                    <lmarc>
+                        <record>
+                            <datafield tag="465" ind1=" " ind2=" ">
+                                <subfield code="e" type="VARCHAR(1)">1</subfield>
+                            </datafield>
+                        </record>
+                    </lmarc>
+                </row>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:lmarc_automated_loans rdf:name="true"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
