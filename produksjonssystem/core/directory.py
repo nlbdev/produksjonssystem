@@ -396,7 +396,7 @@ class Directory():
                             if deep_md5 != self._md5[book]["deep"]:
                                 self._md5[book]["modified"] = int(time.time())
                                 self._update_md5(book)
-                                self._add_book_to_queue(book, "modified")
+                                self.notify_book_event_handlers(book, "modified")
                                 logging.debug("book modified: {}".format(book))
 
                 self.store_checksums()  # regularly store updated version of checksums
