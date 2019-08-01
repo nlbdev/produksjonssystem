@@ -168,9 +168,9 @@ class API():
         process = Filesystem.run_static(["git", "pull"], cwd=project_dir)
 
         if process.returncode == 0:
-            return process.stdout.decode("utf-8"), 200
+            return Response(process.stdout.decode("utf-8"), status=200)
         else:
-            return process.stderr.decode("utf-8"), 500
+            return Response(process.stderr.decode("utf-8"), status=200)
 
     # endpoint: /creative-works
     def creativeWorks(self):
