@@ -372,10 +372,11 @@ class Pipeline():
         if self.dir_in is not None:
             Directory.stop(self.dir_in)
 
-        for thread in self.threads:
-            if thread:
-                logging.debug("joining {}".format(thread.name))
-                thread.join(timeout=60)
+        if self.threads:
+            for thread in self.threads:
+                if thread:
+                    logging.debug("joining {}".format(thread.name))
+                    thread.join(timeout=60)
 
         if self._dir_trigger_obj:
             self._dir_trigger_obj.cleanup()
@@ -383,11 +384,12 @@ class Pipeline():
         is_alive = True
         while is_alive:
             is_alive = False
-            for thread in self.threads:
-                if thread and thread != threading.current_thread() and thread.is_alive():
-                    is_alive = True
-                    logging.info("Thread is still running: {}".format(thread.name))
-                    thread.join(timeout=60)
+            if self.threads:
+                for thread in self.threads:
+                    if thread and thread != threading.current_thread() and thread.is_alive():
+                        is_alive = True
+                        logging.info("Thread is still running: {}".format(thread.name))
+                        thread.join(timeout=60)
 
     def get_group_id(self):
         if self.gid:
@@ -980,36 +982,35 @@ class Pipeline():
 
     @staticmethod
     def get_main_event(book):
+        # always prefer "triggered" over other events
+        if "triggered" in book["events"]:
+            return "triggered"
+
+        # only use "autotriggered" if there are no other known event
+        if len(set(book["events"])) == 1 and book["events"][0] == "autotriggered":
+            return "autotriggered"
+
+        # remember in which order a book was created/deleted
         created_seq = []
         deleted_seq = []
-        event = None
-
         for e in range(0, len(book["events"])):
-            this_event = book["events"][e]
-            if this_event == "autotriggered":
-                # only use "autotriggered" if there are no other known event
-                if not event:
-                    event = this_event
-            else:
-                # always prefer "triggered" over other events
-                if event != "triggered":
-                    event = this_event
-
-            # remember in which order a book was created/deleted
-            if event == "created":
+            if book["events"][e] == "created":
                 created_seq.append(e)
-            elif event == "deleted":
+            elif book["events"][e] == "deleted":
                 deleted_seq.append(e)
 
         # use the event "crete_before_delete" if the book was first created and then deleted
-        if event in ["created", "deleted"] and created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
-            event = "create_before_delete"
+        if created_seq and deleted_seq and min(created_seq) < min(deleted_seq) and max(deleted_seq) > max(created_seq):
+            return "create_before_delete"
+
+        if "created" in book["events"]:
+            return "created"
+
+        if "deleted" in book["events"]:
+            return "deleted"
 
         # default to "modified"
-        if not event:
-            event = "modified"
-
-        return event
+        return "modified"
 
     # in case you want to override something
     @staticmethod

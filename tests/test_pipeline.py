@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import inspect
-import logging
 import os
 import shutil
 import sys
@@ -197,6 +196,75 @@ class PipelineTest(unittest.TestCase):
         time.sleep(9)
         self.assertEqual(self.pipeline.get_status(), "Venter")
         self.assertEqual(len(self.pipeline._queue), 0)
+
+    def test_get_main_event(self):
+        book = {}
+
+        book["events"] = ["autotriggered", "triggered", "created", "modified", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "triggered")
+
+        book["events"] = ["triggered", "autotriggered", "created", "modified", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "triggered")
+
+        book["events"] = ["triggered", "created", "modified", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "triggered")
+
+        book["events"] = ["created", "modified", "deleted", "autotriggered", "triggered"]
+        self.assertEqual(Pipeline.get_main_event(book), "triggered")
+
+        book["events"] = ["created", "modified", "deleted", "triggered", "autotriggered"]
+        self.assertEqual(Pipeline.get_main_event(book), "triggered")
+
+        book["events"] = ["triggered", "autotriggered"]
+        self.assertEqual(Pipeline.get_main_event(book), "triggered")
+
+        book["events"] = ["autotriggered", "created", "modified", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "create_before_delete")
+
+        book["events"] = ["created", "modified", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "create_before_delete")
+
+        book["events"] = ["created", "deleted", "modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "create_before_delete")
+
+        book["events"] = ["modified", "created", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "create_before_delete")
+
+        book["events"] = ["deleted", "created", "modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "created")
+
+        book["events"] = ["modified", "deleted", "created"]
+        self.assertEqual(Pipeline.get_main_event(book), "created")
+
+        book["events"] = ["deleted", "modified", "created"]
+        self.assertEqual(Pipeline.get_main_event(book), "created")
+
+        book["events"] = ["modified", "created"]
+        self.assertEqual(Pipeline.get_main_event(book), "created")
+
+        book["events"] = ["created", "modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "created")
+
+        book["events"] = ["modified", "deleted"]
+        self.assertEqual(Pipeline.get_main_event(book), "deleted")
+
+        book["events"] = ["deleted", "modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "deleted")
+
+        book["events"] = ["modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "modified")
+
+        book["events"] = ["modified", "modified", "modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "modified")
+
+        book["events"] = ["modified", "autotriggered", "modified"]
+        self.assertEqual(Pipeline.get_main_event(book), "modified")
+
+        book["events"] = ["autotriggered"]
+        self.assertEqual(Pipeline.get_main_event(book), "autotriggered")
+
+        book["events"] = ["autotriggered", "autotriggered"]
+        self.assertEqual(Pipeline.get_main_event(book), "autotriggered")
 
 
 if __name__ == '__main__':
