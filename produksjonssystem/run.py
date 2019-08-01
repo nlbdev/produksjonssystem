@@ -394,7 +394,7 @@ class Produksjonssystem():
 
         self.shouldRun = True
 
-        self.api = API()
+        self.api = API(shutdown_function=self.stop)
         self.api.start(hot_reload=False)
 
         self._configThread = Thread(target=self._config_thread, name="config")
@@ -447,19 +447,18 @@ class Produksjonssystem():
         system_process = psutil.Process()  # This process
         system_process.cpu_percent()  # first value returned is 0.0, which we ignore
         try:
-            stopfile = os.getenv("TRIGGER_DIR")
-            if stopfile:
-                stopfile = os.path.join(stopfile, "stop")
-
             running = True
             while running:
                 time.sleep(1)
 
+                # TODO: The trigger directory mechanism, including the stopfile, is deprecated. Will be removed in the future.
+                #       Use the stop function or shutdown API endpoint instead.
+                stopfile = os.getenv("TRIGGER_DIR")
+                if stopfile:
+                    stopfile = os.path.join(stopfile, "stop")
                 if os.path.exists(stopfile):
-                    self.info("Sender stoppsignal til alle pipelines...")
+                    self.stop()
                     os.remove(stopfile)
-                    for pipeline in self.pipelines:
-                        pipeline[0].stop()
 
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
@@ -544,11 +543,9 @@ class Produksjonssystem():
         return False
 
     def stop(self):
-        stopfile = os.getenv("TRIGGER_DIR")
-        assert stopfile, "TRIGGER_DIR must be defined"
-        stopfile = os.path.join(stopfile, "stop")
-        with open(stopfile, "w") as f:
-            f.write("stop")
+        self.info("Sender stoppsignal til alle pipelines...")
+        for pipeline in self.pipelines:
+            pipeline[0].stop()
 
     def is_idle(self):
         for pipeline in self.pipelines:

@@ -29,11 +29,12 @@ class API():
     root_path = None
 
     kill_endpoint = "/kill{}/".format(str(random()).split(".")[-1])  # random endpoint to discourage explicit external usage
+    shutdown_function = None
 
     buffered_network_paths = {}
     buffered_network_hosts = {}
 
-    def __init__(self, root_path="/prodsys", include_version=True):
+    def __init__(self, root_path="/prodsys", include_version=True, shutdown_function=None):
         self.app = Flask(__name__)
         self.host = os.getenv("API_HOST", default="0.0.0.0")
         self.port = os.getenv("API_PORT", default=3875)
@@ -58,6 +59,13 @@ class API():
         # the easiest way to shut down Flask is through an instance of request,
         # so we create this endpoint which gives us a request instance
         self.app.add_url_rule(self.root_path + API.kill_endpoint, "kill", self.kill, methods=["POST"])
+
+        if shutdown_function:
+            self.shutdown_function = shutdown_function
+            self.app.add_url_rule(self.root_path+"/shutdown/",
+                                  "shutdown",
+                                  self.shutdown,
+                                  methods=["GET", "PUT"])
 
         self.app.add_url_rule(self.root_path+"/creative-works/",
                               "creative-works",
@@ -123,6 +131,8 @@ class API():
         self.thread.setDaemon(True)
         self.thread.start()
 
+        logging.info("Started API on {}".format(self.base_url))
+
     def join(self):
         """
         Stop thread
@@ -135,6 +145,16 @@ class API():
 
         if self.thread.isAlive():
             logging.debug("The API thread is still running. Let's ignore it and continue shutdown…")
+
+    # endpoint: /shutdown
+    def shutdown(self):
+        # true | false
+        if self.shutdown_function:
+            self.shutdown_function()
+            return "true"
+        else:
+            logging.error("Shutdown function is not defined.")
+            return "false"
 
     # endpoint: /creative-works
     def creativeWorks(self):

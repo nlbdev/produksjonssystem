@@ -239,6 +239,8 @@ class Pipeline():
             for p in self.parentdirs:
                 os.makedirs(os.path.join(self.dir_out, self.parentdirs[p]), exist_ok=True)
 
+        # TODO: The trigger directory mechanism is deprecated. Will be removed in the future.
+        #       Use the trigger function or trigger API endpoint instead.
         self.dir_trigger = os.getenv("TRIGGER_DIR")
         if self.dir_trigger:
             self.dir_trigger = os.path.join(self.dir_trigger, "pipelines", self.uid)
