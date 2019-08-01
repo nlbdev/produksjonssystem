@@ -196,9 +196,9 @@ class Plotter():
             fillcolor = "lightskyblue1"
             if book or queue_size:
                 fillcolor = "lightslateblue"
-            if state == "considering":
+            elif state == "considering":
                 fillcolor = "lightskyblue3"
-            if not group_pipeline.running:
+            elif not group_pipeline.running:
                 fillcolor = "white"
             elif isinstance(group_pipeline, DummyPipeline):
                 fillcolor = "snow"
