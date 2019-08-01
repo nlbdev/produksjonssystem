@@ -49,10 +49,13 @@ class Newsletter(Pipeline):
     def _trigger_newsletter_thread(self):
         last_check = 0
         # If no newsletter this month, trigger newsletter
-        while self.dirsAvailable and self.shouldRun:
+        while self.shouldRun:
             time.sleep(5)
-            max_update_interval = 60 * 60
 
+            if not self.dirsAvailable():
+                continue
+
+            max_update_interval = 60 * 60
             if time.time() - last_check < max_update_interval:
                 continue
 
