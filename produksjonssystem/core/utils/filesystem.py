@@ -305,7 +305,7 @@ class Filesystem():
     @staticmethod
     def run_static(args,
                    cwd,
-                   report,
+                   report=None,
                    stdout=subprocess.PIPE,
                    stderr=subprocess.PIPE,
                    shell=False,
@@ -315,22 +315,31 @@ class Filesystem():
                    stderr_level="DEBUG"):
         """Convenience method for subprocess.run, with our own defaults"""
 
-        report.debug("Kjører: "+(" ".join(args) if isinstance(args, list) else args))
+        (report if report else logging).debug("Kjører: "+(" ".join(args) if isinstance(args, list) else args))
 
         completedProcess = None
         try:
             completedProcess = subprocess.run(args, stdout=stdout, stderr=stderr, shell=shell, cwd=cwd, timeout=timeout, check=check)
 
         except subprocess.CalledProcessError as e:
-            report.error(traceback.format_exc(), preformatted=True)
+            if report:
+                report.error(traceback.format_exc(), preformatted=True)
+            else:
+                logging.error("exception occured", exc_info=True)
             completedProcess = e
 
-        report.debug("---- stdout: ----")
-        report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
-        report.debug("-----------------")
-        report.debug("---- stderr: ----")
-        report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
-        report.debug("-----------------")
+        (report if report else logging).debug("---- stdout: ----")
+        if report:
+            report.add_message(stdout_level, completedProcess.stdout.decode("utf-8").strip(), add_empty_line_between=True)
+        else:
+            logging.info(completedProcess.stdout.decode("utf-8"))
+        (report if report else logging).debug("-----------------")
+        (report if report else logging).debug("---- stderr: ----")
+        if report:
+            report.add_message(stderr_level, completedProcess.stderr.decode("utf-8").strip(), add_empty_line_between=True)
+        else:
+            logging.info(completedProcess.stderr.decode("utf-8"))
+        (report if report else logging).debug("-----------------")
 
         return completedProcess
 
