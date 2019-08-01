@@ -67,6 +67,11 @@ class API():
                                   self.shutdown,
                                   methods=["GET", "PUT"])
 
+        self.app.add_url_rule(self.root_path+"/update/",
+                              "update",
+                              self.update,
+                              methods=["GET", "PUT"])
+
         self.app.add_url_rule(self.root_path+"/creative-works/",
                               "creative-works",
                               self.creativeWorks)
@@ -155,6 +160,17 @@ class API():
         else:
             logging.error("Shutdown function is not defined.")
             return "false"
+
+    # endpoint: /update
+    def update(self):
+        project_dir = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+
+        process = Filesystem.run_static(["git", "pull"], cwd=project_dir)
+
+        if process.returncode == 0:
+            return process.stdout.decode("utf-8"), 200
+        else:
+            return process.stderr.decode("utf-8"), 500
 
     # endpoint: /creative-works
     def creativeWorks(self):
