@@ -344,30 +344,21 @@
         </xsl:if>
         
         <!-- 
-            - if audience is "Student" based on 850$a, then use "Student"
             - if 008 POS 22 is 'a', or ageRangeFrom > 13, then use "Adult"
             - if ageRangeFrom = 13, then use "Adolescent"
             - if ageRangeFrom < 13, then use "Child"
         -->
-        <xsl:variable name="tag850" as="element()*">
-            <xsl:apply-templates select="../*:datafield[@tag='850']"/>
-        </xsl:variable>
-        <xsl:if test="not(exists($tag850[@property='audience']))">
-            <xsl:choose>
-                <xsl:when test="$tag850[@property='dc:type.genre']/text() = 'textbook'">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Student'"/></xsl:call-template>
-                </xsl:when>
-                <xsl:when test="$ageRangeFrom and $ageRangeFrom gt 13 or $POS22='a'">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
-                </xsl:when>
-                <xsl:when test="$ageRangeFrom and $ageRangeFrom = 13">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adolescent'"/></xsl:call-template>
-                </xsl:when>
-                <xsl:when test="$ageRangeFrom and $ageRangeFrom lt 13 or $POS22='j'">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Child'"/></xsl:call-template>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="$ageRangeFrom and $ageRangeFrom gt 13 or $POS22='a'">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
+            </xsl:when>
+            <xsl:when test="$ageRangeFrom and $ageRangeFrom = 13">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adolescent'"/></xsl:call-template>
+            </xsl:when>
+            <xsl:when test="$ageRangeFrom and $ageRangeFrom lt 13 or $POS22='j'">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Child'"/></xsl:call-template>
+            </xsl:when>
+        </xsl:choose>
     
         <xsl:choose>
             <xsl:when test="$POS33='0'">
@@ -887,6 +878,7 @@
                     </xsl:when>
                     <xsl:when test=".='L'">
                         <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'educationalUse'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                     </xsl:when>
                 </xsl:choose>
                 </xsl:for-each>
@@ -1974,6 +1966,7 @@
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="text()=('NLB/S')">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'educationalUse'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'library'"/><xsl:with-param name="value" select="tokenize(text(),'/')[1]"/></xsl:call-template>
         </xsl:for-each>
