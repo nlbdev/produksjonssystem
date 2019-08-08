@@ -282,4 +282,34 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Audience and educationalUse">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="612345"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="audience" content="Voksen"/>
+                <meta name="educationalUse" content="true"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                    <owl:sameAs rdf:resource="urn:isbn:1234565555"/>
+                    <dc:identifier>612345</dc:identifier>
+                    <schema:isbn>1234-56-5555</schema:isbn>
+                    <schema:audience>Voksen</schema:audience>
+                    <schema:educationalUse>true</schema:educationalUse>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

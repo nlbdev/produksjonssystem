@@ -87,6 +87,7 @@
                         <dc:type.mainGenre>Underholdning</dc:type.mainGenre>
                     </dc:type.genre>
                     <schema:audience>Adult</schema:audience>
+                    <schema:educationalUse>true</schema:educationalUse>
                     <schema:isbn>978-82-16-24118-9</schema:isbn>
                     <schema:library>NLB</schema:library>
                 </rdf:Description>
@@ -159,6 +160,7 @@
                         <type.mainGenre name="Underholdning"/>
                     </type.genre>
                     <audience name="Adult"/>
+                    <educationalUse name="true"/>
                     <isbn name="978-82-16-24118-9"/>
                     <library name="NLB"/>
                 </Book>
