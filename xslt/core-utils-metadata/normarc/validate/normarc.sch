@@ -67,6 +67,14 @@
         </rule>
     </pattern>
     
+    <!-- Hylleplass -->
+    <pattern>
+        <title>Hylleplass</title>
+        <rule context="marcxchange:record/marcxchange:datafield[@tag='090']/marcxchange:subfield[@code='a']">
+            <assert test="text() = $identifier">Hylleplass i `*090$a` må være den samme som boknummeret i `*001` (`*090$a` er: <value-of select="text()"/>, `*001` er: <value-of select="$identifier"/>).</assert>
+        </rule>
+    </pattern>
+    
     <!-- Forlag -->
     <pattern>
         <title>Forlag for alle utgaver</title>
