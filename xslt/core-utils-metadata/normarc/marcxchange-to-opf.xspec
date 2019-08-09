@@ -970,6 +970,68 @@
                 </metadata>
             </x:expect>
         </x:scenario>
+        
+        <x:scenario label="019$d with bibliofilId - 1">
+            <x:context>
+                <marcxchange:record format="normarc" type="Bibliographic">
+                    <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                        <marcxchange:subfield code="d">N</marcxchange:subfield>
+                    </marcxchange:datafield>
+                </marcxchange:record>
+            </x:context>
+            
+            <x:expect label="the metadata should be extracted as expected">
+                <metadata>
+                    <meta property="dc:type.genre">Biography</meta>
+                    <meta property="dc:type.genre">short story</meta>
+                    <meta property="dc:type.genre" id="subject-019d-1">Noveller</meta>
+                    <meta property="bibliofil-id" refines="#subject-019d-1">20282100</meta>
+                </metadata>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="019$d with bibliofilId - 2">
+            <x:context>
+                <marcxchange:record format="normarc" type="Bibliographic">
+                    <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                        <marcxchange:subfield code="d">BD</marcxchange:subfield>
+                    </marcxchange:datafield>
+                </marcxchange:record>
+            </x:context>
+            
+            <x:expect label="the metadata should be extracted as expected">
+                <metadata>
+                    <meta property="dc:type.genre">Biography</meta>
+                    <meta property="dc:type.genre">short story</meta>
+                    <meta property="dc:type.genre" id="subject-019d-1">Noveller</meta>
+                    <meta property="bibliofil-id" refines="#subject-019d-1">20282100</meta>
+                    <meta property="dc:type.genre">poem</meta>
+                    <meta property="dc:type.genre" id="subject-019d-2">Dikt</meta>
+                    <meta property="bibliofil-id" refines="#subject-019d-2">20697500</meta>
+                </metadata>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="019$d with bibliofilId - 3">
+            <x:context>
+                <marcxchange:record format="normarc" type="Bibliographic">
+                    <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                        <marcxchange:subfield code="d">RS</marcxchange:subfield>
+                    </marcxchange:datafield>
+                </marcxchange:record>
+            </x:context>
+            
+            <x:expect label="the metadata should be extracted as expected">
+                <metadata>
+                    <meta property="dc:type.genre">poem</meta>
+                    <meta property="dc:type.genre" id="subject-019d-1">Dikt</meta>
+                    <meta property="bibliofil-id" refines="#subject-019d-1">20697500</meta>
+                    <meta property="dc:type.genre">play</meta>
+                    <meta property="dc:type.genre" id="subject-019d-2">Hørespill</meta>
+                    <meta property="bibliofil-id" refines="#subject-019d-2">19883700</meta>
+                </metadata>
+            </x:expect>
+        </x:scenario>
     </x:scenario>
     
     <x:scenario label="Child audience">
