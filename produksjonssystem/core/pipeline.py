@@ -384,14 +384,19 @@ class Pipeline():
             self._dir_trigger_obj.cleanup()
 
         is_alive = True
+        join_start_time = time.time()
         while is_alive:
             is_alive = False
             if self.threads:
                 for thread in self.threads:
                     if thread and thread != threading.current_thread() and thread.is_alive():
-                        is_alive = True
-                        logging.info("Thread is still running: {}".format(thread.name))
-                        thread.join(timeout=60)
+                        if time.time() - join_start_time > 60 * 50:
+                            logging.info("Thread is still running (we've waited too long, let's ignore it): {}".format(thread.name))
+                            thread.join(timeout=60)
+                        else:
+                            is_alive = True
+                            logging.info("Thread is still running: {}".format(thread.name))
+                            thread.join(timeout=60)
 
     def get_group_id(self):
         if self.gid:

@@ -493,13 +493,18 @@ class Produksjonssystem():
             thread.join(timeout=5)
 
         is_alive = True
+        join_start_time = time.time()
         while is_alive:
             is_alive = False
             for thread in threads:
                 if thread and thread != threading.current_thread() and thread.is_alive():
-                    is_alive = True
-                    self.info("Thread is still running: {}".format(thread.name))
-                    thread.join(timeout=5)
+                    if time.time() - join_start_time > 60 * 60:
+                        self.info("Thread is still running (we've waited too long, let's ignore it): {}".format(thread.name))
+                        thread.join(timeout=5)
+                    else:
+                        is_alive = True
+                        self.info("Thread is still running: {}".format(thread.name))
+                        thread.join(timeout=5)
             for pipeline in self.pipelines:
                 if pipeline[0].running:
                     self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(
