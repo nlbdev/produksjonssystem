@@ -10,7 +10,12 @@
         (c) 2019 NLB
         
         Per Sennels, 21.01.2019
+        Gaute Rønningen, 09.09.2019
     -->
+    
+    <!-- Imports: -->
+    <xsl:import href="translations.xsl"/>
+    <xsl:import href="utilities.xsl"/>
     
 
     <!-- Tall etterfulgt av grader tegnet    -->
@@ -63,12 +68,12 @@
                         <xsl:text> grad </xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text> grader </xsl:text>
+                        <xsl:text> grader, </xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> grader </xsl:text>
+                <xsl:text> grader, </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         

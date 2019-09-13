@@ -5,12 +5,16 @@
     xmlns:fnk="http://www.nlb.no/2017/xml/funksjoner" exclude-result-prefixes="xs m fnk"
     version="2.0">
 
-
     <!-- 
         (c) 2019 NLB
         
         Per Sennels, 21.01.2019
+        Gaute Rønningen, 09.09.2019
     -->
+    
+    <!-- Imports: -->
+    <xsl:import href="translations.xsl"/>
+    <xsl:import href="utilities.xsl"/>
     
 
     <!-- Ekvivalens -->

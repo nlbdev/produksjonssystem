@@ -9,6 +9,7 @@
         (c) 2019 NLB
         
         Per Sennels, 21.01.2019
+        Gaute Rønningen, 09.09.2019
     -->
 
     <!--
@@ -16,15 +17,22 @@
         Denne strengen plasseres rett etter MathML-markupen i ut-filen.
         
         Alt som ikke er i MathML-namespace overføres uten videre til ut-filen. 
-        Det samme gjør altså MatML-markupen.
+        Det samme gjør altså MathML-markupen.
         Eneste endringer er altså at det genereres en tekst etter matematikken.
+        
+        Alle tekster (med oversettinger) finns i translations.xsl
+        Bruk funksjonen: fnk:translate('translate this', .)
     -->
 
     <!-- Masse nyttig info her:
         https://www.tutorialspoint.com/mathml/index.htm
     -->
 
-
+    <!-- Imports: -->
+    <xsl:import href="translations.xsl"/>
+    <xsl:import href="utilities.xsl"/>
+    
+    <!-- Includes: -->
     <xsl:include href="funksjoner-og-matematisk-analyse.xsl"/>
     <xsl:include href="grader-og-beslektet-notasjon.xsl"/>
     <xsl:include href="indekser.xsl"/>
@@ -38,7 +46,7 @@
 
 
     <xsl:template match="/">
-        <xsl:message>mathml-til-tekst.xsl (2019-01-18)</xsl:message>
+        <xsl:message>mathml-til-tekst.xsl (2019-09-09)</xsl:message>
         <xsl:apply-templates/>
     </xsl:template>
 
@@ -52,30 +60,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <!-- Legger inn en egen materelatert css.
-        Bør sannsynlgvis fjernes i forbindelse med normal produksjon.
-    -->
-    <xsl:template match="head">
-        <xsl:copy>
-            <xsl:apply-templates/>
-            <link rel="stylesheet" type="text/css" href="../../mathml-test.css"/>
-        </xsl:copy>
-    </xsl:template>
-
     <xsl:template match="meta[@charset]"/>
-
-    <!-- Legger inn "NY: " foran tittelen, slik at det er lettere å se forskjell.
-        Denne templaten MÅ fjernes i forbindelse med normal produksjon
-    -->
-    <xsl:template match="title | h1[@class eq 'title']">
-        <xsl:copy>
-            <xsl:copy-of select="@*"/>
-            <xsl:text>NY: </xsl:text>
-            <xsl:apply-templates/>
-        </xsl:copy>
-    </xsl:template>
-
-
 
     <!-- math-elementet må ha et display-attributt, med verdi "inline" eller "block" -->
     <xsl:template match="m:math[@display eq 'inline']">
@@ -119,7 +104,6 @@
         </xsl:choose>
     </xsl:template>
 
-
     <!-- Her er startpunktet for alle generering av verbal matematikk -->
     <xsl:template name="generer-verbal-matte">
         <!-- Først samler vi alt i en variabel som inneholder mange tekstnoder ...-->
@@ -128,7 +112,11 @@
             <xsl:apply-templates mode="verbal-matte"/>
         </xsl:variable>
         <!-- ... og deretter presenterer vi dette pent og pyntelig -->
+        <xsl:value-of select="fnk:translate('formel', .)" />
+        <xsl:text> </xsl:text>
         <xsl:value-of select="normalize-space(string-join($verbal-matte, ' '))"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('formel slutt', .)" />
     </xsl:template>
 
     <!-- Vis AsciiMath hvis det er noe å vise -->
@@ -140,7 +128,6 @@
             <xsl:text> </xsl:text>
             <xsl:element name="{$elementnavn}">
                 <xsl:attribute name="class" select="'asciimath'"/>
-                <xsl:text>Alternativt: </xsl:text>
                 <xsl:value-of select="$ascimath"/>
             </xsl:element>
             <xsl:text> </xsl:text>
@@ -148,52 +135,11 @@
     </xsl:template>
     <!-- Og her får vi informasjon om all MathML-markup som vi ikke har regler for i nevnte mode  -->
     <xsl:template match="m:*" mode="verbal-matte">
-        <xsl:message>Ingen template for denne: <xsl:value-of select="local-name()"/></xsl:message>
+        <xsl:message>
+            <xsl:value-of select="fnk:translate('Ingen mal for denne:', .)"/>
+            <xsl:text> </xsl:text>
+            <xsl:value-of select="local-name()"/>
+        </xsl:message>
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
-
-
-
-    <!-- Bare noen funksjoner: -->
-    <xsl:function name="fnk:tall" as="xs:string">
-        <xsl:param name="tall" as="xs:integer"/>
-        <xsl:choose>
-            <xsl:when test="$tall eq 1">
-                <xsl:text> én </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 2">
-                <xsl:text> to </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 3">
-                <xsl:text> tre </xsl:text>
-            </xsl:when>
-            <!-- og så videre -->
-            <xsl:otherwise>
-                <xsl:value-of select="$tall"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-
-    <xsl:function name="fnk:ordenstall" as="xs:string">
-        <xsl:param name="tall" as="xs:integer"/>
-        <xsl:choose>
-            <xsl:when test="$tall eq 1">
-                <xsl:text> første </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 2">
-                <xsl:text> andre </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 3">
-                <xsl:text> tredje </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 3">
-                <xsl:text> fjerde </xsl:text>
-            </xsl:when>
-            <!-- og så videre -->
-            <xsl:otherwise>
-                <xsl:value-of select="$tall"/>
-                <xsl:text>. </xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
 </xsl:stylesheet>
