@@ -46,7 +46,7 @@
 
 
     <xsl:template match="/">
-        <xsl:message>mathml-til-tekst.xsl (2019-09-09)</xsl:message>
+        <xsl:message>mathml-til-tekst.xsl (<xsl:value-of  select="current-dateTime()"/>)</xsl:message>
         <xsl:apply-templates/>
     </xsl:template>
 

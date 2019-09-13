@@ -24,8 +24,7 @@
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="context" as="node()"/>
         
-        <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]"/>
-        
+        <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]"/>      
         <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
         <xsl:choose>
             <xsl:when test="not($result)">
@@ -45,13 +44,18 @@
                 <translation lang="nb">ukjent operator</translation>
             </term>
             
+            <term name="av">
+                <translation lang="en">of</translation>
+                <translation lang="nb">av</translation>
+            </term>
+            
             <term name="opphøyd i">
-                <translation lang="en">exalted in</translation>
+                <translation lang="en">PLACEHOLDER</translation>
                 <translation lang="nb">opphøyd i</translation>
             </term>
             
             <term name="eksponent slutt">
-                <translation lang="en">exponent ending</translation>
+                <translation lang="en">exponent end</translation>
                 <translation lang="nb">eksponent slutt</translation>
             </term>
             
@@ -90,7 +94,205 @@
                 <translation lang="nb">og med nevner</translation>
             </term>
             
+            <term name="funksjonen">
+                <translation lang="en">the function</translation>
+                <translation lang="nb">funksjonen</translation>
+            </term>
             
+            <term name="er lik">
+                <translation lang="en">equals</translation>
+                <translation lang="nb">er lik</translation>
+            </term>
+            
+            <term name="minus">
+                <translation lang="en">minus</translation>
+                <translation lang="nb">minus</translation>
+            </term>
+            
+            <term name="sinus">
+                <translation lang="en">sine</translation>
+                <translation lang="nb">sinus</translation>
+            </term>
+            
+            <term name="til">
+                <translation lang="en">to</translation>
+                <translation lang="nb">til</translation>
+            </term>
+            
+            <term name="formel">
+                <translation lang="en">formula</translation>
+                <translation lang="nb">formel</translation>
+            </term>
+            
+            <term name="formel slutt">
+                <translation lang="en">formula end</translation>
+                <translation lang="nb">formel slutt</translation>
+            </term>
+            
+            <term name="cosinus">
+                <translation lang="en">cosine</translation>
+                <translation lang="nb">cosinus</translation>
+            </term>
+            
+            <term name="ganger">
+                <translation lang="en">times</translation>
+                <translation lang="nb">ganger</translation>
+            </term>
+            
+            <term name="pluss">
+                <translation lang="en">plus</translation>
+                <translation lang="nb">pluss</translation>
+            </term>
+            
+            <term name="liten">
+                <translation lang="en">small</translation>
+                <translation lang="nb">liten</translation>
+            </term>
+            
+            <term name="stor">
+                <translation lang="en">capital</translation>
+                <translation lang="nb">stor</translation>
+            </term>
+            
+            <term name="parentes">
+                <translation lang="en">paren</translation>
+                <translation lang="nb">parentes</translation>
+            </term>
+            
+            <term name="parentes slutt">
+                <translation lang="en">paren end</translation>
+                <translation lang="nb">parentes slutt</translation>
+            </term>
+            
+            <term name="omega">
+                <translation lang="en">omega</translation>
+                <translation lang="nb">omega</translation>
+            </term>
+            
+            <term name="fi">
+                <translation lang="en">fi</translation>
+                <translation lang="nb">fi</translation>
+            </term>
+            
+            <term name="er større eller lik">
+                <translation lang="en">is bigger or equal than</translation>
+                <translation lang="nb">er større eller lik</translation>
+            </term>
+            
+            <term name="roten av">
+                <translation lang="en">squared</translation>
+                <translation lang="nb">roten av</translation>
+            </term>
+            
+            <term name="kvadratroten av">
+                <translation lang="en">squareroot</translation>
+                <translation lang="nb">kvadratroten av</translation>
+            </term>
+            
+            <term name="kvadratrot slutt">
+                <translation lang="en">squareroot end</translation>
+                <translation lang="nb">kvadratrot slutt</translation>
+            </term>
+            
+            <term name="tangens">
+                <translation lang="en">tangent</translation>
+                <translation lang="nb">tangens</translation>
+            </term>
+            
+            <term name="arkus sinus">
+                <translation lang="en">arc sine</translation>
+                <translation lang="nb">arkus sinus</translation>
+            </term>
+            
+            <term name="arkus cosinus">
+                <translation lang="en">arc cosine</translation>
+                <translation lang="nb">arkus cosinus</translation>
+            </term>
+            
+            <term name="arkus tangens">
+                <translation lang="en">arc tangent</translation>
+                <translation lang="nb">arkus tangens</translation>
+            </term>
+            
+            <term name="hyperbolsk sinus">
+                <translation lang="en">hyperbolic sine</translation>
+                <translation lang="nb">hyperbolsk sinus</translation>
+            </term>
+            
+            <term name="hyperbolsk cosinus">
+                <translation lang="en">hyperbolic cosine</translation>
+                <translation lang="nb">hyperbolsk cosinus</translation>
+            </term>
+            
+            <term name="hyperbolsk tangens">
+                <translation lang="en">hyperbolic tangent</translation>
+                <translation lang="nb">hyperbolsk tangens</translation>
+            </term>
+            
+            <term name="cotangens">
+                <translation lang="en">cotangent</translation>
+                <translation lang="nb">cotangens</translation>
+            </term>
+            
+            <term name="secans">
+                <translation lang="en">secans</translation>
+                <translation lang="nb">secans</translation>
+            </term>
+            
+            <term name="cosecans">
+                <translation lang="en">cosecans</translation>
+                <translation lang="nb">cosecans</translation>
+            </term>
+            
+            <term name="arkus cotangens">
+                <translation lang="en">arc cotangent</translation>
+                <translation lang="nb">arkus cotangens</translation>
+            </term>
+            
+            <term name="arkus secans">
+                <translation lang="en">arc secans</translation>
+                <translation lang="nb">arkus secans</translation>
+            </term>
+            
+            <term name="arkus cosecans">
+                <translation lang="en">arc cosecans</translation>
+                <translation lang="nb">arkus cosecans</translation>
+            </term>
+            
+            <term name="hyperbolsk cotangens">
+                <translation lang="en">hyperbolic cotangent</translation>
+                <translation lang="nb">hyperbolsk cotangens</translation>
+            </term>
+            
+            <term name="hyperbolsk secans">
+                <translation lang="en">hyperbolic secans</translation>
+                <translation lang="nb">hyperbolsk secans</translation>
+            </term>
+            
+            <term name="hyperbolsk cosecans">
+                <translation lang="en">hyperbolic cosecans</translation>
+                <translation lang="nb">hyperbolsk cosecans</translation>
+            </term>
+            
+            <term name="hyperbolsk arkus sinus">
+                <translation lang="en">hyperbolic arc sine</translation>
+                <translation lang="nb">hyperbolsk arkus sinus</translation>
+            </term>
+            
+            <term name="hyperbolsk arkus cosinus">
+                <translation lang="en">hyperbolic arc cosine</translation>
+                <translation lang="nb">hyperbolsk arkus cosinus</translation>
+            </term>
+            
+            <term name="hyperbolsk arkus tangens">
+                <translation lang="en">hyperbolic arc tangent</translation>
+                <translation lang="nb">hyperbolsk arkus tangens</translation>
+            </term>
+            
+            <term name="hyperbolsk arkus cotangens">
+                <translation lang="en">hyperbolic arc cotangent</translation>
+                <translation lang="nb">hyperbolsk arkus cotangens</translation>
+            </term>
         </dictionary>
     </xsl:variable>
 </xsl:stylesheet>
