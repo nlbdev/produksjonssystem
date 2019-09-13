@@ -29,7 +29,9 @@
             <mo>&#8660;</mo>
            [minst ett element]
         -->
-        <xsl:text> er ekvivalent med </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('er ekvivalent med', .)" />
+        <xsl:text> </xsl:text>
         
     </xsl:template>
 

@@ -42,14 +42,20 @@
                     )
                     )">
                 <!-- kortform -->
-                <xsl:text> roten av </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('roten av', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:apply-templates mode="#current"/>
             </xsl:when>
             <xsl:otherwise>
                 <!-- stadandarform -->
-                <xsl:text> kvadratroten av </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('kvadratroten av', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:apply-templates mode="#current"/>
-                <xsl:text> kvadratrot slutt, </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('kvadratrot slutt', .)" />
+                <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -100,78 +106,79 @@
             <xsl:variable name="f" as="xs:string" select="normalize-space(child::element()[1])"/>
             <xsl:choose>
                 <xsl:when test="$f eq 'sin'">
-                    <xsl:text>sinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('sinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'cos'">
-                    <xsl:text>cosinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('cosinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'tan'">
-                    <xsl:text>tangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('tangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arcsin'">
-                    <xsl:text>arkus sinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('arkus sinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arccos'">
-                    <xsl:text>arkus cosinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('arkus cosinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arctan'">
-                    <xsl:text>arkus tangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('arkus tangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'sinh'">
-                    <xsl:text>hyperbolsk sinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk sinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'cosh'">
-                    <xsl:text>hyperbolsk cosinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk cosinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'tanh'">
-                    <xsl:text>hyperbolsk tangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk tangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arsinh'">
-                    <xsl:text>hyperbolsk arkus sinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk arkus sinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arcosh'">
-                    <xsl:text>hyperbolsk arkus cosinus</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk arkus cosinus', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'artanh'">
-                    <xsl:text>hyperbolsk arkus tangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk arkus tangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arcoth'">
-                    <xsl:text>hyperbolsk arkus cotangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk arkus cotangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'cot'">
-                    <xsl:text>cotangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('cotangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'sec'">
-                    <xsl:text>secans</xsl:text>
+                    <xsl:value-of select="fnk:translate('secans', .)" />
                 </xsl:when>
                 <xsl:when test="($f eq 'cosec') or ($f eq 'csc')">
-                    <xsl:text>cosecans</xsl:text>
+                    <xsl:value-of select="fnk:translate('cosecans', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arccot'">
-                    <xsl:text>arkus cotangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('arkus cotangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'arcsec'">
-                    <xsl:text>arkus secans</xsl:text>
+                    <xsl:value-of select="fnk:translate('arkus secans', .)" />
                 </xsl:when>
                 <xsl:when test="($f eq 'arccosec') or ($f eq 'arccsc')">
-                    <xsl:text>arkus cosecans</xsl:text>
+                    <xsl:value-of select="fnk:translate('arkus cosecans', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'coth'">
-                    <xsl:text>hyperbolsk cotangens</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk cotangens', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'sech'">
-                    <xsl:text>hyperbolsk secans</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk secans', .)" />
                 </xsl:when>
                 <xsl:when test="($f eq 'csch') or ($f eq 'cosech')">
-                    <xsl:text>hyperbolsk cosecans</xsl:text>
+                    <xsl:value-of select="fnk:translate('hyperbolsk cosecans', .)" />
                 </xsl:when>
                 <xsl:when test="$f eq 'ln'">
-                    <xsl:text>den naturlige logaritmen</xsl:text>
+                    <xsl:value-of select="fnk:translate('den naturlige logaritmen', .)" />
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:text>ukjent funksjon</xsl:text>
+                    <xsl:value-of select="fnk:translate('ukjent funksjon', .)" />
                     <xsl:message>
-                        <xsl:text>ukjent funksjon: </xsl:text>
+                        <xsl:value-of select="fnk:translate('ukjent funksjon', .)" />
+                        <xsl:text>: </xsl:text>
                         <xsl:value-of select="$f"/>
                     </xsl:message>
                 </xsl:otherwise>
@@ -179,7 +186,9 @@
         </xsl:variable>
         <xsl:text> </xsl:text>
         <xsl:value-of select="$funksjon"/>
-        <xsl:text> til </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('til', .)" />
+        <xsl:text> </xsl:text>
         <xsl:choose>
             <xsl:when
                 test="
@@ -195,9 +204,13 @@
                 <xsl:apply-templates select="child::element()[3]" mode="verbal-matte"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> uttrykket </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('uttrykket', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:apply-templates select="child::element()[3]" mode="verbal-matte"/>
-                <xsl:text> uttrykk slutt, </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('uttrykk slutt', .)" />
+                <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -228,7 +241,9 @@
             </mrow>
         -->
 
-        <xsl:text> funksjonen </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('funksjonen', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mi" mode="#current"/>
 
         <xsl:call-template name="presenter-funksjonsargumentene"/>
@@ -270,9 +285,13 @@
         -->
 
 
-        <xsl:text> grenseverdien av </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('grenseverdien av', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="child::element()[3]" mode="#current"/>
-        <xsl:text> når </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('når', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:munder[1]/child::element()[2]" mode="#current"/>
     </xsl:template>
 
@@ -311,10 +330,14 @@
         -->
         <xsl:choose>
             <xsl:when test="normalize-space(m:msup/m:mo) eq '&#8243;'">
-                <xsl:text> den annenderiverte av funksjonen </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('den annenderiverte av funksjonen', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> den deriverte av funksjonen </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('den deriverte av funksjonen', .)" />
+                <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         <xsl:apply-templates select="m:msup/child::element()[1]" mode="#current"/>
@@ -349,10 +372,14 @@
         <xsl:apply-templates select="m:mfenced" mode="verbal-matte"/>
         <xsl:choose>
             <xsl:when test="normalize-space(m:mo) eq '&#8243;'">
-                <xsl:text> annenderivert </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('annenderivert', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> derivert </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('derivert', .)" />
+                <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -394,12 +421,16 @@
                 </mrow>
             </mfrac>
     -->
-        <xsl:text> den deriverte av </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('den deriverte av', .)" />
+        <xsl:text> </xsl:text>
         <!-- prosesser alt i telleren som kommer etter &#x02146; -->
         <xsl:apply-templates
             select="m:mrow[1]/child::element()[preceding-sibling::m:mo eq '&#x02146;']"
             mode="verbal-matte"/>
-        <xsl:text> med hensyn på </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('med hensyn på', .)" />
+        <xsl:text> </xsl:text>
         <!-- prosesser alt i nevneren som kommer etter &#x02146; -->
         <xsl:apply-templates select="m:mrow[2]/m:mi" mode="verbal-matte"/>
         <xsl:text>, </xsl:text>
@@ -457,11 +488,15 @@
                 </mrow>
             </mfrac>
     -->
-        <xsl:text> den annenderiverte av </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('den annenderiverte av', .)" />
+        <xsl:text> </xsl:text>
         <!-- prosesser alt i telleren som kommer etter det første msup-elementet, altså har posisjon to eller mer-->
         <xsl:apply-templates select="m:mrow[1]/child::element()[position() ge 2]"
             mode="verbal-matte"/>
-        <xsl:text> med hensyn på </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('med hensyn på', .)" />
+        <xsl:text> </xsl:text>
         <!-- prosesser alt i nevneren som kommer etter &#x02146; -->
         <xsl:apply-templates select="m:mrow[2]/m:msup/m:mi" mode="verbal-matte"/>
         <xsl:text>, </xsl:text>
@@ -516,29 +551,47 @@
         <xsl:variable name="integraltegnet" as="xs:string" select="normalize-space(m:munderover/m:mo[1])"/>
         <xsl:choose>
             <xsl:when test="$integraltegnet eq '&#8747;'">
-                <xsl:text> integralet </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('integralet', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$integraltegnet eq '&#8748;'">
-                <xsl:text> dobbeltintegralet </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('dobbeltintegralet', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$integraltegnet eq '&#8749;'">
-                <xsl:text> trippelintegralet </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('trippelintegralet', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$integraltegnet eq '&#8750;'">
-                <xsl:text> konturintegralet </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('konturintegralet', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> ukjent integraltegn </xsl:text>
-                <xsl:message> ukjent integraltegn</xsl:message>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('ukjent integraltegn', .)" />
+                <xsl:text> </xsl:text>
+                <xsl:message> <xsl:value-of select="fnk:translate('ukjent integraltegn', .)" /></xsl:message>
             </xsl:otherwise>
         </xsl:choose>
-        <xsl:text> fra </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('fra', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:munderover/child::element()[2]" mode="verbal-matte"/>
-        <xsl:text> til </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('til', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:munderover/child::element()[3]" mode="verbal-matte"/>
-        <xsl:text> av </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('av', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="child::element()[2]" mode="verbal-matte"/>
-        <xsl:text> med hensyn på </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('med hensyn på', .)" />
+        <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mrow[last()]/child::element()[2]" mode="verbal-matte"/>
         <xsl:text>, </xsl:text>
     </xsl:template>
@@ -550,7 +603,9 @@
             <xsl:when
                 test="(count(m:mfenced/element()) eq 1) and matches(local-name(m:mfenced/element()), '^(mi|mn)$')">
                 <!-- Det er ett enkelt argument, og det er et tall eller en variabel -->
-                <xsl:text> av </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('av', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:apply-templates select="m:mfenced/*" mode="verbal-matte"/>
             </xsl:when>
             <xsl:when
@@ -558,13 +613,16 @@
                     (count(m:mfenced/element()) gt 1) and (every $a in m:mfenced/element()
                         satisfies matches(local-name($a), '^(mi|mn)$'))">
                 <!-- Det er flere argumenter, men alle er tall er variabler -->
-                <xsl:text> av </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('av', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:for-each select="m:mfenced/element()">
                     <xsl:apply-templates select="." mode="verbal-matte"/>
                     <xsl:choose>
                         <xsl:when test="position() eq last() - 1">
-                            <xsl:text> og </xsl:text>
-
+                            <xsl:text> </xsl:text>
+                            <xsl:value-of select="fnk:translate('og', .)" />
+                            <xsl:text> </xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:text> </xsl:text>
@@ -574,15 +632,23 @@
             </xsl:when>
             <xsl:when test="m:mfenced/m:mrow">
                 <!-- Det er ett argument, men det er komplekst -->
-                <xsl:text> av uttrykket </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('av uttrykket', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:apply-templates select="m:mfenced/*" mode="verbal-matte"/>
-                <xsl:text> uttrykk slutt, </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('uttrykk slutt', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <!-- Det er ikke godt å si hva dette er, men vi behandler det som komplekst -->
-                <xsl:text> av uttrykket </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('av uttrykket', .)" />
+                <xsl:text> </xsl:text>
                 <xsl:apply-templates select="m:mfenced/*" mode="verbal-matte"/>
-                <xsl:text> uttrykk slutt, </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('uttrykk slutt', .)" />
+                <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>

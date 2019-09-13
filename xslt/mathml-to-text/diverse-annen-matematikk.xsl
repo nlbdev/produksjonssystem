@@ -67,7 +67,7 @@
                 <!-- kortform -->
                 <xsl:apply-templates select="child::*[1]" mode="#current"/>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('i', .)" />
+                <xsl:value-of select="fnk:translate('opphøyd i', .)" />
                 <xsl:text> </xsl:text>
                 <xsl:apply-templates select="child::*[2]" mode="#current"/>
                 <xsl:text> </xsl:text>
@@ -143,11 +143,11 @@
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('en matrise med', .)" />
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:tall(count(m:mtr))"/>
+        <xsl:value-of select="fnk:tall(count(m:mtr), .)"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('rader og med', .)" />
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:tall(count(m:mtr[1]/m:mtd))"/>
+        <xsl:value-of select="fnk:tall(count(m:mtr[1]/m:mtd), .)"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('kolonner:', .)" />
         <xsl:text> </xsl:text>
@@ -162,7 +162,7 @@
             <xsl:value-of select="fnk:translate('og til slutt', .)" />
             <xsl:text> </xsl:text>
         </xsl:if>
-        <xsl:value-of select="fnk:ordenstall(1 + count(preceding-sibling::m:mtr))"/>
+        <xsl:value-of select="fnk:ordenstall(1 + count(preceding-sibling::m:mtr), .)"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('rad:', .)" />
         <xsl:text> </xsl:text>
@@ -177,7 +177,7 @@
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="fnk:ordenstall(1 + count(preceding-sibling::m:mtd))"/>
+                <xsl:value-of select="fnk:ordenstall(1 + count(preceding-sibling::m:mtd), .)"/>
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('kolonne:', .)" />
                 <xsl:text> </xsl:text>

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns="http://www.w3.org/1999/xhtml" xpath-default-namespace="http://www.w3.org/1999/xhtml"
-    xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:fnk="http://www.nlb.no/2017/xml/funksjoner" exclude-result-prefixes="xs m fnk"
+<xsl:stylesheet 
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xpath-default-namespace="http://www.w3.org/1999/xhtml"
+    xmlns:m="http://www.w3.org/1998/Math/MathML" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:fnk="http://www.nlb.no/2017/xml/funksjoner" 
+    exclude-result-prefixes="xs m fnk"
     version="2.0">
 
 
@@ -65,15 +69,21 @@
             <xsl:when test="child::element()[1] castable as xs:integer">
                 <xsl:choose>
                     <xsl:when test="abs(child::element()[1]) eq 1">
-                        <xsl:text> grad </xsl:text>
+                        <xsl:text> </xsl:text>
+                        <xsl:value-of select="fnk:translate('grad', .)" />
+                        <xsl:text> </xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text> grader, </xsl:text>
+                        <xsl:text> </xsl:text>
+                        <xsl:value-of select="fnk:translate('grader', .)" />
+                        <xsl:text>, </xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> grader, </xsl:text>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('grader', .)" />
+                <xsl:text>, </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         
@@ -125,7 +135,9 @@
         -->
         
         <xsl:apply-templates select="child::element()[1]" mode="#current"/>
-        <xsl:text> gon </xsl:text>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate('gon', .)" />
+        <xsl:text> </xsl:text>
     </xsl:template>
     
     
