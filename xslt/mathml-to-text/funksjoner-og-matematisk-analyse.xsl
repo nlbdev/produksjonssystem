@@ -9,7 +9,12 @@
         (c) 2019 NLB
         
         Per Sennels, 21.01.2019
+        Gaute Rønningen, 09.09.2019
     -->
+    
+    <!-- Imports: -->
+    <xsl:import href="translations.xsl"/>
+    <xsl:import href="utilities.xsl"/>
     
     <!-- Kvadratrot -->
     <xsl:template match="m:msqrt" mode="verbal-matte">
@@ -44,7 +49,7 @@
                 <!-- stadandarform -->
                 <xsl:text> kvadratroten av </xsl:text>
                 <xsl:apply-templates mode="#current"/>
-                <xsl:text> kvadratrot slutt</xsl:text>
+                <xsl:text> kvadratrot slutt, </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -192,7 +197,7 @@
             <xsl:otherwise>
                 <xsl:text> uttrykket </xsl:text>
                 <xsl:apply-templates select="child::element()[3]" mode="verbal-matte"/>
-                <xsl:text> uttrykk slutt </xsl:text>
+                <xsl:text> uttrykk slutt, </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -397,6 +402,7 @@
         <xsl:text> med hensyn på </xsl:text>
         <!-- prosesser alt i nevneren som kommer etter &#x02146; -->
         <xsl:apply-templates select="m:mrow[2]/m:mi" mode="verbal-matte"/>
+        <xsl:text>, </xsl:text>
     </xsl:template>
 
     <!-- Uttrykk på formen d^2 ... / d ...^2, altså "den annenderiverte av ... med hensyn på ..." -->
@@ -458,6 +464,7 @@
         <xsl:text> med hensyn på </xsl:text>
         <!-- prosesser alt i nevneren som kommer etter &#x02146; -->
         <xsl:apply-templates select="m:mrow[2]/m:msup/m:mi" mode="verbal-matte"/>
+        <xsl:text>, </xsl:text>
     </xsl:template>
 
     <!--             and (matches(normalize-space(m:munderover/m:mo[1]),'^&#8747;$') (: og dette barnet består av bare int :)
@@ -533,6 +540,7 @@
         <xsl:apply-templates select="child::element()[2]" mode="verbal-matte"/>
         <xsl:text> med hensyn på </xsl:text>
         <xsl:apply-templates select="m:mrow[last()]/child::element()[2]" mode="verbal-matte"/>
+        <xsl:text>, </xsl:text>
     </xsl:template>
 
 
@@ -568,13 +576,13 @@
                 <!-- Det er ett argument, men det er komplekst -->
                 <xsl:text> av uttrykket </xsl:text>
                 <xsl:apply-templates select="m:mfenced/*" mode="verbal-matte"/>
-                <xsl:text> uttrykk slutt </xsl:text>
+                <xsl:text> uttrykk slutt, </xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <!-- Det er ikke godt å si hva dette er, men vi behandler det som komplekst -->
                 <xsl:text> av uttrykket </xsl:text>
                 <xsl:apply-templates select="m:mfenced/*" mode="verbal-matte"/>
-                <xsl:text> uttrykk slutt </xsl:text>
+                <xsl:text> uttrykk slutt, </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
