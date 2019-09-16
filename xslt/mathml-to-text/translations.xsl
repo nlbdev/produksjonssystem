@@ -50,7 +50,7 @@
             </term>
             
             <term name="opphøyd i">
-                <translation lang="en">PLACEHOLDER</translation>
+                <translation lang="en">raised to</translation>
                 <translation lang="nb">opphøyd i</translation>
             </term>
             
@@ -85,12 +85,12 @@
             </term>
             
             <term name="brøk med teller">
-                <translation lang="en">PLACEHOLDER</translation>
+                <translation lang="en">division with dividend</translation>
                 <translation lang="nb">brøk med teller</translation>
             </term>
             
             <term name="og med nevner">
-                <translation lang="en">PLACEHOLDER</translation>
+                <translation lang="en">and with divisor</translation>
                 <translation lang="nb">og med nevner</translation>
             </term>
             
@@ -155,12 +155,12 @@
             </term>
             
             <term name="parentes">
-                <translation lang="en">paren</translation>
+                <translation lang="en">parentheses</translation>
                 <translation lang="nb">parentes</translation>
             </term>
             
             <term name="parentes slutt">
-                <translation lang="en">paren end</translation>
+                <translation lang="en">parentheses end</translation>
                 <translation lang="nb">parentes slutt</translation>
             </term>
             
@@ -170,12 +170,12 @@
             </term>
             
             <term name="fi">
-                <translation lang="en">fi</translation>
-                <translation lang="nb">fi</translation>
+                <translation lang="en">phi</translation>
+                <translation lang="nb">phi</translation>
             </term>
             
             <term name="er større eller lik">
-                <translation lang="en">is bigger or equal than</translation>
+                <translation lang="en">is bigger or equal to</translation>
                 <translation lang="nb">er større eller lik</translation>
             </term>
             
@@ -185,12 +185,12 @@
             </term>
             
             <term name="kvadratroten av">
-                <translation lang="en">squareroot</translation>
+                <translation lang="en">square root of</translation>
                 <translation lang="nb">kvadratroten av</translation>
             </term>
             
             <term name="kvadratrot slutt">
-                <translation lang="en">squareroot end</translation>
+                <translation lang="en">square root end</translation>
                 <translation lang="nb">kvadratrot slutt</translation>
             </term>
             
@@ -200,17 +200,17 @@
             </term>
             
             <term name="arkus sinus">
-                <translation lang="en">arc sine</translation>
+                <translation lang="en">arcus sine</translation>
                 <translation lang="nb">arkus sinus</translation>
             </term>
             
             <term name="arkus cosinus">
-                <translation lang="en">arc cosine</translation>
+                <translation lang="en">arcus cosine</translation>
                 <translation lang="nb">arkus cosinus</translation>
             </term>
             
             <term name="arkus tangens">
-                <translation lang="en">arc tangent</translation>
+                <translation lang="en">arcus tangent</translation>
                 <translation lang="nb">arkus tangens</translation>
             </term>
             
@@ -235,27 +235,27 @@
             </term>
             
             <term name="secans">
-                <translation lang="en">secans</translation>
+                <translation lang="en">secant</translation>
                 <translation lang="nb">secans</translation>
             </term>
             
             <term name="cosecans">
-                <translation lang="en">cosecans</translation>
+                <translation lang="en">cosecant</translation>
                 <translation lang="nb">cosecans</translation>
             </term>
             
             <term name="arkus cotangens">
-                <translation lang="en">arc cotangent</translation>
+                <translation lang="en">arcus cotangent</translation>
                 <translation lang="nb">arkus cotangens</translation>
             </term>
             
             <term name="arkus secans">
-                <translation lang="en">arc secans</translation>
+                <translation lang="en">arcus secant</translation>
                 <translation lang="nb">arkus secans</translation>
             </term>
             
             <term name="arkus cosecans">
-                <translation lang="en">arc cosecans</translation>
+                <translation lang="en">arcus cosecant</translation>
                 <translation lang="nb">arkus cosecans</translation>
             </term>
             
@@ -265,32 +265,32 @@
             </term>
             
             <term name="hyperbolsk secans">
-                <translation lang="en">hyperbolic secans</translation>
+                <translation lang="en">hyperbolic secant</translation>
                 <translation lang="nb">hyperbolsk secans</translation>
             </term>
             
             <term name="hyperbolsk cosecans">
-                <translation lang="en">hyperbolic cosecans</translation>
+                <translation lang="en">hyperbolic cosecant</translation>
                 <translation lang="nb">hyperbolsk cosecans</translation>
             </term>
             
             <term name="hyperbolsk arkus sinus">
-                <translation lang="en">hyperbolic arc sine</translation>
+                <translation lang="en">hyperbolic arcus sine</translation>
                 <translation lang="nb">hyperbolsk arkus sinus</translation>
             </term>
             
             <term name="hyperbolsk arkus cosinus">
-                <translation lang="en">hyperbolic arc cosine</translation>
+                <translation lang="en">hyperbolic arcus cosine</translation>
                 <translation lang="nb">hyperbolsk arkus cosinus</translation>
             </term>
             
             <term name="hyperbolsk arkus tangens">
-                <translation lang="en">hyperbolic arc tangent</translation>
+                <translation lang="en">hyperbolic arcus tangent</translation>
                 <translation lang="nb">hyperbolsk arkus tangens</translation>
             </term>
             
             <term name="hyperbolsk arkus cotangens">
-                <translation lang="en">hyperbolic arc cotangent</translation>
+                <translation lang="en">hyperbolic arcus cotangent</translation>
                 <translation lang="nb">hyperbolsk arkus cotangens</translation>
             </term>
         </dictionary>
