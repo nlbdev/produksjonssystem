@@ -21,52 +21,52 @@
         <xsl:choose>
             <xsl:when test="$tall eq 1">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('én', $content)" />
+                <xsl:value-of select="fnk:translate('one', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 2">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('to', $content)" />
+                <xsl:value-of select="fnk:translate('two', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 3">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('tre', $content)" />
+                <xsl:value-of select="fnk:translate('three', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 4">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('fire', $content)" />
+                <xsl:value-of select="fnk:translate('four', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 5">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('fem', $content)" />
+                <xsl:value-of select="fnk:translate('five', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 6">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('seks', $content)" />
+                <xsl:value-of select="fnk:translate('six', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 7">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('sju', $content)" />
+                <xsl:value-of select="fnk:translate('seven', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 8">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('åtte', $content)" />
+                <xsl:value-of select="fnk:translate('eight', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 9">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('ni', $content)" />
+                <xsl:value-of select="fnk:translate('nine', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 10">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('ti', $content)" />
+                <xsl:value-of select="fnk:translate('ten', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <!-- og så videre -->
@@ -82,52 +82,52 @@
         <xsl:choose>
             <xsl:when test="$tall eq 1">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('første', $content)" />
+                <xsl:value-of select="fnk:translate('first', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 2">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('andre', $content)" />
+                <xsl:value-of select="fnk:translate('second', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 3">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('tredje', $content)" />
+                <xsl:value-of select="fnk:translate('third', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 4">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('fjerde', $content)" />
+                <xsl:value-of select="fnk:translate('fourth', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 5">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('femte', $content)" />
+                <xsl:value-of select="fnk:translate('fifth', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 6">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('sjette', $content)" />
+                <xsl:value-of select="fnk:translate('sixth', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 7">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('sjuende', $content)" />
+                <xsl:value-of select="fnk:translate('seventh', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 8">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('åttende', $content)" />
+                <xsl:value-of select="fnk:translate('eighth', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 9">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('niende', $content)" />
+                <xsl:value-of select="fnk:translate('ninth', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$tall eq 10">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('tiende', $content)" />
+                <xsl:value-of select="fnk:translate('tenth', $content)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <!-- og så videre -->

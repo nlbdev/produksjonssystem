@@ -39,7 +39,7 @@
 
         <xsl:apply-templates select="m:mi" mode="#current"/>
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('med nedre indeks', .)" />
+        <xsl:value-of select="fnk:translate('with the lower index', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mn" mode="#current"/>
     </xsl:template>
@@ -65,7 +65,7 @@
 
         <xsl:apply-templates select="m:mi[1]" mode="#current"/>
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('med nedre indeks', .)" />
+        <xsl:value-of select="fnk:translate('with the lower index', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mi[2]" mode="#current"/>
     </xsl:template>
@@ -92,7 +92,7 @@
         
         <xsl:apply-templates select="m:mi[1]" mode="#current"/>
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('med nedre indeks', .)" />
+        <xsl:value-of select="fnk:translate('with the lower index', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="child::element()[2]" mode="#current"/>
         <!-- hva vi ser etter det er avhengig av det tredje barnet -->
@@ -100,13 +100,13 @@
             <!-- Hvis det opphøyes i to: -->
             <xsl:when test="normalize-space(child::element()[3]) eq '2'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('i annen', .)" />
+                <xsl:value-of select="fnk:translate('squared', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <!-- standardform -->
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('i', .)" />
+                <xsl:value-of select="fnk:translate('in', .)" />
                 <xsl:text> </xsl:text>
                 <xsl:apply-templates select="child::*[3]" mode="#current"/>
                 <xsl:text> </xsl:text>

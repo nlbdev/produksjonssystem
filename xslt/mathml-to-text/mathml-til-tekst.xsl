@@ -112,11 +112,11 @@
             <xsl:apply-templates mode="verbal-matte"/>
         </xsl:variable>
         <!-- ... og deretter presenterer vi dette pent og pyntelig -->
-        <xsl:value-of select="fnk:translate('formel', .)" />
+        <xsl:value-of select="fnk:translate('formula', .)" />
         <xsl:text> </xsl:text>
         <xsl:value-of select="normalize-space(string-join($verbal-matte, ' '))"/>
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('formel slutt', .)" />
+        <xsl:value-of select="fnk:translate('formula end', .)" />
     </xsl:template>
 
     <!-- Vis AsciiMath hvis det er noe å vise -->
@@ -136,7 +136,7 @@
     <!-- Og her får vi informasjon om all MathML-markup som vi ikke har regler for i nevnte mode  -->
     <xsl:template match="m:*" mode="verbal-matte">
         <xsl:message>
-            <xsl:value-of select="fnk:translate('Ingen mal for denne:', .)"/>
+            <xsl:value-of select="fnk:translate('No template found', .)"/>
             <xsl:text> </xsl:text>
             <xsl:value-of select="local-name()"/>
         </xsl:message>
