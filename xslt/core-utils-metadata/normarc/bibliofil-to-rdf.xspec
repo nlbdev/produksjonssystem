@@ -256,7 +256,7 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Fiction / Non-fiction">
+    <x:scenario label="fiction = true">
         <x:context>
             <opf:metadata>
                 <dc:identifier content="612345"/>
@@ -275,6 +275,52 @@
                     <dc:source>urn:isbn:1234567890</dc:source>
                     <dc:type.fiction>true</dc:type.fiction>
                     <dc:type.genre>Fiction</dc:type.genre>
+                    <dc:type.genre>Non-biography</dc:type.genre>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">...</rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="fiction = false">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="612345"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="dc:type.fiction" content="false"/>
+                <meta name="dc:type.genre" content="Non-biography"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                    <dc:type.fiction>false</dc:type.fiction>
+                    <dc:type.genre>Non-biography</dc:type.genre>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">...</rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="fiction = none">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="612345"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="dc:type.genre" content="Non-biography"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
                     <dc:type.genre>Non-biography</dc:type.genre>
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">...</rdf:Description>

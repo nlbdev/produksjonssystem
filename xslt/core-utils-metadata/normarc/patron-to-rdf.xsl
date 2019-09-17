@@ -19,7 +19,7 @@
     
     <xsl:output indent="yes" method="xml"/>
     
-    <xsl:template match="@* | node()" mode="#all">
+    <xsl:template match="@* | node()" mode="#all" priority="-2">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:copy>
@@ -57,7 +57,7 @@
         </rdf:RDF>
     </xsl:template>
     
-    <xsl:template match="@*[starts-with(local-name(), 'ln_')]" priority="0">
+    <xsl:template match="@*[starts-with(local-name(), 'ln_')]" priority="-1">
         <xsl:element name="nlbbib:{local-name()}">
             <xsl:attribute name="rdf:name" select="."/>
         </xsl:element>
@@ -82,7 +82,7 @@
     </xsl:template>
     
     <xsl:template match="controlfield | datafield" mode="lmarc">
-        <xsl:if test="not((@tag, ../@tag) = ('102','103','150','200','250','260','271','272','273','300','466','467','500','516','517','518','521','600'))">
+        <xsl:if test="not((@tag, ../@tag) = ('102','103','200','250','260','271','272','273','300','466','467','500','516','517','518','521','600'))">
             <xsl:message select="concat('Ignored ', local-name(), ': ', @tag)"/>
             <!--<xsl:copy exclude-result-prefixes="#all">
                 <xsl:apply-templates select="@* | node()" mode="#default"/>
@@ -111,7 +111,7 @@
                             if (. = ('OL','OS')) then 'NLB' else
                             if (. = 'SPED') then 'Statped' else
                             if (. = 'KABB') then 'Kabb' else .
-                        "/>
+                            "/>
                         <xsl:with-param name="context" select="."/>
                     </xsl:call-template>
                 </xsl:when>
@@ -123,13 +123,29 @@
                             <xsl:with-param name="value" select="
                                 if (. = 'SPED') then 'Statped' else
                                 if (. = 'KABB') then 'Kabb' else .
-                            "/>
+                                "/>
                             <xsl:with-param name="context" select="$context"/>
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:when>
             </xsl:choose>
         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template match="datafield[@tag='150']" mode="lmarc">
+        <xsl:if test="not(preceding-sibling::*[@tag='150'])">
+            <xsl:variable name="lines" as="xs:string*">
+                <xsl:for-each select="(. | following-sibling::*[@tag='150'])">
+                    <xsl:sort select="*[@code='a']/text()"/>
+                    <xsl:value-of select="*[@code = 'b']/text()"/>
+                </xsl:for-each>
+            </xsl:variable>
+            <xsl:call-template name="lmarc">
+                <xsl:with-param name="name" select="'melding'"/>
+                <xsl:with-param name="value" select="string-join($lines, '&#xA;')"/>
+                <xsl:with-param name="context" select="."/>
+            </xsl:call-template>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="datafield[@tag='240']" mode="lmarc">
