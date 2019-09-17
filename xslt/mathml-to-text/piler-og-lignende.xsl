@@ -30,7 +30,7 @@
            [minst ett element]
         -->
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('er ekvivalent med', .)" />
+        <xsl:value-of select="fnk:translate('is equivalent of', .)" />
         <xsl:text> </xsl:text>
         
     </xsl:template>
