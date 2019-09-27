@@ -7,6 +7,7 @@ import threading
 from pathlib import Path
 from random import random
 
+import pybrake.flask
 import requests
 from flask import Flask, Response, jsonify, redirect, request
 
@@ -27,6 +28,7 @@ class API():
     host = None
     port = None
     root_path = None
+    airbrake_config = None
 
     kill_endpoint = "/kill{}/".format(str(random()).split(".")[-1])  # random endpoint to discourage explicit external usage
     shutdown_function = None
@@ -34,7 +36,9 @@ class API():
     buffered_network_paths = {}
     buffered_network_hosts = {}
 
-    def __init__(self, root_path="/prodsys", include_version=True, shutdown_function=None):
+    def __init__(self, root_path="/prodsys", include_version=True, shutdown_function=None, airbrake_config=None):
+        self.airbrake_config = airbrake_config
+
         self.app = Flask(__name__)
         self.host = os.getenv("API_HOST", default="0.0.0.0")
         self.port = os.getenv("API_PORT", default=3875)
@@ -126,6 +130,10 @@ class API():
         """
         Start thread
         """
+
+        if self.airbrake_config is not None:
+            self.app.config['PYBRAKE'] = self.airbrake_config
+            self.app = pybrake.flask.init_app(self.app)
 
         # app.run should ideally not be used in production, but oh well…
         self.thread = threading.Thread(target=self.app.run, name="api", kwargs={

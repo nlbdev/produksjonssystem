@@ -12,6 +12,7 @@ from collections import OrderedDict
 from threading import Thread
 
 import psutil
+import pybrake
 import yaml
 
 from core.api import API
@@ -64,11 +65,26 @@ class Produksjonssystem():
     environment = None
     emailDoc = []
     api = None
+    airbrake_config = None
 
     def __init__(self, environment=None):
         logging.basicConfig(stream=sys.stdout,
                             level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO,
                             format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+
+        # add airbrake.io handler
+        self.airbrake_config = {
+            "project_id": os.getenv("AIRBRAKE_PROJECT_ID", None),
+            "project_key": os.getenv("AIRBRAKE_PROJECT_KEY", None),
+            "environment": os.getenv("AIRBRAKE_ENVIRONMENT", "development")
+        }
+        if self.airbrake_config["project_id"] is not None and self.airbrake_config["project_key"] is not None:
+            notifier = pybrake.Notifier(**self.airbrake_config)
+            airbrake_handler = pybrake.LoggingHandler(notifier=notifier, level=logging.ERROR)
+            logging.getLogger().addHandler(airbrake_handler)
+        else:
+            self.airbrake_config = None
+            logging.warn("Airbrake.io not configured (missing AIRBRAKE_PROJECT_ID and/or AIRBRAKE_PROJECT_KEY)")
 
         # Set environment variables (mainly useful when testing)
         if environment:
@@ -394,7 +410,7 @@ class Produksjonssystem():
 
         self.shouldRun = True
 
-        self.api = API(shutdown_function=self.stop)
+        self.api = API(shutdown_function=self.stop, airbrake_config=self.airbrake_config)
         self.api.start(hot_reload=False)
 
         self._configThread = Thread(target=self._config_thread, name="config")

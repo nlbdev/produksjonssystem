@@ -13,3 +13,7 @@ if [ -f "$HOME/Desktop/produksjonssystem.yaml" ]; then
 else
     export CONFIG_FILE="$DIR/tests/produksjonssystem.yaml"
 fi
+
+export AIRBRAKE_PROJECT_ID=
+export AIRBRAKE_PROJECT_KEY=
+export AIRBRAKE_ENVIRONMENT=development
