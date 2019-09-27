@@ -874,7 +874,7 @@ class Pipeline():
                                 logging.exception("An error occured while sending email")
                             finally:
                                 logpath = self.utils.report.attachLog()
-                                logging.error("Logfile: " + logpath)
+                                logging.warn("Logfile: " + logpath)
                             if self.utils.report.should_email:
                                 self.write_to_daily()
 
