@@ -90,7 +90,7 @@ class Report():
         elif severity == "WARN":
             logging.warning(message)
         elif severity == "ERROR":
-            logging.error(message)
+            logging.warning(message)  # note that errors in the report, are logged to the logger using the warning level
         else:
             logging.warning("Unknown message severity: " + str(severity))
             logging.warning(message)
