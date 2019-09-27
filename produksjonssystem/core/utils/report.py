@@ -430,7 +430,7 @@ class Report():
         except AssertionError as e:
             logging.error(str(e))
         if not should_message_slack:
-            logging.exception("Not sending message to slack")
+            logging.warning("Not sending message to slack")
         else:
             # 5. send message to Slack
             slack_attachments = []
