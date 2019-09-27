@@ -139,10 +139,13 @@ class Epub():
         if os.path.isdir(self.book_path):
             container = ElementTree.parse(os.path.join(self.book_path, "META-INF/container.xml")).getroot()
 
-        else:
+        elif os.path.isfile(self.book_path):
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 container = archive.read("META-INF/container.xml")
                 container = ElementTree.XML(container)
+
+        else:
+            return None
 
         rootfiles = container.findall('{urn:oasis:names:tc:opendocument:xmlns:container}rootfiles')[0]
         rootfile = rootfiles.findall('{urn:oasis:names:tc:opendocument:xmlns:container}rootfile')[0]
@@ -156,10 +159,13 @@ class Epub():
         if os.path.isdir(self.book_path):
             opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
 
-        else:
+        elif os.path.isfile(self.book_path):
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 opf = archive.read(opf_path)
                 opf = ElementTree.XML(opf)
+
+        else:
+            return None
 
         manifest = opf.findall('{http://www.idpf.org/2007/opf}manifest')[0]
         items = manifest.findall("*")
