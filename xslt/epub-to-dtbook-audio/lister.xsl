@@ -273,9 +273,9 @@
             <xsl:copy-of select="@*"/>
 
             <!-- Legg inn det ekstra elementet med informasjon -->
-            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
+            <!--<xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
                 <xsl:with-param name="informasjon" as="xs:string" select="$tekst"/>
-            </xsl:call-template>
+            </xsl:call-template>-->
 
             <!-- Og prosesser innholdet i listen på vanlig måte -->
             <xsl:apply-templates/>
