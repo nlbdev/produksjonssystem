@@ -6,7 +6,7 @@
                 <m:math xml:lang="en" display="block"/>
                 <m:math xml:lang="nb" display="block"/>
                 <m:math xml:lang="nn" display="block"/>
-                <m:math xml:lang="no"/>
+                <m:math xml:lang="no" display="block"/>
                 <p>Teksten med uttrykket <m:math xml:lang="nb" display="inline"/> er riktig.</p>
             </body>
         </x:context>

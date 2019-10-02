@@ -46,13 +46,9 @@
         </span>
     </xsl:template>
     
-    <!-- If display attribute is not set, default to block -->
+    <!-- If display attribute is not set, terminate -->
     <xsl:template match="m:math">
-        <p class="spoken-math">
-            <xsl:copy-of select="@id | @xml:lang"/>
-            <xsl:value-of select="fnk:translate('placeholder', ., true())"/>
-            <xsl:text>.</xsl:text>
-        </p>
+        <xsl:message terminate="yes">No display attribute found, terminating.</xsl:message>
     </xsl:template>
     
     <!-- Translation function -->
