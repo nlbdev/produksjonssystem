@@ -27,8 +27,7 @@
     <xsl:include href="tts-tabeller.xsl"/>
     <xsl:include href="ekstra-informasjon.xsl"/>
 
-    <xsl:output indent="no" doctype-public="-//NISO//DTD dtbook 2005-3//EN"
-        doctype-system="http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd"/>
+    <xsl:output indent="no" doctype-public="-//NISO//DTD dtbook 2005-3//EN"/>
 
     <xsl:template match="@* | node()">
         <xsl:copy exclude-result-prefixes="#all">
