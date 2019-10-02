@@ -137,20 +137,6 @@ class EpubToDtbookAudio(Pipeline):
             return False
         shutil.copy(temp_dtbook_file, dtbook_file)
 
-        # 2019-10-02, Gaute Rønningen:
-        # Transformasjon for å erstatte MathML med tekstuell representasjon
-        # TODO Endre fra placeholder til riktig transformering når denne er klar
-        self.utils.report.info("Erstatter matematiske formler med tekstuell representasjon")
-        self.utils.report.debug("mathml-to-placeholder.xsl")
-        self.utils.report.debug("    source = " + dtbook_file)
-        self.utils.report.debug("    target = " + temp_dtbook_file)
-        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "mathml-to-placeholder.xsl"),
-                    source=dtbook_file,
-                    target=temp_dtbook_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_dtbook_file, dtbook_file)
-
         # 2019-01-15, Per Sennels:
         # Fjern denne transformasjonen hvis det oppstår kritiske proplemer med håndteringen av komplekst innhold
         self.utils.report.info("Legger inn ekstra informasjon om komplekst innhold")
@@ -163,7 +149,6 @@ class EpubToDtbookAudio(Pipeline):
         if not xslt.success:
             return False
         shutil.copy(temp_dtbook_file, dtbook_file)
-
 
         self.utils.report.info("Validerer DTBook")
         sch = Schematron(self, schematron=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "validate-dtbook.sch"), source=dtbook_file)
