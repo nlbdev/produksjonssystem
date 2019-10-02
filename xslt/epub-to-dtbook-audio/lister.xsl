@@ -34,7 +34,7 @@
 
     -->
 
-    <xsl:template match="list[not(some $a in ancestor::element() satisfies $a/@class eq 'toc')]">
+    <xsl:template match="list[not(some $a in ancestor::element() satisfies $a/tokenize(@class, '\s+') = ('toc', 'index', 'glossary', 'footnotes', 'rearnotes'))]">
         <xsl:variable name="er-rotliste" as="xs:boolean" select="not(exists(ancestor::list))"/>
         <xsl:variable name="listepunkter-er-numeriske" as="xs:boolean"
             select="
