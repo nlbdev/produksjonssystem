@@ -7,7 +7,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes" doctype-public="-//NISO//DTD dtbook 2005-3//EN" doctype-system="http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd"/>
+    <xsl:output indent="yes" doctype-public="-//NISO//DTD dtbook 2005-3//EN"/>
     
     <xsl:template match="@* | node()">
         <xsl:copy exclude-result-prefixes="#all">

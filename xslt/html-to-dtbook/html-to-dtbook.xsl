@@ -6,7 +6,7 @@
     <xsl:import href="numeral-conversion.xsl"/>
     <xsl:import href="epub3-vocab.xsl"/>
     
-    <xsl:output indent="yes" exclude-result-prefixes="#all" doctype-public="-//NISO//DTD dtbook 2005-3//EN" doctype-system="http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd"/>
+    <xsl:output indent="yes" exclude-result-prefixes="#all" doctype-public="-//NISO//DTD dtbook 2005-3//EN"/>
 
     <!--
     <xsl:variable name="special-classes"
