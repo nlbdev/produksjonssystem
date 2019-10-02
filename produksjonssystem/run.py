@@ -44,6 +44,7 @@ from nlbpub_to_docx import NLBpubToDocx
 from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_pef import NlbpubToPef
+from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook
 from nordic_dtbook_to_epub import NordicDTBookToEpub
 from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
@@ -187,6 +188,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
         self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
         self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
+        self.dirs_ranked[-1]["dirs"]["dtbook_tts_test"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese-test")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
         self.dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
         self.dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
@@ -299,8 +301,13 @@ class Produksjonssystem():
             [EpubToDtbookAudio(retry_missing=True,
                                check_identifiers=True,
                                during_working_hours=True),      "master",              "dtbook_tts"],
+            [NlbpubToTtsDtbook(retry_missing=True,
+                               check_identifiers=True,
+                               during_working_hours=True),      "pub-in-audio",        "dtbook_tts_test"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
+            [DummyPipeline("Talesyntese i Pipeline 1 (test)",
+                           labels=["Lydbok"]),                  "dtbook_tts_test",          "daisy202"],
             [DummyTtsNewspaperSchibsted("Talesyntese i Pipeline 1 for aviser",
                                         labels=["Lydbok"]),     "dtbook_news",          "daisy202"],
 
