@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:f="#" xmlns:pf="http://www.daisy.org/ns/pipeline/functions" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-    xmlns="http://www.daisy.org/z3986/2005/dtbook/" xpath-default-namespace="http://www.daisy.org/z3986/2005/dtbook/" exclude-result-prefixes="#all" xmlns:epub="http://www.idpf.org/2007/ops"
-    xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:f="#"
+                xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+                xpath-default-namespace="http://www.daisy.org/z3986/2005/dtbook/"
+                exclude-result-prefixes="#all"
+                version="2.0">
 
     <xsl:import href="numeral-conversion.xsl"/>
     <xsl:import href="epub3-vocab.xsl"/>
@@ -264,6 +271,16 @@
         <!--<xsl:if test="count($level-classes) &gt; 0">
             <xsl:attribute name="class" select="string-join($level-classes,' ')"/>
         </xsl:if>-->
+    </xsl:template>
+    
+    <xsl:template match="math:*">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:if test="self::math:math and not(@display)">
+                <xsl:message select="'Warning: MathML element is missing the ''display'' attribute. It will be inferred instead.'"/>
+                <xsl:attribute name="display" select="if (f:is-inline(.)) then 'inline' else 'block'"/>
+            </xsl:if>
+            <xsl:apply-templates select="@* | node()"/>
+        </xsl:copy>
     </xsl:template>
 
     <xsl:template match="html:br">
