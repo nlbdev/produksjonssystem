@@ -15,6 +15,9 @@
         Jostein Austvik Jacobsen, 01.10.2019
     -->
     
+    <!-- Variables -->
+    <xsl:variable name="preserve-mathml-altimg" as="xs:boolean" select="true()" />
+    
     <!-- Output encoding -->
     <xsl:output method="xhtml" indent="yes" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
     
@@ -33,6 +36,12 @@
     
     <!-- Replace MathML with placeholder -->
     <xsl:template match="m:math[@display eq 'block']">
+        <xsl:variable name="imgsrc" select="@altimg" as="xs:string?" />
+        <xsl:if test="$preserve-mathml-altimg and ($imgsrc)">
+            <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
+                <xsl:copy-of select="@xml:lang"/>
+            </img>
+        </xsl:if>
         <p class="spoken-math">
             <xsl:copy-of select="@id | @xml:lang"/>
             <xsl:value-of select="fnk:translate('placeholder', ., true())"/>
@@ -40,8 +49,16 @@
         </p>
     </xsl:template>
     <xsl:template match="m:math[@display eq 'inline']">
+        <xsl:variable name="imgsrc" select="@altimg" as="xs:string?" />
+        <xsl:if test="$preserve-mathml-altimg and ($imgsrc)">
+            <span class="visual-math">
+                <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
+                    <xsl:copy-of select="@xml:lang"/>
+                </img>
+            </span>
+        </xsl:if>
         <span class="spoken-math">
-            <xsl:copy-of select="@id | @xml:lang"/>
+            <xsl:copy-of select="@id | @xml:lang" />
             <xsl:value-of select="fnk:translate('placeholder', ., false())"/>
         </span>
     </xsl:template>
