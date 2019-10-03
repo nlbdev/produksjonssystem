@@ -35,6 +35,7 @@
     </xsl:template>
     
     <!-- Replace MathML with placeholder -->
+    <!-- Block math -->
     <xsl:template match="m:math[@display eq 'block']">
         <xsl:variable name="imgsrc" select="@altimg" as="xs:string?" />
         <xsl:if test="$preserve-mathml-altimg and ($imgsrc)">
@@ -42,25 +43,70 @@
                 <xsl:copy-of select="@xml:lang"/>
             </img>
         </xsl:if>
-        <p class="spoken-math">
-            <xsl:copy-of select="@id | @xml:lang"/>
-            <xsl:value-of select="fnk:translate('placeholder', ., true())"/>
-            <xsl:text>.</xsl:text>
-        </p>
+        <xsl:choose>
+            <xsl:when test="$preserve-mathml-altimg">
+                <xsl:choose>
+                    <xsl:when test="$imgsrc">
+                        <figure class="image visual-math">
+                            <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
+                                <xsl:copy-of select="@xml:lang"/>
+                            </img> 
+                            <figcaption class="spoken-math"><xsl:value-of select="fnk:translate('placeholder', ., true())"/><xsl:text>.</xsl:text></figcaption>
+                        </figure>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <p class="spoken-math">
+                            <xsl:copy-of select="@id | @xml:lang"/>
+                            <xsl:value-of select="fnk:translate('placeholder', ., true())"/>
+                            <xsl:text>.</xsl:text>
+                        </p>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <p class="spoken-math">
+                    <xsl:copy-of select="@id | @xml:lang"/>
+                    <xsl:value-of select="fnk:translate('placeholder', ., true())"/>
+                    <xsl:text>.</xsl:text>
+                </p>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
+    
+    <!-- Inline math -->
     <xsl:template match="m:math[@display eq 'inline']">
         <xsl:variable name="imgsrc" select="@altimg" as="xs:string?" />
-        <xsl:if test="$preserve-mathml-altimg and ($imgsrc)">
+        <xsl:if test="$preserve-mathml-altimg and $imgsrc">
             <span class="visual-math">
                 <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
                     <xsl:copy-of select="@xml:lang"/>
                 </img>
             </span>
         </xsl:if>
-        <span class="spoken-math">
-            <xsl:copy-of select="@id | @xml:lang" />
-            <xsl:value-of select="fnk:translate('placeholder', ., false())"/>
-        </span>
+        <xsl:choose>
+            <xsl:when test="$preserve-mathml-altimg">
+                <xsl:choose>
+                    <xsl:when test="$imgsrc">
+                        <span class="image visual-math">
+                            <img alt="{fnk:translate('placeholder', ., false())}" src="{$imgsrc}"/>
+                            <span class="figcaption spoken-math"><xsl:value-of select="fnk:translate('placeholder', ., true())"/><xsl:text>.</xsl:text></span>
+                        </span>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <span class="spoken-math">
+                            <xsl:copy-of select="@id | @xml:lang" />
+                            <xsl:value-of select="fnk:translate('placeholder', ., false())"/>
+                        </span>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <span class="spoken-math">
+                    <xsl:copy-of select="@id | @xml:lang" />
+                    <xsl:value-of select="fnk:translate('placeholder', ., false())"/>
+                </span>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <!-- If display attribute is not set, terminate -->
