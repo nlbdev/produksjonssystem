@@ -90,7 +90,7 @@
                 <level1 class="toc">
                     <p><a href="#">Don't remove me.</a></p>
                     <list type="pl">
-                        <li><a href="#">Remove me.</a></li>
+                        <li><a href="#" title="Remove me">Don't remove me.</a></li>
                     </list>
                 </level1>
                 <level1 class="chapter">
@@ -106,7 +106,7 @@
                 <level1 class="toc">
                     <p><a href="#">Don't remove me.</a></p>
                     <list type="pl">
-                        <li/>
+                        <li>Don't remove me.</li>
                     </list>
                 </level1>
                 <level1 class="chapter">

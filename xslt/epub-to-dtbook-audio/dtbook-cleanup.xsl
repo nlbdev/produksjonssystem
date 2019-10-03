@@ -67,7 +67,9 @@
     <xsl:template match="p[@class='docauthor author']"/>
     
     <!-- remove links from the toc -->
-    <xsl:template match="a[exists(ancestor::list) and exists(ancestor::*[tokenize(@class,'\s+') = 'toc'])]"/>
+    <xsl:template match="a[exists(ancestor::list) and exists(ancestor::*[tokenize(@class,'\s+') = 'toc'])]">
+        <xsl:apply-templates select="node()"/>
+    </xsl:template>
     
     <xsl:template match="@xml:lang[not(parent::dtbook) and . = /*/tokenize(lower-case(string(@xml:lang)),'-')[last()]]" priority="2"/> 
     
