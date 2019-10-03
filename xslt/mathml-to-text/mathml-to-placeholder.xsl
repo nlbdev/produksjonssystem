@@ -15,8 +15,8 @@
         Jostein Austvik Jacobsen, 01.10.2019
     -->
     
-    <!-- Variables -->
-    <xsl:variable name="preserve-mathml-altimg" as="xs:boolean" select="true()" />
+    <!-- Parameters -->
+    <xsl:param name="preserve-mathml-altimg" as="xs:boolean" select="true()"/>
     
     <!-- Output encoding -->
     <xsl:output method="xhtml" indent="yes" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
