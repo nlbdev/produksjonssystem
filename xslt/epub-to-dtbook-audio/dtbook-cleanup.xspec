@@ -84,4 +84,39 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Remove links from toc">
+        <x:context>
+            <frontmatter>
+                <level1 class="toc">
+                    <p><a href="#">Don't remove me.</a></p>
+                    <list type="pl">
+                        <li><a href="#">Remove me.</a></li>
+                    </list>
+                </level1>
+                <level1 class="chapter">
+                    <p><a href="#">Don't remove me.</a></p>
+                    <list type="pl">
+                        <li><a href="#">Don't remove me.</a></li>
+                    </list>
+                </level1>
+            </frontmatter>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <frontmatter>
+                <level1 class="toc">
+                    <p><a href="#">Don't remove me.</a></p>
+                    <list type="pl">
+                        <li/>
+                    </list>
+                </level1>
+                <level1 class="chapter">
+                    <p><a href="#">Don't remove me.</a></p>
+                    <list type="pl">
+                        <li><a href="#">Don't remove me.</a></li>
+                    </list>
+                </level1>
+            </frontmatter>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
