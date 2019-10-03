@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="html-to-dtbook.xsl" xmlns:dtbook="http://www.daisy.org/z3986/2005/dtbook/"
-    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:html="http://www.w3.org/1999/xhtml" xslt-version="2.0" xmlns:f="#">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dtbook="http://www.daisy.org/z3986/2005/dtbook/"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:html="http://www.w3.org/1999/xhtml"
+               xmlns:f="#"
+               stylesheet="html-to-dtbook.xsl"
+               xslt-version="2.0">
 
     <!-- dtbookblocknoimggroup -->
     <!-- no point in testing -->
@@ -897,10 +902,10 @@
     <!-- a -->
     <x:scenario label="when processing a a element">
         <x:context>
-            <html:a id="id"/>
+            <html:a id="id">TEXT</html:a>
         </x:context>
         <x:expect label="the resulting element should be a a element">
-            <dtbook:a id="id" external="false"/>
+            <dtbook:a id="id" external="false">TEXT</dtbook:a>
         </x:expect>
     </x:scenario>
 
@@ -3302,5 +3307,22 @@
             <dtbook:p class="bridgehead">test bridgehead 1</dtbook:p>
         </x:expect>
     </x:scenario>
-
+    
+    <x:scenario label="don't create empty a elements">
+        <!-- NOTE: for some reason, xml:space="preserve" is needed to provoke this error while testing -->
+        <x:context>
+            <html:li><html:a href="#h1_3" xml:space="preserve"><html:span class="lic">List of Contributors</html:span> <html:span class="lic">ix</html:span></html:a></html:li>
+        </x:context>
+        <x:expect label="there should not be an empty a element">
+            <dtbook:li>
+                <dtbook:lic>
+                    <dtbook:a href="#h1_3" external="false" xml:space="preserve">List of Contributors</dtbook:a>
+                </dtbook:lic>
+                <dtbook:lic>
+                    <dtbook:a href="#h1_3" external="false" xml:space="preserve">ix</dtbook:a>
+                </dtbook:lic>
+            </dtbook:li>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

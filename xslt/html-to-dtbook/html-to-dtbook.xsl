@@ -579,11 +579,13 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template name="f:a">
-        <xsl:param name="children" select="node()"/>
-        <a>
-            <xsl:call-template name="f:attlist.a"/>
-            <xsl:apply-templates select="$children"/>
-        </a>
+        <xsl:param name="children" select="node()" as="node()*"/>
+        <xsl:if test="count($children[normalize-space()]) + count($children/descendant-or-self::*[tokenize(@epub:type,'\s+') = 'pagebreak']) gt 0">
+            <a>
+                <xsl:call-template name="f:attlist.a"/>
+                <xsl:apply-templates select="$children"/>
+            </a>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template name="f:attlist.a">
