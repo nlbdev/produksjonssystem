@@ -464,6 +464,7 @@ class Produksjonssystem():
         system_process.cpu_percent()  # first value returned is 0.0, which we ignore
         try:
             running = True
+            time.sleep(10)  # wait a few seconds before staring to monitor the system (extra precaution to avoid race conditions during startup)
             while running:
                 time.sleep(1)
 
@@ -482,11 +483,18 @@ class Produksjonssystem():
                         if pipeline[0].running:
                             running += 1
                     running = True if running > 0 else False
+
                 else:
                     for thread in threads:
                         if not thread.isAlive():
+                            self.info("thread is not running, will restart system: {} is not healty, will restart system...".format(thread))
                             running = False
                             break
+
+                    for pipeline in self.pipelines:
+                        if not pipeline[0].is_healthy():
+                            self.info("pipeline is not healty, will restart system: {}".format(pipeline[0].title))
+                            running = False
 
                 if time.time() - last_thread_usage_log > 600:
                     last_thread_usage_log = time.time()

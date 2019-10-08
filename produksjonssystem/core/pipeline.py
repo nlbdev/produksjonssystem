@@ -398,6 +398,16 @@ class Pipeline():
                             logging.info("Thread is still running: {}".format(thread.name))
                             thread.join(timeout=60)
 
+    def is_healthy(self):
+        if self.threads:
+            for thread in self.threads:
+                if thread and thread != threading.current_thread() and not thread.is_alive():
+                    # found thread that is not running
+                    return False
+
+        # no threads found that are not running
+        return True
+
     def get_group_id(self):
         if self.gid:
             return self.gid
