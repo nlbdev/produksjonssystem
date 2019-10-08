@@ -52,8 +52,11 @@ class GenerateResources(Pipeline):
         Trigger books in folder but not in DOD database
         """
         last_check = 0
+
+        self.watchdog_bark()
         while self.shouldRun:
             time.sleep(5)
+            self.watchdog_bark()
 
             if not self.dirsAvailable():
                 continue

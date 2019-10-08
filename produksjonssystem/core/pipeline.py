@@ -84,6 +84,7 @@ class Pipeline():
     _queue = None
     _md5 = None
     threads = None
+    watchdogs = None
     progress_text = None
     progress_log = None
     progress_start = None
@@ -277,6 +278,7 @@ class Pipeline():
         self._inactivity_timeout = inactivity_timeout
 
         self.threads = []
+        self.watchdogs = {}
 
         # start a directory watcher for the output directory
         if self.dir_out is not None:
@@ -401,9 +403,15 @@ class Pipeline():
     def is_healthy(self):
         if self.threads:
             for thread in self.threads:
-                if thread and thread != threading.current_thread() and not thread.is_alive():
-                    # found thread that is not running
-                    return False
+                if thread and thread != threading.current_thread():
+                    if not thread.is_alive():
+                        # found thread that is not running
+                        logging.debug("not alive: {}".format(thread))
+                        return False
+                    if thread in self.watchdogs and time.time() - self.watchdogs[thread] > 3600:
+                        # found thread that is frozen
+                        logging.debug("frozen: {}".format(thread))
+                        return False
 
         # no threads found that are not running
         return True
@@ -556,6 +564,9 @@ class Pipeline():
                 })
                 logging.debug("added book to queue: " + name)
 
+    def watchdog_bark(self):
+        self.watchdogs[threading.current_thread()] = time.time()
+
     @staticmethod
     def _trigger_dir_thread():
         _trigger_dir_obj = None
@@ -566,6 +577,7 @@ class Pipeline():
         trigger_dir = os.path.join(trigger_dir, "dirs")
 
         dirs = None
+
         while True:
             time.sleep(5)
 
@@ -625,8 +637,10 @@ class Pipeline():
             _trigger_dir_obj.cleanup()
 
     def _monitor_book_triggers_thread(self):
+        self.watchdog_bark()
         while self.shouldRun:
             time.sleep(10)
+            self.watchdog_bark()
 
             if not os.path.isdir(self.dir_trigger):
                 continue
@@ -653,8 +667,10 @@ class Pipeline():
     def _retry_all_books_thread(self):
         last_check = 0
 
+        self.watchdog_bark()
         while self.shouldRun:
             time.sleep(5)
+            self.watchdog_bark()
 
             if not self.dirsAvailable():
                 continue
@@ -672,8 +688,11 @@ class Pipeline():
 
     def _retry_missing_books_thread(self):
         last_check = 0
+
+        self.watchdog_bark()
         while self.shouldRun:
             time.sleep(5)
+            self.watchdog_bark()
 
             if not self.dirsAvailable():
                 continue
@@ -740,8 +759,10 @@ class Pipeline():
                         logging.info(fileName + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
 
     def _handle_book_events_thread(self):
+        self.watchdog_bark()
         while self.shouldRun:
             self.running = True
+            self.watchdog_bark()
 
             if not self.dirsAvailable():
                 time.sleep(5)

@@ -72,8 +72,10 @@ class UpdateMetadata(Pipeline):
         return Metadata.queue
 
     def _watch_metadata_thread(self):
+        self.watchdog_bark()
         while self.shouldRun:
             self.running = True
+            self.watchdog_bark()
 
             try:
                 time.sleep(1)

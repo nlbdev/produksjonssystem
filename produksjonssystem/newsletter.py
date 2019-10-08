@@ -49,8 +49,10 @@ class Newsletter(Pipeline):
     def _trigger_newsletter_thread(self):
         last_check = 0
         # If no newsletter this month, trigger newsletter
+        self.watchdog_bark()
         while self.shouldRun:
             time.sleep(5)
+            self.watchdog_bark()
 
             if not self.dirsAvailable():
                 continue

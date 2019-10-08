@@ -49,8 +49,10 @@ class NewspaperSchibsted(Pipeline):
         last_check = 0
         # If feed found trigger newspaper
 
+        self.watchdog_bark()
         while self.shouldRun:
             time.sleep(5)
+            self.watchdog_bark()
 
             if not self.dirsAvailable():
                 continue
