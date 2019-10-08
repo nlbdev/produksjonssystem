@@ -51,4 +51,36 @@
         <x:expect label="result" test="exists(/*)"/>
     </x:scenario>
     
+    <x:scenario label="Regression test for issue with aside elements getting wrapped in a elements">
+        <x:context>
+            <section id="ch1-19">
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1">Fotnote 1</a> …</p>
+                <aside epub:type="note" class="notebody" id="fnt1a-1">
+                    <p>Fotnote 1: Bla bla bla.</p>
+                </aside>
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2">ref</a> …</p>
+                <p>…</p>
+                <aside epub:type="note" class="notebody" id="fnt1a-2">
+                    <p>Notetekst</p>
+                </aside>
+            </section>
+        </x:context>
+        
+        <x:expect>
+            <section id="ch1-19">
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1">Fotnote 1</a> …</p>
+                <aside epub:type="note" class="notebody" id="fnt1a-1">
+                    <p>Fotnote 1: Bla bla bla.</p>
+                    <p class="nlb-ekstra-informasjon">Note slutt</p>
+                </aside>
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2"><span class="nlb-ekstra-informasjon">Note </span>ref</a> …</p>
+                <aside epub:type="note" class="notebody" id="fnt1a-2">
+                    <p>Notetekst</p>
+                    <p class="nlb-ekstra-informasjon">Note slutt</p>
+                </aside>
+                <p>…</p>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
