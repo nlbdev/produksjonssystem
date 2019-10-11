@@ -43,7 +43,7 @@
                     )">
                 <!-- kortform -->
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('squared', .)" />
+                <xsl:value-of select="fnk:translate('square root of', .)" />
                 <xsl:text> </xsl:text>
                 <xsl:apply-templates mode="#current"/>
             </xsl:when>
@@ -439,7 +439,7 @@
         <xsl:text> </xsl:text>
         <!-- prosesser alt i nevneren som kommer etter &#x02146; -->
         <xsl:apply-templates select="m:mrow[2]/m:mi" mode="verbal-matte"/>
-        <xsl:text>, </xsl:text>
+        <xsl:text> </xsl:text>
     </xsl:template>
 
     <!-- Uttrykk på formen d^2 ... / d ...^2, altså "den annenderiverte av ... med hensyn på ..." -->
@@ -599,7 +599,7 @@
         <xsl:value-of select="fnk:translate('with respect to', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mrow[last()]/child::element()[2]" mode="verbal-matte"/>
-        <xsl:text>, </xsl:text>
+        <xsl:text> </xsl:text>
     </xsl:template>
 
 

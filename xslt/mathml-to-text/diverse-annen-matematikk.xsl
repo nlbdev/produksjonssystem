@@ -348,6 +348,29 @@
                 <xsl:value-of select="fnk:translate('right bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
+            <xsl:when test="$operator eq '{'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('left brace', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '}'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('right brace', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#10216;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('left angle bracket', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#10217;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('right angle bracket', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#8289;' or $operator eq '&#8290;'">
+                <xsl:text> </xsl:text>
+            </xsl:when>
             <xsl:otherwise>
                 <xsl:message>
                     <xsl:value-of select="fnk:translate('unknown operator', .)" />

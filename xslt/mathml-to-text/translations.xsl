@@ -24,15 +24,34 @@
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="context" as="node()"/>
         
-        <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]"/>      
-        <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
         <xsl:choose>
-            <xsl:when test="not($result)">
-                <xsl:message select="concat('Translation missing for: ', $text, ' (language=', $language, ')')"/>
-                <xsl:value-of select="$text"/>
+            <xsl:when test="($context/ancestor-or-self::*/@xml:lang)[last()] != ''">
+                <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]"/>
+                
+                <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                <xsl:choose>
+                    <xsl:when test="not($result)">
+                        <xsl:message select="concat('Translation missing for: ', $text, ' (language=', $language, ')')"/>
+                        <xsl:value-of select="$text"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                <xsl:variable name="language" select="'nb'"/>
+                
+                <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                <xsl:choose>
+                    <xsl:when test="not($result)">
+                        <xsl:message select="concat('Translation missing for: ', $text, ' (language=', $language, ')')"/>
+                        <xsl:value-of select="$text"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -40,6 +59,10 @@
     <xsl:variable name="dictionary" as="element()">
         <dictionary>
             <!-- General terms -->
+            <term name="placeholder">
+                <translation lang="en">mathematical formula</translation>
+                <translation lang="nb">matematisk formel</translation>
+            </term>
             <term name="unknown operator">
                 <translation lang="en">unknown operator</translation>
                 <translation lang="nb">ukjent operator</translation>
@@ -79,14 +102,6 @@
             <term name="formula end">
                 <translation lang="en">formula end</translation>
                 <translation lang="nb">formel slutt</translation>
-            </term>
-            <term name="parenthesis">
-                <translation lang="en">parenthesis</translation>
-                <translation lang="nb">parentes</translation>
-            </term>
-            <term name="parenthesis end">
-                <translation lang="en">parenthesis end</translation>
-                <translation lang="nb">parentes slutt</translation>
             </term>
             <term name="small">
                 <translation lang="en">small</translation>
@@ -132,6 +147,14 @@
                 <translation lang="en">vector</translation>
                 <translation lang="nb">vektor</translation>
             </term>
+            <term name="parenthesis">
+                <translation lang="en">left parenthesis</translation>
+                <translation lang="nb">venstre parentes</translation>
+            </term>
+            <term name="parenthesis end">
+                <translation lang="en">right parenthesis</translation>
+                <translation lang="nb">høyre parentes</translation>
+            </term>
             <term name="left bracket">
                 <translation lang="en">left bracket</translation>
                 <translation lang="nb">venstre hakeparentes</translation>
@@ -139,6 +162,22 @@
             <term name="right bracket">
                 <translation lang="en">right bracket</translation>
                 <translation lang="nb">høyre hakeparentes</translation>
+            </term>
+            <term name="left angle bracket">
+                <translation lang="en">left angle bracket</translation>
+                <translation lang="nb">venstre vinkelparentes</translation>
+            </term>
+            <term name="right angle bracket">
+                <translation lang="en">right angle bracket</translation>
+                <translation lang="nb">høyre vinkelparentes</translation>
+            </term>
+            <term name="left brace">
+                <translation lang="en">left brace</translation>
+                <translation lang="nb">venstre sløyfeparentes</translation>
+            </term>
+            <term name="right brace">
+                <translation lang="en">right brace</translation>
+                <translation lang="nb">høyre sløyfeparentes</translation>
             </term>
             <term name="with the lower index">
                 <translation lang="en">with the lower index</translation>
@@ -159,7 +198,21 @@
                 <translation lang="nb">absoluttverdien til</translation>
             </term>
             
-            <!-- Table -->
+            <!-- Degrees -->
+            <term name="degree">
+                <translation lang="en">degree</translation>
+                <translation lang="nb">grad</translation>
+            </term>
+            <term name="degrees">
+                <translation lang="en">degrees</translation>
+                <translation lang="nb">grader</translation>
+            </term>
+            <term name="gon">
+                <translation lang="en">gon</translation>
+                <translation lang="nb">gon</translation>
+            </term>
+            
+            <!-- Matrixes -->
             <term name="a matrix with">
                 <translation lang="en">a matrix with</translation>
                 <translation lang="nb">en matrise med</translation>
@@ -214,6 +267,10 @@
                 <translation lang="en">the derivative of</translation>
                 <translation lang="nb">den deriverte av</translation>
             </term>
+            <term name="the partial derivative">
+                <translation lang="en">the partial derivative</translation>
+                <translation lang="nb">den delvis deriverte</translation>
+            </term>
             
             <!-- Boundary values -->
             <term name="boundary value of">
@@ -226,7 +283,10 @@
                 <translation lang="en">raised to</translation>
                 <translation lang="nb">opphøyd i</translation>
             </term>
-            
+            <term name="squared">
+                <translation lang="en">squared</translation>
+                <translation lang="nb">i annen</translation>
+            </term>            
             
             <!-- Square root -->
             <term name="square root of">
@@ -239,10 +299,6 @@
             </term>
             
             <!-- N-root -->
-            <term name="squared">
-                <translation lang="en">squared</translation>
-                <translation lang="nb">roten av</translation>
-            </term>
             
             <!-- Fractions -->
             <term name="the fraction">
@@ -386,8 +442,8 @@
                 <translation lang="nb">og så videre</translation>
             </term>
             <term name="differ from">
-                <translation lang="en">differ from</translation>
-                <translation lang="nb">er forskjellig fra</translation>
+                <translation lang="en">does not equal</translation>
+                <translation lang="nb">er ikke lik</translation>
             </term>
             <term name="is less than">
                 <translation lang="en">is less than</translation>
@@ -410,12 +466,12 @@
                 <translation lang="nb">er mye større enn</translation>
             </term>
             <term name="plus-minus">
-                <translation lang="en">plus-minus</translation>
-                <translation lang="nb">pluss minus</translation>
+                <translation lang="en">plus or minus</translation>
+                <translation lang="nb">pluss eller minus</translation>
             </term>
             <term name="minus-plus">
-                <translation lang="en">minus-plus</translation>
-                <translation lang="nb">minus pluss</translation>
+                <translation lang="en">minus or plus</translation>
+                <translation lang="nb">minus eller pluss</translation>
             </term>
             <term name="goes against">
                 <translation lang="en">goes against</translation>
@@ -483,7 +539,7 @@
             </term>
             <term name="alpha">
                 <translation lang="en">alpha</translation>
-                <translation lang="nb">alfa</translation>
+                <translation lang="nb">alpha</translation>
             </term>
             <term name="beta">
                 <translation lang="en">beta</translation>

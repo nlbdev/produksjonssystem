@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns="http://www.w3.org/1999/xhtml" xpath-default-namespace="http://www.w3.org/1999/xhtml"
     xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:fnk="http://www.nlb.no/2017/xml/funksjoner" exclude-result-prefixes="xs m fnk"
+    xmlns:fnk="#" exclude-result-prefixes="xs m fnk"
     version="2.0">
     
     <!-- 
@@ -10,9 +10,10 @@
         
         Gaute Rønningen, 09.09.2019
     -->
-    
-    <!-- Imports: -->
-    <xsl:import href="translations.xsl"/>
+    <xsl:function name="fnk:translate">
+        <xsl:param name="param0"/>
+        <xsl:param name="param1"/>
+    </xsl:function>
     
     <!-- Funksjoner: -->
     <xsl:function name="fnk:tall" as="xs:string">

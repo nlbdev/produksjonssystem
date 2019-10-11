@@ -70,19 +70,19 @@
                 <xsl:choose>
                     <xsl:when test="abs(child::element()[1]) eq 1">
                         <xsl:text> </xsl:text>
-                        <xsl:value-of select="fnk:translate('grad', .)" />
+                        <xsl:value-of select="fnk:translate('degree', .)" />
                         <xsl:text> </xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text> </xsl:text>
-                        <xsl:value-of select="fnk:translate('grader', .)" />
+                        <xsl:value-of select="fnk:translate('degrees', .)" />
                         <xsl:text>, </xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('grader', .)" />
+                <xsl:value-of select="fnk:translate('degrees', .)" />
                 <xsl:text>, </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
