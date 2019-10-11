@@ -123,6 +123,13 @@
 
         </div>
     </xsl:template>
+    
+    <!-- wrap linegroups in synch-point-wrapper divs -->
+    <xsl:template match="div[tokenize(@class,'\s+') = 'linegroup']">
+        <div class="synch-point-wrapper" id="{concat('nlb-sp-',generate-id())}">
+            <xsl:next-match/>
+        </div>
+    </xsl:template>
 
 
 

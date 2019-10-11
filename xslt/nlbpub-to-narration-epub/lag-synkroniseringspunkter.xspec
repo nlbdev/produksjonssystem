@@ -9,7 +9,6 @@
     -->
 
     <x:scenario label="Etterfølgende p-elementer ...">
-
         <x:context>
             <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
                 <h1>En overskrift</h1>
@@ -56,7 +55,76 @@
                 </div>
             </section>
         </x:expect>
-
     </x:scenario>
-
+    
+    <x:scenario label="linegroup">
+        <x:context>
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <p>…</p>
+                <p>…</p>
+                <p>…</p>
+                <div class="linegroup">
+                    <p class="line">…</p>
+                    <p class="line">…</p>
+                    <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    <p class="line">…</p>
+                </div>
+                <div class="linegroup">
+                    <p class="line">…</p>
+                    <p class="line">…</p>
+                    <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    <p class="line">…</p>
+                </div>
+                <p>…</p>
+                <div class="linegroup">
+                    <p class="line">…</p>
+                    <p class="line">…</p>
+                    <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    <p class="line">…</p>
+                </div>
+                <p>…</p>
+            </section>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <div class="synch-point-wrapper" id="...">
+                    <p>…</p>
+                    <p>…</p>
+                    <p>…</p>
+                </div>
+                <div class="synch-point-wrapper" id="...">
+                    <div class="linegroup">
+                        <p class="line">…</p>
+                        <p class="line">…</p>
+                        <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                        <p class="line">…</p>
+                    </div>
+                </div>
+                <div class="synch-point-wrapper" id="...">
+                    <div class="linegroup">
+                        <p class="line">…</p>
+                        <p class="line">…</p>
+                        <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                        <p class="line">…</p>
+                    </div>
+                </div>
+                <div class="synch-point-wrapper" id="...">
+                    <p>…</p>
+                </div>
+                <div class="synch-point-wrapper" id="...">
+                    <div class="linegroup">
+                        <p class="line">…</p>
+                        <p class="line">…</p>
+                        <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                        <p class="line">…</p>
+                    </div>
+                </div>
+                <div class="synch-point-wrapper" id="...">
+                    <p>…</p>
+                </div>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
