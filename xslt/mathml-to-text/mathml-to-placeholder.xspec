@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="mathml-to-placeholder.xsl"> 
-    <x:scenario label="test translations">
+    
+    <x:scenario label="basic tests">
         <x:context>
             <body>
-                <m:math xml:lang="en" display="block" altimg="test.jpg"/>
-                <m:math xml:lang="nb" display="block"/>
-                <m:math xml:lang="nn" display="block"/>
+                <m:math xml:lang="en" display="block" altimg="test.jpg" alttext="x^2"/>
+                <m:math xml:lang="nb" display="block" altimg="test.jpg"/>
+                <m:math xml:lang="nn" display="block" alttext="x^2"/>
                 <m:math xml:lang="no" display="block"/>
                 <p>Teksten med uttrykket <m:math xml:lang="nb" display="inline" altimg="test.jpg"/> er riktig.</p>
             </body>
         </x:context>
         
         <x:expect label="The result should be as expected">
-            <body xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:m="http://www.w3.org/1998/Math/MathML">
-                <img class="mathml-altimg"
-                    src="test.jpg"
-                    alt="mathematical formula"
-                    xml:lang="en" />
-                <p class="spoken-math"
-                    xml:lang="en">Mathematical formula.</p>
-                <p class="spoken-math"
-                    xml:lang="nb">Matematisk formel.</p>
-                <p class="spoken-math"
-                    xml:lang="nn">Matematisk formel.</p>
-                <p class="spoken-math"
-                    xml:lang="no">Matematisk formel.</p>
-                <p>Teksten med uttrykket <span class="visual-math">
-                    <img class="mathml-altimg"
-                        src="test.jpg"
-                        alt="matematisk formel"
-                        xml:lang="nb" />
-                </span>
-                    <span class="spoken-math"
-                        xml:lang="nb">matematisk formel</span> er riktig.</p>
+            <body xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://www.w3.org/1998/Math/MathML">
+                <figure class="image" xml:lang="en">
+                    <img class="visual-math" src="test.jpg" alt="x^2"/>
+                    <figcaption class="spoken-math">Mathematical formula.</figcaption>
+                </figure>
+                <figure class="image" xml:lang="nb">
+                    <img class="visual-math" src="test.jpg" alt=""/>
+                    <figcaption class="spoken-math">Matematisk formel.</figcaption>
+                </figure>
+                <p class="spoken-math" xml:lang="nn">Matematisk formel.</p>
+                <p class="spoken-math" xml:lang="no">Matematisk formel.</p>
+                <p>Teksten med uttrykket <span class="image" xml:lang="nb">
+                        <img class="visual-math" src="test.jpg" alt=""/>
+                        <span class="spoken-math">matematisk formel</span>
+                    </span> er riktig.</p>
             </body>
         </x:expect>
     </x:scenario>

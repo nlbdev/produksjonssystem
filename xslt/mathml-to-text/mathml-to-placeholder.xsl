@@ -16,7 +16,7 @@
     -->
     
     <!-- Parameters -->
-    <xsl:param name="preserve-mathml-altimg" as="xs:boolean" select="true()"/>
+    <xsl:param name="preserve-visual-math" as="xs:boolean" select="true()"/>
     
     <!-- Output encoding -->
     <xsl:output method="xhtml" indent="yes" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
@@ -38,30 +38,13 @@
     <!-- Block math -->
     <xsl:template match="m:math[@display eq 'block']">
         <xsl:variable name="imgsrc" select="@altimg" as="xs:string?" />
-        <xsl:if test="$preserve-mathml-altimg and ($imgsrc)">
-            <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
-                <xsl:copy-of select="@xml:lang"/>
-            </img>
-        </xsl:if>
         <xsl:choose>
-            <xsl:when test="$preserve-mathml-altimg">
-                <xsl:choose>
-                    <xsl:when test="$imgsrc">
-                        <figure class="image visual-math">
-                            <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
-                                <xsl:copy-of select="@xml:lang"/>
-                            </img> 
-                            <figcaption class="spoken-math"><xsl:value-of select="fnk:translate('placeholder', ., true())"/><xsl:text>.</xsl:text></figcaption>
-                        </figure>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <p class="spoken-math">
-                            <xsl:copy-of select="@id | @xml:lang"/>
-                            <xsl:value-of select="fnk:translate('placeholder', ., true())"/>
-                            <xsl:text>.</xsl:text>
-                        </p>
-                    </xsl:otherwise>
-                </xsl:choose>
+            <xsl:when test="$preserve-visual-math and $imgsrc">
+                <figure class="image">
+                    <xsl:copy-of select="@id | @xml:lang"/>
+                    <img class="visual-math" src="{$imgsrc}" alt="{@alttext}"/>
+                    <figcaption class="spoken-math"><xsl:value-of select="fnk:translate('placeholder', ., true())"/><xsl:text>.</xsl:text></figcaption>
+                </figure>
             </xsl:when>
             <xsl:otherwise>
                 <p class="spoken-math">
@@ -76,29 +59,13 @@
     <!-- Inline math -->
     <xsl:template match="m:math[@display eq 'inline']">
         <xsl:variable name="imgsrc" select="@altimg" as="xs:string?" />
-        <xsl:if test="$preserve-mathml-altimg and $imgsrc">
-            <span class="visual-math">
-                <img class="mathml-altimg" src="{$imgsrc}" alt="{fnk:translate('placeholder', ., false())}">
-                    <xsl:copy-of select="@xml:lang"/>
-                </img>
-            </span>
-        </xsl:if>
         <xsl:choose>
-            <xsl:when test="$preserve-mathml-altimg">
-                <xsl:choose>
-                    <xsl:when test="$imgsrc">
-                        <span class="image visual-math">
-                            <img alt="{fnk:translate('placeholder', ., false())}" src="{$imgsrc}"/>
-                            <span class="figcaption spoken-math"><xsl:value-of select="fnk:translate('placeholder', ., true())"/><xsl:text>.</xsl:text></span>
-                        </span>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <span class="spoken-math">
-                            <xsl:copy-of select="@id | @xml:lang" />
-                            <xsl:value-of select="fnk:translate('placeholder', ., false())"/>
-                        </span>
-                    </xsl:otherwise>
-                </xsl:choose>
+            <xsl:when test="$preserve-visual-math and $imgsrc">
+                <span class="image">
+                    <xsl:copy-of select="@id | @xml:lang"/>
+                    <img class="visual-math" alt="{@alttext}" src="{$imgsrc}"/>
+                    <span class="spoken-math"><xsl:value-of select="fnk:translate('placeholder', ., false())"/></span>
+                </span>
             </xsl:when>
             <xsl:otherwise>
                 <span class="spoken-math">
