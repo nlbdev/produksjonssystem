@@ -316,6 +316,7 @@
                         <nlbbib:lmarc_institution rdf:name="Andre"/>
                         <nlbbib:lmarc_disability rdf:name="Ukjent"/>
                         <nlbbib:lmarc_library rdf:name="NLB"/>
+                        <nlbbib:lmarc_student rdf:name="false"/>
                         <nlbbib:lmarc_libraryAccess rdf:name="NLB"/>
                         <nlbbib:lmarc_libraryAccess rdf:name="Statped"/>
                         <nlbbib:lmarc_melding rdf:name="Fiktiv f.dato.&#xA;linje 2&#xA;linje 3"/>
@@ -803,6 +804,7 @@
                         <nlbbib:lmarc_institution rdf:name="Ingen"/>
                         <nlbbib:lmarc_disability rdf:name="Dysleksi"/>
                         <nlbbib:lmarc_library rdf:name="Statped"/>
+                        <nlbbib:lmarc_student rdf:name="false"/>
                         <nlbbib:lmarc_libraryAccess rdf:name="Statped"/>
                         <nlbbib:lmarc_libraryAccess rdf:name="NLB"/>
                         <nlbbib:lmarc_tlf rdf:name="93200000"/>
@@ -1063,6 +1065,33 @@
                     <rdf:Description rdf:ID="">
                         <rdf:type rdf:resource="http://schema.org/Person"/>
                         <nlbbib:lmarc_automated_loans rdf:name="true"/>
+                    </rdf:Description>
+                </rdf:RDF>
+            </laaner>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Student">
+        <x:context>
+            <laaner>
+                <row>
+                    <lmarc>
+                        <record>
+                            <datafield tag="140" ind1=" " ind2=" ">
+                                <subfield code="a">OS</subfield>
+                            </datafield>
+                        </record>
+                    </lmarc>
+                </row>
+            </laaner>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <laaner>
+                <rdf:RDF>
+                    <rdf:Description rdf:ID="">
+                        <rdf:type rdf:resource="http://schema.org/Person"/>
+                        <nlbbib:lmarc_library rdf:name="NLB"/>
+                        <nlbbib:lmarc_student rdf:name="true"/>
                     </rdf:Description>
                 </rdf:RDF>
             </laaner>

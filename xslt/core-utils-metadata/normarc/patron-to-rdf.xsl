@@ -114,6 +114,11 @@
                             "/>
                         <xsl:with-param name="context" select="."/>
                     </xsl:call-template>
+                    <xsl:call-template name="lmarc">
+                        <xsl:with-param name="name" select="'student'"/>
+                        <xsl:with-param name="value" select="if (. = 'OS') then 'true' else 'false'"/>
+                        <xsl:with-param name="context" select="."/>
+                    </xsl:call-template>
                 </xsl:when>
                 <xsl:when test="@code = 'i'">
                     <xsl:variable name="context" select="."/>

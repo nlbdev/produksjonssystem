@@ -61,7 +61,9 @@
                         <nlbbib:bibliofil-id>17192400</nlbbib:bibliofil-id>
                         <dc:publisher.location>Oslo</dc:publisher.location>
                     </dc:publisher>
-                    <dc:date.available>2017-03-17</dc:date.available>
+                    <dc:date.registered>2019-10-15</dc:date.registered>
+                    <dc:date.ordered>2019-10-16</dc:date.ordered>
+                    <dc:date.available>2019-10-17</dc:date.available>
                     <dc:date.issued>2017</dc:date.issued>
                     <dc:description.abstract>Fra forlagets omtale: Madeline Hyde følger motvillig med ektemannen og deres beste venn til det skotske høylandet på jakt etter sjøormen i Loch Ness - samtidig som et virkelig monster, Hitler, fører krig mot de allierte. I den lille landsbyen har lokalbefolkningen ikke annet forakt til overs for de privilegerte nykommerne. Maddie blir overlatt til seg selv på det isolerte hotellet, der det er mangel på mat og brensel, og et besøk av postbudet kan bety tragiske nyheter.</dc:description.abstract>
                     <dc:format.extent.duration>11 t. 56 min.</dc:format.extent.duration>
@@ -134,7 +136,9 @@
                         <bibliofil-id name="17192400"/>
                         <publisher.location name="Oslo"/>
                     </publisher>
-                    <date.available name="2017-03-17"/>
+                    <date.registered name="2019-10-15"/>
+                    <date.ordered name="2019-10-16"/>
+                    <date.available name="2019-10-17"/>
                     <date.issued name="2017"/>
                     <description.abstract name="Fra forlagets omtale: Madeline Hyde følger motvillig med ektemannen og deres beste venn til det skotske høylandet på jakt etter sjøormen i Loch Ness - samtidig som et virkelig monster, Hitler, fører krig mot de allierte. I den lille landsbyen har lokalbefolkningen ikke annet forakt til overs for de privilegerte nykommerne. Maddie blir overlatt til seg selv på det isolerte hotellet, der det er mangel på mat og brensel, og et besøk av postbudet kan bety tragiske nyheter."/>
                     <format.extent.duration name="11 t. 56 min."/>

@@ -548,8 +548,8 @@
         <x:context>
             <marcxchange:record>
                 <marcxchange:datafield tag="511" ind1=" " ind2=" ">
-                    <marcxchange:subfield code="a">Brage Talesyntese</marcxchange:subfield>
-                    <marcxchange:subfield code="3">19209900</marcxchange:subfield>
+                    <marcxchange:subfield code="a">Fornavn Etternavn</marcxchange:subfield>
+                    <marcxchange:subfield code="3">19209901</marcxchange:subfield>
                 </marcxchange:datafield>
                 
                 <marcxchange:datafield tag="511" ind1=" " ind2=" ">
@@ -560,8 +560,8 @@
         </x:context>
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
-                <meta property="dc:contributor.narrator" id="contributor-511-1">Brage Talesyntese</meta>
-                <meta property="bibliofil-id" refines="#contributor-511-1">19209900</meta>
+                <meta property="dc:contributor.narrator" id="contributor-511-1">Fornavn Etternavn</meta>
+                <meta property="bibliofil-id" refines="#contributor-511-1">19209901</meta>
                 
                 <meta property="dc:contributor.narrator" id="contributor-511-2">Fry, Stephen</meta>
                 <meta property="bibliofil-id" refines="#contributor-511-2">17738500</meta>
@@ -793,6 +793,7 @@
                 <meta property="dc:format.other.no">Lydopptak</meta>
                 <meta property="dc:format.other.no">CD (kompaktplate)</meta>
                 <meta property="dc:format.other.no">Annen tale/annet</meta>
+                <meta property="dc:type.audio">true</meta>
                 <meta property="bookEdition">1</meta>
             </metadata>
         </x:expect>
@@ -1054,6 +1055,149 @@
                 <meta property="dc:type.genre">Non-biography</meta>
                 <meta property="audience">Child</meta>
                 <meta property="typicalAgeRange">6-10</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="access modes (text / audio)">
+        <x:context>
+            <marcxchange:record format="normarc" type="Bibliographic">
+                <marcxchange:controlfield tag="008">171220                j          10nob</marcxchange:controlfield>
+                
+                <marcxchange:datafield tag="697" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Lydbok med tekst</marcxchange:subfield>
+                    <marcxchange:subfield code="3">21203600</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:language>nob</dc:language>
+                <meta property="dc:date.registered">2017-12-20</meta>
+                <meta property="dc:subject.keyword" id="subject-697-1">Lydbok med tekst</meta>
+                <meta property="bibliofil-id" refines="#subject-697-1">21203600</meta>
+                <meta property="dc:type.audio">true</meta>
+                <meta property="dc:type.fiction">true</meta>
+                <meta property="dc:type.genre">Fiction</meta>
+                <meta property="dc:type.genre">Non-biography</meta>
+                <meta property="dc:type.text">true</meta>
+                <meta property="audience">Child</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="TTS">
+        <x:context>
+            <marcxchange:record format="normarc" type="Bibliographic">
+                <marcxchange:controlfield tag="008">171220                j          10nob</marcxchange:controlfield>
+                
+                <marcxchange:datafield tag="511" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Brage Talesyntese</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:language>nob</dc:language>
+                <meta property="dc:contributor.narrator">Brage Talesyntese</meta>
+                <meta property="dc:date.registered">2017-12-20</meta>
+                <meta property="dc:type.audio">true</meta>
+                <meta property="dc:type.fiction">true</meta>
+                <meta property="dc:type.genre">Fiction</meta>
+                <meta property="dc:type.genre">Non-biography</meta>
+                <meta property="dc:type.text">true</meta>
+                <meta property="dc:type.tts">true</meta>
+                <meta property="audience">Child</meta>
+            </metadata>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="audiences">
+        <x:scenario label="adult">
+            <x:context>
+                <marcxchange:record format="normarc" type="Bibliographic">
+                    <marcxchange:controlfield tag="008">171220                a          10nob</marcxchange:controlfield>
+                </marcxchange:record>
+            </x:context>
+            
+            <x:expect label="the metadata should be extracted as expected">
+                <metadata>
+                    <dc:language>nob</dc:language>
+                    <meta property="dc:date.registered">2017-12-20</meta>
+                    <meta property="dc:type.fiction">true</meta>
+                    <meta property="dc:type.genre">Fiction</meta>
+                    <meta property="dc:type.genre">Non-biography</meta>
+                    <meta property="audience">Adult</meta>
+                    <meta property="typicalAgeRange">17-</meta>
+                </metadata>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="adolescent">
+            <x:context>
+                <marcxchange:record format="normarc" type="Bibliographic">
+                    <marcxchange:controlfield tag="008">171220                j          10nob</marcxchange:controlfield>
+                    <marcxchange:datafield tag="019">
+                        <marcxchange:subfield code="a">u,mu</marcxchange:subfield>
+                    </marcxchange:datafield>
+                </marcxchange:record>
+            </x:context>
+            
+            <x:expect label="the metadata should be extracted as expected">
+                <metadata>
+                    <dc:language>nob</dc:language>
+                    <meta property="dc:date.registered">2017-12-20</meta>
+                    <meta property="dc:type.fiction">true</meta>
+                    <meta property="dc:type.genre">Fiction</meta>
+                    <meta property="dc:type.genre">Non-biography</meta>
+                    <meta property="audience">Adolescent</meta>
+                    <meta property="typicalAgeRange">11-16</meta>
+                </metadata>
+            </x:expect>
+        </x:scenario>
+        
+        <x:scenario label="child">
+            <x:context>
+                <marcxchange:record format="normarc" type="Bibliographic">
+                    <marcxchange:controlfield tag="008">171220                j          10nob</marcxchange:controlfield>
+                </marcxchange:record>
+            </x:context>
+            
+            <x:expect label="the metadata should be extracted as expected">
+                <metadata>
+                    <dc:language>nob</dc:language>
+                    <meta property="dc:date.registered">2017-12-20</meta>
+                    <meta property="dc:type.fiction">true</meta>
+                    <meta property="dc:type.genre">Fiction</meta>
+                    <meta property="dc:type.genre">Non-biography</meta>
+                    <meta property="audience">Child</meta>
+                </metadata>
+            </x:expect>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="date sent to production / ordered">
+        <x:context>
+            <marcxchange:record format="normarc" type="Bibliographic">
+                <marcxchange:controlfield tag="008">171220                a          10nob</marcxchange:controlfield>
+                <marcxchange:datafield tag="591">
+                    <marcxchange:subfield code="a">06.08.2001</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <metadata>
+                <dc:language>nob</dc:language>
+                <meta property="dc:date.ordered">2001-08-06</meta>
+                <meta property="dc:date.registered">2017-12-20</meta>
+                <meta property="dc:type.fiction">true</meta>
+                <meta property="dc:type.genre">Fiction</meta>
+                <meta property="dc:type.genre">Non-biography</meta>
+                <meta property="audience">Adult</meta>
+                <meta property="typicalAgeRange">17-</meta>
             </metadata>
         </x:expect>
     </x:scenario>

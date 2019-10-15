@@ -358,4 +358,36 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Date registered, ordered and available">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="612345"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="dc:date.registered" content="2019-10-15"/>
+                <meta name="dc:date.ordered" content="2019-10-16"/>
+                <meta name="dc:date.available" content="2019-10-17"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                    <owl:sameAs rdf:resource="urn:isbn:1234565555"/>
+                    <dc:identifier>612345</dc:identifier>
+                    <schema:isbn>1234-56-5555</schema:isbn>
+                    <dc:date.registered>2019-10-15</dc:date.registered>
+                    <dc:date.ordered>2019-10-16</dc:date.ordered>
+                    <dc:date.available>2019-10-17</dc:date.available>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

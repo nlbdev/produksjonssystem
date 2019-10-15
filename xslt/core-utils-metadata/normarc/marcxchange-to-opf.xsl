@@ -313,9 +313,10 @@
             </xsl:if>
         </xsl:if>
         
+        <xsl:variable name="tag019a" select="../*:datafield[@tag='019']/*:subfield[@code='a']/tokenize(replace(text(),'\s',''),'[,\.\-_]')" as="xs:string*"/>
         <xsl:variable name="ageRanges" as="xs:string*">
             <xsl:sequence select="if ($POS22 = 'a') then '17-INF' else ()"/>
-            <xsl:for-each select="../*:datafield[@tag='019']/*:subfield[@code='a']/tokenize(replace(text(),'\s',''),'[,\.\-_]')">
+            <xsl:for-each select="$tag019a">
                 <xsl:choose>
                     <xsl:when test=".='a'">
                         <xsl:sequence select="'0-5'"/>
@@ -343,21 +344,21 @@
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'typicalAgeRange'"/><xsl:with-param name="value" select="concat($ageRangeFrom,'-',$ageRangeTo)"/></xsl:call-template>
         </xsl:if>
         
-        <!-- 
-            - if 008 POS 22 is 'a', or ageRangeFrom > 13, then use "Adult"
-            - if ageRangeFrom = 13, then use "Adolescent"
-            - if ageRangeFrom < 13, then use "Child"
+        <!--
+            - if 008 POS 22 is 'a', then use "Adult"
+            - else if 019$a contains 'mu', then use "Adolescent"
+            - else, use "Child"
         -->
         <xsl:choose>
-            <xsl:when test="$ageRangeFrom and $ageRangeFrom gt 13 or $POS22='a'">
+            <xsl:when test="$POS22='a'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adult'"/></xsl:call-template>
             </xsl:when>
-            <xsl:when test="$ageRangeFrom and $ageRangeFrom = 13">
+            <xsl:when test="$tag019a = 'mu'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Adolescent'"/></xsl:call-template>
             </xsl:when>
-            <xsl:when test="$ageRangeFrom and $ageRangeFrom lt 13 or $POS22='j'">
+            <xsl:otherwise>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Child'"/></xsl:call-template>
-            </xsl:when>
+            </xsl:otherwise>
         </xsl:choose>
     
         <xsl:choose>
@@ -464,6 +465,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'CD (kompaktplate)'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Compact Disk'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='dd'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -501,6 +503,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Annen tale/annet'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Other voice/other'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='dk'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Lydopptak'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -568,6 +571,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='gb'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -593,6 +597,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Nettressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Web resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='gf'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -621,6 +626,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Elektronisk ressurs'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Electronic resource'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='h'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Tredimensjonal gjenstand'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -672,6 +678,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Physical book'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.braille'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='m'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Dataspill'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -753,6 +760,7 @@
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'E-bøker'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'E-books'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='me'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Playstation 4'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
@@ -798,11 +806,13 @@
                             <!-- non-standard -->
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.braille'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='za'">
                             <!-- non-standard -->
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.braille'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:for-each>
@@ -817,32 +827,40 @@
                     <xsl:choose>
                         <xsl:when test=".='dc'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='dj'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='te'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.braille'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='c'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other.no'"/><xsl:with-param name="value" select="'Musikktrykk'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.other'"/><xsl:with-param name="value" select="'Sheet music'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.braille'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='l'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'Braille'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.no'"/><xsl:with-param name="value" select="'Punktskrift'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.braille'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='gt'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='ge'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='g'">
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'XHTML'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:for-each>
@@ -1049,10 +1067,12 @@
                 <xsl:choose>
                     <xsl:when test="matches(text(),'.*da[i\\ss][si]y[\\.\\s]*.*','i') or matches(text(),'.*2[.\\s]*0?2.*','i')">
                         <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'DAISY 2.02'"/></xsl:call-template>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
                     </xsl:when>
                     <xsl:when test="matches(text(),'.*(dtbook|epub).*','i')">
                         <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type'"/><xsl:with-param name="value" select="'Full Text'"/></xsl:call-template>
                         <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format'"/><xsl:with-param name="value" select="'EPUB'"/></xsl:call-template>
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
                     </xsl:when>
                 </xsl:choose>
             </xsl:for-each>
@@ -1269,6 +1289,12 @@
             <xsl:for-each select="../*:subfield[@code='3'][position() = $pos]">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
+            
+            <xsl:if test="contains(lower-case($contributor-name), 'talesyntese')">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.tts'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
+            </xsl:if>
         </xsl:for-each>
     </xsl:template>
     
@@ -1309,7 +1335,12 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='591']">
-        <!--<xsl:message select="'NORMARC-felt ignorert: 591 LOKALE NOTER'"/>-->
+        <xsl:for-each select="*:subfield[@code='a']">
+            <xsl:variable name="ordered" select="nlb:parseDate(text())"/>
+            <xsl:if test="$ordered">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.ordered'"/><xsl:with-param name="value" select="$ordered"/></xsl:call-template>
+            </xsl:if>
+        </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='592']">
@@ -1742,6 +1773,11 @@
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
+            
+            <xsl:if test="*:subfield[@code='a']/text() = 'Lydbok med tekst'">
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
+            </xsl:if>
         </xsl:if>
     </xsl:template>
     
