@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="create-hidden-headlines.xsl" xmlns:epub="http://www.idpf.org/2007/ops">
+    
+    <x:scenario label="Basic test">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section epub:type="frontmatter titlepage">
+                        <p>Titlepage</p>
+                    </section>
+                    <section epub:type="frontmatter colophon">
+                        <p>Colophon</p>
+                    </section>
+                    <section epub:type="frontmatter foreword">
+                        <p>Foreword</p>
+                        <section epub:type="subchapter">
+                            <p>Foreword subchapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1>Chapter</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <p>Chapter</p>
+                        <section>
+                            <p>Chapter</p>
+                            <section>
+                                <p>Chapter</p>
+                                <section>
+                                    <p>Chapter</p>
+                                </section>
+                            </section>
+                            <section>
+                                <p>Chapter</p>
+                                <section>
+                                    <p>Chapter</p>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter part">
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                            <section epub:type="subchapter">
+                                <p>Chapter</p>
+                                <section>
+                                    <p>Chapter</p>
+                                    <section>
+                                        <p>Chapter</p>
+                                    </section>
+                                </section>
+                            </section>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter part">
+                        <h1>Part</h1>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter part">
+                        <section epub:type="chapter">
+                            <p>Chapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1>Chapter</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="backmatter footnotes">
+                        <p>Footnotes</p>
+                    </section>
+                    <section epub:type="backmatter index">
+                        <p>Index</p>
+                        <section epub:type="subchapter">
+                            <p>Index subchapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="backmatter glossary">
+                        <h1>Glossary</h1>
+                        <p>Glossary</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+
+        <x:expect label="The result should be as expected">
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section epub:type="frontmatter titlepage">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmatter 1</h1>
+                        <p>Titlepage</p>
+                    </section>
+                    <section epub:type="frontmatter colophon">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmatter 2</h1>
+                        <p>Colophon</p>
+                    </section>
+                    <section epub:type="frontmatter foreword">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmatter 3</h1>
+                        <p>Foreword</p>
+                        <section epub:type="subchapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Frontmatter 3.1</h2>
+                            <p>Foreword subchapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter 1</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1>Chapter</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter 3</h1>
+                        <p>Chapter</p>
+                        <section>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 3.1</h2>
+                            <p>Chapter</p>
+                            <section>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter 3.1.1</h3>
+                                <p>Chapter</p>
+                                <section>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter 3.1.1.1</h4>
+                                    <p>Chapter</p>
+                                </section>
+                            </section>
+                            <section>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter 3.1.2</h3>
+                                <p>Chapter</p>
+                                <section>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter 3.1.2.1</h4>
+                                    <p>Chapter</p>
+                                </section>
+                            </section>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter part">
+                        <h1 id="..." class="generated-headline hidden-headline">Part 1</h1>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 4</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 7</h2>
+                            <p>Chapter</p>
+                            <section epub:type="subchapter">
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter 7.1</h3>
+                                <p>Chapter</p>
+                                <section>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter 7.1.1</h4>
+                                    <p>Chapter</p>
+                                    <section>
+                                        <h5 id="..." class="generated-headline hidden-headline">Chapter 7.1.1.1</h5>
+                                        <p>Chapter</p>
+                                    </section>
+                                </section>
+                            </section>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 9</h2>
+                            <p>Chapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter part">
+                        <h1>Part</h1>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 11</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 12</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 14</h2>
+                            <p>Chapter</p>
+                        </section>
+                        <section epub:type="chapter">
+                            <h2>Chapter</h2>
+                            <p>Chapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter part">
+                        <h1 id="..." class="generated-headline hidden-headline">Part 3</h1>
+                        <section epub:type="chapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter 16</h2>
+                            <p>Chapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter 17</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1>Chapter</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter 19</h1>
+                        <p>Chapter</p>
+                    </section>
+                    <section epub:type="backmatter footnotes">
+                        <h1 id="..." class="generated-headline hidden-headline">Backmatter 1</h1>
+                        <p>Footnotes</p>
+                    </section>
+                    <section epub:type="backmatter index">
+                        <h1 id="..." class="generated-headline hidden-headline">Backmatter 2</h1>
+                        <p>Index</p>
+                        <section epub:type="subchapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Backmatter 2.1</h2>
+                            <p>Index subchapter</p>
+                        </section>
+                    </section>
+                    <section epub:type="backmatter glossary">
+                        <h1>Glossary</h1>
+                        <p>Glossary</p>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Translation test">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section epub:type="frontmatter foreword" xml:lang="en" lang="en">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="frontmatter foreword" xml:lang="no" lang="no">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="frontmatter foreword" xml:lang="nb" lang="nb">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="frontmatter foreword" xml:lang="nn" lang="nn">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="en" lang="en">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="no" lang="no">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="nb" lang="nb">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="nn" lang="nn">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="en" lang="en">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="no" lang="no">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="nb" lang="nb">
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="nn" lang="nn">
+                        <p>…</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section epub:type="frontmatter foreword" xml:lang="en" lang="en">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmatter 1</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="frontmatter foreword" xml:lang="no" lang="no">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie 2</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="frontmatter foreword" xml:lang="nb" lang="nb">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie 3</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="frontmatter foreword" xml:lang="nn" lang="nn">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie 4</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="en" lang="en">
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter 1</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="no" lang="no">
+                        <h1 id="..." class="generated-headline hidden-headline">Kapittel 2</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="nb" lang="nb">
+                        <h1 id="..." class="generated-headline hidden-headline">Kapittel 3</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="bodymatter chapter" xml:lang="nn" lang="nn">
+                        <h1 id="..." class="generated-headline hidden-headline">Kapittel 4</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="en" lang="en">
+                        <h1 id="..." class="generated-headline hidden-headline">Backmatter 1</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="no" lang="no">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie 2</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="nb" lang="nb">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie 3</h1>
+                        <p>…</p>
+                    </section>
+                    <section epub:type="backmatter chapter" xml:lang="nn" lang="nn">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie 4</h1>
+                        <p>…</p>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
