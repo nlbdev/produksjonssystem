@@ -8,5 +8,5 @@ psutil==5.4.3
 pybrake==0.4.2
 pydub==0.23.0
 PyYAML==5.1.1
-requests==2.18.4
+requests==2.20.0
 slackclient==2.0.1
