@@ -135,6 +135,7 @@ class Produksjonssystem():
         # self.dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
         # self.dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
+        self.dirs_ranked[-1]["dirs"]["incoming-for-approval"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk-manuell-mottakskontroll")
         self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
 
         self.dirs_ranked.append({
@@ -241,7 +242,9 @@ class Produksjonssystem():
             #                labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
             #  [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
             [IncomingNordic(retry_all=True,
-                            during_working_hours=True),       "incoming",            "master"],
+                            during_working_hours=True),       "incoming",            "incoming-for-approval"],
+            [DummyPipeline("Manuell mottakskontroll",
+                           labels=["EPUB", "Statped"]),       "incoming-for-approval", "master"],
             [NordicToNlbpub(retry_missing=True,
                             overwrite=False,
                             during_working_hours=True,

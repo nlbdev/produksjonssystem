@@ -5,24 +5,23 @@
 # python3 -m unittest tests.testProdsys.py
 #
 
+import glob
+import logging
 import os
 import re
-from shutil import copyfile
-from shutil import copytree
-from shutil import rmtree
 import sys
 import threading
-import logging
 import time
-import glob
+import zipfile
+from shutil import copyfile, copytree, rmtree
 
 # import produksjonssystem from relative directory
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 prodsys_path = os.path.join(project_root, "produksjonssystem")
 sys.path.insert(0, prodsys_path)
-from produksjonssystem import run
-from core.pipeline import DummyPipeline
 from core.config import Config
+from core.pipeline import DummyPipeline
+from produksjonssystem import run
 
 # make target directory
 target_path = os.path.join(project_root, "target", "system")
@@ -93,6 +92,10 @@ news_identifier = "611823190315"
 identifiers = ["558237", "115437", "221437", "356837", "406837", audio_identifier, news_identifier]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
 copyfile(file_path, os.path.join(prodsys.dirs["incoming"], os.path.basename(file_path)))
+dir_path = os.path.join(prodsys.dirs["master"], identifiers[0])
+os.makedirs(dir_path, exist_ok=True)
+with zipfile.ZipFile(file_path, "r") as zip_ref:
+    zip_ref.extractall(dir_path)
 
 audio_path = os.path.join(os.path.dirname(__file__), audio_identifier)
 copytree(audio_path, os.path.join(book_archive_dirs["share"], "daisy202", audio_identifier))
