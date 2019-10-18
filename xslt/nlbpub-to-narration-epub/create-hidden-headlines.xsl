@@ -14,7 +14,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="section[not(exists(h1 | h2 | h3 | h4 | h5 | h6))]">
+    <xsl:template match="section[not(exists(h1 | h2 | h3 | h4 | h5 | h6)) and not(ancestor-or-self::section/f:types(.) = 'cover')]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             
