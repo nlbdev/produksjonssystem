@@ -101,19 +101,28 @@ class NLBpubToDocx(Pipeline):
             process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
                                                  html_file,
                                                  os.path.join(temp_docxdir, epub.identifier() + ".docx"),
+						 "--chapter=/",
+  						 "--chapter-mark=none",
+ 						 "--page-breaks-before=/",
                                                  "--no-chapters-in-toc",
                                                  "--toc-threshold=0",
                                                  "--docx-page-size=a4",
                                              #   "--linearize-tables",
-                                                 "--extra-css=os.path.join(Xslt.xslt_dir, self.uid, 'extra.css')",
-                                                 "--embed-font-family=Verdana",   # microsoft fonts must be installed (sudo apt-get install ttf-mscorefonts-installer)
+
+                                              #  "--extra-css=/home/statped/Dokumenter/produksjonssystem/xslt/nlbpub-to-docx/extra.css",
+  						# Denne vil ikke virke "--extra-css=os.path.join(Xslt.xslt_dir, self.uid, 'extra.css')",
+						# Denne vil ikke virke"--extra-css=os.path.join(Xslt.xslt_dir,'prepare-for-docx', 'extra.css')",
+						# Calibre håndterer ikke python variable eller uttrykk
+						 "--embed-font-family=Verdana",   # microsoft fonts must be installed (sudo apt-get install ttf-mscorefonts-installer)
                                                  "--docx-page-margin-top=42",
                                                  "--docx-page-margin-bottom=42",
                                                  "--docx-page-margin-left=70",
                                                  "--docx-page-margin-right=56",
-						 "--language="+language,
-                                                 "--base-font-size=13",
-                                                 "--font-size-mapping=13,13,13,13,13,13,13,13"])
+						# Denne vil ikke virke "--language="+language,
+                                                 #"--base-font-size=13"])
+						 "--remove-paragraph-spacing",
+  						"--font-size-mapping=12,12,12,12,12,12,12,12"])
+                                               
 
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")

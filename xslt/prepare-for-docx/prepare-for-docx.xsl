@@ -27,7 +27,7 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-
+   
     <xsl:template match="h3[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
@@ -88,7 +88,7 @@
 
     <xsl:template match="span[f:types(.) = 'pagebreak']">
         <xsl:if
-            test="not(exists(ancestor::h1 | ancestor::h2 | ancestor::h3 | ancestor::h4 | ancestor::h5 | ancestor::h6 | ancestor::p))">
+            test="not(exists(ancestor::h1 | ancestor::h2 | ancestor::h3 | ancestor::h4 | ancestor::h5 | ancestor::h6  | ancestor::p))">
                <xsl:call-template name="create-pagebreak"/>
         </xsl:if>
     </xsl:template>
@@ -116,88 +116,86 @@
     
     <xsl:template match="img">
         <xsl:variable name="is-inside-figure"
-            select="exists(parent::figure[f:classes(.) = 'image'])"/>
-
+        select="exists(parent::figure[f:classes(.) = 'image'])"/>
         <xsl:if test="string-length(@alt) gt 0">
-            <xsl:if test="not($is-inside-figure)">
-                <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Bilde:}}</p>
-                
-            </xsl:if>
-            
-                <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="concat('Forklaring: ', @alt)"/></p>
-            
-            <xsl:if test="not($is-inside-figure)">
-                <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p> 
-             </xsl:if>
+        <xsl:if test="not($is-inside-figure)">
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Bilde:}}</p>                
+        </xsl:if>            
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="concat('Forklaring: ', @alt)"/></p>
+        <xsl:if test="not($is-inside-figure)">
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p> 
+        </xsl:if>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="figure[f:classes(.) = 'image']">
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Bilde:}}</p>
-        
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Bilde:}}</p>        
         <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
+        <xsl:apply-templates select="@*"/>
+        <xsl:apply-templates select="node()"/>
         </xsl:copy>
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p> 
-     
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>     
     </xsl:template>
     
    
 
     <xsl:template match="figure[f:classes(.) = 'image']/aside">
-       <!-- <xsl:copy exclude-result-prefixes="#all"> -->
-        <!--    <xsl:apply-templates select="node()"/> -->
-            
-            <xsl:choose>
-                <xsl:when test="exists(p)">
-                 
-                    <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="node()"/></p>
+                <xsl:choose>
+                <xsl:when test="exists(p)">                 
+                <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="p"/></p> 
+                <xsl:if test="exists(ul)"> 
+                <ul>
+                <xsl:for-each select="ul/li">
+                <li>
+                <xsl:text>-- </xsl:text>
+                <xsl:value-of select="text()"/>
+                </li>
+                </xsl:for-each>
+                </ul>   
+                </xsl:if> 
                 </xsl:when>
                 <xsl:otherwise>
-                    
-                    <xsl:text>Bildetekst: </xsl:text>
-                    
-                </xsl:otherwise>
-                
-            </xsl:choose>
-            
-          
-      <!--  </xsl:copy> -->
+                <xsl:text>Bildetekst: </xsl:text>
+                </xsl:otherwise>              
+            </xsl:choose> 
+        <!--  </xsl:copy> -->
+    </xsl:template>    
+    <xsl:template match="figure[f:classes(.) = 'image']/aside/ul/li">
+    <li>
+    <xsl:text>-- </xsl:text>
+    <xsl:apply-templates select="text()"/>
+    </li>     
     </xsl:template>
+    
     <xsl:template match="figure[f:classes(.) = 'image']/figcaption">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-
-            <xsl:choose>
-                 <xsl:when test="exists(p)">
-                     <p>{{Bildetekst:}}</p>
-                   </xsl:when>
-                <xsl:otherwise>
-                   
-                        <xsl:text>Bildetekst: </xsl:text>
-                
-                </xsl:otherwise>
-                
-            </xsl:choose>
-
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
+    <xsl:copy exclude-result-prefixes="#all">
+    <xsl:apply-templates select="@*"/>
+    <xsl:choose>
+    <xsl:when test="exists(p)">
+ 
+      <xsl:text>Bildetekst: </xsl:text> 
+    </xsl:when>
+    <xsl:otherwise>                   
+    <xsl:text>Bildetekst: </xsl:text>                
+    </xsl:otherwise>                
+    </xsl:choose>
+    <xsl:apply-templates select="node()"/>
+    </xsl:copy>
     </xsl:template>
 
     <xsl:template match="section[f:types(.) = 'toc']">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
+    <xsl:copy exclude-result-prefixes="#all">
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="node()"/>
+    </xsl:copy>
     </xsl:template>
 
     <xsl:template match="ol[parent::section[f:types(.) = 'toc']]">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-            <li  lang="no" xml:lang="no">xxx1 <a href="#statped_merknad">Merknad</a></li>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
+    <xsl:copy exclude-result-prefixes="#all">
+    <xsl:apply-templates select="@*"/>
+    <li  lang="no" xml:lang="no">xxx1 <a href="#statped_merknad"> <span class="lic">Merknad</span></a></li>
+    <xsl:apply-templates select="node()"/>
+    </xsl:copy>
     </xsl:template>
     
     <xsl:template match="ol[ancestor::section[f:types(.) = 'toc'] and count(ancestor::li) ge 2]"/>
@@ -346,7 +344,7 @@
             <xsl:apply-templates select="section[f:types(.) = 'toc']"/>
            
             <section>
-                <h1 lang="no" xml:lang="no">xxx1 Merknad</h1>
+                <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Merknad</h1>
                 <p lang="no" xml:lang="no">-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de fire overskriftsnivåene som er merket med xxx.</p>
                 <p lang="no" xml:lang="no">-- Rammetekster og bilder som dukker opp midt i løpende tekst, er flyttet, slik at de står etter den løpende teksten, foran neste overskrift.</p>
                 <p lang="no" xml:lang="no">-- Sidetallet står øverst på siden, på egen linje, med åpen linje over, slik:</p>
@@ -369,7 +367,7 @@
    
     
     <!-- _______________________________ -->
-    <xsl:template match="p/em">
+    <xsl:template match="em">
         <!-- replace em with '_' -->
       
         <xsl:text>_</xsl:text>
@@ -378,8 +376,8 @@
         
     
     </xsl:template>
-    <xsl:template match="p/strong">
-        <!-- replace em with '_' -->
+    <xsl:template match="strong">
+        <!-- replace strong with '_' -->
         
         <xsl:text>_</xsl:text>
         <xsl:apply-templates select="node()"/>
@@ -387,6 +385,17 @@
         
         
     </xsl:template>
+    
+    <xsl:template match="li/a/span/strong">
+        <!-- replace string with '' (ref toc) -->
+        
+        <xsl:text></xsl:text>
+        <xsl:apply-templates select="node()"/>
+        <xsl:text></xsl:text>
+        
+        
+    </xsl:template>
+    
     <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/strong">
         <xsl:apply-templates select="node()"/>
         <xsl:text>.</xsl:text>
@@ -402,6 +411,25 @@
         <xsl:apply-templates select="node()"/>
         <xsl:text>.</xsl:text>
     </xsl:template> 
+    
+    <xsl:template match="ul/li">
+        <li>
+        <xsl:text>-- </xsl:text>
+        <xsl:apply-templates select="node()"/>
+        </li>
+    </xsl:template> 
+    
+    <xsl:template match="ul/li/p">
+        <li>
+            <xsl:text>-- </xsl:text>
+            <xsl:apply-templates select="node()"/>
+        </li>
+    </xsl:template> 
+    
+    <xsl:template match="figcaption/p">
+            <xsl:apply-templates select="text()"/>        
+    </xsl:template> 
+    
     
     <xsl:template match="head">
         

@@ -39,7 +39,9 @@
         <x:expect label="Pagebreak avoided">
             <head>
                 <meta charset="UTF-8" />
-                <style>div.pagebreak { page-break-after:avoid; }</style>
+                <style>  
+                    div.pagebreak {page-break-after:avoid;}                    
+                </style>
             </head>
         </x:expect>
     </x:scenario>
@@ -59,8 +61,6 @@
         </x:expect>
     </x:scenario>
     
-    
-   
     <x:scenario label="Transform definition list to unordered list">
         <x:context>
             
@@ -237,60 +237,6 @@
         </x:expect>
     </x:scenario> 
     
-    <x:scenario label="Insert -- in unordered list in aside">
-        <x:context>
-            
-                    <ul>
-                        <li>Irak: 21.000</li>
-                        <li>Somalia: 20.000</li>
-                        <li>Iran: 12.700</li>
-                        <li>Bosnia Hercegovina: 12.200</li>
-                        <li>Vietnam: 11.500</li>
-                        <li>Afghanistan: 11.000</li>
-                        <li>Kosovo: 8.500</li>
-                        <li>Eritrea: 7.600</li>
-                        <li>Sri Lanka: 6.500</li>
-                        <li>Russland: 5.000</li>
-                        <li>Chile: 4.900</li>
-                        <li>Etiopia: 4.000</li>
-                        <li>Myanmar/Burma: 2.700</li>
-                        <li>Det palestinske området: 2.700</li>
-                        <li>Tyrkia: 2.500</li>
-                        <li>Pakistan: 1.800</li>
-                        <li>Kongo: 1.700</li>
-                        <li>Kroatia: 1.700</li>
-                        <li>Sudan 1.400 </li>
-                    </ul>
-        </x:context>
-        
-        <x:expect label="-- should be inserted in unordered list in aside">  
-                            
-                    <ul>
-                        <li>-- Irak: 21.000</li>
-                        <li>-- Somalia: 20.000</li>
-                        <li>-- Iran: 12.700</li>
-                        <li>-- Bosnia Hercegovina: 12.200</li>
-                        <li>-- Vietnam: 11.500</li>
-                        <li>-- Afghanistan: 11.000</li>
-                        <li>-- Kosovo: 8.500</li>
-                        <li>-- Eritrea: 7.600</li>
-                        <li>-- Sri Lanka: 6.500</li>
-                        <li>-- Russland: 5.000</li>
-                        <li>-- Chile: 4.900</li>
-                        <li>-- Etiopia: 4.000</li>
-                        <li>-- Myanmar/Burma: 2.700</li>
-                        <li>-- Det palestinske området: 2.700</li>
-                        <li>-- Tyrkia: 2.500</li>
-                        <li>-- Pakistan: 1.800</li>
-                        <li>-- Kongo: 1.700</li>
-                        <li>-- Kroatia: 1.700</li>
-                        <li>-- Sudan 1.400 </li>
-                    </ul>           
-                 
-        </x:expect>
-    </x:scenario> 
-    
-  
     <x:scenario label="Table of contents">
         <x:context>
             <section epub:type="frontmatter toc" id="level1_4">
@@ -558,7 +504,22 @@
                 <figure class="image"><img alt="foto" src="images/861011-001.jpg" />
                     <aside class="prodnote" epub:type="z3998:production" id="aside_1">
                         <p>Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>
-                     </aside>
+                        <ul>
+                            <li>Meir enn 50%: Vest-Sahara, Mali, Sierra Leone, Burkina Faso,
+                                Nigeria, Tsjad, Den sentralafrikanske republikk, Den
+                                demokratiske republikken Kongo, Zambia, Angola, Tanzania,
+                                Malawi, Mosambik, Madagaskar, Nepal</li>
+                            <li>20,0-49,9%: Mauritania, Senegal, Gambia, Guinea Bissau, Guinea,
+                                Elfenbenskysten, Ghana, Togo, Benin, Niger, Uganda, Etiopia,
+                                Honduras, El Salvador, India, Pakistan, Mongolia, Bangladesh,
+                                Bhutan, Tasjikistan, Usbekistan, Laos, Kambodsja,
+                                Filipinane</li>
+                            <li>10,0-19,9%: Sør-Afrika, Kenya, Jemen, Kina, Turkmenistan,
+                                Vietnam, Indonesia, Papua, Georgia, Colombia, Paraguay, Bolivia,
+                                Guatemala, Nicaragua</li>
+                            <li>10,0% eller ingen data: resten av verda </li>
+                        </ul>
+                    </aside>
                 </figure>
                
                 <figure class="image">
@@ -584,28 +545,55 @@
         </x:context>
 
         <x:expect label="removed image; optionally replace with alt text">
-            <div>              
+            <div>
+              
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
                 <p lang="no" xml:lang="no">Forklaring: image</p>
-                <p lang="no" xml:lang="no">{{Slutt}}</p>                         
+                <p lang="no" xml:lang="no">{{Slutt}}</p>
+              
+                
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
                 <p lang="no" xml:lang="no">Forklaring: God Bildetekst</p>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
+               
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
+             
                 <figure class="image">   
-                <p lang="no" xml:lang="no">Forklaring: foto</p><p lang="no" xml:lang="no">Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>                    
+                 <p lang="no" xml:lang="no">Forklaring: foto</p><p lang="no" xml:lang="no">
+                 Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.
+                 </p>
+                    <ul>
+                        <li>-- Meir enn 50%: Vest-Sahara, Mali, Sierra Leone, Burkina Faso,
+                            Nigeria, Tsjad, Den sentralafrikanske republikk, Den
+                            demokratiske republikken Kongo, Zambia, Angola, Tanzania,
+                            Malawi, Mosambik, Madagaskar, Nepal</li>
+                        <li>-- 20,0-49,9%: Mauritania, Senegal, Gambia, Guinea Bissau, Guinea,
+                            Elfenbenskysten, Ghana, Togo, Benin, Niger, Uganda, Etiopia,
+                            Honduras, El Salvador, India, Pakistan, Mongolia, Bangladesh,
+                            Bhutan, Tasjikistan, Usbekistan, Laos, Kambodsja,
+                            Filipinane</li>
+                        <li>-- 10,0-19,9%: Sør-Afrika, Kenya, Jemen, Kina, Turkmenistan,
+                            Vietnam, Indonesia, Papua, Georgia, Colombia, Paraguay, Bolivia,
+                            Guatemala, Nicaragua</li>
+                        <li>-- 10,0% eller ingen data: resten av verda </li>
+                    </ul>  
                 </figure>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
+                
+                
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
                 <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image</p><figcaption>Bildetekst: figcaption-image</figcaption></figure>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
+                
+
                 <figure class="image-series">
-                <p lang="no" xml:lang="no">{{Bilde:}}</p>
-                <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-1</p><figcaption>Bildetekst: <span>figcaption-image-series-1</span></figcaption></figure>
-                <p lang="no" xml:lang="no">{{Slutt}}</p>       
-                <p lang="no" xml:lang="no">{{Bilde:}}</p>
-                <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-2</p><figcaption>Bildetekst: figcaption-image-series-2</figcaption></figure>
-                <p lang="no" xml:lang="no">{{Slutt}}</p>
+                  
+                    <p lang="no" xml:lang="no">{{Bilde:}}</p>
+                    <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-1</p><figcaption>Bildetekst: <span>figcaption-image-series-1</span></figcaption></figure>
+                    <p lang="no" xml:lang="no">{{Slutt}}</p>       
+                    <p lang="no" xml:lang="no">{{Bilde:}}</p>
+                    <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-2</p><figcaption><p>Bildetekst:</p>figcaption-image-series-2</figcaption></figure>
+                    <p lang="no" xml:lang="no">{{Slutt}}</p>
                 </figure>
             </div>
         </x:expect>
@@ -687,7 +675,7 @@
                     <p lang="no" xml:lang="no">Mangfold - no/en<br/>(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br/>Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
                     <p lang="no" xml:lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>Oslo 2018, Statped læringsressurser og teknologiutvikling.</p>
                     <section>
-                        <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Merknad</h1>
+                        <h1 lang="no" xml:lang="no">xxx1 Merknad</h1>
                         <p lang="no" xml:lang="no">-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de fire overskriftsnivåene som er merket med xxx.</p>
                         <p lang="no" xml:lang="no">-- Rammetekster og bilder som dukker opp midt i løpende tekst, er flyttet, slik at de står etter den løpende teksten, foran neste overskrift.</p>
                         <p lang="no" xml:lang="no">-- Sidetallet står øverst på siden, på egen linje, med åpen linje over, slik:</p>
