@@ -54,7 +54,8 @@
 
             <!-- Hvordan notereferansen håndteres er avhengig av om noten skal flyttes eller ikke og av om det er samsvar mellom referansetekst og start på noten -->
 
-            <xsl:if test="not(fnk:noten-skal-flyttes($noten)) or not(starts-with(normalize-space($noten), normalize-space(current())) and matches(substring(normalize-space($noten), string-length(normalize-space(current())) + 1), '[^\wæøåÆØÅ]* +\p{Lu}'))">
+            <!-- legg inn "Note " etterfulgt av referansen -->
+            <xsl:if test="not(starts-with(normalize-space($noten), normalize-space(current())) and matches(substring(normalize-space($noten), string-length(normalize-space(current())) + 1), '[^\wæøåÆØÅ]* +\p{Lu}'))">
                 <!-- Noten skal ikke flyttes, eller noten starter ikke med samme tekst som notereferansen, så legg inn "Note " etterfulgt av referansen -->
                 <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
                     <xsl:with-param name="informasjon" as="xs:string" select="'Note '"/>
@@ -66,157 +67,15 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="*[fnk:is-block(.) and fnk:is-inline((node(),.)[1]) and descendant::a[tokenize(@epub:type, '\s+') = 'noteref']]">
-        <!-- Block element with inline content. Typically a <p>. Has a noteref descendant. -->
-        
-        <!-- Handle the element the way it normally would be handled. -->
-        <xsl:next-match/>
-        
-        <!-- find notes shat should be moved to after this element -->
-        <xsl:variable name="note-ids" as="xs:string*" select="descendant::a[tokenize(@epub:type, '\s+') = 'noteref']/substring-after(@href, '#')"/>
-        <xsl:variable name="notes" as="element()*" select="//*[@id = $note-ids and fnk:noten-skal-flyttes(.)]"/>
-        
-        <!-- these notes should be moved here -->
-        <xsl:for-each select="$notes">
-            <!-- Prosesser noten her, men i en spesiell mode for å få vekk uønsket markup og uønskede elementer -->
-            <xsl:if test="fnk:noten-skal-flyttes(.)">
-                <xsl:for-each select=".">
-                    <xsl:copy exclude-result-prefixes="#all">
-                        <xsl:apply-templates select="@* | node()" mode="note-etter-referanse"/>
-                        <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
-                            <xsl:with-param name="informasjon" as="xs:string">
-                                <xsl:choose>
-                                    <xsl:when test="$SPRÅK.en">
-                                        <xsl:text>End of note</xsl:text>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:text>Note slutt</xsl:text>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:with-param>
-                        </xsl:call-template>
-                    </xsl:copy>
-                </xsl:for-each>
-            </xsl:if>
-        </xsl:for-each>
+    <!-- add "end of note" text -->
+    <xsl:template match="*[tokenize(@epub:type, '\s+') = ('note', 'footnote', 'endnote', 'rearnote')]">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* | node()" mode="note-etter-referanse"/>
+            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
+                <xsl:with-param name="informasjon" as="xs:string" select="if ($SPRÅK.en) then 'End of note' else 'Note slutt'"/>
+            </xsl:call-template>
+        </xsl:copy>
     </xsl:template>
-    
-    <!-- remove moved notes from their original location -->
-    <xsl:template match="*[tokenize(@epub:type, '\s+') = ('note', 'footnote', 'endnote', 'rearnote') and fnk:noten-skal-flyttes(.)]"/>
-
-    <xsl:template match="ol[li[@class eq 'notebody']]">
-        <xsl:choose>
-            <xsl:when
-                test="
-                    every $li in li[@class eq 'notebody']
-                        satisfies not(fnk:noten-skal-flyttes($li))">
-                <!-- Ingen av notene skal flyttes til referansen, så prosesser som vanlig -->
-<!--                <xsl:message>A: Ingen flyttes</xsl:message>-->
-                <xsl:next-match/>
-            </xsl:when>
-            <xsl:when
-                test="
-                    every $li in li
-                        satisfies ($li[@class eq 'notebody'] and fnk:noten-skal-flyttes($li))">
-                <!-- Listen består bare av noter, og alle notene skal flyttes til referansene, så vi trenger ikke listen, men beholder sidetallene, hvis de finnes. Men først; legg inn passende informasjon: -->
-<!--                <xsl:message>B: Alle flyttes</xsl:message>-->
-                <p>
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>Notes are read where they appear in the text.</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="$SPRÅK.nn">
-                            <xsl:text>Notane er lesne der dei opptrer i teksten.</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>Notene er lest der de opptrer i teksten.</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </p>
-                <xsl:if test="exists(descendant::*[fnk:epub-type(@epub:type, 'pagebreak')])">
-                    <p>
-                        <xsl:copy-of select="descendant::*[fnk:epub-type(@epub:type, 'pagebreak')]"
-                        />
-                    </p>
-                </xsl:if>
-
-            </xsl:when>
-            <xsl:otherwise>
-                <!-- Bare noen av listepunktene er noter, eller bare noen av notene skal flyttes, så må prosessere listen, men bare de notepunktene som ikke skal flyttes.
-                    Alle sidetallene hentes ut og plasseres i eget avsnitt etter listen. 
-                    Listepunkter må prosesseres slik at de ikke tar med sidetall.
-                    Men først litt info:
-                -->
-<!--                <xsl:message>C: Noen flyttes</xsl:message>-->
-                <p>
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>Notes are read where they appear in the text, except:</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="$SPRÅK.nn">
-                            <xsl:text>Notane er lesne der dei opptrer i teksten, bortsett frå:</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>Notene er lest der de opptrer i teksten, bortsett fra:</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </p>
-                <xsl:apply-templates select="." mode="liste-med-noter"/>
-                <xsl:if test="exists(descendant::*[fnk:epub-type(@epub:type, 'pagebreak')])">
-                    <p>
-                        <xsl:copy-of select="descendant::*[fnk:epub-type(@epub:type, 'pagebreak')]"
-                        />
-                    </p>
-                </xsl:if>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    
-    <xsl:template match="li[@class eq 'notebody'][fnk:noten-skal-flyttes(.)]" mode="liste-med-noter">
-        <!-- Dette matcher noter som skal flyttes til etter referansen, så ignorer dette elementet -->
-    </xsl:template>
-    
-    <!-- Tar bort sideskift fra noten. Denne moden brukes bare dersom det er noter som er flyttet -->
-    <xsl:template match="*[fnk:epub-type(@epub:type, 'pagebreak')]" mode="liste-med-noter"/>
-
-
-    <!-- Tar bort sideskift fra noten når den plasseres etter referansen -->
-    <xsl:template match="*[fnk:epub-type(@epub:type, 'pagebreak')]" mode="note-etter-referanse"/>
-
-    <xsl:function name="fnk:noten-skal-flyttes" as="xs:boolean">
-        <xsl:param name="noten" as="element()"/>
-        
-        <xsl:choose>
-            <xsl:when
-                test="
-                    every $child in $noten/descendant::element()
-                        satisfies matches(local-name($child), '^(em|strong|sup|sub|i|b|abbr|acronym|code|dfn|span)$')">
-                <!-- Bare inline-elementer -->
-                <xsl:value-of select="true()"/>
-            </xsl:when>
-            <xsl:when
-                test="
-                    every $child in $noten/child::element()
-                        satisfies ((local-name($child) eq 'p') and (every $child-of-p in $child/descendant::element()
-                            satisfies matches(local-name($child-of-p), '^(em|strong|sup|sub|i|b|abbr|acronym|code|dfn|span)$')))">
-                <!-- Alle barn i noten er p-elementer, og disse inneholder på sin side bare tillatte inline-elementer -->
-                <xsl:value-of select="true()"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="false()"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-
-    <xsl:function name="fnk:noten-har-p-som-barn" as="xs:boolean">
-        <xsl:param name="noten" as="element()"/>
-
-        <xsl:value-of
-            select="
-                every $child in $noten/child::element()
-                    satisfies local-name($child) eq 'p'"
-        />
-    </xsl:function>
     
     <xsl:function name="fnk:is-block" as="xs:boolean">
         <xsl:param name="context" as="element()"/>

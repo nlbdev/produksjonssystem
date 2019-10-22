@@ -74,11 +74,11 @@
                     <p class="nlb-ekstra-informasjon">Note slutt</p>
                 </aside>
                 <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2"><span class="nlb-ekstra-informasjon">Note </span>ref</a> …</p>
+                <p>…</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-2">
                     <p>Notetekst</p>
                     <p class="nlb-ekstra-informasjon">Note slutt</p>
                 </aside>
-                <p>…</p>
             </section>
         </x:expect>
     </x:scenario>
