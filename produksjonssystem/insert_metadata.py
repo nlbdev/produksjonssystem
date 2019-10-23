@@ -81,7 +81,7 @@ class InsertMetadata(Pipeline):
                 return False
         temp_epub.refresh_metadata()
 
-        self.utils.report.info("Boken ble oppdatert med format-spesifik metadata. Kopierer til {}-arkiv.".format(self.publication_format))
+        self.utils.report.info("Boken ble oppdatert med format-spesifikk metadata. Kopierer til {}-arkiv.".format(self.publication_format))
 
         archived_path, stored = self.utils.filesystem.storeBook(temp_epub.asDir(), epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
