@@ -36,27 +36,4 @@
         </xsl:choose>
     </xsl:variable>-->
     
-    
-    <!-- Analyserer struktur -->
-    <xsl:variable name="STRUKTUR.level1" as="element()*"
-        select="//body/section[contains(@epub:type, 'bodymatter')]"/>
-    <xsl:variable name="STRUKTUR.level1.typer" as="xs:string*"
-        select="
-        distinct-values(
-        for $e in $STRUKTUR.level1
-        return
-        normalize-space(substring-after($e/@epub:type, 'bodymatter'))
-        )"/>
-    <xsl:variable name="STRUKTUR.level2" as="element()*"
-        select="//body/section[contains(@epub:type, 'bodymatter')]/section"/>
-    <xsl:variable name="STRUKTUR.level3" as="element()*"
-        select="//body/section[contains(@epub:type, 'bodymatter')]/section/section"/>
-    <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean"
-        select="exists(//*[@epub:type eq 'pagebreak'])"/>
-    <xsl:variable name="STRUKTUR.dybde" as="xs:integer"
-        select="
-        max(for $e in //section
-        return
-        count($e/ancestor-or-self::section))"/>
-    
 </xsl:stylesheet>

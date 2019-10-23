@@ -163,4 +163,12 @@
         </xsl:copy>
     </xsl:template>-->
     
+    <!-- conditionally keep page numbers -->
+    <xsl:template match="*[tokenize(@epub:type,'\s+')='pagebreak']">
+        <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean" select="count(//*[@epub:type eq 'pagebreak']) gt 1"/>
+        <xsl:if test="$STRUKTUR.har-sidetall">
+            <xsl:next-match/>
+        </xsl:if>
+    </xsl:template>
+    
  </xsl:stylesheet>

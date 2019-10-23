@@ -83,4 +83,45 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Remove page break if there's only one page break">
+        <x:context>
+            <html xml:lang="nb" lang="nb">
+                <head>
+                    <meta name="dc:language" value="nb"/>
+                    <meta name="dc:publisher.original" value="NLB"/>
+                    <meta name="dc:publisher.location.original" value="Oslo"/>
+                    <meta name="dc:date.issued.original" value="2019"/>
+                </head>
+                <body>
+                    <section id="ch1-19">
+                        <p>…<span epub:type="pagebreak" class="page-normal" title="1" id="pagebreak1"></span>…</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect select="exists(/*:html/*:body/*:section[@id='nb-level1-om-boka']//*:p[ends-with(text(), 'Boka inneholder ikke sidetall.')])" test="true()"/>
+    </x:scenario>
+    
+    <x:scenario label="Don't remove page breaks if there's multiple page breaks">
+        <x:context>
+            <html xml:lang="nb" lang="nb">
+                <head>
+                    <meta name="dc:language" value="nb"/>
+                    <meta name="dc:publisher.original" value="NLB"/>
+                    <meta name="dc:publisher.location.original" value="Oslo"/>
+                    <meta name="dc:date.issued.original" value="2019"/>
+                </head>
+                <body>
+                    <section id="ch1-19">
+                        <p>…<span epub:type="pagebreak" class="page-normal" title="1" id="pagebreak2"></span>…</p>
+                        <p>…<span epub:type="pagebreak" class="page-normal" title="2" id="pagebreak3"></span>…</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect select="exists(/*:html/*:body/*:section[@id='nb-level1-om-boka']//*:p[ends-with(text(), 'og er på 2 sider.')])" test="true()"/>
+    </x:scenario>
+    
 </x:description>

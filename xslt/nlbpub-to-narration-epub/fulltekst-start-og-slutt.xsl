@@ -9,7 +9,7 @@
         
         Per Sennels, 14.02.2018
     -->
-
+    
     <xsl:template name="generer-startinformasjon">
         <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
         
@@ -287,6 +287,13 @@
     </xsl:template>
 
     <xsl:template name="info-om-boka">
+        <!-- Analyserer struktur -->
+        <xsl:variable name="STRUKTUR.level1" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]"/>
+        <xsl:variable name="STRUKTUR.level1.typer" as="xs:string*" select="distinct-values(for $e in $STRUKTUR.level1 return normalize-space(substring-after($e/@epub:type, 'bodymatter')))"/>
+        <xsl:variable name="STRUKTUR.level2" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]/section"/>
+        <xsl:variable name="STRUKTUR.level3" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]/section/section"/>
+        <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean" select="count(//*[@epub:type eq 'pagebreak']) gt 1"/>
+        
         <section epub:type="frontmatter" id="nlb-level1-om-boka">
             <h1>
                 <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
@@ -299,8 +306,6 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </h1>
-
-
 
             <xsl:choose>
                 <xsl:when test="$SPRÅK.en">
@@ -700,6 +705,8 @@
 
     <xsl:template name="info-om-den-tilrettelagte-utgaven">
         <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="STRUKTUR.dybde" as="xs:integer" select="max(for $e in //section return count($e/ancestor-or-self::section))"/>
+        <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean" select="count(//*[@epub:type eq 'pagebreak']) gt 1"/>
         
         <section epub:type="frontmatter" id="nlb-level1-om-lydboka">
             <h1>
