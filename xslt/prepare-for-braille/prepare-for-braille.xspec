@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xpath-default-namespace="http://www.w3.org/1999/xhtml"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="prepare-for-braille.xsl">
+
+    <x:scenario label="Remove newlines from title elements (test for https://github.com/nlbdev/pipeline/issues/226)">
+        <x:context xml:space="preserve"><title>  Test
+        test  </title></x:context>
+
+        <x:expect label="the result should be as expected" xml:spec="preserve"><title>Test test</title></x:expect>
+    </x:scenario>
+
+</x:description>
