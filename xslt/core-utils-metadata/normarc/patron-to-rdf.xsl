@@ -71,6 +71,10 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:next-match/>
+                <xsl:variable name="name-parsed" select="f:parse-name(.)" as="xs:string*"/>
+                <nlbbib:ln_navn_fornavn rdf:name="{$name-parsed[1]}"/>
+                <nlbbib:ln_navn_mellomnavn rdf:name="{$name-parsed[2]}"/>
+                <nlbbib:ln_navn_etternavn rdf:name="{$name-parsed[3]}"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -375,6 +379,32 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="'Ukjent'"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="f:parse-name" as="xs:string*">
+        <xsl:param name="name" as="xs:string"/>
+        
+        <xsl:variable name="valid-letters" select="'\p{L}\. -'"/>
+        
+        <xsl:choose>
+            <!-- valid characters, then a comma, then more valid characters -->
+            <xsl:when test="matches($name, concat('^[', $valid-letters, ']+,[', $valid-letters, ']+$'))">
+                <xsl:variable name="last" select="normalize-space(tokenize($name, ',')[1])"/>
+                
+                <xsl:variable name="first" select="normalize-space(tokenize(normalize-space($name), ',')[2])"/>
+                
+                <xsl:variable name="middle" select="string-join(tokenize($first, ' ')[position() gt 1], ' ')"/>
+                
+                <xsl:variable name="first" select="tokenize($first, ' ')[1]"/>
+                
+                <xsl:sequence select="($first, $middle, $last)"/>
+                
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- Special characters found, or incorrect number of commas. Put everything as first name. -->
+                <xsl:sequence select="(normalize-space($name), '', '')"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>

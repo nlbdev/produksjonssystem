@@ -8,6 +8,7 @@
                xmlns:frbr="http://purl.org/vocab/frbr/core#"
                xmlns:nlbbib="http://www.nlb.no/bibliographic"
                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+               xmlns:f="#"
                stylesheet="patron-to-rdf.xsl">
     
     <x:scenario label="Test patron">
@@ -286,6 +287,9 @@
                         <rdf:type rdf:resource="http://schema.org/Person"/>
                         <nlbbib:ln_nr rdf:name="12345"/>
                         <nlbbib:ln_navn rdf:name="Etternavn, Fornavn Mellomnavn"/>
+                        <nlbbib:ln_navn_fornavn rdf:name="Fornavn"/>
+                        <nlbbib:ln_navn_mellomnavn rdf:name="Mellomnavn"/>
+                        <nlbbib:ln_navn_etternavn rdf:name="Etternavn"/>
                         <nlbbib:ln_adr1 rdf:name="HER"/>
                         <nlbbib:ln_adr2 rdf:name=""/>
                         <nlbbib:ln_post rdf:name="0000"/>
@@ -775,6 +779,9 @@
                         <rdf:type rdf:resource="http://schema.org/Person"/>
                         <nlbbib:ln_nr rdf:name="12345"/>
                         <nlbbib:ln_navn rdf:name="Etternavn, Fornavn"/>
+                        <nlbbib:ln_navn_fornavn rdf:name="Fornavn"/>
+                        <nlbbib:ln_navn_mellomnavn rdf:name=""/>
+                        <nlbbib:ln_navn_etternavn rdf:name="Etternavn"/>
                         <nlbbib:ln_adr1 rdf:name="Observatoriegata 1b"/>
                         <nlbbib:ln_adr2 rdf:name=""/>
                         <nlbbib:ln_post rdf:name="0254  OSLO"/>
@@ -1096,6 +1103,80 @@
                 </rdf:RDF>
             </laaner>
         </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="name parsing">
+        <x:scenario label="Etternavn, Fornavn Mellomnavn">
+            <x:call function="f:parse-name"><x:param name="name" select="'Etternavn, Fornavn Mellomnavn'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Fornavn', 'Mellomnavn', 'Etternavn')"/>
+        </x:scenario>
+        
+        <x:scenario label="Etternàvn, Fornàvn Mellomnàvn">
+            <x:call function="f:parse-name"><x:param name="name" select="'Etternàvn, Fornàvn Mellomnàvn'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Fornàvn', 'Mellomnàvn', 'Etternàvn')"/>
+        </x:scenario>
+        
+        <x:scenario label="Etternavn, For-Navn Mellom Navn">
+            <x:call function="f:parse-name"><x:param name="name" select="'Etternavn, For-Navn Mellom Navn'"/></x:call>
+            <x:expect label="the result should be as expected" select="('For-Navn', 'Mellom Navn', 'Etternavn')"/>
+        </x:scenario>
+        
+        <x:scenario label="Etternavn, Fornavn M.">
+            <x:call function="f:parse-name"><x:param name="name" select="'Etternavn, Fornavn M.'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Fornavn', 'M.', 'Etternavn')"/>
+        </x:scenario>
+        
+        <x:scenario label="Etternavn, Fornavn">
+            <x:call function="f:parse-name"><x:param name="name" select="'Etternavn, Fornavn'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Fornavn', '', 'Etternavn')"/>
+        </x:scenario>
+        
+        <x:scenario label="Fornavn">
+            <x:call function="f:parse-name"><x:param name="name" select="'Fornavn'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Fornavn', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Skole skule">
+            <x:call function="f:parse-name"><x:param name="name" select="'Skole skule'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Skole skule', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Sted Skoleskule SA">
+            <x:call function="f:parse-name"><x:param name="name" select="'Sted Skoleskule SA'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Sted Skoleskule SA', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Institusjonens Bibliotek">
+            <x:call function="f:parse-name"><x:param name="name" select="'Institusjonens Bibliotek'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Institusjonens Bibliotek', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Placename University Library">
+            <x:call function="f:parse-name"><x:param name="name" select="'Placename University Library'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Placename University Library', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Università la di da: Facoltà di bla bla, Pølsevev fra Blabla, Institutt med Bibliotek">
+            <x:call function="f:parse-name"><x:param name="name" select="'Università la di da: Facoltà di bla bla, Pølsevev fra Blabla, Institutt med Bibliotek'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Università la di da: Facoltà di bla bla, Pølsevev fra Blabla, Institutt med Bibliotek', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Det Beste Bibliotek: med, et komma">
+            <x:call function="f:parse-name"><x:param name="name" select="'Det Beste Bibliotek: med, et komma'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Det Beste Bibliotek: med, et komma', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Snehvit, og de 7 dvergene">
+            <x:call function="f:parse-name"><x:param name="name" select="'Snehvit, og de 7 dvergene'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Snehvit, og de 7 dvergene', '', '')"/>
+        </x:scenario>
+        
+        <x:scenario label="Trailing Comma,">
+            <x:call function="f:parse-name"><x:param name="name" select="'Trailing Comma,'"/></x:call>
+            <x:expect label="the result should be as expected" select="('Trailing Comma,', '', '')"/>
+        </x:scenario>
+        
+        
     </x:scenario>
     
 </x:description>
