@@ -28,8 +28,6 @@ from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
 # from epub_to_dtbook_braille import EpubToDtbookBraille
 # from epub_to_dtbook_html import EpubToDtbookHTML
-# from generate_resources import GenerateResources
-from generate_resources import GenerateResources
 from html_to_dtbook import HtmlToDtbook
 # from incoming_NLBPUB import (NLBPUB_incoming_validator,
 #                              NLBPUB_incoming_warning, NLBPUB_validator)
@@ -328,9 +326,6 @@ class Produksjonssystem():
             [Audio_Abstract(retry_missing=True,
                             during_working_hours=True,
                             during_night_and_weekend=True),     "daisy202",            "abstracts"],
-
-            [GenerateResources(during_working_hours=True,
-                               during_night_and_weekend=True),  "daisy202",            None],
         ]
 
     # ---------------------------------------------------------------------------
