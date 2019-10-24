@@ -83,7 +83,7 @@ class NlbpubPrevious(Pipeline):
         deleted_doc = {}
         if os.path.isfile(deleted_path):
             with open(deleted_path, 'r') as f:
-                deleted_doc = yaml.load(f) or {}
+                deleted_doc = yaml.load(f, Loader=yaml.FullLoader) or {}
 
         # Dictfiles contains the most recent version of each file, saved to files.yml
         for (path, subdir_list, file_list) in walk(os.path.join(self.dir_out, epub.identifier())):
@@ -164,7 +164,7 @@ class NlbpubPrevious(Pipeline):
         deleted_doc = {}
         if os.path.isfile(deleted_path):
             with open(deleted_path, 'r') as f:
-                deleted_doc = yaml.load(f) or {}
+                deleted_doc = yaml.load(f, Loader=yaml.FullLoader) or {}
 
         for del_file in deleted_doc:
             try:

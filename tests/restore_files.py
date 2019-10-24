@@ -13,7 +13,7 @@ identifier = os.path.basename(path_oneup)
 
 if os.path.isfile(os.path.join(path, files)):
     with open(os.path.join(path, files), 'r') as f:
-        files_doc = yaml.load(f) or {}
+        files_doc = yaml.load(f, Loader=yaml.FullLoader) or {}
 else:
     print("Fant ikke " + files)
 

@@ -401,7 +401,7 @@ class Produksjonssystem():
         self.emailDoc = ""
         with open(file_name, 'r') as f:
                 try:
-                    self.emailDoc = yaml.load(f)
+                    self.emailDoc = yaml.load(f, Loader=yaml.FullLoader)
                 except Exception as e:
                     self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
                     traceback.print_exc(e)
@@ -667,7 +667,7 @@ class Produksjonssystem():
 
             try:
                 with open(fileName, 'r') as f:
-                    tempEmailDoc = yaml.load(f)
+                    tempEmailDoc = yaml.load(f, Loader=yaml.FullLoader)
                 if tempEmailDoc != self.emailDoc:
                     self.info("Oppdaterer konfig fra fil")
 
