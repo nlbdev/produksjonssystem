@@ -168,7 +168,27 @@ class Directory():
                 logging.debug("Finner ikke tidligere mappestatus")
 
         if self._md5:
-            logging.debug("Lastet mappestatus fra tidligere lagret fil")
+            logging.debug("Lastet mappestatus fra tidligere lagret fil, doing a partial rescan (only check created/deleted)")
+
+            dir_list = Filesystem.list_book_dir(self.dir_path)
+            self.status_text = "Looking for created/deleted"
+
+            for book in dir_list:
+                with self._md5_lock:
+                    if not self.shouldRun:
+                        self._md5 = {}
+                        return  # break loop if we're shutting down the system
+                    if book not in self._md5:
+                        self._update_md5(book)
+
+            with self._md5_lock:
+                for book in self._md5:
+                    if not self.shouldRun:
+                        self._md5 = {}
+                        return  # break loop if we're shutting down the system
+                    if book not in dir_list:
+                        self._update_md5(book)
+
             self.starting = False
             self.status_text = None
             return
