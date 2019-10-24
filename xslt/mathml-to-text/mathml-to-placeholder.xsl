@@ -19,7 +19,7 @@
     <xsl:param name="preserve-visual-math" as="xs:boolean" select="true()"/>
     
     <!-- Output encoding -->
-    <xsl:output method="xhtml" indent="yes" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
+    <xsl:output method="xhtml" indent="no" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
     
     <!-- Print a message to console -->
     <xsl:template match="/">
