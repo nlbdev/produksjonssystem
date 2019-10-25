@@ -707,15 +707,25 @@ class Pipeline():
             filenames = (os.path.join(self.dir_in, fileName) for fileName in Filesystem.list_book_dir(self.dir_in))
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
             for modification_time, path in reversed(sorted(filenames)):
-
                 if not (self.dirsAvailable() and self.shouldRun):
                     break  # break loop if we're shutting down the system or directory is unavailable
                 fileName = Path(path).name
                 fileStem = Path(path).stem
                 edition = [fileStem]
 
-                # if input file is an epub (starts with 5), find all possible identifiers
-                if self.check_identifiers:
+                file_exists = False
+
+                # Try with the same identifier as the input (i.e. don't lookup metadata in Bibliofil).
+                # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
+                try:
+                    file_exists = Filesystem.dir_has_book(self.dir_out, edition, subdirs=self.parentdirs)
+
+                except Exception:
+                    logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
+                    continue
+
+                # If input file is an epub (starts with 5), find all possible identifiers
+                if not file_exists and self.check_identifiers:
                     try:
                         self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
                         edition, publication = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
@@ -723,29 +733,13 @@ class Pipeline():
                     except Exception:
                         logging.info("Metadata feilet under get_identifiers for fileStem")
                     # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
-                file_exists = False
 
-                try:
-                    if self.parentdirs:
-                        for key in self.parentdirs:
-                            for fileInDirOut in Filesystem.list_book_dir(os.path.join(self.dir_out, self.parentdirs[key])):
+                    try:
+                        file_exists = Filesystem.dir_has_book(self.dir_out, edition, subdirs=self.parentdirs)
 
-                                if not (self.dirsAvailable() and self.shouldRun):
-                                    break  # break loop if we're shutting down the system or directory is unavailable
-                                if Path(fileInDirOut).stem in edition:
-                                    file_exists = True
-                                    break
-                    else:
-                        for fileInOut in Filesystem.list_book_dir(self.dir_out):
-
-                            if not (self.dirsAvailable() and self.shouldRun):
-                                break  # break loop if we're shutting down the system or directory is unavailable
-                            if Path(fileInOut).stem in edition:
-                                file_exists = True
-                                break
-
-                except Exception:
-                    logging.info("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
+                    except Exception:
+                        logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
+                        continue
 
                 if not file_exists:
                     self.considering_retry_book = path

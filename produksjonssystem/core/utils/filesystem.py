@@ -491,3 +491,21 @@ class Filesystem():
                 continue
             filtered.append(dirname)
         return filtered
+
+    @staticmethod
+    def dir_has_book(dir, identifiers, subdirs=None):
+        # check "pipelien parent directories" (i.e. subdirectories)
+        if isinstance(subdirs, dict) and len(subdirs) >= 1:
+            for key in subdirs:
+                for name in Filesystem.list_book_dir(os.path.join(dir, subdirs[key])):
+                    if Path(name).stem in identifiers:
+                        return True
+
+        # check the directory itself
+        else:
+            for name in Filesystem.list_book_dir(dir):
+                if Path(name).stem in identifiers:
+                    return True
+
+        # not found
+        return False
