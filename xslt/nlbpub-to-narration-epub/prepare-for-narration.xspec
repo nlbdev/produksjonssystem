@@ -66,7 +66,7 @@
             </section>
         </x:context>
         
-        <x:expect>
+        <x:expect label="the result should be as expected">
             <section id="ch1-19">
                 <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1">Fotnote 1</a> …</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-1">
@@ -100,7 +100,21 @@
             </html>
         </x:context>
         
-        <x:expect select="exists(/*:html/*:body/*:section[@id='nb-level1-om-boka']//*:p[ends-with(text(), 'Boka inneholder ikke sidetall.')])" test="true()"/>
+        <x:expect label="the result should be as expected">
+            <html xml:lang="nb" lang="nb">
+                <head>...</head>
+                <body>
+                    <section epub:type="frontmatter titlepage" id="nlb-level1-tittel">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-om-boka">
+                        <h1 class="nlb-ekstra-informasjon">Om boka</h1>
+                        <p class="nlb-ekstra-informasjon">Boka er utgitt av [MANGLER FORVENTET METADATA: dc:publisher.original], [MANGLER FORVENTET METADATA: dc:publisher.location.original], i [MANGLER FORVENTET METADATA: dc:date.issued.original].</p>
+                    </section>
+                    <section epub:type="frontmatter" id="nlb-level1-om-lydboka">...</section>
+                    <section id="ch1-19">...</section>
+                </body>
+            </html>
+        </x:expect>
     </x:scenario>
     
     <x:scenario label="Don't remove page breaks if there's multiple page breaks">
@@ -121,7 +135,21 @@
             </html>
         </x:context>
         
-        <x:expect select="exists(/*:html/*:body/*:section[@id='nb-level1-om-boka']//*:p[ends-with(text(), 'og er på 2 sider.')])" test="true()"/>
+        <x:expect label="the result should be as expected">
+            <html xml:lang="nb" lang="nb">
+                <head>...</head>
+                <body>
+                    <section epub:type="frontmatter titlepage" id="nlb-level1-tittel">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-om-boka">
+                        <h1 class="nlb-ekstra-informasjon">Om boka</h1>
+                        <p class="nlb-ekstra-informasjon">Boka er utgitt av [MANGLER FORVENTET METADATA: dc:publisher.original], [MANGLER FORVENTET METADATA: dc:publisher.location.original], i [MANGLER FORVENTET METADATA: dc:date.issued.original], og er på 2 sider.</p>
+                    </section>
+                    <section epub:type="frontmatter" id="nlb-level1-om-lydboka">...</section>
+                    <section id="ch1-19">...</section>
+                </body>
+            </html>
+        </x:expect>
     </x:scenario>
     
 </x:description>

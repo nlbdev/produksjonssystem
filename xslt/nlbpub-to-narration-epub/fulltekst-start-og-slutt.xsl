@@ -333,7 +333,7 @@
                                     <xsl:text> pages.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:text>. There are no pages in this book.</xsl:text>
+                                    <xsl:text>.</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </p>
@@ -413,7 +413,7 @@
                                     <xsl:text> sider.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:text>. Boka inneheld ikkje sidetal.</xsl:text>
+                                    <xsl:text>.</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </p>
@@ -492,7 +492,7 @@
                                     <xsl:text> sider.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:text>. Boka inneholder ikke sidetall.</xsl:text>
+                                    <xsl:text>.</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </p>
