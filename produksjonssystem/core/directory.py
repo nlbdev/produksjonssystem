@@ -185,7 +185,7 @@ class Directory():
                     logging.debug("{} is in directory but not in cache: adding to cache".format(book))
                     self._update_md5(book)
 
-            for book in self._md5:
+            for book in list(self._md5.keys()):  # list(….keys()) to avoid "RuntimeError: dictionary changed size during iteration"
                 if not self.shouldRun:
                     self._md5 = {}
                     return  # break loop if we're shutting down the system
