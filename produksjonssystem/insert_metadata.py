@@ -101,8 +101,8 @@ class InsertMetadata(Pipeline):
             return True
 
         if not Metadata.is_in_quickbase(self.logPipeline.utils.report, epub.identifier()):
-            self.utils.report.error("{} finnes ikke i Quickbase, kan ikke avgjøre om den skal trigges eller ikke.".format(epub.identifier()) +
-                                    "Antar at den ikke skal det.")
+            self.logPipeline.utils.report.warn("{} finnes ikke i Quickbase, kan ikke avgjøre om den skal trigges eller ikke.".format(epub.identifier()) +
+                                               " Antar at den ikke skal det.")
             return False
 
         should_produce, _ = Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
