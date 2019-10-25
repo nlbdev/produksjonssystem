@@ -44,8 +44,6 @@ class NlbpubToTtsDtbook(Pipeline):
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
 
-        identifier = Path(self.book["source"]).stem
-
         self.utils.report.info("Locating HTML file")
         epub = Epub(self, self.book["source"])
         if not epub.isepub():
@@ -56,6 +54,8 @@ class NlbpubToTtsDtbook(Pipeline):
             self.utils.report.warn("There must only be one item in the EPUB spine")
             return False
         html_file = os.path.join(self.book["source"], os.path.dirname(epub.opf_path()), spine[0]["href"])
+
+        identifier = epub.identifier()
 
         self.utils.report.info("lag en kopi av boka")
         temp_resultdir_obj = tempfile.TemporaryDirectory()
