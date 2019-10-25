@@ -148,6 +148,10 @@ class Directory():
                     del Directory.dirs[dir_path]
 
     def initialize_checksums(self):
+        with self._md5_lock:
+            return self._initialize_checksums()
+
+    def _initialize_checksums(self):
         cache_dir = Config.get("cache_dir", None)
         if not cache_dir:
             cache_dir = os.getenv("CACHE_DIR", os.path.join(tempfile.gettempdir(), "prodsys-cache"))
@@ -163,31 +167,31 @@ class Directory():
                     with open(self.cache_file, 'rb') as f:
                         self._md5 = pickle.load(f)
                 except Exception as e:
-                    logging.exception("Gammel loggfil finnes, men klarte ikke å åpne den", e)
+                    logging.exception("Cache file found, but could not parse it", e)
             else:
-                logging.debug("Finner ikke tidligere mappestatus")
+                logging.debug("Can't find cache file")
 
         if self._md5:
-            logging.debug("Lastet mappestatus fra tidligere lagret fil, doing a partial rescan (only check created/deleted)")
+            logging.debug("Loaded directory status from cache file, doing a partial rescan (only check created/deleted)")
 
             dir_list = Filesystem.list_book_dir(self.dir_path)
             self.status_text = "Looking for created/deleted"
 
             for book in dir_list:
-                with self._md5_lock:
-                    if not self.shouldRun:
-                        self._md5 = {}
-                        return  # break loop if we're shutting down the system
-                    if book not in self._md5:
-                        self._update_md5(book)
+                if not self.shouldRun:
+                    self._md5 = {}
+                    return  # break loop if we're shutting down the system
+                if book not in self._md5:
+                    logging.debug("{} is in directory but not in cache: adding to cache".format(book))
+                    self._update_md5(book)
 
-            with self._md5_lock:
-                for book in self._md5:
-                    if not self.shouldRun:
-                        self._md5 = {}
-                        return  # break loop if we're shutting down the system
-                    if book not in dir_list:
-                        self._update_md5(book)
+            for book in self._md5:
+                if not self.shouldRun:
+                    self._md5 = {}
+                    return  # break loop if we're shutting down the system
+                if book not in dir_list:
+                    logging.debug("{} is in cache but not in directory: deleting from cache".format(book))
+                    del self._md5[book]
 
             self.starting = False
             self.status_text = None
@@ -199,8 +203,7 @@ class Directory():
         self.status_text = "0 / {}".format(len(dir_list))
         for book in dir_list:
             if not self.shouldRun:
-                with self._md5_lock:
-                    self._md5 = {}
+                self._md5 = {}
                 return  # break loop if we're shutting down the system
             self._update_md5(book)
             md5_count += 1
@@ -218,6 +221,10 @@ class Directory():
             # Cache is not complete yet. Cache will not be saved
             return
 
+        with self._md5_lock:
+            return self._store_checksums()
+
+    def _store_checksums(self):
         if not self.cache_file:
             # No cache file defined. Cannot cache directory checksums
             return
@@ -225,13 +232,12 @@ class Directory():
         if not os.path.exists(os.path.dirname(self.cache_file)):
             os.makedirs(os.path.dirname(self.cache_file))
 
-        with self._md5_lock:
-            if len(self._md5) == 0:
-                # No checksums in cache. Cache will not be saved
-                return
+        if len(self._md5) == 0:
+            # No checksums in cache. Cache will not be saved
+            return
 
-            with open(self.cache_file, 'wb') as f:
-                pickle.dump(self._md5, f, -1)
+        with open(self.cache_file, 'wb') as f:
+            pickle.dump(self._md5, f, -1)
 
     def is_starting(self):
         return self.starting
@@ -330,31 +336,34 @@ class Directory():
                 should_deepscan = []
 
                 # books that have explicitly been requested for rescan should be rescanned first
-                with self._md5_lock:
-                    if self.suggested_for_rescan:
-                        for book_id in self.suggested_for_rescan:
-                            book_path = os.path.join(self.dir_path, book_id)
+                if self.suggested_for_rescan:
+                    for book_id in self.suggested_for_rescan:
+                        book_path = os.path.join(self.dir_path, book_id)
 
-                            if os.path.exists(book_path):
-                                sorted_dirlist.append(book_id)
-                                should_deepscan.append(book_id)
+                        if os.path.exists(book_path):
+                            sorted_dirlist.append(book_id)
+                            should_deepscan.append(book_id)
 
-                            else:
-                                # if book is a file, then it can have a file extension
-                                for dirname in dirlist:
-                                    if Path(dirname).stem == book_id:
-                                        sorted_dirlist.append(dirname)
-                                        should_deepscan.append(dirname)
-                                        break
+                        else:
+                            # if book is a file, then it can have a file extension
+                            for dirname in dirlist:
+                                if Path(dirname).stem == book_id:
+                                    sorted_dirlist.append(dirname)
+                                    should_deepscan.append(dirname)
+                                    break
 
-                        # empty list after having put the suggestions at the front of the queue
-                        self.suggested_for_rescan = []
+                    # empty list after having put the suggestions at the front of the queue
+                    self.suggested_for_rescan = []
 
-                        # add the remaining books to the list
-                        for dirname in dirlist:
-                            if dirname not in sorted_dirlist:
-                                sorted_dirlist.append(dirname)
-                        dirlist = sorted_dirlist
+                    # add the remaining books to the list
+                    for dirname in dirlist:
+                        if dirname not in sorted_dirlist:
+                            sorted_dirlist.append(dirname)
+                    if len(dirlist) != len(sorted_dirlist):
+                        logging.warning("len(dirlist) != len(sorted_dirlist)")
+                        logging.warning("dirlist: {}".format(dirlist))
+                        logging.warning("sorted_dirlist: {}".format(sorted_dirlist))
+                    dirlist = sorted_dirlist
 
                 # do a shallow check of files and folders (i.e. don't check file sizes, modification times etc. in subdirectories)
                 for book in dirlist:
