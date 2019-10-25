@@ -707,6 +707,9 @@ class Pipeline():
             filenames = (os.path.join(self.dir_in, fileName) for fileName in Filesystem.list_book_dir(self.dir_in))
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
             for modification_time, path in reversed(sorted(filenames)):
+                if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
+                    logging.debug("checking {}".format(path))
+
                 if not (self.dirsAvailable() and self.shouldRun):
                     break  # break loop if we're shutting down the system or directory is unavailable
                 fileName = Path(path).name
@@ -719,6 +722,8 @@ class Pipeline():
                 # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
                 try:
                     file_exists = Filesystem.dir_has_book(self.dir_out, edition, subdirs=self.parentdirs)
+                    if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
+                        logging.debug("does {} exist in {}? {}".format(edition, self.dir_out, file_exists))
 
                 except Exception:
                     logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
@@ -736,6 +741,8 @@ class Pipeline():
 
                     try:
                         file_exists = Filesystem.dir_has_book(self.dir_out, edition, subdirs=self.parentdirs)
+                        if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
+                            logging.debug("does {} exist in {}? {}".format(edition, self.dir_out, file_exists))
 
                     except Exception:
                         logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)

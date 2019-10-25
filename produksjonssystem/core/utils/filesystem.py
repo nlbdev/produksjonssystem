@@ -8,6 +8,7 @@ import shutil
 import socket
 import subprocess
 import tempfile
+import threading
 import time
 import traceback
 import urllib.parse
@@ -481,15 +482,28 @@ class Filesystem():
     @staticmethod
     def list_book_dir(dir):
         dirlist = os.listdir(dir)
+
+        if threading.current_thread().getName().endswith("event in nlbpub") and dir.endswith("master/NLBPUB/"):  # debugging strange bug
+            logging.debug(dir)
+            logging.debug("Filesystem.list_book_dir: '{}' in dirlist == {}".format("558282402019", "558282402019" in dirlist))
+
         filtered = []
         for dirname in dirlist:
             if Filesystem.should_ignore(os.path.join(dir, dirname)):
+                if "master/NLBPUB" in dir and threading.current_thread().getName().endswith("event in nlbpub") and "558282402019" in dirname:  # debugging strange bug
+                    logging.debug("Filesystem.list_book_dir: '{}' is filtered out as a common system file".format(dirname))
                 # Filter out common system files
                 continue
             if len(dirname) == 0 or (dirname[0] not in "0123456789" and not dirname.startswith("TEST")):
+                if "master/NLBPUB" in dir and threading.current_thread().getName().endswith("event in nlbpub") and "558282402019" in dirname:  # debugging strange bug
+                    logging.debug("Filesystem.list_book_dir: '{}' is filtered out because it doesn't start with a number".format(dirname))
                 # Book identifiers must start with a number
                 continue
+
             filtered.append(dirname)
+
+        if threading.current_thread().getName().endswith("event in nlbpub") and dir.endswith("master/NLBPUB/"):  # debugging strange bug
+            logging.debug("Filesystem.list_book_dir: '{}' in filtered == {}".format("558282402019", "558282402019" in filtered))
         return filtered
 
     @staticmethod
