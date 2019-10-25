@@ -539,6 +539,9 @@ class Produksjonssystem():
                     self.info("{} kjører fortsatt, venter på at den skal stoppe{}...".format(
                         pipeline[0].title,
                         " ({} / {})".format(pipeline[0].book["name"], pipeline[0].get_progress()) if pipeline[0].book else ""))
+                if pipeline[0].shouldRun:
+                    self.info("{} har startet igjen, sender nytt signal om at den skal stoppe...".format(pipeline[0].uid))
+                    pipeline[0].stop()
 
         self.info("Venter på at plotteren skal stoppe...")
         time.sleep(5)  # gi plotteren litt tid på slutten
