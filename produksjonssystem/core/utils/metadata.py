@@ -122,23 +122,23 @@ class Metadata:
     @staticmethod
     def get_identifiers(report, epub_edition_identifier):
         report.debug("Finner boknummer for {}...".format(epub_edition_identifier))
-        edition_identifier = epub_edition_identifier
-        pub_identifier = edition_identifier
-        if len(pub_identifier) > 6:
-            pub_identifier = pub_identifier[:6]
-            report.debug("Boknummer for selve utgaven er (seks første siffer): {}".format(pub_identifier))
+        issue_identifier = epub_edition_identifier
+        edition_identifier = issue_identifier
+        if len(edition_identifier) > 6:
+            edition_identifier = edition_identifier[:6]
+            report.debug("Boknummer for selve utgaven er (seks første siffer): {}".format(edition_identifier))
 
+        issue_identifiers = [issue_identifier]
         edition_identifiers = [edition_identifier]
-        publication_identifiers = [pub_identifier]
-        edition_identifiers, publication_identifiers = Metadata.get_quickbase_identifiers(report, edition_identifiers, publication_identifiers)
-        edition_identifiers, publication_identifiers = Metadata.get_bibliofil_identifiers(report, edition_identifiers, publication_identifiers)
+        issue_identifiers, edition_identifiers = Metadata.get_quickbase_identifiers(report, issue_identifiers, edition_identifiers)
+        issue_identifiers, edition_identifiers = Metadata.get_bibliofil_identifiers(report, issue_identifiers, edition_identifiers)
 
-        return sorted(edition_identifiers), sorted(publication_identifiers)
+        return sorted(issue_identifiers), sorted(edition_identifiers)
 
     @staticmethod
-    def get_quickbase_identifiers(report, edition_identifiers, publication_identifiers):
-        quickbase_edition_identifiers = []
-        for edition_identifier in edition_identifiers:
+    def get_quickbase_identifiers(report, issue_identifiers, edition_identifiers):
+        quickbase_issue_identifiers = []
+        for edition_identifier in issue_identifiers:
             report.debug("Finner andre boknummer for {} i Quickbase...".format(edition_identifier))
             metadata_dir = Metadata.get_metadata_dir(edition_identifier)
             catalogued = False
@@ -149,7 +149,7 @@ class Metadata:
                     rdf = ElementTree.parse(rdf_path).getroot()
                     identifiers = rdf.xpath("//nlbprod:*[starts-with(local-name(),'identifier.')]", namespaces=rdf.nsmap)
                     identifiers = [e.text for e in identifiers if re.match(r"^[\dA-Za-z._-]+$", e.text)]
-                    quickbase_edition_identifiers.extend(identifiers)
+                    quickbase_issue_identifiers.extend(identifiers)
                     if identifiers:
                         catalogued = True
                         report.debug("Andre boknummer for {} i {}-Quickbase: {}".format(edition_identifier,
@@ -165,9 +165,9 @@ class Metadata:
                 for warning in missing_catalogue_warnings:
                     report.warn(warning)
 
-        edition_identifiers = sorted(set(edition_identifiers + quickbase_edition_identifiers))
-        publication_identifiers = sorted(set([i[:6] for i in edition_identifiers if len(i) >= 6]))
-        return edition_identifiers, publication_identifiers
+        issue_identifiers = sorted(set(issue_identifiers + quickbase_issue_identifiers))
+        edition_identifiers = sorted(set([i[:6] for i in issue_identifiers if len(i) >= 6]))
+        return issue_identifiers, edition_identifiers
 
     @staticmethod
     def is_in_quickbase(report, identifiers):
@@ -209,7 +209,7 @@ class Metadata:
             return os.path.isdir(dir)
 
     @staticmethod
-    def get_bibliofil_identifiers(report, edition_identifiers, publication_identifiers):
+    def get_bibliofil_identifiers(report, issue_identifiers, edition_identifiers):
         with Metadata._original_isbn_lock:
             # Find book IDs with the same ISBN in *596$f (input is "bookId,isbn" CSV dump)
             Metadata.original_isbn_csv = str(os.path.normpath(os.environ.get("ORIGINAL_ISBN_CSV"))) if os.environ.get("ORIGINAL_ISBN_CSV") else None
@@ -253,46 +253,46 @@ class Metadata:
                             Metadata.original_isbn[i_normalized]["books"][fmt] = sorted(list(set(Metadata.original_isbn[i_normalized]["books"][fmt])))
             if not Metadata.original_isbn_csv or not os.path.isfile(Metadata.original_isbn_csv):
                 report.warn("Finner ikke liste over boknummer og ISBN fra `*596$f` (\"{}\")".format(Metadata.original_isbn_csv))
-                return edition_identifiers, publication_identifiers
+                return issue_identifiers, edition_identifiers
 
-            report.debug("Leter etter bøker med samme ISBN som {} i {}...".format("/".join(edition_identifiers), Metadata.original_isbn_csv))
+            report.debug("Leter etter bøker med samme ISBN som {} i {}...".format("/".join(issue_identifiers), Metadata.original_isbn_csv))
             for i in Metadata.original_isbn:
                 data = Metadata.original_isbn[i]
-                match = True in [bool(set(edition_identifiers) & set(data["books"][book_format])) or
-                                 bool(set(publication_identifiers) & set(data["books"][book_format]))
+                match = True in [bool(set(issue_identifiers) & set(data["books"][book_format])) or
+                                 bool(set(edition_identifiers) & set(data["books"][book_format]))
                                  for book_format in data["books"]]
                 if not match:
                     continue
                 for fmt in data["books"]:
                     if len(data["books"][fmt]) > 1:
-                        ignored = [val for val in data["books"][fmt] if val not in edition_identifiers and val not in publication_identifiers]
+                        ignored = [val for val in data["books"][fmt] if val not in issue_identifiers and val not in edition_identifiers]
                         report.warn("Det er flere bøker med samme original-ISBN/ISSN og samme format: {}".format(", ".join(data["books"][fmt])))
                         if len(ignored):
                             report.warn("Følgende bøker blir ikke behandlet: {}".format(", ".join(ignored)))
                         continue
                     else:
                         fmt_bookid = data["books"][fmt][0]
-                        if fmt_bookid not in publication_identifiers and fmt_bookid not in edition_identifiers:
+                        if fmt_bookid not in edition_identifiers and fmt_bookid not in issue_identifiers:
                             report.info("{} har samme ISBN/ISSN i `*596$f` som {}".format(
                                 fmt_bookid,
-                                ("en av: " if len(edition_identifiers) >= 2 else "") +
-                                "/".join(edition_identifiers)))
+                                ("en av: " if len(issue_identifiers) >= 2 else "") +
+                                "/".join(issue_identifiers)))
                             report.info("Legger til {} som utgave".format(fmt_bookid))
-                            edition_identifiers.append(fmt_bookid)
-                            publication_identifiers.append(fmt_bookid[:6])
+                            issue_identifiers.append(fmt_bookid)
+                            edition_identifiers.append(fmt_bookid[:6])
 
+            filtered_issue_identifiers = []
             filtered_edition_identifiers = []
-            filtered_publication_identifiers = []
-            for publication_identifier in publication_identifiers:
-                if Metadata.bibliofil_record_exists(report, publication_identifier):
-                    filtered_publication_identifiers.append(publication_identifier)
-                    for edition_identifier in edition_identifiers:
-                        if publication_identifier == edition_identifier[:6]:
-                            filtered_edition_identifiers.append(edition_identifier)
+            for edition_identifier in edition_identifiers:
+                if Metadata.bibliofil_record_exists(report, edition_identifier):
+                    filtered_edition_identifiers.append(edition_identifier)
+                    for edition_identifier in issue_identifiers:
+                        if edition_identifier == edition_identifier[:6]:
+                            filtered_issue_identifiers.append(edition_identifier)
+            issue_identifiers = filtered_issue_identifiers
             edition_identifiers = filtered_edition_identifiers
-            publication_identifiers = filtered_publication_identifiers
 
-            return sorted(set(edition_identifiers)), sorted(set(publication_identifiers))
+            return sorted(set(issue_identifiers)), sorted(set(edition_identifiers))
 
     @staticmethod
     def update(report, epub, publication_format="", insert=True, force_update=False):
@@ -438,8 +438,8 @@ class Metadata:
                     return False
                 rdf_files.append('quickbase/' + os.path.basename(rdf_path))
 
-            identifiers, publication_identifiers = Metadata.get_quickbase_identifiers(report, [edition_identifier], [pub_identifier])
-            identifiers, publication_identifiers = Metadata.get_bibliofil_identifiers(report, identifiers, publication_identifiers)
+            identifiers, edition_identifiers = Metadata.get_quickbase_identifiers(report, [edition_identifier], [pub_identifier])
+            identifiers, edition_identifiers = Metadata.get_bibliofil_identifiers(report, identifiers, edition_identifiers)
 
             for format_edition_identifier in identifiers:
                 format_pub_identifier = format_edition_identifier
@@ -516,7 +516,7 @@ class Metadata:
 
             # ========== Clean up old files from sources ==========
 
-            allowed_identifiers = identifiers + publication_identifiers
+            allowed_identifiers = identifiers + edition_identifiers
             for root, dirs, files in os.walk(metadata_dir):
                 for file in files:
                     file_identifier = [i for i in Path(file).stem.split("-") if re.match(r"^\d\d\d+$", i)]
