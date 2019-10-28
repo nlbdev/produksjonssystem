@@ -642,7 +642,7 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Namespace Identifier (NID) 'NBN' for national bibliography numbers">
+    <x:scenario label="Filesize in bytes.">
         <x:context>
             <marcxchange:record>
                 <marcxchange:datafield tag="856" ind1=" " ind2=" ">
@@ -660,8 +660,7 @@
         </x:context>
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
-                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_140759411</meta>
-                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_ABCD</meta>
+                <meta property="fileSize">140759411</meta>
             </metadata>
         </x:expect>
     </x:scenario>
@@ -713,7 +712,7 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Default library for 5xx-books should be NLB">
+    <x:scenario label="Default library for 5xx-books should be NLB (also include Namespace Identifier (NID) 'NBN' for national bibliography numbers as dc:soure.urn-nbn)">
         <x:context>
             <marcxchange:record>
                 <marcxchange:controlfield tag="001">500000</marcxchange:controlfield>
@@ -722,6 +721,7 @@
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <dc:identifier id="pub-id">500000</dc:identifier>
+                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_500000</meta>
                 <meta property="library">NLB</meta>
             </metadata>
         </x:expect>
@@ -739,6 +739,7 @@
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <dc:identifier id="pub-id">500000</dc:identifier>
+                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_500000</meta>
                 <meta property="library">StatPed</meta>
             </metadata>
         </x:expect>
@@ -753,6 +754,7 @@
         <x:expect label="the metadata should be extracted as expected">
             <metadata>
                 <dc:identifier id="pub-id">000000</dc:identifier>
+                <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_000000</meta>
             </metadata>
         </x:expect>
     </x:scenario>

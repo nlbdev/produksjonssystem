@@ -92,6 +92,11 @@
                     <schema:educationalUse>true</schema:educationalUse>
                     <schema:isbn>978-82-16-24118-9</schema:isbn>
                     <schema:library>NLB</schema:library>
+                    <schema:fileSize>12345678</schema:fileSize>
+                    <dc:type.audio>true</dc:type.audio>
+                    <dc:type.text>true</dc:type.text>
+                    <dc:type.braille>true</dc:type.braille>
+                    <dc:type.tts>true</dc:type.tts>
                 </rdf:Description>
             </rdf:RDF>
         </x:context>
@@ -167,6 +172,11 @@
                     <educationalUse name="true"/>
                     <isbn name="978-82-16-24118-9"/>
                     <library name="NLB"/>
+                    <fileSize name="12345678"/>
+                    <type.audio name="true"/>
+                    <type.text name="true"/>
+                    <type.braille name="true"/>
+                    <type.tts name="true"/>
                 </Book>
             </RDF>
         </x:expect>

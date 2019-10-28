@@ -390,4 +390,37 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="fileSize and dc:type.audio/text/braille/tts">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="612345"/>
+                <meta name="fileSize" content="12345678"/>
+                <meta name="dc:type.audio" content="true"/>
+                <meta name="dc:type.text" content="true"/>
+                <meta name="dc:type.braille" content="true"/>
+                <meta name="dc:type.tts" content="true"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                    <dc:identifier>612345</dc:identifier>
+                    <schema:fileSize>12345678</schema:fileSize>
+                    <dc:type.audio>true</dc:type.audio>
+                    <dc:type.text>true</dc:type.text>
+                    <dc:type.braille>true</dc:type.braille>
+                    <dc:type.tts>true</dc:type.tts>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

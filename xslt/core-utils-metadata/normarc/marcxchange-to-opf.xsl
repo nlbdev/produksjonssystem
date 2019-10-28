@@ -264,6 +264,11 @@
             <xsl:with-param name="id" select="'pub-id'"/>
         </xsl:call-template>
         
+        <xsl:call-template name="meta">
+            <xsl:with-param name="property" select="'dc:source.urn-nbn'"/>
+            <xsl:with-param name="value" select="concat('urn:nbn:no-nb_nlb_', $edition-identifier)"/>
+        </xsl:call-template>
+        
         <xsl:if test="starts-with(string($edition-identifier), '5') and not(exists(../*:datafield[@tag='850']/*:subfield[@code='a']))">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'library'"/><xsl:with-param name="value" select="'NLB'"/></xsl:call-template>
         </xsl:if>
@@ -2020,9 +2025,9 @@
     </xsl:template>
     
     <xsl:template match="*:datafield[@tag='856']">
-        <xsl:if test="*:subfield[@code='u']/text() = 'URN:NBN:no-nb_nlb_'">
+        <xsl:if test="*:subfield[@code='s' and matches(text(), '\d+')]">
             <xsl:for-each select="*:subfield[@code='s']">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:source.urn-nbn'"/><xsl:with-param name="value" select="concat('urn:nbn:no-nb_nlb_', text())"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'fileSize'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
