@@ -69,13 +69,13 @@ class Audio_Abstract(Pipeline):
             self.utils.report.info("Klarte ikke lese ncc fila. Sjekk loggen for detaljer.")
             self.utils.report.debug(traceback.format_exc(), preformatted=True)
 
-        audio_identifier = ""
+        edition_identifier = ""
         audio_title = ""
         audio_title = " (" + nccdoc.xpath("string(//*[@name='dc:title']/@content)") + ") "
-        audio_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
-        audio_identifier = audio_identifier[0:6]
+        issue_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
+        edition_identifier = issue_identifier[0:6]
 
-        if audio_identifier == (""):
+        if edition_identifier == (""):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
             return False
@@ -86,7 +86,7 @@ class Audio_Abstract(Pipeline):
 
         except Exception:
             self.utils.report.debug(traceback.format_exc(), preformatted=True)
-            self.utils.report.error("Det oppstod en feil for" + audio_identifier + " under lasting av smilfilene. Sjekk loggen for detaljer.")
+            self.utils.report.error("Det oppstod en feil for" + edition_identifier + " under lasting av smilfilene. Sjekk loggen for detaljer.")
             return False
         # Back-cover
 
@@ -110,9 +110,9 @@ class Audio_Abstract(Pipeline):
 
             except Exception:
                 self.utils.report.debug(traceback.format_exc(), preformatted=True)
-                self.utils.report.info("Klarte ikke hente ut baksidetekst for " + audio_identifier + " sjekk loggen for detaljer.")
+                self.utils.report.info("Klarte ikke hente ut baksidetekst for " + edition_identifier + " sjekk loggen for detaljer.")
         else:
-            self.utils.report.info("Baksidetekst ikke funnet for " + audio_identifier)
+            self.utils.report.info("Baksidetekst ikke funnet for " + edition_identifier)
 
         # creates abstract from ncc --> smil --> mp3
         several_smilFiles = []
@@ -124,7 +124,7 @@ class Audio_Abstract(Pipeline):
                 several_smilFiles_id.append(nccdoc.xpath("substring-after((//@href)[{0}],'#')".format(i+1)))
         except Exception:
             self.utils.report.info(traceback.format_exc(), preformatted=True)
-            self.utils.report.info("Klarte ikke hente ut .smil filene for " + audio_identifier + audio_title)
+            self.utils.report.info("Klarte ikke hente ut .smil filene for " + edition_identifier + audio_title)
 
         timeout = time.time() + 60 * 2
         duration = 0
@@ -208,12 +208,17 @@ class Audio_Abstract(Pipeline):
             for key in self.parentdirs:
                 if(file_exists[key]):
                     archived_path, stored = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"),
-                                                                            audio_identifier,
+                                                                            edition_identifier,
                                                                             parentdir=self.parentdirs[key],
                                                                             file_extension="mp3")
+                    if edition_identifier != issue_identifier:
+                        archived_path, stored = self.utils.filesystem.storeBook(os.path.join(temp_absdir, self.parentdirs[key]+".mp3"),
+                                                                                issue_identifier,
+                                                                                parentdir=self.parentdirs[key],
+                                                                                file_extension="mp3")
                     self.utils.report.attachment(None, archived_path, "DEBUG")
 
-            self.utils.report.title = self.title + ": " + audio_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
+            self.utils.report.title = self.title + ": " + edition_identifier + " lydutdrag ble eksportert 👍😄" + audio_title
         else:
             self.utils.report.title = ("Klarte ikke hente ut hverken baksidetekst eller lydutdrag 😭👎. ") + audio_title
             return False
