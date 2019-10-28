@@ -167,9 +167,10 @@ class PipelineTest(unittest.TestCase):
 
         # Create a book
         Path(os.path.join(self.dir_in, '1_book')).touch()
-        time.sleep(3)
+        time.sleep(2)
         self.assertEqual(len(self.pipeline._queue), 1)
         self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_book']), 1)
+        time.sleep(1)
 
         # Create two more books while the first one is being processed
         Path(os.path.join(self.dir_in, '3_book')).touch()
