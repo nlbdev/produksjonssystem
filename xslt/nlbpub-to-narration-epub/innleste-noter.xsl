@@ -47,16 +47,13 @@
     -->
 
     <xsl:template match="a[tokenize(@epub:type, '\s+') = 'noteref']">
-        <xsl:variable name="noten" as="element()" select="//*[@id eq substring-after(current()/@href, '#')]"/>
-
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
 
             <!-- Hvordan notereferansen håndteres er avhengig av om noten skal flyttes eller ikke og av om det er samsvar mellom referansetekst og start på noten -->
 
             <!-- legg inn "Note " etterfulgt av referansen -->
-            <xsl:if test="not(starts-with(normalize-space($noten), normalize-space(current())) and matches(substring(normalize-space($noten), string-length(normalize-space(current())) + 1), '[^\wæøåÆØÅ]* +\p{Lu}'))">
-                <!-- Noten skal ikke flyttes, eller noten starter ikke med samme tekst som notereferansen, så legg inn "Note " etterfulgt av referansen -->
+            <xsl:if test="not(contains(tokenize(lower-case(normalize-space(current())), '\s')[1], 'note'))">
                 <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
                     <xsl:with-param name="informasjon" as="xs:string" select="'Note '"/>
                 </xsl:call-template>
