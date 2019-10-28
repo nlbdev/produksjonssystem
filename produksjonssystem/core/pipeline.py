@@ -714,41 +714,40 @@ class Pipeline():
                     break  # break loop if we're shutting down the system or directory is unavailable
                 fileName = Path(path).name
                 fileStem = Path(path).stem
-                edition = [fileStem]
+                issue = [fileStem]
 
-                file_exists = False
+                book_path = None
 
                 # Try with the same identifier as the input (i.e. don't lookup metadata in Bibliofil).
                 # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
                 try:
-                    file_exists = Filesystem.dir_has_book(self.dir_out, edition, subdirs=self.parentdirs)
+                    book_path = Filesystem.book_path_in_dir(self.dir_out, issue, subdirs=self.parentdirs)
                     if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
-                        logging.debug("does {} exist in {}? {}".format(edition, self.dir_out, file_exists))
+                        logging.debug("does {} exist in {}? {}".format(issue, self.dir_out, book_path))
 
                 except Exception:
                     logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
                     continue
 
                 # If input file is an epub (starts with 5), find all possible identifiers
-                if not file_exists and self.check_identifiers:
+                if book_path is None and self.check_identifiers:
                     try:
                         self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
-                        edition, publication = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
-                        edition = list(set(edition) | set(publication))
+                        issue, edition = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
                     except Exception:
                         logging.info("Metadata feilet under get_identifiers for fileStem")
                     # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
 
                     try:
-                        file_exists = Filesystem.dir_has_book(self.dir_out, edition, subdirs=self.parentdirs)
+                        book_path = Filesystem.book_path_in_dir(self.dir_out, issue, subdirs=self.parentdirs)
                         if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
-                            logging.debug("does {} exist in {}? {}".format(edition, self.dir_out, file_exists))
+                            logging.debug("does {} exist in {}? {}".format(issue, self.dir_out, book_path))
 
                     except Exception:
                         logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
                         continue
 
-                if not file_exists:
+                if book_path is None:
                     self.considering_retry_book = path
                     should_retry = self.should_retry_book(path)
                     self.considering_retry_book = None
