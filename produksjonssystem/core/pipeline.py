@@ -20,6 +20,7 @@ from dotmap import DotMap
 
 from core.config import Config
 from core.directory import Directory
+from core.utils.epub import Epub
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from core.utils.report import DummyReport, Report
@@ -731,12 +732,27 @@ class Pipeline():
 
                 # If input file is an epub (starts with 5), find all possible identifiers
                 if book_path is None and self.check_identifiers:
+                    # try getting identifiers from package.opf (fast)
                     try:
                         self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
-                        issue, edition = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
+
+                        epub = Epub(self.pipelineDummy, book_path)
+                        if epub.isepub():
+                            book_metadata = epub.metadata()
+                            for property in book_metadata:
+                                if (property == "dc:identifier" or property.startswith("nlbprod:identifier.")) and book_metadata[property] not in issue:
+                                    issue.append(book_metadata[property])
+
                     except Exception:
                         logging.info("Metadata feilet under get_identifiers for fileStem")
-                    # TODO Maybe if not epub and not daisy202 find epub identifier from metadata then call to Metadata to find editions
+
+                    if len(issue) == 1:
+                        # if we didn't find any new identifiers in the EPUB: try getting identifiers from Quickbase and Bibliofil (slow)
+                        try:
+                            self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
+                            issue, edition = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
+                        except Exception:
+                            logging.info("Metadata feilet under get_identifiers for fileStem")
 
                     try:
                         book_path = Filesystem.book_path_in_dir(self.dir_out, issue, subdirs=self.parentdirs)
