@@ -736,7 +736,7 @@ class Pipeline():
                     try:
                         self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
 
-                        epub = Epub(self.pipelineDummy, book_path)
+                        epub = Epub(self.pipelineDummy, path)
                         if epub.isepub():
                             book_metadata = epub.metadata()
                             for property in book_metadata:
@@ -744,7 +744,7 @@ class Pipeline():
                                     issue.append(book_metadata[property])
 
                     except Exception:
-                        logging.info("Metadata feilet under get_identifiers for fileStem")
+                        logging.exception("Metadata feilet under Epub.metadata() for {}".format(fileStem))
 
                     if len(issue) == 1:
                         # if we didn't find any new identifiers in the EPUB: try getting identifiers from Quickbase and Bibliofil (slow)
@@ -752,7 +752,7 @@ class Pipeline():
                             self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
                             issue, edition = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
                         except Exception:
-                            logging.info("Metadata feilet under get_identifiers for fileStem")
+                            logging.info("Metadata feilet under get_identifiers for {}".format(fileStem))
 
                     try:
                         book_path = Filesystem.book_path_in_dir(self.dir_out, issue, subdirs=self.parentdirs)
