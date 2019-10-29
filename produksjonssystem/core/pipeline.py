@@ -719,6 +719,8 @@ class Pipeline():
 
                 last_retry[path] = time.time()
 
+                self.watchdog_bark()  # iterating all books can take some time, so let's bark here
+
                 if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
                     logging.debug("checking {}".format(path))
 
