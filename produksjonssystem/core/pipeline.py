@@ -666,7 +666,7 @@ class Pipeline():
                         logging.exception("An error occured while trying to delete triggerfile: " + triggerfile)
 
     def _retry_all_books_thread(self):
-        last_check = 0
+        last_retry = 0
 
         self.watchdog_bark()
         while self.shouldRun:
@@ -676,19 +676,19 @@ class Pipeline():
             if not self.dirsAvailable():
                 continue
 
-            max_update_interval = 60 * 60  # 1 hour
+            retry_interval = 60 * 60  # 1 hour
 
-            if time.time() - last_check < max_update_interval:
+            if time.time() - last_retry < retry_interval:
                 continue
 
-            last_check = time.time()
+            last_retry = time.time()
             for filename in Filesystem.list_book_dir(self.dir_in):
                 if not (self.dirsAvailable() and self.shouldRun):
                     break  # break loop if we're shutting down the system or directory is not available
                 self.trigger(filename)
 
     def _retry_missing_books_thread(self):
-        last_check = 0
+        last_rescan = 0
 
         self.watchdog_bark()
         while self.shouldRun:
@@ -698,16 +698,27 @@ class Pipeline():
             if not self.dirsAvailable():
                 continue
 
-            max_update_interval = 60 * 60 * 4
+            retry_interval = 60 * 60 * 4  # 4 hours
+            rescan_interval = 60 * 15  # 15 minutes
+            last_retry = {}  # { "[path]": [last-retry] }
 
-            if time.time() - last_check < max_update_interval:
+            if time.time() - last_rescan < rescan_interval:
                 continue
 
-            last_check = time.time()
+            last_rescan = time.time()
+
+            for path in list(last_retry.keys()):  # use .keys() to be able to delete from dict
+                if time.time() - last_retry[path] > retry_interval:
+                    del last_retry[path]  # a long time sice this path was retried
 
             filenames = (os.path.join(self.dir_in, fileName) for fileName in Filesystem.list_book_dir(self.dir_in))
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
             for modification_time, path in reversed(sorted(filenames)):
+                if path in last_retry:
+                    continue  # This book was recently retried. Let's skip this one for now.
+
+                last_retry[path] = time.time()
+
                 if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
                     logging.debug("checking {}".format(path))
 
