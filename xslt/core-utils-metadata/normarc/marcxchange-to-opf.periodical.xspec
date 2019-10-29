@@ -25,6 +25,7 @@
                 <dc:identifier nlb:metadata-source="Bibliofil@612345 *001" id="pub-id">612345022018</dc:identifier>
                 <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued">2018</meta>
                 <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued.original">2018</meta>
+                <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_612345022018</meta>
                 <meta nlb:metadata-source="Bibliofil@612345 *596" property="bookEdition.original">1</meta>
                 <meta nlb:metadata-source="Bibliofil@612345 *596$f" property="issn.original">0018-2842</meta>
             </metadata>
