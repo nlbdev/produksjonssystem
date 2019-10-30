@@ -102,15 +102,54 @@
     </xsl:template>
   
         <xsl:template match="aside[f:classes(.) = 'sidebar']">
+           
             <p lang="no" xml:lang="no">{{Rammetekst:}}</p>
             <xsl:apply-templates select="node()"/>
             <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>
+            
         </xsl:template>
     
     <xsl:template match="div[f:classes(.) = 'linegroup']">
+        <xsl:element name="div">
         <p lang="no" xml:lang="no">{{Rammetekst:}}</p>
         <xsl:apply-templates select="node()"/>
         <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="div[f:classes(.) = 'ramme1'] | div[f:classes(.) = 'ramme2'] | div[f:classes(.) = 'ramme3'] | div[f:classes(.) = 'ramme4'] | div[f:classes(.) = 'ramme5'] | div[f:classes(.) = 'ramme6']">
+        <xsl:element name="div">
+        <p lang="no" xml:lang="no">{{Rammetekst:}}</p>
+        <xsl:apply-templates select="node()"/>
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="section[f:classes(.) = 'oppgaver3']/h1 | section[f:classes(.) = 'oppgaver3']/h2 | section[f:classes(.) = 'oppgaver3']/h3 | section[f:classes(.) = 'oppgaver3']/h4 | section[f:classes(.) = 'oppgaver3']/h5 | section[f:classes(.) = 'oppgaver3']/h6 ">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:text>>>> </xsl:text>
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
+         
+    </xsl:template>
+    
+    
+    <xsl:template match="section[f:classes(.) = 'oppgaver1']/ol/li | section[f:classes(.) = 'oppgaver2']/ol/li">
+            <li>
+                <xsl:apply-templates select="@*"/>
+                <xsl:text>>>> </xsl:text>
+                <xsl:apply-templates select="node()"/>
+            </li> 
+     </xsl:template>
+    
+  
+    <xsl:template match="section[f:classes(.) = 'oppgaver1']/ol/li/p | section[f:classes(.) = 'oppgaver2']/ol/li/p">
+        <li>
+            <xsl:apply-templates select="@*"/>
+            <xsl:text>>>> </xsl:text>
+            <xsl:apply-templates select="node()"/>
+        </li> 
     </xsl:template>
     
     
@@ -353,7 +392,7 @@
                 <p lang="no" xml:lang="no"> -- Uthevingstegnet er slik: _</p>
                 <p lang="no" xml:lang="no"> Eksempel: _Denne setningen er uthevet._</p>
                 <p lang="no" xml:lang="no"> -- {{}} Doble klammeparenteser brukes rundt opplysninger om layout eller spesielle elementer på siden.</p>
-                <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert slik: >>> 1, >>> 2 osv., slik at du enkelt kan søke deg frem til dem.</p>
+                <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert med >>> slik: 1. >>>, 2. >>> osv., slik at du enkelt kan søke deg frem til dem.</p>
                 <p lang="no" xml:lang="no"> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og innhold for hele boka finner du til slutt i denne filen.</p>
             </section>
             <xsl:apply-templates select="* except section[f:types(.) = 'toc']"/>
@@ -382,8 +421,6 @@
         <xsl:text>_</xsl:text>
         <xsl:apply-templates select="node()"/>
         <xsl:text>_</xsl:text>
-        
-        
     </xsl:template>
     
     <xsl:template match="li/a/span/strong">
@@ -392,13 +429,6 @@
         <xsl:text></xsl:text>
         <xsl:apply-templates select="node()"/>
         <xsl:text></xsl:text>
-        
-        
-    </xsl:template>
-    
-    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/strong">
-        <xsl:apply-templates select="node()"/>
-        <xsl:text>.</xsl:text>
     </xsl:template>
     
   
@@ -407,12 +437,7 @@
         <p><xsl:apply-templates select="node()"/></p>
     </xsl:template>
     
-    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p/strong">
-        <xsl:apply-templates select="node()"/>
-        <xsl:text>.</xsl:text>
-    </xsl:template> 
-    
-    <xsl:template match="ul/li">
+    <xsl:template match="ul/li[not(*)]">
         <li>
         <xsl:text>-- </xsl:text>
         <xsl:apply-templates select="node()"/>
@@ -436,7 +461,9 @@
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="node()"/>
-                <xsl:element name="style">div.pagebreak { page-break-after:avoid; }</xsl:element>
+                <xsl:element name="style">  
+                    <xsl:text>div.pagebreak {page-break-after:avoid;}</xsl:text>             
+                </xsl:element>
             </xsl:copy>
     </xsl:template> 
     

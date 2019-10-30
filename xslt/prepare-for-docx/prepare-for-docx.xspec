@@ -39,7 +39,7 @@
         <x:expect label="Pagebreak avoided">
             <head>
                 <meta charset="UTF-8" />
-                <style>div.pagebreak { page-break-after:avoid; }</style>
+                <style>div.pagebreak {page-break-after:avoid;}</style>
             </head>
         </x:expect>
     </x:scenario>
@@ -140,6 +140,8 @@
                 <li>Kroatia: 1.700</li>
                 <li>Sudan 1.400 </li>
             </ul>
+            
+           
         </x:context>
         
         <x:expect label="-- should be inserted in unordered list">  
@@ -165,75 +167,55 @@
                 <li>-- Sudan 1.400 </li>
             </ul>
         </x:expect>
-    </x:scenario> 
-   
-        
+    </x:scenario>
     
-    <x:scenario label="Insert . in ordered list after number">
+    <x:scenario label="Insert >>> in heading for exercises class=oppgaver3">
         <x:context>
-            <section id="level3_7">
-                 <ol class="list-style-type-none" style="list-style-type: none;">
-                    <li><strong>1</strong> Hvordan vil du beskrive forskjellene mellom de ulike samfunnsfagene?</li>
-                    <li><strong>2</strong> Hvilke fire ambisjoner har sosiologien for å forstå samfunnet og samspillet mellom mennesker?</li>
-                    <li><strong>3</strong> Hvilke samfunnsendringer skapte grunnlaget for sosiologien?</li>
-                    <li><strong>4</strong> Hvordan vil du forklare hva sosiologi er?</li>
-                    <li><strong>5</strong> Hvilket bidrag sto Auguste Comte for når det gjelder å forstå samfunnet?</li>
-                    <li><strong>6</strong> Hvorfor har Karl Marx hatt stor betydning for utviklingen av samfunnsfagene?</li>
-                    <li><strong>7</strong> Hva var Max Weber opptatt av?</li>
-                    <li><strong>8</strong> Hva mente Emile Durkheim alle samfunn hadde til felles?</li>
-                    <li><strong>9</strong> Hva undersøkte Eilert Sundt?</li>
-                    <li><strong>10</strong> På hvilke måter skiller sosialantropologien seg fra sosiologien?</li>
-                    <li><strong>11</strong> Hva er Franz Boas kjent for?</li>
-                    <li><strong>12</strong> Hva er Bronislaw Malinowski kjent for?</li>
-                    <li>
-                        <p><strong>13</strong> Hva menes med</p>
-                        <ol class="list-style-type-none" style="list-style-type: none;">
-                            <li>a) konfliktperspektivet?</li>
-                            <li>b) harmoniperspektivet?</li>
-                            <li>c) handlingsteorien?</li>
-                        </ol></li>
-                    <li><strong>14</strong> Hvorfor skiller vi mellom makro-, meso- og mikronivå?</li>
-                    <li><strong>15</strong> Hvilke teorier om menneskelig atferd har vi presentert i denne boka?</li>
-                    <li><strong>16</strong> Hva mente Margaret Mead at hun hadde funnet ut?</li>
-                    <li><strong>17</strong> Hva betyr sosiobiologi, og på hvilken måte forklarer det menneskelig atferd?</li>
-                    <li><strong>18</strong> Hva betyr begrepet «evolusjon»?</li>
-                    <li><strong>19</strong> Hva betyr «naturlig seleksjon»?</li>
-                    <li><strong>20</strong> Hvorfor har samfunnsvitere og biologer så ulikt syn på menneskets atferd?</li>
-                </ol>
-                </section>
-        </x:context>
+            <section class="oppgaver3" id="ch3-72">
+                <h6 id="d1e10125">Oppgave</h6>
+            </section>
+         </x:context>
         
-        <x:expect label=". should be inserted in ordered list after number">  
-            <section id="level3_7">
-                <ol class="list-style-type-none" style="list-style-type: none;">
-                    <li>1. Hvordan vil du beskrive forskjellene mellom de ulike samfunnsfagene?</li>
-                    <li>2. Hvilke fire ambisjoner har sosiologien for å forstå samfunnet og samspillet mellom mennesker?</li>
-                    <li>3. Hvilke samfunnsendringer skapte grunnlaget for sosiologien?</li>
-                    <li>4. Hvordan vil du forklare hva sosiologi er?</li>
-                    <li>5. Hvilket bidrag sto Auguste Comte for når det gjelder å forstå samfunnet?</li>
-                    <li>6. Hvorfor har Karl Marx hatt stor betydning for utviklingen av samfunnsfagene?</li>
-                    <li>7. Hva var Max Weber opptatt av?</li>
-                    <li>8. Hva mente Emile Durkheim alle samfunn hadde til felles?</li>
-                    <li>9. Hva undersøkte Eilert Sundt?</li>
-                    <li>10. På hvilke måter skiller sosialantropologien seg fra sosiologien?</li>
-                    <li>11. Hva er Franz Boas kjent for?</li>
-                    <li>12. Hva er Bronislaw Malinowski kjent for?</li>
-                    <li>
-                        <p>13. Hva menes med</p>
-                        <ol class="list-style-type-none" style="list-style-type: none;">
-                            <li>a) konfliktperspektivet?</li>
-                            <li>b) harmoniperspektivet?</li>
-                            <li>c) handlingsteorien?</li>
-                        </ol></li>
-                    <li>14. Hvorfor skiller vi mellom makro-, meso- og mikronivå?</li>
-                    <li>15. Hvilke teorier om menneskelig atferd har vi presentert i denne boka?</li>
-                    <li>16. Hva mente Margaret Mead at hun hadde funnet ut?</li>
-                    <li>17. Hva betyr sosiobiologi, og på hvilken måte forklarer det menneskelig atferd?</li>
-                    <li>18. Hva betyr begrepet «evolusjon»?</li>
-                    <li>19. Hva betyr «naturlig seleksjon»?</li>
-                    <li>20. Hvorfor har samfunnsvitere og biologer så ulikt syn på menneskets atferd?</li>
+        <x:expect label=">>> should be inserted in heading for exercises class=oppgave3 ">  
+            
+            <section class="oppgaver3" id="ch3-72">
+                <h6 id="d1e10125">>>> Oppgave</h6>
+            </section>
+            
+        </x:expect>
+    </x:scenario> 
+    
+    
+    
+    <x:scenario label="Insert >>> in ordered list for exercises">
+        <x:context>
+             
+           
+            <section class="oppgaver1" id="ch1-6">
+                <h3 id="d1e2227">Test deg selv</h3>
+                <ol>
+                    <li><p><strong>2.2.10</strong> Ola Bjerk er gårdbruker. </p>
+                        <p>Kari Lind leser annonsen med interesse.</p>
+                        <p>Drøft og løs tvisten mellom Ola og Kari.</p>
+                    </li>
                 </ol>
             </section>
+            
+            
+        </x:context>
+        
+        <x:expect label=">>> should be inserted in ordered list ">  
+                
+            <section class="oppgaver1" id="ch1-6">
+                <h3 id="d1e2227">xxx3 Test deg selv</h3>
+                <ol> 
+                    <li>>>> <p>_2.2.10_ Ola Bjerk er gårdbruker. </p>
+                        <p>Kari Lind leser annonsen med interesse.</p>
+                        <p>Drøft og løs tvisten mellom Ola og Kari.</p>
+                    </li>
+                </ol>
+            </section>
+            
         </x:expect>
     </x:scenario> 
     
@@ -513,20 +495,30 @@
                  <p>Hopefully they will run away.</p>
            </aside>
             </div>   
+            <div class="ramme5">
+                <p><strong>Eksempel</strong></p>
+            </div>
         </x:context>
        
         <x:expect label="Mark with 'Rammetekst'">
+            <div>
                 <p lang="no" xml:lang="no">{{Rammetekst:}}</p>  
                 <p class="line">But hope remains when pride is gone</p>
                 <p class="line">And it keeps you moving on</p>
                 <p class="line">Calling you across the borderline</p>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
-            <div >
+           </div>
+            <div>
                 <p lang="no" xml:lang="no">{{Rammetekst:}}</p>  
                 <p>WARNING! WATCH OUT FOR GRIZZLY BEARS!</p>
                 <p>Hopefully they will run away.</p>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
              </div>
+            <div>
+                <p lang="no" xml:lang="no">{{Rammetekst:}}</p>  
+                <p>_Eksempel_</p>
+                <p lang="no" xml:lang="no">{{Slutt}}</p>
+            </div>
         </x:expect>
     </x:scenario>
     <!-- ***********-->
@@ -696,7 +688,7 @@
                         <p lang="no" xml:lang="no"> -- Uthevingstegnet er slik: _</p>
                         <p lang="no" xml:lang="no"> Eksempel: _Denne setningen er uthevet._</p>
                         <p lang="no" xml:lang="no"> -- {{}} Doble klammeparenteser brukes rundt opplysninger om layout eller spesielle elementer på siden.</p>
-                        <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert slik: >>> 1, >>> 2 osv., slik at du enkelt kan søke deg frem til dem.</p>
+                        <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert med >>> slik: 1. >>>, 2. >>> osv., slik at du enkelt kan søke deg frem til dem.</p>
                         <p lang="no" xml:lang="no"> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og innhold for hele boka finner du til slutt i denne filen.</p>
                     </section>
                     <section>
