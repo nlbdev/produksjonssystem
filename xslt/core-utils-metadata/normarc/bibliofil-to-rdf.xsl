@@ -207,7 +207,7 @@
         <xsl:param name="type" as="xs:string" required="yes"/>
         <xsl:param name="nested" as="xs:boolean" select="false()" required="no"/>
         
-        <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'dc:subject', 'dc:type.genre', 'dc:type.fiction',
+        <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'dc:subject', 'dc:type.genre', 'dc:type.fiction', 'dc:type.literaryForm',
                                                              'nlbbib:series.issn', 'nlbbib:series.position', 'nlbbib:periodical', 'nlbbib:periodicity', 'nlbbib:magazine', 'nlbbib:newspaper',
                                                              $metadata//*[starts-with(@name,'dc:title.')]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:contributor.') and not(@name='dc:contributor.narrator')]/string(@name),

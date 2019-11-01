@@ -437,6 +437,9 @@
             <rdf:RDF>
                 <rdf:Description rdf:about="urn:isbn:1234567890">
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:type.literaryForm schema:name="Roman">
+                        <nlbbib:normarc-id>R</nlbbib:normarc-id>
+                    </dc:type.literaryForm>
                     <schema:isbn>1234-56-7890</schema:isbn>
                     <dc:source>urn:isbn:1234567890</dc:source>
                 </rdf:Description>
@@ -444,9 +447,6 @@
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
                     <dc:identifier>612345</dc:identifier>
-                    <dc:type.literaryForm schema:name="Roman">
-                        <nlbbib:normarc-id>R</nlbbib:normarc-id>
-                    </dc:type.literaryForm>
                 </rdf:Description>
             </rdf:RDF>
         </x:expect>
