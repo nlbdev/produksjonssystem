@@ -212,7 +212,7 @@
                                                              $metadata//*[starts-with(@name,'dc:title.')]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:contributor.') and not(@name='dc:contributor.narrator')]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:subject.')]/string(@name))"/>
-        <xsl:variable name="nlbbibProperties" select="('series.issn','series.position','periodical','periodicity','magazine','newspaper','watermark','external-production','websok.url','websok.type','bibliofil-id','pseudonym','epub-nr')"/>
+        <xsl:variable name="nlbbibProperties" select="('series.issn','series.position','periodical','periodicity','magazine','newspaper','watermark','external-production','websok.url','websok.type','bibliofil-id','normarc-id','pseudonym','epub-nr')"/>
         
         <xsl:for-each select="$metadata/*">
             <xsl:variable name="name" select="(@name, name())[1]"/>

@@ -939,7 +939,7 @@
                     <meta property="dc:type.fiction">true</meta>
                     <meta property="dc:type.genre">Fiction</meta>
                     <meta property="dc:type.genre">Non-biography</meta>
-                    <meta property="dc:type.genre">textbook</meta>
+                    <meta property="dc:type.genre">Textbook</meta>
                     <meta property="audience">Adult</meta>
                     <meta property="educationalUse">true</meta>
                     <meta property="library">NLB</meta>
@@ -966,7 +966,8 @@
                     <meta property="dc:type.fiction">true</meta>
                     <meta property="dc:type.genre">Fiction</meta>
                     <meta property="dc:type.genre">Non-biography</meta>
-                    <meta property="dc:type.genre">textbook</meta>
+                    <meta property="dc:type.literaryForm" id="literary-form-019d-1">Lærebok</meta>
+                    <meta property="normarc-id" refines="#literary-form-019d-1">L</meta>
                     <meta property="audience">Adult</meta>
                     <meta property="educationalUse">true</meta>
                     <meta property="typicalAgeRange">17-</meta>
@@ -985,10 +986,8 @@
             
             <x:expect label="the metadata should be extracted as expected">
                 <metadata>
-                    <meta property="dc:type.genre">Biography</meta>
-                    <meta property="dc:type.genre">short story</meta>
-                    <meta property="dc:type.genre" id="subject-019d-1">Noveller</meta>
-                    <meta property="bibliofil-id" refines="#subject-019d-1">20282100</meta>
+                    <meta property="dc:type.literaryForm" id="literary-form-019d-1">Novelle</meta>
+                    <meta property="normarc-id" refines="#literary-form-019d-1">N</meta>
                 </metadata>
             </x:expect>
         </x:scenario>
@@ -1004,13 +1003,10 @@
             
             <x:expect label="the metadata should be extracted as expected">
                 <metadata>
-                    <meta property="dc:type.genre">Biography</meta>
-                    <meta property="dc:type.genre">short story</meta>
-                    <meta property="dc:type.genre" id="subject-019d-1">Noveller</meta>
-                    <meta property="bibliofil-id" refines="#subject-019d-1">20282100</meta>
-                    <meta property="dc:type.genre">poem</meta>
-                    <meta property="dc:type.genre" id="subject-019d-2">Dikt</meta>
-                    <meta property="bibliofil-id" refines="#subject-019d-2">20697500</meta>
+                    <meta property="dc:type.literaryForm" id="literary-form-019d-1">Billedbok</meta>
+                    <meta property="normarc-id" refines="#literary-form-019d-1">B</meta>
+                    <meta property="dc:type.literaryForm" id="literary-form-019d-2">Dikt</meta>
+                    <meta property="normarc-id" refines="#literary-form-019d-2">D</meta>
                 </metadata>
             </x:expect>
         </x:scenario>
@@ -1026,12 +1022,10 @@
             
             <x:expect label="the metadata should be extracted as expected">
                 <metadata>
-                    <meta property="dc:type.genre">poem</meta>
-                    <meta property="dc:type.genre" id="subject-019d-1">Dikt</meta>
-                    <meta property="bibliofil-id" refines="#subject-019d-1">20697500</meta>
-                    <meta property="dc:type.genre">play</meta>
-                    <meta property="dc:type.genre" id="subject-019d-2">Hørespill</meta>
-                    <meta property="bibliofil-id" refines="#subject-019d-2">19883700</meta>
+                    <meta property="dc:type.literaryForm" id="literary-form-019d-1">Roman</meta>
+                    <meta property="normarc-id" refines="#literary-form-019d-1">R</meta>
+                    <meta property="dc:type.literaryForm" id="literary-form-019d-2">Skuespill</meta>
+                    <meta property="normarc-id" refines="#literary-form-019d-2">S</meta>
                 </metadata>
             </x:expect>
         </x:scenario>

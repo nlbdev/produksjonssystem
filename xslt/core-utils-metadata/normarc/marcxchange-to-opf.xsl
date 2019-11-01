@@ -875,44 +875,44 @@
         <xsl:for-each select="*:subfield[@code='d']">
             <xsl:variable name="context" select="."/>
                 <xsl:for-each select="for $i in (1 to string-length(text())) return substring(text(),$i,1)">
-                    <xsl:variable name="subject-id" select="concat('subject-019d-', position())"/>
+                    <xsl:variable name="literary-form-id" select="concat('literary-form-019d-', position())"/>
                     <xsl:choose>
-                        <xsl:when test=".='N'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'short story'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Noveller'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="'20282100'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                        <xsl:when test=".='R'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Roman'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
-                        <xsl:when test=".='B'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'short story'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Noveller'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="'20282100'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                        <xsl:when test=".='N'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Novelle'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='D'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'poem'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Dikt'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="'20697500'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
-                        </xsl:when>
-                        <xsl:when test=".='R'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'poem'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Dikt'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="'20697500'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Dikt'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='S'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'play'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Hørespill'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="'19883700'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Skuespill'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='T'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'cartoon'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Tegneserie'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='A'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'anthology'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Antologi'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
                         <xsl:when test=".='L'">
-                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Lærebok'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                             <xsl:call-template name="meta"><xsl:with-param name="property" select="'educationalUse'"/><xsl:with-param name="value" select="'true'"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='P'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Pekebok'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
+                        </xsl:when>
+                        <xsl:when test=".='B'">
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.literaryForm'"/><xsl:with-param name="value" select="'Billedbok'"/><xsl:with-param name="context" select="$context"/><xsl:with-param name="id" select="$literary-form-id"/></xsl:call-template>
+                            <xsl:call-template name="meta"><xsl:with-param name="property" select="'normarc-id'"/><xsl:with-param name="value" select="."/><xsl:with-param name="context" select="$context"/><xsl:with-param name="refines" select="$literary-form-id"/></xsl:call-template>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:for-each>
@@ -2017,7 +2017,7 @@
     <xsl:template match="*:datafield[@tag='850']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="text()=('NLB/S')">
-                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'textbook'"/></xsl:call-template>
+                <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Textbook'"/></xsl:call-template>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'educationalUse'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'library'"/><xsl:with-param name="value" select="tokenize(text(),'/')[1]"/></xsl:call-template>
