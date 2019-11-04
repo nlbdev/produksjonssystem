@@ -164,9 +164,23 @@
     </xsl:template>
 
     <xsl:template match="html:meta[@name and @content and not(lower-case(@name)=('viewport','dc:title'))]">
-        <meta>
-            <xsl:call-template name="f:attlist.meta"/>
-        </meta>
+        <xsl:choose>
+            <xsl:when test="starts-with(lower-case(@name), 'dc:') and not(matches(lower-case(@name), '^dc:(title|subject|description|type|source|relation|coverage|creator|publisher|contributor|rights|date|format|identifier|language)$'))">
+                <xsl:comment>
+                    <xsl:text> not allowed in DTBook: </xsl:text>
+                    <xsl:text>&lt;meta</xsl:text>
+                    <xsl:for-each select="@*">
+                        <xsl:value-of select="concat(' ', name(), '=&quot;', ., '&quot;')"/>
+                    </xsl:for-each>
+                    <xsl:text>/&gt; </xsl:text>
+                </xsl:comment>
+            </xsl:when>
+            <xsl:otherwise>
+                <meta>
+                    <xsl:call-template name="f:attlist.meta"/>
+                </meta>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template name="f:attlist.meta">
