@@ -163,7 +163,7 @@
                         </section>
                     </section>
                     <section epub:type="bodymatter chapter">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter.</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
@@ -177,18 +177,18 @@
                             <h2 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h2>
                             <p>Chapter</p>
                             <section>
-                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter.</h3>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter</h3>
                                 <p>Chapter</p>
                                 <section>
-                                    <h4 id="..." class="generated-headline hidden-headline">Chapter.</h4>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter</h4>
                                     <p>Chapter</p>
                                 </section>
                             </section>
                             <section>
-                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter.</h3>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter</h3>
                                 <p>Chapter</p>
                                 <section>
-                                    <h4 id="..." class="generated-headline hidden-headline">Chapter.</h4>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter</h4>
                                     <p>Chapter</p>
                                 </section>
                             </section>
@@ -197,7 +197,7 @@
                     <section epub:type="bodymatter part">
                         <h1 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h1>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter.</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -212,13 +212,13 @@
                             <h2 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h2>
                             <p>Chapter</p>
                             <section epub:type="subchapter">
-                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter.</h3>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter</h3>
                                 <p>Chapter</p>
                                 <section>
-                                    <h4 id="..." class="generated-headline hidden-headline">Chapter Chapter.</h4>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter Chapter</h4>
                                     <p>Chapter</p>
                                     <section>
-                                        <h5 id="..." class="generated-headline hidden-headline">Chapter.</h5>
+                                        <h5 id="..." class="generated-headline hidden-headline">Chapter</h5>
                                         <p>Chapter</p>
                                     </section>
                                 </section>
@@ -229,7 +229,7 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter.</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                     </section>
@@ -240,11 +240,11 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter.</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter.</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -252,7 +252,7 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter.</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -261,14 +261,14 @@
                         </section>
                     </section>
                     <section epub:type="bodymatter part">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter.</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter.</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                     </section>
                     <section epub:type="bodymatter chapter">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter.</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
@@ -276,7 +276,7 @@
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter.</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
                         <p>Chapter</p>
                     </section>
                     <section epub:type="backmatter footnotes">
@@ -370,19 +370,19 @@
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="en" lang="en">
-                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">…</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="no" lang="no">
-                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">…</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="nb" lang="nb">
-                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">…</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="nn" lang="nn">
-                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">…</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="backmatter chapter" xml:lang="en" lang="en">

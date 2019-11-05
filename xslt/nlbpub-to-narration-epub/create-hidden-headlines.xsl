@@ -124,7 +124,7 @@
         
         <xsl:choose>
             <xsl:when test="count(tokenize($text, ' ')) le 3">
-                <xsl:value-of select="concat(string-join($text, ' '), '.')"/>
+                <xsl:value-of select="string-join($text, ' ')"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat(string-join(tokenize($text, ' ')[position() le 3], ' '), '...')"/>
