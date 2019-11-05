@@ -544,7 +544,14 @@
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="npdoc:*[starts-with(local-name(), 'subheadline')]">
+    <xsl:template match="npdoc:*[starts-with(local-name(), 'subheadline') and not(exists(ancestor::npdoc:body))]">
+        <!-- treat subheadline as a paragraph if it's not inside the body -->
+        <xsl:if test="normalize-space()">
+            <p><xsl:apply-templates select="@* | node()"/></p>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="npdoc:*[starts-with(local-name(), 'subheadline') and exists(ancestor::npdoc:body)]">
         <xsl:param name="headline-as-paragraph" select="false()" tunnel="yes"/>
         <xsl:param name="level" as="xs:integer" tunnel="yes"/>
         
