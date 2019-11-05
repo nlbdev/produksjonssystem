@@ -13,6 +13,8 @@
     <xsl:param name="bodymatter-headlines" select="'from-text'"/> <!-- omit / from-type / from-text -->
     <xsl:param name="backmatter-headlines" select="'omit'"/> <!-- omit / from-type / from-text -->
     
+    <xsl:output indent="no" method="xhtml" include-content-type="no"/>
+    
     <xsl:template match="@* | node()">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
