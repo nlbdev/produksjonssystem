@@ -143,17 +143,22 @@
                 </head>
                 <body>
                     <section epub:type="cover">
+                        <h1 id="..." class="generated-headline hidden-headline">Cover</h1>
                         <p>Cover</p>
                     </section>
                     <section epub:type="frontmatter titlepage">
+                        <h1 id="..." class="generated-headline hidden-headline">Title page</h1>
                         <p>Titlepage</p>
                     </section>
                     <section epub:type="frontmatter colophon">
+                        <h1 id="..." class="generated-headline hidden-headline">Colophon</h1>
                         <p>Colophon</p>
                     </section>
                     <section epub:type="frontmatter foreword">
+                        <h1 id="..." class="generated-headline hidden-headline">Foreword</h1>
                         <p>Foreword</p>
                         <section epub:type="subchapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Subchapter</h2>
                             <p>Foreword subchapter</p>
                         </section>
                     </section>
@@ -275,11 +280,14 @@
                         <p>Chapter</p>
                     </section>
                     <section epub:type="backmatter footnotes">
+                        <h1 id="..." class="generated-headline hidden-headline">Footnotes</h1>
                         <p>Footnotes</p>
                     </section>
                     <section epub:type="backmatter index">
+                        <h1 id="..." class="generated-headline hidden-headline">Index</h1>
                         <p>Index</p>
                         <section epub:type="subchapter">
+                            <h2 id="..." class="generated-headline hidden-headline">Subchapter</h2>
                             <p>Index subchapter</p>
                         </section>
                     </section>
@@ -292,7 +300,7 @@
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Translation test" pending="nothing currently being translated by default">
+    <x:scenario label="Translation test">
         <x:context>
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
                 <head>
@@ -362,19 +370,19 @@
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="en" lang="en">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="no" lang="no">
-                        <h1 id="..." class="generated-headline hidden-headline">Kapittel</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="nb" lang="nb">
-                        <h1 id="..." class="generated-headline hidden-headline">Kapittel</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="bodymatter chapter" xml:lang="nn" lang="nn">
-                        <h1 id="..." class="generated-headline hidden-headline">Kapittel</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">….</h1>
                         <p>…</p>
                     </section>
                     <section epub:type="backmatter chapter" xml:lang="en" lang="en">
@@ -696,122 +704,152 @@
                 </head>
                 <body>
                     <section epub:type="cover">
+                        <h1 id="..." class="generated-headline hidden-headline">Bokomslag</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter abstract">
+                        <h1 id="..." class="generated-headline hidden-headline">Samandrag</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter foreword">
+                        <h1 id="..." class="generated-headline hidden-headline">Forord</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter preface">
+                        <h1 id="..." class="generated-headline hidden-headline">Innleiing</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter prologue">
+                        <h1 id="..." class="generated-headline hidden-headline">Prolog</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter introduction">
+                        <h1 id="..." class="generated-headline hidden-headline">Innleiing</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter preamble">
+                        <h1 id="..." class="generated-headline hidden-headline">Innleiing</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter conclusion">
+                        <h1 id="..." class="generated-headline hidden-headline">Avslutning/Konklusjon</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter toc">
+                        <h1 id="..." class="generated-headline hidden-headline">Innhald</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter toc-brief">
+                        <h1 id="..." class="generated-headline hidden-headline">Kort innhaldsfortegnelse</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter landmarks">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter titlepage">
+                        <h1 id="..." class="generated-headline hidden-headline">Tittelside</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter halftitlepage">
+                        <h1 id="..." class="generated-headline hidden-headline">Tittel</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter copyright-page">
+                        <h1 id="..." class="generated-headline hidden-headline">Opphavsrett</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter seriespage">
+                        <h1 id="..." class="generated-headline hidden-headline">Andre bøker i serien</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter acknowledgments">
+                        <h1 id="..." class="generated-headline hidden-headline">Takk til:</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter imprint">
+                        <h1 id="..." class="generated-headline hidden-headline">Imprint</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter imprimatur">
+                        <h1 id="..." class="generated-headline hidden-headline">Imprimatur</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter contributors">
+                        <h1 id="..." class="generated-headline hidden-headline">Bidragsytere</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter other-credits">
+                        <h1 id="..." class="generated-headline hidden-headline">Andre bidragsytere</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter errata">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter dedication">
+                        <h1 id="..." class="generated-headline hidden-headline">Dedikasjon</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter revision-history">
+                        <h1 id="..." class="generated-headline hidden-headline">Revidert</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:published-works">
+                        <h1 id="..." class="generated-headline hidden-headline">Tidlegare utgivingar</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:publisher-address">
+                        <h1 id="..." class="generated-headline hidden-headline">Adresse</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:editorial-note">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:grant-acknowledgment">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:biographical-note">
+                        <h1 id="..." class="generated-headline hidden-headline">Biblografi</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:translator-note">
+                        <h1 id="..." class="generated-headline hidden-headline">Omsetjarens kommentar</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="frontmatter z3998:promotional-copy">
+                        <h1 id="..." class="generated-headline hidden-headline">Frontmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
@@ -896,98 +934,122 @@
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter epilogue">
+                        <h1 id="..." class="generated-headline hidden-headline">Epilog</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter afterword">
+                        <h1 id="..." class="generated-headline hidden-headline">Etterord</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter epigraph">
+                        <h1 id="..." class="generated-headline hidden-headline">Innskrift</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter loa">
+                        <h1 id="..." class="generated-headline hidden-headline">Lydklipp</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter loi">
+                        <h1 id="..." class="generated-headline hidden-headline">Illustrasjonar</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter lot">
+                        <h1 id="..." class="generated-headline hidden-headline">Tabellar</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter lov">
+                        <h1 id="..." class="generated-headline hidden-headline">Videoar</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter appendix">
+                        <h1 id="..." class="generated-headline hidden-headline">Vedlegg</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter colophon">
+                        <h1 id="..." class="generated-headline hidden-headline">Kolofon</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter credits">
+                        <h1 id="..." class="generated-headline hidden-headline">Bidragsytere</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter keywords">
+                        <h1 id="..." class="generated-headline hidden-headline">Søkjeord</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter z3998:discography">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter z3998:filmography">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter index">
+                        <h1 id="..." class="generated-headline hidden-headline">Innhald</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter index-headnotes">
+                        <h1 id="..." class="generated-headline hidden-headline">Innhald</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter index-legend">
+                        <h1 id="..." class="generated-headline hidden-headline">Symbolfolklaring</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter index-group">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter glossary">
+                        <h1 id="..." class="generated-headline hidden-headline">Ordliste</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter dictionary">
+                        <h1 id="..." class="generated-headline hidden-headline">Ordliste</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter bibliography">
+                        <h1 id="..." class="generated-headline hidden-headline">Bibliografi</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter footnotes">
+                        <h1 id="..." class="generated-headline hidden-headline">Noter</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter rearnotes">
+                        <h1 id="..." class="generated-headline hidden-headline">Noter</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter endnotes">
+                        <h1 id="..." class="generated-headline hidden-headline">Noteapparat</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>
                     <section epub:type="backmatter page-list">
+                        <h1 id="..." class="generated-headline hidden-headline">Sluttmaterie</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>

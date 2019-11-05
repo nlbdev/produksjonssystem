@@ -8,10 +8,10 @@
                 xmlns:f="#"
                 version="2.0">
     
-    <xsl:param name="cover-headlines" select="'omit'"/> <!-- omit / from-type / from-text -->
-    <xsl:param name="frontmatter-headlines" select="'omit'"/> <!-- omit / from-type / from-text -->
+    <xsl:param name="cover-headlines" select="'from-type'"/> <!-- omit / from-type / from-text -->
+    <xsl:param name="frontmatter-headlines" select="'from-type'"/> <!-- omit / from-type / from-text -->
     <xsl:param name="bodymatter-headlines" select="'from-text'"/> <!-- omit / from-type / from-text -->
-    <xsl:param name="backmatter-headlines" select="'omit'"/> <!-- omit / from-type / from-text -->
+    <xsl:param name="backmatter-headlines" select="'from-type'"/> <!-- omit / from-type / from-text -->
     
     <xsl:output indent="no" method="xhtml" include-content-type="no"/>
     
