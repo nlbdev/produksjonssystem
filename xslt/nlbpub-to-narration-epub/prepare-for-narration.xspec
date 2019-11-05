@@ -8,8 +8,6 @@
     <!-- 
         (c) 2018 NLB
         Per Sennels, 13.04.2018
-        
-        TODO: Legge til flere tester
     -->
 
     <x:scenario label="Transformasjon av lister" pending="Transformasjon av lister er under testing, og skal foreløpig ikke brukes (komplekst innhold)">
@@ -149,6 +147,55 @@
                     <section id="ch1-19">...</section>
                 </body>
             </html>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Image captions">
+        <x:context>
+            <section xmlns="http://www.w3.org/1999/xhtml">
+                <figure>
+                    <p>Not an image</p>
+                    <figcaption>
+                        <p>Not an image caption.</p>
+                    </figcaption>
+                </figure>
+                
+                <figure class="image">
+                    <img href="…"/>
+                    <figcaption>Inline image caption</figcaption>
+                </figure>
+                
+                <figure class="image">
+                    <img href="…"/>
+                    <figcaption>
+                        <p>Block image caption</p>
+                    </figcaption>
+                </figure>
+            </section>
+        </x:context>
+        <x:expect label="skal gi samme liste, men med ekstra informasjon">
+            <section xmlns="http://www.w3.org/1999/xhtml">
+                <figure>
+                    <p>Not an image</p>
+                    <figcaption>
+                        <p>Not an image caption.</p>
+                    </figcaption>
+                </figure>
+                
+                <figure class="image">
+                    <img href="…"/>
+                    <figcaption><span class="nlb-ekstra-informasjon">Bildetekst: </span>Inline image caption<span class="nlb-ekstra-informasjon"> Bildetekst slutt.</span></figcaption>
+                </figure>
+                
+                <figure class="image">
+                    <img href="…"/>
+                    <figcaption>
+                        <p class="nlb-ekstra-informasjon">Bildetekst: </p>
+                        <p>Block image caption</p>
+                        <p class="nlb-ekstra-informasjon"> Bildetekst slutt.</p>
+                    </figcaption>
+                </figure>
+            </section>
         </x:expect>
     </x:scenario>
     

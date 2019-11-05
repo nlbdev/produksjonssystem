@@ -171,4 +171,20 @@
         </xsl:if>
     </xsl:template>
     
+    <xsl:template match="figure[tokenize(@class,'\s+')='image']/figcaption">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            
+            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
+                <xsl:with-param name="informasjon" select="'Bildetekst: '"/>
+            </xsl:call-template>
+            
+            <xsl:apply-templates select="node()"/>
+            
+            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
+                <xsl:with-param name="informasjon" select="' Bildetekst slutt.'"/>
+            </xsl:call-template>
+        </xsl:copy>
+    </xsl:template>
+    
  </xsl:stylesheet>
