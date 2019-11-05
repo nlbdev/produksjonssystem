@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:html="http://www.w3.org/1999/xhtml"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="unwrap-poem-chapters.xsl">
+    
+    <x:scenario label="Poem nesting (chapter - section x 1 - section x 1)">
+        <x:context>
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_2">Navn på diktsamling</h1>
+                <section id="level2_1">
+                    <h2 id="h2_1">Navn på dikt (1)</h2>
+                    <section class="poem" epub:type="z3998:poem" id="poem_1">
+                        <div class="linegroup">
+                            <p class="line">Lorem ipsum dolor sit amet!</p>
+                            <p class="line">consectetur adipisicing elit!</p>
+                        </div>
+                        <div class="linegroup">
+                            <p class="line">sed do eiusmod.</p>
+                            <p class="line">tempor incididunt ut labore</p>
+                            <p class="line">et dolore magna aliqua.</p>
+                        </div>
+                    </section>
+                </section>
+            </section>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_2">Navn på diktsamling</h1>
+                <section class="poem" epub:type="z3998:poem" id="level2_1">
+                    <h2 id="h2_1">Navn på dikt (1)</h2>
+                    <div class="linegroup">
+                        <p class="line">Lorem ipsum dolor sit amet!</p>
+                        <p class="line">consectetur adipisicing elit!</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">sed do eiusmod.</p>
+                        <p class="line">tempor incididunt ut labore</p>
+                        <p class="line">et dolore magna aliqua.</p>
+                    </div>
+                </section>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Poem nesting (chapter - section x 1 + section x 2)">
+        <x:context>
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_2">Navn på diktsamling</h1>
+                <section id="level2_1">
+                    <h2 id="h2_1">Navn på dikt (1)</h2>
+                    <section class="poem" epub:type="z3998:poem" id="poem_1">
+                        <div class="linegroup">
+                            <p class="line">Lorem ipsum dolor sit amet!</p>
+                            <p class="line">consectetur adipisicing elit!</p>
+                        </div>
+                        <div class="linegroup">
+                            <p class="line">sed do eiusmod.</p>
+                            <p class="line">tempor incididunt ut labore</p>
+                            <p class="line">et dolore magna aliqua.</p>
+                        </div>
+                    </section>
+                    <section class="poem" epub:type="z3998:poem" id="poem_2">
+                        <div class="linegroup">
+                            <p class="line">Ut enim ad minim veniam.</p>
+                            <p class="line">quis nostrud exercitation ullamco</p>
+                            <p class="line">laboris nisi ut aliquip ex ea commodo consequat,</p>
+                            <p class="line">Duis aute irure dolor in reprehenderit</p>
+                        </div>
+                        <div class="linegroup">
+                            <p class="line">in voluptate velit esse cillum dolore.</p>
+                            <p class="line">eu fugiat nulla pariatur</p>
+                            <p class="line">Excepteur sint occaecat cupidatat non proident.</p>
+                        </div>
+                    </section>
+                </section>
+            </section>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_2">Navn på diktsamling</h1>
+                <section id="level2_1">
+                    <h2 id="h2_1">Navn på dikt (1)</h2>
+                    <section class="poem" epub:type="z3998:poem" id="poem_1">
+                        <div class="linegroup">
+                            <p class="line">Lorem ipsum dolor sit amet!</p>
+                            <p class="line">consectetur adipisicing elit!</p>
+                        </div>
+                        <div class="linegroup">
+                            <p class="line">sed do eiusmod.</p>
+                            <p class="line">tempor incididunt ut labore</p>
+                            <p class="line">et dolore magna aliqua.</p>
+                        </div>
+                    </section>
+                    <section class="poem" epub:type="z3998:poem" id="poem_2">
+                        <div class="linegroup">
+                            <p class="line">Ut enim ad minim veniam.</p>
+                            <p class="line">quis nostrud exercitation ullamco</p>
+                            <p class="line">laboris nisi ut aliquip ex ea commodo consequat,</p>
+                            <p class="line">Duis aute irure dolor in reprehenderit</p>
+                        </div>
+                        <div class="linegroup">
+                            <p class="line">in voluptate velit esse cillum dolore.</p>
+                            <p class="line">eu fugiat nulla pariatur</p>
+                            <p class="line">Excepteur sint occaecat cupidatat non proident.</p>
+                        </div>
+                    </section>
+                </section>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Poem nesting (chapter - section x 1)">
+        <x:context>
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_1">Navn på dikt</h1>
+                <section class="poem" epub:type="z3998:poem" id="poem_1">
+                    <div class="linegroup">
+                        <p class="line">Lorem ipsum dolor sit amet!</p>
+                        <p class="line">consectetur adipisicing elit!</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">sed do eiusmod.</p>
+                        <p class="line">tempor incididunt ut labore</p>
+                        <p class="line">et dolore magna aliqua.</p>
+                    </div>
+                </section>
+            </section>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <section class="poem" epub:type="bodymatter chapter z3998:poem" id="level1_7">
+                <h1 id="h1_1">Navn på dikt</h1>
+                <div class="linegroup">
+                    <p class="line">Lorem ipsum dolor sit amet!</p>
+                    <p class="line">consectetur adipisicing elit!</p>
+                </div>
+                <div class="linegroup">
+                    <p class="line">sed do eiusmod.</p>
+                    <p class="line">tempor incididunt ut labore</p>
+                    <p class="line">et dolore magna aliqua.</p>
+                </div>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Poem nesting (chapter - section x 2)">
+        <x:context>
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_1">Navn på dikt</h1>
+                <section class="poem" epub:type="z3998:poem" id="poem_1">
+                    <div class="linegroup">
+                        <p class="line">Lorem ipsum dolor sit amet!</p>
+                        <p class="line">consectetur adipisicing elit!</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">sed do eiusmod.</p>
+                        <p class="line">tempor incididunt ut labore</p>
+                        <p class="line">et dolore magna aliqua.</p>
+                    </div>
+                </section>
+                <section class="poem" epub:type="z3998:poem" id="poem_2">
+                    <div class="linegroup">
+                        <p class="line">Ut enim ad minim veniam.</p>
+                        <p class="line">quis nostrud exercitation ullamco</p>
+                        <p class="line">laboris nisi ut aliquip ex ea commodo consequat,</p>
+                        <p class="line">Duis aute irure dolor in reprehenderit</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">in voluptate velit esse cillum dolore.</p>
+                        <p class="line">eu fugiat nulla pariatur</p>
+                        <p class="line">Excepteur sint occaecat cupidatat non proident.</p>
+                    </div>
+                </section>
+            </section>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_1">Navn på dikt</h1>
+                <section class="poem" epub:type="z3998:poem" id="poem_1">
+                    <div class="linegroup">
+                        <p class="line">Lorem ipsum dolor sit amet!</p>
+                        <p class="line">consectetur adipisicing elit!</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">sed do eiusmod.</p>
+                        <p class="line">tempor incididunt ut labore</p>
+                        <p class="line">et dolore magna aliqua.</p>
+                    </div>
+                </section>
+                <section class="poem" epub:type="z3998:poem" id="poem_2">
+                    <div class="linegroup">
+                        <p class="line">Ut enim ad minim veniam.</p>
+                        <p class="line">quis nostrud exercitation ullamco</p>
+                        <p class="line">laboris nisi ut aliquip ex ea commodo consequat,</p>
+                        <p class="line">Duis aute irure dolor in reprehenderit</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">in voluptate velit esse cillum dolore.</p>
+                        <p class="line">eu fugiat nulla pariatur</p>
+                        <p class="line">Excepteur sint occaecat cupidatat non proident.</p>
+                    </div>
+                </section>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Poem nesting (chapter - p and section)">
+        <x:context>
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_1">Navn på dikt</h1>
+                <p>Tekst før dikt</p>
+                <section class="poem" epub:type="z3998:poem" id="poem_1">
+                    <div class="linegroup">
+                        <p class="line">Lorem ipsum dolor sit amet!</p>
+                        <p class="line">consectetur adipisicing elit!</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">sed do eiusmod.</p>
+                        <p class="line">tempor incididunt ut labore</p>
+                        <p class="line">et dolore magna aliqua.</p>
+                    </div>
+                </section>
+            </section>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <section epub:type="bodymatter chapter" id="level1_7">
+                <h1 id="h1_1">Navn på dikt</h1>
+                <p>Tekst før dikt</p>
+                <section class="poem" epub:type="z3998:poem" id="poem_1">
+                    <div class="linegroup">
+                        <p class="line">Lorem ipsum dolor sit amet!</p>
+                        <p class="line">consectetur adipisicing elit!</p>
+                    </div>
+                    <div class="linegroup">
+                        <p class="line">sed do eiusmod.</p>
+                        <p class="line">tempor incididunt ut labore</p>
+                        <p class="line">et dolore magna aliqua.</p>
+                    </div>
+                </section>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
