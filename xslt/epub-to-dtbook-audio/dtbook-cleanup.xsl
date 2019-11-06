@@ -38,6 +38,17 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="meta[starts-with(lower-case(@name), 'dc:') and not(matches(lower-case(@name), '^dc:(title|subject|description|type|source|relation|coverage|creator|publisher|contributor|rights|date|format|identifier|language)$'))]">
+        <xsl:comment>
+            <xsl:text> not allowed in DTBook: </xsl:text>
+            <xsl:text>&lt;meta</xsl:text>
+            <xsl:for-each select="@*">
+                <xsl:value-of select="concat(' ', name(), '=&quot;', ., '&quot;')"/>
+            </xsl:for-each>
+            <xsl:text>/&gt; </xsl:text>
+        </xsl:comment>
+    </xsl:template>
+    
     <xsl:template match="doctitle">
         <xsl:next-match/>
         
@@ -62,9 +73,59 @@
         <meta name="dc:Language" content="{f:lang(@content)}"/>
     </xsl:template>
     
-    <xsl:template match="h1[@class='title fulltitle']"/>   
+    <xsl:template match="h1[tokenize(@class, '\s+') = 'fulltitle']"/>
     
-    <xsl:template match="p[@class='docauthor author']"/>
+    <xsl:template match="p[tokenize(@class,'\s+') = 'docauthor']"/>
+    <!--and exists(../* except (../p[tokenize(@class, '\s+') = 'docauthor'] | ../*[local-name() = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hd', 'pagenum')]))]-->
+    
+    <xsl:template match="level1">
+        <xsl:variable name="result" as="element()">
+            <xsl:next-match/>
+        </xsl:variable>
+        
+        <xsl:for-each select="$result">  <!-- set resulting level1 as context -->
+            <xsl:choose>
+                <xsl:when test="exists(h1/following-sibling::*)">
+                    <!-- perfectly valid level1, just copy the result we already have -->
+                    <xsl:copy-of select="."/>
+                </xsl:when>
+                
+                <xsl:when test="exists(h1/preceding-sibling::*)">
+                    <!-- h1 with preceding element(s) but no following elements -->
+                    <xsl:copy>
+                        <xsl:copy-of select="@*"/>
+                        <xsl:copy-of select="h1/preceding-sibling::*[1]/preceding-sibling::node()"/> <!-- for instance when there's more than one pagenum, then let's only move one of them -->
+                        <xsl:copy-of select="h1"/>
+                        <xsl:copy-of select="h1/preceding-sibling::node() intersect h1/preceding-sibling::*[1]/following-sibling::node()"/>  <!-- nodes (i.e. whitespace) between the h1 and its preceding element-->
+                        <xsl:copy-of select="h1/preceding-sibling::*[1]"/>
+                        <xsl:copy-of select="h1/following-sibling::node()"/>
+                    </xsl:copy>
+                </xsl:when>
+                
+                <xsl:when test="exists(h1)">
+                    <!-- only a h1 in the level1. Let's make it into a p. -->
+                    <xsl:copy>
+                        <xsl:copy-of select="@*"/>
+                        <xsl:copy-of select="h1/preceding-sibling::node()"/>
+                        <p>
+                            <xsl:copy-of select="h1/@*"/>
+                            <xsl:copy-of select="h1/node()"/>
+                        </p>
+                        <xsl:copy-of select="h1/following-sibling::node()"/>
+                    </xsl:copy>
+                </xsl:when>
+                
+                <xsl:when test="exists(*)">
+                    <!-- there are elements, there's just no h1. Should be valid, let's copy the result we already have -->
+                    <xsl:copy-of select="."/>
+                </xsl:when>
+                
+                <xsl:otherwise>
+                    <!-- no remaining elements in the level1. Let's delete it -->
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:template>
     
     <!-- remove links from the toc -->
     <xsl:template match="a[exists(ancestor::list) and exists(ancestor::*[tokenize(@class,'\s+') = 'toc'])]">

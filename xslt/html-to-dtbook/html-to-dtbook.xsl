@@ -14,6 +14,8 @@
     <xsl:import href="epub3-vocab.xsl"/>
     
     <xsl:output indent="no" exclude-result-prefixes="#all" doctype-public="-//NISO//DTD dtbook 2005-3//EN"/>
+    
+    <xsl:param name="remove-invalid-dc-metadata" select="false()" as="xs:boolean"/>
 
     <!--
     <xsl:variable name="special-classes"
@@ -165,7 +167,7 @@
 
     <xsl:template match="html:meta[@name and @content and not(lower-case(@name)=('viewport','dc:title'))]">
         <xsl:choose>
-            <xsl:when test="starts-with(lower-case(@name), 'dc:') and not(matches(lower-case(@name), '^dc:(title|subject|description|type|source|relation|coverage|creator|publisher|contributor|rights|date|format|identifier|language)$'))">
+            <xsl:when test="$remove-invalid-dc-metadata and starts-with(lower-case(@name), 'dc:') and not(matches(lower-case(@name), '^dc:(title|subject|description|type|source|relation|coverage|creator|publisher|contributor|rights|date|format|identifier|language)$'))">
                 <xsl:comment>
                     <xsl:text> not allowed in DTBook: </xsl:text>
                     <xsl:text>&lt;meta</xsl:text>

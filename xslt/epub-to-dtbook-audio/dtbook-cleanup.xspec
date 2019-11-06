@@ -68,10 +68,10 @@
                     <meta name="nlbprod:isbnDaisy202Student" content="978-82-16-26496-6"/>
                     <meta name="nlbprod:identifierEbook" content="360696"/>
                     <meta name="nlbprod:identifierEpub" content="562096"/>
-                    <meta name="dc:Title.part" content="Tro og tradisjon"/>
-                    <meta name="dc:Title.series.preceding" content="Kristendommen I : Bibelen"/>
-                    <meta name="dc:Contributor.editor" content="Sødal, Helje Kringlebotn"/>
-                    <meta name="dc:Contributor.narrator" content="Brage Talesyntese"/>
+                    <!-- not allowed in DTBook: <meta name="dc:Title.part" content="Tro og tradisjon"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:Title.series.preceding" content="Kristendommen I : Bibelen"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:Contributor.editor" content="Sødal, Helje Kringlebotn"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:Contributor.narrator" content="Brage Talesyntese"/> -->
                     <meta name="dc:Date" content="..."/>
                 </head>
                 <book>
@@ -116,6 +116,170 @@
                     </list>
                 </level1>
             </frontmatter>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="handling of chapters that become empty after removing p elements with class=fulltitle/docauthor">
+        <x:context>
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="228974"/>
+                    <meta name="dc:Identifier" content="228974"/>
+                    <meta name="dc:Title" content="Lek og samspill i et mangfoldsperspektiv"/>
+                    <meta name="dc:Date" content="2019-11-06" />
+                    <meta name="dc:Contributor" content="Fodstad, Cecilie Dyrkorn"/>
+                    <meta name="dc:Contributor" content="Hopperstad, Marit Holm"/>
+                    <meta name="dc:Contributor" content="Kalkman, Kris"/>
+                    <meta name="dc:Contributor" content="Kanstad, Marit"/>
+                    <meta name="dc:Contributor" content="Kibsgaard, Sonja"/>
+                    <meta name="dc:Contributor" content="Kulset, Nora"/>
+                    <meta name="dc:Contributor" content="Olsen, Torild Marie"/>
+                    <meta name="dc:Contributor" content="Valenta, Marko"/>
+                    <meta name="dc:contributor.editor" content="Kanstad, Marit"/>
+                    <meta name="dc:contributor.editor" content="Kibsgaard, Sonja"/>
+                    <meta name="dc:contributor.narrator" content="Brage Talesyntese"/>
+                </head>
+                <book>
+                    <frontmatter>
+                        <doctitle>Lek og samspill i et mangfoldsperspektiv</doctitle>
+                        <level1 id="c1" class="jacketcopy">
+                            <prodnote id="c2" class="frontcover" render="optional">
+                                <imggroup>
+                                    <img alt="image" src="images/cover.jpg" id="img_1"/>
+                                </imggroup>
+                            </prodnote>
+                        </level1>
+                        <level1 id="d6e715" class="halftitlepage">
+                            <pagenum id="d6e717-1" page="normal">1</pagenum>
+                            <p id="d6e718">Lek og samspill i et mangfoldsperspektiv</p>
+                        </level1>
+                        <level1 id="d6e720-0" class="titlepage">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p id="d6e727" class="docauthor author">
+                                <em id="d6e728">Sonja Kibsgaard</em>
+                            </p>
+                            <p id="d6e730" class="docauthor author">
+                                <em id="d6e731">Marit Kanstad (red.)</em>
+                            </p>
+                        </level1>
+                        <level1 id="d6e720-1">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p id="d6e727" class="docauthor author">
+                                <em id="d6e728">Sonja Kibsgaard</em>
+                            </p>
+                            <p id="d6e730" class="docauthor author">
+                                <em id="d6e731">Marit Kanstad (red.)</em>
+                            </p>
+                        </level1>
+                        <level1 id="d6e720-2">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p>This time, there's other content</p>
+                            <p id="d6e727" class="docauthor author">
+                                <em id="d6e728">Sonja Kibsgaard</em>
+                            </p>
+                            <p id="d6e730" class="docauthor author">
+                                <em id="d6e731">Marit Kanstad (red.)</em>
+                            </p>
+                        </level1>
+                        <level1 id="d6e720-3">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p id="d6e727" class="docauthor author">
+                                <em id="d6e728">Sonja Kibsgaard</em>
+                            </p>
+                            <p id="d6e730" class="docauthor author">
+                                <em id="d6e731">Marit Kanstad (red.)</em>
+                            </p>
+                            <level2>
+                                <h2>Other content</h2>
+                                <p>This time, there's also other content</p>
+                            </level2>
+                        </level1>
+                        <level1 id="d6e733">
+                            <pagenum id="d6e735-4" page="normal">4</pagenum>
+                            <h1 id="d6e736">Copyright © 2015 by Fagbokforlaget Vigmostad &amp; Bjørke AS All Rights Reserved</h1>
+                            <p id="d6e738">ISBN: 978-82-450-1742-7</p>
+                        </level1>
+                    </frontmatter>
+                </book>
+            </dtbook>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="228974"/>
+                    <meta name="dc:Identifier" content="228974"/>
+                    <meta name="dc:Title" content="Lek og samspill i et mangfoldsperspektiv"/>
+                    <meta name="dc:Date" content="2019-11-06" />
+                    <meta name="dc:Contributor" content="Fodstad, Cecilie Dyrkorn"/>
+                    <meta name="dc:Contributor" content="Hopperstad, Marit Holm"/>
+                    <meta name="dc:Contributor" content="Kalkman, Kris"/>
+                    <meta name="dc:Contributor" content="Kanstad, Marit"/>
+                    <meta name="dc:Contributor" content="Kibsgaard, Sonja"/>
+                    <meta name="dc:Contributor" content="Kulset, Nora"/>
+                    <meta name="dc:Contributor" content="Olsen, Torild Marie"/>
+                    <meta name="dc:Contributor" content="Valenta, Marko"/>
+                    <!-- not allowed in DTBook: <meta name="dc:contributor.editor" content="Kanstad, Marit"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:contributor.editor" content="Kibsgaard, Sonja"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:contributor.narrator" content="Brage Talesyntese"/> -->
+                </head>
+                <book>
+                    <frontmatter>
+                        <doctitle>Lek og samspill i et mangfoldsperspektiv</doctitle>
+                        <docauthor>Marit Kanstad (red.)</docauthor>
+                        <docauthor>Sonja Kibsgaard (red.)</docauthor>
+                        <level1 id="c1" class="jacketcopy">
+                            <prodnote id="c2" class="frontcover" render="optional">
+                                <imggroup>
+                                    <img alt="image" src="images/cover.jpg" id="img_1"/>
+                                </imggroup>
+                            </prodnote>
+                        </level1>
+                        <level1 id="d6e715" class="halftitlepage">
+                            <pagenum id="d6e717-1" page="normal">1</pagenum>
+                            <p id="d6e718">Lek og samspill i et mangfoldsperspektiv</p>
+                        </level1>
+                        <level1 id="d6e720-0" class="titlepage">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                        </level1>
+                        <level1 id="d6e720-1">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                        </level1>
+                        <level1 id="d6e720-2">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p>This time, there's other content</p>
+                        </level1>
+                        <level1 id="d6e720-3">
+                            <pagenum id="d6e722-2" page="normal">2</pagenum>
+                            <pagenum id="d6e724-3" page="normal">3</pagenum>
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <level2>
+                                <h2>Other content</h2>
+                                <p>This time, there's also other content</p>
+                            </level2>
+                        </level1>
+                        <level1 id="d6e733">
+                            <pagenum id="d6e735-4" page="normal">4</pagenum>
+                            <h1 id="d6e736">Copyright © 2015 by Fagbokforlaget Vigmostad &amp; Bjørke AS All Rights Reserved</h1>
+                            <p id="d6e738">ISBN: 978-82-450-1742-7</p>
+                        </level1>
+                    </frontmatter>
+                </book>
+            </dtbook>
         </x:expect>
     </x:scenario>
     
