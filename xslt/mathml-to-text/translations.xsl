@@ -20,48 +20,47 @@
         hvordan bruke:
             <xsl:value-of select="fnk:translate('translate', .)"/>
     -->
+    <!-- Translation function -->
     <xsl:function name="fnk:translate" as="xs:string">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="context" as="node()"/>
+        <xsl:param name="capitalize" as="xs:boolean"/>
         
+        <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]" as="xs:string?"/>
+        <xsl:variable name="translated" as="xs:string">
+            <xsl:choose>
+                <xsl:when test="$language != ''">
+                    <xsl:variable name="language" select="if ($language = 'no') then 'nn' else $language"/>
+                    <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()" as="xs:string?"/>
+                    <xsl:if test="not($result)">
+                        <xsl:message terminate="yes">No translation found for language=<xsl:value-of select="$language"/>, terminating.</xsl:message>
+                    </xsl:if>
+                    <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:message terminate="yes">No language attribute found, terminating.</xsl:message>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <!-- Capitalize first letter -->
         <xsl:choose>
-            <xsl:when test="($context/ancestor-or-self::*/@xml:lang)[last()] != ''">
-                <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]"/>
-                
-                <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
-                <xsl:choose>
-                    <xsl:when test="not($result)">
-                        <xsl:message select="concat('Translation missing for: ', $text, ' (language=', $language, ')')"/>
-                        <xsl:value-of select="$text"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
-                    </xsl:otherwise>
-                </xsl:choose>
+            <xsl:when test="$capitalize">
+                <xsl:value-of select="concat(upper-case(substring($translated,1,1)), substring($translated, 2), ' '[not(last())])"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:variable name="language" select="'nb'"/>
-                
-                <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
-                <xsl:choose>
-                    <xsl:when test="not($result)">
-                        <xsl:message select="concat('Translation missing for: ', $text, ' (language=', $language, ')')"/>
-                        <xsl:value-of select="$text"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
-                    </xsl:otherwise>
-                </xsl:choose>
+                <xsl:value-of select="$translated"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+        
+    <!-- Translation dictionary -->
     <xsl:variable name="dictionary" as="element()">
         <dictionary>
             <!-- General terms -->
             <term name="placeholder">
                 <translation lang="en">mathematical formula</translation>
                 <translation lang="nb">matematisk formel</translation>
+                <translation lang="nn">matematisk formel</translation>
             </term>
             <term name="unknown operator">
                 <translation lang="en">unknown operator</translation>
