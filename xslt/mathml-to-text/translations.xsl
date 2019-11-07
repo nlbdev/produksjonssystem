@@ -60,7 +60,6 @@
             <term name="placeholder">
                 <translation lang="en">mathematical formula</translation>
                 <translation lang="nb">matematisk formel</translation>
-                <translation lang="nn">matematisk formel</translation>
             </term>
             <term name="unknown operator">
                 <translation lang="en">unknown operator</translation>

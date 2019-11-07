@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://www.w3.org/1998/Math/MathML" xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="mathml-to-spoken-math.xsl"> 
+<x:description 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:m="http://www.w3.org/1998/Math/MathML" 
+    xmlns:x="http://www.jenitennison.com/xslt/xspec" 
+    stylesheet="mathml-to-spoken-math.xsl"> 
     
     <x:scenario label="Aritmetikk">
         <x:context>
-            <body>
+            <body xml:lang="en">
                 <h2>Addisjon</h2>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
-                    <mn>2</mn>
-                    <mo>+</mo>
-                    <mn>3</mn>
-                    <mo>=</mo>
-                    <mn>5</mn>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <m:math mode="display" display="block">
+                    <semantics>
+                        <m:mrow>
+                            <m:mn>2</m:mn>
+                            <m:mo>+</m:mo>
+                            <m:mn>3</m:mn>
+                            <m:mo>=</m:mo>
+                            <m:mn>5</m:mn>
+                        </m:mrow>
+                    </semantics>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>x</mi>
                     </mrow>
                     <mo>+</mo>
@@ -25,26 +33,26 @@
                     <mo>=</mo>
                     <mrow>
                         <mn>3</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>x</mi>
                     </mrow>
                     <mo>+</mo>
                     <mi>a</mi>
-                </math>
+                </m:math>
                 <h2>Subtraksjon</h2>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mn>2</mn>
                     <mo>-</mo>
                     <mn>3</mn>
                     <mo>=</mo>
                     <mo>-</mo>
                     <mn>5</mn>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
                         <mo>-</mo>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>x</mi>
                     </mrow>
                     <mo>+</mo>
@@ -56,47 +64,47 @@
                     <mi>x</mi>
                     <mo>-</mo>
                     <mi>a</mi>
-                </math>
+                </m:math>
                 <h3>Multiplikasjon</h3>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
                         <mn>2</mn>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mn>3</mn>
                         <mo>=</mo>
                         <mn>6</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
                         <mo>-</mo>
                         <mn>2</mn>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mn>3</mn>
                         <mo>=</mo>
                         <mo>-</mo>
                         <mn>6</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
                         <mn>2</mn>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mi>x</mi>
                         <mo>+</mo>
                         <mn>5</mn>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mi>x</mi>
                         <mo>-</mo>
                         <mn>4</mn>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mi>a</mi>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mi>x</mi>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mfenced>
                             <mrow>
                                 <mi>y</mi>
@@ -106,16 +114,16 @@
                         </mfenced>
                         <mo>=</mo>
                         <mi>x</mi>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>y</mi>
                         <mo>+</mo>
                         <mn>4</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>x</mi>
                     </mrow>
-                </math>
+                </m:math>
                 <h2>Divisjon</h2>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>8</mn>
                         <mo>:</mo>
@@ -123,78 +131,78 @@
                         <mo>=</mo>
                         <mn>4</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>4</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>y</mi>
                         <mo>:</mo>
                         <mi>y</mi>
                         <mo>=</mo>
                         <mn>4</mn>
                     </mrow>
-                </math>
+                </m:math>
                 <h2>Likhet og ulikhet</h2>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>10</mn>
                         <mo>=</mo>
                         <mn>10</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>9</mn>
                         <mo>&#x2260;</mo>
                         <mn>10</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>11</mn>
                         <mo>&gt;</mo>
                         <mn>10</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>1000</mn>
                         <mo>&#x226B;</mo>
                         <mn>0</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mi>y</mi>
-                        <mo>&ge;</mo>
+                        <mo>&gt;</mo>
                         <mi>a</mi>
                         <mo>+</mo>
                         <mn>5</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>9</mn>
                         <mo>&lt;</mo>
                         <mi>10</mi>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
                         <mo>-</mo>
                         <mn>1000</mn>
                         <mo>&#x226A;</mo>
                         <mn>0</mn>
                     </mrow>
-                </math>
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mi>x</mi>
-                    <mo>&le;</mo>
+                    <mo>&lt;</mo>
                     <mn>2</mn>
-                    <mo>&InvisibleTimes;</mo>
+                    <mo>&#8290;</mo>
                     <mi>a</mi>
-                </math>
+                </m:math>
             </body>
         </x:context>
         
@@ -207,43 +215,43 @@
     <x:scenario label="Kvadratrot og potens">
         <x:context>
             <h2>Kvadratrot</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <msqrt>
                     <mn>2</mn>
                 </msqrt>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msqrt>
                     <mn>2</mn>
                 </msqrt>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msqrt>
                     <mrow>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>a</mi>
                         <mo>+</mo>
                         <mi>b</mi>
                     </mrow>
                 </msqrt>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msqrt>
                     <mn>2</mn>
                 </msqrt>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msqrt>
                     <mi>a</mi>
                 </msqrt>
                 <mo>+</mo>
                 <mi>b</mi>
-                <mo>&ne;</mo>
+                <mo>&#8800;</mo>
                 <msqrt>
                     <mrow>
                         <mi>a</mi>
@@ -251,12 +259,12 @@
                         <mi>b</mi>
                     </mrow>
                 </msqrt>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msqrt>
                     <mrow>
                         <mi>a</mi>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>b</mi>
                     </mrow>
                 </msqrt>
@@ -264,12 +272,12 @@
                 <msqrt>
                     <mi>a</mi>
                 </msqrt>
-                <mo>&sdot;</mo>
+                <mo>&#8901;</mo>
                 <msqrt>
                     <mi>b</mi>
                 </msqrt>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msqrt>
                     <mrow>
                         <mi>a</mi>
@@ -277,7 +285,7 @@
                         <mi>b</mi>
                     </mrow>
                 </msqrt>
-                <mo>&ne;</mo>
+                <mo>&#8800;</mo>
                 <msqrt>
                     <mi>a</mi>
                 </msqrt>
@@ -285,21 +293,21 @@
                 <msqrt>
                     <mi>b</mi>
                 </msqrt>
-            </math>
+            </m:math>
             <h2>Potensregning</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mi>x</mi>
                     <mn>2</mn>
                 </msup>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mi>x</mi>
                     <mi>y</mi>
                 </msup>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mi>x</mi>
                     <mrow>
@@ -308,18 +316,18 @@
                         <mn>1</mn>
                     </mrow>
                 </msup>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mi>x</mi>
                     <mrow>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mi>n</mi>
                     </mrow>
                 </msup>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mi>x</mi>
                     <msup>
@@ -327,8 +335,8 @@
                         <mi>b</mi>
                     </msup>
                 </msup>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mi>x</mi>
                     <msup>
@@ -338,7 +346,7 @@
                 </msup>
                 <mo>+</mo>
                 <mn>2</mn>
-                <mo>&ne;</mo>
+                <mo>&#8800;</mo>
                 <msup>
                     <mi>x</mi>
                     <msup>
@@ -350,7 +358,7 @@
                         </mrow>
                     </msup>
                 </msup>
-            </math>
+            </m:math>
         </x:context>
 
         <x:expect label="Forventet">
@@ -415,7 +423,7 @@
                                 <m:mo>+</m:mo>
                                 <m:mi>b</m:mi></m:mrow>
                         </m:mfenced>
-                        <m:mo>&sdot;</m:mo>
+                        <m:mo>&#8901;</m:mo>
                         <m:mfenced>
                             <m:mrow><m:mi>a</m:mi>
                                 <m:mo>-</m:mo>
@@ -432,7 +440,7 @@
                     <m:mrow>
                         <m:mo>-</m:mo>
                         <m:mi>b</m:mi>
-                        <m:mo>&PlusMinus;</m:mo>
+                        <m:mo>&#177;</m:mo>
                         <m:msqrt>
                             <m:msup>
                                 <m:mi>b</m:mi>
@@ -440,15 +448,15 @@
                             </m:msup>
                             <m:mo>-</m:mo>
                             <m:mn>4</m:mn>
-                            <m:mo>&InvisibleTimes;</m:mo>
+                            <m:mo>&#8290;</m:mo>
                             <m:mi>a</m:mi>
-                            <m:mo>&InvisibleTimes;</m:mo>
+                            <m:mo>&#8290;</m:mo>
                             <m:mi>c</m:mi>
                         </m:msqrt>
                     </m:mrow>
                     <m:mrow>
                         <m:mn>2</m:mn>
-                        <m:mo>&InvisibleTimes;</m:mo>
+                        <m:mo>&#8290;</m:mo>
                         <m:mi>a</m:mi>
                     </m:mrow>
                 </m:mfrac>
@@ -495,54 +503,54 @@
     <x:scenario label="Trigonometri">
         <x:context>
             <h2>Sinus</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
                 <mo>=</mo>
                 <mfrac>
                     <mi>y</mi>
                     <mi>r</mi>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
                 <mo>=</mo>
                 <mfrac bevelled="true">
                     <mi>y</mi>
                     <mi>r</mi>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mi>a</mi>
                 </mrow>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mrow>
                             <mi>a</mi>
@@ -551,76 +559,76 @@
                         </mrow>
                     </mfenced>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mrow>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
-                        <mi>&pi;</mi>
-                        <mo>&it;</mo>
+                        <mo>&#8290;</mo>
+                        <mi>&#960;</mi>
+                        <mo>&#8290;</mo>
                         <mi>f</mi>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mi>t</mi>
                     </mrow>
                 </mrow>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
+            </m:math>
 
             <h2>Cosinus</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>cos</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>cos</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
                 <mo>=</mo>
                 <mfrac>
                     <mi>x</mi>
                     <mi>r</mi>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>cos</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
                 <mo>=</mo>
                 <mfrac bevelled="true">
                     <mi>y</mi>
                     <mi>r</mi>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>cos</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mi>a</mi>
                 </mrow>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>cos</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mrow>
                             <mi>a</mi>
@@ -629,84 +637,84 @@
                         </mrow>
                     </mfenced>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mrow>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
-                        <mi>&pi;</mi>
-                        <mo>&it;</mo>
+                        <mo>&#8290;</mo>
+                        <mi>&#960;</mi>
+                        <mo>&#8290;</mo>
                         <mi>f</mi>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mi>t</mi>
                     </mrow>
                 </mrow>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
+            </m:math>
             
             <h2>Tangens</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>tan</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>tan</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
                 <mo>=</mo>
                 <mfrac>
                     <mrow>
                         <mi>sin</mi>
-                        <mo>&ApplyFunction;</mo>
-                        <mi>&alpha;</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
                     </mrow>
                     <mrow>
                         <mi>cos</mi>
-                        <mo>&ApplyFunction;</mo>
-                        <mi>&alpha;</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
                     </mrow>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>tan</mi>
-                    <mo>&ApplyFunction;</mo>
-                    <mi>&alpha;</mi>
+                    <mo>&#8289;</mo>
+                    <mi>&#945;</mi>
                 </mrow>
                 <mo>=</mo>
                 <mfrac bevelled="true">
                     <mi>y</mi>
                     <mi>r</mi>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>tan</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mi>a</mi>
                 </mrow>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>tan</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mrow>
                             <mi>a</mi>
@@ -715,26 +723,26 @@
                         </mrow>
                     </mfenced>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mi>x</mi>
                 <mo>=</mo>
                 <mrow>
                     <mi>tan</mi>
-                    <mo>&af;</mo>
+                    <mo>&#8289;</mo>
                     <mrow>
                         <mn>2</mn>
-                        <mo>&InvisibleTimes;</mo>
-                        <mi>&pi;</mi>
-                        <mo>&it;</mo>
+                        <mo>&#8290;</mo>
+                        <mi>&#960;</mi>
+                        <mo>&#8290;</mo>
                         <mi>f</mi>
-                        <mo>&sdot;</mo>
+                        <mo>&#8901;</mo>
                         <mi>t</mi>
                     </mrow>
                 </mrow>
                 <mo>+</mo>
                 <mi>b</mi>
-            </math>
+            </m:math>
         </x:context>
 
         <x:expect label="Forventet">
@@ -746,10 +754,10 @@
     <x:scenario label="Matematisk analyse">
         <x:context>
             <h2>Funksjoner</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>f</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -759,25 +767,25 @@
                     <mn>10</mn>
                     <mi>x</mi>
                 </msup>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>f</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mrow>
                             <mi>x</mi>
                             <mo>+</mo>
-                            <mi>&Delta;</mi>
+                            <mi>&#916;</mi>
                             <mi>x</mi>
                         </mrow>
                     </mfenced>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>h</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                         <mi>y</mi>
@@ -786,24 +794,24 @@
                 <mo>=</mo>
                 <mrow>
                     <mi>f</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
                 </mrow>
-                <mo>&sdot;</mo>
+                <mo>&#8901;</mo>
                 <mrow>
                     <mi>g</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>f</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>a</mi>
                         <mi>b</mi>
@@ -816,12 +824,12 @@
                 <mi>b</mi>
                 <mo>+</mo>
                 <mi>c</mi>
-            </math>
+            </m:math>
             <h2>Derivasjon og grenseverdi</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>g</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -832,47 +840,47 @@
                         <mo>lim</mo>
                         <mrow>
                             <mi>t</mi>
-                            <mo>&rarr;</mo>
+                            <mo>&#8594;</mo>
                             <mn>100</mn>
                         </mrow>
                     </munder>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mrow>
                         <mi>f</mi>
-                        <mo>&ApplyFunction;</mo>
+                        <mo>&#8289;</mo>
                         <mfenced>
                             <mi>x</mi>
                             <mi>t</mi>
                         </mfenced>
                     </mrow>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <munder>
                         <mo>lim</mo>
                         <mrow>
                             <mi>x</mi>
-                            <mo>&rarr;</mo>
+                            <mo>&#8594;</mo>
                             <mn>0</mn>
                         </mrow>
                     </munder>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfrac>
                         <mn>1</mn>
                         <mi>x</mi>
                     </mfrac>
                 </mrow>
                 <mo>=</mo>
-                <mi>&infin;</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <mi>&#8734;</mi>
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -883,16 +891,16 @@
                         <mo>lim</mo>
                         <mrow>
                             <mi>h</mi>
-                            <mo>&rarr;</mo>
+                            <mo>&#8594;</mo>
                             <mn>0</mn>
                         </mrow>
                     </munder>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfrac>
                         <mrow>
                             <mrow>
                                 <mi>f</mi>
-                                <mo>&ApplyFunction;</mo>
+                                <mo>&#8289;</mo>
                                 <mfenced>
                                     <mrow>
                                         <mi>x</mi>
@@ -904,7 +912,7 @@
                             <mo>-</mo>
                             <mrow>
                                 <mi>f</mi>
-                                <mo>&ApplyFunction;</mo>
+                                <mo>&#8289;</mo>
                                 <mfenced>
                                     <mi>x</mi>
                                 </mfenced>
@@ -913,14 +921,14 @@
                         <mi>h</mi>
                     </mfrac>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&Prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -929,30 +937,30 @@
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mrow>
                             <msup>
                                 <mi>f</mi>
-                                <mo>&prime;</mo>
+                                <mo>&#8242;</mo>
                             </msup>
-                            <mo>&ApplyFunction;</mo>
+                            <mo>&#8289;</mo>
                             <mfenced>
                                 <mi>x</mi>
                             </mfenced>
                         </mrow>
                     </mfenced>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -960,36 +968,36 @@
                 <mo>=</mo>
                 <mfrac>
                     <mrow>
-                        <mo>&DifferentialD;</mo>
+                        <mo>&#8517;</mo>
                         <mrow>
                             <mi>f</mi>
-                            <mo>&ApplyFunction;</mo>
+                            <mo>&#8289;</mo>
                             <mfenced>
                                 <mi>x</mi>
                             </mfenced>
                         </mrow>
                     </mrow>
                     <mrow>
-                        <mo>&dd;</mo>
+                        <mo>&#8518;</mo>
                         <mi>x</mi>
                     </mrow>
                 </mfrac>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mfenced>
                             <mrow>
                                 <mn>4</mn>
-                                <mo>&it;</mo>
+                                <mo>&#8290;</mo>
                                 <msup>
                                     <mi>x</mi>
                                     <mn>3</mn>
                                 </msup>
-                                <mo>&it;</mo>
+                                <mo>&#8290;</mo>
                                 <mrow>
                                     <mi>cos</mi>
-                                    <mo>&af;</mo>
+                                    <mo>&#8289;</mo>
                                     <mi>x</mi>
                                     <!--<mfenced>
                                         <mi>x</mi>
@@ -997,56 +1005,56 @@
                                 </mrow>
                             </mrow>
                         </mfenced>
-                        <mo>&Prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <msup>
                     <mfenced>
                         <mrow>
                             <mn>3</mn>
-                            <mo>&it;</mo>
+                            <mo>&#8290;</mo>
                             <mi>a</mi>
-                            <mo>&it;</mo>
+                            <mo>&#8290;</mo>
                             <msup>
                                 <mi>x</mi>
                                 <mn>3</mn>
                             </msup>
                         </mrow>
                     </mfenced>
-                    <mo>&Prime;</mo>
+                    <mo>&#8242;</mo>
                 </msup>
                 <mo>=</mo>
                 <msup>
                     <mfenced>
                         <mrow>
                             <mn>9</mn>
-                            <mo>&it;</mo>
+                            <mo>&#8290;</mo>
                             <mi>a</mi>
-                            <mo>&it;</mo>
+                            <mo>&#8290;</mo>
                             <msup>
                                 <mi>x</mi>
                                 <mn>2</mn>
                             </msup>
                         </mrow>
                     </mfenced>
-                    <mo>&prime;</mo>
+                    <mo>&#8242;</mo>
                 </msup>
                 <mo>=</mo>
                 <mn>18</mn>
-                <mo>&it;</mo>
+                <mo>&#8290;</mo>
                 <mi>a</mi>
-                <mo>&it;</mo>
+                <mo>&#8290;</mo>
                 <mi>x</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&Prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -1055,38 +1063,38 @@
                 <mfrac>
                     <mrow>
                         <msup>
-                            <mo>&DifferentialD;</mo><mn>2</mn>
+                            <mo>&#8517;</mo><mn>2</mn>
                         </msup>
                         <mrow>
                             <mi>f</mi>
-                            <mo>&ApplyFunction;</mo>
+                            <mo>&#8289;</mo>
                             <mfenced>
                                 <mi>x</mi>
                             </mfenced>
                         </mrow>
                     </mrow>
                     <mrow>
-                        <mo>&dd;</mo>
+                        <mo>&#8518;</mo>
                         <msup>
                             <mi>x</mi>
                             <mn>2</mn>
                         </msup>
                     </mrow>
                 </mfrac>
-            </math>
+            </m:math>
             <h2>Integrasjon</h2>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
-                <mo>&int;</mo>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <mo>&#8747;</mo>
                 <mi>f</mi>
                 <mo>=</mo>
                 <mi>g</mi>
                 <mo>+</mo>
                 <mi>C</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <mi>g</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -1094,90 +1102,90 @@
                 <mo>=</mo>
                 <mrow>
                     <munderover>
-                        <mo>&int;</mo>
+                        <mo>&#8747;</mo>
                         <mi>a</mi>
                         <mi>x</mi>
                     </munderover>
                     <mrow>
                         <mi>f</mi>
-                        <mo>&ApplyFunction;</mo>
+                        <mo>&#8289;</mo>
                         <mfenced>
                             <mi>t</mi>
                         </mfenced>
                     </mrow>
                     <mrow>
-                        <mo>&dd;</mo>
+                        <mo>&#8518;</mo>
                         <mi>t</mi>
                     </mrow>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
-                    <mo>&int;</mo>
+                    <mo>&#8747;</mo>
                     <mrow>
                         <mi>cos</mi>
-                        <mo>&ApplyFunction;</mo>
+                        <mo>&#8289;</mo>
                         <mi>x</mi>
                     </mrow>
                     <mrow>
-                        <mo>&dd;</mo>
+                        <mo>&#8518;</mo>
                         <mi>x</mi>
                     </mrow>
                 </mrow>
                 <mo>=</mo>
                 <mrow>
                     <mi>sin</mi>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
                 <mo>+</mo>
                 <mi>C</mi>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <munderover>
-                        <mo>&int;</mo>
+                        <mo>&#8747;</mo>
                         <mi>a</mi>
                         <mi>b</mi>
                     </munderover>
                     <mrow>
                         <mi>k</mi>
-                        <mo>&InvisibleTimes;</mo>
+                        <mo>&#8290;</mo>
                         <mrow>
                             <mi>f</mi>
-                            <mo>&ApplyFunction;</mo>
+                            <mo>&#8289;</mo>
                             <mfenced>
                                 <mi>x</mi>
                             </mfenced>
                         </mrow>
                     </mrow>
                     <mrow>
-                        <mo>&dd;</mo>
+                        <mo>&#8518;</mo>
                         <mi>x</mi>
                     </mrow>
                 </mrow>
                 <mo>=</mo>
                 <mi>k</mi>
-                <mo>&sdot;</mo>
+                <mo>&#8901;</mo>
                 <mrow>
                     <munderover>
-                        <mo>&int;</mo>
+                        <mo>&#8747;</mo>
                         <mi>a</mi>
                         <mi>b</mi>
                     </munderover>
                     <mrow>
                         <mi>f</mi>
-                        <mo>&ApplyFunction;</mo>
+                        <mo>&#8289;</mo>
                         <mfenced>
                             <mi>x</mi>
                         </mfenced>
                     </mrow>
                     <mrow>
-                        <mo>&dd;</mo>
+                        <mo>&#8518;</mo>
                         <mi>x</mi>
                     </mrow>
                 </mrow>
-            </math>
+            </m:math>
         </x:context>
 
         <x:expect label="Forventet">
@@ -1191,7 +1199,7 @@
             <h1 class="title">Diverse matematiske uttrykk representert med MATHML</h1>
             <p>Testområde</p>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1205,9 +1213,9 @@
                     <mo>&#8289;</mo>
                         <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1221,9 +1229,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1237,9 +1245,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1253,9 +1261,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1269,9 +1277,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1285,9 +1293,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1301,8 +1309,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1316,8 +1324,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1331,9 +1339,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
         
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1347,8 +1355,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1362,8 +1370,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1377,8 +1385,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1392,9 +1400,9 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1408,8 +1416,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1423,8 +1431,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1438,8 +1446,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1453,8 +1461,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1468,8 +1476,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1483,8 +1491,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1498,8 +1506,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1513,8 +1521,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1528,8 +1536,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1543,8 +1551,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1558,8 +1566,8 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            </m:math>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>y</mi>
                     <mo>&#8289;</mo>
@@ -1573,12 +1581,12 @@
                     <mo>&#8289;</mo>
                     <mi>x</mi>
                 </mrow>
-            </math>
+            </m:math>
             <!-- arsinh|arcosh|artanh|arcoth -->
             <h2>Hookes lov og harmonisk bevegelse</h2>
             <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i
                 en mekanisk fjær. Loven beskrives matematisk som</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>F</mi>
                     <mo>&#8289;</mo>
@@ -1597,9 +1605,9 @@
                         <mi>t</mi>
                     </mfenced>
                 </mrow>
-            </math>
+            </m:math>
             <p>Samtidig gir <em>Newtons 2. lov</em> at</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>F</mi>
                     <mo>&#8289;</mo>
@@ -1641,9 +1649,9 @@
                         </msup>
                     </mrow>
                 </mfrac>
-            </math>
+            </m:math>
             <p>og fra det følger at</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mfrac>
                     <mrow>
                         <msup>
@@ -1679,9 +1687,9 @@
                         <mi>t</mi>
                     </mfenced>
                 </mrow>
-            </math>
+            </m:math>
             <p>som er en differensiallikning med løsning</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>x</mi>
                     <mo>&#8289;</mo>
@@ -1705,17 +1713,17 @@
                         </mrow>
                     </mfenced>
                 </mrow>
-            </math>
-            <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <math
-                    xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi></math>
-                er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <math
+            </m:math>
+            <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <m:math
+                    xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi></m:math>
+                er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <m:math
                     xmlns="http://www.w3.org/1998/Math/MathML" display="inline"
                         ><mi>&#969;</mi><mo>=</mo><msqrt><mfrac bevelled="true"
-                            ><mi>k</mi><mi>m</mi></mfrac></msqrt></math>. Svingningens <em>fase</em>,
-                    <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"
-                    ><mi>&#981;</mi></math>, er en konstant som er bestemt av startbetingelsene. </p>
+                            ><mi>k</mi><mi>m</mi></mfrac></msqrt></m:math>. Svingningens <em>fase</em>,
+                    <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"
+                    ><mi>&#981;</mi></m:math>, er en konstant som er bestemt av startbetingelsene. </p>
             <h2>Eksempler hentet fra eksamen Matematikk 1T våren 2018</h2>
-            <p>Løs likningen <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+            <p>Løs likningen <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
                     <mn>3</mn>
                     <mo>&#8901;</mo>
                     <msup>
@@ -1724,10 +1732,10 @@
                     </msup>
                     <mo>=</mo>
                     <mn>3000</mn>
-                </math>. </p>
+                </m:math>. </p>
             <hr />
             <p>Regn ut følgende uttrykk:</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mfrac>
                     <mrow>
                         <msup>
@@ -1760,10 +1768,10 @@
                         </msup>
                     </mrow>
                 </mfrac>
-            </math>
+            </m:math>
             <p>og skriv svaret på standardform.</p>
             <hr />
-            <p>Vis at <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+            <p>Vis at <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
                     <msqrt>
                         <mn>15</mn>
                     </msqrt>
@@ -1775,15 +1783,15 @@
                     <msqrt>
                         <mn>48</mn>
                     </msqrt>
-                </math> kan skrives som <math xmlns="http://www.w3.org/1998/Math/MathML"
+                </m:math> kan skrives som <m:math xmlns="http://www.w3.org/1998/Math/MathML"
                     display="inline">
                     <msqrt>
                         <mn>3</mn>
                     </msqrt>
-                </math>.</p>
+                </m:math>.</p>
             <hr />
             <p>Løs ulikheten</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <msup>
                     <mi>x</mi>
                     <mn>2</mn>
@@ -1796,10 +1804,10 @@
                 <mn>8</mn>
                 <mo>&#8805;</mo>
                 <mn>0</mn>
-            </math>
+            </m:math>
             <hr />
             <p>Skriv så enkelt som mulig</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mfrac>
                     <mrow>
                         <mi>x</mi>
@@ -1827,10 +1835,10 @@
                         </mfrac>
                     </mrow>
                 </mfrac>
-            </math>
+            </m:math>
             <hr />
             <p>En funksjon <em>f</em> er gitt ved</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>f</mi>
                     <mo>&#8289;</mo>
@@ -1852,8 +1860,8 @@
                 </msup>
                 <mo>+</mo>
                 <mn>1</mn>
-            </math>
-            <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <math
+            </m:math>
+            <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <m:math
                     xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
                     <mfenced>
                         <mn>1</mn>
@@ -1865,11 +1873,11 @@
                             </mfenced>
                         </mrow>
                     </mfenced>
-                </math>. </p>
+                </m:math>. </p>
             <hr />
             <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan
                 skrives som</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mi>T</mi>
                 <mo>=</mo>
                 <mfrac>
@@ -1913,8 +1921,8 @@
                     </mrow>
                     <mn>2</mn>
                 </mfrac>
-            </math>
-            <p>Arealet til trekanten kan også skrives som <math
+            </m:math>
+            <p>Arealet til trekanten kan også skrives som <m:math
                     xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
                     <mi>T</mi>
                     <mo>=</mo>
@@ -1936,8 +1944,8 @@
                                 <mi>v</mi></mrow>
                         </mfenced>
                     </mrow>
-                </math>. Bruk dette, sammen med uttrykket over, til å vise at</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                </m:math>. Bruk dette, sammen med uttrykket over, til å vise at</p>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                 <mrow>
                     <mi>sin</mi>
                     <mo>&#8289;</mo>
@@ -1971,7 +1979,7 @@
                     <mo>&#8289;</mo>
                     <mi>u</mi>
                 </mrow>
-            </math>
+            </m:math>
         </x:context>
 
         <x:expect label="Forventet">
@@ -1983,13 +1991,13 @@
     <x:scenario label="Typiske feil">
         <x:context>
             <h1 class="title">Tre "like" uttrykk</h1>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -2000,16 +2008,16 @@
                         <mo>lim</mo>
                         <mrow>
                             <mi>h</mi>
-                            <mo>&rarr;</mo>
+                            <mo>&#8594;</mo>
                             <mn>0</mn>
                         </mrow>
                     </munder>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfrac>
                         <mrow>
                             <mrow>
                                 <mi>f</mi>
-                                <mo>&ApplyFunction;</mo>
+                                <mo>&#8289;</mo>
                                 <mfenced>
                                     <mrow>
                                         <mi>x</mi>
@@ -2021,7 +2029,7 @@
                             <mo>-</mo>
                             <mrow>
                                 <mi>f</mi>
-                                <mo>&ApplyFunction;</mo>
+                                <mo>&#8289;</mo>
                                 <mfenced>
                                     <mi>x</mi>
                                 </mfenced>
@@ -2030,15 +2038,15 @@
                         <mi>h</mi>
                     </mfrac>
                 </mrow>
-            </math>
+            </m:math>
             <p>og</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>f</mi>
-                        <mo>&prime;</mo>
+                        <mo>&#8242;</mo>
                     </msup>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
                     <mfenced>
                         <mi>x</mi>
                     </mfenced>
@@ -2049,17 +2057,66 @@
                         <mo>lim</mo>
                         <mrow>
                             <mi>h</mi>
-                            <mo>&rarr;</mo>
+                            <mo>&#8594;</mo>
                             <mn>0</mn>
                         </mrow>
                     </munder>
-                    <mo>&ApplyFunction;</mo>
+                    <mo>&#8289;</mo>
+                    <mfrac>
+                        <mrow>
+                            <mrow>
+                                <mi>f</mi>
+                                <mo>&#8290;</mo>
+                                <mfenced>
+                                    <mrow>
+                                        <mi>x</mi>
+                                        <mo>+</mo>
+                                        <mi>h</mi>
+                                    </mrow>
+                                </mfenced>
+                            </mrow>
+                            <mo>-</mo>
+                            <mrow>
+                                <mi>f</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>x</mi>
+                                </mfenced>
+                            </mrow>
+                        </mrow>
+                        <mi>h</mi>
+                    </mfrac>
+                </mrow>
+            </m:math>
+            <p>og</p>
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                <mrow>
+                    <msup>
+                        <mi>f</mi>
+                        <mo>&#8242;</mo>
+                    </msup>
+                    <mo>&#8289;</mo>
+                    <mfenced>
+                        <mi>x</mi>
+                    </mfenced>
+                </mrow>
+                <mo>=</mo>
+                <mrow>
+                    <munder>
+                        <mo>lim</mo>
+                        <mrow>
+                            <mi>h</mi>
+                            <mo>&#8594;</mo>
+                            <mn>0</mn>
+                        </mrow>
+                    </munder>
+                    <mo>&#8289;</mo>
                     <mfrac>
                         <mrow>
                             <mrow>
                                 <mi>f</mi>
                                 <!-- Og her burde det vært ApplyFunction -->
-                                <mo>&it;</mo>
+                                <!--<mo>&#8290;</mo>-->
                                 <mfenced>
                                     <mrow>
                                         <mi>x</mi>
@@ -2071,7 +2128,7 @@
                             <mo>-</mo>
                             <mrow>
                                 <mi>f</mi>
-                                <mo>&ApplyFunction;</mo>
+                                <mo>&#8289;</mo>
                                 <mfenced>
                                     <mi>x</mi>
                                 </mfenced>
@@ -2080,57 +2137,7 @@
                         <mi>h</mi>
                     </mfrac>
                 </mrow>
-            </math>
-            <p>og</p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
-                <mrow>
-                    <msup>
-                        <mi>f</mi>
-                        <mo>&prime;</mo>
-                    </msup>
-                    <mo>&ApplyFunction;</mo>
-                    <mfenced>
-                        <mi>x</mi>
-                    </mfenced>
-                </mrow>
-                <mo>=</mo>
-                <mrow>
-                    <munder>
-                        <mo>lim</mo>
-                        <mrow>
-                            <mi>h</mi>
-                            <mo>&rarr;</mo>
-                            <mn>0</mn>
-                        </mrow>
-                    </munder>
-                    <mo>&ApplyFunction;</mo>
-                    <mfrac>
-                        <mrow>
-                            <mrow>
-                                <mi>f</mi>
-                                <!-- Og her burde det vært ApplyFunction -->
-                                <!--<mo>&it;</mo>-->
-                                <mfenced>
-                                    <mrow>
-                                        <mi>x</mi>
-                                        <mo>+</mo>
-                                        <mi>h</mi>
-                                    </mrow>
-                                </mfenced>
-                            </mrow>
-                            <mo>-</mo>
-                            <mrow>
-                                <mi>f</mi>
-                                <mo>&ApplyFunction;</mo>
-                                <mfenced>
-                                    <mi>x</mi>
-                                </mfenced>
-                            </mrow>
-                        </mrow>
-                        <mi>h</mi>
-                    </mfrac>
-                </mrow>
-            </math>
+            </m:math>
         </x:context>
 
         <x:expect label="Forventet">
@@ -2143,16 +2150,16 @@
         <x:context>
             <h1 class="title">i og j</h1>
             <p>Matematikere og fysikere bruker  <em>i</em> som symbol for den imaginære enhet: 
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="inline"><mi>&ImaginaryI;</mi><mo>=</mo><msqrt><mo>-</mo><mn>1</mn></msqrt></math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="inline"><mi>&#8520;</mi><mo>=</mo><msqrt><mo>-</mo><mn>1</mn></msqrt></m:math>
             </p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>e</mi>
                         <mrow>
-                            <mi>&ImaginaryI;</mi>
-                            <mo>&sdot;</mo>
-                            <mi>&pi;</mi>
+                            <mi>&#8520;</mi>
+                            <mo>&#8901;</mo>
+                            <mi>&#960;</mi>
                         </mrow>
                     </msup>
                     <mo>+</mo>
@@ -2160,19 +2167,19 @@
                     <mo>=</mo>
                     <mn>0</mn>
                 </mrow>
-            </math>
+            </m:math>
             
             <p>Ingeniører bruker  <em>j</em> som symbol for den imaginære enhet: 
-                <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="inline"><mi mathvariant="sans-serif-bold-italic">j</mi><mo>=</mo><msqrt><mo>-</mo><mn>1</mn></msqrt></math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="inline"><mi mathvariant="sans-serif-bold-italic">j</mi><mo>=</mo><msqrt><mo>-</mo><mn>1</mn></msqrt></m:math>
             </p>
-            <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+            <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                 <mrow>
                     <msup>
                         <mi>e</mi>
                         <mrow>
                             <mi mathvariant="sans-serif-bold-italic">j</mi>
-                            <mo>&sdot;</mo>
-                            <mi>&pi;</mi>
+                            <mo>&#8901;</mo>
+                            <mi>&#960;</mi>
                         </mrow>
                     </msup>
                     <mo>+</mo>
@@ -2180,7 +2187,7 @@
                     <mo>=</mo>
                     <mn>0</mn>
                 </mrow>
-            </math>
+            </m:math>
         </x:context>
 
         <x:expect label="Forventet">

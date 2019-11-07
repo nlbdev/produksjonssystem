@@ -10,10 +10,6 @@
         
         Gaute Rønningen, 09.09.2019
     -->
-    <xsl:function name="fnk:translate">
-        <xsl:param name="param0"/>
-        <xsl:param name="param1"/>
-    </xsl:function>
     
     <!-- Funksjoner: -->
     <xsl:function name="fnk:tall" as="xs:string">
