@@ -24,7 +24,6 @@
     <xsl:function name="fnk:translate" as="xs:string">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="context" as="node()"/>
-        <xsl:param name="capitalize" as="xs:boolean"/>
         
         <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]" as="xs:string?"/>
         <xsl:variable name="translated" as="xs:string">
@@ -42,17 +41,9 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <!-- Capitalize first letter -->
-        <xsl:choose>
-            <xsl:when test="$capitalize">
-                <xsl:value-of select="concat(upper-case(substring($translated,1,1)), substring($translated, 2), ' '[not(last())])"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="$translated"/>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:value-of select="$translated"/>
     </xsl:function>
-        
+
     <!-- Translation dictionary -->
     <xsl:variable name="dictionary" as="element()">
         <dictionary>
