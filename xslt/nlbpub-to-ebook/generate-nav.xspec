@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:dcterms="http://purl.org/dc/terms/"
+               xmlns:nordic="http://www.mtm.se/epub/"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="generate-nav.xsl">
+    
+    <x:scenario label="Basic test">
+        <x:call template="main">
+            <x:param name="opf" as="element()">
+                <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:base="file:///tmp/EPUB/package.opf">
+                    <metadata>
+                        <dc:identifier id="pub-id">565723</dc:identifier>
+                        <dc:title>Title</dc:title>
+                        <meta property="nordic:guidelines">2015-1</meta>
+                        <meta property="nordic:supplier">Supplier name</meta>
+                        <dc:language>no</dc:language>
+                        <dc:format>EPUB3</dc:format>
+                        <dc:creator>Lastname, Firstname</dc:creator>
+                        <dc:date>2019-11-05</dc:date>
+                        <dc:publisher>NLB</dc:publisher>
+                        <dc:source>urn:isbn:0</dc:source>
+                        <meta property="dcterms:modified">2019-11-05T18:52:25+00:00</meta>
+                    </metadata>
+                    <manifest>
+                        <item media-type="image/jpeg" id="item_0" href="images/cover.jpg"/>
+                        <item media-type="application/xhtml+xml" id="item_1" href="nav.xhtml" properties="nav"/>
+                        <item media-type="application/xhtml+xml" id="item_2" href="565723-1.xhtml"/>
+                        <item media-type="application/xhtml+xml" id="item_3" href="565723-2.xhtml"/>
+                        <item media-type="application/xhtml+xml" id="item_4" href="565723-3.xhtml"/>
+                    </manifest>
+                    <spine>
+                        <itemref idref="item_2" id="itemref_1"/>
+                        <itemref idref="item_3" id="itemref_2"/>
+                        <itemref idref="item_4" id="itemref_3"/>
+                    </spine>
+                </package>
+            </x:param>
+            <x:param name="nav" as="element()">
+                <html xml:lang="no" lang="no" xml:base="file:///tmp/EPUB/nav.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Title</title>
+                        <meta name="dc:identifier" content="565723" />
+                        <meta name="viewport" content="width=device-width" />
+                        <meta name="nordic:guidelines" content="2015-1" />
+                        <meta name="nordic:supplier" content="Supplier name" />
+                        <meta name="dc:language" content="no" />
+                        <meta name="dc:format" content="EPUB3" />
+                        <meta name="dc:creator" content="Lastname, Firstname" />
+                        <meta name="dc:date" content="2019-11-05" />
+                        <meta name="dc:publisher" content="NLB" />
+                        <meta name="dc:source" content="urn:isbn:0" />
+                        <meta name="dcterms:modified" content="2019-11-05T18:51:25+00:00" />
+                    </head>
+                    <body><!-- whatever is here will be replaced --></body>
+                </html>
+            </x:param>
+            <x:param name="spine" as="element()*">
+                <html xml:lang="no" lang="no" xml:base="file:///tmp/EPUB/565723-1.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Title</title>
+                        <meta name="dc:identifier" content="565723" />
+                        <meta name="viewport" content="width=device-width" />
+                        <meta name="nordic:guidelines" content="2015-1" />
+                        <meta name="nordic:supplier" content="Supplier name" />
+                        <meta name="dc:language" content="no" />
+                        <meta name="dc:format" content="EPUB3" />
+                        <meta name="dc:creator" content="Lastname, Firstname" />
+                        <meta name="dc:date" content="2019-11-05" />
+                        <meta name="dcterms:modified" content="2019-11-05T18:51:25+00:00" />
+                    </head>
+                    <body>
+                        <!-- without sectioning elements -->
+                        <h1 id="h1_1">Without sectioning elements</h1>
+                        <h2 id="h2_1">h2</h2>
+                        <h3 id="h3_1">h3</h3>
+                        <h4 id="h4_1">h4</h4>
+                        <div epub:type="pagebreak" class="page-normal" title="1" id="page_1"></div>
+                        <h2 id="h2_2">h2</h2>
+                        <h3 id="h3_2">h3</h3>
+                        <h4 id="h4_2">h4</h4>
+                        <div epub:type="pagebreak" class="page-normal" title="2" id="page_2"></div>
+                        <h5 id="h5_1">h5</h5>
+                        <h6 id="h6_1">h6</h6>
+                        <h6 id="h6_2">h6</h6>
+                    </body>
+                </html>
+                <html xml:lang="no" lang="no" xml:base="file:///tmp/EPUB/565723-2.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Title</title>
+                        <meta name="dc:identifier" content="565723" />
+                    </head>
+                    <body>
+                        <!-- with sectioning elements (needed for levels deeper than 6) -->
+                        <h1 epub:type="bodymatter" id="h1_2">With sectioning elements</h1>
+                        <section>
+                            <h2 id="h2_3">h2</h2>
+                            <section>
+                                <h3 id="h3_3">h3</h3>
+                                <section>
+                                    <h4 id="h4_3">h4</h4>
+                                    <div epub:type="pagebreak" class="page-normal" title="3" id="page_3"></div>
+                                    <section>
+                                        <h5 id="h5_2">h5</h5>
+                                        <section>
+                                            <h6 id="h6_3">h6</h6>
+                                            <section>
+                                                <h6 id="h6_4">h7</h6>
+                                                <section>
+                                                    <h6 id="h6_5">h8</h6>
+                                                    <div epub:type="pagebreak" class="page-normal" title="4" id="page_4"></div>
+                                                </section>
+                                            </section>
+                                        </section>
+                                    </section>
+                                </section>
+                            </section>
+                        </section>
+                    </body>
+                </html>
+                <html xml:lang="no" lang="no" xml:base="file:///tmp/EPUB/565723-3.xhtml">
+                    <head>
+                        <meta charset="UTF-8" />
+                        <title>Title</title>
+                        <meta name="dc:identifier" content="565723" />
+                        <meta name="dc:creator" content="Lastname, Firstname" />
+                        <meta name="dc:date" content="2019-11-05" />
+                        <meta name="dcterms:modified" content="2019-11-05T18:51:25+00:00" />
+                    </head>
+                    <body>
+                        <!-- both with and without sectioning elements -->
+                        <h1 epub:type="bodymatter" id="h1_3">With and without</h1>
+                        <section>
+                            <h1 id="h1_4">h2</h1>
+                        </section>
+                        <h2 id="h2_4">h2</h2>
+                        <section>
+                            <h1 id="h1_5">h3</h1>
+                        </section>
+                        <h1 id="h1_6">With and without (#2)</h1>
+                        <h2 id="h1_5">h2</h2>
+                        <h3 id="h3_4">h2</h3>
+                        <section>
+                            <h4 id="h4_4">h4</h4>
+                            <section>
+                                <h5 id="h5_3">h5</h5>
+                                <section>
+                                    <h6 id="h6_6">h6</h6>
+                                    <section>
+                                        <h6 id="h6_7">h7</h6>
+                                        <section>
+                                            <h6 id="h6_8">h8</h6>
+                                        </section>
+                                    </section>
+                                </section>
+                            </section>
+                        </section>
+                    </body>
+                </html>
+            </x:param>
+        </x:call>
+        
+        <x:expect label="The result should be as expected">
+            <html xml:lang="no" lang="no" xml:base="file:///tmp/EPUB/nav.xhtml">
+                <head>
+                    <meta charset="UTF-8" />
+                    <title>Title</title>
+                    <meta name="dc:identifier" content="565723" />
+                    <meta name="viewport" content="width=device-width" />
+                    <meta name="nordic:guidelines" content="2015-1" />
+                    <meta name="nordic:supplier" content="Supplier name" />
+                    <meta name="dc:language" content="no" />
+                    <meta name="dc:format" content="EPUB3" />
+                    <meta name="dc:creator" content="Lastname, Firstname" />
+                    <meta name="dc:date" content="2019-11-05" />
+                    <meta name="dc:publisher" content="NLB" />
+                    <meta name="dc:source" content="urn:isbn:0" />
+                    <meta name="dcterms:modified" content="2019-11-05T18:51:25+00:00" />
+                </head>
+                <body>
+                    <nav epub:type="landmarks" hidden="">
+                        <ol>
+                            <li epub:type="bodymatter">
+                                <a href="565723-2.xhtml#h1_2">Starten av boka</a>
+                            </li>
+                        </ol>
+                    </nav>
+                    
+                    <nav epub:type="toc">
+                        <ol>
+                            <li><a href="565723-1.xhtml#h1_1">Without sectioning elements</a>
+                                <ol>
+                                    <li><a href="565723-1.xhtml#h2_1">h2</a>
+                                        <ol>
+                                            <li><a href="565723-1.xhtml#h3_1">h3</a>
+                                                <ol>
+                                                    <li><a href="565723-1.xhtml#h4_1">h4</a></li>
+                                                </ol>
+                                            </li>
+                                        </ol>
+                                    </li>
+                                    <li><a href="565723-1.xhtml#h2_2">h2</a>
+                                        <ol>
+                                            <li><a href="565723-1.xhtml#h3_2">h3</a>
+                                                <ol>
+                                                    <li><a href="565723-1.xhtml#h4_2">h4</a>
+                                                        <ol>
+                                                            <li><a href="565723-1.xhtml#h5_1">h5</a>
+                                                                <ol>
+                                                                    <li><a href="565723-1.xhtml#h6_1">h6</a></li>
+                                                                    <li><a href="565723-1.xhtml#h6_2">h6</a></li>
+                                                                </ol>
+                                                            </li>
+                                                        </ol>
+                                                    </li>
+                                                </ol>
+                                            </li>
+                                        </ol>
+                                    </li>
+                                </ol>
+                            </li>
+                            <li><a href="565723-2.xhtml#h1_2">With sectioning elements</a>
+                                <ol>
+                                    <li><a href="565723-2.xhtml#h2_3">h2</a>
+                                        <ol>
+                                            <li><a href="565723-2.xhtml#h3_3">h3</a>
+                                                <ol>
+                                                    <li><a href="565723-2.xhtml#h4_3">h4</a>
+                                                        <ol>
+                                                            <li><a href="565723-2.xhtml#h5_2">h5</a>
+                                                                <ol>
+                                                                    <li><a href="565723-2.xhtml#h6_3">h6</a>
+                                                                        <ol>
+                                                                            <li><a href="565723-2.xhtml#h6_4">h7</a>
+                                                                                <ol>
+                                                                                    <li><a href="565723-2.xhtml#h6_5">h8</a></li>
+                                                                                </ol>
+                                                                            </li>
+                                                                        </ol>
+                                                                    </li>
+                                                                </ol>
+                                                            </li>
+                                                        </ol>
+                                                    </li>
+                                                </ol>
+                                            </li>
+                                        </ol>
+                                    </li>
+                                </ol>
+                            </li>
+                            <li><a href="565723-3.xhtml#h1_3">With and without</a>
+                                <ol>
+                                    <li><a href="565723-3.xhtml#h1_4">h2</a></li>
+                                    <li><a href="565723-3.xhtml#h2_4">h2</a>
+                                        <ol>
+                                            <li><a href="565723-3.xhtml#h1_5">h3</a></li>
+                                        </ol>
+                                    </li>
+                                </ol>
+                            </li>
+                            <li><a href="565723-3.xhtml#h1_6">With and without (#2)</a>
+                                <ol>
+                                    <li><a href="565723-3.xhtml#h1_5">h2</a>
+                                        <ol>
+                                            <li><a href="565723-3.xhtml#h3_4">h2</a>
+                                                <ol>
+                                                    <li><a href="565723-3.xhtml#h4_4">h4</a>
+                                                        <ol>
+                                                            <li><a href="565723-3.xhtml#h5_3">h5</a>
+                                                                <ol>
+                                                                    <li><a href="565723-3.xhtml#h6_6">h6</a>
+                                                                        <ol>
+                                                                            <li><a href="565723-3.xhtml#h6_7">h7</a>
+                                                                                <ol>
+                                                                                    <li><a href="565723-3.xhtml#h6_8">h8</a></li>
+                                                                                </ol>
+                                                                            </li>
+                                                                        </ol>
+                                                                    </li>
+                                                                </ol>
+                                                            </li>
+                                                        </ol>
+                                                    </li>
+                                                </ol>
+                                            </li>
+                                        </ol>
+                                    </li>
+                                </ol>
+                            </li>
+                        </ol>
+                    </nav>
+                    
+                    <nav epub:type="page-list" hidden="">
+                        <ol>
+                            <li><a href="565723-1.xhtml#page_1">1</a></li>
+                            <li><a href="565723-1.xhtml#page_2">2</a></li>
+                            <li><a href="565723-2.xhtml#page_3">3</a></li>
+                            <li><a href="565723-2.xhtml#page_4">4</a></li>
+                        </ol>
+                    </nav>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
