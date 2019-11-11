@@ -1349,7 +1349,7 @@
                     <mrow>
                         <mi>sin</mi>
                         <mo>&#8289;</mo>
-                            <mi>x</mi>
+                        <mi>x</mi>
                     </mrow>
                 </m:math>
                 
@@ -1721,8 +1721,7 @@
                     </mrow>
                 </m:math>
                 <h2>Hookes lov og harmonisk bevegelse</h2>
-                <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i
-                    en mekanisk fjær. Loven beskrives matematisk som</p>
+                <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i en mekanisk fjær. Loven beskrives matematisk som</p>
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                     <mrow>
                         <mi>F</mi>
@@ -1767,9 +1766,7 @@
                     <mo>&#8901;</mo>
                     <mfrac>
                         <mrow>
-                            <msup>
-                                <mo>&#8706;</mo><mn>2</mn>
-                            </msup>
+                            <mo>&#8243;</mo>
                             <mrow>
                                 <mi>x</mi>
                                 <mo>&#8289;</mo>
@@ -1791,9 +1788,7 @@
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                     <mfrac>
                         <mrow>
-                            <msup>
-                                <mo>&#8706;</mo><mn>2</mn>
-                            </msup>
+                            <mo>&#8243;</mo>
                             <mrow>
                                 <mi>x</mi>
                                 <mo>&#8289;</mo>
@@ -1851,14 +1846,7 @@
                         </mfenced>
                     </mrow>
                 </m:math>
-                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <m:math
-                        xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi></m:math>
-                    er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <m:math
-                        xmlns="http://www.w3.org/1998/Math/MathML" display="inline"
-                            ><mi>&#969;</mi><mo>=</mo><msqrt><mfrac bevelled="true"
-                                ><mi>k</mi><mi>m</mi></mfrac></msqrt></m:math>. Svingningens <em>fase</em>,
-                        <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"
-                        ><mi>&#981;</mi></m:math>, er en konstant som er bestemt av startbetingelsene. </p>
+                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi></m:math> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi><mo>=</mo><msqrt><mfrac bevelled="true"><mi>k</mi><mi>m</mi></mfrac></msqrt></m:math>. Svingningens <em>fase</em>, <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#981;</mi></m:math>, er en konstant som er bestemt av startbetingelsene. </p>
                 <h2>Eksempler hentet fra eksamen Matematikk 1T våren 2018</h2>
                 <p>Løs likningen <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
                         <mn>3</mn>
@@ -2012,8 +2000,7 @@
                         </mfenced>
                     </m:math>. </p>
                 <hr />
-                <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan
-                    skrives som</p>
+                <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan skrives som</p>
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                     <mi>T</mi>
                     <mo>=</mo>
@@ -2059,8 +2046,7 @@
                         <mn>2</mn>
                     </mfrac>
                 </m:math>
-                <p>Arealet til trekanten kan også skrives som <m:math
-                        xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+                <p>Arealet til trekanten kan også skrives som <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
                         <mi>T</mi>
                         <mo>=</mo>
                         <mfrac>
@@ -2081,7 +2067,7 @@
                                     <mi>v</mi></mrow>
                             </mfenced>
                         </mrow>
-                    </m:math>. Bruk dette, sammen med uttrykket over, til å vise at</p>
+                    </m:math>. Bruk dette, sammen med uttrykket over, til å vise at</p> 
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
                     <mrow>
                         <mi>sin</mi>
@@ -2152,24 +2138,20 @@
                 <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk arkus tangens til x formel slutt</p>
                 <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk arkus cotangens til x formel slutt</p>
                 <h2>Hookes lov og harmonisk bevegelse</h2>
-                <p>
-                    <em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i
-                    en mekanisk fjær. Loven beskrives matematisk som</p>
+                <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i en mekanisk fjær. Loven beskrives matematisk som</p>
                 <p class="spoken-math">formel funksjonen stor f av t er lik minus k ganger funksjonen x av t formel slutt</p>
                 <p>Samtidig gir <em>Newtons 2. lov</em> at</p>
                 <p class="spoken-math">formel funksjonen stor f av t er lik m ganger funksjonen a av t er lik m ganger den annenderiverte av funksjonen x av t med hensyn på t formel slutt</p>
                 <p>og fra det følger at</p>
                 <p class="spoken-math">formel den annenderiverte av funksjonen x av t med hensyn på t er lik minus brøken k delt på m ganger funksjonen x av t formel slutt</p>
                 <p>som er en differensiallikning med løsning</p>
-                <p class="spoken-math">funksjonen x av t er lik stor a ganger cosinus til venstre parentes omega ⁢ t minus fi høyre parentes formel slutt</p>
-                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <span class="spoken-math">formel omega formel slutt</span>
-                    er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <span class="spoken-math">formel omega er lik kvadratroten av k delt på m kvadratrot slutt formel slutt</span>. Svingningens <em>fase</em>,
-                    <span class="spoken-math">formel phi formel slutt</span>, er en konstant som er bestemt av startbetingelsene. </p>
+                <p class="spoken-math">formel funksjonen x av t er lik stor a ganger cosinus til venstre parentes omega ⁢ t minus phi høyre parentes formel slutt</p>
+                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <span class="spoken-math">formel omega formel slutt</span> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <span class="spoken-math">formel omega er lik kvadratroten av k delt på m kvadratrot slutt formel slutt</span>. Svingningens <em>fase</em>, <span class="spoken-math">formel phi formel slutt</span>, er en konstant som er bestemt av startbetingelsene. </p>
                 <h2>Eksempler hentet fra eksamen Matematikk 1T våren 2018</h2>
                 <p>Løs likningen <span class="spoken-math">formel 3 ganger 10 opphøyd i x er lik 3000 formel slutt</span>. </p>
                 <hr />
                 <p>Regn ut følgende uttrykk:</p>
-                <p class="spoken-math">formel brøk med teller parentes 3,5 ganger 10 i 6 parentes slutt i annen og med nevner 0,2 ganger 10 opphøyd i minus 4 eksponent slutt pluss 3 ganger 10 opphøyd i minus 5 eksponent slutt brøk slutt formel slutt</p>
+                <p class="spoken-math">formel brøk med teller venstre parentes 3,5 ganger 10 opphøyd i 6 høyre parentes i annen og med nevner 0,2 ganger 10 opphøyd i minus 4 eksponent slutt pluss 3 ganger 10 opphøyd i minus 5 eksponent slutt brøk slutt formel slutt</p>
                 <p>og skriv svaret på standardform.</p>
                 <hr />
                 <p>Vis at <span class="spoken-math">formel kvadratroten av 15 ganger kvadratroten av 5 minus kvadratroten av 48 formel slutt</span> kan skrives som <span class="spoken-math">formel kvadratroten av 3 formel slutt</span>.</p>
@@ -2182,10 +2164,9 @@
                 <hr />
                 <p>En funksjon <em>f</em> er gitt ved</p>
                 <p class="spoken-math">formel funksjonen f av x er lik x opphøyd i 3 pluss 2 ganger x i annen pluss 1 formel slutt</p>
-                <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <span class="spoken-math">formel venstre parentes 1 funksjonen f av 3 formel slutt</span>. </p>
+                <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <span class="spoken-math">formel venstre parentes 1 funksjonen f av 3 høyre parentes formel slutt</span>. </p>
                 <hr />
-                <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan
-                    skrives som</p>
+                <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan skrives som</p>
                 <p class="spoken-math">formel stor t er lik brøk med teller a ganger sinus til u ganger b ganger cosinus til v og med nevner 2 brøk slutt pluss brøk med teller b ganger sinus til v ganger a ganger cosinus til u og med nevner 2 brøk slutt formel slutt</p>
                 <p>Arealet til trekanten kan også skrives som <span class="spoken-math">formel stor t er lik brøken 1 delt på 2 ganger a ganger b ganger sinus til venstre parentes u pluss v høyre parentes formel slutt</span>. Bruk dette, sammen med uttrykket over, til å vise at</p>
                 <p class="spoken-math">formel sinus til venstre parentes u pluss v høyre parentes er lik sinus til u ganger cosinus til v pluss sinus til v ganger cosinus til u formel slutt</p>

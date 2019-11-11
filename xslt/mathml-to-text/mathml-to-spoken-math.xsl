@@ -525,6 +525,17 @@
                 <xsl:value-of select="fnk:translate('right angle bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
+            <xsl:when test="$operator eq '&#8243;' or $operator eq '&#x2033;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('the second derivative', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#120539;' or $operator eq '&#x1D6DB;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('partial differential', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            
             <xsl:when test="$operator eq '&#8289;' or $operator eq '&#8290;'">
                 <xsl:text> </xsl:text>
             </xsl:when>
@@ -581,11 +592,11 @@
     </xsl:template>
     <xsl:template match="m:mfenced[@open = '{' and @close eq '}']" mode="spoken-math">
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('left brace', .)" />
+        <xsl:value-of select="fnk:translate('left curly bracket', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates mode="#current"/>
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('right brace', .)" />
+        <xsl:value-of select="fnk:translate('right curly bracket', .)" />
         <xsl:text> </xsl:text>
     </xsl:template>
     <xsl:template match="m:mfenced[@open = '&lt;' and @close eq '&gt;']" mode="spoken-math">
@@ -1313,7 +1324,7 @@
             </term>
             <term name="the partial derivative">
                 <translation lang="en">the partial derivative</translation>
-                <translation lang="nb">den delvis deriverte</translation>
+                <translation lang="nb">den partielle deriverte</translation>
             </term>
             
             <!-- Boundary values -->
