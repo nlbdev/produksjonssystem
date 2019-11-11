@@ -5,6 +5,38 @@
     xmlns:x="http://www.jenitennison.com/xslt/xspec" 
     stylesheet="mathml-to-spoken-math.xsl"> 
     
+    <x:scenario label="Generelle funksjoner og uttrykk">
+        <x:context>
+            <body xml:lang="nb">
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mfenced open="[" close="]">
+                        <mrow>
+                             <mi>x</mi>
+                             <mo>+</mo>
+                             <mi>y</mi>
+                        </mrow>
+                    </mfenced>
+                    <mo>&#8290;</mo>
+                    <mfenced open="(" close=")">
+                        <mrow>
+                            <mi>x</mi>
+                            <mo>-</mo>
+                            <mi>y</mi>
+                        </mrow>
+                    </mfenced>
+                </m:math>
+            </body>
+        </x:context>
+        
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="nb">
+                <p class="spoken-math">formel venstre hakeparentes x pluss y høyre hakeparentes ganger venstre parentes x minus y høyre parentes formel slutt</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
     <x:scenario label="Aritmetikk">
         <x:context>
             <body xml:lang="nb">
@@ -161,7 +193,7 @@
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>11</mn>
-                        <mo>&gt;</mo>
+                        <mo>&#62;</mo>
                         <mn>10</mn>
                     </mrow>
                 </m:math>
@@ -175,7 +207,7 @@
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mi>y</mi>
-                        <mo>&gt;</mo>
+                        <mo>&#8805;</mo>
                         <mi>a</mi>
                         <mo>+</mo>
                         <mn>5</mn>
@@ -184,7 +216,7 @@
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow> 
                         <mn>9</mn>
-                        <mo>&lt;</mo>
+                        <mo>&#60;</mo>
                         <mi>10</mi>
                     </mrow>
                 </m:math>
@@ -198,7 +230,7 @@
                 </m:math>
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mi>x</mi>
-                    <mo>&lt;</mo>
+                    <mo>&#8804;</mo>
                     <mn>2</mn>
                     <mo>&#8290;</mo>
                     <mi>a</mi>
@@ -549,7 +581,7 @@
                 <p class="spoken-math">formel x er lik brøken 123 delt på y formel slutt</p>
                 <p class="spoken-math">formel brøk med teller 1 og med nevner x pluss 1 brøk slutt formel slutt</p>
                 <p class="spoken-math">formel x er lik brøk med teller a pluss b og med nevner c brøk slutt formel slutt</p>
-                <p class="spoken-math">formel brøk med teller parentes a pluss b parentes slutt ganger parentes a minus b parentes slutt og med nevner c brøk slutt formel slutt</p>
+                <p class="spoken-math">formel brøk med teller venstre parentes a pluss b høyre parentes ganger venstre parentes a minus b høyre parentes og med nevner c brøk slutt formel slutt</p>
                 <p class="spoken-math">formel x er lik brøk med teller minus b pluss minus kvadratroten av b i annen minus 4 a ganger c kvadratrot slutt og med nevner 2 a brøk slutt formel slutt</p>
                 <p class="spoken-math">formel x er lik a pluss b delt på c pluss d formel slutt</p>
                 <p class="spoken-math">formel x er lik venstre parentes a pluss b høyre parentes delt på venstre parentes c pluss d høyre parentes formel slutt</p>

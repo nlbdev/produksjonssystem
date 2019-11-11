@@ -23,7 +23,7 @@
     <xsl:param name="preserve-visual-math" as="xs:boolean" select="true()"/>
     
     <!-- Output encoding -->
-    <xsl:output method="xhtml" indent="yes" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
+    <xsl:output name="spoken-math" method="xhtml" indent="yes" encoding="UTF-8" include-content-type="no" exclude-result-prefixes="#all" />
     
     <!-- Print a message to console -->
     <xsl:template match="/">
@@ -186,6 +186,8 @@
                 <xsl:text> </xsl:text>
                 <xsl:apply-templates select="child::*[2]" mode="#current"/>
                 <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('fraction end', .)" />
+                <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -219,7 +221,7 @@
         <xsl:value-of select="fnk:translate('with respect to', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mrow[2]/m:msup/m:mi" mode="spoken-math"/>
-        <xsl:text>, </xsl:text>
+        <xsl:text> </xsl:text>
     </xsl:template>
     
     <!-- m:msubsup is used to attach both a subscript and a superscript, together, to an expression -->
@@ -268,63 +270,41 @@
                 <xsl:value-of select="fnk:translate('the imaginary unit', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:otherwise>
-                <xsl:text> </xsl:text>
-                <xsl:apply-templates mode="#current"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template match="m:mi[matches(normalize-space(.), '^\p{IsGreek}$')]" mode="spoken-math">
-        <xsl:variable name="uc" as="xs:integer" select="string-to-codepoints(normalize-space(.))"/>
-        <xsl:choose>
-            <xsl:when test="$uc ge 945">
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('capital', .)" />
-                <xsl:text> </xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:choose>
-            <xsl:when test="($uc eq 945) or ($uc eq 913)">
+            <xsl:when test="($operator eq '&#945;') or ($operator eq '&#913;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('alfa', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 946) or ($uc eq 914)">
+            <xsl:when test="($operator eq '&#946;') or ($operator eq '&#914;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('beta', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 947) or ($uc eq 915)">
+            <xsl:when test="($operator eq '&#947;') or ($operator eq '&#915;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('gamma', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 948) or ($uc eq 916)">
+            <xsl:when test="($operator eq '&#948;') or ($operator eq '&#916;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('delta', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 949) or ($uc eq 917)">
+            <xsl:when test="($operator eq '&#949;') or ($operator eq '&#917;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('epsilon', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 960) or ($uc eq 928)">
+            <xsl:when test="($operator eq '&#960;') or ($operator eq '&#928;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('pi', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 966) or ($uc eq 934) or ($uc eq 981)">
+            <xsl:when test="($operator eq '&#966;') or ($operator eq '&#934;') or ($operator eq '&#981;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('phi', .)" />
             </xsl:when>
-            <xsl:when test="($uc eq 969) or ($uc eq 937)">
+            <xsl:when test="($operator eq '&#969;') or ($operator eq '&#937;')">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('omega', .)" />
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message>
-                    <xsl:text> </xsl:text>
-                    <xsl:value-of select="fnk:translate('unknown greek letter', .)" />
-                    <xsl:text>: </xsl:text>
-                    <xsl:value-of select="$uc"/>
-                </xsl:message>
+                <xsl:text> </xsl:text>
+                <xsl:apply-templates mode="#current"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -340,11 +320,11 @@
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('a matrix with', .)" />
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:tall(count(m:mtr), .)"/>
+        <xsl:value-of select="fnk:numbers(count(m:mtr), .)"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('rows and with', .)" />
         <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:tall(count(m:mtr[1]/m:mtd), .)"/>
+        <xsl:value-of select="fnk:numbers(count(m:mtr[1]/m:mtd), .)"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('columns', .)" />
         <xsl:text>: </xsl:text>
@@ -360,7 +340,7 @@
             <xsl:value-of select="fnk:translate('and at last', .)" />
             <xsl:text> </xsl:text>
         </xsl:if>
-        <xsl:value-of select="fnk:ordenstall(1 + count(preceding-sibling::m:mtr), .)"/>
+        <xsl:value-of select="fnk:sort-numbers(1 + count(preceding-sibling::m:mtr), .)"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('row', .)" />
         <xsl:text>: </xsl:text>
@@ -376,7 +356,7 @@
                 <xsl:text>: </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="fnk:ordenstall(1 + count(preceding-sibling::m:mtd), .)"/>
+                <xsl:value-of select="fnk:sort-numbers(1 + count(preceding-sibling::m:mtd), .)"/>
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('column', .)" />
                 <xsl:text>: </xsl:text>
@@ -398,87 +378,87 @@
                 <xsl:value-of select="fnk:translate('et cetera', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '+'">
+            <xsl:when test="$operator eq '+' or $operator eq '&#43;' or $operator eq '&#x2B;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('plus', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '='">
+            <xsl:when test="$operator eq '=' or $operator eq '&#61;' or $operator eq '&#x3D;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('equals', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8800;'">
+            <xsl:when test="$operator eq '&#8800;' or $operator eq '&#x2260;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('differ from', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&lt;'">
+            <xsl:when test="$operator eq '&lt;' or $operator eq '&#60;' or $operator eq '&#x3C;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('is less than', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#x226A;'">
+            <xsl:when test="$operator eq '&#8810;' or $operator eq '&#x226A;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('is much less than', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#x2264;'">
+            <xsl:when test="$operator eq '&#x2264;' or $operator eq '&#8804;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('is less than or equal', .)" />
+                <xsl:value-of select="fnk:translate('is less than or equal to', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&gt;'">
+            <xsl:when test="$operator eq '&gt;' or $operator eq '&#62;' or $operator eq '&#x3E;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('is greater than', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#x226B;'">
+            <xsl:when test="$operator eq '&#8811;' or $operator eq '&#x226B;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('is much greater than', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#x2265;'">
+            <xsl:when test="$operator eq '≥' or $operator eq '&#8805;' or $operator eq '&#x2265;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('is greater or equal to', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '-'">
+            <xsl:when test="$operator eq '-' or $operator eq '&#8722;' or $operator eq '&#x2212;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('minus', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq ':'">
+            <xsl:when test="$operator eq ':' or $operator eq '&#58;' or $operator eq '&#x3A;' or $operator eq '&#247;' or $operator eq '&#xF7;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('divided by', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#177;'">
+            <xsl:when test="$operator eq '&#177;' or $operator eq '&#xB1;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('plus-minus', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8723;'">
+            <xsl:when test="$operator eq '&#8723;' or $operator eq '&#x2213;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('minus-plus', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8901;'">
+            <xsl:when test="$operator eq '&#8901;' or $operator eq '&#x22C5;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('times', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8594;'">
+            <xsl:when test="$operator eq '&#8594;' or $operator eq '&#x2192;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('goes against', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8743;'">
+            <xsl:when test="$operator eq '&#8743;' or $operator eq '&#x2227;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('and', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#x02062;'">
+            <xsl:when test="$operator eq '&#8290;' or $operator eq '&#x02062;' or $operator eq '&#x2062;'">
                 <xsl:choose>
                     <xsl:when test="not(exists(preceding-sibling::element()[1]/child::element()) or exists(following-sibling::element()[1]/child::element())) and matches(preceding-sibling::element()[1], '^\d{1,3}$') and matches(following-sibling::element()[1], '^[a-z]$')">
                         <xsl:text> </xsl:text>
@@ -490,57 +470,57 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8747;'">
+            <xsl:when test="$operator eq '&#8747;' or $operator eq '&#x222B;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('integral of', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8748;'">
+            <xsl:when test="$operator eq '&#8748;' or $operator eq '&#x222C;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('the double integral of', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8749;'">
+            <xsl:when test="$operator eq '&#8749;' or $operator eq '&#x222C;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('the triple integral of', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8750;'">
+            <xsl:when test="$operator eq '&#8750;' or $operator eq '&#x222C;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('the contour integral of', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8518;'">
+            <xsl:when test="$operator eq '&#8518;' or $operator eq '&#x222C;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('with respect to', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '['">
+            <xsl:when test="$operator eq '[' or $operator eq '&#91;' or $operator eq '&#x5B;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('left bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq ']'">
+            <xsl:when test="$operator eq ']' or $operator eq '&#93;' or $operator eq '&#x5D;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('right bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '{'">
+            <xsl:when test="$operator eq '{' or $operator eq '&#123;' or $operator eq '&#x7B;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('left brace', .)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$operator eq '}'">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('right brace', .)" />
+                <xsl:value-of select="fnk:translate('left curly bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#10216;'">
+            <xsl:when test="$operator eq '}' or $operator eq '&#125;' or $operator eq '&#x7D;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('right curly bracket', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#10216;' or $operator eq '&#x27E8;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('left angle bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#10217;'">
+            <xsl:when test="$operator eq '&#10217;' or $operator eq '&#x27E9;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('right angle bracket', .)" />
                 <xsl:text> </xsl:text>
@@ -973,7 +953,7 @@
     </xsl:template>
     
     <!-- Funksjoner: -->
-    <xsl:function name="fnk:tall" as="xs:string">
+    <xsl:function name="fnk:numbers" as="xs:string">
         <xsl:param name="tall" as="xs:integer"/>
         <xsl:param name="content" as="node()"/>
         <xsl:choose>
@@ -1033,7 +1013,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    <xsl:function name="fnk:ordenstall" as="xs:string">
+    <xsl:function name="fnk:sort-numbers" as="xs:string">
         <xsl:param name="tall" as="xs:integer"/>
         <xsl:param name="content" as="node()"/>
         <xsl:choose>
@@ -1235,12 +1215,12 @@
                 <translation lang="en">right angle bracket</translation>
                 <translation lang="nb">høyre vinkelparentes</translation>
             </term>
-            <term name="left brace">
-                <translation lang="en">left brace</translation>
+            <term name="left curly bracket">
+                <translation lang="en">left curly bracket</translation>
                 <translation lang="nb">venstre sløyfeparentes</translation>
             </term>
-            <term name="right brace">
-                <translation lang="en">right brace</translation>
+            <term name="right curly bracket">
+                <translation lang="en">right curly bracket</translation>
                 <translation lang="nb">høyre sløyfeparentes</translation>
             </term>
             <term name="with the lower index">
@@ -1376,6 +1356,10 @@
             <term name="and with divisor">
                 <translation lang="en">and with divisor</translation>
                 <translation lang="nb">og med nevner</translation>
+            </term>
+            <term name="fraction end">
+                <translation lang="en">fraction end</translation>
+                <translation lang="nb">brøk slutt</translation>
             </term>
             
             <!-- Functions -->
@@ -1530,12 +1514,12 @@
                 <translation lang="nb">er mye større enn</translation>
             </term>
             <term name="plus-minus">
-                <translation lang="en">plus or minus</translation>
-                <translation lang="nb">pluss eller minus</translation>
+                <translation lang="en">plus minus</translation>
+                <translation lang="nb">pluss minus</translation>
             </term>
             <term name="minus-plus">
-                <translation lang="en">minus or plus</translation>
-                <translation lang="nb">minus eller pluss</translation>
+                <translation lang="en">minus plus</translation>
+                <translation lang="nb">minus pluss</translation>
             </term>
             <term name="goes against">
                 <translation lang="en">goes against</translation>
