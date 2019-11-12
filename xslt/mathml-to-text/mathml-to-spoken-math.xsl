@@ -270,41 +270,64 @@
                 <xsl:value-of select="fnk:translate('the imaginary unit', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="($operator eq '&#945;') or ($operator eq '&#913;')">
+            <xsl:otherwise>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('alfa', .)" />
+                <xsl:apply-templates mode="#current"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    <xsl:template match="m:mi[matches(normalize-space(.), '^\p{IsGreek}$')]" mode="spoken-math">
+        <xsl:variable name="uc" as="xs:integer" select="string-to-codepoints(normalize-space(.))"/>
+        <xsl:message>MI: <xsl:value-of select="$uc"/></xsl:message>
+        <xsl:choose>
+            <xsl:when test="$uc ge 945">
             </xsl:when>
-            <xsl:when test="($operator eq '&#946;') or ($operator eq '&#914;')">
+            <xsl:otherwise>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('capital', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+        <xsl:choose>
+            <xsl:when test="($uc eq 945) or ($uc eq 913)">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('alpha', .)" />
+            </xsl:when>
+            <xsl:when test="($uc eq 946) or ($uc eq 914)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('beta', .)" />
             </xsl:when>
-            <xsl:when test="($operator eq '&#947;') or ($operator eq '&#915;')">
+            <xsl:when test="($uc eq 947) or ($uc eq 915)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('gamma', .)" />
             </xsl:when>
-            <xsl:when test="($operator eq '&#948;') or ($operator eq '&#916;')">
+            <xsl:when test="($uc eq 948) or ($uc eq 916)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('delta', .)" />
             </xsl:when>
-            <xsl:when test="($operator eq '&#949;') or ($operator eq '&#917;')">
+            <xsl:when test="($uc eq 949) or ($uc eq 917)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('epsilon', .)" />
             </xsl:when>
-            <xsl:when test="($operator eq '&#960;') or ($operator eq '&#928;')">
+            <xsl:when test="($uc eq 960) or ($uc eq 928)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('pi', .)" />
             </xsl:when>
-            <xsl:when test="($operator eq '&#966;') or ($operator eq '&#934;') or ($operator eq '&#981;')">
+            <xsl:when test="($uc eq 966) or ($uc eq 934) or ($uc eq 981)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('phi', .)" />
             </xsl:when>
-            <xsl:when test="($operator eq '&#969;') or ($operator eq '&#937;')">
+            <xsl:when test="($uc eq 969) or ($uc eq 937)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('omega', .)" />
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text> </xsl:text>
-                <xsl:apply-templates mode="#current"/>
+                <xsl:message>
+                    <xsl:text> </xsl:text>
+                    <xsl:value-of select="fnk:translate('unknown greek letter', .)" />
+                    <xsl:text>: </xsl:text>
+                    <xsl:value-of select="$uc"/>
+                </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -532,7 +555,7 @@
             </xsl:when>
             <xsl:when test="$operator eq '&#120539;' or $operator eq '&#x1D6DB;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('partial differential', .)" />
+                <xsl:value-of select="fnk:translate('the partial derivative', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             
@@ -1098,7 +1121,7 @@
                     <xsl:variable name="language" select="if ($language = 'no') then 'nn' else $language"/>
                     <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()" as="xs:string?"/>
                     <xsl:if test="not($result)">
-                        <xsl:message terminate="no">No translation found for language=<xsl:value-of select="$language"/>, terminating.</xsl:message>
+                        <xsl:message terminate="no">No translation found for <xsl:value-of select="$text"/> in language=<xsl:value-of select="$language"/>, terminating.</xsl:message>
                     </xsl:if>
                     <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
                 </xsl:when>
@@ -1598,7 +1621,7 @@
             </term>
             <term name="alpha">
                 <translation lang="en">alpha</translation>
-                <translation lang="nb">alpha</translation>
+                <translation lang="nb">alfa</translation>
             </term>
             <term name="beta">
                 <translation lang="en">beta</translation>
