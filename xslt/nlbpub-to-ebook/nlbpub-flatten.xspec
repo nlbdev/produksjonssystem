@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:dcterms="http://purl.org/dc/terms/"
+               xmlns:nordic="http://www.mtm.se/epub/"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="nlbpub-flatten.xsl">
+    
+    <x:scenario label="Basic test">
+        <x:context href="test-resources/901001/nordic-structure/901001.xhtml" select="/*"/>
+
+        <x:expect label="The result should be as expected" href="test-resources/901001/flattened/901001.xhtml" select="/*"/>
+    </x:scenario>
+    
+</x:description>
