@@ -120,9 +120,9 @@ class Metadata:
             return Metadata._metadata_dirs_locks[dir]
 
     @staticmethod
-    def get_identifiers(report, epub_edition_identifier):
-        report.debug("Finner boknummer for {}...".format(epub_edition_identifier))
-        issue_identifier = epub_edition_identifier
+    def get_identifiers(report, epub_issue_identifier):
+        report.debug("Finner boknummer for {}...".format(epub_issue_identifier))
+        issue_identifier = epub_issue_identifier
         edition_identifier = issue_identifier
         if len(edition_identifier) > 6:
             edition_identifier = edition_identifier[:6]
@@ -133,14 +133,14 @@ class Metadata:
         issue_identifiers, edition_identifiers = Metadata.get_quickbase_identifiers(report, issue_identifiers, edition_identifiers)
         issue_identifiers, edition_identifiers = Metadata.get_bibliofil_identifiers(report, issue_identifiers, edition_identifiers)
 
-        return sorted(issue_identifiers), sorted(edition_identifiers)
+        return list(sorted(issue_identifiers)), list(sorted(edition_identifiers))
 
     @staticmethod
     def get_quickbase_identifiers(report, issue_identifiers, edition_identifiers):
         quickbase_issue_identifiers = []
-        for edition_identifier in issue_identifiers:
-            report.debug("Finner andre boknummer for {} i Quickbase...".format(edition_identifier))
-            metadata_dir = Metadata.get_metadata_dir(edition_identifier)
+        for issue_identifier in issue_identifiers:
+            report.debug("Finner andre boknummer for {} i Quickbase...".format(issue_identifier))
+            metadata_dir = Metadata.get_metadata_dir(issue_identifier)
             catalogued = False
             missing_catalogue_warnings = []
             for library in [None, "statped"]:
@@ -152,21 +152,21 @@ class Metadata:
                     quickbase_issue_identifiers.extend(identifiers)
                     if identifiers:
                         catalogued = True
-                        report.debug("Andre boknummer for {} i {}-Quickbase: {}".format(edition_identifier,
+                        report.debug("Andre boknummer for {} i {}-Quickbase: {}".format(issue_identifier,
                                                                                         library if library else "NLB",
                                                                                         ", ".join(identifiers)))
                     else:
-                        missing_catalogue_warnings.append("{} er ikke katalogisert i {}-Quickbase.".format(edition_identifier,
+                        missing_catalogue_warnings.append("{} er ikke katalogisert i {}-Quickbase.".format(issue_identifier,
                                                                                                            library if library else "NLB"))
                 else:
-                    missing_catalogue_warnings.append("Finner ikke metadata for {} i {}-Quickbase.".format(edition_identifier,
+                    missing_catalogue_warnings.append("Finner ikke metadata for {} i {}-Quickbase.".format(issue_identifier,
                                                                                                            library if library else "NLB"))
             if not catalogued:
                 for warning in missing_catalogue_warnings:
                     report.warn(warning)
 
-        issue_identifiers = sorted(set(issue_identifiers + quickbase_issue_identifiers))
-        edition_identifiers = sorted(set([i[:6] for i in issue_identifiers if len(i) >= 6]))
+        issue_identifiers = list(sorted(set(issue_identifiers + quickbase_issue_identifiers)))
+        edition_identifiers = list(sorted(set([i[:6] for i in issue_identifiers if len(i) >= 6])))
         return issue_identifiers, edition_identifiers
 
     @staticmethod
