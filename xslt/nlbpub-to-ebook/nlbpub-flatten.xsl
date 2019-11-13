@@ -36,7 +36,9 @@
     <xsl:template match="section">
         <xsl:choose>
             <xsl:when test="f:should-insert-break-point(.)">
-                <div class="html-break-point"/>
+                <xsl:if test="not(self::section intersect ancestor::body/section[1])">
+                    <div class="html-break-point"/>
+                </xsl:if>
                 <xsl:call-template name="newline">
                     <xsl:with-param name="indent" select="-1"/>
                 </xsl:call-template>
