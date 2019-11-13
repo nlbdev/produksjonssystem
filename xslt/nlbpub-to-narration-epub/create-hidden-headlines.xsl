@@ -125,7 +125,13 @@
         <xsl:choose>
             <xsl:when test="$text = ''">
                 <xsl:message>
+                    <xsl:text>
+```
+</xsl:text>
                     <xsl:copy-of select="$section"/>
+                    <xsl:text>
+```
+</xsl:text>
                 </xsl:message>
                 <xsl:message terminate="yes" select="concat(
                     'No usable text content for headline available at: ',
