@@ -286,9 +286,9 @@ class Metadata:
             for edition_identifier in edition_identifiers:
                 if Metadata.bibliofil_record_exists(report, edition_identifier):
                     filtered_edition_identifiers.append(edition_identifier)
-                    for edition_identifier in issue_identifiers:
-                        if edition_identifier == edition_identifier[:6]:
-                            filtered_issue_identifiers.append(edition_identifier)
+                    for issue_identifier in issue_identifiers:
+                        if edition_identifier == issue_identifier[:6]:
+                            filtered_issue_identifiers.append(issue_identifier)
             issue_identifiers = filtered_issue_identifiers
             edition_identifiers = filtered_edition_identifiers
 
