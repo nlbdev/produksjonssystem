@@ -120,9 +120,18 @@
         
         <xsl:variable name="text" select="string-join(($section//text()[normalize-space()])[position() le 10], ' ')" as="xs:string"/>
         <xsl:variable name="text" select="normalize-space($text)" as="xs:string"/>
-        <xsl:variable name="text" select="tokenize($text, '\.')[1]" as="xs:string"/>
+        <xsl:variable name="text" select="string(tokenize($text, '\.')[1])" as="xs:string"/>
         
         <xsl:choose>
+            <xsl:when test="$text = ''">
+                <xsl:message>
+                    <xsl:copy-of select="$section"/>
+                </xsl:message>
+                <xsl:message terminate="yes" select="concat(
+                    'No usable text content for headline available at: ',
+                    '/', string-join((for $e in ($section/ancestor-or-self::*) return concat('*[', count($e/preceding-sibling::*) + 1, ']')), '/'),
+                    if ($section/@id) then concat(' (', $section/name(), '[@id=''', $section/@id, '''])') else '')"/>
+            </xsl:when>
             <xsl:when test="count(tokenize($text, ' ')) le 3">
                 <xsl:value-of select="string-join($text, ' ')"/>
             </xsl:when>
