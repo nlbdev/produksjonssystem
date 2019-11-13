@@ -365,10 +365,10 @@ class Metadata:
                 opf_path = opf_obj.name
 
             # Publication and edition identifiers are the same except for periodicals
-            edition_identifier = epub.identifier()
-            pub_identifier = edition_identifier
-            if len(pub_identifier) > 6:
-                pub_identifier = pub_identifier[:6]
+            issue_identifier = epub.identifier()
+            edition_identifier = issue_identifier
+            if len(edition_identifier) > 6:
+                edition_identifier = edition_identifier[:6]
 
             report.attachment(None, metadata_dir, "DEBUG")
             os.makedirs(metadata_dir, exist_ok=True)
@@ -414,7 +414,7 @@ class Metadata:
                 report.debug("quickbase-record-to-rdf.xsl (RDF/A)")
                 report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")))
                 report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/record{}.html'.format("-"+library if library else "")))
-                success = Metadata.get_quickbase(report, "records", edition_identifier,
+                success = Metadata.get_quickbase(report, "records", issue_identifier,
                                                  os.path.join(metadata_dir, 'quickbase/record{}.xml'.format("-"+library if library else "")), library=library)
                 if not success:
                     return False
@@ -438,23 +438,23 @@ class Metadata:
                     return False
                 rdf_files.append('quickbase/' + os.path.basename(rdf_path))
 
-            identifiers, edition_identifiers = Metadata.get_quickbase_identifiers(report, [edition_identifier], [pub_identifier])
-            identifiers, edition_identifiers = Metadata.get_bibliofil_identifiers(report, identifiers, edition_identifiers)
+            issue_identifiers, edition_identifiers = Metadata.get_quickbase_identifiers(report, [issue_identifier], [edition_identifier])
+            issue_identifiers, edition_identifiers = Metadata.get_bibliofil_identifiers(report, issue_identifiers, edition_identifiers)
 
-            for format_edition_identifier in identifiers:
-                format_pub_identifier = format_edition_identifier
-                if len(format_pub_identifier) > 6:
-                    format_pub_identifier = format_pub_identifier[:6]
+            for format_issue_identifier in issue_identifiers:
+                format_edition_identifier = format_issue_identifier
+                if len(format_edition_identifier) > 6:
+                    format_edition_identifier = format_edition_identifier[:6]
 
                 report.debug("normarc/marcxchange-to-opf.xsl")
-                marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.xml')
-                current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.opf')
-                html_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.html')
-                rdf_path = os.path.join(metadata_dir, 'bibliofil/' + format_pub_identifier + '.rdf')
+                marcxchange_path = os.path.join(metadata_dir, 'bibliofil/' + format_edition_identifier + '.xml')
+                current_opf_path = os.path.join(metadata_dir, 'bibliofil/' + format_edition_identifier + '.opf')
+                html_path = os.path.join(metadata_dir, 'bibliofil/' + format_edition_identifier + '.html')
+                rdf_path = os.path.join(metadata_dir, 'bibliofil/' + format_edition_identifier + '.rdf')
 
                 report.debug("    source = " + marcxchange_path)
                 report.debug("    target = " + current_opf_path)
-                Metadata.get_bibliofil(report, format_pub_identifier, marcxchange_path)
+                Metadata.get_bibliofil(report, format_edition_identifier, marcxchange_path)
                 if os.path.isfile(marcxchange_path):
                     xslt = Xslt(report=report,
                                 stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "normarc/marcxchange-to-opf.xsl"),
@@ -463,7 +463,7 @@ class Metadata:
                                 parameters={
                                   "nested": "true",
                                   "include-source-reference": "true",
-                                  "identifier": format_edition_identifier
+                                  "identifier": format_issue_identifier
                                 })
                     if not xslt.success:
                         return False
@@ -482,31 +482,31 @@ class Metadata:
 
                 for library in [None, "statped"]:
                     report.debug("quickbase-isbn-to-rdf.xsl (RDF/A)")
-                    report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                    report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_issue_identifier + '{}.xml'.format(
                                                                                    "-"+library if library else "")))
-                    report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.html'.format(
+                    report.debug("    target = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_issue_identifier + '{}.html'.format(
                                                                                    "-"+library if library else "")))
-                    success = Metadata.get_quickbase(report, "isbn", format_edition_identifier,
-                                                     os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                    success = Metadata.get_quickbase(report, "isbn", format_issue_identifier,
+                                                     os.path.join(metadata_dir, 'quickbase/isbn-' + format_issue_identifier + '{}.xml'.format(
                                                          "-"+library if library else "")),
                                                      library=library)
                     if not success:
                         return False
                     xslt = Xslt(report=report,
                                 stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
-                                source=os.path.join(metadata_dir, 'quickbase/isbn-{}{}.xml'.format(format_edition_identifier, "-"+library if library else "")),
-                                target=os.path.join(metadata_dir, 'quickbase/isbn-{}{}.html'.format(format_edition_identifier, "-"+library if library else "")),
+                                source=os.path.join(metadata_dir, 'quickbase/isbn-{}{}.xml'.format(format_issue_identifier, "-"+library if library else "")),
+                                target=os.path.join(metadata_dir, 'quickbase/isbn-{}{}.html'.format(format_issue_identifier, "-"+library if library else "")),
                                 parameters={"output-rdfa": "true", "include-source-reference": "true"})
                     if not xslt.success:
                         return False
                     report.debug("quickbase-isbn-to-rdf.xsl (RDF/XML)")
-                    rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.rdf'.format("-"+library if library else ""))
-                    report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                    rdf_path = os.path.join(metadata_dir, 'quickbase/isbn-' + format_issue_identifier + '{}.rdf'.format("-"+library if library else ""))
+                    report.debug("    source = " + os.path.join(metadata_dir, 'quickbase/isbn-' + format_issue_identifier + '{}.xml'.format(
                                                                                                                     "-"+library if library else "")))
                     report.debug("    target = " + rdf_path)
                     xslt = Xslt(report=report,
                                 stylesheet=os.path.join(Xslt.xslt_dir, Metadata.uid, "bookguru", "quickbase-isbn-to-rdf.xsl"),
-                                source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_edition_identifier + '{}.xml'.format(
+                                source=os.path.join(metadata_dir, 'quickbase/isbn-' + format_issue_identifier + '{}.xml'.format(
                                                                                                                     "-"+library if library else "")),
                                 target=rdf_path,
                                 parameters={"include-source-reference": "true"})
@@ -516,7 +516,7 @@ class Metadata:
 
             # ========== Clean up old files from sources ==========
 
-            allowed_identifiers = identifiers + edition_identifiers
+            allowed_identifiers = edition_identifiers + issue_identifiers
             for root, dirs, files in os.walk(metadata_dir):
                 for file in files:
                     file_identifier = [i for i in Path(file).stem.split("-") if re.match(r"^\d\d\d+$", i)]
