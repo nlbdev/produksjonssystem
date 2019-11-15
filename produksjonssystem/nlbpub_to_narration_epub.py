@@ -112,7 +112,7 @@ class NlbpubToNarrationEpub(Pipeline):
         self.utils.report.debug("    source = " + html_file)
         self.utils.report.debug("    target = " + temp_html)
         xslt = Xslt(self,
-                    stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "create-hidden-headlines.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "create-hidden-headlines.xsl"),
                     source=html_file,
                     target=temp_html)
         if not xslt.success:
