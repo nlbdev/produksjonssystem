@@ -5,7 +5,9 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 
+import requests
 from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
@@ -23,6 +25,8 @@ class PrepareForEbook(Pipeline):
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 8
+
+    css_tempfile_obj = None
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -126,9 +130,25 @@ class PrepareForEbook(Pipeline):
         if os.path.isfile(logo):
             shutil.copy(logo, os.path.join(html_dir, os.path.basename(logo)))
 
+        PrepareForEbook.update_css()
+
         if not os.path.isfile(stylesheet):
-            stylesheet = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "default.css")
-        shutil.copy(stylesheet, os.path.join(html_dir, "default.css"))
+            stylesheet = PrepareForEbook.css_tempfile_obj.name
+        shutil.copy(stylesheet, os.path.join(html_dir, "ebok.css"))
+
+        self.utils.report.info("Adding CSS item to OPF manifest")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),
+                    source=html_file,
+                    target=temp_html,
+                    parameters={
+                        "href": "ebok.css",
+                        "media-type": "text/css"
+                    })
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_html, html_file)
 
         # ---------- lagre filsett ----------
 
@@ -138,6 +158,28 @@ class PrepareForEbook(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
+
+    @staticmethod
+    def update_css():
+        if PrepareForEbook.css_tempfile_obj is None:
+            PrepareForEbook.css_tempfile_obj = tempfile.NamedTemporaryFile()
+
+        css_tempfile = PrepareForEbook.css_tempfile_obj.name
+
+        stat = os.stat(css_tempfile)
+        st_size = stat.st_size
+        st_mtime = round(stat.st_mtime)
+
+        if st_size == 0 or time.time() - st_mtime > 3600 * 3:
+            if st_size == 0:
+                default_path = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "ebok.css")
+                shutil.copy(default_path, css_tempfile)
+
+            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ebok.css"
+            response = requests.get(latest_url)
+            if response.status_code == 200:
+                with open(css_tempfile, "wb") as target_file:
+                    target_file.write(response.content)
 
 
 if __name__ == "__main__":

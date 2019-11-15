@@ -26,7 +26,7 @@
             <meta name="dcterms:modified" content="{if ($modified) then $modified else format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]-[M00]-[D00]T[H00]:[m00]:[s00]Z')}"/>
             <xsl:text><![CDATA[
         ]]></xsl:text>
-            <link rel="stylesheet" type="text/css" href="default.css"/>
+            <link rel="stylesheet" type="text/css" href="ebok.css"/>
             <xsl:text><![CDATA[
     ]]></xsl:text>
         </xsl:copy>
