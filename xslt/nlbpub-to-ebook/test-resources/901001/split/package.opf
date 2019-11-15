@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" version="3.0" unique-identifier="pub-id">
+    <metadata>
+        <dc:identifier id="pub-id">901001</dc:identifier>
+        <dc:title>Test book</dc:title>
+        <meta property="nordic:guidelines">2015-1</meta>
+        <meta property="nordic:supplier">Supplier name</meta>
+        <dc:language>en</dc:language>
+        <dc:format>EPUB3</dc:format>
+        <dc:creator>Lastname, Firstname</dc:creator>
+        <dc:date>2019-10-18</dc:date>
+        <dc:publisher>NLB</dc:publisher>
+        <dc:source>urn:isbn:0</dc:source>
+        <meta property="dcterms:modified">2019-10-18T11:05:35Z</meta>
+    </metadata>
+    <manifest>
+        <item media-type="image/jpeg" id="item_0" href="images/cover.jpg"/>
+        <item media-type="application/xhtml+xml" id="item_1" href="nav.xhtml" properties="nav"/>
+        <item media-type="application/xhtml+xml" id="item_2" href="901001.xhtml"/>
+    </manifest>
+    <spine>
+        <itemref idref="item_2" id="itemref_1"/>
+    </spine>
+</package>

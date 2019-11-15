@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:dcterms="http://purl.org/dc/terms/"
+               xmlns:nordic="http://www.mtm.se/epub/"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="update-opf.xsl">
+    
+    <x:param name="spine-hrefs" select="concat('901001-01-cover.xhtml,',
+                                               '901001-02-titlepage.xhtml,',
+                                               '901001-03-colophon.xhtml,',
+                                               '901001-04-toc.xhtml,',
+                                               '901001-05-preface.xhtml,',
+                                               '901001-06-chapter.xhtml,',
+                                               '901001-07-part.xhtml,',
+                                               '901001-08-chapter.xhtml,',
+                                               '901001-09-chapter.xhtml,',
+                                               '901001-10-chapter.xhtml,',
+                                               '901001-11-part.xhtml,',
+                                               '901001-12-chapter.xhtml,',
+                                               '901001-13-chapter.xhtml,',
+                                               '901001-14-chapter.xhtml,',
+                                               '901001-15-footnotes.xhtml,',
+                                               '901001-16-conclusion.xhtml,',
+                                               '901001-17-afterword.xhtml')"/>
+    
+    <x:scenario label="Basic test">
+        <x:context href="test-resources/901001/split/package.opf"/>
+        
+        <x:expect xml:space="preserve">
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" version="3.0" unique-identifier="pub-id">
+    <metadata>
+        <dc:identifier id="pub-id">901001</dc:identifier>
+        <dc:title>Test book</dc:title>
+        <meta property="nordic:guidelines">2015-1</meta>
+        <meta property="nordic:supplier">Supplier name</meta>
+        <dc:language>en</dc:language>
+        <dc:format>EPUB3</dc:format>
+        <dc:creator>Lastname, Firstname</dc:creator>
+        <dc:date>2019-10-18</dc:date>
+        <dc:publisher>NLB</dc:publisher>
+        <dc:source>urn:isbn:0</dc:source>
+        <meta property="dcterms:modified">2019-10-18T11:05:35Z</meta>
+    </metadata>
+    <manifest>
+        <item media-type="image/jpeg" id="item_0" href="images/cover.jpg"/>
+        <item media-type="application/xhtml+xml" id="item_1" href="nav.xhtml" properties="nav"/>
+        <item media-type="application/xhtml+xml" href="901001-01-cover.xhtml" id="spine_item_1"/>
+        <item media-type="application/xhtml+xml" href="901001-02-titlepage.xhtml" id="spine_item_2"/>
+        <item media-type="application/xhtml+xml" href="901001-03-colophon.xhtml" id="spine_item_3"/>
+        <item media-type="application/xhtml+xml" href="901001-04-toc.xhtml" id="spine_item_4"/>
+        <item media-type="application/xhtml+xml" href="901001-05-preface.xhtml" id="spine_item_5"/>
+        <item media-type="application/xhtml+xml" href="901001-06-chapter.xhtml" id="spine_item_6"/>
+        <item media-type="application/xhtml+xml" href="901001-07-part.xhtml" id="spine_item_7"/>
+        <item media-type="application/xhtml+xml" href="901001-08-chapter.xhtml" id="spine_item_8" properties="mathml"/>
+        <item media-type="application/xhtml+xml" href="901001-09-chapter.xhtml" id="spine_item_9"/>
+        <item media-type="application/xhtml+xml" href="901001-10-chapter.xhtml" id="spine_item_10"/>
+        <item media-type="application/xhtml+xml" href="901001-11-part.xhtml" id="spine_item_11"/>
+        <item media-type="application/xhtml+xml" href="901001-12-chapter.xhtml" id="spine_item_12"/>
+        <item media-type="application/xhtml+xml" href="901001-13-chapter.xhtml" id="spine_item_13"/>
+        <item media-type="application/xhtml+xml" href="901001-14-chapter.xhtml" id="spine_item_14"/>
+        <item media-type="application/xhtml+xml" href="901001-15-footnotes.xhtml" id="spine_item_15"/>
+        <item media-type="application/xhtml+xml" href="901001-16-conclusion.xhtml" id="spine_item_16"/>
+        <item media-type="application/xhtml+xml" href="901001-17-afterword.xhtml" id="spine_item_17"/>
+    </manifest>
+    <spine>
+        <itemref idref="spine_item_1" linear="no" id="spine_itemref_1"/>
+        <itemref idref="spine_item_2" id="spine_itemref_2"/>
+        <itemref idref="spine_item_3" linear="no" id="spine_itemref_3"/>
+        <itemref idref="spine_item_4" id="spine_itemref_4"/>
+        <itemref idref="spine_item_5" id="spine_itemref_5"/>
+        <itemref idref="spine_item_6" id="spine_itemref_6"/>
+        <itemref idref="spine_item_7" id="spine_itemref_7"/>
+        <itemref idref="spine_item_8" id="spine_itemref_8"/>
+        <itemref idref="spine_item_9" id="spine_itemref_9"/>
+        <itemref idref="spine_item_10" id="spine_itemref_10"/>
+        <itemref idref="spine_item_11" id="spine_itemref_11"/>
+        <itemref idref="spine_item_12" id="spine_itemref_12"/>
+        <itemref idref="spine_item_13" id="spine_itemref_13"/>
+        <itemref idref="spine_item_14" id="spine_itemref_14"/>
+        <itemref idref="spine_item_15" linear="no" id="spine_itemref_15"/>
+        <itemref idref="spine_item_16" id="spine_itemref_16"/>
+        <itemref idref="spine_item_17" id="spine_itemref_17"/>
+    </spine>
+</package>
+</x:expect>
+    </x:scenario>
+    
+</x:description>
