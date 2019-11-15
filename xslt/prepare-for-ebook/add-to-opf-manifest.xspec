@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns="http://www.idpf.org/2007/opf" stylesheet="add-to-opf-manifest.xsl">
+    
+    <x:param name="href" select="'filename.extension'"/>
+    <x:param name="media-type" select="'media/type'"/>
+    
+    <x:scenario label="Scenario for testing a function">
+        <x:context>
+            <package>
+                <metadata>
+                    <meta/>
+                </metadata>
+                <manifest>
+                    <item href="a.xhtml"/>
+                    <item href="foo.mp3"/>
+                </manifest>
+                <spine>
+                    <itemref/>
+                </spine>
+            </package>
+        </x:context>
+
+        <x:expect label="the result should be as expected">
+            <package>
+                <metadata>
+                    <meta/>
+                </metadata>
+                <manifest>
+                    <item href="a.xhtml"/>
+                    <item href="foo.mp3"/>
+                    <item href="filename.extension" media-type="media/type" id="..."/>
+                </manifest>
+                <spine>
+                    <itemref/>
+                </spine>
+            </package>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
