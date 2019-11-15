@@ -90,6 +90,22 @@ class PrepareForEbook(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
 
+        self.utils.report.info("Generating hidden headlines where necessary")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "create-hidden-headlines.xsl"),
+                    source=html_file,
+                    target=temp_html,
+                    parameters={
+                        "cover-headlines": "from-type",
+                        "frontmatter-headlines": "from-type",
+                        "bodymatter-headlines": "from-text",
+                        "backmatter-headlines": "from-type"
+                    })
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_html, html_file)
+
         self.utils.report.info("Tilpasser innhold for e-tekst...")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "prepare-for-ebook.xsl"),
