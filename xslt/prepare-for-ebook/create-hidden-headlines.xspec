@@ -704,7 +704,7 @@
                 </head>
                 <body>
                     <section epub:type="cover">
-                        <h1 id="..." class="generated-headline hidden-headline">Bokomslag</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Omslag</h1>
                         <p>Lorem ipsum dolor sit amet</p>
                         <p>consectetur adipisicing elit</p>
                     </section>

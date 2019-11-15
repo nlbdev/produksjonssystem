@@ -157,8 +157,8 @@
         <xsl:variable name="document-divisions" as="element()*">
             <type name="cover">
                 <en>Cover</en>
-                <nb>Bokomslag</nb>
-                <nn>Bokomslag</nn>
+                <nb>Omslag</nb>
+                <nn>Omslag</nn>
             </type>
             <type name="frontmatter">
                 <en>Frontmatter</en>
