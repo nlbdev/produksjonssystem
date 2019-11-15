@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"
+      xml:lang="en" lang="en" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#">
+    <head xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/">
+        <meta charset="UTF-8"/>
+        <title>Test book</title>
+        <meta name="dc:identifier" content="901001"/>
+        <meta name="dc:language" content="en"/>
+        <meta name="dcterms:modified" content="2019-10-18T11:05:35+00:00"/>
+    </head>
+    <body>
+            <div id="section_10" epub:type="chapter" class="section-start"></div>
+                <h2 id="headline_9">Math tests with image and asciimath fallback</h2>
+                
+                <section id="section_11">
+                    <h3 id="headline_10">Image in altimg, asciimath in alttext</h3>
+                    
+                    <p>In block context:</p>
+                    
+                    <math xmlns="http://www.w3.org/1998/Math/MathML"
+                          display="block"
+                          altimg="images/901001-001.png"
+                          altimg-width="97px"
+                          altimg-height="22px"
+                          altimg-valign="middle"
+                          alttext="x = y + 2*z">
+                        
+                        <mi>x</mi>
+                        <mo>=</mo>
+                        <mi>y</mi>
+                        <mo>+</mo>
+                        <mn>2</mn>
+                        <mo>&#8290;</mo>
+                        <mi>z</mi>
+                    </math>
+                </section>
+                
+                <section id="section_12">
+                    <h3 id="headline_11">Image in altimg, no alttext</h3>
+                    
+                    <p>In block context:</p>
+                </section>
+                
+                <section id="section_13">
+                    <h3 id="headline_12">No image, asciimath in alttext</h3>
+                    
+                    <p>In block context:</p>
+                </section>
+                
+                <section id="section_14">
+                    <h3 id="headline_13">No image, no alttext</h3>
+                    
+                    <p>In block context:</p>
+                </section>
+                
+                <section id="section_15">
+                    <h3 id="headline_14">Image in altimg and annotation, asciimath in alttext and annotation</h3>
+                    
+                    <p>Prefer image annotation over asciimath annotation (with altimg/alttext)</p>
+                </section>
+                
+                <section id="section_16">
+                    <h3 id="headline_15">Image in annotation, asciimath in annotation</h3>
+                </section>
+                
+                <section id="section_17">
+                    <h3 id="headline_16">MathML with SVG annotation</h3>
+                </section>
+                
+                <section id="section_18">
+                    <h3 id="headline_17">SVG hidden from screen readers, &lt;p&gt; only viewable from screen readers</h3>
+                    <p class="sr-only">a*x^2 + b*x + c = 0</p>
+                </section>
+                
+                <section id="section_19">
+                    <h3 id="headline_18">Image with empty alt text, asciimath in separate element</h3>
+                    
+                    <img alt="" src="images/901001-001.png"/>
+                    <p class="sr-only">x = y + 2*z</p>
+                </section>
+                
+                <section id="section_20">
+                    <h3 id="headline_19">role="math"</h3>
+                    
+                    <p>Image without role: <img src="images/901001-002.png" alt="x^2 + y^2 + z^2"/></p>
+                </section>
+            
+            </body>
+</html>
