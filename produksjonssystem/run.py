@@ -39,6 +39,7 @@ from newsletter import Newsletter
 from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
+from nlbpub_to_ebook import NlbpubToEbook
 from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_pef import NlbpubToPef
@@ -200,6 +201,7 @@ class Produksjonssystem():
         })
         self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
         self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
+        self.dirs_ranked[-1]["dirs"]["epub-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-ut/EPUB")
         self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
         self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
 
@@ -266,6 +268,10 @@ class Produksjonssystem():
             [PrepareForDocx(retry_missing=True,
                             check_identifiers=True,
                             during_working_hours=True),         "pub-in-ebook",        "pub-ready-docx"],
+            [NlbpubToEbook(retry_missing=True,
+                           check_identifiers=True,
+                           during_working_hours=True,
+                           during_night_and_weekend=True),      "pub-ready-ebook",     "epub-ebook"],
             [NlbpubToHtml(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True),           "pub-ready-ebook",     "html"],
