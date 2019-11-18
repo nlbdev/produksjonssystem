@@ -1366,7 +1366,9 @@ class Metadata:
             if not os.path.isfile(file):
                 file = os.path.join(path, os.path.basename(path) + ".html")
             if not os.path.isfile(file):
-                file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))][0]
+                file = [f for f in html_files if re.match(r"^\d+\.x?html$", os.path.basename(f))]
+                if len(file) > 0:
+                    file = file[0]
             if not file:
                 file = html_files[0]
 
