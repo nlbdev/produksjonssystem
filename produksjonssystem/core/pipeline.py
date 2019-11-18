@@ -515,6 +515,8 @@ class Pipeline():
 
     @staticmethod
     def is_working_hours():
+        if os.getenv("TEST", "").lower() in ["1", "true", "yes"]:
+            return True
         if not (datetime.date.today().weekday() <= 4):
             return False
         if not (8 <= datetime.datetime.now().hour <= 15):
