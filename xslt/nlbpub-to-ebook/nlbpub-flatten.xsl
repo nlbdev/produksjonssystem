@@ -49,7 +49,7 @@
                 <xsl:apply-templates select="node()"/>
             </xsl:when>
             
-            <xsl:when test="descendant::section/f:should-insert-break-point(.)">
+            <xsl:when test="exists(descendant::section[f:should-insert-break-point(.)])">
                 <div>
                     <xsl:call-template name="apply-global-attributes"/>
                     <xsl:attribute name="class" select="string-join((@class, 'section-start'), ' ')"></xsl:attribute>
@@ -76,8 +76,8 @@
     
     <xsl:function name="f:matter" as="xs:string">
         <xsl:param name="context" as="element()"/>
-        <xsl:variable name="matter" select="(($context/ancestor-or-self::*/f:types(.))[. = ('cover', 'frontmatter', 'bodymatter', 'backmatter')])[last()]" as="xs:string"/>
-        <xsl:variable name="matter" select="if ($matter != '') then $matter else 'bodymatter'" as="xs:string"/>
+        <xsl:variable name="matter" select="(($context/ancestor-or-self::*/f:types(.))[. = ('cover', 'frontmatter', 'bodymatter', 'backmatter')])[last()]" as="xs:string?"/>
+        <xsl:variable name="matter" select="if ($matter) then $matter else 'bodymatter'" as="xs:string"/>
         <xsl:value-of select="$matter"/>
     </xsl:function>
     

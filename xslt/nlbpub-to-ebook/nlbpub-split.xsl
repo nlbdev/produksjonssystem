@@ -12,7 +12,8 @@
     <xsl:output indent="no" method="xhtml" include-content-type="no" exclude-result-prefixes="#all"/>
     
     <xsl:param name="output-dir" as="xs:string"/>
-    <xsl:variable name="outputDir" select="concat($output-dir, if (ends-with($output-dir, '/')) then '' else '/')" as="xs:string"/>
+    <xsl:variable name="outputDir_1" select="concat($output-dir, if (ends-with($output-dir, '/')) then '' else '/')" as="xs:string"/>
+    <xsl:variable name="outputDir" select="if (matches($outputDir_1, '^\w+:/')) then $outputDir_1 else concat('file:', $outputDir_1)" as="xs:string"/>
     
     <xsl:template match="@* | node()" mode="#all">
         <xsl:copy exclude-result-prefixes="#all">
@@ -36,15 +37,15 @@
         
         <xsl:for-each select="$results">
             <xsl:variable name="target-uri" select="resolve-uri(@href, $outputDir)"/>
-                <xsl:result-document href="{$target-uri}"
-                                     indent="no"
-                                     method="xhtml"
-                                     include-content-type="no"
-                                     exclude-result-prefixes="#all">
-                    <xsl:text disable-output-escaping="yes">
+            <xsl:result-document href="{$target-uri}"
+                                 indent="no"
+                                 method="xhtml"
+                                 include-content-type="no"
+                                 exclude-result-prefixes="#all">
+                <xsl:text disable-output-escaping="yes">
 &lt;!DOCTYPE html&gt;</xsl:text>
-                    <xsl:sequence select="node()"/>
-                </xsl:result-document>
+                <xsl:sequence select="node()"/>
+            </xsl:result-document>
         </xsl:for-each>
     </xsl:template>
     
