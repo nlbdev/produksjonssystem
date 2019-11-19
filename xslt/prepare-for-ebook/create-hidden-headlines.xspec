@@ -167,7 +167,7 @@
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
-                        <h1>Chapter</h1>
+                        <h1 id="...">Chapter</h1>
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
@@ -201,11 +201,11 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2>Chapter</h2>
+                            <h2 id="...">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2>Chapter</h2>
+                            <h2 id="...">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -225,7 +225,7 @@
                             </section>
                         </section>
                         <section epub:type="chapter">
-                            <h2>Chapter</h2>
+                            <h2 id="...">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -234,9 +234,9 @@
                         </section>
                     </section>
                     <section epub:type="bodymatter part">
-                        <h1>Part</h1>
+                        <h1 id="...">Part</h1>
                         <section epub:type="chapter">
-                            <h2>Chapter</h2>
+                            <h2 id="...">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -248,7 +248,7 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2>Chapter</h2>
+                            <h2 id="...">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
@@ -256,7 +256,7 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2>Chapter</h2>
+                            <h2 id="...">Chapter</h2>
                             <p>Chapter</p>
                         </section>
                     </section>
@@ -272,7 +272,7 @@
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
-                        <h1>Chapter</h1>
+                        <h1 id="...">Chapter</h1>
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
@@ -292,7 +292,7 @@
                         </section>
                     </section>
                     <section epub:type="backmatter glossary">
-                        <h1>Glossary</h1>
+                        <h1 id="...">Glossary</h1>
                         <p>Glossary</p>
                     </section>
                 </body>

@@ -21,6 +21,14 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="h1[not(@id)] | h2[not(@id)] | h3[not(@id)] | h4[not(@id)] | h5[not(@id)] | h6[not(@id)]">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="id" select="generate-id()"/>
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:template match="section[not(exists(h1 | h2 | h3 | h4 | h5 | h6))]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
