@@ -18,16 +18,16 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     sys.exit(1)
 
 
-class NlbpubToEbook(Pipeline):
-    uid = "nlbpub-to-ebook"
-    title = "NLBPUB til e-bok (EPUB)"
+class NlbpubToEpub(Pipeline):
+    uid = "nlbpub-to-epub"
+    title = "NLBPUB til EPUB"
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 7
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
-        self.utils.report.title = self.title + " EPUB master slettet: " + self.book['name']
+        self.utils.report.title = self.title + " EPUB-kilde slettet: " + self.book['name']
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
@@ -91,7 +91,7 @@ class NlbpubToEbook(Pipeline):
 
         self.utils.report.info("Flater ut NLBPUB")
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEbook.uid, "nlbpub-flatten.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEpub.uid, "nlbpub-flatten.xsl"),
                     source=html_file,
                     target=temp_xml)
         if not xslt.success:
@@ -101,7 +101,7 @@ class NlbpubToEbook(Pipeline):
 
         self.utils.report.info("Deler opp NLBPUB i flere HTML-filer")
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEbook.uid, "nlbpub-split.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEpub.uid, "nlbpub-split.xsl"),
                     source=html_file,
                     target=temp_xml,
                     parameters={
@@ -120,7 +120,7 @@ class NlbpubToEbook(Pipeline):
         self.utils.report.info("Oppdaterer OPF-fil")
         print(",".join(spine_hrefs))
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEbook.uid, "update-opf.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEpub.uid, "update-opf.xsl"),
                     source=opf_path,
                     target=temp_xml,
                     parameters={
@@ -135,7 +135,7 @@ class NlbpubToEbook(Pipeline):
 
         self.utils.report.info("Lager nytt navigasjonsdokument")
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEbook.uid, "generate-nav.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEpub.uid, "generate-nav.xsl"),
                     source=opf_path,
                     target=nav_path)
         if not xslt.success:
@@ -159,4 +159,4 @@ class NlbpubToEbook(Pipeline):
 
 
 if __name__ == "__main__":
-    NlbpubToEbook().run()
+    NlbpubToEpub().run()

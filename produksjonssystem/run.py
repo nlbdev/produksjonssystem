@@ -39,7 +39,7 @@ from newsletter import Newsletter
 from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted
 from nlbpub_previous import NlbpubPrevious
 from nlbpub_to_docx import NLBpubToDocx
-from nlbpub_to_ebook import NlbpubToEbook
+from nlbpub_to_epub import NlbpubToEpub
 from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_pef import NlbpubToPef
@@ -268,7 +268,7 @@ class Produksjonssystem():
             [PrepareForDocx(retry_missing=True,
                             check_identifiers=True,
                             during_working_hours=True),         "pub-in-ebook",        "pub-ready-docx"],
-            [NlbpubToEbook(retry_missing=True,
+            [NlbpubToEpub(retry_missing=True,
                            check_identifiers=True,
                            during_working_hours=True,
                            during_night_and_weekend=True),      "pub-ready-ebook",     "epub-ebook"],
