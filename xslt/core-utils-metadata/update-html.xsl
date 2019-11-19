@@ -24,6 +24,11 @@
                 <xsl:copy exclude-result-prefixes="#all">
                     <xsl:copy-of select="$new/namespace::*" exclude-result-prefixes="#all"/>
                     <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                    <xsl:variable name="language" select="($current/meta[@name = 'dc:language']/@content)[1]" as="xs:string?"/>
+                    <xsl:if test="$language">
+                        <xsl:attribute name="xml:lang" select="$language"/>
+                        <xsl:attribute name="lang" select="$language"/>
+                    </xsl:if>
                     <xsl:for-each select="$new">
                         <xsl:text><![CDATA[
     ]]></xsl:text>
@@ -54,7 +59,15 @@
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                    <xsl:variable name="language" select="($current/meta[@name = 'dc:language']/@content)[1]" as="xs:string?"/>
+                    <xsl:if test="$language">
+                        <xsl:attribute name="xml:lang" select="$language"/>
+                        <xsl:attribute name="lang" select="$language"/>
+                    </xsl:if>
+                    <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
+                </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
