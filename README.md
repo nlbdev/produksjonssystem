@@ -69,6 +69,10 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 - installer Calibre:
     - `sudo apt-get install calibre`
 
+- installer epubcheck:
+    - Last ned EPUBCheck herifra: https://github.com/w3c/epubcheck/releases (i utgangspunktet bruker vi 4.2.2, som er nyeste versjon per 19.november 2019)
+    - pakk ut enten i mappen `/opt/epubcheck/` eller bruk miljøvariabelen `EPUBCHECK_HOME` for å sette stedet du pakket ut filene
+
 - installer og konfigurer quickbase-dump-skript:
     - `sudo apt install git maven`
     - `sudo mkdir /opt/quickbase`
