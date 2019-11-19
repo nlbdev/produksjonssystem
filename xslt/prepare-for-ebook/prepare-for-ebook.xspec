@@ -134,7 +134,7 @@
         <meta name="nordic:supplier" content="Net Systems Informatics (I) Pvt. Ltd."/> <!-- EPUB -->
     
         <meta name="dcterms:modified" content="..."/>
-        <link rel="stylesheet" type="text/css" href="default.css"/>
+        <link rel="stylesheet" type="text/css" href="ebok.css"/>
     </head>
         </x:expect>
     </x:scenario>
