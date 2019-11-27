@@ -1041,7 +1041,7 @@
                     <mrow>
                         <msup>
                             <mi>f</mi>
-                            <mo>&#8242;</mo>
+                            <mo>&#8243;</mo>
                         </msup>
                         <mo>&#8289;</mo>
                         <mfenced>
@@ -1167,7 +1167,7 @@
                     <mrow>
                         <msup>
                             <mi>f</mi>
-                            <mo>&#8242;</mo>
+                            <mo>&#8243;</mo>
                         </msup>
                         <mo>&#8289;</mo>
                         <mfenced>
@@ -1319,7 +1319,7 @@
                 <p class="spoken-math">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller funksjonen f av uttrykket x pluss h uttrykk slutt minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
                 <p class="spoken-math">formel den annenderiverte av funksjonen f av x er lik den deriverte av funksjonen f av uttrykket den deriverte av funksjonen f av x uttrykk slutt formel slutt</p>
                 <p class="spoken-math">formel den deriverte av funksjonen f av x er lik den deriverte av funksjonen f av x med hensyn på x formel slutt</p>
-                <p class="spoken-math">formel venstre parentes 4 ganger x i 3 ganger cosinus til x høyre parentes annenderivert formel slutt</p>
+                <p class="spoken-math">formel venstre parentes 4 ganger x opphøyd i 3 ganger cosinus til x høyre parentes annenderivert formel slutt</p>
                 <p class="spoken-math">formel venstre parentes 3 a ganger x opphøyd i 3 høyre parentes annenderivert er lik venstre parentes 9 a ganger x i annen høyre parentes derivert er lik 18 a ganger x formel slutt</p>
                 <p class="spoken-math">formel den annenderiverte av funksjonen f av x er lik den annenderiverte av funksjonen f av x med hensyn på x formel slutt</p>
                 <h2>Integrasjon</h2>
@@ -2141,9 +2141,9 @@
                 <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i en mekanisk fjær. Loven beskrives matematisk som</p>
                 <p class="spoken-math">formel funksjonen stor f av t er lik minus k ganger funksjonen x av t formel slutt</p>
                 <p>Samtidig gir <em>Newtons 2. lov</em> at</p>
-                <p class="spoken-math">formel funksjonen stor f av t er lik m ganger funksjonen a av t er lik m ganger den annenderiverte av funksjonen x av t med hensyn på t formel slutt</p>
+                <p class="spoken-math">formel funksjonen stor f av t er lik m ganger funksjonen a av t er lik m ganger brøk med teller annenderivert funksjonen x av t og med nevner den partielle deriverte t i annen brøk slutt formel slutt</p>
                 <p>og fra det følger at</p>
-                <p class="spoken-math">formel den annenderiverte av funksjonen x av t med hensyn på t er lik minus brøken k delt på m ganger funksjonen x av t formel slutt</p>
+                <p class="spoken-math">formel brøk med teller annenderivert funksjonen x av t og med nevner den partielle deriverte t i annen brøk slutt er lik minus brøken k delt på m ganger funksjonen x av t formel slutt</p>
                 <p>som er en differensiallikning med løsning</p>
                 <p class="spoken-math">formel funksjonen x av t er lik stor a ganger cosinus til venstre parentes omega ⁢ t minus phi høyre parentes formel slutt</p>
                 <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <span class="spoken-math">formel omega formel slutt</span> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <span class="spoken-math">formel omega er lik kvadratroten av k delt på m kvadratrot slutt formel slutt</span>. Svingningens <em>fase</em>, <span class="spoken-math">formel phi formel slutt</span>, er en konstant som er bestemt av startbetingelsene. </p>

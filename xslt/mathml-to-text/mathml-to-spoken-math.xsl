@@ -278,7 +278,6 @@
     </xsl:template>
     <xsl:template match="m:mi[matches(normalize-space(.), '^\p{IsGreek}$')]" mode="spoken-math">
         <xsl:variable name="uc" as="xs:integer" select="string-to-codepoints(normalize-space(.))"/>
-        <xsl:message>MI: <xsl:value-of select="$uc"/></xsl:message>
         <xsl:choose>
             <xsl:when test="$uc ge 945">
             </xsl:when>
@@ -392,6 +391,7 @@
     <!-- m:mo represents an operator in a broad sense -->
     <xsl:template match="m:mo" mode="spoken-math">
         <xsl:variable name="operator" as="xs:string" select="normalize-space(.)"/>
+        <xsl:variable name="uc" as="xs:integer" select="string-to-codepoints(normalize-space(.))"/>
         <xsl:choose>
             <xsl:when test="matches($operator, '^(,|\.)$')">
                 <xsl:value-of select="$operator"/>
@@ -558,6 +558,21 @@
                 <xsl:value-of select="fnk:translate('the partial derivative', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
+            <xsl:when test="$operator eq '&#8517;' or $operator eq '&#x2145;' or $uc eq 8517">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('capital differential d', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#8242;' or $operator eq '&#x2032;' or $uc eq 8242">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('derived', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#8243;' or $operator eq '&#x2033;' or $uc eq 8243">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('the second derivative of', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
             
             <xsl:when test="$operator eq '&#8289;' or $operator eq '&#8290;'">
                 <xsl:text> </xsl:text>
@@ -567,6 +582,9 @@
                     <xsl:value-of select="fnk:translate('unknown operator', .)" />
                     <xsl:text>: </xsl:text>
                     <xsl:value-of select="."/>
+                    <xsl:text> (</xsl:text>
+                    <xsl:value-of select="$uc"/>
+                    <xsl:text>)</xsl:text>
                 </xsl:message>
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('unknown operator', .)" />
@@ -1337,6 +1355,10 @@
                 <translation lang="en">the second derivative of</translation>
                 <translation lang="nb">den annenderiverte av</translation>
             </term>
+            <term name="derived">
+                <translation lang="en">derived</translation>
+                <translation lang="nb">derivert</translation>
+            </term>
             <term name="the derivative">
                 <translation lang="en">the derivative</translation>
                 <translation lang="nb">derivert</translation>
@@ -1348,6 +1370,10 @@
             <term name="the partial derivative">
                 <translation lang="en">the partial derivative</translation>
                 <translation lang="nb">den partielle deriverte</translation>
+            </term>
+            <term name="capital differential d">
+                <translation lang="en">capital differential d</translation>
+                <translation lang="nb">stor differensial d</translation>
             </term>
             
             <!-- Boundary values -->
