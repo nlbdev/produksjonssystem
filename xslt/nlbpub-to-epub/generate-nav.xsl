@@ -67,12 +67,12 @@
         <xsl:param name="spine" as="element()*"/>
         <xsl:param name="base-uri-strip-length" as="xs:integer" tunnel="yes"/>
         
-        <xsl:variable name="headings" select="$spine//(h1 | h2 | h3 | h4 | h5 | h6)"/>
+        <xsl:variable name="headings" select="$spine//(h1 | h2 | h3 | h4 | h5 | h6)" as="element()+"/>
         
         <nav epub:type="landmarks" hidden="">
             <ol>
-                <xsl:variable name="start-of-book" select="($headings[ancestor-or-self::*/tokenize(@epub:type, '\s+') = 'bodymatter'])[1]"/>
-                <xsl:variable name="language" select="($start-of-book/ancestor-or-self::*/@xml:lang)[last()]"/>
+                <xsl:variable name="start-of-book" select="($headings[f:matter(.) = 'bodymatter'])[1]" as="element()"/>
+                <xsl:variable name="language" select="($start-of-book/ancestor-or-self::*/@xml:lang)[last()]" as="xs:string"/>
                 
                 <xsl:variable name="text" as="xs:string">
                     <xsl:choose>
@@ -88,7 +88,7 @@
                     </xsl:choose>
                 </xsl:variable>
                 
-                <li epub:type="bodymatter"><a href="{substring(base-uri($start-of-book), $base-uri-strip-length)}#{$start-of-book/@id}"><xsl:value-of select="$text"/></a></li>
+                <li><a href="{substring(base-uri($start-of-book), $base-uri-strip-length)}#{$start-of-book/@id}" epub:type="bodymatter"><xsl:value-of select="$text"/></a></li>
             </ol>
         </nav>
     </xsl:template>
@@ -173,7 +173,20 @@
                 </ol>
             </nav>
         </xsl:if>
-        
     </xsl:template>
+    
+    <xsl:function name="f:matter" as="xs:string">
+        <xsl:param name="context" as="node()"/>
+        
+        <xsl:variable name="types" as="xs:string*">
+            <xsl:for-each select="$context/ancestor-or-self::*">
+                <xsl:sequence select="(preceding-sibling::*[tokenize(@class, '\s+') = 'section-start'])[1]/tokenize(@epub:type, '\s+')"/>
+                <xsl:sequence select="tokenize(@epub:type, '\s+')"/>
+            </xsl:for-each>
+        </xsl:variable>
+        
+        <xsl:variable name="matter" select="$types[. = ('cover', 'frontmatter', 'bodymatter', 'backmatter')]" as="xs:string*"/>
+        <xsl:value-of select="if (count($matter)) then $matter[last()] else 'bodymatter'"/>
+    </xsl:function>
     
 </xsl:stylesheet>

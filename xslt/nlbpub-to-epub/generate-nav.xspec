@@ -185,8 +185,8 @@
                 <body>
                     <nav epub:type="landmarks" hidden="">
                         <ol>
-                            <li epub:type="bodymatter">
-                                <a href="565723-2.xhtml#h1_2">Starten av boka</a>
+                            <li>
+                                <a href="565723-1.xhtml#h1_1" epub:type="bodymatter">Starten av boka</a>
                             </li>
                         </ol>
                     </nav>
