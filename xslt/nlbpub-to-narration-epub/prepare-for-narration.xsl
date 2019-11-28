@@ -97,10 +97,6 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="comment()">
-        <!-- Tar bort alle kommentarer -->
-    </xsl:template>
-
     <xsl:template match="meta">
         <!-- Rydder opp litt i metadata, blant annet fjerner en del som ikke lenger er nødvendige -->
         <xsl:choose>
