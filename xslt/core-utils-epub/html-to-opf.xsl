@@ -8,7 +8,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:output indent="yes"/>
+    <xsl:output indent="no"/>
     
     <xsl:template match="/opf:package">
         <xsl:call-template name="main">
@@ -18,57 +18,103 @@
     </xsl:template>
     
     <xsl:template name="main">
-        <xsl:param name="opf" as="element()" required="yes"/>
-        <xsl:param name="html" as="element()" required="yes"/>
+        <xsl:param name="opf" as="node()+" required="yes"/>
+        <xsl:param name="html" as="node()+" required="yes"/>
         
-        <xsl:for-each select="$opf">
+        <xsl:param name="opf-root" as="element()" select="$opf[self::*]"/>
+        <xsl:param name="html-root" as="element()" select="$html[self::*]"/>
+        
+        <xsl:for-each select="$opf-root">
+            <xsl:text>
+</xsl:text>
             <xsl:copy exclude-result-prefixes="#all">
                 <xsl:copy-of select="@* except @xml:base" exclude-result-prefixes="#all"/>
                 <xsl:attribute name="unique-identifier" select="'pub-id'"/>
                 
-                <xsl:variable name="metadata" select="$html/html:head/*[self::html:meta or self::html:title]" as="element()*"/>
+                <xsl:variable name="metadata" select="$html-root/html:head/node()" as="node()*"/>
+                <xsl:text>
+    </xsl:text>
                 <metadata>
-                    <dc:identifier id="pub-id">
-                        <xsl:value-of select="$metadata[@name='dc:identifier']/@content"/>
-                    </dc:identifier>
-                    <dc:title>
-                        <xsl:value-of select="$metadata[self::html:title]/text()"/>
-                    </dc:title>
-                    <xsl:for-each select="$metadata[@name and @content and not(@name='dc:identifier')]">
+                    <xsl:for-each select="$metadata">
                         <xsl:choose>
-                            <xsl:when test="matches(@name,'^dc:[a-z]+$')">
+                            <xsl:when test="not(self::*)">
+                                <!-- whitespace and comments -->
+                                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                            </xsl:when>
+                            
+                            <xsl:when test="self::html:title">
+                                <dc:title>
+                                    <xsl:value-of select="."/>
+                                </dc:title>
+                            </xsl:when>
+                            
+                            <xsl:when test="not(self::html:meta)">
+                                <!-- ignore -->
+                            </xsl:when>
+                            
+                            <xsl:when test="@name = 'viewport'">
+                                <!-- discard -->
+                            </xsl:when>
+                            
+                            <xsl:when test="@name = 'dc:identifier'">
+                                <dc:identifier id="pub-id">
+                                    <xsl:value-of select="@content"/>
+                                </dc:identifier>
+                            </xsl:when>
+                            
+                            <xsl:when test="@name = 'description'">
+                                <meta property="dc:description.abstract">
+                                    <xsl:value-of select="@content"/>
+                                </meta>
+                            </xsl:when>
+                            
+                            <xsl:when test="matches(@name, '^dc:[a-z]+$') and exists(@content)">
                                 <xsl:element name="{@name}">
                                     <xsl:value-of select="@content"/>
                                 </xsl:element>
                             </xsl:when>
-                            <xsl:when test="@name = 'viewport'"/>
-                            <xsl:otherwise>
+                            
+                            <xsl:when test="exists(@name) and exists(@content)">
                                 <meta property="{@name}">
                                     <xsl:value-of select="@content"/>
                                 </meta>
-                            </xsl:otherwise>
+                            </xsl:when>
                         </xsl:choose>
                     </xsl:for-each>
+                    <xsl:text>
+    </xsl:text>
                 </metadata>
                 
                 <xsl:apply-templates select="opf:manifest">
                     <xsl:with-param name="identifier" select="$metadata[@name='dc:identifier']/string(@content)" as="xs:string" tunnel="yes"/>
                 </xsl:apply-templates>
                 
+                <xsl:text>
+    </xsl:text>
                 <xsl:copy-of select="opf:spine" exclude-result-prefixes="#all"/>
+                <xsl:text>
+</xsl:text>
             </xsl:copy>
+            <xsl:text>
+</xsl:text>
         </xsl:for-each>
     </xsl:template>
     
     <xsl:template match="opf:manifest">
+        <xsl:text>
+    </xsl:text>
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
             <xsl:apply-templates select="opf:item"/>
+            <xsl:text>
+    </xsl:text>
         </xsl:copy>
     </xsl:template>
     
     <xsl:template match="opf:item">
         <xsl:param name="identifier" as="xs:string" tunnel="yes"/>
+        <xsl:text>
+        </xsl:text>
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
             <xsl:if test="../../opf:spine/opf:itemref/@idref = @id">

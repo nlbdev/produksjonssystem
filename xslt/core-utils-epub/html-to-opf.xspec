@@ -7,66 +7,70 @@
     
     <x:scenario label="Basic example">
         <x:call template="main">
-            <x:param name="opf">
-                <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
-                    <manifest>
-                        <item properties="nav" media-type="application/xhtml+xml" id="item_1" href="nav.xhtml"/>
-                        <item media-type="application/xhtml+xml" id="item_2" href="EPUB/561702.xhtml"/>
-                    </manifest>
-                    <spine>
-                        <itemref idref="item_2" id="itemref_1"/>
-                    </spine>
-                </package>
-            </x:param>
-            <x:param name="html">
-                <html xmlns="http://www.w3.org/1999/xhtml">
-                    <head>
-                        <meta charset="UTF-8" />
-                        <title>Rampete Robins forundringspakke</title>
-                        <meta name="dc:identifier" content="333121" />
-                        <meta name="viewport" content="width=device-width" />
-                        <meta name="nordic:guidelines" content="2015-1" />
-                        <meta name="nordic:supplier" content="AEL Data" />
-                        <meta name="dc:language" content="no" />
-                        <meta name="dc:format" content="EPUB3" />
-                        <meta name="dc:creator" content="Simon, Francesca" />
-                        <meta name="dc:contributor" content="Holm, Dagny" />
-                        <meta name="dc:date" content="2017-10-11" />
-                        <meta name="dc:publisher" content="NLB" />
-                        <meta name="dc:source" content="urn:isbn:9788210000000" />
-                        <meta name="dcterms:modified" content="2018-01-24T08:53:47+00:00" />
-                    </head>
-                    <body>
-                        <h1>Test</h1>
-                    </body>
-                </html>
-            </x:param>
+            <x:param name="opf" xml:space="preserve">
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
+    <manifest>
+        <item properties="nav" media-type="application/xhtml+xml" id="item_1" href="nav.xhtml"/>
+        <item media-type="application/xhtml+xml" id="item_2" href="EPUB/561702.xhtml"/>
+    </manifest>
+    <spine>
+        <itemref idref="item_2" id="itemref_1"/>
+    </spine>
+</package>
+</x:param>
+            <x:param name="html" xml:space="preserve">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Rampete Robins forundringspakke</title> <!-- this is a comment -->
+        <meta name="dc:identifier" content="333121"/>
+        <meta name="viewport" content="width=device-width"/>
+        <meta name="nordic:guidelines" content="2015-1"/> <!-- this is also a comment -->
+        <meta name="nordic:supplier" content="AEL Data"/>
+        <meta name="dc:language" content="no"/>
+        <meta name="dc:format" content="EPUB3"/>
+        <meta name="description" content="…"/> <!-- Bibliofil@… *520$a -->
+        <meta name="dc:creator" content="Simon, Francesca"/>
+        <meta name="dc:contributor" content="Holm, Dagny"/>
+        <meta name="dc:date" content="2017-10-11"/>
+        <meta name="dc:publisher" content="NLB"/>
+        <meta name="dc:source" content="urn:isbn:9788210000000"/>
+        <meta name="dcterms:modified" content="2018-01-24T08:53:47+00:00"/>
+    </head>
+    <body>
+        <h1>Test</h1>
+    </body>
+</html>
+</x:param>
         </x:call>
 
-        <x:expect label="The metadata should be properly copied over">
-            <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
-                <metadata>
-                    <dc:identifier id="pub-id">333121</dc:identifier>
-                    <dc:title>Rampete Robins forundringspakke</dc:title>
-                    <meta property="nordic:guidelines">2015-1</meta>
-                    <meta property="nordic:supplier">AEL Data</meta>
-                    <dc:language>no</dc:language>
-                    <dc:format>EPUB3</dc:format>
-                    <dc:creator>Simon, Francesca</dc:creator>
-                    <dc:contributor>Holm, Dagny</dc:contributor>
-                    <dc:date>2017-10-11</dc:date>
-                    <dc:publisher>NLB</dc:publisher>
-                    <dc:source>urn:isbn:9788210000000</dc:source>
-                    <meta property="dcterms:modified">2018-01-24T08:53:47+00:00</meta>
-                </metadata>
-                <manifest>
-                    <item properties="nav" media-type="application/xhtml+xml" id="item_1" href="nav.xhtml"/>
-                    <item media-type="application/xhtml+xml" id="item_2" href="EPUB/333121.xhtml"/>
-                </manifest>
-                <spine>
-                    <itemref idref="item_2" id="itemref_1"/>
-                </spine>
-            </package>
-        </x:expect>
+        <x:expect label="The metadata should be properly copied over" xml:space="preserve">
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
+    <metadata>
+        
+        <dc:title>Rampete Robins forundringspakke</dc:title> <!-- this is a comment -->
+        <dc:identifier id="pub-id">333121</dc:identifier>
+        
+        <meta property="nordic:guidelines">2015-1</meta> <!-- this is also a comment -->
+        <meta property="nordic:supplier">AEL Data</meta>
+        <dc:language>no</dc:language>
+        <dc:format>EPUB3</dc:format>
+        <meta property="dc:description.abstract">…</meta> <!-- Bibliofil@… *520$a -->
+        <dc:creator>Simon, Francesca</dc:creator>
+        <dc:contributor>Holm, Dagny</dc:contributor>
+        <dc:date>2017-10-11</dc:date>
+        <dc:publisher>NLB</dc:publisher>
+        <dc:source>urn:isbn:9788210000000</dc:source>
+        <meta property="dcterms:modified">2018-01-24T08:53:47+00:00</meta>
+    </metadata>
+    <manifest>
+        <item properties="nav" media-type="application/xhtml+xml" id="item_1" href="nav.xhtml"/>
+        <item media-type="application/xhtml+xml" id="item_2" href="EPUB/333121.xhtml"/>
+    </manifest>
+    <spine>
+        <itemref idref="item_2" id="itemref_1"/>
+    </spine>
+</package>
+</x:expect>
     </x:scenario>
 </x:description>
