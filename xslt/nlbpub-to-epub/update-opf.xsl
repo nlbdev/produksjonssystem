@@ -46,16 +46,16 @@
         
         <xsl:call-template name="newline-indent"><xsl:with-param name="indent" select="0"/></xsl:call-template>
         <package>
-            <xsl:copy-of select="@*"/>
+            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
             
             <xsl:call-template name="newline-indent"><xsl:with-param name="indent" select="1"/></xsl:call-template>
-            <xsl:copy-of select="$metadata"/>
+            <xsl:copy-of select="$metadata" exclude-result-prefixes="#all"/>
             
             <xsl:call-template name="newline-indent"><xsl:with-param name="indent" select="1"/></xsl:call-template>
-            <xsl:copy-of select="$manifest"/>
+            <xsl:copy-of select="$manifest" exclude-result-prefixes="#all"/>
             
             <xsl:call-template name="newline-indent"><xsl:with-param name="indent" select="1"/></xsl:call-template>
-            <xsl:copy-of select="$spine"/>
+            <xsl:copy-of select="$spine" exclude-result-prefixes="#all"/>
             
             <xsl:call-template name="newline-indent"><xsl:with-param name="indent" select="0"/></xsl:call-template>
         </package>
@@ -137,18 +137,18 @@
         <xsl:param name="spine-items-and-itemrefs" as="element()+"/>
         
         <manifest>
-            <xsl:copy-of select="manifest/@*"/>
+            <xsl:copy-of select="manifest/@*" exclude-result-prefixes="#all"/>
             
             <xsl:for-each select="manifest/item">
                 <xsl:if test="tokenize(@properties, '\s+') = 'nav' or not(../../spine/itemref/@idref = @id)">
                     <xsl:call-template name="newline-indent"/>
-                    <xsl:copy-of select="."/>
+                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
                 </xsl:if>
             </xsl:for-each>
             
             <xsl:for-each select="$spine-items-and-itemrefs[self::item]">
                 <xsl:call-template name="newline-indent"/>
-                <xsl:copy-of select="."/>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:for-each>
         </manifest>
     </xsl:template>
@@ -158,7 +158,7 @@
         <spine>
             <xsl:for-each select="$spine-items-and-itemrefs[self::itemref]">
                 <xsl:call-template name="newline-indent"/>
-                <xsl:copy-of select="."/>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
             </xsl:for-each>
             
             <xsl:call-template name="newline-indent"><xsl:with-param name="indent" select="1"/></xsl:call-template>
@@ -168,7 +168,7 @@
     <xsl:template name="create-metadata" as="element()">
         <xsl:param name="manifest" as="element()"/>
         <xsl:param name="spine" as="element()"/>
-        <xsl:copy-of select="metadata"/>
+        <xsl:copy-of select="metadata" exclude-result-prefixes="#all"/>
     </xsl:template>
     
     <xsl:template name="newline-indent">
