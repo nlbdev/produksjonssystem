@@ -22,7 +22,22 @@
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()"/>
             
-            <xsl:variable name="id" select="if ($preferred-id = '' or //*/@id = $preferred-id) then generate-id() else $preferred-id" as="xs:string"/>
+            <xsl:variable name="id" as="xs:string">
+                <xsl:choose>
+                    <xsl:when test="$preferred-id != '' and not($preferred-id = //*/@id)">
+                        <xsl:value-of select="$preferred-id"/>
+                    </xsl:when>
+                    <xsl:when test="not(concat('item_', count(/package/manifest/item)) = //*/@id)">
+                        <xsl:value-of select="concat('item_', count(*) + 1)"/>
+                    </xsl:when>
+                    <xsl:when test="not(generate-id(*[last()]) = //*/@id)">
+                        <xsl:value-of select="generate-id(*[last()])"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:message select="concat('Could not generate a unique id for manifest item: ', $href)" terminate="yes"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
             
             <xsl:text>    </xsl:text>
             <item media-type="{$media-type}" href="{$href}" id="{$id}"/>

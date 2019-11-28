@@ -28,7 +28,7 @@
                 <manifest>
                     <item href="a.xhtml"/>
                     <item href="foo.mp3"/>
-                    <item href="filename.extension" media-type="media/type" id="..."/>
+                    <item href="filename.extension" media-type="media/type" id="item_3"/>
                 </manifest>
                 <spine>
                     <itemref/>
