@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import traceback
 
+from core.utils.epub import Epub
 from core.utils.filesystem import Filesystem
 
 
@@ -34,13 +35,9 @@ class Epubcheck():
                  source=None,
                  stdout_level="INFO",
                  stderr_level="INFO",
-                 report=None,
                  cwd=None):
-        assert pipeline or report
+        assert pipeline
         assert source
-
-        if not report:
-            report = pipeline.utils.report
 
         if not cwd:
             cwd = tempfile.gettempdir()
@@ -49,19 +46,36 @@ class Epubcheck():
 
         Epubcheck.init_environment()
 
+        # epubcheck works better when the input is zipped
+        if source.lower().endswith(".opf"):
+            pipeline.utils.report.debug("EPUB is not zipped, zipping…")
+            root_path = os.path.dirname(source)
+            while True:
+                assert root_path != os.path.dirname(root_path), "No mimetype file or META-INF directory found in the EPUB, unable to determine root directory"
+                is_root = False
+                for filename in os.listdir(root_path):
+                    if filename == "mimetype" or filename == "META-INF":
+                        is_root = True
+                        break
+                if is_root:
+                    break
+                else:
+                    root_path = os.path.dirname(root_path)
+
+            epub = Epub(pipeline, root_path)
+            source = epub.asFile()
+
         try:
             command = ["java", "-jar", Epubcheck.epubcheck_jar]
             command.append(source)
-            if source.lower().endswith(".opf"):
-                command += ["--mode", "opf"]
 
-            report.debug("Running Epubcheck")
-            process = Filesystem.run_static(command, cwd, report, stdout_level=stdout_level, stderr_level=stderr_level)
+            pipeline.utils.report.debug("Running Epubcheck")
+            process = Filesystem.run_static(command, cwd, pipeline.utils.report, stdout_level=stdout_level, stderr_level=stderr_level)
             self.success = process.returncode == 0
 
         except subprocess.TimeoutExpired:
-            report.error("Epubcheck for {} took too long and were therefore stopped.".format(os.path.basename(source)))
+            pipeline.utils.report.error("Epubcheck for {} took too long and were therefore stopped.".format(os.path.basename(source)))
 
         except Exception:
-            report.debug(traceback.format_exc(), preformatted=True)
-            report.error("An error occured while running Epubcheck (for " + str(source) + ")")
+            pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
+            pipeline.utils.report.error("An error occured while running Epubcheck (for " + str(source) + ")")
