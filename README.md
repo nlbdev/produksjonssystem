@@ -73,6 +73,10 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
     - Last ned EPUBCheck herifra: https://github.com/w3c/epubcheck/releases (i utgangspunktet bruker vi 4.2.2, som er nyeste versjon per 19.november 2019)
     - pakk ut enten i mappen `/opt/epubcheck/` eller bruk miljøvariabelen `EPUBCHECK_HOME` for å sette stedet du pakket ut filene
 
+- installer kindlegen:
+    - Last ned KindleGen herifra: https://www.amazon.com/gp/feature.html/?docId=1000765211 (nyeste versjon per 19.november 2019 er V2.9 build 1028-0897292)
+    - pakk ut enten i mappen `/opt/kindlegen/` eller bruk miljøvariabelen `KINDLEGEN_HOME` for å sette stedet du pakket ut filene
+
 - installer og konfigurer quickbase-dump-skript:
     - `sudo apt install git maven`
     - `sudo mkdir /opt/quickbase`

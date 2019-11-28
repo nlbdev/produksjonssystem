@@ -26,6 +26,7 @@ from core.utils.slack import Slack
 # Import pipelines
 from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
+from epub_to_kindle import EpubToKindle
 # from epub_to_dtbook_braille import EpubToDtbookBraille
 # from epub_to_dtbook_html import EpubToDtbookHTML
 from html_to_dtbook import HtmlToDtbook
@@ -202,6 +203,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
         self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
         self.dirs_ranked[-1]["dirs"]["epub-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-ut/EPUB")
+        self.dirs_ranked[-1]["dirs"]["mobi-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-ut/Mobi-KF8")
         self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
         self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
 
@@ -272,6 +274,10 @@ class Produksjonssystem():
                            check_identifiers=True,
                            during_working_hours=True,
                            during_night_and_weekend=True),      "pub-ready-ebook",     "epub-ebook"],
+            [EpubToKindle(retry_missing=True,
+                          check_identifiers=True,
+                          during_working_hours=True,
+                          during_night_and_weekend=True),       "epub-ebook",          "mobi-ebook"],
             [NlbpubToHtml(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True),           "pub-ready-ebook",     "html"],
