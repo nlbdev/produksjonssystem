@@ -35,70 +35,8 @@
     <xsl:template
         match="*[fnk:epub-type(@epub:type, 'cover')]/section[matches(@class, '^(frontcover|rearcover|leftflap|rightflap)$')]"
         mode="bygg-opp-cover">
-        <xsl:variable name="overskrift" as="xs:string">
-            <xsl:choose>
-                <xsl:when test="@class eq 'frontcover'">
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>Front cover</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="$SPRÅK.nn">
-                            <xsl:text>Framside</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>Forside</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:when test="@class eq 'rearcover'">
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>Back cover</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="$SPRÅK.nn">
-                            <xsl:text>Bakside</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>Bakside</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:when test="@class eq 'leftflap'">
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>Left flap</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="$SPRÅK.nn">
-                            <xsl:text>Venstre innbrett</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>Venstre innbrett</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:otherwise>
-                    <!-- Bare 'rightflap' som er mulig nå -->
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>Right flap</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="$SPRÅK.nn">
-                            <xsl:text>Høgre innbrett</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>Høyre innbrett</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
         <section>
             <xsl:copy-of select="@class"/>
-            <xsl:attribute name="id"
-                select="concat('leve2_nlb_', translate(lower-case($overskrift), ' ', '_'))"/>
-            <h2>
-                <xsl:value-of select="$overskrift"/>
-            </h2>
             <xsl:apply-templates mode="#current"/>
         </section>
     </xsl:template>
