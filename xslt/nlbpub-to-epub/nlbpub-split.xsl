@@ -148,42 +148,64 @@
         </xsl:choose>
     </xsl:template>
     
-                                <!--<xsl:text>
+    <xsl:template match="head" mode="post-process">
+        <xsl:param name="after-split" as="node()*" tunnel="yes"/>
+        <xsl:variable name="after-split-elements" select="$after-split[local-name() = '_']" as="element()+"/>
+        
+        <xsl:variable name="current-href" select="../../@href"/>
+        <xsl:variable name="all-hrefs" select="$after-split-elements/@href"/>
+        <xsl:variable name="position" as="xs:integer">
+            <xsl:for-each select="$all-hrefs">
+                <xsl:if test=". = $current-href">
+                    <xsl:value-of select="position()"/>
+                </xsl:if>
+            </xsl:for-each>
+        </xsl:variable>
+        
+        <xsl:variable name="start" select="$after-split-elements[position() = 1]/@href" as="xs:string?"/>
+        <xsl:variable name="first" select="if ($position gt 1) then $after-split-elements[position() = 1]/@href else ()" as="xs:string?"/>
+        <xsl:variable name="prev" select="if ($position gt 1) then $after-split-elements[position() = $position - 1]/@href else ()" as="xs:string?"/>
+        <xsl:variable name="next" select="if ($position lt count($after-split-elements)) then $after-split-elements[position() = $position + 1]/@href else ()" as="xs:string?"/>
+        <xsl:variable name="last" select="if ($position lt count($after-split-elements)) then $after-split-elements[position() = last()]/@href else ()" as="xs:string?"/>
+        
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+            <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
+            
+            <xsl:text>    </xsl:text>
+            <xsl:text>
         </xsl:text>
-                                <xsl:if test="$position gt 1">
-                                    <link rel="first" href="{$filenames[1]}"/>
-                                <xsl:text>
-        </xsl:text>
-                                    <link rel="prev" href="{$filenames[$position - 1]}"/>
-                                    <xsl:text>
-        </xsl:text>
-                                </xsl:if>
-                                <xsl:if test="$position lt count($filenames)">
-                                    <link rel="next" href="{$filenames[$position + 1]}"/>
-                                <xsl:text>
-        </xsl:text>
-                                    <link rel="last" href="{$filenames[last()]}"/>
-                                <xsl:text>
-        </xsl:text>
-                                </xsl:if>-->
-                            </xsl:copy>
-                        </xsl:for-each>
-                        <xsl:copy-of select="head/following-sibling::node() intersect body/preceding-sibling::node()" exclude-result-prefixes="#all"/>
-                        <xsl:for-each select="body">
-                            <xsl:copy exclude-result-prefixes="#all">
-                                <xsl:copy-of select="@* except @id"/>
-                                <xsl:copy-of select="$content" exclude-result-prefixes="#all"/>
-                            </xsl:copy>
-                        </xsl:for-each>
-                        <xsl:copy-of select="body/following-sibling::node()" exclude-result-prefixes="#all"/>
-                    </xsl:copy>
-                </xsl:for-each>
-                
-                <!-- newline after html closing tag -->
+            
+            <!--<xsl:if test="$start">
+                <link rel="start" href="{$start}"/>
                 <xsl:text>
-</xsl:text>
-            </_>
-        </xsl:for-each-group>
+        </xsl:text>
+            </xsl:if>-->
+            
+            <!--<xsl:if test="$first">
+                <link rel="first" href="{$first}"/>
+                <xsl:text>
+        </xsl:text>
+            </xsl:if>-->
+            
+            <xsl:if test="$prev">
+                <link rel="prev" href="{$prev}"/>
+                <xsl:text>
+        </xsl:text>
+            </xsl:if>
+            
+            <xsl:if test="$next">
+                <link rel="next" href="{$next}"/>
+                <xsl:text>
+        </xsl:text>
+            </xsl:if>
+            
+            <!--<xsl:if test="$last">
+                <link rel="last" href="{$last}"/>
+                <xsl:text>
+        </xsl:text>
+            </xsl:if>-->
+        </xsl:copy>
     </xsl:template>
     
     <xsl:function name="f:classes" as="xs:string*">
