@@ -50,6 +50,19 @@
     </xsl:template>
     
     <xsl:template name="split">
+        <xsl:variable name="original-href" select="replace(base-uri(), '^.*/', '')" as="xs:string"/>
+        
+        <xsl:variable name="after-split" as="node()*">
+            <xsl:call-template name="perform-split"/>
+        </xsl:variable>
+        
+        <xsl:apply-templates mode="post-process" select="$after-split">
+            <xsl:with-param name="after-split" select="$after-split" as="node()*" tunnel="yes"/>
+            <xsl:with-param name="original-href" select="$original-href" as="xs:string" tunnel="yes"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
+    <xsl:template name="perform-split">
         <xsl:variable name="source-document" select="/*" as="element()"/>
         <xsl:variable name="filename" select="replace(replace(base-uri(), '^.*/', ''), '\.[^.]*$', '')" as="xs:string"/>
         <xsl:variable name="zero-padding" select="string-length(string(count(body/*[f:classes(.) = 'html-break-point']) + 1))"/>
@@ -80,11 +93,61 @@
                         
                         <!-- copy the head element and its metadata -->
                         <xsl:copy-of select="head/preceding-sibling::node()" exclude-result-prefixes="#all"/>
-                        <xsl:for-each select="head">
+                        <xsl:copy-of select="head" exclude-result-prefixes="#all"/>
+                        <xsl:copy-of select="head/following-sibling::node() intersect body/preceding-sibling::node()" exclude-result-prefixes="#all"/>
+                        <xsl:for-each select="body">
                             <xsl:copy exclude-result-prefixes="#all">
-                                <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
-                                <xsl:copy-of select="node()" exclude-result-prefixes="#all"/>
-                                
+                                <xsl:copy-of select="@* except @id"/>
+                                <xsl:copy-of select="$content" exclude-result-prefixes="#all"/>
+                            </xsl:copy>
+                        </xsl:for-each>
+                        <xsl:copy-of select="body/following-sibling::node()" exclude-result-prefixes="#all"/>
+                    </xsl:copy>
+                </xsl:for-each>
+                
+                <!-- newline after html closing tag -->
+                <xsl:text>
+</xsl:text>
+            </_>
+        </xsl:for-each-group>
+    </xsl:template>
+    
+    <xsl:template match="@src | @href | @data[parent::object] | @altimg | @longdesc" mode="post-process">
+        <xsl:param name="after-split" as="node()*" tunnel="yes"/>
+        <xsl:param name="original-href" as="xs:string" tunnel="yes"/>
+        
+        <xsl:choose>
+            <xsl:when test="not(contains(., '#'))">
+                <!-- does not contain a id reference -->
+                <xsl:next-match/>
+                
+            </xsl:when>
+            <xsl:when test="starts-with(., '#') or starts-with(., concat($original-href, '#'))">
+                <!-- this is an internal link, we need to update it with the new filename -->
+                
+                <xsl:variable name="id" select="tokenize(., '#')[2]" as="xs:string"/>
+                <xsl:variable name="target-element" select="($after-split//*[@id = $id])[1]" as="element()?"/>
+                
+                <xsl:variable name="target-href" select="($target-element/ancestor::*[local-name() = '_' and @href])[1]/@href" as="xs:string"/>
+                <xsl:variable name="current-href" select="(ancestor::*[local-name() = '_' and @href])[1]/@href" as="xs:string"/>
+                
+                <xsl:choose>
+                    <xsl:when test="$target-href = $current-href">
+                        <xsl:attribute name="{name()}" select="concat('#', $id)" exclude-result-prefixes="#all"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="{name()}" select="concat($target-href, '#', $id)" exclude-result-prefixes="#all"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- not an internal link -->
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
                                 <!--<xsl:text>
         </xsl:text>
                                 <xsl:if test="$position gt 1">
