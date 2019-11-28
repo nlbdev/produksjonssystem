@@ -123,6 +123,11 @@
         <xsl:sequence select="$context/tokenize(@epub:type, '\s+')"/>
     </xsl:function>
     
+    <xsl:function name="f:classes" as="xs:string*">
+        <xsl:param name="context" as="element()"/>
+        <xsl:sequence select="$context/tokenize(@class, '\s+')"/>
+    </xsl:function>
+    
     <xsl:function name="f:chapter-first-text">
         <xsl:param name="section" as="element()"/>
         
@@ -191,6 +196,26 @@
         </xsl:variable>
         
         <xsl:variable name="document-sections" as="element()*">
+            <class name="frontcover">
+                <en>Front cover</en>
+                <nb>Forside</nb>
+                <nn>Framside</nn>
+            </class>
+            <class name="rearcover">
+                <en>Back cover</en>
+                <nb>Bakside</nb>
+                <nn>Bakside</nn>
+            </class>
+            <class name="leftflap">
+                <en>Left flap</en>
+                <nb>Venstre innbrett</nb>
+                <nn>Venstre innbrett</nn>
+            </class>
+            <class name="rightflap">
+                <en>Right flap</en>
+                <nb>Høyre innbrett</nb>
+                <nn>Høgre innbrett</nn>
+            </class>
             <type name="volume">
                 <en>Volume</en>
                 <nb>Bind</nb>
@@ -528,7 +553,8 @@
             </type>
         </xsl:variable>
         
-        <xsl:variable name="section-title" select="$document-sections[@name=f:types($section)][1]/*[local-name() = $language]/text()" as="xs:string?"/>
+        <xsl:variable name="section-title" select="$document-sections[local-name() = 'type' and @name = f:types($section)][1]/*[local-name() = $language]/text()" as="xs:string?"/>
+        <xsl:variable name="section-title" select="if ($section-title) then $section-title else $document-sections[local-name() = 'class' and @name = f:classes($section)][1]/*[local-name() = $language]/text()" as="xs:string?"/>
         
         <xsl:variable name="division-title" select="(
             $document-divisions[@name = $matter]/*[local-name() = $language]/text(),

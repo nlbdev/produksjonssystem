@@ -10,6 +10,18 @@
                 <body>
                     <section epub:type="cover">
                         <p>Cover</p>
+                        <section class="frontcover">
+                            <p>Frontcover</p>
+                        </section>
+                        <section class="rearcover">
+                            <p>Rearcover</p>
+                        </section>
+                        <section class="leftflap">
+                            <p>Leftflap</p>
+                        </section>
+                        <section class="rightflap">
+                            <p>Rightflap</p>
+                        </section>
                     </section>
                     <section epub:type="frontmatter titlepage">
                         <p>Titlepage</p>
@@ -145,6 +157,22 @@
                     <section epub:type="cover">
                         <h1 id="..." class="generated-headline hidden-headline">Cover</h1>
                         <p>Cover</p>
+                        <section class="frontcover">
+                            <h2 id="..." class="generated-headline hidden-headline">Front cover</h2>
+                            <p>Frontcover</p>
+                        </section>
+                        <section class="rearcover">
+                            <h2 id="..." class="generated-headline hidden-headline">Back cover</h2>
+                            <p>Rearcover</p>
+                        </section>
+                        <section class="leftflap">
+                            <h2 id="..." class="generated-headline hidden-headline">Left flap</h2>
+                            <p>Leftflap</p>
+                        </section>
+                        <section class="rightflap">
+                            <h2 id="..." class="generated-headline hidden-headline">Right flap</h2>
+                            <p>Rightflap</p>
+                        </section>
                     </section>
                     <section epub:type="frontmatter titlepage">
                         <h1 id="..." class="generated-headline hidden-headline">Title page</h1>
