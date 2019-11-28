@@ -25,20 +25,10 @@
     </xsl:template>
     
     <xsl:template name="bygg-opp-cover">
+        <xsl:param name="matter" as="xs:string"/>
         <xsl:message>* Bygger opp cover</xsl:message>
-        <section epub:type="frontmatter" id="level1_nlb_cover">
-            <h1>
-                <xsl:choose>
-                    <xsl:when test="$SPRÅK.en">
-                        <xsl:text>Book jacket</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>Omslag</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </h1>
-            <xsl:apply-templates select="//*[fnk:epub-type(@epub:type, 'cover')]/*"
-                mode="bygg-opp-cover"/>
+        <section epub:type="{$matter}" id="level1_nlb_cover">
+            <xsl:apply-templates select="//*[fnk:epub-type(@epub:type, 'cover')]/*" mode="bygg-opp-cover"/>
         </section>
     </xsl:template>
     

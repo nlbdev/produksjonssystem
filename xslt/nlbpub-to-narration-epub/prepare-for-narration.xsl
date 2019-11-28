@@ -108,13 +108,17 @@
                 <xsl:when test="upper-case($library) = 'STATPED'">
                     <xsl:apply-templates select="node()"/>
                     <xsl:if test="//element()[fnk:epub-type(@epub:type, 'cover')]">
-                        <xsl:call-template name="bygg-opp-cover"/>
+                        <xsl:call-template name="bygg-opp-cover">
+                            <xsl:with-param name="matter" select="'backmatter'"/>
+                        </xsl:call-template>
                     </xsl:if>
                 </xsl:when>
                 
                 <xsl:otherwise>
                     <xsl:if test="//element()[fnk:epub-type(@epub:type, 'cover')]">
-                        <xsl:call-template name="bygg-opp-cover"/>
+                        <xsl:call-template name="bygg-opp-cover">
+                            <xsl:with-param name="matter" select="'frontmatter'"/>
+                        </xsl:call-template>
                     </xsl:if>
                     <xsl:apply-templates select="node()"/>
                 </xsl:otherwise>
