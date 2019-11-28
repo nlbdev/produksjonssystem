@@ -15,7 +15,7 @@
         Per Sennels, 14.02.2018
     -->
 
-    <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
+    <xsl:output method="xhtml" indent="no" include-content-type="no"/>
 
     <!-- 
         Her kan vi bestemme maks antall p-elementer som kan inngå i ét div.synch-point-wrapper element. 

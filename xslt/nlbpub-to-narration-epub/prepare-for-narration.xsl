@@ -36,7 +36,7 @@
     <xsl:include href="ekstra-informasjon.xsl"/>
     <xsl:include href="innleste-noter.xsl"/>
 
-    <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
+    <xsl:output method="xhtml" indent="no" include-content-type="no"/>
 
     <!-- Brukes bare for kjøring på lokal PC -->
     <!--<xsl:variable name="ID" as="xs:string"

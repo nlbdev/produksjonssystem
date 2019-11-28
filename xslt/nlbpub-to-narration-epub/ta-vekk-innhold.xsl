@@ -21,7 +21,7 @@
         Per Sennels, 29.05.2018
     -->
 
-    <xsl:output method="xhtml" indent="yes" include-content-type="no"/>
+    <xsl:output method="xhtml" indent="no" include-content-type="no"/>
 
     <xsl:function name="fnk:epub-type" as="xs:boolean">
         <xsl:param name="attributtverdi" as="xs:string?"/>
