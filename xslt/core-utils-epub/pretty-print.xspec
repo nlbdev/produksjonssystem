@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="pretty-print.xsl">
+    
+    <x:scenario label="Basic test">
+        <x:context xml:space="preserve">
+<html>
+    <head>
+        <title>Test</title>
+        <meta name="dc:identifier" content="123456"/> <!-- this is a comment -->
+    </head>
+    <body><h1>Headline</h1>
+       <p>Paragraph 1</p>
+        <p>Paragraph 2</p><p>Paragraph 3</p><p>Paragraph 4</p>
+        <section>
+             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Paragraph 6</p><p>Paragraph 7</p><p>Paragraph 8</p></section>
+<section>
+    <p>please indent section open/close tags</p>
+</section>
+    </body>
+</html>
+</x:context>
+
+        <x:expect label="The result should be as expected" xml:space="preserve">
+<html>
+    <head>
+        <title>Test</title>
+        <meta name="dc:identifier" content="123456"/> <!-- this is a comment -->
+    </head>
+    <body>
+        <h1>Headline</h1>
+       <p>Paragraph 1</p>
+        <p>Paragraph 2</p>
+        <p>Paragraph 3</p>
+        <p>Paragraph 4</p>
+        <section>
+             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore 
+                et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
+                ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit 
+                esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Paragraph 6</p>
+            <p>Paragraph 7</p>
+            <p>Paragraph 8</p>
+        </section>
+        <section>
+            <p>please indent section open/close tags</p>
+        </section>
+    </body>
+</html>
+</x:expect>
+    </x:scenario>
+    
+</x:description>
