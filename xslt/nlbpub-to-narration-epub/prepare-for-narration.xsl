@@ -97,21 +97,6 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="meta">
-        <!-- Rydder opp litt i metadata, blant annet fjerner en del som ikke lenger er nødvendige -->
-        <xsl:choose>
-            <xsl:when test="@name eq 'nlbprod:identifier.epub'">
-                <xsl:copy-of select="."/>
-            </xsl:when>
-            <xsl:when test="starts-with(@name, 'nlbprod:')">
-                <!-- Tar bort all annen metadata som begynner med 'nlbprod:' -->
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:copy-of select="."/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
     <xsl:template match="body">
         <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
         
