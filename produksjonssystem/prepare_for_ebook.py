@@ -91,14 +91,14 @@ class PrepareForEbook(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
 
-        temp_html_obj = tempfile.NamedTemporaryFile()
-        temp_html = temp_html_obj.name
+        temp_xml_obj = tempfile.NamedTemporaryFile()
+        temp_xml = temp_xml_obj.name
 
         self.utils.report.info("Generating hidden headlines where necessary")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "create-hidden-headlines.xsl"),
                     source=html_file,
-                    target=temp_html,
+                    target=temp_xml,
                     parameters={
                         "cover-headlines": "from-type",
                         "frontmatter-headlines": "from-type",
@@ -108,17 +108,17 @@ class PrepareForEbook(Pipeline):
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
-        shutil.copy(temp_html, html_file)
+        shutil.copy(temp_xml, html_file)
 
         self.utils.report.info("Tilpasser innhold for e-tekst...")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "prepare-for-ebook.xsl"),
                     source=html_file,
-                    target=temp_html)
+                    target=temp_xml)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
-        shutil.copy(temp_html, html_file)
+        shutil.copy(temp_xml, html_file)
 
         # Use library-specific logo and stylesheet if available
 
@@ -136,11 +136,25 @@ class PrepareForEbook(Pipeline):
             stylesheet = PrepareForEbook.css_tempfile_obj.name
         shutil.copy(stylesheet, os.path.join(html_dir, "ebok.css"))
 
+        self.utils.report.info("Adding logo item to OPF manifest")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),
+                    source=opf_path,
+                    target=temp_xml,
+                    parameters={
+                        "href": os.path.basename(logo),
+                        "media-type": "image/png"
+                    })
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_xml, opf_path)
+
         self.utils.report.info("Adding CSS item to OPF manifest")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),
-                    source=html_file,
-                    target=temp_html,
+                    source=opf_path,
+                    target=temp_xml,
                     parameters={
                         "href": "ebok.css",
                         "media-type": "text/css"
@@ -148,7 +162,7 @@ class PrepareForEbook(Pipeline):
         if not xslt.success:
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
-        shutil.copy(temp_html, html_file)
+        shutil.copy(temp_xml, opf_path)
 
         # ---------- lagre filsett ----------
 
