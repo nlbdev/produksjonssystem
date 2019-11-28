@@ -63,16 +63,19 @@
     </xsl:template>
     
     <xsl:template name="page-list">
-        <nav epub:type="page-list" hidden="">
-            <h1>Liste over sider</h1>
-            <ol>
-                <xsl:for-each select=".//*[tokenize(@epub:type,'\s+') = 'pagebreak']">
-                    <li>
-                        <xsl:call-template name="pagebreak"/>
-                    </li>
-                </xsl:for-each>
-            </ol>
-        </nav>
+        <xsl:variable name="pagebreaks" select=".//*[tokenize(@epub:type,'\s+') = 'pagebreak']"/>
+        <xsl:if test="count($pagebreaks) gt 0">
+            <nav epub:type="page-list" hidden="">
+                <h1>Liste over sider</h1>
+                <ol>
+                    <xsl:for-each select="$pagebreaks">
+                        <li>
+                            <xsl:call-template name="pagebreak"/>
+                        </li>
+                    </xsl:for-each>
+                </ol>
+            </nav>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template name="headline">
