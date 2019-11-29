@@ -12,6 +12,7 @@ from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
+from core.utils.epubcheck import Epubcheck
 from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -163,6 +164,14 @@ class PrepareForEbook(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_xml, opf_path)
+
+        if Epubcheck.isavailable():
+            epubcheck = Epubcheck(self, opf_path)
+            if not epubcheck.success:
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return
+        else:
+            self.utils.report.warn("Epubcheck not available, EPUB will not be validated!")
 
         # ---------- lagre filsett ----------
 
