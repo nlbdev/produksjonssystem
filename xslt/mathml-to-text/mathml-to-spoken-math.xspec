@@ -5,7 +5,97 @@
     xmlns:x="http://www.jenitennison.com/xslt/xspec" 
     stylesheet="mathml-to-spoken-math.xsl"> 
     
-    <x:scenario label="Generelle funksjoner og uttrykk">
+    <x:scenario label="Playground">
+        <x:context>
+            <m:math
+                xml:lang="en"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                alttext="6 CO_2 + 6 H_2O + light rarr C_6H_12O_6 + 6 O_2"
+                display="block"
+                class="chemistry">
+                <m:mn>6</m:mn>
+                <m:mtext class="asciimath">C O_2</m:mtext>
+                <m:mo>+</m:mo>
+                <m:mn>6</m:mn>
+                <m:mtext class="asciimath">H_2 O</m:mtext>
+                <m:mo>+</m:mo>
+                <m:mtext>light</m:mtext>
+                <m:mo>&#8594;</m:mo>
+                <m:mtext class="asciimath">C_6 H_12 O_6</m:mtext>
+                <m:mo>+</m:mo>
+                <m:mn>6</m:mn>
+                <m:mtext class="asciimath">O_2</m:mtext>
+            </m:math>
+            <p>
+                <m:math 
+                    xml:lang="en"
+                    display="inline" 
+                    xmlns:m="http://www.w3.org/1998/Math/MathML" 
+                    altimg="images/565535-215.jpg" 
+                    alttext="W_(ia) = W_d + W_f + W_a - W_e - W_s">
+                   <m:msub>
+                       <m:mrow>
+                           <m:mtext>W</m:mtext>
+                       </m:mrow>
+                       <m:mtext>ia</m:mtext>
+                   </m:msub>
+                   <m:mo>=</m:mo>
+                   <m:msub>
+                       <m:mrow>
+                           <m:mtext>W</m:mtext>
+                       </m:mrow>
+                       <m:mtext>d</m:mtext>
+                   </m:msub>
+                   <m:mo>+</m:mo>
+                   <m:msub>
+                       <m:mrow>
+                           <m:mtext>W</m:mtext>
+                       </m:mrow>
+                       <m:mtext>f</m:mtext>
+                   </m:msub>
+                   <m:mo>+</m:mo>
+                   <m:msub>
+                       <m:mrow>
+                           <m:mtext>W</m:mtext>
+                       </m:mrow>
+                       <m:mtext>a</m:mtext>
+                   </m:msub>
+                   <m:mo>-</m:mo>
+                   <m:msub>
+                       <m:mrow>
+                           <m:mtext>W</m:mtext>
+                       </m:mrow>
+                       <m:mtext>e</m:mtext>
+                   </m:msub>
+                   <m:mo>-</m:mo>
+                   <m:msub>
+                       <m:mrow>
+                           <m:mtext>W</m:mtext>
+                       </m:mrow>
+                       <m:mtext>s</m:mtext>
+                   </m:msub>
+                </m:math>
+            </p>
+        </x:context>
+        <x:expect label="Expected">
+            <p xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:m="http://www.w3.org/1998/Math/MathML"
+            class="spoken-math sr-only"
+            xml:lang="en">formula 6 C O_2 plus 6 H_2 O plus light goes against C_6 H_12 O_6 plus 6 O_2 formula end</p><p xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML">
+                <span class="image"
+                    xml:lang="en">
+                    <img class="visual-math"
+                        aria-hidden="true"
+                        src="images/565535-215.jpg"
+                        alt="W_(ia) = W_d + W_f + W_a - W_e - W_s" />
+                    <span class="spoken-math sr-only">formula W ia equals W d plus W f plus W a minus W e minus W s formula end</span>
+                </span>
+            </p>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="01. Generelle funksjoner og uttrykk">
         <x:context>
             <body xml:lang="nb">
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
@@ -32,12 +122,12 @@
             <body xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
-                <p class="spoken-math">formel venstre hakeparentes x pluss y høyre hakeparentes ganger venstre parentes x minus y høyre parentes formel slutt</p>
+                <p class="spoken-math sr-only">formel venstre hakeparentes x pluss y høyre hakeparentes ganger venstre parentes x minus y høyre parentes formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
-    
-    <x:scenario label="Aritmetikk">
+        
+    <x:scenario label="02. Aritmetikk">
         <x:context>
             <body xml:lang="nb">
                 <h2>Addisjon</h2>
@@ -243,33 +333,33 @@
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
                 <h2>Addisjon</h2>
-                <p class="spoken-math">formel 2 pluss 3 er lik 5 formel slutt</p>
-                <p class="spoken-math">formel 2 x pluss x pluss a er lik 3 x pluss a formel slutt</p>
+                <p class="spoken-math sr-only">formel 2 pluss 3 er lik 5 formel slutt</p>
+                <p class="spoken-math sr-only">formel 2 x pluss x pluss a er lik 3 x pluss a formel slutt</p>
                 <h2>Subtraksjon</h2>
-                <p class="spoken-math">formel 2 minus 3 er lik minus 5 formel slutt</p>
-                <p class="spoken-math">formel minus 2 x pluss x minus a er lik minus x minus a formel slutt</p>
+                <p class="spoken-math sr-only">formel 2 minus 3 er lik minus 5 formel slutt</p>
+                <p class="spoken-math sr-only">formel minus 2 x pluss x minus a er lik minus x minus a formel slutt</p>
                 <h3>Multiplikasjon</h3>
-                <p class="spoken-math">formel 2 ganger 3 er lik 6 formel slutt</p>
-                <p class="spoken-math">formel minus 2 ganger 3 er lik minus 6 formel slutt</p>
-                <p class="spoken-math">formel 2 ganger x pluss 5 ganger x minus 4 ganger a formel slutt</p>
-                <p class="spoken-math">formel x ganger venstre parentes y pluss 4 høyre parentes er lik x ganger y pluss 4 x formel slutt</p>
+                <p class="spoken-math sr-only">formel 2 ganger 3 er lik 6 formel slutt</p>
+                <p class="spoken-math sr-only">formel minus 2 ganger 3 er lik minus 6 formel slutt</p>
+                <p class="spoken-math sr-only">formel 2 ganger x pluss 5 ganger x minus 4 ganger a formel slutt</p>
+                <p class="spoken-math sr-only">formel x ganger venstre parentes y pluss 4 høyre parentes er lik x ganger y pluss 4 x formel slutt</p>
                 <h2>Divisjon</h2>
-                <p class="spoken-math">formel 8 delt på 2 er lik 4 formel slutt</p>
-                <p class="spoken-math">formel 4 y delt på y er lik 4 formel slutt</p>
+                <p class="spoken-math sr-only">formel 8 delt på 2 er lik 4 formel slutt</p>
+                <p class="spoken-math sr-only">formel 4 y delt på y er lik 4 formel slutt</p>
                 <h2>Likhet og ulikhet</h2>
-                <p class="spoken-math">formel 10 er lik 10 formel slutt</p>
-                <p class="spoken-math">formel 9 er ikke lik 10 formel slutt</p>
-                <p class="spoken-math">formel 11 er større enn 10 formel slutt</p>
-                <p class="spoken-math">formel 1000 er mye større enn 0 formel slutt</p>
-                <p class="spoken-math">formel y er større eller lik a pluss 5 formel slutt</p>
-                <p class="spoken-math">formel 9 er mindre enn 10 formel slutt</p>
-                <p class="spoken-math">formel minus 1000 er mye mindre enn 0 formel slutt</p>
-                <p class="spoken-math">formel x er mindre eller lik 2 a formel slutt</p>
+                <p class="spoken-math sr-only">formel 10 er lik 10 formel slutt</p>
+                <p class="spoken-math sr-only">formel 9 er ikke lik 10 formel slutt</p>
+                <p class="spoken-math sr-only">formel 11 er større enn 10 formel slutt</p>
+                <p class="spoken-math sr-only">formel 1000 er mye større enn 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel y er større eller lik a pluss 5 formel slutt</p>
+                <p class="spoken-math sr-only">formel 9 er mindre enn 10 formel slutt</p>
+                <p class="spoken-math sr-only">formel minus 1000 er mye mindre enn 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel x er mindre eller lik 2 a formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Kvadratrot og potens">
+    <x:scenario label="03. Kvadratrot og potens">
         <x:context>
             <body xml:lang="nb">
                 <h2>Kvadratrot</h2>
@@ -425,25 +515,25 @@
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
                 <h2>Kvadratrot</h2>
-                <p class="spoken-math">formel x er lik kvadratroten av 2 formel slutt</p>
-                <p class="spoken-math">formel kvadratroten av 2 formel slutt</p>
-                <p class="spoken-math">formel kvadratroten av 2 a pluss b kvadratrot slutt formel slutt</p>
-                <p class="spoken-math">formel kvadratroten av 2 pluss b formel slutt</p>
-                <p class="spoken-math">formel kvadratroten av a pluss b er ikke lik kvadratroten av a pluss b kvadratrot slutt formel slutt</p>
-                <p class="spoken-math">formel kvadratroten av a ganger b kvadratrot slutt er lik kvadratroten av a ganger kvadratroten av b formel slutt</p>
-                <p class="spoken-math">formel kvadratroten av a pluss b kvadratrot slutt er ikke lik kvadratroten av a pluss kvadratroten av b formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik kvadratroten av 2 formel slutt</p>
+                <p class="spoken-math sr-only">formel kvadratroten av 2 formel slutt</p>
+                <p class="spoken-math sr-only">formel kvadratroten av 2 a pluss b kvadratrot slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel kvadratroten av 2 pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel kvadratroten av a pluss b er ikke lik kvadratroten av a pluss b kvadratrot slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel kvadratroten av a ganger b kvadratrot slutt er lik kvadratroten av a ganger kvadratroten av b formel slutt</p>
+                <p class="spoken-math sr-only">formel kvadratroten av a pluss b kvadratrot slutt er ikke lik kvadratroten av a pluss kvadratroten av b formel slutt</p>
                 <h2>Potensregning</h2>
-                <p class="spoken-math">formel x i annen formel slutt</p>
-                <p class="spoken-math">formel x opphøyd i y formel slutt</p>
-                <p class="spoken-math">formel x opphøyd i n pluss 1 eksponent slutt formel slutt</p>
-                <p class="spoken-math">formel x opphøyd i 2 n eksponent slutt formel slutt</p>
-                <p class="spoken-math">formel x opphøyd i a opphøyd i b eksponent slutt formel slutt</p>
-                <p class="spoken-math">formel x opphøyd i a opphøyd i b eksponent slutt pluss 2 er ikke lik x opphøyd i a opphøyd i b pluss 2 eksponent slutt eksponent slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x i annen formel slutt</p>
+                <p class="spoken-math sr-only">formel x opphøyd i y formel slutt</p>
+                <p class="spoken-math sr-only">formel x opphøyd i n pluss 1 eksponent slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x opphøyd i 2 n eksponent slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x opphøyd i a opphøyd i b eksponent slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x opphøyd i a opphøyd i b eksponent slutt pluss 2 er ikke lik x opphøyd i a opphøyd i b pluss 2 eksponent slutt eksponent slutt formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Brøk">
+    <x:scenario label="04. Brøk">
         <x:context>
             <body xml:lang="nb">
                 <m:math display="block">
@@ -576,20 +666,20 @@
             <body xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
-                <p class="spoken-math">formel x er lik a delt på b formel slutt</p>
-                <p class="spoken-math">formel x er lik brøken a delt på b formel slutt</p>
-                <p class="spoken-math">formel x er lik brøken 123 delt på y formel slutt</p>
-                <p class="spoken-math">formel brøk med teller 1 og med nevner x pluss 1 brøk slutt formel slutt</p>
-                <p class="spoken-math">formel x er lik brøk med teller a pluss b og med nevner c brøk slutt formel slutt</p>
-                <p class="spoken-math">formel brøk med teller venstre parentes a pluss b høyre parentes ganger venstre parentes a minus b høyre parentes og med nevner c brøk slutt formel slutt</p>
-                <p class="spoken-math">formel x er lik brøk med teller minus b pluss minus kvadratroten av b i annen minus 4 a ganger c kvadratrot slutt og med nevner 2 a brøk slutt formel slutt</p>
-                <p class="spoken-math">formel x er lik a pluss b delt på c pluss d formel slutt</p>
-                <p class="spoken-math">formel x er lik venstre parentes a pluss b høyre parentes delt på venstre parentes c pluss d høyre parentes formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik a delt på b formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik brøken a delt på b formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik brøken 123 delt på y formel slutt</p>
+                <p class="spoken-math sr-only">formel brøk med teller 1 og med nevner x pluss 1 brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik brøk med teller a pluss b og med nevner c brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel brøk med teller venstre parentes a pluss b høyre parentes ganger venstre parentes a minus b høyre parentes og med nevner c brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik brøk med teller minus b pluss minus kvadratroten av b i annen minus 4 a ganger c kvadratrot slutt og med nevner 2 a brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik a pluss b delt på c pluss d formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik venstre parentes a pluss b høyre parentes delt på venstre parentes c pluss d høyre parentes formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Trigonometri">
+    <x:scenario label="05. Trigonometri">
         <x:context>
             <body xml:lang="nb">
                 <h2>Sinus</h2>
@@ -841,31 +931,31 @@
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
                 <h2>Sinus</h2>
-                <p class="spoken-math">formel sinus til alfa formel slutt</p>
-                <p class="spoken-math">formel sinus til alfa er lik brøken y delt på r formel slutt</p>
-                <p class="spoken-math">formel sinus til alfa er lik y delt på r formel slutt</p>
-                <p class="spoken-math">formel x er lik sinus til a pluss b formel slutt</p>
-                <p class="spoken-math">formel x er lik sinus til venstre parentes a pluss b høyre parentes formel slutt</p>
-                <p class="spoken-math">formel x er lik sinus til uttrykket 2 ganger pi ganger f ganger t uttrykk slutt pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel sinus til alfa formel slutt</p>
+                <p class="spoken-math sr-only">formel sinus til alfa er lik brøken y delt på r formel slutt</p>
+                <p class="spoken-math sr-only">formel sinus til alfa er lik y delt på r formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik sinus til a pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik sinus til venstre parentes a pluss b høyre parentes formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik sinus til uttrykket 2 ganger pi ganger f ganger t uttrykk slutt pluss b formel slutt</p>
                 <h2>Cosinus</h2>
-                <p class="spoken-math">formel cosinus til alfa formel slutt</p>
-                <p class="spoken-math">formel cosinus til alfa er lik brøken x delt på r formel slutt</p>
-                <p class="spoken-math">formel cosinus til alfa er lik y delt på r formel slutt</p>
-                <p class="spoken-math">formel x er lik cosinus til a pluss b formel slutt</p>
-                <p class="spoken-math">formel x er lik cosinus til venstre parentes a pluss b høyre parentes formel slutt</p>
-                <p class="spoken-math">formel x er lik sinus til uttrykket 2 ganger pi ganger f ganger t uttrykk slutt pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel cosinus til alfa formel slutt</p>
+                <p class="spoken-math sr-only">formel cosinus til alfa er lik brøken x delt på r formel slutt</p>
+                <p class="spoken-math sr-only">formel cosinus til alfa er lik y delt på r formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik cosinus til a pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik cosinus til venstre parentes a pluss b høyre parentes formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik sinus til uttrykket 2 ganger pi ganger f ganger t uttrykk slutt pluss b formel slutt</p>
                 <h2>Tangens</h2>
-                <p class="spoken-math">formel tangens til alfa formel slutt</p>
-                <p class="spoken-math">formel tangens til alfa er lik brøk med teller sinus til alfa og med nevner cosinus til alfa brøk slutt formel slutt</p>
-                <p class="spoken-math">formel tangens til alfa er lik y delt på r formel slutt</p>
-                <p class="spoken-math">formel x er lik tangens til a pluss b formel slutt</p>
-                <p class="spoken-math">formel x er lik tangens til venstre parentes a pluss b høyre parentes formel slutt</p>
-                <p class="spoken-math">formel x er lik tangens til uttrykket 2 ganger pi ganger f ganger t uttrykk slutt pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel tangens til alfa formel slutt</p>
+                <p class="spoken-math sr-only">formel tangens til alfa er lik brøk med teller sinus til alfa og med nevner cosinus til alfa brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel tangens til alfa er lik y delt på r formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik tangens til a pluss b formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik tangens til venstre parentes a pluss b høyre parentes formel slutt</p>
+                <p class="spoken-math sr-only">formel x er lik tangens til uttrykket 2 ganger pi ganger f ganger t uttrykk slutt pluss b formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Matematisk analyse">
+    <x:scenario label="06. Matematisk analyse">
         <x:context>
             <body xml:lang="nb">
                 <h2>Funksjoner</h2>
@@ -1100,62 +1190,53 @@
                 </m:math>
                 <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
                     <mrow>
-                        <msup>
-                            <mfenced>
-                                <mrow>
-                                    <mn>4</mn>
-                                    <mo>&#8290;</mo>
-                                    <msup>
-                                        <mi>x</mi>
-                                        <mn>3</mn>
-                                    </msup>
-                                    <mo>&#8290;</mo>
-                                    <mrow>
-                                        <mi>cos</mi>
-                                        <mo>&#8289;</mo>
-                                        <mi>x</mi>
-                                        <!--<mfenced>
-                                            <mi>x</mi>
-                                        </mfenced>-->
-                                    </mrow>
-                                </mrow>
-                            </mfenced>
-                            <mo>&#8242;</mo>
-                        </msup>
-                    </mrow>
-                </m:math>
-                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
-                    <msup>
                         <mfenced>
                             <mrow>
-                                <mn>3</mn>
-                                <mo>&#8290;</mo>
-                                <mi>a</mi>
+                                <mn>4</mn>
                                 <mo>&#8290;</mo>
                                 <msup>
                                     <mi>x</mi>
                                     <mn>3</mn>
                                 </msup>
-                            </mrow>
-                        </mfenced>
-                        <mo>&#8242;</mo>
-                    </msup>
-                    <mo>=</mo>
-                    <msup>
-                        <mfenced>
-                            <mrow>
-                                <mn>9</mn>
                                 <mo>&#8290;</mo>
-                                <mi>a</mi>
-                                <mo>&#8290;</mo>
-                                <msup>
+                                <mrow>
+                                    <mi>cos</mi>
+                                    <mo>&#8289;</mo>
                                     <mi>x</mi>
-                                    <mn>2</mn>
-                                </msup>
+                                </mrow>
                             </mrow>
                         </mfenced>
-                        <mo>&#8242;</mo>
-                    </msup>
+                        <mo>&#8243;</mo>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mfenced>
+                        <mrow>
+                            <mn>3</mn>
+                            <mo>&#8290;</mo>
+                            <mi>a</mi>
+                            <mo>&#8290;</mo>
+                            <msup>
+                                <mi>x</mi>
+                                <mn>3</mn>
+                            </msup>
+                        </mrow>
+                    </mfenced>
+                    <mo>&#8243;</mo>
+                    <mo>=</mo>
+                    <mfenced>
+                        <mrow>
+                            <mn>9</mn>
+                            <mo>&#8290;</mo>
+                            <mi>a</mi>
+                            <mo>&#8290;</mo>
+                            <msup>
+                                <mi>x</mi>
+                                <mn>2</mn>
+                            </msup>
+                        </mrow>
+                    </mfenced>
+                    <mo>&#8242;</mo>
                     <mo>=</mo>
                     <mn>18</mn>
                     <mo>&#8290;</mo>
@@ -1177,9 +1258,7 @@
                     <mo>=</mo>
                     <mfrac>
                         <mrow>
-                            <msup>
-                                <mo>&#8517;</mo><mn>2</mn>
-                            </msup>
+                            <mo>&#8243;</mo>
                             <mrow>
                                 <mi>f</mi>
                                 <mo>&#8289;</mo>
@@ -1309,29 +1388,29 @@
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
                 <h2>Funksjoner</h2>
-                <p class="spoken-math">formel funksjonen f av x er lik 10 opphøyd i x formel slutt</p>
-                <p class="spoken-math">formel funksjonen f av uttrykket x pluss stor delta x uttrykk slutt formel slutt</p>
-                <p class="spoken-math">formel funksjonen h av x og y er lik funksjonen f av x ganger funksjonen g av x formel slutt</p>
-                <p class="spoken-math">formel funksjonen f av a b og c er lik a pluss b pluss c formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen f av x er lik 10 opphøyd i x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen f av uttrykket x pluss stor delta x uttrykk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen h av x og y er lik funksjonen f av x ganger funksjonen g av x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen f av a b og c er lik a pluss b pluss c formel slutt</p>
                 <h2>Derivasjon og grenseverdi</h2>
-                <p class="spoken-math">formel funksjonen g av x er lik grenseverdien av funksjonen f av x og t når t går mot 100 formel slutt</p>
-                <p class="spoken-math">formel grenseverdien av brøken 1 delt på x når x går mot 0 er lik uendelig formel slutt</p>
-                <p class="spoken-math">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller funksjonen f av uttrykket x pluss h uttrykk slutt minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
-                <p class="spoken-math">formel den annenderiverte av funksjonen f av x er lik den deriverte av funksjonen f av uttrykket den deriverte av funksjonen f av x uttrykk slutt formel slutt</p>
-                <p class="spoken-math">formel den deriverte av funksjonen f av x er lik den deriverte av funksjonen f av x med hensyn på x formel slutt</p>
-                <p class="spoken-math">formel venstre parentes 4 ganger x opphøyd i 3 ganger cosinus til x høyre parentes annenderivert formel slutt</p>
-                <p class="spoken-math">formel venstre parentes 3 a ganger x opphøyd i 3 høyre parentes annenderivert er lik venstre parentes 9 a ganger x i annen høyre parentes derivert er lik 18 a ganger x formel slutt</p>
-                <p class="spoken-math">formel den annenderiverte av funksjonen f av x er lik den annenderiverte av funksjonen f av x med hensyn på x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen g av x er lik grenseverdien av funksjonen f av x og t når t går mot 100 formel slutt</p>
+                <p class="spoken-math sr-only">formel grenseverdien av brøken 1 delt på x når x går mot 0 er lik uendelig formel slutt</p>
+                <p class="spoken-math sr-only">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller funksjonen f av uttrykket x pluss h uttrykk slutt minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel den annenderiverte av funksjonen f av x er lik den deriverte av funksjonen f av uttrykket den deriverte av funksjonen f av x uttrykk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel den deriverte av funksjonen f av x er lik brøk med teller den deriverte av funksjonen f av x og med nevner med hensyn på x brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel venstre parentes 4 ganger x opphøyd i 3 ganger cosinus til x høyre parentes annenderivert formel slutt</p>
+                <p class="spoken-math sr-only">formel venstre parentes 3 a ganger x opphøyd i 3 høyre parentes annenderivert er lik venstre parentes 9 a ganger x i annen høyre parentes derivert er lik 18 a ganger x formel slutt</p>
+                <p class="spoken-math sr-only">formel den annenderiverte av funksjonen f av x er lik brøk med teller annenderivert funksjonen f av x og med nevner med hensyn på x i annen brøk slutt formel slutt</p>
                 <h2>Integrasjon</h2>
-                <p class="spoken-math">formel integralet av f er lik g pluss stor c formel slutt</p>
-                <p class="spoken-math">formel funksjonen g av x er lik integralet fra a til x av funksjonen f av t med hensyn på t formel slutt</p>
-                <p class="spoken-math">formel integralet av cosinus til x med hensyn på x er lik sinus til x pluss stor c formel slutt</p>
-                <p class="spoken-math">formel integralet fra a til b av k ganger funksjonen f av x med hensyn på x er lik k ganger integralet fra a til b av funksjonen f av x med hensyn på x formel slutt</p>
+                <p class="spoken-math sr-only">formel integralet av f er lik g pluss stor c formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen g av x er lik integralet fra a til x av funksjonen f av t med hensyn på t formel slutt</p>
+                <p class="spoken-math sr-only">formel integralet av cosinus til x med hensyn på x er lik sinus til x pluss stor c formel slutt</p>
+                <p class="spoken-math sr-only">formel integralet fra a til b av k ganger funksjonen f av x med hensyn på x er lik k ganger integralet fra a til b av funksjonen f av x med hensyn på x formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Diverse matematikk">
+    <x:scenario label="07. Diverse matematikk">
         <x:context>
             <body xml:lang="nb">
                 <h1 class="title">Diverse matematiske uttrykk representert med MATHML</h1>
@@ -2112,69 +2191,69 @@
                 xml:lang="nb">
                 <h1 class="title">Diverse matematiske uttrykk representert med MATHML</h1>
                 <p>Testområde</p>
-                <p class="spoken-math">formel funksjonen y av x er lik sinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik cosinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik tangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus sinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus cosinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus tangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk sinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk cosinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk tangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik cotangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik secans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik cosecans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik cosecans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus cotangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus secans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus cosecans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik arkus cosecans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk cotangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk secans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk cosecans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk cosecans til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk arkus sinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk arkus cosinus til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk arkus tangens til x formel slutt</p>
-                <p class="spoken-math">formel funksjonen y av x er lik hyperbolsk arkus cotangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik sinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik cosinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik tangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus sinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus cosinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus tangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk sinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk cosinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk tangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik cotangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik secans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik cosecans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik cosecans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus cotangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus secans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus cosecans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik arkus cosecans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk cotangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk secans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk cosecans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk cosecans til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk arkus sinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk arkus cosinus til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk arkus tangens til x formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen y av x er lik hyperbolsk arkus cotangens til x formel slutt</p>
                 <h2>Hookes lov og harmonisk bevegelse</h2>
                 <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i en mekanisk fjær. Loven beskrives matematisk som</p>
-                <p class="spoken-math">formel funksjonen stor f av t er lik minus k ganger funksjonen x av t formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen stor f av t er lik minus k ganger funksjonen x av t formel slutt</p>
                 <p>Samtidig gir <em>Newtons 2. lov</em> at</p>
-                <p class="spoken-math">formel funksjonen stor f av t er lik m ganger funksjonen a av t er lik m ganger brøk med teller annenderivert funksjonen x av t og med nevner den partielle deriverte t i annen brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel funksjonen stor f av t er lik m ganger funksjonen a av t er lik m ganger brøk med teller annenderivert funksjonen x av t og med nevner partiell derivert t i annen brøk slutt formel slutt</p>
                 <p>og fra det følger at</p>
-                <p class="spoken-math">formel brøk med teller annenderivert funksjonen x av t og med nevner den partielle deriverte t i annen brøk slutt er lik minus brøken k delt på m ganger funksjonen x av t formel slutt</p>
+                <p class="spoken-math sr-only">formel brøk med teller annenderivert funksjonen x av t og med nevner partiell derivert t i annen brøk slutt er lik minus brøken k delt på m ganger funksjonen x av t formel slutt</p>
                 <p>som er en differensiallikning med løsning</p>
-                <p class="spoken-math">formel funksjonen x av t er lik stor a ganger cosinus til venstre parentes omega ⁢ t minus phi høyre parentes formel slutt</p>
-                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <span class="spoken-math">formel omega formel slutt</span> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <span class="spoken-math">formel omega er lik kvadratroten av k delt på m kvadratrot slutt formel slutt</span>. Svingningens <em>fase</em>, <span class="spoken-math">formel phi formel slutt</span>, er en konstant som er bestemt av startbetingelsene. </p>
+                <p class="spoken-math sr-only">formel funksjonen x av t er lik stor a ganger cosinus til venstre parentes omega ⁢ t minus phi høyre parentes formel slutt</p>
+                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <span class="spoken-math sr-only">formel omega formel slutt</span> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <span class="spoken-math sr-only">formel omega er lik kvadratroten av k delt på m kvadratrot slutt formel slutt</span>. Svingningens <em>fase</em>, <span class="spoken-math sr-only">formel phi formel slutt</span>, er en konstant som er bestemt av startbetingelsene. </p>
                 <h2>Eksempler hentet fra eksamen Matematikk 1T våren 2018</h2>
-                <p>Løs likningen <span class="spoken-math">formel 3 ganger 10 opphøyd i x er lik 3000 formel slutt</span>. </p>
+                <p>Løs likningen <span class="spoken-math sr-only">formel 3 ganger 10 opphøyd i x er lik 3000 formel slutt</span>. </p>
                 <hr />
                 <p>Regn ut følgende uttrykk:</p>
-                <p class="spoken-math">formel brøk med teller venstre parentes 3,5 ganger 10 opphøyd i 6 høyre parentes i annen og med nevner 0,2 ganger 10 opphøyd i minus 4 eksponent slutt pluss 3 ganger 10 opphøyd i minus 5 eksponent slutt brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel brøk med teller venstre parentes 3,5 ganger 10 opphøyd i 6 høyre parentes i annen og med nevner 0,2 ganger 10 opphøyd i minus 4 eksponent slutt pluss 3 ganger 10 opphøyd i minus 5 eksponent slutt brøk slutt formel slutt</p>
                 <p>og skriv svaret på standardform.</p>
                 <hr />
-                <p>Vis at <span class="spoken-math">formel kvadratroten av 15 ganger kvadratroten av 5 minus kvadratroten av 48 formel slutt</span> kan skrives som <span class="spoken-math">formel kvadratroten av 3 formel slutt</span>.</p>
+                <p>Vis at <span class="spoken-math sr-only">formel kvadratroten av 15 ganger kvadratroten av 5 minus kvadratroten av 48 formel slutt</span> kan skrives som <span class="spoken-math sr-only">formel kvadratroten av 3 formel slutt</span>.</p>
                 <hr />
                 <p>Løs ulikheten</p>
-                <p class="spoken-math">formel x i annen minus 2 x minus 8 er større eller lik 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel x i annen minus 2 x minus 8 er større eller lik 0 formel slutt</p>
                 <hr />
                 <p>Skriv så enkelt som mulig</p>
-                <p class="spoken-math">formel brøk med teller x pluss 2 pluss brøken 1 delt på x og med nevner brøken x delt på 3 minus brøk med teller 1 og med nevner 3 x brøk slutt brøk slutt formel slutt</p>
+                <p class="spoken-math sr-only">formel brøk med teller x pluss 2 pluss brøken 1 delt på x og med nevner brøken x delt på 3 minus brøk med teller 1 og med nevner 3 x brøk slutt brøk slutt formel slutt</p>
                 <hr />
                 <p>En funksjon <em>f</em> er gitt ved</p>
-                <p class="spoken-math">formel funksjonen f av x er lik x opphøyd i 3 pluss 2 ganger x i annen pluss 1 formel slutt</p>
-                <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <span class="spoken-math">formel venstre parentes 1 funksjonen f av 3 høyre parentes formel slutt</span>. </p>
+                <p class="spoken-math sr-only">formel funksjonen f av x er lik x opphøyd i 3 pluss 2 ganger x i annen pluss 1 formel slutt</p>
+                <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <span class="spoken-math sr-only">formel venstre parentes 1 funksjonen f av 3 høyre parentes formel slutt</span>. </p>
                 <hr />
                 <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan skrives som</p>
-                <p class="spoken-math">formel stor t er lik brøk med teller a ganger sinus til u ganger b ganger cosinus til v og med nevner 2 brøk slutt pluss brøk med teller b ganger sinus til v ganger a ganger cosinus til u og med nevner 2 brøk slutt formel slutt</p>
-                <p>Arealet til trekanten kan også skrives som <span class="spoken-math">formel stor t er lik brøken 1 delt på 2 ganger a ganger b ganger sinus til venstre parentes u pluss v høyre parentes formel slutt</span>. Bruk dette, sammen med uttrykket over, til å vise at</p>
-                <p class="spoken-math">formel sinus til venstre parentes u pluss v høyre parentes er lik sinus til u ganger cosinus til v pluss sinus til v ganger cosinus til u formel slutt</p>
+                <p class="spoken-math sr-only">formel stor t er lik brøk med teller a ganger sinus til u ganger b ganger cosinus til v og med nevner 2 brøk slutt pluss brøk med teller b ganger sinus til v ganger a ganger cosinus til u og med nevner 2 brøk slutt formel slutt</p>
+                <p>Arealet til trekanten kan også skrives som <span class="spoken-math sr-only">formel stor t er lik brøken 1 delt på 2 ganger a ganger b ganger sinus til venstre parentes u pluss v høyre parentes formel slutt</span>. Bruk dette, sammen med uttrykket over, til å vise at</p>
+                <p class="spoken-math sr-only">formel sinus til venstre parentes u pluss v høyre parentes er lik sinus til u ganger cosinus til v pluss sinus til v ganger cosinus til u formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Typiske feil">
+    <x:scenario label="08. Typiske feil">
         <x:context>
             <body xml:lang="nb">
                 <h1 class="title">Tre "like" uttrykk</h1>
@@ -2331,16 +2410,16 @@
                 xmlns:m="http://www.w3.org/1998/Math/MathML"
                 xml:lang="nb">
                 <h1 class="title">Tre "like" uttrykk</h1>
-                <p class="spoken-math">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller funksjonen f av uttrykket x pluss h uttrykk slutt minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller funksjonen f av uttrykket x pluss h uttrykk slutt minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
                 <p>og</p>
-                <p class="spoken-math">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller f ganger venstre parentes x pluss h høyre parentes minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller f ganger venstre parentes x pluss h høyre parentes minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
                 <p>og</p>
-                <p class="spoken-math">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller f venstre parentes x pluss h høyre parentes minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel den deriverte av funksjonen f av x er lik grenseverdien av brøk med teller f venstre parentes x pluss h høyre parentes minus funksjonen f av x og med nevner h brøk slutt når h går mot 0 formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Tvetydige uttrykk">
+    <x:scenario label="09. Tvetydige uttrykk">
         <x:context>
             <body xml:lang="nb">
                 
@@ -2393,14 +2472,2412 @@
                 xml:lang="nb">
                 <h1 class="title">i og j</h1>
                 <p>Matematikere og fysikere bruker  <em>i</em> som symbol for den imaginære enhet: 
-                    <span class="spoken-math">formel den imaginære enhet er lik kvadratroten av minus 1 kvadratrot slutt formel slutt</span>
+                    <span class="spoken-math sr-only">formel den imaginære enhet er lik kvadratroten av minus 1 kvadratrot slutt formel slutt</span>
                 </p>
-                <p class="spoken-math">formel e opphøyd i den imaginære enhet ganger pi eksponent slutt pluss 1 er lik 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel e opphøyd i den imaginære enhet ganger pi eksponent slutt pluss 1 er lik 0 formel slutt</p>
                 <p>Ingeniører bruker  <em>j</em> som symbol for den imaginære enhet: 
-                    <span class="spoken-math">formel vektor j er lik kvadratroten av minus 1 kvadratrot slutt formel slutt</span>
+                    <span class="spoken-math sr-only">formel vektor j er lik kvadratroten av minus 1 kvadratrot slutt formel slutt</span>
                 </p>
-                <p class="spoken-math">formel e opphøyd i vektor j ganger pi eksponent slutt pluss 1 er lik 0 formel slutt</p>
+                <p class="spoken-math sr-only">formel e opphøyd i vektor j ganger pi eksponent slutt pluss 1 er lik 0 formel slutt</p>
             </body>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="English 01. Generelle funksjoner og uttrykk">
+        <x:context>
+            <body xml:lang="en">
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mfenced open="[" close="]">
+                        <mrow>
+                            <mi>x</mi>
+                            <mo>+</mo>
+                            <mi>y</mi>
+                        </mrow>
+                    </mfenced>
+                    <mo>&#8290;</mo>
+                    <mfenced open="(" close=")">
+                        <mrow>
+                            <mi>x</mi>
+                            <mo>-</mo>
+                            <mi>y</mi>
+                        </mrow>
+                    </mfenced>
+                </m:math>
+            </body>
+        </x:context>
+        
+        <x:expect label="Expected">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <p class="spoken-math sr-only">formula left bracket x plus y right bracket times left parenthesis x minus y right parenthesis formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 02. Aritmetikk">
+        <x:context>
+            <body xml:lang="en">
+                <h2>Addisjon</h2>
+                <m:math mode="display" display="block">
+                    <semantics>
+                        <m:mrow>
+                            <m:mn>2</m:mn>
+                            <m:mo>+</m:mo>
+                            <m:mn>3</m:mn>
+                            <m:mo>=</m:mo>
+                            <m:mn>5</m:mn>
+                        </m:mrow>
+                    </semantics>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mn>2</mn>
+                        <mo>&#8290;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>x</mi>
+                    <mo>+</mo>
+                    <mi>a</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mn>3</mn>
+                        <mo>&#8290;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>a</mi>
+                </m:math>
+                <h2>Subtraksjon</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mn>2</mn>
+                    <mo>-</mo>
+                    <mn>3</mn>
+                    <mo>=</mo>
+                    <mo>-</mo>
+                    <mn>5</mn>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mo>-</mo>
+                        <mn>2</mn>
+                        <mo>&#8290;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>x</mi>
+                    <mo>-</mo>
+                    <mi>a</mi>
+                    <mo>=</mo>
+                    <mo>-</mo>
+                    <mi>x</mi>
+                    <mo>-</mo>
+                    <mi>a</mi>
+                </m:math>
+                <h3>Multiplikasjon</h3>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mn>2</mn>
+                        <mo>&#8901;</mo>
+                        <mn>3</mn>
+                        <mo>=</mo>
+                        <mn>6</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mo>-</mo>
+                        <mn>2</mn>
+                        <mo>&#8901;</mo>
+                        <mn>3</mn>
+                        <mo>=</mo>
+                        <mo>-</mo>
+                        <mn>6</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mn>2</mn>
+                        <mo>&#8901;</mo>
+                        <mi>x</mi>
+                        <mo>+</mo>
+                        <mn>5</mn>
+                        <mo>&#8901;</mo>
+                        <mi>x</mi>
+                        <mo>-</mo>
+                        <mn>4</mn>
+                        <mo>&#8901;</mo>
+                        <mi>a</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mi>x</mi>
+                        <mo>&#8290;</mo>
+                        <mfenced>
+                            <mrow>
+                                <mi>y</mi>
+                                <mo>+</mo>
+                                <mn>4</mn>
+                            </mrow>
+                        </mfenced>
+                        <mo>=</mo>
+                        <mi>x</mi>
+                        <mo>&#8290;</mo>
+                        <mi>y</mi>
+                        <mo>+</mo>
+                        <mn>4</mn>
+                        <mo>&#8290;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <h2>Divisjon</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>8</mn>
+                        <mo>:</mo>
+                        <mn>2</mn>
+                        <mo>=</mo>
+                        <mn>4</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>4</mn>
+                        <mo>&#8290;</mo>
+                        <mi>y</mi>
+                        <mo>:</mo>
+                        <mi>y</mi>
+                        <mo>=</mo>
+                        <mn>4</mn>
+                    </mrow>
+                </m:math>
+                <h2>Likhet og ulikhet</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>10</mn>
+                        <mo>=</mo>
+                        <mn>10</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>9</mn>
+                        <mo>&#x2260;</mo>
+                        <mn>10</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>11</mn>
+                        <mo>&#62;</mo>
+                        <mn>10</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>1000</mn>
+                        <mo>&#x226B;</mo>
+                        <mn>0</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mi>y</mi>
+                        <mo>&#8805;</mo>
+                        <mi>a</mi>
+                        <mo>+</mo>
+                        <mn>5</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow> 
+                        <mn>9</mn>
+                        <mo>&#60;</mo>
+                        <mi>10</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mo>-</mo>
+                        <mn>1000</mn>
+                        <mo>&#x226A;</mo>
+                        <mn>0</mn>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>&#8804;</mo>
+                    <mn>2</mn>
+                    <mo>&#8290;</mo>
+                    <mi>a</mi>
+                </m:math>
+            </body>
+        </x:context>
+        
+        <x:expect label="Expected">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <h2>Addisjon</h2>
+                <p class="spoken-math sr-only">formula 2 plus 3 equals 5 formula end</p>
+                <p class="spoken-math sr-only">formula 2 x plus x plus a equals 3 x plus a formula end</p>
+                <h2>Subtraksjon</h2>
+                <p class="spoken-math sr-only">formula 2 minus 3 equals minus 5 formula end</p>
+                <p class="spoken-math sr-only">formula minus 2 x plus x minus a equals minus x minus a formula end</p>
+                <h3>Multiplikasjon</h3>
+                <p class="spoken-math sr-only">formula 2 times 3 equals 6 formula end</p>
+                <p class="spoken-math sr-only">formula minus 2 times 3 equals minus 6 formula end</p>
+                <p class="spoken-math sr-only">formula 2 times x plus 5 times x minus 4 times a formula end</p>
+                <p class="spoken-math sr-only">formula x times left parenthesis y plus 4 right parenthesis equals x times y plus 4 x formula end</p>
+                <h2>Divisjon</h2>
+                <p class="spoken-math sr-only">formula 8 over 2 equals 4 formula end</p>
+                <p class="spoken-math sr-only">formula 4 y over y equals 4 formula end</p>
+                <h2>Likhet og ulikhet</h2>
+                <p class="spoken-math sr-only">formula 10 equals 10 formula end</p>
+                <p class="spoken-math sr-only">formula 9 does not equal 10 formula end</p>
+                <p class="spoken-math sr-only">formula 11 is greater than 10 formula end</p>
+                <p class="spoken-math sr-only">formula 1000 is much greater than 0 formula end</p>
+                <p class="spoken-math sr-only">formula y is greater or equal to a plus 5 formula end</p>
+                <p class="spoken-math sr-only">formula 9 is less than 10 formula end</p>
+                <p class="spoken-math sr-only">formula minus 1000 is much less than 0 formula end</p>
+                <p class="spoken-math sr-only">formula x is less than or equal to 2 a formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+        
+    <x:scenario label="English 03. Kvadratrot og potens">
+        <x:context>
+            <body xml:lang="en">
+                <h2>Kvadratrot</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <msqrt>
+                        <mn>2</mn>
+                    </msqrt>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msqrt>
+                        <mn>2</mn>
+                    </msqrt>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msqrt>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&#8290;</mo>
+                            <mi>a</mi>
+                            <mo>+</mo>
+                            <mi>b</mi>
+                        </mrow>
+                    </msqrt>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msqrt>
+                        <mn>2</mn>
+                    </msqrt>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msqrt>
+                        <mi>a</mi>
+                    </msqrt>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                    <mo>&#8800;</mo>
+                    <msqrt>
+                        <mrow>
+                            <mi>a</mi>
+                            <mo>+</mo>
+                            <mi>b</mi>
+                        </mrow>
+                    </msqrt>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msqrt>
+                        <mrow>
+                            <mi>a</mi>
+                            <mo>&#8290;</mo>
+                            <mi>b</mi>
+                        </mrow>
+                    </msqrt>
+                    <mo>=</mo>
+                    <msqrt>
+                        <mi>a</mi>
+                    </msqrt>
+                    <mo>&#8901;</mo>
+                    <msqrt>
+                        <mi>b</mi>
+                    </msqrt>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msqrt>
+                        <mrow>
+                            <mi>a</mi>
+                            <mo>+</mo>
+                            <mi>b</mi>
+                        </mrow>
+                    </msqrt>
+                    <mo>&#8800;</mo>
+                    <msqrt>
+                        <mi>a</mi>
+                    </msqrt>
+                    <mo>+</mo>
+                    <msqrt>
+                        <mi>b</mi>
+                    </msqrt>
+                </m:math>
+                <h2>Potensregning</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <mn>2</mn>
+                    </msup>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <mi>y</mi>
+                    </msup>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <mrow>
+                            <mi>n</mi>
+                            <mo>+</mo>
+                            <mn>1</mn>
+                        </mrow>
+                    </msup>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&#8290;</mo>
+                            <mi>n</mi>
+                        </mrow>
+                    </msup>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <msup>
+                            <mi>a</mi>
+                            <mi>b</mi>
+                        </msup>
+                    </msup>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <msup>
+                            <mi>a</mi>
+                            <mi>b</mi>
+                        </msup>
+                    </msup>
+                    <mo>+</mo>
+                    <mn>2</mn>
+                    <mo>&#8800;</mo>
+                    <msup>
+                        <mi>x</mi>
+                        <msup>
+                            <mi>a</mi>
+                            <mrow>
+                                <mi>b</mi>
+                                <mo>+</mo>
+                                <mn>2</mn>
+                            </mrow>
+                        </msup>
+                    </msup>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <h2>Kvadratrot</h2>
+                <p class="spoken-math sr-only">formula x equals square root of 2 formula end</p>
+                <p class="spoken-math sr-only">formula square root of 2 formula end</p>
+                <p class="spoken-math sr-only">formula square root of 2 a plus b square root end formula end</p>
+                <p class="spoken-math sr-only">formula square root of 2 plus b formula end</p>
+                <p class="spoken-math sr-only">formula square root of a plus b does not equal square root of a plus b square root end formula end</p>
+                <p class="spoken-math sr-only">formula square root of a times b square root end equals square root of a times square root of b formula end</p>
+                <p class="spoken-math sr-only">formula square root of a plus b square root end does not equal square root of a plus square root of b formula end</p>
+                <h2>Potensregning</h2>
+                <p class="spoken-math sr-only">formula x squared formula end</p>
+                <p class="spoken-math sr-only">formula x raised to y formula end</p>
+                <p class="spoken-math sr-only">formula x raised to n plus 1 exponent end formula end</p>
+                <p class="spoken-math sr-only">formula x raised to 2 n exponent end formula end</p>
+                <p class="spoken-math sr-only">formula x raised to a raised to b exponent end formula end</p>
+                <p class="spoken-math sr-only">formula x raised to a raised to b exponent end plus 2 does not equal x raised to a raised to b plus 2 exponent end exponent end formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 04. Brøk">
+        <x:context>
+            <body xml:lang="en">
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mfrac bevelled="true">
+                        <m:mi>a</m:mi>
+                        <m:mi>b</m:mi>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mfrac>
+                        <m:mi>a</m:mi>
+                        <m:mi>b</m:mi>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mfrac>
+                        <m:mn>123</m:mn>
+                        <m:mi>y</m:mi>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mfrac>
+                        <m:mn>1</m:mn>
+                        <m:mrow>
+                            <m:mi>x</m:mi>
+                            <m:mo>+</m:mo>
+                            <m:mn>1</m:mn>
+                        </m:mrow>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mfrac>
+                        <m:mrow>
+                            <m:mi>a</m:mi>
+                            <m:mo>+</m:mo>
+                            <m:mi>b</m:mi>
+                        </m:mrow>
+                        <m:mi>c</m:mi>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mfrac>
+                        <m:mrow>
+                            <m:mfenced>
+                                <m:mrow><m:mi>a</m:mi>
+                                    <m:mo>+</m:mo>
+                                    <m:mi>b</m:mi></m:mrow>
+                            </m:mfenced>
+                            <m:mo>&#8901;</m:mo>
+                            <m:mfenced>
+                                <m:mrow><m:mi>a</m:mi>
+                                    <m:mo>-</m:mo>
+                                    <m:mi>b</m:mi></m:mrow>
+                            </m:mfenced>
+                        </m:mrow>
+                        <m:mi>c</m:mi>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mfrac>
+                        <m:mrow>
+                            <m:mo>-</m:mo>
+                            <m:mi>b</m:mi>
+                            <m:mo>&#177;</m:mo>
+                            <m:msqrt>
+                                <m:msup>
+                                    <m:mi>b</m:mi>
+                                    <m:mn>2</m:mn>
+                                </m:msup>
+                                <m:mo>-</m:mo>
+                                <m:mn>4</m:mn>
+                                <m:mo>&#8290;</m:mo>
+                                <m:mi>a</m:mi>
+                                <m:mo>&#8290;</m:mo>
+                                <m:mi>c</m:mi>
+                            </m:msqrt>
+                        </m:mrow>
+                        <m:mrow>
+                            <m:mn>2</m:mn>
+                            <m:mo>&#8290;</m:mo>
+                            <m:mi>a</m:mi>
+                        </m:mrow>
+                    </m:mfrac>
+                </m:math>
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mi>a</m:mi>
+                    <m:mo>+</m:mo>
+                    <m:mfrac bevelled="true">
+                        <m:mi>b</m:mi>
+                        <m:mi>c</m:mi>
+                    </m:mfrac>
+                    <m:mo>+</m:mo>
+                    <m:mi>d</m:mi>
+                </m:math>
+                <m:math display="block">
+                    <m:mi>x</m:mi>
+                    <m:mo>=</m:mo>
+                    <m:mfrac bevelled="true">
+                        <m:mfenced>
+                            <m:mrow><m:mi>a</m:mi>
+                                <m:mo>+</m:mo>
+                                <m:mi>b</m:mi>
+                            </m:mrow>
+                        </m:mfenced>
+                        <m:mfenced>
+                            <m:mrow>
+                                <m:mi>c</m:mi>
+                                <m:mo>+</m:mo>
+                                <m:mi>d</m:mi>
+                            </m:mrow>
+                        </m:mfenced>
+                    </m:mfrac>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <p class="spoken-math sr-only">formula x equals a over b formula end</p>
+                <p class="spoken-math sr-only">formula x equals the fraction a over b formula end</p>
+                <p class="spoken-math sr-only">formula x equals the fraction 123 over y formula end</p>
+                <p class="spoken-math sr-only">formula division with dividend 1 and with divisor x plus 1 fraction end formula end</p>
+                <p class="spoken-math sr-only">formula x equals division with dividend a plus b and with divisor c fraction end formula end</p>
+                <p class="spoken-math sr-only">formula division with dividend left parenthesis a plus b right parenthesis times left parenthesis a minus b right parenthesis and with divisor c fraction end formula end</p>
+                <p class="spoken-math sr-only">formula x equals division with dividend minus b plus minus square root of b squared minus 4 a times c square root end and with divisor 2 a fraction end formula end</p>
+                <p class="spoken-math sr-only">formula x equals a plus b over c plus d formula end</p>
+                <p class="spoken-math sr-only">formula x equals left parenthesis a plus b right parenthesis over left parenthesis c plus d right parenthesis formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 05. Trigonometri">
+        <x:context>
+            <body xml:lang="en">
+                <h2>Sinus</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mi>y</mi>
+                        <mi>r</mi>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac bevelled="true">
+                        <mi>y</mi>
+                        <mi>r</mi>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>a</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow>
+                                <mi>a</mi>
+                                <mo>+</mo>
+                                <mi>b</mi>
+                            </mrow>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&#8290;</mo>
+                            <mi>&#960;</mi>
+                            <mo>&#8290;</mo>
+                            <mi>f</mi>
+                            <mo>&#8901;</mo>
+                            <mi>t</mi>
+                        </mrow>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+                
+                <h2>Cosinus</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mi>x</mi>
+                        <mi>r</mi>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac bevelled="true">
+                        <mi>y</mi>
+                        <mi>r</mi>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>a</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow>
+                                <mi>a</mi>
+                                <mo>+</mo>
+                                <mi>b</mi>
+                            </mrow>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&#8290;</mo>
+                            <mi>&#960;</mi>
+                            <mo>&#8290;</mo>
+                            <mi>f</mi>
+                            <mo>&#8901;</mo>
+                            <mi>t</mi>
+                        </mrow>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+                
+                <h2>Tangens</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mrow>
+                            <mi>sin</mi>
+                            <mo>&#8289;</mo>
+                            <mi>&#945;</mi>
+                        </mrow>
+                        <mrow>
+                            <mi>cos</mi>
+                            <mo>&#8289;</mo>
+                            <mi>&#945;</mi>
+                        </mrow>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mi>&#945;</mi>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac bevelled="true">
+                        <mi>y</mi>
+                        <mi>r</mi>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mi>a</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow>
+                                <mi>a</mi>
+                                <mo>+</mo>
+                                <mi>b</mi>
+                            </mrow>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mi>x</mi>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mrow>
+                            <mn>2</mn>
+                            <mo>&#8290;</mo>
+                            <mi>&#960;</mi>
+                            <mo>&#8290;</mo>
+                            <mi>f</mi>
+                            <mo>&#8901;</mo>
+                            <mi>t</mi>
+                        </mrow>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <h2>Sinus</h2>
+                <p class="spoken-math sr-only">formula sine to alpha formula end</p>
+                <p class="spoken-math sr-only">formula sine to alpha equals the fraction y over r formula end</p>
+                <p class="spoken-math sr-only">formula sine to alpha equals y over r formula end</p>
+                <p class="spoken-math sr-only">formula x equals sine to a plus b formula end</p>
+                <p class="spoken-math sr-only">formula x equals sine to left parenthesis a plus b right parenthesis formula end</p>
+                <p class="spoken-math sr-only">formula x equals sine to the expression 2 times pi times f times t expression end plus b formula end</p>
+                <h2>Cosinus</h2>
+                <p class="spoken-math sr-only">formula cosine to alpha formula end</p>
+                <p class="spoken-math sr-only">formula cosine to alpha equals the fraction x over r formula end</p>
+                <p class="spoken-math sr-only">formula cosine to alpha equals y over r formula end</p>
+                <p class="spoken-math sr-only">formula x equals cosine to a plus b formula end</p>
+                <p class="spoken-math sr-only">formula x equals cosine to left parenthesis a plus b right parenthesis formula end</p>
+                <p class="spoken-math sr-only">formula x equals sine to the expression 2 times pi times f times t expression end plus b formula end</p>
+                <h2>Tangens</h2>
+                <p class="spoken-math sr-only">formula tangent to alpha formula end</p>
+                <p class="spoken-math sr-only">formula tangent to alpha equals division with dividend sine to alpha and with divisor cosine to alpha fraction end formula end</p>
+                <p class="spoken-math sr-only">formula tangent to alpha equals y over r formula end</p>
+                <p class="spoken-math sr-only">formula x equals tangent to a plus b formula end</p>
+                <p class="spoken-math sr-only">formula x equals tangent to left parenthesis a plus b right parenthesis formula end</p>
+                <p class="spoken-math sr-only">formula x equals tangent to the expression 2 times pi times f times t expression end plus b formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 06. Matematisk analyse">
+        <x:context>
+            <body xml:lang="en">
+                <h2>Funksjoner</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>f</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <msup>
+                        <mn>10</mn>
+                        <mi>x</mi>
+                    </msup>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>f</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow>
+                                <mi>x</mi>
+                                <mo>+</mo>
+                                <mi>&#916;</mi>
+                                <mi>x</mi>
+                            </mrow>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>h</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                            <mi>y</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>f</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>g</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>f</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>a</mi>
+                            <mi>b</mi>
+                            <mi>c</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mi>a</mi>
+                    <mo>+</mo>
+                    <mi>b</mi>
+                    <mo>+</mo>
+                    <mi>c</mi>
+                </m:math>
+                <h2>Derivasjon og grenseverdi</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>g</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <munder>
+                            <mo>lim</mo>
+                            <mrow>
+                                <mi>t</mi>
+                                <mo>&#8594;</mo>
+                                <mn>100</mn>
+                            </mrow>
+                        </munder>
+                        <mo>&#8289;</mo>
+                        <mrow>
+                            <mi>f</mi>
+                            <mo>&#8289;</mo>
+                            <mfenced>
+                                <mi>x</mi>
+                                <mi>t</mi>
+                            </mfenced>
+                        </mrow>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <munder>
+                            <mo>lim</mo>
+                            <mrow>
+                                <mi>x</mi>
+                                <mo>&#8594;</mo>
+                                <mn>0</mn>
+                            </mrow>
+                        </munder>
+                        <mo>&#8289;</mo>
+                        <mfrac>
+                            <mn>1</mn>
+                            <mi>x</mi>
+                        </mfrac>
+                    </mrow>
+                    <mo>=</mo>
+                    <mi>&#8734;</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8242;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <munder>
+                            <mo>lim</mo>
+                            <mrow>
+                                <mi>h</mi>
+                                <mo>&#8594;</mo>
+                                <mn>0</mn>
+                            </mrow>
+                        </munder>
+                        <mo>&#8289;</mo>
+                        <mfrac>
+                            <mrow>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8289;</mo>
+                                    <mfenced>
+                                        <mrow>
+                                            <mi>x</mi>
+                                            <mo>+</mo>
+                                            <mi>h</mi>
+                                        </mrow>
+                                    </mfenced>
+                                </mrow>
+                                <mo>-</mo>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8289;</mo>
+                                    <mfenced>
+                                        <mi>x</mi>
+                                    </mfenced>
+                                </mrow>
+                            </mrow>
+                            <mi>h</mi>
+                        </mfrac>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8243;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8242;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow>
+                                <msup>
+                                    <mi>f</mi>
+                                    <mo>&#8242;</mo>
+                                </msup>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>x</mi>
+                                </mfenced>
+                            </mrow>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8242;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mrow>
+                            <mo>&#8517;</mo>
+                            <mrow>
+                                <mi>f</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>x</mi>
+                                </mfenced>
+                            </mrow>
+                        </mrow>
+                        <mrow>
+                            <mo>&#8518;</mo>
+                            <mi>x</mi>
+                        </mrow>
+                    </mfrac>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mfenced>
+                                <mrow>
+                                    <mn>4</mn>
+                                    <mo>&#8290;</mo>
+                                    <msup>
+                                        <mi>x</mi>
+                                        <mn>3</mn>
+                                    </msup>
+                                    <mo>&#8290;</mo>
+                                    <mrow>
+                                        <mi>cos</mi>
+                                        <mo>&#8289;</mo>
+                                        <mi>x</mi>
+                                    </mrow>
+                                </mrow>
+                            </mfenced>
+                            <mo>&#8242;</mo>
+                        </msup>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <msup>
+                        <mfenced>
+                            <mrow>
+                                <mn>3</mn>
+                                <mo>&#8290;</mo>
+                                <mi>a</mi>
+                                <mo>&#8290;</mo>
+                                <msup>
+                                    <mi>x</mi>
+                                    <mn>3</mn>
+                                </msup>
+                            </mrow>
+                        </mfenced>
+                        <mo>&#8242;</mo>
+                    </msup>
+                    <mo>=</mo>
+                    <msup>
+                        <mfenced>
+                            <mrow>
+                                <mn>9</mn>
+                                <mo>&#8290;</mo>
+                                <mi>a</mi>
+                                <mo>&#8290;</mo>
+                                <msup>
+                                    <mi>x</mi>
+                                    <mn>2</mn>
+                                </msup>
+                            </mrow>
+                        </mfenced>
+                        <mo>&#8242;</mo>
+                    </msup>
+                    <mo>=</mo>
+                    <mn>18</mn>
+                    <mo>&#8290;</mo>
+                    <mi>a</mi>
+                    <mo>&#8290;</mo>
+                    <mi>x</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8243;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mrow>
+                            <msup>
+                                <mo>&#8517;</mo><mn>2</mn>
+                            </msup>
+                            <mrow>
+                                <mi>f</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>x</mi>
+                                </mfenced>
+                            </mrow>
+                        </mrow>
+                        <mrow>
+                            <mo>&#8518;</mo>
+                            <msup>
+                                <mi>x</mi>
+                                <mn>2</mn>
+                            </msup>
+                        </mrow>
+                    </mfrac>
+                </m:math>
+                <h2>Integrasjon</h2>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mo>&#8747;</mo>
+                    <mi>f</mi>
+                    <mo>=</mo>
+                    <mi>g</mi>
+                    <mo>+</mo>
+                    <mi>C</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mi>g</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <munderover>
+                            <mo>&#8747;</mo>
+                            <mi>a</mi>
+                            <mi>x</mi>
+                        </munderover>
+                        <mrow>
+                            <mi>f</mi>
+                            <mo>&#8289;</mo>
+                            <mfenced>
+                                <mi>t</mi>
+                            </mfenced>
+                        </mrow>
+                        <mrow>
+                            <mo>&#8518;</mo>
+                            <mi>t</mi>
+                        </mrow>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <mo>&#8747;</mo>
+                        <mrow>
+                            <mi>cos</mi>
+                            <mo>&#8289;</mo>
+                            <mi>x</mi>
+                        </mrow>
+                        <mrow>
+                            <mo>&#8518;</mo>
+                            <mi>x</mi>
+                        </mrow>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mi>C</mi>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <munderover>
+                            <mo>&#8747;</mo>
+                            <mi>a</mi>
+                            <mi>b</mi>
+                        </munderover>
+                        <mrow>
+                            <mi>k</mi>
+                            <mo>&#8290;</mo>
+                            <mrow>
+                                <mi>f</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>x</mi>
+                                </mfenced>
+                            </mrow>
+                        </mrow>
+                        <mrow>
+                            <mo>&#8518;</mo>
+                            <mi>x</mi>
+                        </mrow>
+                    </mrow>
+                    <mo>=</mo>
+                    <mi>k</mi>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <munderover>
+                            <mo>&#8747;</mo>
+                            <mi>a</mi>
+                            <mi>b</mi>
+                        </munderover>
+                        <mrow>
+                            <mi>f</mi>
+                            <mo>&#8289;</mo>
+                            <mfenced>
+                                <mi>x</mi>
+                            </mfenced>
+                        </mrow>
+                        <mrow>
+                            <mo>&#8518;</mo>
+                            <mi>x</mi>
+                        </mrow>
+                    </mrow>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                    xmlns:m="http://www.w3.org/1998/Math/MathML"
+                    xml:lang="en">
+                <h2>Funksjoner</h2>
+                <p class="spoken-math sr-only">formula the function f of x equals 10 raised to x formula end</p>
+                <p class="spoken-math sr-only">formula the function f of the expression x plus capital delta x expression end formula end</p>
+                <p class="spoken-math sr-only">formula the function h of x and y equals the function f of x times the function g of x formula end</p>
+                <p class="spoken-math sr-only">formula the function f of a b and c equals a plus b plus c formula end</p>
+                <h2>Derivasjon og grenseverdi</h2>
+                <p class="spoken-math sr-only">formula the function g of x equals boundary value of the function f of x and t when t goes against 100 formula end</p>
+                <p class="spoken-math sr-only">formula boundary value of the fraction 1 over x when x goes against 0 equals infinite formula end</p>
+                <p class="spoken-math sr-only">formula the derivative of the function f of x equals boundary value of division with dividend the function f of the expression x plus h expression end minus the function f of x and with divisor h fraction end when h goes against 0 formula end</p>
+                <p class="spoken-math sr-only">formula the second derivative of the function f of x equals the derivative of the function f of the expression the derivative of the function f of x expression end formula end</p>
+                <p class="spoken-math sr-only">formula the derivative of the function f of x equals division with dividend the derivative of the function f of x and with divisor with respect to x fraction end formula end</p>
+                <p class="spoken-math sr-only">formula left parenthesis 4 times x raised to 3 times cosine to x right parenthesis raised to derived exponent end formula end</p>
+                <p class="spoken-math sr-only">formula left parenthesis 3 a times x raised to 3 right parenthesis raised to derived exponent end equals left parenthesis 9 a times x squared right parenthesis raised to derived exponent end equals 18 a times x formula end</p>
+                <p class="spoken-math sr-only">formula the second derivative of the function f of x equals division with dividend the derivative of squared the function f of x and with divisor with respect to x squared fraction end formula end</p>
+                <h2>Integrasjon</h2>
+                <p class="spoken-math sr-only">formula integral of f equals g plus capital c formula end</p>
+                <p class="spoken-math sr-only">formula the function g of x equals integral from a to x of the function f of t with respect to t formula end</p>
+                <p class="spoken-math sr-only">formula integral of cosine to x with respect to x equals sine to x plus capital c formula end</p>
+                <p class="spoken-math sr-only">formula integral from a to b of k times the function f of x with respect to x equals k times integral from a to b of the function f of x with respect to x formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 07. Diverse matematikk">
+        <x:context>
+            <body xml:lang="en">
+                <h1 class="title">Diverse matematiske uttrykk representert med MATHML</h1>
+                <p>Testområde</p>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>tan</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arcsin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arccos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arctan</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sinh</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cosh</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>tanh</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+            
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cot</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sec</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>csc</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cosec</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arccot</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arcsec</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arccsc</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arccosec</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>coth</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sech</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>csch</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>cosech</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arsinh</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arcosh</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>artanh</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>y</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>arcoth</mi>
+                        <mo>&#8289;</mo>
+                        <mi>x</mi>
+                    </mrow>
+                </m:math>
+                <h2>Hookes lov og harmonisk bevegelse</h2>
+                <p><em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i en mekanisk fjær. Loven beskrives matematisk som</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>F</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>t</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mo>-</mo>
+                    <mi>k</mi>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>x</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>t</mi>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <p>Samtidig gir <em>Newtons 2. lov</em> at</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>F</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>t</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mi>m</mi>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>a</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>t</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mi>m</mi>
+                    <mo>&#8901;</mo>
+                    <mfrac>
+                        <mrow>
+                            <mo>&#8243;</mo>
+                            <mrow>
+                                <mi>x</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>t</mi>
+                                </mfenced>
+                            </mrow>
+                        </mrow>
+                        <mrow>
+                            <mo>&#120539;</mo>
+                            <msup>
+                                <mi>t</mi>
+                                <mn>2</mn>
+                            </msup>
+                        </mrow>
+                    </mfrac>
+                </m:math>
+                <p>og fra det følger at</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mfrac>
+                        <mrow>
+                            <mo>&#8243;</mo>
+                            <mrow>
+                                <mi>x</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mi>t</mi>
+                                </mfenced>
+                            </mrow>
+                        </mrow>
+                        <mrow>
+                            <mo>&#120539;</mo>
+                            <msup>
+                                <mi>t</mi>
+                                <mn>2</mn>
+                            </msup>
+                        </mrow>
+                    </mfrac>
+                    <mo>=</mo>
+                    <mo>-</mo>
+                    <mfrac>
+                        <mi>k</mi>
+                        <mi>m</mi>
+                    </mfrac>
+                        <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>x</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>t</mi>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <p>som er en differensiallikning med løsning</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>x</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>t</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mi>A</mi>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow>
+                                <mi>&#969;</mi>
+                                <mi>&#8290;</mi>
+                                <mi>t</mi>
+                                <mo>-</mo>
+                                <mi>&#981;</mi>
+                            </mrow>
+                        </mfenced>
+                    </mrow>
+                </m:math>
+                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi></m:math> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#969;</mi><mo>=</mo><msqrt><mfrac bevelled="true"><mi>k</mi><mi>m</mi></mfrac></msqrt></m:math>. Svingningens <em>fase</em>, <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>&#981;</mi></m:math>, er en konstant som er bestemt av startbetingelsene. </p>
+                <h2>Eksempler hentet fra eksamen Matematikk 1T våren 2018</h2>
+                <p>Løs likningen <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+                        <mn>3</mn>
+                        <mo>&#8901;</mo>
+                        <msup>
+                            <mn>10</mn>
+                            <mi>x</mi>
+                        </msup>
+                        <mo>=</mo>
+                        <mn>3000</mn>
+                    </m:math>. </p>
+                <hr />
+                <p>Regn ut følgende uttrykk:</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mfrac>
+                        <mrow>
+                            <msup>
+                                <mfenced>
+                                    <mrow>
+                                        <mn>3,5</mn>
+                                        <mo>&#8901;</mo>
+                                        <msup>
+                                            <mn>10</mn>
+                                            <mn>6</mn>
+                                        </msup>
+                                    </mrow>
+                                </mfenced>
+                                <mn>2</mn>
+                            </msup>
+                        </mrow>
+                        <mrow>
+                            <mn>0,2</mn>
+                            <mo>&#8901;</mo>
+                            <msup>
+                                <mn>10</mn>
+                                <mn>-4</mn>
+                            </msup>
+                            <mo>+</mo>
+                            <mn>3</mn>
+                            <mo>&#8901;</mo>
+                            <msup>
+                                <mn>10</mn>
+                                <mn>-5</mn>
+                            </msup>
+                        </mrow>
+                    </mfrac>
+                </m:math>
+                <p>og skriv svaret på standardform.</p>
+                <hr />
+                <p>Vis at <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+                        <msqrt>
+                            <mn>15</mn>
+                        </msqrt>
+                        <mo>&#8901;</mo>
+                        <msqrt>
+                            <mn>5</mn>
+                        </msqrt>
+                        <mo>-</mo>
+                        <msqrt>
+                            <mn>48</mn>
+                        </msqrt>
+                    </m:math> kan skrives som <m:math xmlns="http://www.w3.org/1998/Math/MathML"
+                        display="inline">
+                        <msqrt>
+                            <mn>3</mn>
+                        </msqrt>
+                    </m:math>.</p>
+                <hr />
+                <p>Løs ulikheten</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <msup>
+                        <mi>x</mi>
+                        <mn>2</mn>
+                    </msup>
+                    <mo>-</mo>
+                    <mn>2</mn>
+                    <mo>&#8290;</mo>
+                    <mi>x</mi>
+                    <mo>-</mo>
+                    <mn>8</mn>
+                    <mo>&#8805;</mo>
+                    <mn>0</mn>
+                </m:math>
+                <hr />
+                <p>Skriv så enkelt som mulig</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mfrac>
+                        <mrow>
+                            <mi>x</mi>
+                            <mo>+</mo>
+                            <mn>2</mn>
+                            <mo>+</mo>
+                            <mfrac>
+                                <mn>1</mn>
+                                <mi>x</mi>
+                            </mfrac>
+                        </mrow>
+                        <mrow>
+                            <mfrac>
+                                <mi>x</mi>
+                                <mn>3</mn>
+                            </mfrac>
+                            <mo>-</mo>
+                            <mfrac>
+                                <mn>1</mn>
+                                <mrow>
+                                    <mn>3</mn>
+                                    <mo>&#8290;</mo>
+                                    <mi>x</mi>
+                                </mrow>
+                            </mfrac>
+                        </mrow>
+                    </mfrac>
+                </m:math>
+                <hr />
+                <p>En funksjon <em>f</em> er gitt ved</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>f</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <msup>
+                        <mi>x</mi>
+                        <mn>3</mn>
+                    </msup>
+                    <mo>+</mo>
+                    <mn>2</mn>
+                    <mo>&#8290;</mo>
+                    <msup>
+                        <mi>x</mi>
+                        <mn>2</mn>
+                    </msup>
+                    <mo>+</mo>
+                    <mn>1</mn>
+                </m:math>
+                <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <m:math
+                        xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+                        <mfenced>
+                            <mn>1</mn>
+                            <mrow>
+                                <mi>f</mi>
+                                <mo>&#8289;</mo>
+                                <mfenced>
+                                    <mn>3</mn>
+                                </mfenced>
+                            </mrow>
+                        </mfenced>
+                    </m:math>. </p>
+                <hr />
+                <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan skrives som</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mi>T</mi>
+                    <mo>=</mo>
+                    <mfrac>
+                        <mrow>
+                            <mi>a</mi>
+                            <mo>&#8901;</mo>
+                            <mrow>
+                                <mi>sin</mi>
+                                <mo>&#8289;</mo>
+                                <mi>u</mi>
+                            </mrow>
+                            <mo>&#8901;</mo>
+                            <mi>b</mi>
+                            <mo>&#8901;</mo>
+                            <mrow>
+                                <mi>cos</mi>
+                                <mo>&#8289;</mo>
+                                <mi>v</mi>
+                            </mrow>
+                        </mrow>
+                        <mn>2</mn>
+                    </mfrac>
+                    <mo>+</mo>
+                    <mfrac>
+                        <mrow>
+                            <mi>b</mi>
+                            <mo>&#8901;</mo>
+                            <mrow>
+                                <mi>sin</mi>
+                                <mo>&#8289;</mo>
+                                <mi>v</mi>
+                            </mrow>
+                            <mo>&#8901;</mo>
+                            <mi>a</mi>
+                            <mo>&#8901;</mo>
+                            <mrow>
+                                <mi>cos</mi>
+                                <mo>&#8289;</mo>
+                                <mi>u</mi>
+                            </mrow>
+                        </mrow>
+                        <mn>2</mn>
+                    </mfrac>
+                </m:math>
+                <p>Arealet til trekanten kan også skrives som <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+                        <mi>T</mi>
+                        <mo>=</mo>
+                        <mfrac>
+                            <mn>1</mn>
+                            <mn>2</mn>
+                        </mfrac>
+                        <mo>&#8290;</mo>
+                        <mi>a</mi>
+                        <mo>&#8901;</mo>
+                        <mi>b</mi>
+                        <mo>&#8901;</mo>
+                        <mrow>
+                            <mi>sin</mi>
+                            <mo>&#8289;</mo>
+                            <mfenced>
+                                <mrow><mi>u</mi>
+                                    <mo>+</mo>
+                                    <mi>v</mi></mrow>
+                            </mfenced>
+                        </mrow>
+                    </m:math>. Bruk dette, sammen med uttrykket over, til å vise at</p> 
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mrow><mi>u</mi>
+                                <mo>+</mo>
+                                <mi>v</mi></mrow>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>u</mi>
+                    </mrow>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>v</mi>
+                    </mrow>
+                    <mo>+</mo>
+                    <mrow>
+                        <mi>sin</mi>
+                        <mo>&#8289;</mo>
+                        <mi>v</mi>
+                    </mrow>
+                    <mo>&#8901;</mo>
+                    <mrow>
+                        <mi>cos</mi>
+                        <mo>&#8289;</mo>
+                        <mi>u</mi>
+                    </mrow>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <h1 class="title">Diverse matematiske uttrykk representert med MATHML</h1>
+                <p>Testområde</p>
+                <p class="spoken-math sr-only">formula the function y of x equals sine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals cosine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals tangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus sine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus cosine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus tangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic sine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic cosine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic tangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals cotangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals secant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals cosecant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals cosecant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus cotangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus secant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus cosecant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals arcus cosecant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic cotangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic secant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic cosecant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic cosecant to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic arcus sine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic arcus cosine to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic arcus tangent to x formula end</p>
+                <p class="spoken-math sr-only">formula the function y of x equals hyperbolic arcus cotangent to x formula end</p>
+                <h2>Hookes lov og harmonisk bevegelse</h2>
+                <p>
+                    <em>Hookes lov</em> beskriver fysikken knyttet til et legeme som er utsatt for kreftene i en mekanisk fjær. Loven beskrives matematisk som</p>
+                <p class="spoken-math sr-only">formula the function capital f of t equals minus k times the function x of t formula end</p>
+                <p>Samtidig gir <em>Newtons 2. lov</em> at</p>
+                <p class="spoken-math sr-only">formula the function capital f of t equals m times the function a of t equals m times division with dividend the second derivative the function x of t and with divisor the partial derivative t squared fraction end formula end</p>
+                <p>og fra det følger at</p>
+                <p class="spoken-math sr-only">formula division with dividend the second derivative the function x of t and with divisor the partial derivative t squared fraction end equals minus the fraction k over m times the function x of t formula end</p>
+                <p>som er en differensiallikning med løsning</p>
+                <p class="spoken-math sr-only">formula the function x of t equals capital a times cosine to left parenthesis omega ⁢ t minus phi right parenthesis formula end</p>
+                <p>der <em>A</em> er legemets maksimale <em>amplitude</em> og <span class="spoken-math sr-only">formula omega formula end</span> er svingningens <em>vinkelhastighet</em>, som er bestemt av systemets egenskaper: <span class="spoken-math sr-only">formula omega equals square root of k over m square root end formula end</span>. Svingningens <em>fase</em>, <span class="spoken-math sr-only">formula phi formula end</span>, er en konstant som er bestemt av startbetingelsene. </p>
+                <h2>Eksempler hentet fra eksamen Matematikk 1T våren 2018</h2>
+                <p>Løs likningen <span class="spoken-math sr-only">formula 3 times 10 raised to x equals 3000 formula end</span>. </p>
+                <hr />
+                <p>Regn ut følgende uttrykk:</p>
+                <p class="spoken-math sr-only">formula division with dividend left parenthesis 3,5 times 10 raised to 6 right parenthesis squared and with divisor 0,2 times 10 raised to minus 4 exponent end plus 3 times 10 raised to minus 5 exponent end fraction end formula end</p>
+                <p>og skriv svaret på standardform.</p>
+                <hr />
+                <p>Vis at <span class="spoken-math sr-only">formula square root of 15 times square root of 5 minus square root of 48 formula end</span> kan skrives som <span class="spoken-math sr-only">formula square root of 3 formula end</span>.</p>
+                <hr />
+                <p>Løs ulikheten</p>
+                <p class="spoken-math sr-only">formula x squared minus 2 x minus 8 is greater or equal to 0 formula end</p>
+                <hr />
+                <p>Skriv så enkelt som mulig</p>
+                <p class="spoken-math sr-only">formula division with dividend x plus 2 plus the fraction 1 over x and with divisor the fraction x over 3 minus division with dividend 1 and with divisor 3 x fraction end fraction end formula end</p>
+                <hr />
+                <p>En funksjon <em>f</em> er gitt ved</p>
+                <p class="spoken-math sr-only">formula the function f of x equals x raised to 3 plus 2 times x squared plus 1 formula end</p>
+                <p> Bestem likningen for tangenten til grafen til <em>f</em> i punktet <span class="spoken-math sr-only">formula left parenthesis 1 the function f of 3 right parenthesis formula end</span>. </p>
+                <hr />
+                <p>Bruk blant annet resultatet fra oppgave a), og vis at dette uttrykket for arealet kan skrives som</p>
+                <p class="spoken-math sr-only">formula capital t equals division with dividend a times sine to u times b times cosine to v and with divisor 2 fraction end plus division with dividend b times sine to v times a times cosine to u and with divisor 2 fraction end formula end</p>
+                <p>Arealet til trekanten kan også skrives som <span class="spoken-math sr-only">formula capital t equals the fraction 1 over 2 times a times b times sine to left parenthesis u plus v right parenthesis formula end</span>. Bruk dette, sammen med uttrykket over, til å vise at</p>
+                <p class="spoken-math sr-only">formula sine to left parenthesis u plus v right parenthesis equals sine to u times cosine to v plus sine to v times cosine to u formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 08. Typiske feil">
+        <x:context>
+            <body xml:lang="en">
+                <h1 class="title">Tre "like" uttrykk</h1>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8242;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <munder>
+                            <mo>lim</mo>
+                            <mrow>
+                                <mi>h</mi>
+                                <mo>&#8594;</mo>
+                                <mn>0</mn>
+                            </mrow>
+                        </munder>
+                        <mo>&#8289;</mo>
+                        <mfrac>
+                            <mrow>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8289;</mo>
+                                    <mfenced>
+                                        <mrow>
+                                            <mi>x</mi>
+                                            <mo>+</mo>
+                                            <mi>h</mi>
+                                        </mrow>
+                                    </mfenced>
+                                </mrow>
+                                <mo>-</mo>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8289;</mo>
+                                    <mfenced>
+                                        <mi>x</mi>
+                                    </mfenced>
+                                </mrow>
+                            </mrow>
+                            <mi>h</mi>
+                        </mfrac>
+                    </mrow>
+                </m:math>
+                <p>og</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8242;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <munder>
+                            <mo>lim</mo>
+                            <mrow>
+                                <mi>h</mi>
+                                <mo>&#8594;</mo>
+                                <mn>0</mn>
+                            </mrow>
+                        </munder>
+                        <mo>&#8289;</mo>
+                        <mfrac>
+                            <mrow>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8290;</mo>
+                                    <mfenced>
+                                        <mrow>
+                                            <mi>x</mi>
+                                            <mo>+</mo>
+                                            <mi>h</mi>
+                                        </mrow>
+                                    </mfenced>
+                                </mrow>
+                                <mo>-</mo>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8289;</mo>
+                                    <mfenced>
+                                        <mi>x</mi>
+                                    </mfenced>
+                                </mrow>
+                            </mrow>
+                            <mi>h</mi>
+                        </mfrac>
+                    </mrow>
+                </m:math>
+                <p>og</p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>f</mi>
+                            <mo>&#8242;</mo>
+                        </msup>
+                        <mo>&#8289;</mo>
+                        <mfenced>
+                            <mi>x</mi>
+                        </mfenced>
+                    </mrow>
+                    <mo>=</mo>
+                    <mrow>
+                        <munder>
+                            <mo>lim</mo>
+                            <mrow>
+                                <mi>h</mi>
+                                <mo>&#8594;</mo>
+                                <mn>0</mn>
+                            </mrow>
+                        </munder>
+                        <mo>&#8289;</mo>
+                        <mfrac>
+                            <mrow>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mfenced>
+                                        <mrow>
+                                            <mi>x</mi>
+                                            <mo>+</mo>
+                                            <mi>h</mi>
+                                        </mrow>
+                                    </mfenced>
+                                </mrow>
+                                <mo>-</mo>
+                                <mrow>
+                                    <mi>f</mi>
+                                    <mo>&#8289;</mo>
+                                    <mfenced>
+                                        <mi>x</mi>
+                                    </mfenced>
+                                </mrow>
+                            </mrow>
+                            <mi>h</mi>
+                        </mfrac>
+                    </mrow>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <h1 class="title">Tre "like" uttrykk</h1>
+                <p class="spoken-math sr-only">formula the derivative of the function f of x equals boundary value of division with dividend the function f of the expression x plus h expression end minus the function f of x and with divisor h fraction end when h goes against 0 formula end</p>
+                <p>og</p>
+                <p class="spoken-math sr-only">formula the derivative of the function f of x equals boundary value of division with dividend f times left parenthesis x plus h right parenthesis minus the function f of x and with divisor h fraction end when h goes against 0 formula end</p>
+                <p>og</p>
+                <p class="spoken-math sr-only">formula the derivative of the function f of x equals boundary value of division with dividend f left parenthesis x plus h right parenthesis minus the function f of x and with divisor h fraction end when h goes against 0 formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="English 09. Tvetydige uttrykk">
+        <x:context>
+            <body xml:lang="en">
+                
+                <h1 class="title">i og j</h1>
+                <p>Matematikere og fysikere bruker  <em>i</em> som symbol for den imaginære enhet: 
+                    <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="inline"><mi>&#8520;</mi><mo>=</mo><msqrt><mo>-</mo><mn>1</mn></msqrt></m:math>
+                </p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>e</mi>
+                            <mrow>
+                                <mi>&#8520;</mi>
+                                <mo>&#8901;</mo>
+                                <mi>&#960;</mi>
+                            </mrow>
+                        </msup>
+                        <mo>+</mo>
+                        <mn>1</mn>
+                        <mo>=</mo>
+                        <mn>0</mn>
+                    </mrow>
+                </m:math>
+                
+                <p>Ingeniører bruker  <em>j</em> som symbol for den imaginære enhet: 
+                    <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="inline"><mi mathvariant="sans-serif-bold-italic">j</mi><mo>=</mo><msqrt><mo>-</mo><mn>1</mn></msqrt></m:math>
+                </p>
+                <m:math xmlns="http://www.w3.org/1998/Math/MathML" mode="display" display="block">
+                    <mrow>
+                        <msup>
+                            <mi>e</mi>
+                            <mrow>
+                                <mi mathvariant="sans-serif-bold-italic">j</mi>
+                                <mo>&#8901;</mo>
+                                <mi>&#960;</mi>
+                            </mrow>
+                        </msup>
+                        <mo>+</mo>
+                        <mn>1</mn>
+                        <mo>=</mo>
+                        <mn>0</mn>
+                    </mrow>
+                </m:math>
+            </body>
+        </x:context>
+
+        <x:expect label="Forventet">
+            <body xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:m="http://www.w3.org/1998/Math/MathML"
+                xml:lang="en">
+                <h1 class="title">i og j</h1>
+                <p>Matematikere og fysikere bruker  <em>i</em> som symbol for den imaginære enhet: 
+                    <span class="spoken-math sr-only">formula the imaginary unit equals square root of minus 1 square root end formula end</span>
+                </p>
+                <p class="spoken-math sr-only">formula e raised to the imaginary unit times pi exponent end plus 1 equals 0 formula end</p>
+                <p>Ingeniører bruker  <em>j</em> som symbol for den imaginære enhet: 
+                    <span class="spoken-math sr-only">formula vector j equals square root of minus 1 square root end formula end</span>
+                </p>
+                <p class="spoken-math sr-only">formula e raised to vector j times pi exponent end plus 1 equals 0 formula end</p>
+            </body>
+        </x:expect>
+    </x:scenario>
+   
 </x:description>

@@ -42,16 +42,25 @@
     <!-- Block math -->
     <xsl:template match="m:math[@display eq 'block']">
         <xsl:variable name="imgsrc" select="@altimg" as="xs:string?"/>
+        
+        <xsl:variable name="stringified" select="string-join(.//text(), '')" as="xs:string"/>
+        <xsl:if test="contains($stringified, '&amp;lt;') or
+                      contains($stringified, '&amp;gt;') or
+                      contains($stringified, '&amp;quot;') or
+                      contains($stringified, '&amp;amp;')">
+            <xsl:message terminate="yes">Found XML Entity, terminating. <xsl:value-of select="@alttext"/></xsl:message>
+        </xsl:if>
+        
         <xsl:choose>
             <xsl:when test="$preserve-visual-math and $imgsrc">
                 <figure class="image">
                     <xsl:copy-of select="@id | @xml:lang"/>
-                    <img class="visual-math" src="{$imgsrc}" alt="{@alttext}"/>
-                    <figcaption class="spoken-math"><xsl:call-template name="generate-spoken-math"/><xsl:text></xsl:text></figcaption>
+                    <img class="visual-math" aria-hidden="true" src="{$imgsrc}" alt="{@alttext}"/><!-- TODO Replace with SVG when conversion service is operational -->
+                    <figcaption class="spoken-math sr-only"><xsl:call-template name="generate-spoken-math"/></figcaption>
                 </figure>
             </xsl:when>
             <xsl:otherwise>
-                <p class="spoken-math">
+                <p class="spoken-math sr-only">
                     <xsl:copy-of select="@id | @xml:lang"/>
                     <xsl:call-template name="generate-spoken-math"/>
                 </p>
@@ -62,16 +71,25 @@
     <!-- Inline math -->
     <xsl:template match="m:math[@display eq 'inline']">
         <xsl:variable name="imgsrc" select="@altimg" as="xs:string?"/>
+        
+        <xsl:variable name="stringified" select="string-join(.//text(), '')" as="xs:string"/>
+        <xsl:if test="contains($stringified, '&amp;lt;') or
+                      contains($stringified, '&amp;gt;') or
+                      contains($stringified, '&amp;quot;') or
+                      contains($stringified, '&amp;amp;')">
+            <xsl:message terminate="yes">Found XML Entity, terminating. <xsl:value-of select="@alttext"/></xsl:message>
+        </xsl:if>
+        
         <xsl:choose>
             <xsl:when test="$preserve-visual-math and $imgsrc">
                 <span class="image">
                     <xsl:copy-of select="@id | @xml:lang"/>
-                    <img class="visual-math" src="{$imgsrc}" alt="{@alttext}"/>
-                    <span class="spoken-math"><xsl:call-template name="generate-spoken-math"/></span>
+                    <img class="visual-math" aria-hidden="true" src="{$imgsrc}" alt="{@alttext}"/><!-- TODO Replace with SVG when conversion service is operational -->
+                    <span class="spoken-math sr-only"><xsl:call-template name="generate-spoken-math"/></span>
                 </span>
             </xsl:when>
             <xsl:otherwise>
-                <span class="spoken-math">
+                <span class="spoken-math sr-only">
                     <xsl:copy-of select="@id | @xml:lang"/>
                     <xsl:call-template name="generate-spoken-math"/>
                 </span>
@@ -139,7 +157,17 @@
         <xsl:value-of select="fnk:translate('squared', .)" />
         <xsl:text> </xsl:text>
     </xsl:template>
-    <xsl:template match="m:msup[(count(child::element()) eq 2) and ((local-name(child::element()[1]) eq 'mn') or ((local-name(child::element()[1]) eq 'mrow') and (count(child::element()[1]/child::element()) eq 2) and local-name(child::element()[1]/child::element()[1]) eq 'mo') and (normalize-space(child::element()[1]/child::element()[1]) eq '-') and (local-name(child::element()[1]/child::element()[2]) eq 'mn')) and (local-name(child::element()[2]) eq 'mtext') and (normalize-space(m:mtext) eq 'g')]"
+    <xsl:template match="m:msup[
+        (count(child::element()) eq 2) 
+        and ((local-name(child::element()[1]) eq 'mn') 
+        or ((local-name(child::element()[1]) eq 'mrow') 
+        and (count(child::element()[1]/child::element()) eq 2) 
+        and local-name(child::element()[1]/child::element()[1]) eq 'mo') 
+        and (normalize-space(child::element()[1]/child::element()[1]) eq '-') 
+        and (local-name(child::element()[1]/child::element()[2]) eq 'mn')) 
+        and (local-name(child::element()[2]) eq 'mtext') 
+        and (normalize-space(m:mtext) eq 'g')
+        ]"
         mode="spoken-math">
         <xsl:apply-templates select="child::element()[1]" mode="#current"/>
         <xsl:text> </xsl:text>
@@ -148,21 +176,38 @@
     </xsl:template>
     
     <!-- m:msub is used to attach a subscript to an expression -->
-    <xsl:template match="m:msub[(local-name(child::element()[1]) and (matches(normalize-space(child::element()[1]), '^[a-z]$', 'i') or matches(normalize-space(child::element()[1]), '^\p{IsGreek}$')) and (local-name(child::element()[2]) eq 'mn') and matches(normalize-space(child::element()[2]), '^\d+$'))]" mode="spoken-math">
+    <xsl:template match="m:msub" mode="spoken-math">
+        <xsl:apply-templates mode="#current"/>
+    </xsl:template>
+    <xsl:template match="m:msub[
+        (local-name(child::element()[1]) 
+        and (matches(normalize-space(child::element()[1]), '^[a-z]$', 'i') 
+        or matches(normalize-space(child::element()[1]), '^\p{IsGreek}$')) 
+        and (local-name(child::element()[2]) eq 'mn') 
+        and matches(normalize-space(child::element()[2]), '^\d+$'))
+        ]"  
+        mode="spoken-math">
         <xsl:apply-templates select="m:mi" mode="#current"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('with the lower index', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mn" mode="#current"/>
     </xsl:template>
-    <xsl:template match="m:msub[(count(m:mi) eq 2) and (matches(normalize-space(m:mi[1]), '^[a-z]$', 'i') or matches(normalize-space(m:mi[1]), '^\p{IsGreek}$')) and (matches(normalize-space(m:mi[2]), '^[a-z]$', 'i') or matches(normalize-space(m:mi[2]), '^\p{IsGreek}$'))]" mode="spoken-math">
+    <xsl:template match="m:msub[
+        (count(m:mi) eq 2) 
+        and (matches(normalize-space(m:mi[1]), '^[a-z]$', 'i') 
+        or matches(normalize-space(m:mi[1]), '^\p{IsGreek}$')) 
+        and (matches(normalize-space(m:mi[2]), '^[a-z]$', 'i') 
+        or matches(normalize-space(m:mi[2]), '^\p{IsGreek}$'))
+        ]" 
+        mode="spoken-math">
         <xsl:apply-templates select="m:mi[1]" mode="#current"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="fnk:translate('with the lower index', .)" />
         <xsl:text> </xsl:text>
         <xsl:apply-templates select="m:mi[2]" mode="#current"/>
     </xsl:template>
-    
+
     <!-- m:frac is used to display fractions -->
     <xsl:template match="m:mfrac" mode="spoken-math">
         <xsl:choose>
@@ -256,7 +301,7 @@
         <xsl:choose>
             <xsl:when test="$operator eq '&#8734;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('unlimited', .)" />
+                <xsl:value-of select="fnk:translate('infinite', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="matches($operator, '^\p{Lu}$')">
@@ -268,6 +313,16 @@
             <xsl:when test="$operator eq '&#8520;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('the imaginary unit', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq 'log'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('log', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq 'ln'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('ln', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
@@ -288,6 +343,18 @@
             </xsl:otherwise>
         </xsl:choose>
         <xsl:choose>
+            <xsl:when test="($uc eq 955)">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('lambda', .)" />
+            </xsl:when>
+            <xsl:when test="($uc eq 967)">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('chi', .)" />
+            </xsl:when>
+            <xsl:when test="($uc eq 936) or ($uc eq 968)">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('psi', .)" />
+            </xsl:when>
             <xsl:when test="($uc eq 945) or ($uc eq 913)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('alpha', .)" />
@@ -308,9 +375,17 @@
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('epsilon', .)" />
             </xsl:when>
+            <xsl:when test="($uc eq 956)">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('mu', .)" />
+            </xsl:when>
             <xsl:when test="($uc eq 960) or ($uc eq 928)">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('pi', .)" />
+            </xsl:when>
+            <xsl:when test="($uc eq 963) or ($uc eq 931)">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('sigma', .)" />
             </xsl:when>
             <xsl:when test="($uc eq 966) or ($uc eq 934) or ($uc eq 981)">
                 <xsl:text> </xsl:text>
@@ -327,6 +402,8 @@
                     <xsl:text>: </xsl:text>
                     <xsl:value-of select="$uc"/>
                 </xsl:message>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="."/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -337,64 +414,52 @@
         <xsl:next-match/>
     </xsl:template>
     
-    <!-- m:mtable is used to create tables or matrices -->
-    <xsl:template match="m:mtable" mode="spoken-math">
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('a matrix with', .)" />
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:numbers(count(m:mtr), .)"/>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('rows and with', .)" />
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:numbers(count(m:mtr[1]/m:mtd), .)"/>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('columns', .)" />
-        <xsl:text>: </xsl:text>
-        <xsl:apply-templates mode="#current"/>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('matrix end', .)" />
-    </xsl:template>
-    
-    <!-- m:mtr represents a row in a table or a matrix -->
-    <xsl:template match="m:mtr" mode="spoken-math">
-        <xsl:if test="count(following-sibling::m:mtr) eq 0">
-            <xsl:text> </xsl:text>
-            <xsl:value-of select="fnk:translate('and at last', .)" />
-            <xsl:text> </xsl:text>
-        </xsl:if>
-        <xsl:value-of select="fnk:sort-numbers(1 + count(preceding-sibling::m:mtr), .)"/>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="fnk:translate('row', .)" />
-        <xsl:text>: </xsl:text>
-        <xsl:apply-templates mode="#current"/>
-    </xsl:template>
-    
-    <!-- m:mtd represents a cell in a table or a matrix -->
-    <xsl:template match="m:mtd" mode="spoken-math">
-        <xsl:choose>
-            <xsl:when test="count(following-sibling::m:mtd) eq 0">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('and the last column', .)" />
-                <xsl:text>: </xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="fnk:sort-numbers(1 + count(preceding-sibling::m:mtd), .)"/>
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('column', .)" />
-                <xsl:text>: </xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:apply-templates mode="spoken-math"/>
-        <xsl:text> </xsl:text>
-    </xsl:template>
-    
     <!-- m:mo represents an operator in a broad sense -->
     <xsl:template match="m:mo" mode="spoken-math">
         <xsl:variable name="operator" as="xs:string" select="normalize-space(.)"/>
-        <xsl:variable name="uc" as="xs:integer" select="string-to-codepoints(normalize-space(.))"/>
         <xsl:choose>
             <xsl:when test="matches($operator, '^(,|\.)$')">
                 <xsl:value-of select="$operator"/>
+            </xsl:when>
+            <xsl:when test="($operator eq '&#47;')">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('divided by', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq 'sin'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('sine', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq 'cos'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('cosine', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq 'tan'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('tangent', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="($operator eq '&#175;')">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('macron', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="($operator eq '&#8776;')">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('almost equal to', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="($operator eq '&#8734;')">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('infinite', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="($operator eq '&#8721;')">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('sum of', .)" />
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$operator eq '...'">
                 <xsl:text> </xsl:text>
@@ -471,6 +536,11 @@
                 <xsl:value-of select="fnk:translate('times', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
+            <xsl:when test="$operator eq '&#8902;' or $operator eq '&#215;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('multiplied by', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
             <xsl:when test="$operator eq '&#8594;' or $operator eq '&#x2192;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('goes against', .)" />
@@ -479,6 +549,11 @@
             <xsl:when test="$operator eq '&#8743;' or $operator eq '&#x2227;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('and', .)" />
+                <xsl:text> </xsl:text>
+            </xsl:when>
+            <xsl:when test="$operator eq '&#8712;'">
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="fnk:translate('element of', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$operator eq '&#8290;' or $operator eq '&#x02062;' or $operator eq '&#x2062;'">
@@ -548,9 +623,9 @@
                 <xsl:value-of select="fnk:translate('right angle bracket', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8243;' or $operator eq '&#x2033;'">
+            <xsl:when test="$operator eq '&#8517;' or $operator eq '&#x2145;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('the second derivative', .)" />
+                <xsl:value-of select="fnk:translate('the derivative of', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:when test="$operator eq '&#120539;' or $operator eq '&#x1D6DB;'">
@@ -558,22 +633,21 @@
                 <xsl:value-of select="fnk:translate('the partial derivative', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8517;' or $operator eq '&#x2145;' or $uc eq 8517">
+            <xsl:when test="$operator eq '&#8706;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('capital differential d', .)" />
+                <xsl:value-of select="fnk:translate('the partial differential', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8242;' or $operator eq '&#x2032;' or $uc eq 8242">
+            <xsl:when test="$operator eq '&#8242;' or $operator eq '&#x2032;'">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="fnk:translate('derived', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            <xsl:when test="$operator eq '&#8243;' or $operator eq '&#x2033;' or $uc eq 8243">
+            <xsl:when test="$operator eq '&#8243;' or $operator eq '&#x2033;'">
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('the second derivative of', .)" />
+                <xsl:value-of select="fnk:translate('the second derivative', .)" />
                 <xsl:text> </xsl:text>
             </xsl:when>
-            
             <xsl:when test="$operator eq '&#8289;' or $operator eq '&#8290;'">
                 <xsl:text> </xsl:text>
             </xsl:when>
@@ -582,12 +656,9 @@
                     <xsl:value-of select="fnk:translate('unknown operator', .)" />
                     <xsl:text>: </xsl:text>
                     <xsl:value-of select="."/>
-                    <xsl:text> (</xsl:text>
-                    <xsl:value-of select="$uc"/>
-                    <xsl:text>)</xsl:text>
                 </xsl:message>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('unknown operator', .)" />
+                <xsl:value-of select="fnk:translate($operator, .)" />
                 <xsl:text> </xsl:text>
             </xsl:otherwise>
         </xsl:choose>
@@ -680,8 +751,13 @@
     <xsl:template match="m:mrow" mode="spoken-math">
         <xsl:apply-templates mode="#current"/>
     </xsl:template>
-    <xsl:template match="m:mrow[(count(child::element()) eq 2) and ((local-name(child::element()[1]) eq 'mn') or ((local-name(child::element()[1]) eq 'mrow') and (count(child::element()[1]/child::element()) eq 2) and (local-name(child::element()[1]/child::element()[1]) eq 'mo') and (normalize-space(child::element()[1]/child::element()[1]) eq '-') and (local-name(child::element()[1]/child::element()[2]) eq 'mn'))) and (local-name(child::element()[2]) eq 'mi') and (normalize-space(m:mi) eq '&#176;')]"
-        mode="spoken-math">
+    <xsl:template match="m:mrow[(count(child::element()) eq 1) and (local-name(child::element()[1]) eq 'mi')]" mode="spoken-math">
+        <xsl:variable name="stringified" select="normalize-space(string-join(.//text(), ''))" as="xs:string"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="fnk:translate($stringified, .)" />
+        <xsl:text> </xsl:text>
+    </xsl:template>
+    <xsl:template match="m:mrow[(count(child::element()) eq 2) and ((local-name(child::element()[1]) eq 'mn') or ((local-name(child::element()[1]) eq 'mrow') and (count(child::element()[1]/child::element()) eq 2) and (local-name(child::element()[1]/child::element()[1]) eq 'mo') and (normalize-space(child::element()[1]/child::element()[1]) eq '-') and (local-name(child::element()[1]/child::element()[2]) eq 'mn'))) and (local-name(child::element()[2]) eq 'mi') and (normalize-space(m:mi) eq '&#176;')]" mode="spoken-math">
         <xsl:apply-templates select="child::element()[1]" mode="#current"/>
         <xsl:choose>
             <xsl:when test="child::element()[1] castable as xs:integer">
@@ -779,7 +855,7 @@
                     <xsl:value-of select="fnk:translate('the natural logarithm', .)" />
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="fnk:translate('unknown function', .)" />
+                    <xsl:value-of select="." />
                     <xsl:message>
                         <xsl:value-of select="fnk:translate('unknown function', .)" />
                         <xsl:text>: </xsl:text>
@@ -867,9 +943,9 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('unknown integral', .)" />
+                <xsl:value-of select="." />
                 <xsl:text> </xsl:text>
-                <xsl:message> <xsl:value-of select="fnk:translate('unknown integral', .)" /></xsl:message>
+                <xsl:message> <xsl:value-of select="fnk:translate('unknown integral', .)" /><xsl:text>: </xsl:text><xsl:value-of select="$integraltegnet"/></xsl:message>
             </xsl:otherwise>
         </xsl:choose>
         <xsl:text> </xsl:text>
@@ -1004,129 +1080,6 @@
         </xsl:choose>
     </xsl:template>
     
-    <!-- Funksjoner: -->
-    <xsl:function name="fnk:numbers" as="xs:string">
-        <xsl:param name="tall" as="xs:integer"/>
-        <xsl:param name="content" as="node()"/>
-        <xsl:choose>
-            <xsl:when test="$tall eq 1">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('one', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 2">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('two', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 3">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('three', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 4">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('four', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 5">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('five', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 6">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('six', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 7">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('seven', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 8">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('eight', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 9">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('nine', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 10">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('ten', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <!-- og så videre -->
-            <xsl:otherwise>
-                <xsl:value-of select="$tall"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-    <xsl:function name="fnk:sort-numbers" as="xs:string">
-        <xsl:param name="tall" as="xs:integer"/>
-        <xsl:param name="content" as="node()"/>
-        <xsl:choose>
-            <xsl:when test="$tall eq 1">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('first', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 2">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('second', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 3">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('third', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 4">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('fourth', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 5">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('fifth', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 6">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('sixth', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 7">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('seventh', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 8">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('eighth', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 9">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('ninth', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <xsl:when test="$tall eq 10">
-                <xsl:text> </xsl:text>
-                <xsl:value-of select="fnk:translate('tenth', $content)" />
-                <xsl:text> </xsl:text>
-            </xsl:when>
-            <!-- og så videre -->
-            <xsl:otherwise>
-                <xsl:value-of select="$tall"/>
-                <xsl:text>. </xsl:text>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-    
     <!-- Translation function -->
     <xsl:function name="fnk:translate" as="xs:string">
         <xsl:param name="text" as="xs:string"/>
@@ -1135,16 +1088,21 @@
         <xsl:variable name="language" select="($context/ancestor-or-self::*/@xml:lang)[last()]" as="xs:string?"/>
         <xsl:variable name="translated" as="xs:string">
             <xsl:choose>
-                <xsl:when test="$language != ''">
-                    <xsl:variable name="language" select="if ($language = 'no') then 'nn' else $language"/>
+                <xsl:when test="not($language = '')">
+                    <xsl:variable name="language" select="if (not($language = 'nb')) then 'en' else $language"/>
                     <xsl:variable name="result" select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()" as="xs:string?"/>
-                    <xsl:if test="not($result)">
-                        <xsl:message terminate="no">No translation found for <xsl:value-of select="$text"/> in language=<xsl:value-of select="$language"/>, terminating.</xsl:message>
-                    </xsl:if>
-                    <xsl:value-of select="$dictionary/term[@name=$text]/translation[@lang=$language]/text()"/>
+                    <xsl:choose>
+                        <xsl:when test="not($result)">
+                            <!--<xsl:message terminate="no">No translation found for <xsl:value-of select="$text"/> in language=<xsl:value-of select="$language"/>, returning input text.</xsl:message>-->
+                            <xsl:value-of select="$text"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="$result"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:message terminate="no">No language attribute found, terminating.</xsl:message>
+                    <xsl:message terminate="yes">No language attribute found, terminating.</xsl:message>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -1369,11 +1327,13 @@
             </term>
             <term name="the partial derivative">
                 <translation lang="en">the partial derivative</translation>
-                <translation lang="nb">den partielle deriverte</translation>
+                <translation lang="nb">partiell derivert</translation>
             </term>
-            <term name="capital differential d">
-                <translation lang="en">capital differential d</translation>
-                <translation lang="nb">stor differensial d</translation>
+            
+            <!-- Differential -->
+            <term name="the partial differential">
+                <translation lang="en">the partial differential</translation>
+                <translation lang="nb">partiell differensialet</translation>
             </term>
             
             <!-- Boundary values -->
@@ -1401,8 +1361,6 @@
                 <translation lang="en">square root end</translation>
                 <translation lang="nb">kvadratrot slutt</translation>
             </term>
-            
-            <!-- N-root -->
             
             <!-- Fractions -->
             <term name="the fraction">
@@ -1533,6 +1491,10 @@
                 <translation lang="en">times</translation>
                 <translation lang="nb">ganger</translation>
             </term>
+            <term name="multiplied by">
+                <translation lang="en">multiplied by</translation>
+                <translation lang="nb">ganget med</translation>
+            </term>
             <term name="divided by">
                 <translation lang="en">over</translation>
                 <translation lang="nb">delt på</translation>
@@ -1585,8 +1547,8 @@
                 <translation lang="en">goes against</translation>
                 <translation lang="nb">går mot</translation>
             </term>
-            <term name="unlimited">
-                <translation lang="en">unlimited</translation>
+            <term name="infinite">
+                <translation lang="en">infinite</translation>
                 <translation lang="nb">uendelig</translation>
             </term>
             <term name="the imaginary unit">
@@ -1596,6 +1558,46 @@
             <term name="is equivalent of">
                 <translation lang="en">is equivalent of</translation>
                 <translation lang="nb">er ekvivalent med</translation>
+            </term>
+            <term name="sum of">
+                <translation lang="en">summation from</translation>
+                <translation lang="nb">summering fra</translation>
+            </term>
+            <term name="min">
+                <translation lang="en">min</translation>
+                <translation lang="nb">min</translation>
+            </term>
+            <term name="max">
+                <translation lang="en">max</translation>
+                <translation lang="nb">maks</translation>
+            </term>
+            <term name="macron">
+                <translation lang="en">with line above</translation>
+                <translation lang="nb">med strek over</translation>
+            </term>
+            <term name="lim">
+                <translation lang="en">limit</translation>
+                <translation lang="nb">lim</translation>
+            </term>
+            <term name="almost equal to">
+                <translation lang="en">is approximately equal to</translation>
+                <translation lang="nb">er cirka lik</translation>
+            </term>
+            <term name="element of">
+                <translation lang="en">element of</translation>
+                <translation lang="nb">element av</translation>
+            </term>
+            <term name="ln">
+                <translation lang="en">the natural log of</translation>
+                <translation lang="nb">den naturlige logaritmen til</translation>
+            </term>
+            <term name="log">
+                <translation lang="en">the log of</translation>
+                <translation lang="nb">logaritmen til</translation>
+            </term>
+            <term name="%">
+                <translation lang="en">percent</translation>
+                <translation lang="nb">prosent</translation>
             </term>
             
             <!-- Integrals -->
@@ -1669,6 +1671,10 @@
                 <translation lang="en">pi</translation>
                 <translation lang="nb">pi</translation>
             </term>
+            <term name="psi">
+                <translation lang="en">psi</translation>
+                <translation lang="nb">psi</translation>
+            </term>
             <term name="phi">
                 <translation lang="en">phi</translation>
                 <translation lang="nb">phi</translation>
@@ -1676,6 +1682,14 @@
             <term name="omega">
                 <translation lang="en">omega</translation>
                 <translation lang="nb">omega</translation>
+            </term>
+            <term name="sigma">
+                <translation lang="en">sigma</translation>
+                <translation lang="nb">sigma</translation>
+            </term>
+            <term name="mu">
+                <translation lang="en">mu</translation>
+                <translation lang="nb">mu</translation>
             </term>
             
             <!-- Numbers -->
@@ -1760,6 +1774,80 @@
             <term name="tenth">
                 <translation lang="en">tenth</translation>
                 <translation lang="nb">tiende</translation>
+            </term>
+            
+            <!-- Chemical compounds -->
+            <term name="O">
+                <translation lang="en">O</translation>
+                <translation lang="nb">O</translation>
+            </term>
+            <term name="C">
+                <translation lang="en">C</translation>
+                <translation lang="nb">C</translation>
+            </term>
+            <term name="H">
+                <translation lang="en">H</translation>
+                <translation lang="nb">H</translation>
+            </term>
+            <term name="CO 2">
+                <translation lang="en">C O 2</translation>
+                <translation lang="nb">C O 2</translation>
+            </term>
+            <term name="C 6">
+                <translation lang="en">C 6</translation>
+                <translation lang="nb">C 6</translation>
+            </term>
+            <term name="H 2">
+                <translation lang="en">H 2</translation>
+                <translation lang="nb">H 2</translation>
+            </term>
+            <term name="H 12">
+                <translation lang="en">H 12</translation>
+                <translation lang="nb">H 12</translation>
+            </term>
+            <term name="O 2">
+                <translation lang="en">O 2</translation>
+                <translation lang="nb">O 2</translation>
+            </term>
+            <term name="O 3">
+                <translation lang="en">O 3</translation>
+                <translation lang="nb">O 3</translation>
+            </term>
+            <term name="O 6">
+                <translation lang="en">O 6</translation>
+                <translation lang="nb">O 6</translation>
+            </term>
+            <term name="CO2">
+                <translation lang="en">C O 2</translation>
+                <translation lang="nb">C O 2</translation>
+            </term>
+            <term name="C6">
+                <translation lang="en">C 6</translation>
+                <translation lang="nb">C 6</translation>
+            </term>
+            <term name="H2">
+                <translation lang="en">H 2</translation>
+                <translation lang="nb">H 2</translation>
+            </term>
+            <term name="H12">
+                <translation lang="en">H 12</translation>
+                <translation lang="nb">H 12</translation>
+            </term>
+            <term name="O2">
+                <translation lang="en">O 2</translation>
+                <translation lang="nb">O 2</translation>
+            </term>
+            <term name="O3">
+                <translation lang="en">O 3</translation>
+                <translation lang="nb">O 3</translation>
+            </term>
+            <term name="O6">
+                <translation lang="en">O 6</translation>
+                <translation lang="nb">O 6</translation>
+            </term>
+            <term name="Chlorophyll">
+                <translation lang="en">Chlorophyll</translation>
+                <translation lang="nb">Klorofyll</translation>
             </term>
         </dictionary>
     </xsl:variable>
