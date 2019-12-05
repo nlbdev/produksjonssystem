@@ -19,4 +19,30 @@
         <xsl:value-of select="normalize-space()"/>
     </xsl:template>
     
+    <xsl:template match="sub | sup">
+        <xsl:next-match/> <!-- handle element as normal, this template will conditionally insert whitespace after the element -->
+        
+        <!-- incrementally increase the search area to improve performance (and readability) -->
+        <xsl:variable name="next-text-node" select="following-sibling::node()[1] intersect following-sibling::text()[1]" as="text()*"/> <!-- check first following node -->
+        <xsl:variable name="next-text-node" select="if (count($next-text-node) gt 0) then $next-text-node else             (following-sibling::text()[1] | (following-sibling::*//text()[1])[1])" as="text()*"/> <!-- check following nodes and their descendants -->
+        <xsl:variable name="next-text-node" select="if (count($next-text-node) gt 0) then $next-text-node else ancestor::*/(following-sibling::text()[1] | (following-sibling::*//text()[1])[1])" as="text()*"/> <!-- check ancestors and their descendants -->
+        <xsl:variable name="next-text-node" select="$next-text-node[1]" as="text()?"/> <!-- use the first text node, in case multiple was found -->
+        
+        <xsl:choose>
+            <xsl:when test="count($next-text-node) = 0">
+                <xsl:message select="concat('First following text node for ', name(), ' was not found (self::*//text() = ''', string-join(.//text(), ''), ''')')"/>
+                <!-- could not foind text node => do nothing -->
+            </xsl:when>
+            
+            <xsl:when test="matches(substring($next-text-node, 1, 1), '\s')">
+                <!-- whitespace found at start of next text node => do nothing -->
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <!-- insert space after element -->
+                <xsl:text> </xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
 </xsl:stylesheet>

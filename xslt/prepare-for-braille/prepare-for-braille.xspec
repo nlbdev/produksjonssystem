@@ -11,5 +11,71 @@
 
         <x:expect label="the result should be as expected" xml:spec="preserve"><title>Test test</title></x:expect>
     </x:scenario>
+    
+    <x:scenario label="Make sure that there's whitespace after sup and sub (test for https://github.com/nlbdev/pipeline/issues/227)">
+        <x:context>
+            <div>
+                <p xml:space="preserve">xxx <sup>yyy</sup> zzz</p>
+                <p xml:space="preserve">xxx<sup>yyy</sup> zzz</p>
+                <p xml:space="preserve">xxx <sup>yyy</sup>zzz</p>
+                <p xml:space="preserve">xxx<sup>yyy</sup>zzz</p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> zzz</p>
+                <p xml:space="preserve">xxx<sub>yyy</sub> zzz</p>
+                <p xml:space="preserve">xxx <sub>yyy</sub>zzz</p>
+                <p xml:space="preserve">xxx<sub>yyy</sub>zzz</p>
+                
+                <p xml:space="preserve">xxx <sup>yyy</sup><span> zzz</span></p>
+                <p xml:space="preserve">xxx <sup>yyy</sup><span>zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub><span> zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub><span>zzz</span></p>
+                
+                <p xml:space="preserve">xxx <sup>yyy</sup> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <sup>yyy</sup><span>zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub><span>zzz</span></p>
+                
+                <p xml:space="preserve">xxx <span><sup>yyy</sup></span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sup>yyy</sup> </span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub></span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub> </span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sup>yyy</sup></span> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sup>yyy</sup> </span> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub></span> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub> </span> <span>zzz</span></p>
+            </div>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <div>
+                <p xml:space="preserve">xxx <sup>yyy</sup> zzz</p>
+                <p xml:space="preserve">xxx<sup>yyy</sup> zzz</p>
+                <p xml:space="preserve">xxx <sup>yyy</sup> zzz</p>
+                <p xml:space="preserve">xxx<sup>yyy</sup> zzz</p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> zzz</p>
+                <p xml:space="preserve">xxx<sub>yyy</sub> zzz</p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> zzz</p>
+                <p xml:space="preserve">xxx<sub>yyy</sub> zzz</p>
+                
+                <p xml:space="preserve">xxx <sup>yyy</sup><span> zzz</span></p>
+                <p xml:space="preserve">xxx <sup>yyy</sup> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub><span> zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> <span>zzz</span></p>
+                
+                <p xml:space="preserve">xxx <sup>yyy</sup> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <sup>yyy</sup> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <sub>yyy</sub> <span>zzz</span></p>
+                
+                <p xml:space="preserve">xxx <span><sup>yyy</sup> </span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sup>yyy</sup> </span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub> </span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub> </span><span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sup>yyy</sup></span> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sup>yyy</sup> </span> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub></span> <span>zzz</span></p>
+                <p xml:space="preserve">xxx <span><sub>yyy</sub> </span> <span>zzz</span></p>
+            </div>
+        </x:expect>
+    </x:scenario>
 
 </x:description>
