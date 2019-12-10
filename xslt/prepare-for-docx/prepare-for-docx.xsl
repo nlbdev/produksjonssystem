@@ -12,7 +12,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="h1[not(ancestor::section[f:types(.) = 'toc'])]">
+    <xsl:template match="h1[not(ancestor::div[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             <xsl:text>xxx1 </xsl:text>

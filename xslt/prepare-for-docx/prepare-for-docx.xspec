@@ -141,8 +141,53 @@
                 <li>Sudan 1.400 </li>
             </ul>
             
+            <aside class="prodnote" epub:type="z3998:production" id="desc-21">
+                <p><strong>Samfunnsvitenskapelig Forskning:</strong></p>
+                <ul>
+                    <li><p>Kvantitativ metode</p>
+                        <ul>
+                            <li>Spørreundersøkelse</li>
+                            <li>Registerdata</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Forskningsetikk</li>
+                </ul>
+                <ul>
+                    <li><p>Kvalitativ metode</p>
+                        <ul>
+                            <li>Kvalitativt intervju</li>
+                            <li>Dokumentstudie</li>
+                            <li>Feltarbeid</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Problemstilling</li>
+                </ul>
+                <ul>
+                    <li>Teori</li>
+                </ul>
+                <ul>
+                    <li>Metode</li>
+                </ul>
+                <ul>
+                    <li>Empiri</li>
+                </ul>
+            </aside>
            
+           
+            <div>
+            <p>Grovt sett kan vi si at sosialantropologien har et dobbelt siktemål med sin forskning:</p>
+            <ul>
+                <li><p>For det første skal den bringe fram kunnskap om de store <em>kulturelle variasjonene</em> i verden.</p>
+                    <p>Sosialantropologer ser på hva som er spesielt og unikt ved gruppa de studerer. </p></li>
+                <li>For det andre er sosialantropologene opptatt av å forklare hva kulturer og mennesker kan ha felles. </li>
+            </ul>
+            </div>
         </x:context>
+       
         
         <x:expect label="-- should be inserted in unordered list">  
             <ul>
@@ -166,24 +211,54 @@
                 <li>-- Kroatia: 1.700</li>
                 <li>-- Sudan 1.400 </li>
             </ul>
+            <aside class="prodnote" epub:type="z3998:production" id="desc-21">
+                <p>_Samfunnsvitenskapelig Forskning:_</p>
+                <ul>
+                    <li>-- <p>Kvantitativ metode</p>
+                        <ul>
+                            <li>-- Spørreundersøkelse</li>
+                            <li>-- Registerdata</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li>-- Forskningsetikk</li>
+                </ul>
+                <ul>
+                    <li>-- <p>Kvalitativ metode</p>
+                        <ul>
+                            <li>-- Kvalitativt intervju</li>
+                            <li>-- Dokumentstudie</li>
+                            <li>-- Feltarbeid</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li>-- Problemstilling</li>
+                </ul>
+                <ul>
+                    <li>-- Teori</li>
+                </ul>
+                <ul>
+                    <li>-- Metode</li>
+                </ul>
+                <ul>
+                    <li>-- Empiri</li>
+                </ul>
+            </aside>
+            
+            <div>
+                <p>Grovt sett kan vi si at sosialantropologien har et dobbelt siktemål med sin forskning:</p>
+                <ul>
+                    <li>-- <p>For det første skal den bringe fram kunnskap om de store _kulturelle variasjonene_ i verden.</p>
+                        <p>Sosialantropologer ser på hva som er spesielt og unikt ved gruppa de studerer. </p></li>
+                    <li>-- For det andre er sosialantropologene opptatt av å forklare hva kulturer og mennesker kan ha felles. </li>
+                </ul>
+            </div>
         </x:expect>
     </x:scenario>
     
-    <x:scenario label="Insert >>> in heading for exercises class=oppgaver3">
-        <x:context>
-            <section class="oppgaver3" id="ch3-72">
-                <h6 id="d1e10125">Oppgave</h6>
-            </section>
-         </x:context>
-        
-        <x:expect label=">>> should be inserted in heading for exercises class=oppgave3 ">  
-            
-            <section class="oppgaver3" id="ch3-72">
-                <h6 id="d1e10125">>>> Oppgave</h6>
-            </section>
-            
-        </x:expect>
-    </x:scenario> 
+    
     
     
     
@@ -191,7 +266,7 @@
         <x:context>
              
            
-            <section class="oppgaver1" id="ch1-6">
+            <div class="oppgaver1" id="ch1-6">
                 <h3 id="d1e2227">Test deg selv</h3>
                 <ol>
                     <li><p><strong>2.2.10</strong> Ola Bjerk er gårdbruker. </p>

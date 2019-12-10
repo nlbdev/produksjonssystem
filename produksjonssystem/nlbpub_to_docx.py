@@ -120,7 +120,7 @@ class NLBpubToDocx(Pipeline):
                                                  "--docx-page-margin-right=56",
 						# Denne vil ikke virke "--language="+language,
                                                  #"--base-font-size=13"])
-						 "--remove-paragraph-spacing",
+						"--remove-paragraph-spacing",
   						"--font-size-mapping=12,12,12,12,12,12,12,12"])
                                                
 
