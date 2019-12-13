@@ -128,10 +128,16 @@
                 <xsl:variable name="id" select="tokenize(., '#')[2]" as="xs:string"/>
                 <xsl:variable name="target-element" select="($after-split//*[@id = $id])[1]" as="element()?"/>
                 
-                <xsl:variable name="target-href" select="($target-element/ancestor::*[local-name() = '_' and @href])[1]/@href" as="xs:string"/>
+                <xsl:variable name="target-href" select="($target-element/ancestor::*[local-name() = '_' and @href])[1]/@href" as="xs:string?"/>
                 <xsl:variable name="current-href" select="(ancestor::*[local-name() = '_' and @href])[1]/@href" as="xs:string"/>
                 
+                <xsl:message select="concat('Reference: ', name(), '=''', ., ''', at /', string-join(for $e in (ancestor-or-self::*) return concat($e/name(), '[', count($e/preceding-sibling::*[name() = $e/name()]), ']'), '/'))"/>
+                
                 <xsl:choose>
+                    <xsl:when test="not($target-href)">
+                        <xsl:message select="concat('Could not find target element for ', name(), '=''', ., ''', at /', string-join(for $e in (ancestor-or-self::*) return concat($e/name(), '[', count($e/preceding-sibling::*[name() = $e/name()]), ']'), '/'))"/>
+                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                    </xsl:when>
                     <xsl:when test="$target-href = $current-href">
                         <xsl:attribute name="{name()}" select="concat('#', $id)" exclude-result-prefixes="#all"/>
                     </xsl:when>
