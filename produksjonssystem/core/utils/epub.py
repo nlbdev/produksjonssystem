@@ -3,6 +3,7 @@
 import os
 import pathlib
 import re
+import stat
 import tempfile
 import zipfile
 
@@ -330,6 +331,29 @@ class Epub():
             container.write("</container>\n")
 
         return Epub(pipeline, dir_out)
+
+    def copy(self):
+        epub_tempfile_obj = tempfile.NamedTemporaryFile()
+        epub_tempfile = epub_tempfile_obj.name
+        self.pipeline.utils.filesystem.copy(self.asFile(), epub_tempfile)
+        return Epub(self.pipeline, epub_tempfile), epub_tempfile_obj
+
+    def fix_permissions(self):
+        dir = self.asDir()
+        for root, dirs, files in os.walk(dir):
+            # read, write and execute on all directories
+            for dir in dirs:
+                os.chmod(os.path.join(root, dir),
+                         stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+
+            # read and write on all files
+            for file in files:
+                os.chmod(os.path.join(root, file),
+                         stat.S_IRUSR | stat.S_IWUSR |
+                         stat.S_IRGRP | stat.S_IWGRP |
+                         stat.S_IROTH | stat.S_IWOTH)
+
+        self.asFile(rebuild=True)  # make sure the permissions is included in the zipped version
 
     file_extensions = {
         "xml":       "application/xml",

@@ -490,12 +490,14 @@ class Filesystem():
         filtered = []
         for dirname in dirlist:
             if Filesystem.should_ignore(os.path.join(dir, dirname)):
-                if "master/NLBPUB" in dir and threading.current_thread().getName().endswith("event in nlbpub") and "558282402019" in dirname:  # debugging strange bug
+                # debugging strange bug
+                if "master/NLBPUB" in dir and threading.current_thread().getName().endswith("event in nlbpub") and "558282402019" in dirname:
                     logging.debug("Filesystem.list_book_dir: '{}' is filtered out as a common system file".format(dirname))
                 # Filter out common system files
                 continue
             if len(dirname) == 0 or (dirname[0] not in "0123456789" and not dirname.startswith("TEST")):
-                if "master/NLBPUB" in dir and threading.current_thread().getName().endswith("event in nlbpub") and "558282402019" in dirname:  # debugging strange bug
+                # debugging strange bug
+                if "master/NLBPUB" in dir and threading.current_thread().getName().endswith("event in nlbpub") and "558282402019" in dirname:
                     logging.debug("Filesystem.list_book_dir: '{}' is filtered out because it doesn't start with a number".format(dirname))
                 # Book identifiers must start with a number
                 continue
