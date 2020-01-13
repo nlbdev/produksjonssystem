@@ -123,7 +123,7 @@
                             ' levels')"/> of headings.</p>
                         <p>The format of this book is HTML. This file format can be opened in any web browser for reading,
                             or a text editor for editing purposes (for instance Microsoft Word or LibreOffice Writer).</p>
-                        <figure class="image"><img alt="NLB logo" src="NLB_logo.png"/></figure>
+                        <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
                     </section>
                 </xsl:otherwise>
             </xsl:choose>
