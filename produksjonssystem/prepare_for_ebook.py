@@ -111,7 +111,7 @@ class PrepareForEbook(Pipeline):
             return False
         shutil.copy(temp_xml, html_file)
 
-        self.utils.report.info("Tilpasser innhold for e-tekst...")
+        self.utils.report.info("Tilpasser innhold for e-bok...")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "prepare-for-ebook.xsl"),
                     source=html_file,

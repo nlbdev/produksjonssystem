@@ -120,7 +120,7 @@ class InsertMetadataDaisy202(InsertMetadata):
 
 class InsertMetadataXhtml(InsertMetadata):
     uid = "insert-metadata-xhtml"
-    title = "Sett inn metadata for e-tekst"
+    title = "Sett inn metadata for e-bok"
     labels = ["e-bok", "Metadata", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 989
