@@ -15,6 +15,8 @@ from core.directory import Directory
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
+from datetime import datetime, timezone
+from dateutil.relativedelta import relativedelta
 
 
 class API():
@@ -116,6 +118,14 @@ class API():
         self.app.add_url_rule(self.root_path+"/directories/<directory_id>/editions/",
                               "directory_editions",
                               self.directory_editions)
+
+        self.app.add_url_rule(self.root_path+"/editions/<edition_id>/reports/",
+                              "reports",
+                              self.reports)
+
+        self.app.add_url_rule(self.root_path+"/editions/<edition_id>/reports/<production_id>",
+                              "report",
+                              self.report)
 
         self.app.add_url_rule(self.root_path+"/directories/<directory_id>/editions/<edition_id>/",
                               "directory_edition",
@@ -357,6 +367,53 @@ class API():
             if pipeline.dir_in and os.path.normpath(pipeline.dir_in) == path:
                 pipeline.trigger(edition_id, auto=False)
                 result.append(pipeline.uid)
+        return jsonify(result)
+
+    def reports(self, edition_id):
+        path = os.environ.get("DIR_REPORTS")
+
+        if not path:
+            return Response(None, status=404)
+        result = []
+        current_month = datetime.now(timezone.utc)
+
+        # Finding reports for last 3 months
+        for i in range(0, 3):
+            month = (current_month - relativedelta(months=i)).strftime("%Y-%m")
+
+            path_reports = os.path.join(path, "logs", month, edition_id)
+            if not os.path.exists(path_reports):
+                continue
+            dirs = os.listdir(path_reports)
+            for dir in dirs:
+                dir_split = dir.split("-")
+                pipeline_id = dir_split[len(dir_split) - 2] + "-" + dir_split[len(dir_split) - 1]
+                pipeline = [pipeline for pipeline in Pipeline.pipelines if pipeline.uid == pipeline_id]
+                pipeline = pipeline[0] if pipeline else None
+                result.append({
+                    "edition_id": edition_id,
+                    "pipeline_id": pipeline_id,
+                    "production_id": dir,
+                    "title": pipeline.title,
+                    "labels": pipeline.labels,
+                    "format": pipeline.publication_format
+                    })
+        if result == []:
+            return jsonify("No results found for edition: " + edition_id)
+        return jsonify(result)
+
+    def report(self, edition_id, production_id):
+        path = os.environ.get("DIR_REPORTS")
+
+        if not path:
+            return Response(None, status=404)
+
+        path_report = os.path.join(path, "logs", (datetime.now(timezone.utc).strftime("%Y-%m")), edition_id, production_id, "log.txt")
+        if not os.path.exists(path_report):
+            return Response("No report for edition: " + edition_id, status=404)
+        result = []
+        with open(path_report, 'r') as report:
+            result = report.read()
         return jsonify(result)
 
     # endpoint: /
