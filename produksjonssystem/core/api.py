@@ -407,8 +407,9 @@ class API():
 
         if not path:
             return Response(None, status=404)
-
-        path_report = os.path.join(path, "logs", (datetime.now(timezone.utc).strftime("%Y-%m")), edition_id, production_id, "log.txt")
+        id_split = production_id.split("-")
+        month = id_split[0] + "-" + id_split[1]
+        path_report = os.path.join(path, "logs", month, edition_id, production_id, "log.txt")
         if not os.path.exists(path_report):
             return Response("No report for edition: " + edition_id, status=404)
         result = []
