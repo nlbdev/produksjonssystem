@@ -9,7 +9,7 @@ from core.utils.metadata import Metadata
 
 
 class InsertMetadata(Pipeline):
-    # Ikke instansier denne klassen; bruk heller InsertMetadataEpub osv.
+    # Ikke instansier denne klassen; bruk heller InsertMetadataBraille osv.
     uid = "insert-metadata"
     # gid = "insert-metadata"
     title = "Sett inn metadata"
@@ -108,14 +108,6 @@ class InsertMetadata(Pipeline):
         should_produce, _ = Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
         production_complete, _ = Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
         return should_produce and not production_complete
-
-
-class InsertMetadataEpub(InsertMetadata):
-    uid = "insert-metadata-epub"
-    title = "Sett inn metadata for EPUB"
-    labels = ["EPUB", "Metadata", "Statped"]
-    publication_format = "EPUB"
-    expected_processing_time = 30
 
 
 class InsertMetadataDaisy202(InsertMetadata):

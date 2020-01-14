@@ -26,9 +26,6 @@ from core.utils.slack import Slack
 # Import pipelines
 from check_pef import CheckPef
 from epub_to_dtbook_audio import EpubToDtbookAudio
-# from epub_to_dtbook_braille import EpubToDtbookBraille
-# from epub_to_dtbook_html import EpubToDtbookHTML
-from html_to_dtbook import HtmlToDtbook
 # from incoming_NLBPUB import (NLBPUB_incoming_validator,
 #                              NLBPUB_incoming_warning, NLBPUB_validator)
 from incoming_nordic import IncomingNordic
@@ -172,7 +169,6 @@ class Produksjonssystem():
                 "name": "Format-spesifikk metadata",
                 "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["pub-in-epub"] = os.path.join(book_archive_dirs["master"], "utgave-inn/EPUB")
         self.dirs_ranked[-1]["dirs"]["pub-in-braille"] = os.path.join(book_archive_dirs["master"], "utgave-inn/punktskrift")
         self.dirs_ranked[-1]["dirs"]["pub-in-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-inn/e-tekst")
         self.dirs_ranked[-1]["dirs"]["pub-in-audio"] = os.path.join(book_archive_dirs["master"], "utgave-inn/lydbok")
@@ -182,16 +178,12 @@ class Produksjonssystem():
             "name": "Klar for produksjon",
             "dirs": OrderedDict()
         })
-        self.dirs_ranked[-1]["dirs"]["dtbook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook")
-        self.dirs_ranked[-1]["dirs"]["newsletter-in"] = os.path.join(book_archive_dirs["master"], "nyhetsbrev/inn")
         self.dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
         self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
         self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
         self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts_test"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese-test")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
-        self.dirs_ranked[-1]["dirs"]["dtbook_html"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-HTML")
-        self.dirs_ranked[-1]["dirs"]["dtbook_braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-punktskrift")
         self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["news"], "dtbookfiler")
 
         self.dirs_ranked.append({
@@ -246,11 +238,6 @@ class Produksjonssystem():
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
-            # [UpdateMetadata(),                                "metadata",            "nlbpub"],
-            # [HtmlToDtbook(),                                   "nlbpub",              "dtbook"],
-
-            # EPUB
-            # [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
 
             # e-bok
             [InsertMetadataXhtml(retry_missing=True,
@@ -263,9 +250,9 @@ class Produksjonssystem():
                             check_identifiers=True,
                             during_working_hours=True),         "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToEpub(retry_missing=True,
-                           check_identifiers=True,
-                           during_working_hours=True,
-                           during_night_and_weekend=True),      "pub-ready-ebook",     "epub-ebook"],
+                          check_identifiers=True,
+                          during_working_hours=True,
+                          during_night_and_weekend=True),       "pub-ready-ebook",     "epub-ebook"],
             [NlbpubToHtml(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True),           "pub-ready-ebook",     "html"],
@@ -312,16 +299,6 @@ class Produksjonssystem():
                            labels=["Lydbok"]),                  "dtbook_tts_test",          "daisy202"],
             [DummyTtsNewspaperSchibsted("Talesyntese i Pipeline 1 for aviser",
                                         labels=["Lydbok"]),     "dtbook_news",          "daisy202"],
-
-            # e-bok basert på DTBook
-            # [EpubToDtbookHTML(),                              "master",              "dtbook_html"],
-            # [DummyPipeline("Pipeline 1 og Ammars skript",
-            #               labels=["e-bok"]),                 "dtbook_html",         None],
-
-            # DTBook for punktskrift
-            # [EpubToDtbookBraille(),                           "master",              "dtbook_braille"],
-            # [DummyPipeline("Punktskrift med NorBraille",
-            #               labels=["Punktskrift"]),           "dtbook_braille",      None],
 
             # lydutdrag
             [Audio_Abstract(retry_missing=True,

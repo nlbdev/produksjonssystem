@@ -12,7 +12,6 @@ from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from epub_to_dtbook_audio import EpubToDtbookAudio
-from html_to_dtbook import HtmlToDtbook
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -92,7 +91,7 @@ class NlbpubToTtsDtbook(Pipeline):
         self.utils.report.debug("    source = " + temp_result)
         self.utils.report.debug("    target = " + temp_xslt_output)
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, HtmlToDtbook.uid, "html-to-dtbook.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "html-to-dtbook.xsl"),
                     source=temp_result,
                     target=temp_xslt_output)
         if not xslt.success:
