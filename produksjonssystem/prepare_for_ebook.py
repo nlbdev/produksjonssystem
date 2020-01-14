@@ -22,7 +22,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class PrepareForEbook(Pipeline):
     uid = "prepare-for-ebook"
-    title = "NLBPUB til e-bok"
+    title = "Klargjør for e-bok"
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 8
