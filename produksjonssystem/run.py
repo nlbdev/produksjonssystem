@@ -247,7 +247,7 @@ class Produksjonssystem():
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
             # [UpdateMetadata(),                                "metadata",            "nlbpub"],
-            [HtmlToDtbook(),                                   "nlbpub",              "dtbook"],
+            # [HtmlToDtbook(),                                   "nlbpub",              "dtbook"],
 
             # EPUB
             # [InsertMetadataEpub(),                            "nlbpub",              "pub-in-epub"],
