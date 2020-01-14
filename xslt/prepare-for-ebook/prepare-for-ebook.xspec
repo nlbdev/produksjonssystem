@@ -159,4 +159,19 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Paragraphs in captions">
+        <x:context>
+            <caption>
+                <p id="a" class="b">…</p>
+                <p id="c" class="d">…</p>
+            </caption>
+        </x:context>
+        <x:expect label="result">
+            <caption>
+                <span id="a" class="b">…</span><br/>
+                <span id="c" class="d">…</span>
+            </caption>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
