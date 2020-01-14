@@ -7,91 +7,29 @@
     
     <x:scenario label="Playground">
         <x:context>
-            <m:math
-                xml:lang="en"
-                xmlns:m="http://www.w3.org/1998/Math/MathML"
-                alttext="6 CO_2 + 6 H_2O + light rarr C_6H_12O_6 + 6 O_2"
-                display="block"
-                class="chemistry">
-                <m:mn>6</m:mn>
-                <m:mtext class="asciimath">C O_2</m:mtext>
-                <m:mo>+</m:mo>
-                <m:mn>6</m:mn>
-                <m:mtext class="asciimath">H_2 O</m:mtext>
-                <m:mo>+</m:mo>
-                <m:mtext>light</m:mtext>
-                <m:mo>&#8594;</m:mo>
-                <m:mtext class="asciimath">C_6 H_12 O_6</m:mtext>
-                <m:mo>+</m:mo>
-                <m:mn>6</m:mn>
-                <m:mtext class="asciimath">O_2</m:mtext>
-            </m:math>
-            <p>
-                <m:math 
-                    xml:lang="en"
-                    display="inline" 
-                    xmlns:m="http://www.w3.org/1998/Math/MathML" 
-                    altimg="images/565535-215.jpg" 
-                    alttext="W_(ia) = W_d + W_f + W_a - W_e - W_s">
-                   <m:msub>
-                       <m:mrow>
-                           <m:mtext>W</m:mtext>
-                       </m:mrow>
-                       <m:mtext>ia</m:mtext>
-                   </m:msub>
-                   <m:mo>=</m:mo>
-                   <m:msub>
-                       <m:mrow>
-                           <m:mtext>W</m:mtext>
-                       </m:mrow>
-                       <m:mtext>d</m:mtext>
-                   </m:msub>
-                   <m:mo>+</m:mo>
-                   <m:msub>
-                       <m:mrow>
-                           <m:mtext>W</m:mtext>
-                       </m:mrow>
-                       <m:mtext>f</m:mtext>
-                   </m:msub>
-                   <m:mo>+</m:mo>
-                   <m:msub>
-                       <m:mrow>
-                           <m:mtext>W</m:mtext>
-                       </m:mrow>
-                       <m:mtext>a</m:mtext>
-                   </m:msub>
-                   <m:mo>-</m:mo>
-                   <m:msub>
-                       <m:mrow>
-                           <m:mtext>W</m:mtext>
-                       </m:mrow>
-                       <m:mtext>e</m:mtext>
-                   </m:msub>
-                   <m:mo>-</m:mo>
-                   <m:msub>
-                       <m:mrow>
-                           <m:mtext>W</m:mtext>
-                       </m:mrow>
-                       <m:mtext>s</m:mtext>
-                   </m:msub>
-                </m:math>
-            </p>
+            <p>This expression is infact inline: <m:math xml:lang="en" display="inline" xmlns:m="http://www.w3.org/1998/Math/MathML">
+                <m:msqrt>
+                    <m:mrow>
+                        <m:mfrac>
+                            <m:mrow>
+                                <m:mn>1</m:mn>
+                                <m:mo>+</m:mo>
+                                <m:mrow>
+                                    <m:mi>cos</m:mi>
+                                    <m:mo>&#8289;</m:mo>
+                                    <m:mi>x</m:mi>
+                                </m:mrow>
+                            </m:mrow>
+                            <m:mn>2</m:mn>
+                        </m:mfrac>
+                    </m:mrow>
+                </m:msqrt>
+            </m:math>. How would you interpret it?</p>
         </x:context>
         <x:expect label="Expected">
             <p xmlns="http://www.w3.org/1999/xhtml"
-            xmlns:m="http://www.w3.org/1998/Math/MathML"
-            class="spoken-math sr-only"
-            xml:lang="en">formula 6 C O_2 plus 6 H_2 O plus light goes against C_6 H_12 O_6 plus 6 O_2 formula end</p><p xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:m="http://www.w3.org/1998/Math/MathML">
-                <span class="image"
-                    xml:lang="en">
-                    <img class="visual-math"
-                        aria-hidden="true"
-                        src="images/565535-215.jpg"
-                        alt="W_(ia) = W_d + W_f + W_a - W_e - W_s" />
-                    <span class="spoken-math sr-only">formula W ia equals W d plus W f plus W a minus W e minus W s formula end</span>
-                </span>
-            </p>
+            xmlns:m="http://www.w3.org/1998/Math/MathML">This expression is infact inline: <span class="spoken-math sr-only"
+                xml:lang="en">formula square root of division with dividend 1 plus cosine to x and with divisor 2 fraction end square root end formula end</span>. How would you interpret it?</p>
         </x:expect>
     </x:scenario>
     
