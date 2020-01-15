@@ -17,6 +17,7 @@ from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
+from core.config import Config
 
 
 class API():
@@ -370,7 +371,7 @@ class API():
         return jsonify(result)
 
     def reports(self, edition_id):
-        path = os.environ.get("DIR_REPORTS")
+        path = Config.get("reports_dir")
 
         if not path:
             return Response(None, status=404)
@@ -403,7 +404,7 @@ class API():
         return jsonify(result)
 
     def report(self, edition_id, production_id):
-        path = os.environ.get("DIR_REPORTS")
+        path = Config.get("reports_dir")
 
         if not path:
             return Response(None, status=404)
