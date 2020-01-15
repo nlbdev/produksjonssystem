@@ -165,6 +165,74 @@ class PrepareForEbook(Pipeline):
             return False
         shutil.copy(temp_xml, opf_path)
 
+        # add cover if missing
+
+        opf_xml = ElementTree.parse(opf_path).getroot()
+        cover_id = opf_xml.xpath("/*/*[local-name()='manifest']/*[contains(concat(' ', @properties, ' '), ' cover-image ')]/@id")  # from properties
+        if not cover_id:
+            cover_id = opf_xml.xpath("/*/*[local-name()='manifest']/*[@name='cover']/@content")  # from metadata
+        if not cover_id:
+            cover_id = opf_xml.xpath("/*/*[local-name()='manifest']/*[starts-with(@media-type, 'image/') and contains(@href, 'cover')]/@id")  # from filename
+        cover_id = cover_id[0] if cover_id else None
+
+        if not cover_id:
+            # cover not found in the book, let's try NLBs API
+            response = requests.get("{}/editions/{}?creative-work-metadata=none&edition-metadata=all".format(
+                os.environ.get("NLB_API_URL"), epub.identifier()))  # NOTE: identifier at this point is the e-book identifier
+            if response.status_code == 200:
+                data = response.json()['data']
+                cover_url = data["coverUrlLarge"]
+                if cover_url is not None and cover_url.startswith("http"):
+                    response = requests.get(cover_url)
+                    if response.status_code == 200:
+                        _, extension = os.path.splitext(cover_url)
+                        target_href = "cover" + extension
+                        target_dir = os.path.dirname(opf_path)
+                        with open(os.path.join(target_dir, target_href), "wb") as target_file:
+                            target_file.write(response.content)
+
+                        self.utils.report.info("Legger til bildet av bokomslaget i OPF-manifestet")
+                        media_type = None
+                        if extension.lower() in [".png"]:  # check for png, just in case. Should always be jpg though.
+                            media_type = "image/png"
+                        else:
+                            media_type = "image/jpeg"
+                        xslt = Xslt(self,
+                                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),
+                                    source=opf_path,
+                                    target=temp_xml,
+                                    parameters={
+                                        "href": target_href,
+                                        "media-type": media_type
+                                    })
+                        if not xslt.success:
+                            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                            return False
+                        shutil.copy(temp_xml, opf_path)
+
+                        opf_xml = ElementTree.parse(opf_path).getroot()
+                        cover_id = opf_xml.xpath("/*/*[local-name()='manifest']/*[@href = '{}']/@id".format(target_href))  # from filename
+                        cover_id = cover_id[0] if cover_id else None
+
+        if cover_id is None or len(cover_id) == 0:
+            self.utils.report.error("Klarte ikke å finne bilde av bokomslaget for {}".format(epub.identifier()))
+            return False
+
+        self.utils.report.info("Setter 'properties' og metadata-referanse for bildet av bokomslaget i OPF-manifestet")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "set-cover-image-in-opf.xsl"),
+                    source=opf_path,
+                    target=temp_xml,
+                    parameters={
+                        "cover-id": cover_id
+                    })
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_xml, opf_path)
+
+        # valiate with epubcheck
+
         if Epubcheck.isavailable():
             epubcheck = Epubcheck(self, opf_path)
             if not epubcheck.success:
