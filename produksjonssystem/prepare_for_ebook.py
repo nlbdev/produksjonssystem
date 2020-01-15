@@ -95,7 +95,7 @@ class PrepareForEbook(Pipeline):
         temp_xml_obj = tempfile.NamedTemporaryFile()
         temp_xml = temp_xml_obj.name
 
-        self.utils.report.info("Generating hidden headlines where necessary")
+        self.utils.report.info("Lager skjulte overskrifter der det er nødvendig")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "create-hidden-headlines.xsl"),
                     source=html_file,
@@ -137,7 +137,7 @@ class PrepareForEbook(Pipeline):
             stylesheet = PrepareForEbook.css_tempfile_obj.name
         shutil.copy(stylesheet, os.path.join(html_dir, "ebok.css"))
 
-        self.utils.report.info("Adding logo item to OPF manifest")
+        self.utils.report.info("Legger til logoen i OPF-manifestet")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),
                     source=opf_path,
@@ -151,7 +151,7 @@ class PrepareForEbook(Pipeline):
             return False
         shutil.copy(temp_xml, opf_path)
 
-        self.utils.report.info("Adding CSS item to OPF manifest")
+        self.utils.report.info("Legger til CSS-fila i OPF-manifestet")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),
                     source=opf_path,
@@ -171,7 +171,7 @@ class PrepareForEbook(Pipeline):
                 self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
                 return
         else:
-            self.utils.report.warn("Epubcheck not available, EPUB will not be validated!")
+            self.utils.report.warn("Epubcheck er ikke tilgjengelig, EPUB blir ikke validert!")
 
         # ---------- lagre filsett ----------
 
