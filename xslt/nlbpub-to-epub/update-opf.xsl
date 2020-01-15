@@ -142,7 +142,9 @@
             <xsl:for-each select="manifest/item">
                 <xsl:if test="tokenize(@properties, '\s+') = 'nav' or not(../../spine/itemref/@idref = @id)">
                     <xsl:call-template name="newline-indent"/>
-                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                    <xsl:element name="{name()}">
+                        <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                    </xsl:element>
                 </xsl:if>
             </xsl:for-each>
             
