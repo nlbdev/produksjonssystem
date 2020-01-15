@@ -388,9 +388,11 @@ class API():
             dirs = os.listdir(path_reports)
             for dir in dirs:
                 dir_split = dir.split("-")
-                pipeline_id = dir_split[len(dir_split) - 2] + "-" + dir_split[len(dir_split) - 1]
+                pipeline_id = "-".join(dir_split[5:])
                 pipeline = [pipeline for pipeline in Pipeline.pipelines if pipeline.uid == pipeline_id]
                 pipeline = pipeline[0] if pipeline else None
+                if pipeline is None:
+                    continue
                 result.append({
                     "edition_id": edition_id,
                     "pipeline_id": pipeline_id,
