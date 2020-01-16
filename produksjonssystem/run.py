@@ -117,6 +117,9 @@ class Produksjonssystem():
         Config.set("email.smtp.user", os.environ.get("MAIL_USERNAME", None))
         Config.set("email.smtp.pass", os.environ.get("MAIL_PASSWORD", None))
 
+        # Configure NLB API URL
+        Config.set("nlb_api_url", os.environ.get("NLB_API_URL"))
+
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
         Config.set("newsfeed_dir", os.path.join(book_archive_dirs["news"], "avisfeeder"))

@@ -10,6 +10,7 @@ import time
 import requests
 from lxml import etree as ElementTree
 
+from core.config import Config
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.epubcheck import Epubcheck
@@ -178,7 +179,7 @@ class PrepareForEbook(Pipeline):
         if not cover_id:
             # cover not found in the book, let's try NLBs API
             response = requests.get("{}/editions/{}?creative-work-metadata=none&edition-metadata=all".format(
-                os.environ.get("NLB_API_URL"), epub.identifier()))  # NOTE: identifier at this point is the e-book identifier
+                Config.get("nlb_api_url"), epub.identifier()))  # NOTE: identifier at this point is the e-book identifier
             if response.status_code == 200:
                 data = response.json()['data']
                 cover_url = data["coverUrlLarge"]
