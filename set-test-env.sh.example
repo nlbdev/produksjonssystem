@@ -6,6 +6,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export TEST=true
 
 export NLB_API_URL=https://api.nlb.no/v1
+
+export MAIL_SERVER=""
+export MAIL_PORT="25"
+export MAIL_USERNAME=""
+export MAIL_PASSWORD=""
+
+export ALLOWED_EMAIL_ADDRESSES_IN_TEST=  # comma separated list of e-mails
+
 export BOOK_ARCHIVE_DIRS="master=/tmp/book-archive share=/tmp/book-archive-share distribution=/tmp/book-archive-distribution news=/tmp/book-archive-news"
 export TRIGGER_DIR="/tmp/trigger-produksjonssystem"
 export PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"

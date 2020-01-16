@@ -184,7 +184,7 @@ class Report():
             addresses = list(addresses)
 
         if not library:
-            logging.info("[email] No library to filter on. Using unfiltered list of e-mail addresses.")
+            logging.info("[e-mail] No library to filter on. Using unfiltered list of e-mail addresses.")
             return tuple(addresses)
 
         filtered = []
@@ -195,10 +195,10 @@ class Report():
                 filtered.append(address)
 
         if filtered:
-            logging.info("[email] Filtered e-mail addresses. Only sending to: {}".format(library))
+            logging.info("[e-mail] Filtered e-mail addresses. Only sending to: {}".format(library))
             return tuple(filtered)
         else:
-            logging.info("[email] No addresses remaining after filtering. Using unfiltered list of e-mail addresses.")
+            logging.info("[e-mail] No addresses remaining after filtering. Using unfiltered list of e-mail addresses.")
             return tuple(addresses)
 
     @staticmethod
@@ -219,8 +219,16 @@ class Report():
             recipients = [recipients]
 
         if not should_email:
-            logging.info("Not sending plain text email")
+            logging.info("[e-mail] Not sending plain text email")
         else:
+            if Config.get("test"):
+                subject = "[test] " + subject
+                filtered_recipients = []
+                for recipient in recipients:
+                    if recipient in Config.get("email.allowed_email_addresses_in_test"):
+                        filtered_recipients.append(recipient)
+                recipients = filtered_recipients
+
             # 1. build e-mail
             msg = EmailMessage()
             msg['Subject'] = subject
@@ -230,20 +238,22 @@ class Report():
 
             # 2. send e-mail
             if not msg["To"]:
-                logging.warning("Email with subject \"{}\" has no recipients".format(subject))
+                logging.warning("[e-mail] Email with subject \"{}\" has no recipients".format(subject))
             else:
-                logging.info("Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
+                logging.info("[e-mail] Sending email with subject \"{}\" to: {}".format(subject, ", ".join(recipients)))
                 if isinstance(smtp["host"], str) and isinstance(smtp["port"], str):
                     with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                         s.ehlo()
                         s.starttls()
-                        if "user" in smtp and "pass" in smtp:
+                        if smtp["user"] and smtp["pass"]:
                             s.login(smtp["user"], smtp["pass"])
                         else:
-                            logging.debug("email user/pass not configured")
+                            logging.debug("[e-mail] user/pass not configured")
+                        logging.debug("[e-mail] sending…")
                         s.send_message(msg)
+                        logging.debug("[e-mail] sending complete.")
                 else:
-                    logging.warning("email host/port not configured")
+                    logging.warning("[e-mail] host/port not configured")
 
         Slack.slack(text=subject, attachments=None)
 
@@ -307,6 +317,15 @@ class Report():
                 for key in Config.get("administrators", default=[]):
                     if key not in recipients:
                         recipients.append(key)
+
+            # when testing, only allow e-mail addresses defined in the ALLOWED_EMAIL_ADDRESSES_IN_TEST env var
+            if Config.get("test"):
+                subject = "[test] " + subject
+                filtered_recipients = []
+                for recipient in recipients:
+                    if recipient in Config.get("email.allowed_email_addresses_in_test"):
+                        filtered_recipients.append(recipient)
+                recipients = filtered_recipients
 
             # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
             markdown_text = []
@@ -382,7 +401,7 @@ class Report():
 '''
 
             if not should_email:
-                logging.info("Not sending email")
+                logging.info("[e-mail] Not sending email")
             else:
                 # 3. build e-mail
                 msg = EmailMessage()
@@ -391,31 +410,33 @@ class Report():
                 msg['To'] = Report.emailStringsToAddresses(recipients)
                 msg.set_content(markdown_text)
                 msg.add_alternative(markdown_html, subtype="html")
-                logging.info("E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
+                logging.info("[e-mail] E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
 
                 # 4. send e-mail
                 if smtp["host"] and smtp["port"]:
                     smtp_server = "{}:{}".format(smtp["host"], smtp["port"])
-                    logging.info("SMTP server: {}".format(smtp_server))
+                    logging.info("[e-mail] SMTP server: {}".format(smtp_server))
                     with smtplib.SMTP(smtp_server) as s:
                         s.ehlo()
                         s.starttls()
                         if smtp["user"] and smtp["pass"]:
                             s.login(smtp["user"], smtp["pass"])
                         else:
-                            logging.debug("email user/pass not configured")
+                            logging.debug("[e-mail] user/pass not configured")
+                        logging.debug("[e-mail] sending…")
                         s.send_message(msg)
+                        logging.debug("[e-mail] sending complete.")
                 else:
-                    logging.warning("email host/port not configured")
+                    logging.warning("[e-mail] host/port not configured")
 
                 temp_md_obj = tempfile.NamedTemporaryFile(suffix=".md")
                 temp_html_obj = tempfile.NamedTemporaryFile(suffix=".html")
                 with open(temp_md_obj.name, "w") as f:
                     f.write(markdown_text)
-                    logging.debug("email markdown: {}".format(temp_md_obj.name))
+                    logging.debug("[e-mail] markdown: {}".format(temp_md_obj.name))
                 with open(temp_html_obj.name, "w") as f:
                     f.write(markdown_html)
-                    logging.debug("email html: {}".format(temp_html_obj.name))
+                    logging.debug("[e-mail] html: {}".format(temp_html_obj.name))
                 if should_attach_log is True:
                     path_mail = os.path.join(self.reportDir(), "email.html")
                     shutil.copy(temp_html_obj.name, path_mail)
@@ -428,7 +449,7 @@ class Report():
                     self.mailpath = Filesystem.networkpath(path_mail)
 
         except AssertionError as e:
-            logging.error(str(e))
+            logging.error("[e-mail] " + str(e))
         if not should_message_slack:
             logging.warning("Not sending message to slack")
         else:

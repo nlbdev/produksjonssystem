@@ -106,6 +106,9 @@ class Produksjonssystem():
         # write "self." all the time during initialization.
         book_archive_dirs = self.book_archive_dirs
 
+        Config.set("test", os.environ.get("TEST", "false").lower() in ["true", "1"])
+        Config.set("email.allowed_email_addresses_in_test", os.environ.get("ALLOWED_EMAIL_ADDRESSES_IN_TEST", "").split(","))
+
         # Configure email
         Config.set("email.sender.name", "NLBs Produksjonssystem")
         Config.set("email.sender.address", "produksjonssystem@nlb.no")
