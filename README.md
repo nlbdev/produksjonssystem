@@ -208,3 +208,41 @@ Eventuelt kan man teste hele systemet, kjøre alle XSpec-testene, eller alle Pyt
 ./test_xspec.py
 ./test_unit.py
 ```
+
+Format og metode i Bibliofil
+----------------------------
+
+Bibliofil sender `deliveryFormat` til distribusjonssystemet vårt. Feltet har formen `{format}_{metode}`. Vi oppgir format og metode når bøker er ferdig produsert i produksjonssystemet (gjennom "formatklar"-e-post), og kan dermed styre selv hvilke formater og metoder som finnes. Bibliotek-Systemer må legge til støtte for hver metode, ettersom de oppfører seg forskjellig, men format og navn kan vi styre helt selv.
+
+formater (id - navn):
+    - daisy - "DAISY 2.02"
+    - epub - "EPUB"
+    - docx - "DOCX (Word)"
+    - mobi - "Mobi / Kindle Format"
+    - html - "HTML"
+
+metoder (id - navn):
+    - cd - "CD"
+    - dl - "Last ned"
+    - st - "Vis i nettleseren"
+    - ki - "Send til Kindle"
+    - no - "Legg på bokhylla" - utfører lånet, men har ingen "metode" (no=none), så ingenting skjer utover at boken legges på bokhylla. Tilsvarer dagens "Til Lydhør/online-spiller".
+
+E-post sendes til Bibliofil, på formen:
+
+```
+{boknummer};{format-id};{metode-id};{navn}
+```
+
+(For nedlasting, altså metode-id=dl, så brukes format-navn som navn, ellers brukes metode-navn.)
+
+
+For eksempel:
+
+```
+321654;epub;dl;EPUB
+321654;html;dl;HTML
+321654;docx;dl;DOCX (Word)
+321654;mobi;ki;Send til Kindle
+321654;epub;un;Legg på bokhylla
+```
