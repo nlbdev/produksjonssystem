@@ -12,6 +12,7 @@ export MAIL_PORT="25"
 export MAIL_USERNAME=""
 export MAIL_PASSWORD=""
 
+export MAIL_FORMATKLAR=
 export ALLOWED_EMAIL_ADDRESSES_IN_TEST=  # comma separated list of e-mails
 
 export BOOK_ARCHIVE_DIRS="master=/tmp/book-archive share=/tmp/book-archive-share distribution=/tmp/book-archive-distribution news=/tmp/book-archive-news"

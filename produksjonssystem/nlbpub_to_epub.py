@@ -9,6 +9,7 @@ import tempfile
 from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
+from core.utils.bibliofil import Bibliofil
 from core.utils.epub import Epub
 from core.utils.epubcheck import Epubcheck
 from core.utils.xslt import Xslt
@@ -154,6 +155,7 @@ class NlbpubToEpub(Pipeline):
 
         archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, temp_epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
+        Bibliofil.book_available(NlbpubToEpub.publication_format, temp_epub.identifier())
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 

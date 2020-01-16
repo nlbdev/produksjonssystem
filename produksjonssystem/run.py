@@ -116,6 +116,7 @@ class Produksjonssystem():
         Config.set("email.smtp.port", os.environ.get("MAIL_PORT", None))
         Config.set("email.smtp.user", os.environ.get("MAIL_USERNAME", None))
         Config.set("email.smtp.pass", os.environ.get("MAIL_PASSWORD", None))
+        Config.set("email.formatklar.address", os.environ.get("MAIL_FORMATKLAR"))
 
         # Configure NLB API URL
         Config.set("nlb_api_url", os.environ.get("NLB_API_URL"))
