@@ -77,8 +77,14 @@
     
     <!-- try to break up long paragraphs (doesn't handle inline elements) -->
     <xsl:template match="p/text()[normalize-space() and not(ancestor::*/@xml:space = 'preserve') and not(ancestor::pre | ancestor::code)]">
+        <xsl:variable name="preceding-space" select="matches(., '^\s')" as="xs:boolean"/>
+        <xsl:variable name="trailing-space" select="matches(., '\s$')" as="xs:boolean"/>
         <xsl:variable name="words" select="tokenize(normalize-space(.), '\s+')" as="xs:string*"/>
         <xsl:variable name="indent" select="count(ancestor::*)" as="xs:integer"/>
+        
+        <xsl:if test="$preceding-space">
+            <xsl:text> </xsl:text>
+        </xsl:if>
         
         <xsl:for-each select="$words">
             <xsl:value-of select="."/>
@@ -93,6 +99,10 @@
                 </xsl:call-template>
             </xsl:if>
         </xsl:for-each>
+        
+        <xsl:if test="$trailing-space">
+            <xsl:text> </xsl:text>
+        </xsl:if>
     </xsl:template>
     
     <!-- utility template for indentation -->

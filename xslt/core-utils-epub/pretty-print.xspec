@@ -53,4 +53,26 @@
 </x:expect>
     </x:scenario>
     
+    <x:scenario label="Preceding and trailing spaces should be preserved when normalizing space (fixes https://github.com/nlbdev/produksjonssystem/issues/233)">
+        <x:context xml:space="preserve">
+<html>
+    <head>
+    </head>
+    <body>
+        <p>… <em>…</em> … <em> … </em>, …</p>
+    </body>
+</html>
+</x:context>
+        
+        <x:expect label="The result should be as expected" xml:space="preserve">
+<html>
+    <head>
+    </head>
+    <body>
+        <p>… <em>…</em> … <em> … </em>, …</p>
+    </body>
+</html>
+</x:expect>
+    </x:scenario>
+    
 </x:description>
