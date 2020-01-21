@@ -178,8 +178,12 @@ class PrepareForEbook(Pipeline):
 
         if not cover_id:
             # cover not found in the book, let's try NLBs API
-            response = requests.get("{}/editions/{}?creative-work-metadata=none&edition-metadata=all".format(
-                Config.get("nlb_api_url"), epub.identifier()))  # NOTE: identifier at this point is the e-book identifier
+
+            # NOTE: identifier at this point is the e-book identifier
+            edition_url = "{}/editions/{}?creative-work-metadata=none&edition-metadata=all".format(Config.get("nlb_api_url"), epub.identifier())
+
+            response = requests.get(edition_url)
+            self.utils.report.debug("looking for cover image in: {}".format())
             if response.status_code == 200:
                 data = response.json()['data']
                 cover_url = data["coverUrlLarge"]
