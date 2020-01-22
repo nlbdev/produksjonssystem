@@ -183,7 +183,7 @@ class PrepareForEbook(Pipeline):
             edition_url = "{}/editions/{}?creative-work-metadata=none&edition-metadata=all".format(Config.get("nlb_api_url"), epub.identifier())
 
             response = requests.get(edition_url)
-            self.utils.report.debug("looking for cover image in: {}".format())
+            self.utils.report.debug("looking for cover image in: {}".format(edition_url))
             if response.status_code == 200:
                 data = response.json()['data']
                 cover_url = data["coverUrlLarge"]
