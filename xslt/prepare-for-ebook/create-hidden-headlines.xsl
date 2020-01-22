@@ -133,7 +133,7 @@
         
         <xsl:variable name="text" select="string-join(($section//text()[normalize-space()])[position() le 10], ' ')" as="xs:string"/>
         <xsl:variable name="text" select="normalize-space($text)" as="xs:string"/>
-        <xsl:variable name="text" select="string(tokenize($text, '\.')[1])" as="xs:string"/>
+        <xsl:variable name="text" select="string(replace($text, '^(.*?[a-zA-ZæøåÆØÅ].*?)\..*', '$1'))" as="xs:string"/>
         
         <xsl:choose>
             <xsl:when test="$text = ''">
