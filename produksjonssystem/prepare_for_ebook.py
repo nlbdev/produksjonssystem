@@ -220,21 +220,21 @@ class PrepareForEbook(Pipeline):
                         cover_id = cover_id[0] if cover_id else None
 
         if cover_id is None or len(cover_id) == 0:
-            self.utils.report.error("Klarte ikke å finne bilde av bokomslaget for {}".format(epub.identifier()))
-            return False
+            self.utils.report.warn("Klarte ikke å finne bilde av bokomslaget for {}".format(epub.identifier()))
 
-        self.utils.report.info("Setter 'properties' og metadata-referanse for bildet av bokomslaget i OPF-manifestet")
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "set-cover-image-in-opf.xsl"),
-                    source=opf_path,
-                    target=temp_xml,
-                    parameters={
-                        "cover-id": cover_id
-                    })
-        if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return False
-        shutil.copy(temp_xml, opf_path)
+        else:
+            self.utils.report.info("Setter 'properties' og metadata-referanse for bildet av bokomslaget i OPF-manifestet")
+            xslt = Xslt(self,
+                        stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "set-cover-image-in-opf.xsl"),
+                        source=opf_path,
+                        target=temp_xml,
+                        parameters={
+                            "cover-id": cover_id
+                        })
+            if not xslt.success:
+                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+                return False
+            shutil.copy(temp_xml, opf_path)
 
         # valiate with epubcheck
 
