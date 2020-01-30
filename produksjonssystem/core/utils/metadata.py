@@ -35,30 +35,6 @@ class Metadata:
         "isbn": ["7"],
         "isbn-statped": ["7"]
     }
-    quickbase_rdf_should_produce_mapping = {
-        "Braille": [
-            "nlbprod:formatBraille",                   # Punktskrift
-            "nlbprod:formatBrailleClub",               # Punktklubb
-            "nlbprod:formatBraillePartialProduction",  # Punktskrift delproduksjon
-            "nlbprod:formatNotes",                     # Noter
-            "nlbprod:formatTactilePrint",              # Taktil trykk
-        ],
-        "DAISY 2.02": [
-            "nlbprod:formatDaisy202narrated",              # DAISY 2.02 Innlest Skjønn
-            "nlbprod:formatDaisy202narratedFulltext",      # DAISY 2.02 Innlest fulltekst
-            "nlbprod:formatDaisy202narratedStudent",       # DAISY 2.02 Innlest Studie
-            "nlbprod:formatDaisy202tts",                   # DAISY 2.02 TTS Skjønn
-            "nlbprod:formatDaisy202ttsStudent",            # DAISY 2.02 TTS Studie
-            "nlbprod:formatDaisy202wips",                  # DAISY 2.02 WIPS
-            "nlbprod:formatAudioCDMP3ExternalProduction",  # Audio CD MP3 ekstern produksjon
-            "nlbprod:formatAudioCDWAVExternalProduction",  # Audio CD WAV ekstern produksjon
-            "nlbprod:formatDaisy202externalProduction",    # DAISY 2.02 ekstern produksjon
-        ],
-        "XHTML": [
-            "nlbprod:formatEbook",                    # E-bok
-            "nlbprod:formatEbookExternalProduction",  # E-bok ekstern produksjon
-        ]
-    }
     quickbase_rdf_production_complete_mapping = {
         "Braille": [
             "nlbprod:brailleProductionComplete",       # Punktskrift ferdig produsert
@@ -1088,7 +1064,7 @@ class Metadata:
             report.info("Andre boknummer er ikke tilgjengelig.")
 
     @staticmethod
-    def should_produce(report, epub, publication_format):
+    def should_produce(report, epub, edition_format):
         force_metadata_update = False
         if report.pipeline.book and report.pipeline.book["events"] and "triggered" in report.pipeline.book["events"]:
             # Hvis steget ble trigget manuelt: sørg for at metadataen er oppdatert
@@ -1096,88 +1072,54 @@ class Metadata:
             # For eksempel så hentes Quickbase-metadata via en cron-jobb én gang i timen.
             force_metadata_update = True
 
-        Metadata.update(report, epub, publication_format=publication_format, insert=False, force_update=force_metadata_update)
+        metadata_valid = Metadata.update(report, epub, publication_format=edition_format, insert=False, force_update=force_metadata_update)
 
         metadata_dir = Metadata.get_metadata_dir(epub.identifier())
         rdf_path = os.path.join(metadata_dir, "metadata.rdf")
-        rdf_path_obj = tempfile.NamedTemporaryFile()
 
         if not os.path.isfile(rdf_path):
             report.warn("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
-            return False, False
+            metadata_valid = False
 
-        with Metadata.get_dir_lock(metadata_dir):
-            report.debug("Metadata.should_produce fikk metadata-låsen for {}.".format(epub.identifier()))
+        edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), epub.identifier())
 
-            # Temporary copy of RDF file
-            shutil.copy(rdf_path, rdf_path_obj.name)
-            rdf_path = rdf_path_obj.name
+        report.debug("looking for creative work identifier in: {}".format(edition_url))
+        response = requests.get(edition_url)
+        if response.status_code == 200:
+            edition_data = response.json()['data']
 
-        rdf = ElementTree.parse(rdf_path).getroot()
-        metadata = Metadata.get_cached_rdf_metadata(epub.identifier())
-        production_formats = [meta for meta in metadata if meta["property"].startswith("nlbprod:format")]
-        exists_in_quickbase = bool(production_formats)
+            creative_work_url = "{}/creative-works/{}?editions-metadata=simple".format(Config.get("nlb_api_url"), edition_data["creativeWork"])
 
-        exists_in_bibliofil = False
-        for i in rdf.xpath("//dc:identifier", namespaces=rdf.nsmap):
-            value = i.attrib["{http://schema.org/}name"] if "{http://schema.org/}name" in i.attrib else i.text
-            if epub.identifier() == value and "bibliofil" in i.attrib["{http://www.nlb.no/}metadata-source"].lower():
-                exists_in_bibliofil = True
-                break
+            report.debug("looking for editions in: {}".format(creative_work_url))
+            response = requests.get(creative_work_url)
+            if response.status_code == 200:
+                creative_work_data = response.json()['data']
 
-        if not exists_in_quickbase and exists_in_bibliofil:
-            report.info("{} finnes i Bibliofil men ikke i Quickbase. Antar at den skal produseres som {}.".format(epub.identifier(), publication_format))
-            return True, True
+                for edition in creative_work_data["editions"]:
+                    report.debug("The creative work {} has the edition {} which is the format {}{}".format(
+                        creative_work_data["identifier"],
+                        edition["identifier"],
+                        edition["format"],
+                        " but it is marked as deleted" if edition["deleted"] else ""
+                    ))
+                    if edition["format"] == edition_format and not edition["deleted"]:
+                        report.info("Metadata exists in Bibliofil, therefore assuming that the book should be produced as {}".format(edition["format"]))
+                        return True, metadata_valid
 
-        result = False
-        if publication_format == "Braille":
-            production_formats = [f for f in production_formats if f["property"] in Metadata.quickbase_rdf_should_produce_mapping["Braille"]]
-            if "true" in [f["value"] for f in production_formats]:
-                result = True
-
-        elif publication_format == "DAISY 2.02":
-            production_formats = [f for f in production_formats if f["property"] in Metadata.quickbase_rdf_should_produce_mapping["DAISY 2.02"]]
-            if "true" in [f["value"] for f in production_formats]:
-                result = True
-
-        elif publication_format == "XHTML":
-            production_formats = [f for f in production_formats if f["property"] in Metadata.quickbase_rdf_should_produce_mapping["XHTML"]]
-            if "true" in [f["value"] for f in production_formats]:
-                result = True
-
-        elif publication_format == "EPUB":
-            production_formats = []
-            report.info("EPUB skal alltid produseres.".format())
-            return True, True
-
-        else:
-            production_formats = []
-            report.warn("Ukjent format: {}. {} blir ikke produsert.".format(publication_format, epub.identifier()))
-            return False, False
-
-        if production_formats:
-            if result is True:
-                report.info(
-                    "<p><strong>{} skal produseres som {} fordi følgende felter er huket av i BookGuru:</strong></p>".format(
-                        epub.identifier(), publication_format))
-                production_formats = [f for f in production_formats if f["value"] == "true"]
             else:
-                report.info(
-                    "<p><strong>{} skal ikke produseres som {} fordi følgende felter ikke er huket av i BookGuru:</strong></p>".format(
-                        epub.identifier(), publication_format))
+                report.warn("An error occured when trying to get metadata for the creative work {}".format(creative_work_data["identifier"]))
 
-            report.info("<ul>")
-            for f in production_formats:
-                report.info("<li>{}</li>".format(f["source"]))
-            report.info("</ul>")
-
-            if result is False:
-                report.info("<p><strong>Merk at det kan ta opptil en time fra du huker av i BookGuru, " +
-                            "til produksjonssystemet ser at det har blitt huket av.</strong></p>")
         else:
-            report.warn("Ingen informasjon i BookGuru om produksjon av formatet \"{}\".".format(publication_format))
+            report.warn("An error occured when trying to get metadata for the edition {}".format(epub.identifier()))
 
-        return result, True
+        if edition_format == "EPUB":
+            report.warning("Not catalogued in the library system: {}".format(epub.identifier()))
+            report.warning("However, EPUBs should always be produced, regardless of whether or not " +
+                           "it's catalogued in the library system, so let's produce it anyway.")
+            return True, metadata_valid
+
+        report.warn("No catalog entry found for {} in the library system. {} should therefore not be produced.".format(edition_format, epub.identifier()))
+        return False, metadata_valid
 
     @staticmethod
     def production_complete(report, epub, publication_format):
