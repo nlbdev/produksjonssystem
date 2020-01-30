@@ -1113,8 +1113,8 @@ class Metadata:
             report.warn("An error occured when trying to get metadata for the edition {}".format(epub.identifier()))
 
         if edition_format == "EPUB":
-            report.warning("Not catalogued in the library system: {}".format(epub.identifier()))
-            report.warning("However, EPUBs should always be produced, regardless of whether or not " +
+            report.warn("Not catalogued in the library system: {}".format(epub.identifier()))
+            report.warn("However, EPUBs should always be produced, regardless of whether or not " +
                            "it's catalogued in the library system, so let's produce it anyway.")
             return True, metadata_valid
 
