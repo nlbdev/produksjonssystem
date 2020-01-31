@@ -1178,8 +1178,9 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:variable name="numberOfPages" select="(if (matches(lower-case(replace(text(),'[\[\]]','')),'^.*?(\d+)\s*s.*$')) then replace(lower-case(replace(text(),'[\[\]]','')),'^.*?(\d+)\s*s.*$','$1') else ())[1]"/>
-            <xsl:variable name="numberOfVolumes" select="(if (matches(lower-case(replace(text(),'[\[\]]','')),'^.*?(\d+)\s*(heft|b).*$')) then replace(lower-case(replace(text(),'[\[\]]','')),'^.*?(\d+)\s*(heft|b).*$','$1') else ())[1]"/>
+            <xsl:variable name="extent" select="lower-case(replace(text(),'[\[\]]',''))"/>
+            <xsl:variable name="numberOfPages" select="(if (matches($extent,'^.*?(\d+)\s*s.*$')) then replace($extent,'^.*?(\d+)\s*s.*$','$1') else ())[1]"/>
+            <xsl:variable name="numberOfVolumes" select="(if (matches($extent,'^.*?(\d+)\s*(heft|b).*$')) then replace($extent,'^.*?(\d+)\s*(heft|b).*$','$1') else ())[1]"/>
             
             <xsl:choose>
                 <xsl:when test="matches(text(),'^.*?\d+ *t+\.? *\d+ *min\.?.*?$')">
@@ -1191,14 +1192,16 @@
                 <xsl:when test="matches(text(),'^.*?\d+ *t\.?.*?$')">
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.duration'"/><xsl:with-param name="value" select="replace(text(),'^.*?(\d+) *t\.?.*?$','$1 t. 0 min.')"/></xsl:call-template>
                 </xsl:when>
-                <xsl:when test="$numberOfPages">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.pages'"/><xsl:with-param name="value" select="$numberOfPages"/></xsl:call-template>
-                </xsl:when>
-                <xsl:when test="$numberOfVolumes">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.volumes'"/><xsl:with-param name="value" select="$numberOfVolumes"/></xsl:call-template>
-                </xsl:when>
                 <xsl:otherwise>
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                    <xsl:if test="$numberOfPages">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.pages'"/><xsl:with-param name="value" select="$numberOfPages"/></xsl:call-template>
+                    </xsl:if>
+                    <xsl:if test="$numberOfVolumes">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.volumes'"/><xsl:with-param name="value" select="$numberOfVolumes"/></xsl:call-template>
+                    </xsl:if>
+                    <xsl:if test="not($numberOfPages) and not($numberOfVolumes)">
+                        <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                    </xsl:if>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>

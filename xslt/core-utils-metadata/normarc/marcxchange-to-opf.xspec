@@ -1198,4 +1198,17 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="parsing of volumes">
+        <x:context>
+            <marcxchange:datafield tag="300" ind1=" " ind2=" ">
+                <marcxchange:subfield code="a">13 hefter (972 s.)</marcxchange:subfield>
+            </marcxchange:datafield>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <meta property="dc:format.extent.pages">972</meta>
+            <meta property="dc:format.extent.volumes">13</meta>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
