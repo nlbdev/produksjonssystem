@@ -1137,4 +1137,126 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="For poems outside of bodymatter, use text from content as the headline, regardless of what the *-headlines parameters are set to">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nn" lang="nn">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section epub:type="cover">
+                        <h1 id="h1_1">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_1">
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                    <section epub:type="frontmatter">
+                        <h1 id="h1_2">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_2">
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="h1_3">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_3">
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                    <section epub:type="backmatter">
+                        <h1 id="h1_4">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_4">
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="The result should be as expected'">
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nn" lang="nn">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section epub:type="cover">
+                        <h1 id="h1_1">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_1">
+                            <h2 id="..." class="generated-headline hidden-headline">... men nokon...</h2>
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                    <section epub:type="frontmatter">
+                        <h1 id="h1_2">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_2">
+                            <h2 id="..." class="generated-headline hidden-headline">... men nokon...</h2>
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="h1_3">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_3">
+                            <h2 id="..." class="generated-headline hidden-headline">... men nokon...</h2>
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                    <section epub:type="backmatter">
+                        <h1 id="h1_4">Bodymatter</h1>
+                        <section class="poem" epub:type="z3998:poem" id="poem_4">
+                            <h2 id="..." class="generated-headline hidden-headline">... men nokon...</h2>
+                            <div class="linegroup">
+                                <p class="line"><em>... men nokon når inn der språket er nesten ordlaust</em></p>
+                                <p class="line"><em>vegen er ein lang labyrint</em></p>
+                                <p class="line"><em>det blir stillare og stillare innover</em></p>
+                                <p class="line"><em>underlege ekkolydar minner</em></p>
+                                <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

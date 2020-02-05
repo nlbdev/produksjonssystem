@@ -12,6 +12,9 @@
     <xsl:param name="frontmatter-headlines" select="'from-type'"/> <!-- omit / from-type / from-text -->
     <xsl:param name="bodymatter-headlines" select="'from-text'"/> <!-- omit / from-type / from-text -->
     <xsl:param name="backmatter-headlines" select="'from-type'"/> <!-- omit / from-type / from-text -->
+    <xsl:param name="always-from-text" select="'z3998:poem'"/> <!-- comma separated list of types that should always be based on the text -->
+    
+    <xsl:variable name="alwaysFromText" select="tokenize($always-from-text, '\s*,\s*')"/>  <!-- list version of always-from-text -->
     
     <xsl:output indent="no" method="xhtml" include-content-type="no"/>
     
@@ -56,6 +59,10 @@
         <xsl:variable name="matter" select="($matter, 'bodymatter')[1]" as="xs:string"/>
 
         <xsl:choose>
+            <xsl:when test="($matter = $alwaysFromText) or ($section/f:types(.) = $alwaysFromText)">
+                <xsl:value-of select="f:chapter-first-text($section)"/>
+            </xsl:when>
+            
             <xsl:when test="$matter = 'cover'">
                 <xsl:choose>
                     <xsl:when test="$cover-headlines = 'from-type'">
@@ -550,6 +557,11 @@
                 <en>Page list</en>
                 <nb/>
                 <nn/>
+            </type>
+            <type name="z3998:poem">
+                <en>Poem</en>
+                <nb>Dikt</nb>
+                <nn>Dikt</nn>
             </type>
         </xsl:variable>
         
