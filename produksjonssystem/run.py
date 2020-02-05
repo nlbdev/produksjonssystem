@@ -221,8 +221,8 @@ class Produksjonssystem():
 
         # by default, the inactivity timeout for all directories are 10 seconds,
         # but they can be overridden here
+        # for instance: self.dirs_inactivity_timeouts["news"] = 300
         self.dirs_inactivity_timeouts = {}
-        self.dirs_inactivity_timeouts["news"] = 300  # newsfeeds are added slowly, so allow for more inactivity
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
