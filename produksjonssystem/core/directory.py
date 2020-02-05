@@ -117,6 +117,14 @@ class Directory():
             if dir_path not in Directory.dirs:
                 Directory.dirs[dir_path] = Directory(dir_path)
 
+            elif inactivity_timeout is not None:
+                # The inactivity_timeout is normally defined when creating the directory
+                # as an input directory. In case the directory is already created as an
+                # output directory (i.e. without a inactivity_timeout), and we now
+                # try to instantiate it as an input directory (i.e. with a inactivity_timeout),
+                # then we update the inactivity_timeout
+                Directory.dirs[dir_path].set_inactivity_timeout(inactivity_timeout)
+
             if inactivity_timeout:
                 Directory.dirs[dir_path].inactivity_timeout = inactivity_timeout
 
@@ -146,6 +154,9 @@ class Directory():
             with Directory._static_lock:
                 if dir_path in Directory.dirs:
                     del Directory.dirs[dir_path]
+
+    def set_inactivity_timeout(self, inactivity_timeout):
+        self.inactivity_timeout = inactivity_timeout
 
     def initialize_checksums(self):
         with self._md5_lock:

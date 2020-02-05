@@ -58,6 +58,7 @@ class Produksjonssystem():
     book_archive_dirs = None
     email = None
     dirs = None
+    dirs_inactivity_timeouts = None
     pipelines = None
     environment = None
     emailDoc = []
@@ -217,6 +218,11 @@ class Produksjonssystem():
         # also make dirs available from static contexts
         Directory.dirs_ranked = self.dirs_ranked
         Directory.dirs_flat = self.dirs
+
+        # by default, the inactivity timeout for all directories are 10 seconds,
+        # but they can be overridden here
+        self.dirs_inactivity_timeouts = {}
+        self.dirs_inactivity_timeouts["news"] = 300  # newsfeeds are added slowly, so allow for more inactivity
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
@@ -428,14 +434,17 @@ class Produksjonssystem():
                         for key in recipient:
                             pipeline_config[key] = recipient[key]
 
+            inactivity_timeout = 10
+            if pipeline[1] and pipeline[1] in self.dirs_inactivity_timeouts:
+                self.dirs_inactivity_timeouts[pipeline[1]]
             thread = Thread(target=pipeline[0].run, name=pipeline[0].uid,
-                            args=(10,
-                                  self.dirs[pipeline[1]] if pipeline[1] else None,
-                                  self.dirs[pipeline[2]] if pipeline[2] else None,
-                                  self.dirs["reports"],
-                                  email_settings,
-                                  self.book_archive_dirs,
-                                  pipeline_config
+                            args=(inactivity_timeout,  # inactivity_timeout
+                                  self.dirs[pipeline[1]] if pipeline[1] else None,  # dir_in
+                                  self.dirs[pipeline[2]] if pipeline[2] else None,  # dir_out
+                                  self.dirs["reports"],  # dir_reports
+                                  email_settings,  # email_settings
+                                  self.book_archive_dirs,  # dir_base
+                                  pipeline_config  # config
                                   ))
 
             thread.setDaemon(True)
