@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="move-to-end-of-sentence.xsl">
+    
+    <x:param name="wrap-sentences" select="'true'"/>
+    
+    <x:scenario label="Unstructured">
+        <x:context>
+            <section>
+                <p>Dette er en setning. Jeg flyttet til 2. etasje den 4.desember. Mitt favorittall er 2.
+                    På norsk skriver vi π med komma: 3,14, mens på engelsk skrives det med punktum: 3.14.
+                    Jeg telte sakte, en... to... tre... Og så gikk jeg videre. Jeg kan også bruke tegnet "…" for tre prikker… så det så!
+                    (Dette er en setning i parentes, hvor punktum vanligvis står innenfor parentesen.) Og her er en setning utenfor parentes.
+                    "Denne setningen som omsluttes av hermetegn, avsluttes også med punktum inni hermetegnene." Det kan du sitere meg på! Andre måter å sitere på kan være:
+                    'Et sitat.' “Enda et sitat.” ‘Nok et sitat.’ 「Disse sitattegnene er rare synes jeg.」 «Denne måten å sitere på er mer vanlig.»
+                    Jeg kan skrike fra 2. etasje med utropstegn!!! JEG KAN OGSÅ SKRIKE FRA 2. ETASJE MED STORE BOKSTAVER.
+                    Kaller du dette et bra avsnitt‽ Se der fikk jeg inn en interrobang også 😀, og der var en emoji også gitt!
+                    Glemte du mellomrom etter setningsslutt?Synd for deg. Glemte du stor bokstav i neste setning? også synd for deg.
+                    Forresten så er www.nlb.no adressen til NLBs hjemmeside.</p>
+            </section>
+        </x:context>
+
+        <x:expect label="The result should be as expected">
+            <section>
+                <p><span epub:type="z3998:sentence">Dette er en setning.</span>
+                    <span epub:type="z3998:sentence">Jeg flyttet til 2. etasje den 4.desember.</span>
+                    <span epub:type="z3998:sentence">Mitt favorittall er 2.</span>
+                    <span epub:type="z3998:sentence">På norsk skriver vi π med komma: 3,14, mens på engelsk skrives det med punktum: 3.14.</span>
+                    <span epub:type="z3998:sentence">Jeg telte sakte, en...</span> <span epub:type="z3998:sentence">to...</span> <span epub:type="z3998:sentence">tre...</span>
+                    <span epub:type="z3998:sentence">Og så gikk jeg videre.</span> <span epub:type="z3998:sentence">Jeg kan også bruke tegnet "…" for tre prikker…</span>
+                    <span epub:type="z3998:sentence">Så det så!</span>
+                    <span epub:type="z3998:sentence">(Dette er en setning i parentes, hvor punktum vanligvis står innenfor parentesen.)</span>
+                    <span epub:type="z3998:sentence">Og her er en setning utenfor parentes.</span>
+                    <span epub:type="z3998:sentence">"Denne setningen som omsluttes av hermetegn, avsluttes også med punktum inni hermetegnene."</span>
+                    <span epub:type="z3998:sentence">Det kan du sitere meg på!</span>
+                    <span epub:type="z3998:sentence">Andre måter å sitere på kan være:
+                   'Et sitat.'</span>
+                    <span epub:type="z3998:sentence">“Enda et sitat.”</span>
+                    <span epub:type="z3998:sentence">‘Nok et sitat.’</span>
+                    <span epub:type="z3998:sentence">「Disse sitattegnene er rare synes jeg.」</span>
+                    <span epub:type="z3998:sentence">«Denne måten å sitere på er mer vanlig.»</span>
+                    <span epub:type="z3998:sentence">Jeg kan skrike fra 2. etasje med utropstegn!!!</span>
+                    <span epub:type="z3998:sentence">JEG KAN OGSÅ SKRIKE FRA 2. ETASJE MED STORE BOKSTAVER.</span>
+                    <span epub:type="z3998:sentence">Kaller du dette et bra avsnitt‽</span>
+                    <span epub:type="z3998:sentence">Se der fikk jeg inn en interrobang også 😀, og der var en emoji også gitt!</span>
+                    <span epub:type="z3998:sentence">Glemte du mellomrom etter setningsslutt?Synd for deg.</span>
+                    <span epub:type="z3998:sentence">Glemte du stor bokstav i neste setning? også synd for deg.</span>
+                    <span epub:type="z3998:sentence">Forresten så er www.nlb.no adressen til NLBs hjemmeside.</span></p>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Structured">
+        <x:context>
+            <section>
+                <p>Dette er strukturelt sett et mer komplekst avsnitt.
+                    <strong>Denne setningen er fet, og har <a href="#">en lenke i seg</a>. Det er også en annen setning her.</strong>
+                    Denne setningen <strong>har noen fete ord</strong> i seg.
+                    Denne setningen <strong>slutter<span epub:type="pagebreak" class="page-special">1.</span> med fet skrift.</strong>
+                    Denne <strong>er i stor grad fet, men er <em>delvis<a href="#" epub:type="noteref">1.</a></em> også kursivert.</strong>
+                    <strong>En skikkelig fet setning til slutt.</strong></p>
+            </section>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <section>
+                <p><span epub:type="z3998:sentence">Dette er strukturelt sett et mer komplekst avsnitt.</span>
+                    <strong><span epub:type="z3998:sentence">Denne setningen er fet, og har <a href="#">en lenke i seg</a>.</span>
+                        <span epub:type="z3998:sentence">Det er også en annen setning her.</span></strong>
+                    <span epub:type="z3998:sentence">Denne setningen <strong>har noen fete ord</strong> i seg.</span>
+                    <span epub:type="z3998:sentence">Denne setningen <strong>slutter<span epub:type="pagebreak" class="page-special">1.</span> med fet skrift.</strong></span>
+                    <span epub:type="z3998:sentence">Denne <strong>er i stor grad fet, men er <em>delvis<a href="#" epub:type="noteref">1.</a></em> også kursivert.</strong></span>
+                    <span epub:type="z3998:sentence"><strong>En skikkelig fet setning til slutt.</strong></span></p>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

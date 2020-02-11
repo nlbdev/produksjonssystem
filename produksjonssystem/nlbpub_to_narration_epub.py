@@ -94,6 +94,8 @@ class NlbpubToNarrationEpub(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
 
+        shutil.copy(html_file, "/tmp/1.xhtml")
+
         self.utils.report.info("Fjerner elementer som ikke skal være med i lydboka...")
         self.utils.report.debug("ta-vekk-innhold.xsl")
         self.utils.report.debug("    source = " + html_file)
@@ -106,6 +108,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
+        shutil.copy(html_file, "/tmp/2.xhtml")
 
         self.utils.report.info("Lager usynlige overskrifter der det trengs...")
         self.utils.report.debug("create-hidden-headlines.xsl")
@@ -119,6 +122,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
+        shutil.copy(html_file, "/tmp/3.xhtml")
 
         self.utils.report.info("Tilpasser innhold for innlesing...")
         self.utils.report.debug("prepare-for-narration.xsl")
@@ -132,6 +136,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
+        shutil.copy(html_file, "/tmp/4.xhtml")
 
         self.utils.report.info("Lager synkroniseringspunkter...")
         self.utils.report.debug("lag-synkroniseringspunkter.xsl")
@@ -145,6 +150,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
+        shutil.copy(html_file, "/tmp/5.xhtml")
 
         self.utils.report.info("Gjør HTMLen litt penere...")
         self.utils.report.debug("pretty-print.xsl")
@@ -158,6 +164,7 @@ class NlbpubToNarrationEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
+        shutil.copy(html_file, "/tmp/6.xhtml")
 
         # ---------- erstatt metadata i OPF med metadata fra HTML ----------
 

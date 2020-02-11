@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
-    xmlns:epub="http://www.idpf.org/2007/ops" xmlns:html="http://www.w3.org/1999/xhtml"
-    stylesheet="lag-synkroniseringspunkter.xsl">
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="lag-synkroniseringspunkter.xsl">
 
     <!-- 
         (c) 2018 NLB
         Per Sennels, 13.04.2018
+        
+        Jostein Austvik Jacobsen, 07.02.2020
     -->
 
     <x:scenario label="Etterfølgende p-elementer ...">
         <x:context>
-            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+            <section epub:type="bodymatter chapter">
                 <h1>En overskrift</h1>
                 <p>Et avsnitt</p>
                 <p>Et avsnitt</p>
@@ -31,7 +34,7 @@
 
         <!-- Sjekke med Eivind om vi også skal wrappe enslige p-elementer -->
         <x:expect label="... skal 'wrappes' sammen">
-            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+            <section epub:type="bodymatter chapter">
                 <h1>En overskrift</h1>
                 <div class="synch-point-wrapper" id="...">
                     <p>Et avsnitt</p>
@@ -61,7 +64,7 @@
     
     <x:scenario label="linegroup">
         <x:context>
-            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+            <section epub:type="bodymatter chapter">
                 <p>…</p>
                 <p>…</p>
                 <p>…</p>
@@ -89,36 +92,42 @@
         </x:context>
         
         <x:expect label="the result should be as expected">
-            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+            <section epub:type="bodymatter chapter">
                 <div class="synch-point-wrapper" id="...">
                     <p>…</p>
                     <p>…</p>
                     <p>…</p>
                 </div>
-                <div class="synch-point-wrapper" id="...">
-                    <div class="linegroup">
+                <div class="linegroup">
+                    <div class="synch-point-wrapper" id="...">
                         <p class="line">…</p>
                         <p class="line">…</p>
-                        <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    </div>
+                    <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    <div class="synch-point-wrapper" id="...">
+                        <p class="line">…</p>
+                    </div>
+                </div>
+                <div class="linegroup">
+                    <div class="synch-point-wrapper" id="...">
+                       <p class="line">…</p>
+                       <p class="line">…</p>
+                    </div>
+                    <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    <div class="synch-point-wrapper" id="...">
                         <p class="line">…</p>
                     </div>
                 </div>
                 <div class="synch-point-wrapper" id="...">
-                    <div class="linegroup">
-                        <p class="line">…</p>
-                        <p class="line">…</p>
-                        <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
-                        <p class="line">…</p>
-                    </div>
-                </div>
-                <div class="synch-point-wrapper" id="...">
                     <p>…</p>
                 </div>
-                <div class="synch-point-wrapper" id="...">
-                    <div class="linegroup">
+                <div class="linegroup">
+                    <div class="synch-point-wrapper" id="...">
                         <p class="line">…</p>
                         <p class="line">…</p>
-                        <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    </div>
+                    <div epub:type="pagebreak" class="page-normal" id="Page_11" title="11"></div>
+                    <div class="synch-point-wrapper" id="...">
                         <p class="line">…</p>
                     </div>
                 </div>
