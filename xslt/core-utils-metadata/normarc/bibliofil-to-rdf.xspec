@@ -451,5 +451,28 @@
             </rdf:RDF>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="ISSN in rdf:about for creative work">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="628282"/>
+                <meta name="issn.original" content="0803-141X"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:issn:0803141X">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:issn>0803-141X</schema:issn>
+                    <dc:source>urn:issn:0803141X</dc:source>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_628282">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:issn:0803141X"/>
+                    <dc:identifier>628282</dc:identifier>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
 
 </x:description>

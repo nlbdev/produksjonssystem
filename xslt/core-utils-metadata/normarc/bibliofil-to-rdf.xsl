@@ -32,8 +32,8 @@
         <xsl:variable name="identifier" select="$metadata/dc:identifier"/>
         
         <xsl:variable name="resource-creativeWork" select="(
-                                                                $metadata/*[@name='isbn.original' and matches(@content, '.*\d.*')]/concat('urn:isbn:', replace(@content,'[^\d]','')),
-                                                                $metadata/*[@name='issn.original' and matches(@content, '.*\d.*')]/concat('urn:issn:', replace(@content,'[^\d]','')),
+                                                                $metadata/*[@name='isbn.original' and matches(@content, '.*[\dX-].*')]/concat('urn:isbn:', replace(@content,'[^\dX]','')),
+                                                                $metadata/*[@name='issn.original' and matches(@content, '.*[\dX-].*')]/concat('urn:issn:', replace(@content,'[^\dX]','')),
                                                                 concat('creativeWork_',replace(string(current-time()),'[^\d]',''),'_',generate-id())
                                                             )[1]"/>
         <xsl:variable name="resource-book" select="(
@@ -256,7 +256,7 @@
                                 </xsl:element>
                                 <xsl:element name="dc:source">
                                     <xsl:copy-of select="@nlb:metadata-source"/>
-                                    <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\d]',''))"/>
+                                    <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\dX]',''))"/>
                                 </xsl:element>
                             </xsl:when>
                             
@@ -266,7 +266,7 @@
                                 </xsl:element>
                                 <xsl:element name="dc:source">
                                     <xsl:copy-of select="@nlb:metadata-source"/>
-                                    <xsl:copy-of select="concat('urn:issn:',replace($element/text()[1],'[^\d]',''))"/>
+                                    <xsl:copy-of select="concat('urn:issn:',replace($element/text()[1],'[^\dX]',''))"/>
                                 </xsl:element>
                             </xsl:when>
                             
