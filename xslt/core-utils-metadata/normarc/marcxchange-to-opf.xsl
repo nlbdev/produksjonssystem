@@ -1429,8 +1429,9 @@
                 </xsl:choose>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='f']">
-                <xsl:variable name="length" select="string-length(replace(text(),'[^0-9xX]',''))" as="xs:integer"/>
-                <xsl:if test="not(text() = '0') and $length gt 0">
+                <xsl:variable name="isbn-issn" select="replace(upper-case(text()),'[^\dX-]','')" as="xs:string"/>
+                <xsl:variable name="length" select="string-length(replace($isbn-issn,'-',''))" as="xs:integer"/>
+                <xsl:if test="not($isbn-issn = '0') and $length gt 0">
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="concat(if ($length lt 9) then 'issn' else 'isbn', '.original')"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
