@@ -1081,10 +1081,22 @@ class Metadata:
             report.warn("Metadata om produksjonen finnes ikke: {}".format(epub.identifier()))
             metadata_valid = False
 
-        edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), epub.identifier())
+        edition_identifier = epub.identifier()
+        edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), edition_identifier)
 
         report.debug("looking for creative work identifier in: {}".format(edition_url))
         response = requests.get(edition_url)
+
+        if response.status_code == 404 and len(edition_identifier) > 6:
+            # fallback for as long as the API does not
+            # support edition identifiers longer than 6 digits
+            edition_identifier = edition_identifier[:6]
+            report.debug("edition identifier is {} digits long, trying 6 first digits instead…".format(len(edition_identifier)))
+            edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), edition_identifier)
+
+            report.debug("looking for creative work identifier in: {}".format(edition_url))
+            response = requests.get(edition_url)
+
         if response.status_code == 200:
             edition_data = response.json()['data']
 
