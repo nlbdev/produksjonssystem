@@ -66,7 +66,8 @@ environment = {
     "CONFIG_FILE": os.path.join(os.path.dirname(__file__), "produksjonssystem.yaml"),
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
     "STOP_AFTER_FIRST_JOB": "true",
-    "CACHE_DIR": "{}/cache".format(target_path)
+    "CACHE_DIR": "{}/cache".format(target_path),
+    "NLB_API_URL": "https://api.nlb.no/v1",
 }
 
 book_archive_dirs = {}
