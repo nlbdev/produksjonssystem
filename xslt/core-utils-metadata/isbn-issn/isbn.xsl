@@ -130,7 +130,9 @@
         <xsl:param name="number" as="xs:string"/>
         
         <xsl:variable name="compact" select="isbn:compact($number, false())"/>
-        <xsl:variable name="compact-without-check-digit" select="if (string-length($compact) = 10) then substring($compact, 1, 9) else substring($compact, 1, 12)"/>
+        <xsl:variable name="compact-without-check-digit" select="if (string-length($compact) = 10) then substring($compact, 1, 9)
+                                                                 else if (string-length($compact) gt 10) then substring($compact, 1, 12)
+                                                                 else substring($compact, 0, string-length($compact))"/>
         
         <xsl:variable name="check" as="xs:integer*">
             <xsl:analyze-string select="$compact-without-check-digit" regex="(.)">

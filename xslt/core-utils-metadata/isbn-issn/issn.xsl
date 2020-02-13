@@ -208,7 +208,7 @@
             The 11th and 12th characters are variable and the publisher can use them to express additional information (e.g.; change of price).
             The 13th character is a check digit calculated according to the modulo 10 formula.
         -->
-        <xsl:variable name="ean" select="concat('977', substring(issn:compact($number), 1, 7), $issue_code)"/>
+        <xsl:variable name="ean" select="concat('977', substring(issn:compact($number), 1, min((7, string-length($number) - 1))), $issue_code)"/>
         <xsl:variable name="ean" select="concat($ean, issn:ean_calc_check_digit($ean))"/>
         
         <xsl:value-of select="$ean"/>
