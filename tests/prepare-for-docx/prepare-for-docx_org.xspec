@@ -39,7 +39,7 @@
         <x:expect label="Pagebreak avoided">
             <head>
                 <meta charset="UTF-8" />
-                <style>div.pagebreak { page-break-after:avoid; }</style>
+                <style>div.pagebreak {page-break-after:avoid;}</style>
             </head>
         </x:expect>
     </x:scenario>
@@ -59,6 +59,8 @@
         </x:expect>
     </x:scenario>
     
+    
+   
     <x:scenario label="Transform definition list to unordered list">
         <x:context>
             
@@ -138,6 +140,43 @@
                 <li>Kroatia: 1.700</li>
                 <li>Sudan 1.400 </li>
             </ul>
+            
+            <aside class="prodnote" epub:type="z3998:production" id="desc-21">
+                <p><strong>Samfunnsvitenskapelig Forskning:</strong></p>
+                <ul>
+                    <li><p>Kvantitativ metode</p>
+                        <ul>
+                            <li>Spørreundersøkelse</li>
+                            <li>Registerdata</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Forskningsetikk</li>
+                </ul>
+                <ul>
+                    <li><p>Kvalitativ metode</p>
+                        <ul>
+                            <li>Kvalitativt intervju</li>
+                            <li>Dokumentstudie</li>
+                            <li>Feltarbeid</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Problemstilling</li>
+                </ul>
+                <ul>
+                    <li>Teori</li>
+                </ul>
+                <ul>
+                    <li>Metode</li>
+                </ul>
+                <ul>
+                    <li>Empiri</li>
+                </ul>
+            </aside>
+           
         </x:context>
         
         <x:expect label="-- should be inserted in unordered list">  
@@ -162,79 +201,147 @@
                 <li>-- Kroatia: 1.700</li>
                 <li>-- Sudan 1.400 </li>
             </ul>
+            <aside class="prodnote" epub:type="z3998:production" id="desc-21">
+                <p>_Samfunnsvitenskapelig Forskning:_</p>
+                <ul>
+                    <li>-- Kvantitativ metode</li>
+                        <ul>
+                            <li>-- Spørreundersøkelse</li>
+                            <li>-- Registerdata</li>
+                        </ul>
+                    
+                </ul>
+                <ul>
+                    <li>-- Forskningsetikk</li>
+                </ul>
+                <ul>
+                    <li>-- Kvalitativ metode</li>
+                        <ul>
+                            <li>-- Kvalitativt intervju</li>
+                            <li>-- Dokumentstudie</li>
+                            <li>-- Feltarbeid</li>
+                        </ul>
+                 </ul>
+                <ul>
+                    <li>-- Problemstilling</li>
+                </ul>
+                <ul>
+                    <li>-- Teori</li>
+                </ul>
+                <ul>
+                    <li>-- Metode</li>
+                </ul>
+                <ul>
+                    <li>-- Empiri</li>
+                </ul>
+            </aside>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Insert >>> in heading for exercises class=oppgaver3">
+        <x:context>
+            <section class="oppgaver3" id="ch3-72">
+                <h6 id="d1e10125">Oppgave</h6>
+            </section>
+         </x:context>
+        
+        <x:expect label=">>> should be inserted in heading for exercises class=oppgave3 ">  
+            
+            <section class="oppgaver3" id="ch3-72">
+                <h6 id="d1e10125">>>> Oppgave</h6>
+            </section>
+            
         </x:expect>
     </x:scenario> 
-   
-        
     
-    <x:scenario label="Insert . in ordered list after number">
+    
+    
+    <x:scenario label="Insert >>> in ordered list for exercises">
         <x:context>
-            <section id="level3_7">
-                 <ol class="list-style-type-none" style="list-style-type: none;">
-                    <li><strong>1</strong> Hvordan vil du beskrive forskjellene mellom de ulike samfunnsfagene?</li>
-                    <li><strong>2</strong> Hvilke fire ambisjoner har sosiologien for å forstå samfunnet og samspillet mellom mennesker?</li>
-                    <li><strong>3</strong> Hvilke samfunnsendringer skapte grunnlaget for sosiologien?</li>
-                    <li><strong>4</strong> Hvordan vil du forklare hva sosiologi er?</li>
-                    <li><strong>5</strong> Hvilket bidrag sto Auguste Comte for når det gjelder å forstå samfunnet?</li>
-                    <li><strong>6</strong> Hvorfor har Karl Marx hatt stor betydning for utviklingen av samfunnsfagene?</li>
-                    <li><strong>7</strong> Hva var Max Weber opptatt av?</li>
-                    <li><strong>8</strong> Hva mente Emile Durkheim alle samfunn hadde til felles?</li>
-                    <li><strong>9</strong> Hva undersøkte Eilert Sundt?</li>
-                    <li><strong>10</strong> På hvilke måter skiller sosialantropologien seg fra sosiologien?</li>
-                    <li><strong>11</strong> Hva er Franz Boas kjent for?</li>
-                    <li><strong>12</strong> Hva er Bronislaw Malinowski kjent for?</li>
-                    <li>
-                        <p><strong>13</strong> Hva menes med</p>
-                        <ol class="list-style-type-none" style="list-style-type: none;">
-                            <li>a) konfliktperspektivet?</li>
-                            <li>b) harmoniperspektivet?</li>
-                            <li>c) handlingsteorien?</li>
-                        </ol></li>
-                    <li><strong>14</strong> Hvorfor skiller vi mellom makro-, meso- og mikronivå?</li>
-                    <li><strong>15</strong> Hvilke teorier om menneskelig atferd har vi presentert i denne boka?</li>
-                    <li><strong>16</strong> Hva mente Margaret Mead at hun hadde funnet ut?</li>
-                    <li><strong>17</strong> Hva betyr sosiobiologi, og på hvilken måte forklarer det menneskelig atferd?</li>
-                    <li><strong>18</strong> Hva betyr begrepet «evolusjon»?</li>
-                    <li><strong>19</strong> Hva betyr «naturlig seleksjon»?</li>
-                    <li><strong>20</strong> Hvorfor har samfunnsvitere og biologer så ulikt syn på menneskets atferd?</li>
-                </ol>
-                </section>
-        </x:context>
-        
-        <x:expect label=". should be inserted in ordered list after number">  
-            <section id="level3_7">
-                <ol class="list-style-type-none" style="list-style-type: none;">
-                    <li>1. Hvordan vil du beskrive forskjellene mellom de ulike samfunnsfagene?</li>
-                    <li>2. Hvilke fire ambisjoner har sosiologien for å forstå samfunnet og samspillet mellom mennesker?</li>
-                    <li>3. Hvilke samfunnsendringer skapte grunnlaget for sosiologien?</li>
-                    <li>4. Hvordan vil du forklare hva sosiologi er?</li>
-                    <li>5. Hvilket bidrag sto Auguste Comte for når det gjelder å forstå samfunnet?</li>
-                    <li>6. Hvorfor har Karl Marx hatt stor betydning for utviklingen av samfunnsfagene?</li>
-                    <li>7. Hva var Max Weber opptatt av?</li>
-                    <li>8. Hva mente Emile Durkheim alle samfunn hadde til felles?</li>
-                    <li>9. Hva undersøkte Eilert Sundt?</li>
-                    <li>10. På hvilke måter skiller sosialantropologien seg fra sosiologien?</li>
-                    <li>11. Hva er Franz Boas kjent for?</li>
-                    <li>12. Hva er Bronislaw Malinowski kjent for?</li>
-                    <li>
-                        <p>13. Hva menes med</p>
-                        <ol class="list-style-type-none" style="list-style-type: none;">
-                            <li>a) konfliktperspektivet?</li>
-                            <li>b) harmoniperspektivet?</li>
-                            <li>c) handlingsteorien?</li>
-                        </ol></li>
-                    <li>14. Hvorfor skiller vi mellom makro-, meso- og mikronivå?</li>
-                    <li>15. Hvilke teorier om menneskelig atferd har vi presentert i denne boka?</li>
-                    <li>16. Hva mente Margaret Mead at hun hadde funnet ut?</li>
-                    <li>17. Hva betyr sosiobiologi, og på hvilken måte forklarer det menneskelig atferd?</li>
-                    <li>18. Hva betyr begrepet «evolusjon»?</li>
-                    <li>19. Hva betyr «naturlig seleksjon»?</li>
-                    <li>20. Hvorfor har samfunnsvitere og biologer så ulikt syn på menneskets atferd?</li>
+             
+           
+            <section class="oppgaver1" id="ch1-6">
+                <h3 id="d1e2227">Test deg selv</h3>
+                <ol>
+                    <li><p><strong>2.2.10</strong> Ola Bjerk er gårdbruker. </p>
+                        <p>Kari Lind leser annonsen med interesse.</p>
+                        <p>Drøft og løs tvisten mellom Ola og Kari.</p>
+                    </li>
                 </ol>
             </section>
+            
+            
+        </x:context>
+        
+        <x:expect label=">>> should be inserted in ordered list ">  
+                
+            <section class="oppgaver1" id="ch1-6">
+                <h3 id="d1e2227">xxx3 Test deg selv</h3>
+                <ol> 
+                    <li>>>> <p>_2.2.10_ Ola Bjerk er gårdbruker. </p>
+                        <p>Kari Lind leser annonsen med interesse.</p>
+                        <p>Drøft og løs tvisten mellom Ola og Kari.</p>
+                    </li>
+                </ol>
+            </section>
+            
         </x:expect>
     </x:scenario> 
     
+    <x:scenario label="Insert -- in unordered list in aside">
+        <x:context>
+            
+                    <ul>
+                        <li>Irak: 21.000</li>
+                        <li>Somalia: 20.000</li>
+                        <li>Iran: 12.700</li>
+                        <li>Bosnia Hercegovina: 12.200</li>
+                        <li>Vietnam: 11.500</li>
+                        <li>Afghanistan: 11.000</li>
+                        <li>Kosovo: 8.500</li>
+                        <li>Eritrea: 7.600</li>
+                        <li>Sri Lanka: 6.500</li>
+                        <li>Russland: 5.000</li>
+                        <li>Chile: 4.900</li>
+                        <li>Etiopia: 4.000</li>
+                        <li>Myanmar/Burma: 2.700</li>
+                        <li>Det palestinske området: 2.700</li>
+                        <li>Tyrkia: 2.500</li>
+                        <li>Pakistan: 1.800</li>
+                        <li>Kongo: 1.700</li>
+                        <li>Kroatia: 1.700</li>
+                        <li>Sudan 1.400 </li>
+                    </ul>
+        </x:context>
+        
+        <x:expect label="-- should be inserted in unordered list in aside">  
+                            
+                    <ul>
+                        <li>-- Irak: 21.000</li>
+                        <li>-- Somalia: 20.000</li>
+                        <li>-- Iran: 12.700</li>
+                        <li>-- Bosnia Hercegovina: 12.200</li>
+                        <li>-- Vietnam: 11.500</li>
+                        <li>-- Afghanistan: 11.000</li>
+                        <li>-- Kosovo: 8.500</li>
+                        <li>-- Eritrea: 7.600</li>
+                        <li>-- Sri Lanka: 6.500</li>
+                        <li>-- Russland: 5.000</li>
+                        <li>-- Chile: 4.900</li>
+                        <li>-- Etiopia: 4.000</li>
+                        <li>-- Myanmar/Burma: 2.700</li>
+                        <li>-- Det palestinske området: 2.700</li>
+                        <li>-- Tyrkia: 2.500</li>
+                        <li>-- Pakistan: 1.800</li>
+                        <li>-- Kongo: 1.700</li>
+                        <li>-- Kroatia: 1.700</li>
+                        <li>-- Sudan 1.400 </li>
+                    </ul>           
+                 
+        </x:expect>
+    </x:scenario> 
+    
+  
     <x:scenario label="Table of contents">
         <x:context>
             <section epub:type="frontmatter toc" id="level1_4">
@@ -457,20 +564,30 @@
                  <p>Hopefully they will run away.</p>
            </aside>
             </div>   
+            <div class="ramme5">
+                <p><strong>Eksempel</strong></p>
+            </div>
         </x:context>
        
         <x:expect label="Mark with 'Rammetekst'">
+            <div>
                 <p lang="no" xml:lang="no">{{Rammetekst:}}</p>  
                 <p class="line">But hope remains when pride is gone</p>
                 <p class="line">And it keeps you moving on</p>
                 <p class="line">Calling you across the borderline</p>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
-            <div >
+           </div>
+            <div>
                 <p lang="no" xml:lang="no">{{Rammetekst:}}</p>  
                 <p>WARNING! WATCH OUT FOR GRIZZLY BEARS!</p>
                 <p>Hopefully they will run away.</p>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
              </div>
+            <div>
+                <p lang="no" xml:lang="no">{{Rammetekst:}}</p>  
+                <p>_Eksempel_</p>
+                <p lang="no" xml:lang="no">{{Slutt}}</p>
+            </div>
         </x:expect>
     </x:scenario>
     <!-- ***********-->
@@ -502,22 +619,7 @@
                 <figure class="image"><img alt="foto" src="images/861011-001.jpg" />
                     <aside class="prodnote" epub:type="z3998:production" id="aside_1">
                         <p>Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>
-                        <ul>
-                            <li>Meir enn 50%: Vest-Sahara, Mali, Sierra Leone, Burkina Faso,
-                                Nigeria, Tsjad, Den sentralafrikanske republikk, Den
-                                demokratiske republikken Kongo, Zambia, Angola, Tanzania,
-                                Malawi, Mosambik, Madagaskar, Nepal</li>
-                            <li>20,0-49,9%: Mauritania, Senegal, Gambia, Guinea Bissau, Guinea,
-                                Elfenbenskysten, Ghana, Togo, Benin, Niger, Uganda, Etiopia,
-                                Honduras, El Salvador, India, Pakistan, Mongolia, Bangladesh,
-                                Bhutan, Tasjikistan, Usbekistan, Laos, Kambodsja,
-                                Filipinane</li>
-                            <li>10,0-19,9%: Sør-Afrika, Kenya, Jemen, Kina, Turkmenistan,
-                                Vietnam, Indonesia, Papua, Georgia, Colombia, Paraguay, Bolivia,
-                                Guatemala, Nicaragua</li>
-                            <li>10,0% eller ingen data: resten av verda </li>
-                        </ul>
-                    </aside>
+                     </aside>
                 </figure>
                
                 <figure class="image">
@@ -543,53 +645,28 @@
         </x:context>
 
         <x:expect label="removed image; optionally replace with alt text">
-            <div>
-              
+            <div>              
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
                 <p lang="no" xml:lang="no">Forklaring: image</p>
-                <p lang="no" xml:lang="no">{{Slutt}}</p>
-              
-                
+                <p lang="no" xml:lang="no">{{Slutt}}</p>                         
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
                 <p lang="no" xml:lang="no">Forklaring: God Bildetekst</p>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
-               
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
-             
                 <figure class="image">   
-                 <p lang="no" xml:lang="no">Forklaring: foto</p><p lang="no" xml:lang="no">Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>
-                    <ul>
-                        <li>-- Meir enn 50%: Vest-Sahara, Mali, Sierra Leone, Burkina Faso,
-                                Nigeria, Tsjad, Den sentralafrikanske republikk, Den
-                                demokratiske republikken Kongo, Zambia, Angola, Tanzania,
-                                Malawi, Mosambik, Madagaskar, Nepal</li>
-                        <li>-- 20,0-49,9%: Mauritania, Senegal, Gambia, Guinea Bissau, Guinea,
-                                Elfenbenskysten, Ghana, Togo, Benin, Niger, Uganda, Etiopia,
-                                Honduras, El Salvador, India, Pakistan, Mongolia, Bangladesh,
-                                Bhutan, Tasjikistan, Usbekistan, Laos, Kambodsja,
-                                Filipinane</li>
-                        <li>-- 10,0-19,9%: Sør-Afrika, Kenya, Jemen, Kina, Turkmenistan,
-                                Vietnam, Indonesia, Papua, Georgia, Colombia, Paraguay, Bolivia,
-                                Guatemala, Nicaragua</li>
-                        <li>-- 10,0% eller ingen data: resten av verda </li>
-                    </ul>  
+                <p lang="no" xml:lang="no">Forklaring: foto</p><p lang="no" xml:lang="no">Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>                    
                 </figure>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
-                
-                
                 <p lang="no" xml:lang="no">{{Bilde:}}</p>
                 <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image</p><figcaption>Bildetekst: figcaption-image</figcaption></figure>
                 <p lang="no" xml:lang="no">{{Slutt}}</p>
-                
-
                 <figure class="image-series">
-                  
-                    <p lang="no" xml:lang="no">{{Bilde:}}</p>
-                    <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-1</p><figcaption>Bildetekst: <span>figcaption-image-series-1</span></figcaption></figure>
-                    <p lang="no" xml:lang="no">{{Slutt}}</p>       
-                    <p lang="no" xml:lang="no">{{Bilde:}}</p>
-                    <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-2</p><figcaption>Bildetekst: figcaption-image-series-2</figcaption></figure>
-                    <p lang="no" xml:lang="no">{{Slutt}}</p>
+                <p lang="no" xml:lang="no">{{Bilde:}}</p>
+                <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-1</p><figcaption>Bildetekst: <span>figcaption-image-series-1</span></figcaption></figure>
+                <p lang="no" xml:lang="no">{{Slutt}}</p>       
+                <p lang="no" xml:lang="no">{{Bilde:}}</p>
+                <figure class="image"><p lang="no" xml:lang="no">Forklaring: figure-image-series-2</p><figcaption>Bildetekst: figcaption-image-series-2</figcaption></figure>
+                <p lang="no" xml:lang="no">{{Slutt}}</p>
                 </figure>
             </div>
         </x:expect>
@@ -671,7 +748,7 @@
                     <p lang="no" xml:lang="no">Mangfold - no/en<br/>(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br/>Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
                     <p lang="no" xml:lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>Oslo 2018, Statped læringsressurser og teknologiutvikling.</p>
                     <section>
-                        <h1 lang="no" xml:lang="no" id="statped_merknad">xxx1 Merknad</h1>
+                        <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Merknad</h1>
                         <p lang="no" xml:lang="no">-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de fire overskriftsnivåene som er merket med xxx.</p>
                         <p lang="no" xml:lang="no">-- Rammetekster og bilder som dukker opp midt i løpende tekst, er flyttet, slik at de står etter den løpende teksten, foran neste overskrift.</p>
                         <p lang="no" xml:lang="no">-- Sidetallet står øverst på siden, på egen linje, med åpen linje over, slik:</p>
@@ -680,7 +757,7 @@
                         <p lang="no" xml:lang="no"> -- Uthevingstegnet er slik: _</p>
                         <p lang="no" xml:lang="no"> Eksempel: _Denne setningen er uthevet._</p>
                         <p lang="no" xml:lang="no"> -- {{}} Doble klammeparenteser brukes rundt opplysninger om layout eller spesielle elementer på siden.</p>
-                        <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert slik: >>> 1, >>> 2 osv., slik at du enkelt kan søke deg frem til dem.</p>
+                        <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert med >>> slik: 1. >>>, 2. >>> osv., slik at du enkelt kan søke deg frem til dem.</p>
                         <p lang="no" xml:lang="no"> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og innhold for hele boka finner du til slutt i denne filen.</p>
                     </section>
                     <section>

@@ -12,17 +12,14 @@
         </xsl:copy>
     </xsl:template>
 
-  
-  
-   
-   <xsl:template match="h1[not(ancestor::section[f:types(.) = 'toc'])]">
-    <xsl:copy exclude-result-prefixes="#all">
-        <xsl:apply-templates select="@*"/>
-        <xsl:text>xxx1 </xsl:text>
-        <xsl:apply-templates select="node()"/>
-    </xsl:copy>
+    <xsl:template match="h1[not(ancestor::section[f:types(.) = 'toc'])]">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:text>xxx1 </xsl:text>
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
     </xsl:template>
-    
+
     <xsl:template match="h2[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
@@ -30,7 +27,7 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-    
+   
     <xsl:template match="h3[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
@@ -38,7 +35,7 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-    
+
     <xsl:template match="h4[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
@@ -46,7 +43,7 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-    
+
     <xsl:template match="h5[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
@@ -54,7 +51,7 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-    
+
     <xsl:template match="h6[not(ancestor::section[f:types(.) = 'toc'])]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
@@ -62,7 +59,6 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
-    
 
     <xsl:template name="create-pagebreak">
         <xsl:variable name="page-number"
@@ -78,9 +74,8 @@
                 else
                     text())"/>
         
-           <p></p>   
+                 
         <div epub:type="pagebreak">
-          
             <xsl:apply-templates select="@*"/>
             <xsl:attribute name="title" select="$page-number"/>
             <xsl:value-of select="concat('--- ', $page-number, ' til ', $max-page-number)"/>
@@ -107,127 +102,130 @@
     </xsl:template>
   
         <xsl:template match="aside[f:classes(.) = 'sidebar']">
-            <xsl:element name="aside">
-            <p lang="no" xml:lang="no"></p>
-            <xsl:apply-templates select="node()"/>
            
-            </xsl:element>
+            <p lang="no" xml:lang="no">{{Rammetekst:}}</p>
+            <xsl:apply-templates select="node()"/>
+            <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>
+            
         </xsl:template>
     
     <xsl:template match="div[f:classes(.) = 'linegroup']">
         <xsl:element name="div">
-        <p lang="no" xml:lang="no"></p>
+        <p lang="no" xml:lang="no">{{Rammetekst:}}</p>
         <xsl:apply-templates select="node()"/>
-       
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>
         </xsl:element>
     </xsl:template>
     
     <xsl:template match="div[f:classes(.) = 'ramme1'] | div[f:classes(.) = 'ramme2'] | div[f:classes(.) = 'ramme3'] | div[f:classes(.) = 'ramme4'] | div[f:classes(.) = 'ramme5'] | div[f:classes(.) = 'ramme6']">
         <xsl:element name="div">
-        <p lang="no" xml:lang="no"></p>
+        <p lang="no" xml:lang="no">{{Rammetekst:}}</p>
         <xsl:apply-templates select="node()"/>
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>
+        </xsl:element>
+    </xsl:template>
+    
+    
+    
+    <xsl:template match="section[f:classes(.) = 'oppgaver1']/ol/li | section[f:classes(.) = 'oppgaver2']/ol/li">
+        <xsl:apply-templates select="@*"/>
        
-        </xsl:element>
+            <li>
+                <xsl:text>>>> </xsl:text>  
+            <!--    <xsl:value-of select="descendant::text()"/> -->
+                <xsl:value-of select="node()"/>
+            </li> 
+     </xsl:template>
+    
+    
+    <xsl:template match="section[f:classes(.) = 'oppgaver1']/ol/li/p | section[f:classes(.) = 'oppgaver2']/ol/li/p">
+        <xsl:apply-templates select="@*"/>
+       
+        <p>
+            <xsl:value-of select="node()"/>
+        </p> 
+            
+   
     </xsl:template>
-    
-      
-    
-    <xsl:template match="div[f:classes(.) = 'ramdoc']">
-        <p></p>
-        <xsl:element name="div">
-            <p lang="no" xml:lang="no">Ramme:</p>
-            <xsl:apply-templates select="node()"/>
-           
-        </xsl:element>
-    </xsl:template>
-    
-    <xsl:template match="aside[f:classes(.) = 'ramdoc']">
-        <p></p>
-        <xsl:element name="aside">
-            <p lang="no" xml:lang="no">Ramme:</p>
-            <xsl:apply-templates select="node()"/>
-          
-        </xsl:element>
-    </xsl:template>
-    
-    <xsl:template match="section[f:classes(.) = 'oppgaver1'] | section[f:classes(.) = 'oppgaver2'] | section[f:classes(.) = 'oppgaver3']">
-       <section>
-                
-      
-           <xsl:apply-templates select="node()"/>
-        
-        
-       </section>
-    </xsl:template>
-    
     
   
     
     
     <xsl:template match="img">
-        
         <xsl:variable name="is-inside-figure"
         select="exists(parent::figure[f:classes(.) = 'image'])"/>
         <xsl:if test="string-length(@alt) gt 0">
         <xsl:if test="not($is-inside-figure)">
-            <p></p>
-            <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>Bilde:</p>                
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Bilde:}}</p>                
         </xsl:if>            
         <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="concat('Forklaring: ', @alt)"/></p>
         <xsl:if test="not($is-inside-figure)">
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute></p> 
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p> 
         </xsl:if>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="figure[f:classes(.) = 'image']">
-        <p></p>
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>Bilde:</p>        
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Bilde:}}</p>        
         <xsl:copy exclude-result-prefixes="#all">
         <xsl:apply-templates select="@*"/>
         <xsl:apply-templates select="node()"/>
         </xsl:copy>
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute></p>     
+        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>{{Slutt}}</p>     
     </xsl:template>
     
-    
-           
-        
-         
-        
+   
 
-    <xsl:template match="figure[f:classes(.) = 'image']/aside" priority="11">
-            <xsl:apply-templates select="node()"/>  
-      
-    </xsl:template>     
-    
-  
-    
+    <xsl:template match="figure[f:classes(.) = 'image']/aside">
+                <xsl:choose>
+                <xsl:when test="exists(p)">                 
+                <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="p"/></p> 
+                <xsl:if test="exists(ul)"> 
+                <ul>
+                <xsl:for-each select="ul/li">
+                <li>
+                <xsl:text>-- </xsl:text>
+                <xsl:value-of select="text()"/>
+                </li>
+                </xsl:for-each>
+                </ul>   
+                </xsl:if> 
+                </xsl:when>
+                <xsl:otherwise>
+                <xsl:text>Bildetekst: </xsl:text>
+                </xsl:otherwise>              
+            </xsl:choose> 
+        <!--  </xsl:copy> -->
+    </xsl:template>    
+    <xsl:template match="figure[f:classes(.) = 'image']/aside/ul/li">
+    <li>
+    <xsl:text>-- </xsl:text>
+    <xsl:apply-templates select="text()"/>
+    </li>     
+    </xsl:template>
     
     <xsl:template match="figure[f:classes(.) = 'image']/figcaption">
     <xsl:copy exclude-result-prefixes="#all">
     <xsl:apply-templates select="@*"/>
-    <xsl:text> Bildetekst: </xsl:text> 
+    <xsl:choose>
+    <xsl:when test="exists(p)">
+ 
+      <xsl:text>Bildetekst: </xsl:text> 
+    </xsl:when>
+    <xsl:otherwise>                   
+    <xsl:text>Bildetekst: </xsl:text>                
+    </xsl:otherwise>                
+    </xsl:choose>
     <xsl:apply-templates select="node()"/>
     </xsl:copy>
     </xsl:template>
 
-   
     <xsl:template match="section[f:types(.) = 'toc']">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
+    <xsl:copy exclude-result-prefixes="#all">
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="node()"/>
+    </xsl:copy>
     </xsl:template>
-    
-    <xsl:template match="section[f:types(.) = 'frontmatter colophon']">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
-        </xsl:template>
-   
-    
 
     <xsl:template match="ol[parent::section[f:types(.) = 'toc']]">
     <xsl:copy exclude-result-prefixes="#all">
@@ -237,10 +235,7 @@
     </xsl:copy>
     </xsl:template>
     
-    
-    
     <xsl:template match="ol[ancestor::section[f:types(.) = 'toc'] and count(ancestor::li) ge 2]"/>
-   
     
     <xsl:template match="li[ancestor::section[f:types(.) = 'toc']]">
         <xsl:copy exclude-result-prefixes="#all">
@@ -249,9 +244,6 @@
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template> 
-    
-   
-    
 
     <xsl:template match="body">
         <xsl:copy exclude-result-prefixes="#all">
@@ -287,7 +279,7 @@
             <!-- Replace "1" with "1.utg." -->
             <xsl:variable name="edition-original" select="replace($edition-original, '\.+', '.')"/>
             <!-- Replace "1..utg." with "1.utg." -->
-            <xsl:variable name="pagebreaks" select="(//section | //span)[f:types(.) = 'pagebreak']"/>
+            <xsl:variable name="pagebreaks" select="(//div | //span)[f:types(.) = 'pagebreak']"/>
             <xsl:variable name="first-page"
                 select="
                     if ($pagebreaks[1]/@title) then
@@ -370,69 +362,51 @@
                 />
             </p>
 
-          
+            <p lang="no" xml:lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>
+                <xsl:value-of select="$publisher-location"/>
+                <xsl:value-of
+                    select="
+                        if ($issued) then
+                            concat(' ', $issued)
+                        else
+                            ''"/>
+                <xsl:value-of
+                    select="
+                        if ($publisher) then
+                            concat(', ', $publisher)
+                        else
+                            ''"/>
+                <xsl:value-of select="'.'"/>
+            </p>
             <xsl:apply-templates select="section[f:types(.) = 'toc']"/>
-            
-       
-            <div>
-                <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Generell merknad for Statpeds leselistbøker:</h1>
-                <p lang="no" xml:lang="no">Filen har en klikkbar innholdsfortegnelse.</p>
-                <p lang="no" xml:lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</p>
-                <p lang="no" xml:lang="no">--- innleder sidetallet.</p>
-                <p lang="no" xml:lang="no">Uthevingstegnet er slik: _.</p>
-                <p lang="no" xml:lang="no">Eksempel: _Denne setningen er uthevet._</p>
-                <p lang="no" xml:lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</p>
-                <p lang="no" xml:lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</p>
-              </div>
-            
-         <!--   <xsl:apply-templates select="* except section[f:types(.) = ('toc', 'backmatter', 'index', 'titlepage', 'colophon') and f:classes(.) = ('rearcover')] "/>-->
-            
-            <xsl:apply-templates select="* except section[f:types(.) = ('toc', 'backmatter', 'index', 'colophon', 'titlepage', 'cover')]"/>
-            <p></p> 
-            <p>Kolofon: </p>
-             <xsl:apply-templates select="section[f:types(.) = 'frontmatter' and f:types(.) = 'colophon']"/>
-         
-            <p></p> 
-            <p>Baksidetekst: </p>
-            <xsl:apply-templates select="section[f:types(.) = 'cover']/section[f:classes(.) = 'rearcover']"/>
-            <p></p> 
-            <p lang="no" xml:lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>Statped.</p>
+           
+            <section>
+                <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Merknad</h1>
+                <p lang="no" xml:lang="no">-- Overskrifter: Den klikkbare innholdsfortegnelsen i denne filen viser to av de fire overskriftsnivåene som er merket med xxx.</p>
+                <p lang="no" xml:lang="no">-- Rammetekster og bilder som dukker opp midt i løpende tekst, er flyttet, slik at de står etter den løpende teksten, foran neste overskrift.</p>
+                <p lang="no" xml:lang="no">-- Sidetallet står øverst på siden, på egen linje, med åpen linje over, slik:</p>
+                <p lang="no" xml:lang="no"> --- 10 til 79</p>
+                <p lang="no" xml:lang="no"> der 10 er aktuelt sidetall og 79 er sluttsidetalet i originalboka.</p>
+                <p lang="no" xml:lang="no"> -- Uthevingstegnet er slik: _</p>
+                <p lang="no" xml:lang="no"> Eksempel: _Denne setningen er uthevet._</p>
+                <p lang="no" xml:lang="no"> -- {{}} Doble klammeparenteser brukes rundt opplysninger om layout eller spesielle elementer på siden.</p>
+                <p lang="no" xml:lang="no"> -- Oppgavene under overskriften _xxx3 Refleksjon_ i boka er nummerert og markert slik: >>> 1, >>> 2 osv., slik at du enkelt kan søke deg frem til dem.</p>
+                <p lang="no" xml:lang="no"> -- Liste over sentrale begreper, Litteraturliste, Læreplan, Stikkordregister og innhold for hele boka finner du til slutt i denne filen.</p>
+            </section>
+            <xsl:apply-templates select="* except section[f:types(.) = 'toc']"/>
+           
         </xsl:copy>
-       
     </xsl:template>
 
-
- 
-    <xsl:template match="section[f:types(.) = 'frontmatter' and f:types(.) = 'colophon']">
-        
+    <xsl:template match="section[f:types(.) = 'titlepage']"/>
+    <xsl:template match="section[f:types(.) = 'colophon']"/>
+    <xsl:template match="section[f:types(.) = 'index']"/>
    
-        <xsl:apply-templates select="node()"/>
-    </xsl:template>
     
-    <xsl:template match="section[f:types(.) = 'cover']/section[f:classes(.) = 'rearcover']">
-         
-        <xsl:apply-templates select="node()"/>
-      
-    </xsl:template>
-    
-    <!-- <xsl:template match="p">
-     
-        <xsl:apply-templates select="node()"/>
-      
-        <xsl:for-each select="p">
-            <p><xsl:value-of select="concat('&#160;&#160;&#160;', p)"/></p>
-        </xsl:for-each>
-        
-       
-     
-      
-      
-      
-      </xsl:template>--> 
- 
+    <!-- _______________________________ -->
     <xsl:template match="em">
         <!-- replace em with '_' -->
-                 
+      
         <xsl:text>_</xsl:text>
         <xsl:apply-templates select="node()"/>
         <xsl:text>_</xsl:text>
@@ -441,9 +415,11 @@
     </xsl:template>
     <xsl:template match="strong">
         <!-- replace strong with '_' -->
+        
         <xsl:text>_</xsl:text>
         <xsl:apply-templates select="node()"/>
         <xsl:text>_</xsl:text>
+        
         
     </xsl:template>
     
@@ -453,53 +429,40 @@
         <xsl:text></xsl:text>
         <xsl:apply-templates select="node()"/>
         <xsl:text></xsl:text>
+        
+        
     </xsl:template>
     
-    <xsl:template match="table" >
-        <!-- Insert text Tabell: -->
-        <p></p> 
-        <p>Tabell:</p>
-        <table>
-            <xsl:apply-templates select="node()"/>
-        </table>
-            
+    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/strong">
+        <xsl:apply-templates select="node()"/>
+        <xsl:text>.</xsl:text>
     </xsl:template>
+    
   
-        
-        
    
     <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p">
         <p><xsl:apply-templates select="node()"/></p>
     </xsl:template>
     
-  <!--  <xsl:template match="ul/li[not(*)]">
+    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p/strong">
+        <xsl:apply-templates select="node()"/>
+        <xsl:text>.</xsl:text>
+    </xsl:template> 
+    
+    <xsl:template match="ul/li">
         <li>
-            <xsl:text>.. </xsl:text>
-            <xsl:if test="exists(ul)"> 
-               <xsl:value-of select="text()"/>
-                
-                <xsl:if test="exists(li)"> 
-                    <li>
-                        <xsl:text>.. </xsl:text>
-                        <xsl:value-of select="node()"/>
-                    </li>
-                </xsl:if>
-                
-            </xsl:if>  
-            <xsl:apply-templates select="node()"/>
+        <xsl:text>-- </xsl:text>
+        <xsl:apply-templates select="node()"/>
         </li>
-    </xsl:template>  -->
+    </xsl:template> 
     
-    
-   <xsl:template match="ul/li">
+    <xsl:template match="ul/li/p">
         <li>
             <xsl:text>-- </xsl:text>
-            <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="node()"/>
         </li>
     </xsl:template> 
     
-      
     <xsl:template match="figcaption/p">
             <xsl:apply-templates select="text()"/>        
     </xsl:template> 
@@ -511,7 +474,7 @@
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates select="node()"/>
                 <xsl:element name="style">  
-                    <xsl:text>div.pagebreak {page-break-after:avoid;}</xsl:text>             
+                    div.pagebreak {page-break-after:avoid;}             
                 </xsl:element>
             </xsl:copy>
     </xsl:template> 

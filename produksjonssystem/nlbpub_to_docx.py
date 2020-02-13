@@ -109,7 +109,7 @@ class NLBpubToDocx(Pipeline):
                                                  "--docx-page-size=a4",
                                              #   "--linearize-tables",
 
-                                              #  "--extra-css=/home/statped/Dokumenter/produksjonssystem/xslt/nlbpub-to-docx/extra.css",
+                                               "--extra-css=/home/statped/Dokumenter/produksjonssystem/xslt/nlbpub-to-docx/extra.css",
   						# Denne vil ikke virke "--extra-css=os.path.join(Xslt.xslt_dir, self.uid, 'extra.css')",
 						# Denne vil ikke virke"--extra-css=os.path.join(Xslt.xslt_dir,'prepare-for-docx', 'extra.css')",
 						# Calibre håndterer ikke python variable eller uttrykk
@@ -120,8 +120,9 @@ class NLBpubToDocx(Pipeline):
                                                  "--docx-page-margin-right=56",
 						# Denne vil ikke virke "--language="+language,
                                                  #"--base-font-size=13"])
-						"--remove-paragraph-spacing",
-  						"--font-size-mapping=12,12,12,12,12,12,12,12"])
+						#"--remove-paragraph-spacing",
+						#"--remove-paragraph-spacing-indent-size=-1",
+  						"--font-size-mapping=13,13,13,13,13,13,13,13"])
                                                
 
             if process.returncode == 0:
