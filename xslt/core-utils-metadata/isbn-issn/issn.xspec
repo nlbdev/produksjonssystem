@@ -111,7 +111,7 @@
             <x:call function="issn:validate">
                 <x:param name="number" select="'1502-43X3'"/>
             </x:call>
-            <x:expect label="the error message" select="'Invalid format'"/>
+            <x:expect label="the error message" select="'Invalid length'"/>
         </x:scenario>
         
         <x:scenario label="1502-4334">

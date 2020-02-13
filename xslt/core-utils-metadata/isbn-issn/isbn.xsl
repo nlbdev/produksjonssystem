@@ -168,7 +168,15 @@
     <xsl:function name="isbn:clean" as="xs:string">
         <xsl:param name="number" as="xs:string"/>
         
-        <xsl:value-of select="normalize-space(replace(upper-case($number), '[^\dX]', ''))"/>
+        <!-- only allow digits and X -->
+        <xsl:variable name="clean" select="replace(upper-case(normalize-space($number)), '[^\dX]', '')"/>
+        
+        <!-- X only allowed as last digit (i.e. the checksum) -->
+        <xsl:variable name="value" select="substring($clean, 0, string-length($clean))"/>
+        <xsl:variable name="checksum" select="substring($clean, string-length($clean))"/>
+        <xsl:variable name="clean" select="concat(replace($value, 'X', ''), $checksum)"/>
+        
+        <xsl:value-of select="$clean"/>
     </xsl:function>
     
     

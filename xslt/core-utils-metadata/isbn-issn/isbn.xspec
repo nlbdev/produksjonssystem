@@ -116,7 +116,7 @@
             <x:call function="isbn:validate">
                 <x:param name="number" select="'08515x-629-2'"/>
             </x:call>
-            <x:expect label="InvalidFormat" select="'Invalid format'"/>
+            <x:expect label="InvalidCheckDigit" select="'Invalid check digit'"/>
         </x:scenario>
         
         <x:scenario label="incorrect check digit">
