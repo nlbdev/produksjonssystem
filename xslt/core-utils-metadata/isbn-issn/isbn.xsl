@@ -130,19 +130,27 @@
         <xsl:param name="number" as="xs:string"/>
         
         <xsl:variable name="compact" select="isbn:compact($number, false())"/>
-        <xsl:variable name="compact-without-check-digit" select="if (string-length($compact) = 10) then substring($compact, 1, 9)
-                                                                 else if (string-length($compact) gt 10) then substring($compact, 1, 12)
-                                                                 else substring($compact, 0, string-length($compact))"/>
-        
-        <xsl:variable name="check" as="xs:integer*">
-            <xsl:analyze-string select="$compact-without-check-digit" regex="(.)">
-                <xsl:matching-substring>
-                    <xsl:sequence select="(if (position() mod 2) then 1 else 3) * xs:integer(.)"/>
-                </xsl:matching-substring>
-            </xsl:analyze-string>
-        </xsl:variable>
-        
-        <xsl:value-of select="(10 - (sum($check) mod 10)) mod 10"/>
+        <xsl:choose>
+            <xsl:when test="matches($compact, '^\d+X?$')">
+                <xsl:variable name="compact-without-check-digit" select="if (string-length($compact) = 10) then substring($compact, 1, 9)
+                                                                         else if (string-length($compact) ge 12) then substring($compact, 1, 12)
+                                                                         else substring($compact, 1, string-length($compact) - 1)"/>
+                
+                <xsl:variable name="check" as="xs:integer*">
+                    <xsl:analyze-string select="$compact-without-check-digit" regex="(.)">
+                        <xsl:matching-substring>
+                            <xsl:sequence select="(if (position() mod 2) then 1 else 3) * xs:integer(.)"/>
+                        </xsl:matching-substring>
+                    </xsl:analyze-string>
+                </xsl:variable>
+                
+                <xsl:value-of select="(10 - (sum($check) mod 10)) mod 10"/>
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <xsl:value-of select="0"/>  <!-- fallback for invalid ISBNs -->
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
     
     
