@@ -17,9 +17,9 @@ export ALLOWED_EMAIL_ADDRESSES_IN_TEST=  # comma separated list of e-mails
 
 export BOOK_ARCHIVE_DIRS="master=/tmp/book-archive share=/tmp/book-archive-share distribution=/tmp/book-archive-distribution news=/tmp/book-archive-news"
 export TRIGGER_DIR="/tmp/trigger-produksjonssystem"
-export PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
-export EPUBCHECK_HOME="$HOME/Desktop/epubcheck-4.2.2"
-export ORIGINAL_ISBN_CSV="$HOME/Desktop/original-isbn.csv"
+#export PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
+#export EPUBCHECK_HOME="$HOME/Desktop/epubcheck-4.2.2"
+#export ORIGINAL_ISBN_CSV="$HOME/Desktop/original-isbn.csv"
 
 if [ -f "$HOME/Desktop/produksjonssystem.yaml" ]; then
     export CONFIG_FILE="$HOME/Desktop/produksjonssystem.yaml"
