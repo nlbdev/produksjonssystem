@@ -119,7 +119,6 @@ class NlbpubToEpub(Pipeline):
                 spine_hrefs.append(href)
 
         self.utils.report.info("Oppdaterer OPF-fil")
-        print(",".join(spine_hrefs))
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToEpub.uid, "update-opf.xsl"),
                     source=opf_path,
