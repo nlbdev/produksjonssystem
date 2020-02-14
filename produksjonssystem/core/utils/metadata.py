@@ -706,8 +706,8 @@ class Metadata:
                 if not format_from_normarc and marc019b:
                     normarc_report.warn("Katalogpost {} har et ukjent format i `*019$b`: \"{}\"".format(marcxchange_path.split("/")[-1].split(".")[0],
                                                                                                         marc019b))
-                if publication_format and format_from_normarc and format_from_normarc not in [publication_format, "EPUB"]:
-                    normarc_report.info("Hopper over validering. Vi er ikke interessert i dette formatet akkurat nå (\"{}\" = \"{}\").".format(
+                if format_from_normarc != "EPUB":
+                    normarc_report.info("Hopper over validering. Vi validerer ikke EPUB (dvs. master-filer) (\"{}\" = \"{}\").".format(
                         marc019b, format_from_normarc))
                     continue
                 normarc_report.info("Format: {}".format(format_from_normarc if format_from_normarc else '(Ukjent)'))
