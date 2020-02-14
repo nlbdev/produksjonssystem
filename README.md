@@ -14,7 +14,7 @@ konverteringer.
 
 ## Utviklingsmiljø
 
-Anbefaler:
+Valgfritt, men anbefaler:
 
 - [GitKraken](https://www.gitkraken.com/) med GitHub-innlogging
 - Lag en snarvei til bokarkivet på skrivebordet: `ln --symbolic /tmp/book-archive /home/$USER/Desktop/book-archive`
@@ -42,87 +42,76 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 - installer java 8 JDK: `sudo apt install openjdk-8-jdk`
 
 - installer DAISY Pipeline 2
-    - Hvis du ikke har en mappe som heter "Desktop" i hjemmemappen, kjør: `ln --symbolic $HOME/Skrivebord Desktop`
-    - last ned og unzip DAISY Pipeline 2 fra http://repo.nlb.no/pipeline/pipeline2_minimal.zip til `~/Desktop/daisy-pipeline`
-    - i `etc/system.properties`, sett `org.daisy.pipeline.procs` til 4 for å kunne kjøre flere jobber på en gang (valgfritt)
-    - kjør: `updater/linux/pipeline-updater -service="http://repo.nlb.no/pipeline/" -install-dir=$HOME/Desktop/daisy-pipeline/ -descriptor=$HOME/Desktop/daisy-pipeline/etc/releaseDescriptor.xml -version=current -force`
-    - opprett `cli/config.yml` med følgende innhold:
-        ```
-        host: http://localhost
-        port: 8181
-        ws_path: ws
-        ws_timeup: 25
-        exec_line: ../bin/pipeline2
-        local: true
-        client_key: clientid
-        client_secret: supersecret
-        timeout: 60
-        debug: false
-        starting: true
-        ```
+    - Kopier Pipeline 2 fra `IKT/DAISY Pipeline/daisy-pipeline2-1.11.tar.gz` og pakk ut til `~/Desktop/daisy-pipeline2`
+    - Tidligere (tror ikke dette virker lenger):
+        - Hvis du ikke har en mappe som heter "Desktop" i hjemmemappen, kjør: `ln --symbolic $HOME/Skrivebord Desktop`
+        - last ned og unzip DAISY Pipeline 2 fra http://repo.nlb.no/pipeline/pipeline2_minimal.zip til `~/Desktop/daisy-pipeline`
+        - i `etc/system.properties`, sett `org.daisy.pipeline.procs` til 4 for å kunne kjøre flere jobber på en gang (valgfritt)
+        - kjør: `updater/linux/pipeline-updater -service="http://repo.nlb.no/pipeline/" -install-dir=$HOME/Desktop/daisy-pipeline/ -descriptor=$HOME/Desktop/daisy-pipeline/etc/releaseDescriptor.xml -version=current -force`
+        - opprett `cli/config.yml` med følgende innhold:
+            ```
+            host: http://localhost
+            port: 8181
+            ws_path: ws
+            ws_timeup: 25
+            exec_line: ../bin/pipeline2
+            local: true
+            client_key: clientid
+            client_secret: supersecret
+            timeout: 60
+            debug: false
+            starting: true
+            ```
 
 - installer ACE:
     - `sudo apt install nodejs npm`
     - `sudo npm install @daisy/ace -g`
     - hvis ikke `/usr/bin/ace` finnes: `sudo ln --symoblic /usr/local/bin/ace /usr/bin/ace`
 
-- installer Calibre:
-    - `sudo apt-get install calibre`
+- installer Calibre v4.10:
+    - `sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin`
 
 - installer epubcheck:
     - Last ned EPUBCheck herifra: https://github.com/w3c/epubcheck/releases (i utgangspunktet bruker vi 4.2.2, som er nyeste versjon per 19.november 2019)
-    - pakk ut enten i mappen `/opt/epubcheck/` eller bruk miljøvariabelen `EPUBCHECK_HOME` for å sette stedet du pakket ut filene
+    - pakk ut i en mappe, for eksempel `~/Desktop/epubcheck/` eller `/opt/epubcheck/`, og sett miljøvariabelen `EPUBCHECK_HOME` i `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh): f.eks. `export EPUBCHECK_HOME="/opt/epubcheck"`
 
 - installer og konfigurer quickbase-dump-skript:
+    - kopier miljøvariabler fra LastPass (søk etter "Quickbase-miljøvariabler") og legg dem inn i slutten av `~/.bashrc` (evt. `~/.zhrc` hvis du bruker zsh)
+    - åpne ny terminal, eller `source ~/.bashrc`
     - `sudo apt install git maven`
     - `sudo mkdir /opt/quickbase`
     - `sudo chown $USER:$USER /opt/quickbase`
     - last ned https://github.com/nlbdev/ansible/blob/master/src/quickbase/get-latest.sh til `/opt/quickbase/get-latest.sh`
     - `chmod +x /opt/quickbase/get-latest.sh`
-    - åpne ny terminal, eller `source ~/config/set-env.sh`
+    - Valgfritt: kjør `/opt/quickbase/get-latest.sh` i en terminal
 
-- sett opp tilgang til bibliofil CSV for `*596$f`:
+- Valgfritt, vi skal slutte med dette: sett opp tilgang til bibliofil CSV for `*596$f`:
     - Sett miljøvariabelen `ORIGINAL_ISBN_CSV` til å peke på en CSV-fil som inneholder to kolonner: "boknummer" (`*001`) og "ISBN" (`*596$f`)
     - Denne filen blir automatisk generert og lagret på dokumentlageret som `Fellesdokumenter/IKT/original-isbn.csv`. I drift leses det direkte fra denne filen. For testing er det nok enklere å ta en lokal kopi av filen. Standardinnstillingene i `set-test-env.sh` forutsetter at du har en lokal kopi lagret på skrivebordet.
     - Hvis miljøvariabelen ikke er satt, eller filen den peker på ikke finnes, så blir dette ignorert. Denne måten å slå opp boknummer basert på `*596$f` i katalogen er kun nyttig for bøker som ikke ligger i Quickbase.
 
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
-    - `sudo apt install python3 python3-pip python3-dev`
+    - `sudo apt install python3.8 python3-pip python3-dev`
     - `sudo apt install graphviz` # for plotting
     - `sudo apt install ffmpeg libavcodec-extra` # for lydutdrag
     - `pip3 install -r requirements.txt`
 
-## Konfigurasjon
+- konfigurer Slack
+    - I `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh), sett miljøvariabelen `SLACK_BOT_TOKEN`. Se "Slack bot" i LastPass.
 
-Konfigurasjon av passord og lignende som vi ikke vil ha lagret i Git legges i en konfigurasjonsfil utenfor git repo'et.
-
-`~/config/set-env.sh`:
-
-```bash
-export SLACK_TOKEN="…"
-export QUICKBASE_APP_TOKEN="…"
-export QUICKBASE_DOMAIN="dtbook.quickbase.com"
-export QUICKBASE_USERNAME="…@nlb.no"
-export QUICKBASE_PASSWORD="…"
-export QUICKBASE_DUMP_DIR="/opt/quickbase"
-```
-
-`~/.bashrc` (legg til på slutten):
-
-```bash
-source $HOME/config/set-env.sh
-```
+- konfiguratsjon av e-postadresser og lignende:
+    - sørg for at `produksjonssystem.yml` finnes. Standardplassering er på skrivebordet, så du kan f.eks. kjøre: `touch ~/Desktop/produksjonssystem.yml` i en terminal
 
 ## Kjør produksjonssystem
 
 - for å oppdatere quickbase-database (gjør innimellom, eller etter behov for nyere bøker):
     - `/opt/quickbase/get-latest.sh`
-- `cd ~/Desktop/produksjonssystem` (eventuelt hold musa over "produksjonssystem" øverst til venstre i GitKraken for å se hvor du har lagret produksjonssystemet)
+- `cd ~/nlb/produksjonssystem` (eventuelt hold musa over "produksjonssystem" øverst til venstre i GitKraken for å se hvor du har lagret produksjonssystemet)
 - For å kjøre tester:
   - `./test.sh`
 - For å starte produksjonssystemet:
-  - sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (gjerne legg til dette i `.bashrc`, så slipper du å skrive det hver gang)
+  - sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (hvis du vil så kan du legge til dette i `.bashrc`, så slipper du å skrive det hver gang)
     - `set-test-env.sh` definerer blant annet at bokarkivet skal ligge i en midlertidig mappe kalt `/tmp/book-archive`.
       En liste med lenke til dashboard'et samt bokarkiv-mappene som brukes, vises i terminalvinduet når man starter produksjonssystemet.
   - start systemet: `./produksjonssystem/run.py`
@@ -211,6 +200,8 @@ Eventuelt kan man teste hele systemet, kjøre alle XSpec-testene, eller alle Pyt
 
 Format og metode i Bibliofil
 ----------------------------
+
+TODO: denne dokumentasjonen hører ikke hjemme i produksjonssystemet. Flytt den til et mer passende sted.
 
 Bibliofil sender `deliveryFormat` til distribusjonssystemet vårt. Feltet har formen `{format}_{metode}`. Vi oppgir format og metode når bøker er ferdig produsert i produksjonssystemet (gjennom "formatklar"-e-post), og kan dermed styre selv hvilke formater og metoder som finnes. Bibliotek-Systemer må legge til støtte for hver metode, ettersom de oppfører seg forskjellig, men format og navn kan vi styre helt selv.
 
