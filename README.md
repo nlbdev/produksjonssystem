@@ -80,6 +80,7 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 
 - installer Calibre v4.10:
     - `sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin`
+    - `sudo apt-get install ttf-mscorefonts-installer` (blant annet for "Verdana"-fonten)
 
 - installer epubcheck:
     - Last ned EPUBCheck herifra: https://github.com/w3c/epubcheck/releases (i utgangspunktet bruker vi 4.2.2, som er nyeste versjon per 19.november 2019)
