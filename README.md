@@ -112,9 +112,6 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 - konfigurer Slack
     - I `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh), sett miljøvariabelen `SLACK_BOT_TOKEN`. Se "Slack bot" i LastPass.
 
-- konfiguratsjon av e-postadresser og lignende:
-    - sørg for at `produksjonssystem.yml` finnes. Standardplassering er på skrivebordet, så du kan f.eks. kjøre: `touch ~/Desktop/produksjonssystem.yml` i en terminal
-
 ## Kjør produksjonssystem
 
 - for å oppdatere quickbase-database (gjør innimellom, eller etter behov for nyere bøker):
