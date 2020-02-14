@@ -11,6 +11,7 @@ from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
+from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -48,12 +49,7 @@ class NLBpubToDocx(Pipeline):
             epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
-# language must be exctracted from epub or else docx default language (nb) wil be used in the converted file
-        language = ""
-        try:
-            language = " (" + epub.meta("dc:language") + ") "
-        except Exception:
-            pass
+        
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
@@ -63,6 +59,13 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
+
+        # language must be exctracted from epub or else docx default language (nb) wil be used in the converted file
+        language = ""
+        try:
+            language = " (" + epub.meta("dc:language") + ") "
+        except Exception:
+            pass
 
         # ---------- lag en kopi av EPUBen ----------
 
@@ -98,31 +101,33 @@ class NLBpubToDocx(Pipeline):
 
         try:
             self.utils.report.info("Konverterer fra XHTML til DOCX...")
-            process = self.utils.filesystem.run(["/usr/bin/ebook-convert",
-                                                 html_file,
-                                                 os.path.join(temp_docxdir, epub.identifier() + ".docx"),
-						 "--chapter=/",
-  						 "--chapter-mark=none",
- 						 "--page-breaks-before=/",
-                                                 "--no-chapters-in-toc",
-                                                 "--toc-threshold=0",
-                                                 "--docx-page-size=a4",
-                                             #   "--linearize-tables",
+            process = self.utils.filesystem.run([
+                "/usr/bin/ebook-convert",
+                html_file,
+                os.path.join(temp_docxdir, epub.identifier() + ".docx"),
+                "--chapter=/",
+                "--chapter-mark=none",
+                "--page-breaks-before=/",
+                "--no-chapters-in-toc",
+                "--toc-threshold=0",
+                "--docx-page-size=a4",
+                # "--linearize-tables",
+                "--extra-css=" + os.path.join(Xslt.xslt_dir, self.uid, 'extra.css'),
 
-                                               "--extra-css=/home/statped/Dokumenter/produksjonssystem/xslt/nlbpub-to-docx/extra.css",
-  						# Denne vil ikke virke "--extra-css=os.path.join(Xslt.xslt_dir, self.uid, 'extra.css')",
-						# Denne vil ikke virke"--extra-css=os.path.join(Xslt.xslt_dir,'prepare-for-docx', 'extra.css')",
-						# Calibre håndterer ikke python variable eller uttrykk
-						 "--embed-font-family=Verdana",   # microsoft fonts must be installed (sudo apt-get install ttf-mscorefonts-installer)
-                                                 "--docx-page-margin-top=42",
-                                                 "--docx-page-margin-bottom=42",
-                                                 "--docx-page-margin-left=70",
-                                                 "--docx-page-margin-right=56",
-						# Denne vil ikke virke "--language="+language,
-                                                 #"--base-font-size=13"])
-						#"--remove-paragraph-spacing",
-						#"--remove-paragraph-spacing-indent-size=-1",
-  						"--font-size-mapping=13,13,13,13,13,13,13,13"])
+                # NOTE: microsoft fonts must be installed:
+                # sudo apt-get install ttf-mscorefonts-installer
+                "--embed-font-family=Verdana",
+
+                "--docx-page-margin-top=42",
+                "--docx-page-margin-bottom=42",
+                "--docx-page-margin-left=70",
+                "--docx-page-margin-right=56",
+                ("--language=" + language) if language else "",
+                #"--base-font-size=13",
+                #"--remove-paragraph-spacing",
+                #"--remove-paragraph-spacing-indent-size=-1",
+                "--font-size-mapping=13,13,13,13,13,13,13,13"
+            ])
                                                
 
             if process.returncode == 0:
