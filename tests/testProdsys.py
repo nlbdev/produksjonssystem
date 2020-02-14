@@ -52,6 +52,21 @@ def result(name, status):
 
 
 # Configure system
+assert os.getenv("EPUBCHECK_HOME"), "the EPUBCHECK_HOME environment variable is not set"
+assert os.path.exists(os.getenv("EPUBCHECK_HOME")), "EPUBCHECK_HOME: {} does not exist".format(
+    os.getenv("EPUBCHECK_HOME")
+)
+
+assert os.getenv("PIPELINE2_HOME"), "the PIPELINE2_HOME environment variable is not set"
+assert os.path.exists(os.getenv("PIPELINE2_HOME")), "PIPELINE2_HOME: {} does not exist".format(
+    os.getenv("PIPELINE2_HOME")
+)
+
+assert os.getenv("JAVA_HOME"), "the JAVA_HOME environment variable is not set (remember to use Java 8!)"
+assert os.path.exists(os.getenv("JAVA_HOME")), "JAVA_HOME: {} does not exist (remember to use Java 8!)".format(
+    os.getenv("JAVA_HOME")
+)
+
 environment = {
     "BOOK_ARCHIVE_DIRS": " ".join([
         "master={}/prodsys-archive".format(target_path),

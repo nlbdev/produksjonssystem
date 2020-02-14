@@ -39,7 +39,16 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 
 ## Installasjon
 
+- Hvis ikke mappen `Desktop` finnes i hjemmemappen, men f.eks. `Skrivebord`, så er det praktisk å lage en symlink, for eksempel:
+    ```
+    ln --symbolic $HOME/Skrivebord $HOME/Desktop
+    ```
+
 - installer java 8 JDK: `sudo apt install openjdk-8-jdk`
+    - sett JAVA_HOME i `~/.bashrc` (eller `~/.zshrc` hvis du bruker zsh):
+        ```
+        export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+        ```
 
 - installer DAISY Pipeline 2
     - Kopier Pipeline 2 fra `IKT/DAISY Pipeline/daisy-pipeline2-1.11.tar.gz` og pakk ut til `~/Desktop/daisy-pipeline2`
@@ -64,9 +73,10 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
             ```
 
 - installer ACE:
-    - `sudo apt install nodejs npm`
-    - `sudo npm install @daisy/ace -g`
-    - hvis ikke `/usr/bin/ace` finnes: `sudo ln --symoblic /usr/local/bin/ace /usr/bin/ace`
+    - `apt-get install -y build-essential`
+    - `curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -`
+    - `sudo apt-get install nodejs`
+    - `sudo PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install @daisy/ace -g`
 
 - installer Calibre v4.10:
     - `sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin`
@@ -93,8 +103,9 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
     - `sudo apt install python3.8 python3-pip python3-dev`
-    - `sudo apt install graphviz` # for plotting
-    - `sudo apt install ffmpeg libavcodec-extra` # for lydutdrag
+    - `sudo apt install graphviz`  # for plotting
+    - `sudo apt install ffmpeg libavcodec-extra`  # for lydutdrag
+    - `sudo apt install libxml2-dev libxslt1-dev`  # for lxml i Python
     - `pip3 install -r requirements.txt`
 
 - konfigurer Slack
