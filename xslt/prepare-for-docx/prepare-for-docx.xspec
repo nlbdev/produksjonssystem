@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
-    xmlns:epub="http://www.idpf.org/2007/ops" xmlns="http://www.w3.org/1999/xhtml"
-    stylesheet="prepare-for-docx.xsl">
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns:html="http://www.w3.org/1999/xhtml"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="prepare-for-docx.xsl">
     
     <x:scenario label="Headline markers">
         <x:context>
@@ -824,10 +826,13 @@
 
     <x:scenario label="remove titlepage  and index">
         <x:context>
-            <div epub:type="frontmatter titlepage"/>
-             <div epub:type="backmatter index"/>
+            <body>
+                <section epub:type="frontmatter titlepage"/>
+                <section epub:type="backmatter index"/>
+            </body>
         </x:context>
-        <x:expect label="the titlepage backmatter index should be removed"/>
+        <x:expect label="the titlepage should be removed" test="//html:body/html:section[tokenize(@epub:type, '\s+') = 'titlepage']"/>
+        <x:expect label="the index should be removed" test="//html:body/html:section[tokenize(@epub:type, '\s+') = 'index']"/>
     </x:scenario>
 
  <!--   <x:scenario label="move toc to the start">
