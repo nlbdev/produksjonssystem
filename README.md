@@ -112,6 +112,12 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 - konfigurer Slack
     - I `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh), sett miljøvariabelen `SLACK_BOT_TOKEN`. Se "Slack bot" i LastPass.
 
+- konfigurer NLBs API
+    - I `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh), sett miljøvariabelen `NLB_API_URL`:
+        ```
+        export NLB_API_URL="https://api.nlb.no/v1"
+        ```
+
 ## Kjør produksjonssystem
 
 - for å oppdatere quickbase-database (gjør innimellom, eller etter behov for nyere bøker):
