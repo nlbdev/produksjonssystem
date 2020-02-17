@@ -157,15 +157,15 @@ class DaisyPipelineJob():
     @staticmethod
     def init_environment():
         from core.pipeline import Pipeline
-        
+
         if "PIPELINE2_HOME" in Pipeline.environment:
             DaisyPipelineJob.dp2_home = Pipeline.environment["PIPELINE2_HOME"]
         else:
             DaisyPipelineJob.dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
         DaisyPipelineJob.dp2_cli = DaisyPipelineJob.dp2_home + "/cli/dp2"
-        
+
         if not os.getenv("JAVA_HOME"):
-            logging.error(
+            logging.warning(
                 "JAVA_HOME is not set! It should be set to a Java 8 installation, for instance:\n" +
                 "export \"/usr/lib/jvm/java-8-openjdk-amd64\""
             )
