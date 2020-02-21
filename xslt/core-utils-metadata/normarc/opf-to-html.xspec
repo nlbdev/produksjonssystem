@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:dc="http://purl.org/dc/elements/1.1/"
+               xmlns:opf="http://www.idpf.org/2007/opf"
+               stylesheet="opf-to-html.xsl">
+    
+    <x:scenario label="Basic test">
+        <x:context xml:space="preserve"><metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production">
+    <!-- Boknummer for EPUB-utgaven -->
+    <dc:identifier id="pub-id">561702</dc:identifier> <!-- Bibliofil@561702 *001 -->
+    
+    <!-- Boknummer for andre utgaver -->
+    <meta property="nlbprod:identifier.braille">118902</meta> <!-- Quickbase Record@561702 Tilvekstnummer Punktskrift -->
+    <meta property="nlbprod:isbn.braille">978-82-16-26048-7</meta> <!-- Bibliofil@118902 *020$a -->
+    <meta property="nlbprod:identifier.ebook">360302</meta> <!-- Quickbase Record@561702 Tilvekstnummer e-bok -->
+    <meta property="nlbprod:identifier.epub">561702</meta> <!-- Quickbase Record@561702 Tilvekstnummer EPUB -->
+    <meta property="nlbprod:identifier.daisy202">628002</meta> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Skjønnlitteratur -->
+    <meta property="nlbprod:identifier.daisy202.fulltext">410302</meta> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Innlest fulltekst -->
+    <meta property="nlbprod:identifier.external">910702</meta> <!-- Quickbase Record@561702 Tilvekstnummer ekstern produksjon -->
+    
+    <!-- Metadata for åndsverket og utgavene -->
+    <dc:title>Rampete Robins forundringspakke</dc:title> <!-- Bibliofil@561702 *245$a -->
+    <dc:language>nb-NO</dc:language> <!-- Bibliofil@561702 *008 -->
+    <dc:creator>Francesca Simon</dc:creator> <!-- Bibliofil@561702 *100 -->
+    <dc:contributor opf:role="nrt">NLB</dc:contributor> <!-- Bibliofil@561702 *511$a -->
+    <dc:contributor opf:role="trl">Dagny Holm</dc:contributor> <!-- Bibliofil@561702 *700 -->
+    <dc:format>EPUB</dc:format> <!-- Bibliofil@561702 *019$b -->
+    <meta property="dc:format.other" opf:alt-rep-lang="no" opf:alt-rep="Elektronisk ressurs">Electronic resource</meta> <!-- Bibliofil@561702 *019$b -->
+    <dc:publisher>Norsk lyd- og blindeskriftbibliotek</dc:publisher> <!-- Bibliofil@561702 *260 -->
+    <meta property="dc:publisher.location.original">Oslo</meta> <!-- Bibliofil@561702 *596$a -->
+    <meta property="dc:date.issued">2017</meta> <!-- Bibliofil@561702 *260$c -->
+    <dc:source opf:scheme="isbn">urn:isbn:9788205489813</dc:source> <!-- Bibliofil@561702 *596$f -->
+    <meta property="dc:type.genre">Fiction</meta> <!-- Bibliofil@561702 *008 -->
+    <meta property="dc:type.genre">Non-biography</meta> <!-- Bibliofil@561702 *008 -->
+    <meta property="schema:isbn">9788205489813</meta> <!-- Bibliofil@561702 *596$f -->
+    <meta property="schema:audience">Juvenile</meta> <!-- Bibliofil@561702 *008 -->
+    <meta property="dc:description.abstract">Fra forlagets omtale: Boka tar for seg logopedisk arbeid med afasirammede. Den drøfter
+         aktuelle temaer innenfor afasirehabilitering fra et teoretisk perspektiv og inneholder
+         også åtte kasusbeskrivelser av logopedisk arbeid med afasirammede.
+      </meta> <!-- Bibliofil@360081 *520$a -->
+</metadata></x:context>
+
+        <x:expect label="The result should be as expected" xml:space="preserve">    <head xmlns="http://www.w3.org/1999/xhtml">
+        <meta charset="utf-8"/>
+        <title>Rampete Robins forundringspakke</title> <!-- Bibliofil@561702 *245$a -->
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="description" content="Fra forlagets omtale: Boka tar for seg logopedisk arbeid med afasirammede. Den drøfter aktuelle temaer innenfor afasirehabilitering fra et teoretisk perspektiv og inneholder også åtte kasusbeskrivelser av logopedisk arbeid med afasirammede."/> <!-- Bibliofil@360081 *520$a -->
+        
+        <!-- Boknummer for EPUB-utgaven -->
+        <meta name="dc:identifier" content="561702"/> <!-- Bibliofil@561702 *001 -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta name="nlbprod:identifier.braille" content="118902"/> <!-- Quickbase Record@561702 Tilvekstnummer Punktskrift -->
+        <meta name="nlbprod:isbn.braille" content="978-82-16-26048-7"/> <!-- Bibliofil@118902 *020$a -->
+        <meta name="nlbprod:identifier.ebook" content="360302"/> <!-- Quickbase Record@561702 Tilvekstnummer e-bok -->
+        <meta name="nlbprod:identifier.epub" content="561702"/> <!-- Quickbase Record@561702 Tilvekstnummer EPUB -->
+        <meta name="nlbprod:identifier.daisy202" content="628002"/> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Skjønnlitteratur -->
+        <meta name="nlbprod:identifier.daisy202.fulltext" content="410302"/> <!-- Quickbase Record@561702 Tilvekstnummer DAISY 2.02 Innlest fulltekst -->
+        <meta name="nlbprod:identifier.external" content="910702"/> <!-- Quickbase Record@561702 Tilvekstnummer ekstern produksjon -->
+        
+        <!-- Metadata for åndsverket og utgavene -->
+        <meta name="dc:language" content="nb-NO"/> <!-- Bibliofil@561702 *008 -->
+        <meta name="dc:creator" content="Francesca Simon"/> <!-- Bibliofil@561702 *100 -->
+        <meta name="dc:contributor.narrator" content="NLB"/> <!-- Bibliofil@561702 *511$a -->
+        <meta name="dc:contributor.translator" content="Dagny Holm"/> <!-- Bibliofil@561702 *700 -->
+        <meta name="dc:format" content="EPUB"/> <!-- Bibliofil@561702 *019$b -->
+        <meta name="dc:format.other" content="Electronic resource"/> <!-- Bibliofil@561702 *019$b -->
+        <meta name="dc:publisher" content="Norsk lyd- og blindeskriftbibliotek"/> <!-- Bibliofil@561702 *260 -->
+        <meta name="dc:publisher.location.original" content="Oslo"/> <!-- Bibliofil@561702 *596$a -->
+        <meta name="dc:date.issued" content="2017"/> <!-- Bibliofil@561702 *260$c -->
+        <meta name="dc:source" content="urn:isbn:9788205489813"/> <!-- Bibliofil@561702 *596$f -->
+        <meta name="dc:type.genre" content="Fiction"/> <!-- Bibliofil@561702 *008 -->
+        <meta name="dc:type.genre" content="Non-biography"/> <!-- Bibliofil@561702 *008 -->
+        <meta name="schema:isbn" content="9788205489813"/> <!-- Bibliofil@561702 *596$f -->
+        <meta name="schema:audience" content="Juvenile"/> <!-- Bibliofil@561702 *008 -->
+    </head></x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Language names for each language code (names no longer associated to codes in OPF or HTML)">
+        <x:context xml:space="preserve">
+    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production dc: http://purl.org/dc/elements/1.1/">
+        <!-- Boknummer for EPUB-utgaven -->
+        <dc:identifier id="pub-id">558237</dc:identifier>
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta property="nlbprod:identifier.epub">558237</meta>
+        
+        <!-- Metadata for åndsverket og EPUB-utgaven -->
+        <dc:language>en</dc:language> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.english">English</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.native">English</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.norwegian">Engelsk</meta> <!-- Bibliofil@115437 *008 -->
+        <dc:language>nb</dc:language> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.english">Norwegian Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.native">Norsk Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.name.norwegian">Bokmål</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original">sv</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original.name.english">Swedish</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original.name.native">Svenska</meta> <!-- Bibliofil@115437 *008 -->
+        <meta property="dc:language.original.name.norwegian">Svensk</meta> <!-- Bibliofil@115437 *008 -->
+        <dc:format>EPUB</dc:format>
+
+    </metadata></x:context>
+        
+        <x:expect label="The result should be as expected" xml:space="preserve">    <head xmlns="http://www.w3.org/1999/xhtml" xmlns:nlbprod="http://www.nlb.no/production" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        <!-- Boknummer for EPUB-utgaven -->
+        <meta name="dc:identifier" content="558237" />
+        
+        <!-- Boknummer for andre utgaver -->
+        <meta name="nlbprod:identifier.epub" content="558237" />
+        
+        <!-- Metadata for åndsverket og EPUB-utgaven -->
+        <meta name="dc:language" content="en" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.english" content="English" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.native" content="English" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.norwegian" content="Engelsk" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language" content="nb" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.english" content="Norwegian Bokmål" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.native" content="Norsk Bokmål" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.name.norwegian" content="Bokmål" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.original" content="sv" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.original.name.english" content="Swedish" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.original.name.native" content="Svenska" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:language.original.name.norwegian" content="Svensk" /> <!-- Bibliofil@115437 *008 -->
+        <meta name="dc:format" content="EPUB" />
+    </head></x:expect>
+    </x:scenario>
+    
+</x:description>

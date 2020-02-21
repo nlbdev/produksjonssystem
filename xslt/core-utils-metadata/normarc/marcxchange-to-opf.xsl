@@ -13,13 +13,14 @@
                 exclude-result-prefixes="#all"
                 xpath-default-namespace="http://www.idpf.org/2007/opf"
                 version="2.0">
-    
-    <xsl:output indent="yes"/>
-    
-    <xsl:param name="nested" select="false()"/>
-    <xsl:param name="include-source-reference" select="false()"/>
-    <xsl:param name="identifier" select="''"/>
-    
+
+    <xsl:output indent="no" exclude-result-prefixes="#all" omit-xml-declaration="yes"/>
+
+    <xsl:param name="nested" select="false()" as="xs:boolean"/>
+    <xsl:param name="include-source-reference" select="false()" as="xs:boolean"/>
+    <xsl:param name="include-source-reference-as-comments" select="false()" as="xs:boolean"/>
+    <xsl:param name="identifier" select="''" as="xs:string"/>
+
     <xsl:template match="@*|node()">
         <xsl:choose>
             <xsl:when test="self::*[@tag]">
@@ -49,8 +50,9 @@
             </xsl:when>
         </xsl:choose>
     </xsl:template>
-    
+
     <xsl:template match="/*" priority="2">
+        <xsl:text>    </xsl:text>
         <xsl:variable name="result" as="element()*">
             <xsl:next-match/>
         </xsl:variable>
@@ -63,15 +65,18 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    
+
     <xsl:template match="SRU:*">
         <xsl:apply-templates select="node()"/>
     </xsl:template>
-    
+
     <xsl:template match="*:record[not(self::SRU:*)]">
         <xsl:variable name="metadata" as="element()">
             <metadata>
                 <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
+                <xsl:if test="$include-source-reference">
+                    <xsl:namespace name="nlb" select="'http://www.nlb.no/'"/>
+                </xsl:if>
                 <xsl:variable name="with-duplicates" as="element()*">
                     <xsl:apply-templates select="node()"/>
                 </xsl:variable>
@@ -100,7 +105,7 @@
                         </xsl:choose>
                     </xsl:for-each>
                 </xsl:variable>
-    
+
                 <xsl:variable name="sorted" as="element()*">
                     <xsl:for-each select="$without-duplicates[self::dc:*[not(@refines)]]">
                         <xsl:sort
@@ -144,7 +149,7 @@
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:variable>
-    
+
                 <xsl:for-each select="$sorted">
                     <!-- remove unneccessary id's on non-DC elements -->
                     <xsl:copy exclude-result-prefixes="#all">
@@ -157,31 +162,121 @@
                 </xsl:for-each>
             </metadata>
         </xsl:variable>
-    
-        <xsl:choose>
-            <xsl:when test="string($nested) = 'true'">
-                <xsl:for-each select="$metadata">
-                    <xsl:copy exclude-result-prefixes="#all">
-                        <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
-                        <xsl:for-each select="*[not(@refines)] | comment()">
-                            <xsl:choose>
-                                <xsl:when test="self::comment()">
-                                    <xsl:copy-of select="." exclude-result-prefixes="#all"/>
-                                </xsl:when>
-                                <xsl:when test="self::*">
-                                    <xsl:apply-templates select="." mode="nesting"/>
-                                </xsl:when>
-                            </xsl:choose>
-                        </xsl:for-each>
-                    </xsl:copy>
-                </xsl:for-each>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:copy-of select="$metadata" exclude-result-prefixes="#all"/>
-            </xsl:otherwise>
-        </xsl:choose>
+        
+        <xsl:variable name="metadata" as="element()">
+            <xsl:choose>
+                <xsl:when test="string($nested) = 'true'">
+                    <xsl:for-each select="$metadata">
+                        <xsl:copy exclude-result-prefixes="#all">
+                            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                            <xsl:for-each select="*[not(@refines)] | comment()">
+                                <xsl:choose>
+                                    <xsl:when test="self::comment()">
+                                        <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                                    </xsl:when>
+                                    <xsl:when test="self::*">
+                                        <xsl:apply-templates select="." mode="nesting"/>
+                                    </xsl:when>
+                                </xsl:choose>
+                            </xsl:for-each>
+                        </xsl:copy>
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:copy-of select="$metadata" exclude-result-prefixes="#all"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
+        <xsl:variable name="metadata" as="element()">
+            <xsl:choose>
+                <xsl:when test="$include-source-reference-as-comments">
+                    <xsl:call-template name="add-comments">
+                        <xsl:with-param name="context" select="$metadata"/>
+                    </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:copy-of select="$metadata" exclude-result-prefixes="#all"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
+        <xsl:call-template name="indent">
+            <xsl:with-param name="element" select="$metadata"/>
+        </xsl:call-template>
     </xsl:template>
     
+    <xsl:template name="add-comments">
+        <xsl:param name="context" as="element()"/>
+        
+        <xsl:for-each select="$context">
+            <xsl:element name="{name()}" exclude-result-prefixes="#all">
+                <xsl:copy-of select="@* except @nlb:metadata-source" exclude-result-prefixes="#all"/>
+
+                <xsl:if test="$include-source-reference">
+                    <xsl:copy-of select="namespace::*[name() = 'nlb']"/>
+                    <xsl:copy-of select="@nlb:metadata-source" exclude-result-prefixes="#all"/>
+                </xsl:if>
+                
+                <xsl:for-each select="node()">
+                    <xsl:choose>
+                        <xsl:when test="self::*">
+                            <xsl:call-template name="add-comments">
+                                <xsl:with-param name="context" select="."/>
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+            </xsl:element>
+        </xsl:for-each>
+        
+        <xsl:if test="$include-source-reference-as-comments and @nlb:metadata-source and parent::*">
+            <xsl:text> </xsl:text>
+            <xsl:comment select="concat(' ', @nlb:metadata-source, ' ')"/>
+        </xsl:if>
+    </xsl:template>
+    
+    <xsl:template name="indent">
+        <xsl:param name="element" as="element()"/>
+        
+        <xsl:if test="exists($element/parent::*) and $element/parent::*/normalize-space(string-join(text(),'')) = ''">
+            <xsl:text>
+</xsl:text>
+            <xsl:for-each select="0 to count($element/ancestor::*)">
+                <xsl:text>    </xsl:text>
+            </xsl:for-each>
+        </xsl:if>
+        
+        <xsl:for-each select="$element">
+            <xsl:copy exclude-result-prefixes="#all">
+                <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                <xsl:for-each select="node()">
+                    <xsl:choose>
+                        <xsl:when test="self::*">
+                            <xsl:call-template name="indent">
+                                <xsl:with-param name="element" select="."/>
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+                
+                <xsl:if test="exists(*)">
+                    <xsl:text>
+</xsl:text>
+                    <xsl:for-each select="0 to count($element/ancestor::*)">
+                        <xsl:text>    </xsl:text>
+                    </xsl:for-each>
+                </xsl:if>
+            </xsl:copy>
+        </xsl:for-each>
+    </xsl:template>
+
     <xsl:template name="copy-meta-refines">
         <xsl:param name="meta-set" required="yes" as="element()*"/>
         <xsl:param name="id" required="yes" as="xs:string"/>
@@ -197,7 +292,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*" mode="nesting">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@* except (@property, @refines)" exclude-result-prefixes="#all"/>
@@ -210,69 +305,69 @@
             </xsl:if>
         </xsl:copy>
     </xsl:template>
-    
+
     <xsl:template name="meta">
         <xsl:param name="context" as="element()?" select="."/>
         <xsl:param name="property" as="xs:string"/>
         <xsl:param name="value" as="xs:string"/>
         <xsl:param name="id" as="xs:string?" select="()"/>
         <xsl:param name="refines" as="xs:string?" select="()"/>
-        
+
         <xsl:variable name="dublin-core" select="$property = ('dc:contributor', 'dc:coverage', 'dc:creator', 'dc:date', 'dc:description', 'dc:format', 'dc:identifier',
                                                               'dc:language', 'dc:publisher', 'dc:relation', 'dc:rights', 'dc:source', 'dc:subject', 'dc:title', 'dc:type')" as="xs:boolean"/>
-        
+
         <xsl:element name="{if ($dublin-core) then $property else 'meta'}">
-            <xsl:if test="$include-source-reference">
+            <xsl:if test="$include-source-reference or $include-source-reference-as-comments">
                 <xsl:variable name="identifier" as="xs:string?" select="($context/(../* | ../../*)[self::*:controlfield[@tag='001']])[1]/text()"/>
                 <xsl:variable name="tag" select="($context/../@tag, $context/@tag, '???')[1]"/>
                 <xsl:attribute name="nlb:metadata-source" select="concat('Bibliofil', if ($identifier) then concat('@',$identifier) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
             </xsl:if>
-            
+
             <xsl:if test="not($dublin-core)">
                 <xsl:attribute name="property" select="$property"/>
             </xsl:if>
-            
+
             <xsl:if test="$id">
                 <xsl:attribute name="id" select="$id"/>
             </xsl:if>
-            
+
             <xsl:if test="$refines">
                 <xsl:attribute name="refines" select="concat('#',$refines)"/>
             </xsl:if>
-            
+
             <xsl:value-of select="$value"/>
         </xsl:element>
     </xsl:template>
-    
+
     <!-- 00X KONTROLLFELT -->
-    
+
     <xsl:template match="*:leader"/>
-    
+
     <xsl:template match="*:controlfield[@tag='000']">
         <xsl:variable name="POS05" select="substring(text(),6,1)"/>
         <xsl:if test="$POS05 = 'd'">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'availability'"/><xsl:with-param name="value" select="'deleted'"/></xsl:call-template>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:controlfield[@tag='001']">
         <xsl:variable name="edition-identifier" select="if ($identifier) then $identifier else text()"/>
-        
+
         <xsl:call-template name="meta">
             <xsl:with-param name="property" select="'dc:identifier'"/>
             <xsl:with-param name="value" select="$edition-identifier"/>
             <xsl:with-param name="id" select="'pub-id'"/>
         </xsl:call-template>
-        
+
         <xsl:call-template name="meta">
             <xsl:with-param name="property" select="'dc:source.urn-nbn'"/>
             <xsl:with-param name="value" select="concat('urn:nbn:no-nb_nlb_', $edition-identifier)"/>
         </xsl:call-template>
-        
+
         <xsl:if test="starts-with(string($edition-identifier), '5') and not(exists(../*:datafield[@tag='850']/*:subfield[@code='a']))">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'library'"/><xsl:with-param name="value" select="'NLB'"/></xsl:call-template>
         </xsl:if>
-        
+
         <xsl:if test="matches(string($edition-identifier), '^\d{12}$')">
             <xsl:variable name="year" select="substring($edition-identifier,9)"/>
             <xsl:variable name="month" select="substring($edition-identifier,7,2)"/>
@@ -284,22 +379,22 @@
             </xsl:if>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:controlfield[@tag='003']">
         <!-- Ignoreres. Dette er noe som ble brukt "i riktig gamle dager". -->
     </xsl:template>
-    
+
     <xsl:template match="*:controlfield[@tag='007']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 007 FYSISK BESKRIVELSE AV DOKUMENTET'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:controlfield[@tag='008']">
         <xsl:variable name="POS00-05" select="substring(text(),1,6)"/>
         <xsl:variable name="POS22" select="substring(text(),23,1)"/>
         <xsl:variable name="POS33" select="substring(text(),34,1)"/>
         <xsl:variable name="POS34" select="substring(text(),35,1)"/>
         <xsl:variable name="POS35-37" select="substring(text(),36,3)"/>
-        
+
         <xsl:if test="matches($POS00-05,'^\d\d\d\d\d\d$')">
             <xsl:variable name="current-year" select="xs:integer(tokenize(xs:string(current-date()),'-')[1])"/>
             <xsl:variable name="year" select="xs:integer(substring($POS00-05,1,2))"/>
@@ -307,9 +402,9 @@
             <xsl:variable name="month" select="substring($POS00-05,3,2)"/>
             <xsl:variable name="day" select="substring($POS00-05,5,2)"/>
             <xsl:variable name="registered" select="concat($year,'-',$month,'-',$day)"/>
-            
+
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.registered'"/><xsl:with-param name="value" select="$registered"/></xsl:call-template>
-            
+
             <xsl:variable name="available" as="element()*">
                 <xsl:apply-templates select="(../*:datafield[@tag=('592','598')])"/>
             </xsl:variable>
@@ -317,7 +412,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.available'"/><xsl:with-param name="value" select="$registered"/></xsl:call-template>
             </xsl:if>
         </xsl:if>
-        
+
         <xsl:variable name="tag019a" select="../*:datafield[@tag='019']/*:subfield[@code='a']/tokenize(replace(text(),'\s',''),'[,\.\-_]')" as="xs:string*"/>
         <xsl:variable name="ageRanges" as="xs:string*">
             <xsl:sequence select="if ($POS22 = 'a') then '17-INF' else ()"/>
@@ -344,11 +439,11 @@
         <xsl:variable name="ageRangeFrom" select="if (count($ageRanges) = 0) then '' else xs:integer(min(for $range in ($ageRanges) return xs:double(tokenize($range,'-')[1])))"/>
         <xsl:variable name="ageMax" select="if (count($ageRanges) = 0) then '' else max(for $range in ($ageRanges) return xs:double(tokenize($range,'-')[2]))"/>
         <xsl:variable name="ageRangeTo" select="if ($ageMax and $ageMax = xs:double('INF')) then '' else $ageMax"/>
-        
+
         <xsl:if test="$ageRangeFrom or $ageRangeTo">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'typicalAgeRange'"/><xsl:with-param name="value" select="concat($ageRangeFrom,'-',$ageRangeTo)"/></xsl:call-template>
         </xsl:if>
-        
+
         <!--
             - if 008 POS 22 is 'a', then use "Adult"
             - else if 019$a contains 'mu', then use "Adolescent"
@@ -365,7 +460,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'audience'"/><xsl:with-param name="value" select="'Child'"/></xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>
-    
+
         <xsl:choose>
             <xsl:when test="$POS33='0'">
                 <meta property="dc:type.fiction">false</meta>
@@ -376,7 +471,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Fiction'"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
-    
+
         <xsl:choose>
             <xsl:when test="$POS34='0'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Non-biography'"/></xsl:call-template>
@@ -400,23 +495,23 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="'Biography'"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
-    
+
         <xsl:choose>
             <xsl:when test="normalize-space($POS35-37) and normalize-space($POS35-37) != 'mul'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:language'"/><xsl:with-param name="value" select="$POS35-37"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
     </xsl:template>
-    
+
     <!-- 010 - 04X KONTROLLNUMMER OG KODER -->
-    
+
     <xsl:template match="*:datafield[@tag='015']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 015 ANDRE BIBLIOGRAFISKE KONTROLLNUMMER'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='019']">
         <!-- *019$a handled in template for *008 -->
-    
+
         <xsl:variable name="b" as="element()*">
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:variable name="context" select="."/>
@@ -824,7 +919,7 @@
             </xsl:for-each>
         </xsl:variable>
         <xsl:copy-of select="$b" exclude-result-prefixes="#all"/>
-    
+
         <xsl:if test="not($b[self::dc:format])">
             <xsl:for-each select="*:subfield[@code='e']">
                 <xsl:variable name="context" select="."/>
@@ -871,7 +966,7 @@
                 </xsl:for-each>
             </xsl:for-each>
         </xsl:if>
-    
+
         <xsl:for-each select="*:subfield[@code='d']">
             <xsl:variable name="context" select="."/>
                 <xsl:for-each select="for $i in (1 to string-length(text())) return substring(text(),$i,1)">
@@ -918,7 +1013,7 @@
                 </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='020']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="not(text() = '0')">
@@ -926,7 +1021,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='022']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="not(text() = '0')">
@@ -934,7 +1029,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='041']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="text" select="text()"/>
@@ -951,15 +1046,15 @@
             </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='048']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'instrument'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <!-- 050 - 099 KLASSIFIKASJONSKODER -->
-    
+
     <xsl:template match="*:datafield[@tag='082']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
@@ -968,24 +1063,24 @@
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[matches(@tag,'09\d')]">
         <!--<xsl:message select="'NORMARC-felt ignorert: 09X LOKALT FELT'"/>-->
     </xsl:template>
-    
+
     <!-- 1XX HOVEDORDNINGSORD -->
-    
+
     <xsl:template match="*:datafield[@tag='100']">
         <xsl:variable name="creator-id" select="concat('creator-',1+count(preceding-sibling::*:datafield[@tag='100' or @tag='110']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
-        
+
         <xsl:if test="$name">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:for-each>
-        
+
             <xsl:for-each select="*:subfield[@code='c']">
                 <xsl:choose>
                     <xsl:when test="matches(text(), $PSEUDONYM)">
@@ -997,7 +1092,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-        
+
             <xsl:for-each select="*:subfield[@code='d']">
                 <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
                 <xsl:if test="$birthDeath[1]">
@@ -1007,7 +1102,7 @@
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
-            
+
             <xsl:for-each select="*:subfield[@code='j']">
                 <xsl:variable name="context" select="."/>
                 <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
@@ -1015,13 +1110,13 @@
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$creator-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                 </xsl:for-each>
             </xsl:for-each>
-            
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='110']">
         <xsl:variable name="creator-id" select="concat('creator-',1+count(preceding-sibling::*:datafield[@tag='100' or @tag='110']))"/>
         <xsl:choose>
@@ -1035,35 +1130,35 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator'"/><xsl:with-param name="value" select="*:subfield[@code='b'][1]/text()"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
             </xsl:when>
         </xsl:choose>
-        
+
         <xsl:for-each select="*:subfield[@code='3']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='130']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <!-- 2XX TITTEL-, ANSVARS- OG UTGIVELSESOPPLYSNINGER -->
-    
+
     <xsl:template match="*:datafield[@tag='240']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='245']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-    
+
         <xsl:for-each select="*:subfield[@code='b']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <xsl:variable name="format019" as="element()*">
             <xsl:apply-templates select="../*:datafield[@tag='019']"/>
         </xsl:variable>
@@ -1082,60 +1177,60 @@
                 </xsl:choose>
             </xsl:for-each>
         </xsl:if>
-        
+
         <xsl:for-each select="*:subfield[@code='n']">
             <xsl:variable name="position" select="replace(text(),'^.*?(\d+).*$','$1')"/>
             <xsl:if test="matches($position, '^\d+$')">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="$position"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
-        
+
         <xsl:for-each select="*:subfield[@code='p']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="concat('dc:title.part',if (count(../*:datafield[@tag='740']/*:subfield[@code='a']) eq 0) then '' else '.other')"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <xsl:for-each select="*:subfield[@code='w']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.part.sortingKey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <!-- *245 finnes alltid, men ikke alltid *250. Opprett bookEdition herifra dersom *250 ikke definerer bookEdition. -->
         <xsl:if test="count(../*:datafield[@tag='250']/*:subfield[@code='a']) = 0">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition'"/><xsl:with-param name="value" select="'1'"/></xsl:call-template>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='246']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <xsl:for-each select="*:subfield[@code='b']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle.alternative.other'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <xsl:for-each select="*:subfield[@code='n']">
             <xsl:variable name="position" select="replace(text(),'^.*?(\d+).*$','$1')"/>
             <xsl:if test="matches($position, '^\d+$')">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'position'"/><xsl:with-param name="value" select="$position"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
-        
+
         <xsl:for-each select="*:subfield[@code='p']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.subTitle.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='250']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='260']">
         <xsl:variable name="publisher-id" select="concat('publisher-260-',1+count(preceding-sibling::*:datafield[@tag='260']))"/>
         <xsl:variable name="issued" select="min(../*:datafield[@tag='260']/*:subfield[@code='c' and matches(text(),'^\d+$')]/xs:integer(text()))"/>
         <xsl:variable name="primary" select="(not($issued) and not(preceding-sibling::*:datafield[@tag='260'])) or (*:subfield[@code='c']/text() = string($issued) and not(preceding-sibling::*:datafield[@tag='260']/*:subfield[@code='c' and text() = string($issued)]))"/>
-        
+
         <xsl:if test="*:subfield[@code='b']">
             <xsl:call-template name="meta">
                 <xsl:with-param name="property" select="if ($primary) then 'dc:publisher' else 'dc:publisher.other'"/>
@@ -1143,26 +1238,26 @@
                 <xsl:with-param name="id" select="$publisher-id"/>
                 <xsl:with-param name="context" select="(*:subfield[@code='b'])[1]"/>
             </xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$publisher-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
-        
+
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:publisher.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="if ($primary) then () else $publisher-id"/></xsl:call-template>
         </xsl:for-each>
         <xsl:for-each select="*:subfield[@code='c']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:date.issued'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="if ($primary) then () else $publisher-id"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <xsl:for-each select="*:subfield[@code='9' and text()='n']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'watermark'"/><xsl:with-param name="value" select="'none'"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <!-- 3XX FYSISK BESKRIVELSE -->
-    
+
     <xsl:template match="*:datafield[@tag='300']">
         <xsl:variable name="fields" as="element()*">
             <xsl:apply-templates select="../*:datafield[@tag='245']"/>
@@ -1181,7 +1276,7 @@
             <xsl:variable name="extent" select="lower-case(replace(text(),'[\[\]]',''))"/>
             <xsl:variable name="numberOfPages" select="(if (matches($extent,'^.*?(\d+)\s*s.*$')) then replace($extent,'^.*?(\d+)\s*s.*$','$1') else ())[1]"/>
             <xsl:variable name="numberOfVolumes" select="(if (matches($extent,'^.*?(\d+)\s*(heft|b).*$')) then replace($extent,'^.*?(\d+)\s*(heft|b).*$','$1') else ())[1]"/>
-            
+
             <xsl:choose>
                 <xsl:when test="matches(text(),'^.*?\d+ *t+\.? *\d+ *min\.?.*?$')">
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:format.extent.duration'"/><xsl:with-param name="value" select="replace(text(),'^.*?(\d+) *t+\.? *(\d+) *min\.?.*?$','$1 t. $2 min.')"/></xsl:call-template>
@@ -1211,18 +1306,18 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='310']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodicity'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <!-- 4XX SERIEANGIVELSER -->
-    
+
     <xsl:template match="*:datafield[@tag='440']">
         <xsl:variable name="title-id" select="concat('series-title-',1+count(preceding-sibling::*:datafield[@tag='440' or @tag='490']))"/>
-    
+
         <xsl:variable name="series-title" as="element()?">
             <xsl:if test="*:subfield[@code='a']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series'"/><xsl:with-param name="value" select="*:subfield[@code='a'][1]/text()"/><xsl:with-param name="id" select="$title-id"/></xsl:call-template>
@@ -1256,7 +1351,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='449']">
         <xsl:for-each select="*:subfield[@code='n']">
             <xsl:if test="matches(text(),'\d')">
@@ -1264,33 +1359,33 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='490']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 490 SERIEANGIVELSE UTEN BIINNFØRSEL'"/>-->
     </xsl:template>
-    
+
     <!-- 5XX NOTER -->
-    
+
     <xsl:template match="*:datafield[@tag='500']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 500 GENERELL NOTE'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='501']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 490 &quot;SAMMEN MED&quot;-NOTE'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='503']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'bookEdition.history'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='505']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:description.content'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='511']">
         <xsl:variable name="contributor-id" select="concat('contributor-511-',1+count(preceding-sibling::*:datafield[@tag='511']))"/>
         <xsl:for-each select="*:subfield[@code='a']">
@@ -1300,12 +1395,12 @@
                 <xsl:with-param name="value" select="$contributor-name"/>
                 <xsl:with-param name="id" select="$contributor-id"/>
             </xsl:call-template>
-            
+
             <xsl:variable name="pos" select="position()"/>
             <xsl:for-each select="../*:subfield[@code='3'][position() = $pos]">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
-            
+
             <xsl:if test="contains(lower-case($contributor-name), 'talesyntese')">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
@@ -1313,43 +1408,43 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='520']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:description.abstract'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='522']">
         <!-- Ignoreres. Dette er noe som ble brukt "i riktig gamle dager". -->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='523']">
         <!-- Ignoreres. Dette er noe som ble brukt "i riktig gamle dager". -->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='533']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 533 FYSISK BESKRIVELSE'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='537']">
         <!-- Duplikat av 505. Ignoreres. -->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='539']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 539 SERIER'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='574']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.original'"/><xsl:with-param name="value" select="replace(text(),'^\s*Ori?ginaltit\w*\s*:?\s*','')"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='590']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 590 LOKALE NOTER'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='591']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="ordered" select="nlb:parseDate(text())"/>
@@ -1358,7 +1453,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='592']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:variable name="available" select="nlb:parseDate(text())"/>
@@ -1367,11 +1462,11 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='593']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 593 LOKALE NOTER'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='594']">
         <!-- Karakteristikk -->
         <xsl:for-each select="*:subfield[@code='a']">
@@ -1385,16 +1480,16 @@
             </xsl:choose>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='595']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 595 LOKALE NOTER'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='596']">
         <xsl:variable name="preceding-issued-years" select="(for $year in (preceding-sibling::*:datafield[@tag='596']/*:subfield[@code='c']/number(nlb:parseYear(text(), false()))) return if ($year eq $year) then $year else (), xs:double('INF'))"/>
         <xsl:variable name="following-issued-years" select="(for $year in (following-sibling::*:datafield[@tag='596']/*:subfield[@code='c']/number(nlb:parseYear(text(), false()))) return if ($year eq $year) then $year else (), xs:double('INF'))"/>
         <xsl:variable name="issued-year" select="(*:subfield[@code='c']/number(nlb:parseYear(text(), false())))[1]"/>
-        
+
         <xsl:if test="$issued-year lt min($preceding-issued-years) and $issued-year le min($following-issued-years)
                       or not($issued-year eq $issued-year) and min(($preceding-issued-years, $following-issued-years)) = xs:double('INF') and not(preceding-sibling::*:datafield[@tag='596'])">
             <xsl:for-each select="*:subfield[@code='b']">
@@ -1437,11 +1532,11 @@
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='597']">
         <!--<xsl:message select="'NORMARC-felt ignorert: 597 LOKALE NOTER'"/>-->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='598']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:choose>
@@ -1466,7 +1561,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='599']">
         <xsl:choose>
             <xsl:when test="*:subfield[@code='a']/text() = 'EPUB-nr' and exists(*:subfield[@code='b'])">
@@ -1477,9 +1572,9 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    
+
     <!-- 6XX EMNEINNFØRSLER -->
-    
+
     <xsl:template match="*:datafield[@tag='600']">
         <xsl:for-each select="*:subfield[@code='0']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
@@ -1490,18 +1585,18 @@
         <xsl:for-each select="*:subfield[@code='1']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-    
+
         <xsl:variable name="subject-id" select="concat('subject-600-',1+count(preceding-sibling::*:datafield[@tag='600']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
-        
+
         <xsl:if test="not($name='')">
-    
+
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='c']">
                 <xsl:choose>
                     <xsl:when test="matches(text(), $PSEUDONYM)">
@@ -1513,7 +1608,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='d']">
                 <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
                 <xsl:if test="$birthDeath[1]">
@@ -1523,7 +1618,7 @@
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
-            
+
             <xsl:for-each select="*:subfield[@code='j']">
                 <xsl:variable name="context" select="."/>
                 <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
@@ -1531,19 +1626,19 @@
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$subject-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                 </xsl:for-each>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='610']">
         <xsl:variable name="subject-id" select="concat('subject-610-',1+count(preceding-sibling::*:datafield[@tag='610']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
@@ -1553,31 +1648,31 @@
             <xsl:for-each select="*:subfield[@code='q']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='611']">
         <xsl:variable name="subject-id" select="concat('subject-611-',1+count(preceding-sibling::*:datafield[@tag='611']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='650']">
         <xsl:variable name="subject-id" select="concat('subject-650-',1+count(preceding-sibling::*:datafield[@tag='650']))"/>
-    
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:if test="*:subfield[@code='a']/text()=('Tidsskrifter','Avis')">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'periodical'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
@@ -1587,7 +1682,7 @@
             <xsl:if test="*:subfield[@code='a']/text()='Avis'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'newspaper'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
-    
+
             <xsl:for-each select="*:subfield[@code='0']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
@@ -1612,19 +1707,19 @@
             <xsl:for-each select="*:subfield[@code='z']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='651']">
         <xsl:variable name="subject-id" select="concat('subject-651-',1+count(preceding-sibling::*:datafield[@tag='651']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="*:subfield[@code='a']/replace(text(),'[\[\]]','')"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
@@ -1637,19 +1732,19 @@
             <xsl:for-each select="*:subfield[@code='z']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='653']">
         <xsl:variable name="subject-id" select="concat('subject-653-',1+count(preceding-sibling::*:datafield[@tag='653']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
@@ -1662,16 +1757,16 @@
             <xsl:for-each select="*:subfield[@code='x']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='655']">
         <xsl:variable name="subject-id" select="concat('subject-655-',1+count(preceding-sibling::*:datafield[@tag='655']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:variable name="context" select="."/>
             <xsl:variable name="mainGenre" select="*:subfield[@code='a']/text()"/>
@@ -1692,118 +1787,118 @@
                 </xsl:for-each>
             </xsl:variable>
             <xsl:variable name="genre" select="if (count($subGenre)) then concat($mainGenre, ' (', string-join($subGenre,'/'), ')') else $mainGenre"/>
-            
+
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre'"/><xsl:with-param name="value" select="$genre"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.genre.no'"/><xsl:with-param name="value" select="$genre"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.mainGenre'"/><xsl:with-param name="value" select="$mainGenre"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             <xsl:for-each select="$subGenre">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.subGenre'"/><xsl:with-param name="value" select="."/><xsl:with-param name="refines" select="$subject-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='691']">
         <xsl:variable name="subject-id" select="concat('subject-691-',1+count(preceding-sibling::*:datafield[@tag='691']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
             <xsl:for-each select="*:subfield[@code='x']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='692']">
         <xsl:variable name="subject-id" select="concat('subject-692-',1+count(preceding-sibling::*:datafield[@tag='692']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='693']">
         <xsl:variable name="subject-id" select="concat('subject-693-',1+count(preceding-sibling::*:datafield[@tag='693']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='694']">
         <!-- På gamle slettede kassetter står det i mange tilfeller teksten "Uten Daisy" i dette feltet. Ignoreres. -->
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='695']">
         <xsl:variable name="subject-id" select="concat('subject-695-',1+count(preceding-sibling::*:datafield[@tag='695']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='696']">
         <xsl:variable name="subject-id" select="concat('subject-696-',1+count(preceding-sibling::*:datafield[@tag='696']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='697']">
         <xsl:variable name="subject-id" select="concat('subject-697-',1+count(preceding-sibling::*:datafield[@tag='697']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-            
+
             <xsl:if test="*:subfield[@code='a']/text() = 'Lydbok med tekst'">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.audio'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:type.text'"/><xsl:with-param name="value" select="'true'"/></xsl:call-template>
             </xsl:if>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='699']">
         <xsl:variable name="subject-id" select="concat('subject-699-',1+count(preceding-sibling::*:datafield[@tag='699']))"/>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.keyword'"/><xsl:with-param name="value" select="*:subfield[@code='a']/text()"/><xsl:with-param name="id" select="$subject-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='1']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
@@ -1822,35 +1917,35 @@
             <xsl:for-each select="*:subfield[@code='z']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'location'"/><xsl:with-param name="value" select="replace(text(),'[\[\]]','')"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
-    
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$subject-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <!-- 700 - 75X BIINNFØRSLER -->
-    
+
     <xsl:template match="*:datafield[@tag='700']">
         <xsl:variable name="contributor-id" select="concat('contributor-700-',1+count(preceding-sibling::*:datafield[@tag='700']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
-        
+
         <xsl:if test="$name">
             <xsl:variable name="role" select="nlb:parseRole(concat('',(*:subfield[@code='e'], *:subfield[@code='r'], *:subfield[@code='x'])[1]/text()))"/>
             <xsl:variable name="role" select="if ($role='dc:creator') then 'dc:contributor.other' else $role">
                 <!-- because 700 never is the main author -->
             </xsl:variable>
-            
+
             <xsl:call-template name="meta">
                 <xsl:with-param name="property" select="$role"/>
                 <xsl:with-param name="value" select="$name"/>
                 <xsl:with-param name="id" select="$contributor-id"/>
             </xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='b']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
-        
+
             <xsl:for-each select="*:subfield[@code='c']">
                 <xsl:choose>
                     <xsl:when test="matches(text(), $PSEUDONYM)">
@@ -1862,7 +1957,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-        
+
             <xsl:for-each select="*:subfield[@code='d']">
                 <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
                 <xsl:if test="$birthDeath[1]">
@@ -1872,7 +1967,7 @@
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
-            
+
             <xsl:for-each select="*:subfield[@code='j']">
                 <xsl:variable name="context" select="."/>
                 <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
@@ -1880,35 +1975,35 @@
                     <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$contributor-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
                 </xsl:for-each>
             </xsl:for-each>
-        
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='710']">
         <xsl:for-each select="*:subfield[@code='1']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:subject.dewey'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-        
+
         <xsl:if test="*:subfield[@code='a']">
             <xsl:variable name="contributor-id" select="concat('contributor-700-',1+count(preceding-sibling::*:datafield[@tag='700']))"/>
-            
+
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:contributor'"/><xsl:with-param name="value" select="*:subfield[@code='a'][1]/text()"/><xsl:with-param name="id" select="$contributor-id"/></xsl:call-template>
-            
+
             <xsl:for-each select="*:subfield[@code='3']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$contributor-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='730']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.alternative'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='740']">
         <xsl:if test="*:subfield[@code='a']">
             <xsl:variable name="title-id" select="concat('title-740-',1+count(preceding-sibling::*:datafield[@tag='740']))"/>
@@ -1932,12 +2027,12 @@
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <!-- 760 - 79X LENKER / RELASJONER -->
-    
+
     <xsl:template match="*:datafield[@tag='780']">
         <xsl:variable name="series-preceding-id" select="concat('series-preceding-',1+count(preceding-sibling::*:datafield[@tag='780']))"/>
-    
+
         <xsl:if test="*:subfield[@code='t']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.preceding'"/><xsl:with-param name="value" select="*:subfield[@code='t']/text()"/><xsl:with-param name="id" select="$series-preceding-id"/></xsl:call-template>
         </xsl:if>
@@ -1954,10 +2049,10 @@
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.preceding.alternative'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$series-preceding-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='785']">
         <xsl:variable name="series-sequel-id" select="concat('series-sequel-',1+count(preceding-sibling::*:datafield[@tag='785']))"/>
-    
+
         <xsl:for-each select="*:subfield[@code='t']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.sequel'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="id" select="$series-sequel-id"/></xsl:call-template>
         </xsl:for-each>
@@ -1974,24 +2069,24 @@
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title.series.sequel.alternative'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$series-sequel-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <!-- 800 - 830 SERIEINNFØRSLER - ANNEN FORM ENN SERIEFELTET -->
-    
+
     <xsl:template match="*:datafield[@tag='800']">
         <xsl:variable name="creator-id" select="concat('series-creator-',1+count(preceding-sibling::*:datafield[@tag='800']))"/>
         <xsl:variable name="name" select="(*:subfield[@code='q'], *:subfield[@code='a'], *:subfield[@code='w'])[normalize-space(.)][1]/text()"/>
-        
+
         <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:creator.series'"/><xsl:with-param name="value" select="$name"/><xsl:with-param name="id" select="$creator-id"/></xsl:call-template>
-        
+
         <xsl:for-each select="*:subfield[@code='t']">
             <xsl:variable name="alternate-title" select="string((../../*:datafield[@tag='440']/*:subfield[@code='a'])[1]/text()) != (text(),'')"/>
             <xsl:call-template name="meta"><xsl:with-param name="property" select="concat('dc:title.series',if ($alternate-title or preceding-sibling::*[@code='t']) then '.alternate' else '','')"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
         </xsl:for-each>
-    
+
         <xsl:for-each select="*:subfield[@code='b']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'honorificSuffix'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
-    
+
         <xsl:for-each select="*:subfield[@code='c']">
             <xsl:choose>
                 <xsl:when test="matches(text(), $PSEUDONYM)">
@@ -2003,7 +2098,7 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
-    
+
         <xsl:for-each select="*:subfield[@code='d']">
             <xsl:variable name="birthDeath" select="tokenize(nlb:parseBirthDeath(text()), ',')"/>
             <xsl:if test="$birthDeath[1]">
@@ -2013,7 +2108,7 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'deathDate'"/><xsl:with-param name="value" select="$birthDeath[2]"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
             </xsl:if>
         </xsl:for-each>
-    
+
         <xsl:for-each select="*:subfield[@code='j']">
             <xsl:variable name="context" select="."/>
             <xsl:for-each select="tokenize(replace(text(),'[\.,? ]',''), '-')">
@@ -2021,14 +2116,14 @@
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'nationality'"/><xsl:with-param name="value" select="$nationality"/><xsl:with-param name="refines" select="$creator-id"/><xsl:with-param name="context" select="$context"/></xsl:call-template>
             </xsl:for-each>
         </xsl:for-each>
-    
+
         <xsl:for-each select="*:subfield[@code='3']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'bibliofil-id'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$creator-id"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <!-- 85X LOKALISERINGSDATA -->
-    
+
     <xsl:template match="*:datafield[@tag='850']">
         <xsl:for-each select="*:subfield[@code='a']">
             <xsl:if test="text()=('NLB/S')">
@@ -2038,7 +2133,7 @@
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'library'"/><xsl:with-param name="value" select="tokenize(text(),'/')[1]"/></xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template match="*:datafield[@tag='856']">
         <xsl:if test="*:subfield[@code='s' and matches(text(), '\d+')]">
             <xsl:for-each select="*:subfield[@code='s']">
@@ -2046,7 +2141,7 @@
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <!-- 9XX HENVISNINGER -->
     <xsl:template match="*:datafield[@tag=('900','950')]">
         <xsl:variable name="preceding-datafield" select="(preceding-sibling::* except preceding-sibling::*:datafield[starts-with(@tag,'9')])[last()]"/>
@@ -2060,21 +2155,21 @@
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <!-- TODO: 911c and 911d (TIGAR project) -->
-    
+
     <xsl:template match="*:datafield[@tag='996']">
         <xsl:variable name="websok-id" select="concat('websok-',1+count(preceding-sibling::*:datafield[@tag='996']))"/>
-    
+
         <xsl:if test="*:subfield[@code='u']">
             <xsl:call-template name="meta"><xsl:with-param name="property" select="'websok.url'"/><xsl:with-param name="value" select="*:subfield[@code='u']/text()"/><xsl:with-param name="id" select="$websok-id"/></xsl:call-template>
-    
+
             <xsl:for-each select="*:subfield[@code='t']">
                 <xsl:call-template name="meta"><xsl:with-param name="property" select="'websok.type'"/><xsl:with-param name="value" select="text()"/><xsl:with-param name="refines" select="$websok-id"/></xsl:call-template>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
-    
+
     <xsl:variable name="DAY_MONTH_YEAR" select="'\d+-\d+-\d+'"/>
     <xsl:variable name="FORMAT_245H_DAISY2_1" select="'(?i).*da[i\ss][si]y[\.\s]*.*'"/>
     <xsl:variable name="FORMAT_245H_DAISY2_2" select="'.*2[.\s]*0?2.*'"/>
@@ -2087,7 +2182,7 @@
     <xsl:variable name="YEAR_VALUE" select="'[^\d]'"/>
     <xsl:variable name="AVAILABLE" select="'^.*?(\d+)[\./]+(\d+)[\./]+(\d+).*?$'"/>
     <xsl:variable name="DEWEY" select="'^.*?(\d+\.?\d*).*?$'"/>
-    
+
     <xsl:function name="nlb:parseNationality">
         <xsl:param name="nationality"/>
         <xsl:choose>
@@ -2336,7 +2431,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+
     <xsl:function name="nlb:parseRole">
         <xsl:param name="role"/>
         <!--
@@ -2344,7 +2439,7 @@
 		    (http://lcweb2.loc.gov/diglib/loc.terms/relators/dc-contributor.html)
         -->
         <xsl:variable name="role" select="lower-case($role)"/>
-    
+
         <xsl:choose>
             <xsl:when test="matches($role,'^fr.\s.*') or matches($role,'^til\s.*') or matches($role,'^p.\s.*') or matches($role,'.*(overs|.versett|overatt|omsett).*')">
                 <xsl:value-of select="'dc:contributor.translator'"/>
@@ -2404,7 +2499,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+
     <xsl:function name="nlb:parseDate">
         <xsl:param name="date"/>
         <xsl:choose>
@@ -2416,37 +2511,37 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+
     <xsl:function name="nlb:parseBirthDeath">
         <xsl:param name="value"/>
-        
+
         <xsl:variable name="split" select="tokenize($value,'-')"/>
-        
+
         <xsl:choose>
             <xsl:when test="count($split) gt 2">
                 <xsl:value-of select="','"/>
-                
+
             </xsl:when>
             <xsl:when test="count($split) = 2">
                 <xsl:variable name="year_death" select="nlb:parseYear($split[2], false())"/>
                 <xsl:variable name="year_birth" select="nlb:parseYear($split[1], number($year_death) lt 0)"/>
                 <xsl:value-of select="concat($year_birth,',',$year_death)"/>
-                
+
             </xsl:when>
             <xsl:when test="count($split) = 1">
                 <xsl:value-of select="concat(nlb:parseYear($split[1], false()),',')"/>
             </xsl:when>
         </xsl:choose>
     </xsl:function>
-    
+
     <xsl:function name="nlb:parseYear">
         <xsl:param name="value"/>
         <xsl:param name="assume-negative"/>
-        
+
         <xsl:variable name="sign" select="if (matches($value,$YEAR_NEGATIVE) or $assume-negative) then '-' else ''"/>
         <xsl:variable name="year" select="replace($value, '^[^\d]*(\d+)([^\d].*)?$', '$1')"/>
         <xsl:variable name="year" select="if (matches($year,'^\d+$')) then $year else ''"/>
-        
+
         <xsl:choose>
             <xsl:when test="$year">
                 <xsl:sequence select="concat($sign, $year)"/>
@@ -2456,5 +2551,5 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
+
 </xsl:stylesheet>

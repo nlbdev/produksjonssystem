@@ -21,7 +21,7 @@
     
     <xsl:variable name="nested" select="true()"/>
     
-    <xsl:output indent="yes" method="xhtml"/>
+    <xsl:output indent="yes" method="xml" exclude-result-prefixes="#all"/>
     
     <xsl:param name="rdf-xml-path" as="xs:string?"/>
     <xsl:param name="edition-identifier" select="''" as="xs:string"/>
@@ -220,8 +220,8 @@
             <xsl:variable name="name" select="if (not(contains($name,':'))) then concat('schema:',$name) else $name"/>
             
             <xsl:variable name="element" as="element()">
-                <xsl:element name="{$name}">
-                    <xsl:copy-of select="@nlb:metadata-source"/>
+                <xsl:element name="{$name}" exclude-result-prefixes="#all">
+                    <xsl:copy-of select="@nlb:metadata-source" exclude-result-prefixes="#all"/>
                     <xsl:choose>
                         <xsl:when test="count(*)">
                             <xsl:attribute name="schema:name" select="@content"/>
@@ -251,22 +251,22 @@
                         -->
                         <xsl:choose>
                             <xsl:when test="$name = 'schema:isbn.original'">
-                                <xsl:element name="schema:isbn">
-                                    <xsl:copy-of select="$element/(@* | node())"/>
+                                <xsl:element name="schema:isbn" exclude-result-prefixes="#all">
+                                    <xsl:copy-of select="$element/(@* | node())" exclude-result-prefixes="#all"/>
                                 </xsl:element>
-                                <xsl:element name="dc:source">
-                                    <xsl:copy-of select="@nlb:metadata-source"/>
-                                    <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\dX]',''))"/>
+                                <xsl:element name="dc:source" exclude-result-prefixes="#all">
+                                    <xsl:copy-of select="@nlb:metadata-source" exclude-result-prefixes="#all"/>
+                                    <xsl:copy-of select="concat('urn:isbn:',replace($element/text()[1],'[^\d]',''))" exclude-result-prefixes="#all"/>
                                 </xsl:element>
                             </xsl:when>
                             
                             <xsl:when test="$name = 'schema:issn.original'">
-                                <xsl:element name="schema:issn">
-                                    <xsl:copy-of select="$element/(@* | node())"/>
+                                <xsl:element name="schema:issn" exclude-result-prefixes="#all">
+                                    <xsl:copy-of select="$element/(@* | node())" exclude-result-prefixes="#all"/>
                                 </xsl:element>
-                                <xsl:element name="dc:source">
-                                    <xsl:copy-of select="@nlb:metadata-source"/>
-                                    <xsl:copy-of select="concat('urn:issn:',replace($element/text()[1],'[^\dX]',''))"/>
+                                <xsl:element name="dc:source" exclude-result-prefixes="#all">
+                                    <xsl:copy-of select="@nlb:metadata-source" exclude-result-prefixes="#all"/>
+                                    <xsl:copy-of select="concat('urn:issn:',replace($element/text()[1],'[^\d]',''))" exclude-result-prefixes="#all"/>
                                 </xsl:element>
                             </xsl:when>
                             

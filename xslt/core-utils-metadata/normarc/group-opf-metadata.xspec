@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               stylesheet="group-opf-metadata.xsl">
+    
+    <x:param name="include-other-identifiers-placeholder" select="true()"/>
+    
+    <x:scenario label="Basic test">
+        <x:context xml:space="preserve">    <metadata xmlns="http://www.idpf.org/2007/opf">
+            <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/" id="pub-id">627958</dc:identifier>  <!-- Bibliofil@627958 *001 -->
+            <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Måneskinn</dc:title>  <!-- Bibliofil@627958 *245$a -->
+            <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" id="creator-1">Hunter, Erin</dc:creator>  <!-- Bibliofil@627958 *100 -->
+            <meta property="bibliofil-id" refines="#creator-1">20931800</meta>  <!-- Bibliofil@627958 *100$3 -->
+            <meta property="nationality" refines="#creator-1">gb</meta>  <!-- Bibliofil@627958 *100$j -->
+            <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/">DAISY 2.02</dc:format>  <!-- Bibliofil@627958 *019$b -->
+            <dc:language xmlns:dc="http://purl.org/dc/elements/1.1/">nob</dc:language>  <!-- Bibliofil@627958 *008 -->
+            <dc:publisher xmlns:dc="http://purl.org/dc/elements/1.1/" id="publisher-260-1">Norsk lyd- og blindeskriftbibliotek</dc:publisher>  <!-- Bibliofil@627958 *260$b -->
+            <meta property="bibliofil-id" refines="#publisher-260-1">17192400</meta>  <!-- Bibliofil@627958 *260$3 -->
+            <meta property="dc:contributor.narrator" id="contributor-511-1">Elisabeth Vatn</meta>  <!-- Bibliofil@627958 *511$a -->
+            <meta property="bibliofil-id" refines="#contributor-511-1">19614200</meta>  <!-- Bibliofil@627958 *511$3 -->
+            <meta property="dc:contributor.translator" id="contributor-700-1">Morset, Tora Larsen</meta>  <!-- Bibliofil@627958 *700 -->
+            <meta property="bibliofil-id" refines="#contributor-700-1">21035300</meta>  <!-- Bibliofil@627958 *700$3 -->
+            <meta property="birthDate" refines="#contributor-700-1">1981</meta>  <!-- Bibliofil@627958 *700$d -->
+            <meta property="nationality" refines="#contributor-700-1">no</meta>  <!-- Bibliofil@627958 *700$j -->
+            <meta property="dc:date.available">2017-10-31</meta>  <!-- Bibliofil@627958 *592$a -->
+            <meta property="dc:date.issued">2017</meta>  <!-- Bibliofil@627958 *260$c -->
+            <meta property="dc:date.issued.original">2015</meta>  <!-- Bibliofil@627958 *596$c -->
+            <meta property="dc:date.registered">2017-09-19</meta>  <!-- Bibliofil@627958 *008 -->
+            <meta property="dc:description.abstract">Fra forlagets omtale: Flere månefaser har gått siden seks katter
+i all hast la ut fra skogen på en dramatisk reise for å redde klanene. Nå er de seks på vei hjem, men oppe i fjellene
+møter de en stamme villkatter som har sine egne forfedres profeti å oppfylle.</meta>  <!-- Bibliofil@627958 *520$a -->
+            <meta property="dc:format.extent.duration">9 t. 15 min.</meta>  <!-- Bibliofil@627958 *300$a -->
+            <meta property="dc:format.extent.pages.original">273</meta>  <!-- Bibliofil@627958 *596$e -->
+            <meta property="dc:format.other">Audio recording</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:format.other">Compact Disk</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:format.other">Other voice/other</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:format.other.no">Lydopptak</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:format.other.no">CD (kompaktplate)</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:format.other.no">Annen tale/annet</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:language.original">eng</meta>  <!-- Bibliofil@627958 *041$h -->
+            <meta property="dc:publisher.location">Oslo</meta>  <!-- Bibliofil@627958 *260$a -->
+            <meta property="dc:publisher.location.original">Oslo</meta>  <!-- Bibliofil@627958 *596$a -->
+            <meta property="dc:publisher.original">Juritzen</meta>  <!-- Bibliofil@627958 *596$b -->
+            <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_627958</meta>  <!-- Bibliofil@627958 *001 -->
+            <meta property="dc:subject.keyword" id="subject-692-1">Katter</meta>  <!-- Bibliofil@627958 *692 -->
+            <meta property="bibliofil-id" refines="#subject-692-1">19736100</meta>  <!-- Bibliofil@627958 *692$3 -->
+            <meta property="dc:title.original">Moonrise</meta>  <!-- Bibliofil@627958 *574$a -->
+            <meta property="dc:title.part">Moonrise</meta>  <!-- Bibliofil@627958 *740$a -->
+            <meta property="dc:title.series" id="series-title-1">Kattekrigerne Serie 2</meta>  <!-- Bibliofil@627958 *440 -->
+            <meta property="series.position" refines="#series-title-1">2</meta>  <!-- Bibliofil@627958 *440$v -->
+            <meta property="dc:title.series.preceding" id="series-preceding-1">Midnatt</meta>  <!-- Bibliofil@627958 *780 -->
+            <meta property="dc:identifier.series.preceding" refines="#series-preceding-1">627680</meta>  <!-- Bibliofil@627958 *780$w -->
+            <meta property="dc:identifier.series.preceding.uri" refines="#series-preceding-1">urn:NBN:no-nb_nlb_627680</meta>  <!-- Bibliofil@627958 *780$w -->
+            <meta property="dc:title.series.sequel" id="series-sequel-1">Daggry</meta>  <!-- Bibliofil@627958 *785$t -->
+            <meta property="dc:identifier.series.sequel" refines="#series-sequel-1">627961</meta>  <!-- Bibliofil@627958 *785$w -->
+            <meta property="dc:identifier.series.sequel.uri" refines="#series-sequel-1">urn:NBN:no-nb_nlb_627961</meta>  <!-- Bibliofil@627958 *785$w -->
+            <meta property="dc:type.audio">true</meta>  <!-- Bibliofil@627958 *019$b -->
+            <meta property="dc:type.fiction">true</meta>
+            <meta property="dc:type.genre">Fiction</meta>  <!-- Bibliofil@627958 *008 -->
+            <meta property="dc:type.genre">Non-biography</meta>  <!-- Bibliofil@627958 *008 -->
+            <meta property="dc:type.genre" id="subject-655-1">Fantasy</meta>  <!-- Bibliofil@627958 *655 -->
+            <meta property="bibliofil-id" refines="#subject-655-1">20157000</meta>  <!-- Bibliofil@627958 *655$3 -->
+            <meta property="dc:type.genre.no" refines="#subject-655-1">Fantasy</meta>  <!-- Bibliofil@627958 *655 -->
+            <meta property="dc:type.mainGenre" refines="#subject-655-1">Fantasy</meta>  <!-- Bibliofil@627958 *655 -->
+            <meta property="dc:type.literaryForm" id="literary-form-019d-1">Roman</meta>  <!-- Bibliofil@627958 *019$d -->
+            <meta property="normarc-id" refines="#literary-form-019d-1">R</meta>  <!-- Bibliofil@627958 *019$d -->
+            <meta property="audience">Child</meta>  <!-- Bibliofil@627958 *008 -->
+            <meta property="bookEdition">1</meta>  <!-- Bibliofil@627958 *245 -->
+            <meta property="bookEdition.original">1</meta>  <!-- Bibliofil@627958 *596 -->
+            <meta property="fileSize">458148548</meta>  <!-- Bibliofil@627958 *856$s -->
+            <meta property="isbn">978-82-16-25998-6</meta>  <!-- Bibliofil@627958 *020$a -->
+            <meta property="isbn.original">978-82-93304-70-8</meta>  <!-- Bibliofil@627958 *596$f -->
+            <meta property="library">NLB</meta>  <!-- Bibliofil@627958 *850$a -->
+            <meta property="position">2</meta>  <!-- Bibliofil@627958 *245$n -->
+            <meta property="typicalAgeRange">11-12</meta>  <!-- Bibliofil@627958 *008 -->
+        </metadata></x:context>
+
+        <x:expect label="The result should be as expected" xml:space="preserve">    <metadata xmlns="http://www.idpf.org/2007/opf">
+        <!-- Boknummer for DAISY 2.02-utgaven -->
+        <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/" id="pub-id">627958</dc:identifier>  <!-- Bibliofil@627958 *001 -->
+        
+        <!-- Boknummer for andre utgaver -->
+        <!-- REPLACEME_OTHER_IDENTIFIERS -->
+        
+        <!-- Metadata for åndsverket -->
+        <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Måneskinn</dc:title>  <!-- Bibliofil@627958 *245$a -->
+        <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/" id="creator-1">Hunter, Erin</dc:creator>  <!-- Bibliofil@627958 *100 -->
+        <meta property="bibliofil-id" refines="#creator-1">20931800</meta>  <!-- Bibliofil@627958 *100$3 -->
+        <meta property="nationality" refines="#creator-1">gb</meta>  <!-- Bibliofil@627958 *100$j -->
+        <dc:language xmlns:dc="http://purl.org/dc/elements/1.1/">nob</dc:language>  <!-- Bibliofil@627958 *008 -->
+        <meta property="dc:type.genre">Fiction</meta>  <!-- Bibliofil@627958 *008 -->
+        <meta property="dc:type.genre">Non-biography</meta>  <!-- Bibliofil@627958 *008 -->
+        <meta property="dc:type.genre" id="subject-655-1">Fantasy</meta>  <!-- Bibliofil@627958 *655 -->
+        <meta property="bibliofil-id" refines="#subject-655-1">20157000</meta>  <!-- Bibliofil@627958 *655$3 -->
+        <meta property="dc:type.genre.no" refines="#subject-655-1">Fantasy</meta>  <!-- Bibliofil@627958 *655 -->
+        <meta property="dc:type.mainGenre" refines="#subject-655-1">Fantasy</meta>  <!-- Bibliofil@627958 *655 -->
+        <meta property="dc:type.fiction">true</meta>
+        
+        <meta property="dc:type.literaryForm" id="literary-form-019d-1">Roman</meta>  <!-- Bibliofil@627958 *019$d -->
+        <meta property="normarc-id" refines="#literary-form-019d-1">R</meta>  <!-- Bibliofil@627958 *019$d -->
+        
+        <!-- Metadata for DAISY 2.02-utgaven -->
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/">DAISY 2.02</dc:format>  <!-- Bibliofil@627958 *019$b -->
+        <dc:publisher xmlns:dc="http://purl.org/dc/elements/1.1/" id="publisher-260-1">Norsk lyd- og blindeskriftbibliotek</dc:publisher>  <!-- Bibliofil@627958 *260$b -->
+        <meta property="bibliofil-id" refines="#publisher-260-1">17192400</meta>  <!-- Bibliofil@627958 *260$3 -->
+        <meta property="dc:contributor.narrator" id="contributor-511-1">Elisabeth Vatn</meta>  <!-- Bibliofil@627958 *511$a -->
+        <meta property="bibliofil-id" refines="#contributor-511-1">19614200</meta>  <!-- Bibliofil@627958 *511$3 -->
+        <meta property="dc:contributor.translator" id="contributor-700-1">Morset, Tora Larsen</meta>  <!-- Bibliofil@627958 *700 -->
+        <meta property="bibliofil-id" refines="#contributor-700-1">21035300</meta>  <!-- Bibliofil@627958 *700$3 -->
+        <meta property="birthDate" refines="#contributor-700-1">1981</meta>  <!-- Bibliofil@627958 *700$d -->
+        <meta property="nationality" refines="#contributor-700-1">no</meta>  <!-- Bibliofil@627958 *700$j -->
+        <meta property="dc:date.available">2017-10-31</meta>  <!-- Bibliofil@627958 *592$a -->
+        <meta property="dc:date.issued">2017</meta>  <!-- Bibliofil@627958 *260$c -->
+        <meta property="dc:date.issued.original">2015</meta>  <!-- Bibliofil@627958 *596$c -->
+        <meta property="dc:date.registered">2017-09-19</meta>  <!-- Bibliofil@627958 *008 -->
+        <meta property="dc:description.abstract">Fra forlagets omtale: Flere månefaser har gått siden seks katter
+i all hast la ut fra skogen på en dramatisk reise for å redde klanene. Nå er de seks på vei hjem, men oppe i fjellene
+møter de en stamme villkatter som har sine egne forfedres profeti å oppfylle.</meta>  <!-- Bibliofil@627958 *520$a -->
+        <meta property="dc:format.extent.duration">9 t. 15 min.</meta>  <!-- Bibliofil@627958 *300$a -->
+        <meta property="dc:format.extent.pages.original">273</meta>  <!-- Bibliofil@627958 *596$e -->
+        <meta property="dc:format.other">Audio recording</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="dc:format.other">Compact Disk</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="dc:format.other">Other voice/other</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="dc:format.other.no">Lydopptak</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="dc:format.other.no">CD (kompaktplate)</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="dc:format.other.no">Annen tale/annet</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="dc:language.original">eng</meta>  <!-- Bibliofil@627958 *041$h -->
+        <meta property="dc:publisher.location">Oslo</meta>  <!-- Bibliofil@627958 *260$a -->
+        <meta property="dc:publisher.location.original">Oslo</meta>  <!-- Bibliofil@627958 *596$a -->
+        <meta property="dc:publisher.original">Juritzen</meta>  <!-- Bibliofil@627958 *596$b -->
+        <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_627958</meta>  <!-- Bibliofil@627958 *001 -->
+        <meta property="dc:subject.keyword" id="subject-692-1">Katter</meta>  <!-- Bibliofil@627958 *692 -->
+        <meta property="bibliofil-id" refines="#subject-692-1">19736100</meta>  <!-- Bibliofil@627958 *692$3 -->
+        <meta property="dc:title.original">Moonrise</meta>  <!-- Bibliofil@627958 *574$a -->
+        <meta property="dc:title.part">Moonrise</meta>  <!-- Bibliofil@627958 *740$a -->
+        <meta property="dc:title.series" id="series-title-1">Kattekrigerne Serie 2</meta>  <!-- Bibliofil@627958 *440 -->
+        <meta property="series.position" refines="#series-title-1">2</meta>  <!-- Bibliofil@627958 *440$v -->
+        <meta property="dc:title.series.preceding" id="series-preceding-1">Midnatt</meta>  <!-- Bibliofil@627958 *780 -->
+        <meta property="dc:identifier.series.preceding" refines="#series-preceding-1">627680</meta>  <!-- Bibliofil@627958 *780$w -->
+        <meta property="dc:identifier.series.preceding.uri" refines="#series-preceding-1">urn:NBN:no-nb_nlb_627680</meta>  <!-- Bibliofil@627958 *780$w -->
+        <meta property="dc:title.series.sequel" id="series-sequel-1">Daggry</meta>  <!-- Bibliofil@627958 *785$t -->
+        <meta property="dc:identifier.series.sequel" refines="#series-sequel-1">627961</meta>  <!-- Bibliofil@627958 *785$w -->
+        <meta property="dc:identifier.series.sequel.uri" refines="#series-sequel-1">urn:NBN:no-nb_nlb_627961</meta>  <!-- Bibliofil@627958 *785$w -->
+        <meta property="dc:type.audio">true</meta>  <!-- Bibliofil@627958 *019$b -->
+        <meta property="audience">Child</meta>  <!-- Bibliofil@627958 *008 -->
+        <meta property="bookEdition">1</meta>  <!-- Bibliofil@627958 *245 -->
+        <meta property="bookEdition.original">1</meta>  <!-- Bibliofil@627958 *596 -->
+        <meta property="fileSize">458148548</meta>  <!-- Bibliofil@627958 *856$s -->
+        <meta property="isbn">978-82-16-25998-6</meta>  <!-- Bibliofil@627958 *020$a -->
+        <meta property="isbn.original">978-82-93304-70-8</meta>  <!-- Bibliofil@627958 *596$f -->
+        <meta property="library">NLB</meta>  <!-- Bibliofil@627958 *850$a -->
+        <meta property="position">2</meta>  <!-- Bibliofil@627958 *245$n -->
+        <meta property="typicalAgeRange">11-12</meta>  <!-- Bibliofil@627958 *008 -->
+        
+        
+    </metadata></x:expect>
+    </x:scenario>
+
+</x:description>
