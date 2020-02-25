@@ -493,8 +493,8 @@
     
    <xsl:template match="ul/li">
         <li>
-            <xsl:text>-- </xsl:text>
             <xsl:apply-templates select="@*"/>
+            <xsl:text>-- </xsl:text>       
             <xsl:apply-templates select="node()"/>
         </li>
     </xsl:template> 
