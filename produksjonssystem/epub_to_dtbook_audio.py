@@ -6,7 +6,7 @@ import shutil
 import sys
 import tempfile
 
-from core.pipeline import Pipeline
+from core.pipeline import Pipeline, DummyPipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
