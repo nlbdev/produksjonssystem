@@ -718,42 +718,28 @@ class Pipeline():
             counter = 0
             for modification_time, path in reversed(sorted(filenames)):
                 counter += 1
-                logging.debug("Vurderer {} av {}".format(counter, total))
 
-                if path in last_retry:
-                    continue  # This book was recently retried. Let's skip this one for now.
-
-                last_retry[path] = time.time()
-
-                self.watchdog_bark()  # iterating all books can take some time, so let's bark here
-
-                if not (self.dirsAvailable() and self.shouldRun):
-                    break  # break loop if we're shutting down the system or directory is unavailable
-                fileName = Path(path).name
-                fileStem = Path(path).stem
-                edition_identifiers = [fileStem]
-
-                book_path = None
-
-                # Try with the same identifier as the input (i.e. don't lookup metadata in Bibliofil).
-                # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
                 try:
-                    book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
+                    self.considering_retry_book = "Vurderer {} av {}".format(counter, total)
+                    logging.debug(self.considering_retry_book)
 
-                except Exception:
-                    logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
-                    continue
+                    if path in last_retry:
+                        continue  # This book was recently retried. Let's skip this one for now.
 
-                # If we didn't find the book in the output directory, and `check_identifiers` is True, find all possible identifiers
-                if book_path is None and self.check_identifiers:
-                    found_identifiers = None
-                    for identifier in edition_identifiers:
-                        found_identifiers = Metadata.get_identifiers(identifier, use_cache_if_possible=True)
-                        if found_identifiers:
-                            break
-                    if found_identifiers:
-                        edition_identifiers = found_identifiers
+                    last_retry[path] = time.time()
 
+                    self.watchdog_bark()  # iterating all books can take some time, so let's bark here
+
+                    if not (self.dirsAvailable() and self.shouldRun):
+                        break  # break loop if we're shutting down the system or directory is unavailable
+                    fileName = Path(path).name
+                    fileStem = Path(path).stem
+                    edition_identifiers = [fileStem]
+
+                    book_path = None
+
+                    # Try with the same identifier as the input (i.e. don't lookup metadata in Bibliofil).
+                    # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
                     try:
                         book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
 
@@ -761,22 +747,44 @@ class Pipeline():
                         logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
                         continue
 
-                if book_path is None:
-                    self.considering_retry_book = "Vurderer {} ({} av {})".format(os.path.basename(path), counter, total)
-                    should_retry = False
-                    try:
-                        should_retry = self.should_retry_book(path)
-                    except Exception:
-                        logging.exception("Retry missing-tråden feilet når den forsøkte å finne ut om boken skal prøves på nytt: " + self.title)
-                        self.considering_retry_book = None
-                        continue
-                    self.considering_retry_book = None
+                    # If we didn't find the book in the output directory, and `check_identifiers` is True, find all possible identifiers
+                    if book_path is None and self.check_identifiers:
+                        found_identifiers = None
+                        for identifier in edition_identifiers:
+                            found_identifiers = Metadata.get_identifiers(identifier, use_cache_if_possible=True)
+                            if found_identifiers:
+                                break
+                        if found_identifiers:
+                            edition_identifiers = found_identifiers
 
-                    if should_retry:
-                        logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
-                        self.trigger(fileName)
-                    else:
-                        logging.info(fileName + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
+                        try:
+                            book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
+
+                        except Exception:
+                            logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
+                            continue
+
+                    if book_path is None:
+                        self.considering_retry_book = "Vurderer {} ({} av {})".format(os.path.basename(path), counter, total)
+                        logging.debug(self.considering_retry_book)
+                        should_retry = False
+                        try:
+                            should_retry = self.should_retry_book(path)
+                        except Exception:
+                            logging.exception("Retry missing-tråden feilet når den forsøkte å finne ut om boken skal prøves på nytt: " + self.title)
+                            continue
+
+                        if should_retry:
+                            logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
+                            self.trigger(fileName)
+                        else:
+                            logging.info(fileName + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
+
+                except Exception:
+                    logging.exception("Retry missing-tråden feilet for: {}".format(self.title))
+                    continue
+
+            self.considering_retry_book = None
 
     def _handle_book_events_thread(self):
         self.watchdog_bark()
