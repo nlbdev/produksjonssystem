@@ -601,7 +601,7 @@ class Produksjonssystem():
     def _system_status_thread(self):
         # Update system status
         idle_start_time = time.time()
-        while self.shouldRun:
+        while self.shouldRun():
             time.sleep(5)
             if not self.is_idle():
                 idle_start_time = time.time()
@@ -610,7 +610,7 @@ class Produksjonssystem():
     def _daily_report_thread(self):
         # Checks for reports in daily report dir for each pipeline. Only sends mail once each day after 7
         last_update = 0
-        while self.shouldRun:
+        while self.shouldRun():
             if time.time() - last_update < 3600 or datetime.datetime.now().hour < 7:
                 time.sleep(5)
                 continue
@@ -669,7 +669,7 @@ class Produksjonssystem():
     def _config_thread(self):
         fileName = os.environ.get("CONFIG_FILE")
         last_update = 0
-        while(self.shouldRun):
+        while self.shouldRun():
 
             if time.time() - last_update < 300:
                 time.sleep(5)
@@ -720,7 +720,7 @@ class Produksjonssystem():
 
     def _signatures_refresh_thread(self):
         idle_start_time = time.time()
-        while self.shouldRun:
+        while self.shouldRun():
             time.sleep(5)
             if time.time() - Metadata.signatures_last_update > 3600*3:
                 Metadata.get_signatures_from_quickbase("0", refresh=True)  # discard the result, we just want to trigger an update
