@@ -105,8 +105,12 @@ class InsertMetadata(Pipeline):
         should_produce, _ = Metadata.should_produce(identifier,
                                                     self.publication_format,
                                                     report=self.logPipeline.utils.report,
-                                                    skip_metadata_validation=True)
-        production_complete = Metadata.production_complete(identifier, self.publication_format, report=self.logPipeline.utils.report)
+                                                    skip_metadata_validation=True,
+                                                    use_cache_if_possible=True)
+        production_complete = Metadata.production_complete(identifier,
+                                                           self.publication_format,
+                                                           report=self.logPipeline.utils.report,
+                                                           use_cache_if_possible=True)
 
         if not should_produce:
             self.logPipeline.utils.report.info("'{}' skal ikke produseres. Boken blir ikke automatisk trigget.".format(identifier))

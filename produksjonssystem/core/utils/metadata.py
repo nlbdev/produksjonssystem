@@ -33,6 +33,10 @@ class Metadata:
     signatures_last_update = 0
     _signatures_cachelock = threading.RLock()
 
+    old_books = []
+    old_books_last_update = 0
+    _old_books_cachelock = threading.RLock()
+
     creative_works = []
     creative_works_last_update = 0
     _creative_works_cachelock = threading.RLock()
@@ -82,11 +86,21 @@ class Metadata:
             return Metadata._metadata_dirs_locks[dir]
 
     @staticmethod
-    def get_edition_from_api(edition_identifier, format="json", report=logging):
+    def get_edition_from_api(edition_identifier, format="json", report=logging, use_cache_if_possible=False):
+        if format == "json" and use_cache_if_possible:
+            cached_data = Metadata.get_creative_work_from_cache(edition_identifier, report=report)
+            if cached_data and edition_identifier in cached_data["editions"]:
+                return cached_data["editions"][edition_identifier]
+            else:
+                report.debug("Could not find the creative work for '{}' in the cache. Will have to try the API directly instead.".format(edition_identifier))
+
         if format == "json":
             edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), edition_identifier)
         else:
             edition_url = "{}/editions/{}/metadata?format={}".format(Config.get("nlb_api_url"), edition_identifier, format)
+
+        import traceback
+        report.debug("".join(traceback.format_stack()))
 
         report.debug("getting edition metadata from: {}".format(edition_url))
         response = Metadata.requests_get(edition_url)
@@ -116,7 +130,14 @@ class Metadata:
             return None
 
     @staticmethod
-    def get_creative_work_from_api(edition_identifier, editions_metadata="simple", report=logging):
+    def get_creative_work_from_api(edition_identifier, editions_metadata="simple", report=logging, use_cache_if_possible=False):
+        if editions_metadata == "simple" and use_cache_if_possible:
+            cached_data = Metadata.get_creative_work_from_cache(edition_identifier, report=report)
+            if cached_data:
+                return cached_data
+            else:
+                report.debug("Could not find the creative work for '{}' in the cache. Will have to try the API directly instead.".format(edition_identifier))
+
         edition = Metadata.get_edition_from_api(edition_identifier, report=report)
 
         if not edition:
@@ -134,8 +155,8 @@ class Metadata:
             return None
 
     @staticmethod
-    def get_identifiers(edition_identifier, report=logging):
-        creative_work = Metadata.get_creative_work_from_api(edition_identifier, report=report)
+    def get_identifiers(edition_identifier, report=logging, use_cache_if_possible=False):
+        creative_work = Metadata.get_creative_work_from_api(edition_identifier, report=report, use_cache_if_possible=use_cache_if_possible)
 
         issue = ""
         if len(edition_identifier) > 6:
@@ -176,37 +197,44 @@ class Metadata:
             return True
 
     @staticmethod
+    def refresh_old_books_cache_if_necessary(report=logging):
+        with Metadata._old_books_cachelock:
+            if time.time() - Metadata.old_books_last_update > 3600 * 24:
+                editions_url = Config.get("nlb_api_url") + "/editions?limit=-1&editions-metadata=all"
+                response = requests.get(editions_url)
+
+                if response.status_code == 200:
+                    old_books = []
+                    for edition in response.json()["data"]:
+                        date = None
+                        try:
+                            date = dateutil.parser.parse(edition["available"])
+                        except Exception:
+                            try:
+                                date = dateutil.parser.parse(edition["registered"])
+                            except Exception:
+                                pass
+
+                        if date is None:
+                            continue
+
+                        # if more than five years ago
+                        if datetime.datetime.utcnow() - date > datetime.timedelta(days=(365.25 * 5)):
+                            old_books.append(edition["identifier"])
+
+                    Metadata.old_books = old_books
+                    Metadata.old_books_last_update = time.time()
+                    report.debug("List of old books has been cached. Found {} old books.".format(len(Metadata.old_books)))
+
+                else:
+                    report.debug("Could not update old books metadata from: {}".format(editions_url))
+
+    @staticmethod
     def is_old(identifier, report=logging):
-        creative_work = Metadata.get_creative_work_from_api(identifier, editions_metadata="all", report=report)
+        Metadata.refresh_old_books_cache_if_necessary(report=report)
 
-        if not creative_work:
-            return False  # not found, assume that it is new
-
-        if len(creative_work["editions"]) == 0:
-            return False  # no editions, assume that it is new
-
-        old = True
-        for edition in creative_work["editions"]:
-            date = None
-            try:
-                date = dateutil.parser.parse(edition["available"])
-            except Exception:
-                try:
-                    date = dateutil.parser.parse(edition["registered"])
-                except Exception:
-                    pass
-
-            if date is None:
-                report.debug("Could not parse 'available' or 'registered' date for {}: {} / {}".format(
-                             edition["identifier"], edition["available"], edition["registered"]))
-                continue
-
-            # if less than five years ago
-            if datetime.datetime.utcnow() - date < datetime.timedelta(days=(365.25 * 5)):
-                old = False
-                break
-
-        return old
+        with Metadata._old_books_cachelock:
+            return identifier in Metadata.old_books
 
     @staticmethod
     def trigger_metadata_pipelines(report, book_id, exclude=None):
@@ -621,7 +649,7 @@ class Metadata:
             report.info("<p>Finner ingen andre katalogiserte formater tilhørende denne {}-boka.</p>".format(creative_work["editions"][0]["format"]))
 
     @staticmethod
-    def should_produce(edition_identifier, edition_format, report=logging, skip_metadata_validation=False):
+    def should_produce(edition_identifier, edition_format, report=logging, skip_metadata_validation=False, use_cache_if_possible=False):
         if edition_identifier.upper().startswith("TEST"):
             report.info("Boknummeret starter med 'TEST'. Boka skal derfor produseres som '{}'.".format(edition_format))
             return True, True
@@ -631,7 +659,7 @@ class Metadata:
             if not metadata_valid:
                 return False, False
 
-        creative_work = Metadata.get_creative_work_from_api(edition_identifier, report=report)
+        creative_work = Metadata.get_creative_work_from_api(edition_identifier, report=report, use_cache_if_possible=use_cache_if_possible)
         if not creative_work:
             report.info("Fant ikke metadata for '{}'. Boka skal derfor ikke produseres som '{}'.".format(edition_identifier, edition_format))
             return False, True
@@ -665,8 +693,8 @@ class Metadata:
         return False, True
 
     @staticmethod
-    def production_complete(edition_identifier, publication_format, report=logging):  # TODO: update report=…
-        creative_work = Metadata.get_creative_work_from_api(edition_identifier, editions_metadata="all", report=report)
+    def production_complete(edition_identifier, publication_format, report=logging, use_cache_if_possible=False):
+        creative_work = Metadata.get_creative_work_from_api(edition_identifier, report=report, use_cache_if_possible=use_cache_if_possible)
 
         if not creative_work:
             return False  # no creative work found, assume production is not complete
@@ -999,7 +1027,7 @@ class Metadata:
         return None
 
     @staticmethod
-    def suggest_similar_editions(edition_identifier, edition_format=None, limit=10, report=logging):
+    def refresh_creative_work_cache_if_necessary(report=logging):
         with Metadata._creative_works_cachelock:
             if time.time() - Metadata.creative_works_last_update > 3600:
                 creative_works_url = Config.get("nlb_api_url") + "/creative-works?limit=-1&editions-metadata=simple"
@@ -1012,30 +1040,51 @@ class Metadata:
                 else:
                     report.debug("Could not update creative works metadata from: {}".format(creative_works_url))
 
-        edition = Metadata.get_edition_from_api(edition_identifier, report=report)
 
-        if not edition:
-            report.debug("Edition could not be found, unable to determine title of edition.")
+    @staticmethod
+    def get_creative_work_from_cache(edition_identifier, report=logging):
+        Metadata.refresh_creative_work_cache_if_necessary(report=report)
+
+        with Metadata._creative_works_cachelock:
+            for cw in Metadata.creative_works:
+                for edition in cw["editions"]:
+                    if (
+                        edition["identifier"] == edition_identifier
+                        or edition["identifier"] == edition_identifier[:6]  # …since the API doesn't fully support longer edition identifiers yet
+                    ):
+                        return cw
+
+        report.debug("{} was not found in cache".format(edition_identifier))
+        return None
+
+    @staticmethod
+    def suggest_similar_editions(edition_identifier, edition_format=None, limit=10, report=logging):
+        Metadata.refresh_creative_work_cache_if_necessary(report=report)
+
+        creative_work = Metadata.get_creative_work_from_cache(edition_identifier, report=report)
+
+        if not creative_work:
+            report.debug("Creative work could not be found in the cache, unable to determine the title of the work.")
             return []
 
-        if not isinstance(edition["title"], str):
-            report.debug("Edition title is not a string, unable to search for similar titles.")
+        if not isinstance(creative_work["title"], str):
+            report.debug("Creative work title is not a string, unable to search for similar titles.")
             return []
 
         matches = []
         with Metadata._creative_works_cachelock:
-            for creative_work in Metadata.creative_works:
-                if not isinstance(creative_work["title"], str):
+            for cw in Metadata.creative_works:
+                if not isinstance(cw["title"], str):
                     continue
 
-                ratio = SequenceMatcher(a=edition["title"], b=creative_work["title"]).ratio()
+                ratio = SequenceMatcher(a=creative_work["title"], b=cw["title"]).ratio()
                 if ratio > 0.9:
-                    for e in creative_work["editions"]:
+                    for e in cw["editions"]:
                         if e["format"] == edition_format or edition_format is None:
                             matches.append((ratio,
                                             {
                                                 "identifier": e["identifier"],
-                                                "title": creative_work["title"],
+                                                "title": cw["title"],
                                                 "format": e["format"]
                                             }))
         matches = sorted(matches, key=lambda match: match[0])

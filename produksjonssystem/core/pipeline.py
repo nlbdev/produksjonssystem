@@ -744,11 +744,11 @@ class Pipeline():
                     logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
                     continue
 
-                # If we didn't find the book in the output directory, and `check_identifiers` is True, , find all possible identifiers
+                # If we didn't find the book in the output directory, and `check_identifiers` is True, find all possible identifiers
                 if book_path is None and self.check_identifiers:
                     found_identifiers = None
                     for identifier in edition_identifiers:
-                        found_identifiers = Metadata.get_identifiers(identifier)
+                        found_identifiers = Metadata.get_identifiers(identifier, use_cache_if_possible=True)
                         if found_identifiers:
                             break
                     if found_identifiers:

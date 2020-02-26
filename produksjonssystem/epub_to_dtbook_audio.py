@@ -178,8 +178,12 @@ class EpubToDtbookAudio(Pipeline):
         should_produce, _ = Metadata.should_produce(epub.identifier(),
                                                     self.publication_format,
                                                     report=self.logPipeline.utils.report,
-                                                    skip_metadata_validation=True)
-        production_complete = Metadata.production_complete(epub.identifier(), self.publication_format, report=self.logPipeline.utils.report)
+                                                    skip_metadata_validation=True,
+                                                    use_cache_if_possible=True)
+        production_complete = Metadata.production_complete(epub.identifier(),
+                                                           self.publication_format,
+                                                           report=self.logPipeline.utils.report,
+                                                           use_cache_if_possible=True)
         return should_produce and not production_complete
 
 
