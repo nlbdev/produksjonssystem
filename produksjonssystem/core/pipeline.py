@@ -392,11 +392,11 @@ class Pipeline():
                 for thread in self.threads:
                     if thread and thread != threading.current_thread() and thread.is_alive():
                         if time.time() - join_start_time > 60 * 50:
-                            logging.info("Thread is still running (we've waited too long, let's ignore it): {}".format(thread.name))
+                            logging.info("Pipeline thread is still running (we've waited too long, let's ignore it): {}".format(thread.name))
                             thread.join(timeout=60)
                         else:
                             is_alive = True
-                            logging.info("Thread is still running: {}".format(thread.name))
+                            logging.info("Pipeline thread is still running: {}".format(thread.name))
                             thread.join(timeout=60)
 
     def is_healthy(self):

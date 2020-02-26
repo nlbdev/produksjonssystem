@@ -148,7 +148,7 @@ class Directory():
                 for thread in dir.threads:
                     if thread and thread != threading.current_thread() and thread.is_alive():
                         is_alive = True
-                        logging.info("Thread is still running: {}".format(thread.name))
+                        logging.info("Directory thread is still running: {}".format(thread.name))
                         thread.join(timeout=60)
 
             with Directory._static_lock:

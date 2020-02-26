@@ -298,7 +298,7 @@ class Plotter():
             for thread in self.threads:
                 if thread and thread != threading.current_thread() and thread.is_alive():
                     is_alive = True
-                    logging.info("Thread is still running: {}".format(thread.name))
+                    logging.info("Plotter thread is still running: {}".format(thread.name))
                     thread.join(timeout=60)
 
     def _generate_plots_thread(self):
