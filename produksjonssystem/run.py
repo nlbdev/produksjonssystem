@@ -22,6 +22,7 @@ from core.pipeline import DummyPipeline, Pipeline
 from core.plotter import Plotter
 from core.utils.filesystem import Filesystem
 from core.utils.slack import Slack
+from core.utils.metadata import Metadata
 
 # Import pipelines
 from check_pef import CheckPef
@@ -404,7 +405,7 @@ class Produksjonssystem():
             for common_key in common:
                 Config.set(common_key, common[common_key])
 
-        self.shouldRun = True
+        self.shouldRun(True)
 
         self.api = API(shutdown_function=self.stop, airbrake_config=self.airbrake_config)
         self.api.start(hot_reload=False)
@@ -420,6 +421,10 @@ class Produksjonssystem():
         self._systemStatusThread = Thread(target=self._system_status_thread, name="system status")
         self._systemStatusThread.setDaemon(True)
         self._systemStatusThread.start()
+
+        self._signaturesRefreshThread = Thread(target=self._signatures_refresh_thread, name="signatures refresh")
+        self._signaturesRefreshThread.setDaemon(True)
+        self._signaturesRefreshThread.start()
 
         for pipeline in self.pipelines:
             email_settings = {
@@ -546,7 +551,10 @@ class Produksjonssystem():
         if graph_thread:
             logging.debug("joined {}".format(graph_thread.name))
 
-        self.shouldRun = False
+        self.shouldRun(False)
+
+        self.info("Venter på at signatur-oppdateringstråden skal stoppe...")
+        self._signaturesRefreshThread.join()
 
         self.info("Venter på at konfigtråden skal stoppe...")
         self._configThread.join()
@@ -559,6 +567,12 @@ class Produksjonssystem():
 
         self.info("Venter på at API-tråden skal stoppe...")
         self.api.join()
+
+    def shouldRun(self, set=None):
+        if set is not None:
+            Config.set("system.shouldRun", set)
+        else:
+            return Config.get("system.shouldRun")
 
     def wait_until_running(self, timeout=60):
         start_time = time.time()
@@ -703,6 +717,13 @@ class Produksjonssystem():
             except Exception:
                 self.info("En feil oppstod under lasting av konfigurasjonsfil. Sjekk syntaksen til" + fileName)
                 self.info(traceback.format_exc())
+
+    def _signatures_refresh_thread(self):
+        idle_start_time = time.time()
+        while self.shouldRun:
+            time.sleep(5)
+            if time.time() - Metadata.signatures_last_update > 3600*3:
+                Metadata.get_signatures_from_quickbase("0", refresh=True)  # discard the result, we just want to trigger an update
 
     def find_diff(self, new_config, old_config, tempkey):
         for key_in_config in new_config[tempkey]:

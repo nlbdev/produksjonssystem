@@ -32,6 +32,7 @@ class Metadata:
     signatures_cache = {}
     signatures_last_update = 0
     _signatures_cachelock = threading.RLock()
+    _signatures_updater_cachelock = threading.RLock()
 
     old_books = []
     old_books_last_update = 0
@@ -912,7 +913,7 @@ class Metadata:
         return name
 
     @staticmethod
-    def get_signatures_from_quickbase(edition_identifiers, library=None, report=logging):
+    def get_signatures_from_quickbase(edition_identifiers, library=None, report=logging, refresh=False):
         if not edition_identifiers:
             return []
 
@@ -961,9 +962,15 @@ class Metadata:
         }
         sources_xpath_filter = " or ".join(["@id = '{}'".format(s) for s in sources])
 
-        with Metadata._signatures_cachelock:
-            if time.time() - Metadata.signatures_last_update > 3600:
-                Metadata.signatures_cache = {}
+        if not refresh and Metadata.creative_works:
+            # hopefully boolean(Metadata.creative_works) is an atomic operation, otherwise there
+            # could be a rare race condition here as we don't want to block with Metadata._signatures_updater_cachelock
+
+            pass  # don't update the signatures
+
+        else:
+            with Metadata._signatures_updater_cachelock:
+                signatures_cache = {}
 
                 for dump in bookguru_dumps:
                     Metadata.signatures_cache[dump["path"]] = {}
@@ -991,6 +998,9 @@ class Metadata:
                         if elem.tag != "record":
                             continue
 
+                        if not Config.get("system.shouldRun", default=True):
+                            return []  # abort iteration if the system is shutting down
+
                         counter += 1
                         if counter % 10 == 1:
                             report.debug("{}: processed {} records so far…".format(dump["path"], counter))
@@ -1012,16 +1022,21 @@ class Metadata:
                     report.debug("{}: done parsing.".format(dump["path"]))
 
                 report.debug("Done parsing all Quickbase-dumps.")
-                Metadata.signatures_last_update = time.time()
+                with Metadata._signatures_cachelock:
+                    Metadata.signatures_cache = signatures_cache
+                    Metadata.signatures_last_update = time.time()
 
             report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
-            for dump in bookguru_dumps:
-                # iterate in order of `bookguru_dumps`, which means Statped gets checked first
-                # when library=StatPed, and NLB gets checked first when library=NLB
-                for identifier in Metadata.signatures_cache[dump["path"]]:
-                    if identifier in edition_identifiers:
-                        report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
-                        return Metadata.signatures_cache[dump["path"]][identifier]
+            with Metadata._signatures_cachelock:
+                for dump in bookguru_dumps:
+                    # iterate in order of `bookguru_dumps`, which means Statped gets checked first
+                    # when library=StatPed, and NLB gets checked first when library=NLB
+                    if dump["path"] not in Metadata.signatures_cache:
+                        continue
+                    for identifier in Metadata.signatures_cache[dump["path"]]:
+                        if identifier in edition_identifiers:
+                            report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
+                            return Metadata.signatures_cache[dump["path"]][identifier]
 
         report.debug("Signatures for '{}' was not found.".format("/".join(edition_identifiers)))
         return []
