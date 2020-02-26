@@ -788,6 +788,8 @@ class Pipeline():
                 time.sleep(5)
                 continue
 
+            self.book = None
+
             try:
                 if self.dir_out_obj is not None and not self.dir_out_obj.is_available():
                     time.sleep(10)
@@ -798,8 +800,6 @@ class Pipeline():
                     # this just catches a potential race condition
                     time.sleep(1)
                     continue
-
-                self.book = None
 
                 with self._queue_lock:
                     # list all books where no book event have occured very recently (self._inactivity_timeout)
@@ -932,6 +932,7 @@ class Pipeline():
                     logging.exception("Could not e-mail exception")
 
             finally:
+                self.book = None
                 time.sleep(1)
 
         self.running = False
