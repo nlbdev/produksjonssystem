@@ -99,9 +99,6 @@ class Metadata:
         else:
             edition_url = "{}/editions/{}/metadata?format={}".format(Config.get("nlb_api_url"), edition_identifier, format)
 
-        import traceback
-        report.debug("".join(traceback.format_stack()))
-
         report.debug("getting edition metadata from: {}".format(edition_url))
         response = Metadata.requests_get(edition_url)
 
