@@ -980,13 +980,20 @@ class Metadata:
                     f = open(dump["path"], "rb")
                     context = ElementTree.iterparse(f)  # use a streaming parser for big XML files
 
+                    counter = 0
                     for action, elem in context:
                         if elem.tag == "lusers":
+                            report.debug("{}: found lusers".format(dump["path"]))
                             for luser in elem.xpath("luser"):
                                 lusers[luser.get("id")] = luser.text
+                            report.debug("{}: found {} luser in lusers".format(dump["path"], len(lusers)))
 
                         if elem.tag != "record":
                             continue
+
+                        counter += 1
+                        if counter % 10 == 1:
+                            report.debug("{}: processed {} records so far…".format(dump["path"], counter))
 
                         identifiers = elem.xpath(f"*[{id_xpath_filter}]/text()")
 
@@ -1002,15 +1009,21 @@ class Metadata:
                         for identifier in identifiers:
                             Metadata.signatures_cache[dump["path"]][identifier] = signatures
 
+                    report.debug("{}: done parsing.".format(dump["path"]))
+
+                report.debug("Done parsing all Quickbase-dumps.")
                 Metadata.signatures_last_update = time.time()
 
+            report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
             for dump in bookguru_dumps:
                 # iterate in order of `bookguru_dumps`, which means Statped gets checked first
                 # when library=StatPed, and NLB gets checked first when library=NLB
                 for identifier in Metadata.signatures_cache[dump["path"]]:
                     if identifier in edition_identifiers:
+                        report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
                         return Metadata.signatures_cache[dump["path"]][identifier]
 
+        report.debug("Signatures for '{}' was not found.".format("/".join(edition_identifiers)))
         return []
 
     @staticmethod
