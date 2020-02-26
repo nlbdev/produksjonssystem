@@ -6,7 +6,7 @@ import shutil
 import sys
 import tempfile
 
-from core.pipeline import DummyPipeline, Pipeline
+from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
@@ -62,7 +62,7 @@ class EpubToDtbookAudio(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        should_produce, metadata_valid = Metadata.should_produce(self.utils.report, epub, self.publication_format)
+        should_produce, metadata_valid = Metadata.should_produce(epub.identifier(), self.publication_format, report=self.utils.report)
         if not metadata_valid:
             self.utils.report.info("{} har feil i metadata for lydbok. Avbryter.".format(epub.identifier()))
             self.utils.report.title = ("{}: {} har feil i metadata for {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
@@ -72,8 +72,8 @@ class EpubToDtbookAudio(Pipeline):
             self.utils.report.title = ("{}: {} Skal ikke produseres som {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
             return True
 
-        if not Metadata.is_in_quickbase(self.utils.report, epub.identifier()):
-            self.utils.report.info("{} finnes ikke i Quickbase og vi lager derfor ikke en DTBook av den. Avbryter.".format(epub.identifier()))
+        if Metadata.is_old(epub.identifier(), report=self.utils.report):
+            self.utils.report.info("{} er gammel, og vi lager derfor ikke en DTBook av den. Avbryter.".format(epub.identifier()))
             self.utils.report.title = ("{}: {} Skal ikke produseres som {} {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
             self.utils.report.should_email = False
             return False
@@ -163,22 +163,20 @@ class EpubToDtbookAudio(Pipeline):
         return True
 
     def should_retry_book(self, source):
-        if not self.logPipeline:
-            self.logPipeline = DummyPipeline(uid=self.uid + "-dummylogger", title=self.title + " dummy logger", inherit_config_from=self)
-
         epub = Epub(self, source)
         if not epub.isepub(report_errors=False):
-            self.logPipeline.utils.report.warn("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke." +
-                                               "Antar at den skal det: {}".format(source))
+            self.utils.report.warning("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke. Antar at den skal det: {}".format(source))
             return True
 
-        if not Metadata.is_in_quickbase(self.logPipeline.utils.report, epub.identifier()):
-            self.utils.report.error("{} finnes ikke i Quickbase, kan ikke avgjøre om den skal trigges eller ikke.".format(epub.identifier()) +
-                                    "Antar at den ikke skal det.")
+        if Metadata.is_old(epub.identifier()):
+            self.utils.report.error("{} er gammel. Boken blir ikke trigget.".format(epub.identifier()))
             return False
 
-        should_produce, _ = Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
-        production_complete, _ = Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
+        should_produce, _ = Metadata.should_produce(epub.identifier(),
+                                                    self.publication_format,
+                                                    report=self.utils.report,
+                                                    skip_metadata_validation=True)
+        production_complete, _ = Metadata.production_complete(epub.identifier(), self.publication_format, report=self.utils.report)
         return should_produce and not production_complete
 
 

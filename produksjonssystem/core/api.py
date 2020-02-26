@@ -345,12 +345,10 @@ class API():
             return Response(None, status=404)
 
         force_update = request.args.get('force_update', "false").lower() == "true"
-        extend_with_cached_rdf_metadata = request.args.get('extend_with_cached_rdf_metadata', "true").lower() == "true"
 
         return jsonify(Metadata.get_metadata_from_book(DummyPipeline(),
                                                        book_path,
-                                                       force_update=force_update,
-                                                       extend_with_cached_rdf_metadata=extend_with_cached_rdf_metadata))
+                                                       force_update=force_update))
 
     # endpoint: /directories/<directory_id>/editions/<edition_id>/trigger
     def directory_trigger(self, directory_id, edition_id):

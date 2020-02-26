@@ -20,7 +20,6 @@ from dotmap import DotMap
 
 from core.config import Config
 from core.directory import Directory
-from core.utils.epub import Epub
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 from core.utils.report import DummyReport, Report
@@ -475,7 +474,7 @@ class Pipeline():
         elif state == "processing":
             return str(Metadata.pipeline_book_shortname(self))
         elif state == "considering":
-            return "Vurderer: {}".format(os.path.basename(self.considering_retry_book) if self.considering_retry_book else "(ukjent)")
+            return self.considering_retry_book
         elif state == "manual":
             return "Manuelt steg"
         elif state == "waiting":
@@ -712,9 +711,15 @@ class Pipeline():
                 if time.time() - last_retry[path] > retry_interval:
                     del last_retry[path]  # a long time sice this path was retried
 
-            filenames = (os.path.join(self.dir_in, fileName) for fileName in Filesystem.list_book_dir(self.dir_in))
+            filenames = Filesystem.list_book_dir(self.dir_in)
+            total = len(filenames)
+            filenames = (os.path.join(self.dir_in, fileName) for fileName in filenames)
             filenames = ((os.stat(path).st_mtime, path) for path in filenames)
+            counter = 0
             for modification_time, path in reversed(sorted(filenames)):
+                counter += 1
+                logging.debug("Vurderer {} av {}".format(counter, total))
+
                 if path in last_retry:
                     continue  # This book was recently retried. Let's skip this one for now.
 
@@ -722,63 +727,42 @@ class Pipeline():
 
                 self.watchdog_bark()  # iterating all books can take some time, so let's bark here
 
-                if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
-                    logging.debug("checking {}".format(path))
-
                 if not (self.dirsAvailable() and self.shouldRun):
                     break  # break loop if we're shutting down the system or directory is unavailable
                 fileName = Path(path).name
                 fileStem = Path(path).stem
-                issue = [fileStem]
+                edition_identifiers = [fileStem]
 
                 book_path = None
 
                 # Try with the same identifier as the input (i.e. don't lookup metadata in Bibliofil).
                 # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
                 try:
-                    book_path = Filesystem.book_path_in_dir(self.dir_out, issue, subdirs=self.parentdirs)
-                    if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
-                        logging.debug("does {} exist in {}? {}".format(issue, self.dir_out, book_path))
+                    book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
 
                 except Exception:
                     logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
                     continue
 
-                # If input file is an epub (starts with 5), find all possible identifiers
+                # If we didn't find the book in the output directory, and `check_identifiers` is True, , find all possible identifiers
                 if book_path is None and self.check_identifiers:
-                    # try getting identifiers from package.opf (fast)
-                    try:
-                        self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
-
-                        epub = Epub(self.pipelineDummy, path)
-                        if epub.isepub():
-                            book_metadata = epub.metadata()
-                            for property in book_metadata:
-                                if (property == "dc:identifier" or property.startswith("nlbprod:identifier.")) and book_metadata[property] not in issue:
-                                    issue.append(book_metadata[property])
-
-                    except Exception:
-                        logging.exception("Metadata feilet under Epub.metadata() for {}".format(fileStem))
-
-                    if len(issue) == 1:
-                        # if we didn't find any new identifiers in the EPUB: try getting identifiers from Quickbase and Bibliofil (slow)
-                        try:
-                            self.pipelineDummy = DummyPipeline(uid=self.uid + "-auto", title=self.title + fileStem + " retry")
-                            issue, edition = Metadata.get_identifiers(self.pipelineDummy.utils.report, fileStem)
-                        except Exception:
-                            logging.info("Metadata feilet under get_identifiers for {}".format(fileStem))
+                    found_identifiers = None
+                    for identifier in edition_identifiers:
+                        found_identifiers = Metadata.get_identifiers(identifier)
+                        if found_identifiers:
+                            break
+                    if found_identifiers:
+                        edition_identifiers = found_identifiers
 
                     try:
-                        book_path = Filesystem.book_path_in_dir(self.dir_out, issue, subdirs=self.parentdirs)
-                        if self.uid == "insert-metadata-daisy202" and "558282402019" in path:  # debugging strange bug
-                            logging.debug("does {} exist in {}? {}".format(issue, self.dir_out, book_path))
+                        book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
 
                     except Exception:
                         logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
                         continue
 
                 if book_path is None:
-                    self.considering_retry_book = path
+                    self.considering_retry_book = "Vurderer {} ({} av {})".format(os.path.basename(path), counter, total)
                     should_retry = self.should_retry_book(path)
                     self.considering_retry_book = None
 
@@ -889,15 +873,9 @@ class Pipeline():
                             if Pipeline._group_locks[self.get_group_id()]["current-uid"] == self.uid:
                                 Pipeline._group_locks[self.get_group_id()]["current-uid"] = None
 
-                            epub_identifier = None
-                            if "nlbprod:identifier.epub" in book_metadata:
-                                epub_identifier = book_metadata["nlbprod:identifier.epub"]
-                            elif book_metadata["identifier"].startswith("5"):
-                                epub_identifier = book_metadata["identifier"]
-
                             try:
                                 Metadata.add_production_info(self.utils.report,
-                                                             epub_identifier if epub_identifier else book_metadata["identifier"],
+                                                             book_metadata["identifier"],
                                                              self.publication_format)
                             except Exception:
                                 self.utils.report.error("An error occured while retrieving production info")
@@ -911,10 +889,8 @@ class Pipeline():
                                 else:
                                     self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + book_title
 
-                            if (epub_identifier
-                                    and Metadata.has_metadata(epub_identifier, self.utils.report)
-                                    and not Metadata.is_in_quickbase(self.utils.report, epub_identifier)):
-                                self.utils.report.info("{} finnes ikke i Quickbase. Vi sender derfor ikke en e-post.".format(epub_identifier))
+                            if (Metadata.is_old(book_metadata["identifier"], report=self.utils.report)):
+                                self.utils.report.info("{} er gammel. Vi sender derfor ikke en e-post.".format(book_metadata["identifier"]))
                                 self.utils.report.should_email = False
 
                             progress_end = time.time()

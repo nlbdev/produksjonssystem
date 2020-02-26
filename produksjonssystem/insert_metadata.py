@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tempfile
+from pathlib import Path
 
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.epub import Epub
@@ -43,7 +44,7 @@ class InsertMetadata(Pipeline):
         except Exception:
             pass
 
-        # sjekk at dette er en EPUB
+        # check that this is an EPUB (we only insert metadata into EPUBs)
         if not epub.isepub():
             return False
 
@@ -55,7 +56,7 @@ class InsertMetadata(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        should_produce, metadata_valid = Metadata.should_produce(self.utils.report, epub, self.publication_format)
+        should_produce, metadata_valid = Metadata.should_produce(epub.identifier(), self.publication_format, report=self.utils.report)
         if not metadata_valid:
             self.utils.report.info("{} har feil i metadata for {}. Avbryter.".format(epub.identifier(), self.publication_format))
             self.utils.report.title = ("{}: {} har feil i metadata for {} - {}".format(self.title, epub.identifier(), self.publication_format, epubTitle))
@@ -71,15 +72,10 @@ class InsertMetadata(Pipeline):
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
 
-        self.utils.report.info("Oppdaterer metadata...")
-        updated = Metadata.update(self.utils.report, temp_epub, publication_format=self.publication_format, insert=True)
-        if isinstance(updated, bool) and updated is False:
-            library = epub.meta("schema:library")
-            if library is not None and library.lower() == "statped":
-                self.utils.report.warn("Klarte ikke å oppdatere metadata, men boken tilhører Statped så vi fortsetter alikevel")
-            else:
-                return False
-        temp_epub.refresh_metadata()
+        is_valid = Metadata.insert_metadata(self.utils.report, temp_epub, publication_format=self.publication_format, report_metadata_errors=False)
+        if not is_valid:
+            self.utils.report.error("Bibliofil-metadata var ikke valide. Avbryter.")
+            return False
 
         self.utils.report.info("Boken ble oppdatert med format-spesifikk metadata. Kopierer til {}-arkiv.".format(self.publication_format))
 
@@ -94,20 +90,39 @@ class InsertMetadata(Pipeline):
         if not self.logPipeline:
             self.logPipeline = DummyPipeline(uid=self.uid + "-dummylogger", title=self.title + " dummy logger", inherit_config_from=self)
 
-        epub = Epub(self, source)
-        if not epub.isepub(report_errors=False):
-            self.logPipeline.utils.report.warn("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke." +
-                                               "Antar at den skal det: {}".format(source))
-            return True
+        # To be able to extract <should_retry_book>…</should_retry_book> from the logs
+        # for easier debugging of why books are not produced.
+        self.logPipeline.utils.report.debug("<should_retry_book>")
 
-        if not Metadata.is_in_quickbase(self.logPipeline.utils.report, epub.identifier()):
-            self.logPipeline.utils.report.warn("{} finnes ikke i Quickbase, kan ikke avgjøre om den skal trigges eller ikke.".format(epub.identifier()) +
-                                               " Antar at den ikke skal det.")
+        identifier = Path(source).stem
+        assert len(identifier) > 0, "identifier can not be empty"  # just a precaution, should never happen
+
+        if Metadata.is_old(identifier, report=self.logPipeline.utils.report):
+            self.logPipeline.utils.report.info("'{}' er gammel. Boken blir ikke automatisk trigget.".format(identifier))
+            self.logPipeline.utils.report.debug("</should_retry_book>")
             return False
 
-        should_produce, _ = Metadata.should_produce(self.logPipeline.utils.report, epub, self.publication_format)
-        production_complete, _ = Metadata.production_complete(self.logPipeline.utils.report, epub, self.publication_format)
-        return should_produce and not production_complete
+        should_produce, _ = Metadata.should_produce(identifier,
+                                                    self.publication_format,
+                                                    report=self.logPipeline.utils.report,
+                                                    skip_metadata_validation=True)
+        production_complete = Metadata.production_complete(identifier, self.publication_format, report=self.logPipeline.utils.report)
+
+        if not should_produce:
+            self.logPipeline.utils.report.info("'{}' skal ikke produseres. Boken blir ikke automatisk trigget.".format(identifier))
+            self.logPipeline.utils.report.debug("</should_retry_book>")
+            return False
+
+        elif production_complete:
+            self.logPipeline.utils.report.info("'{}' er allerede ferdig produsert. Boken blir ikke automatisk trigget.".format(identifier))
+            self.logPipeline.utils.report.debug("</should_retry_book>")
+            return False
+
+        else:
+            # should_produce and not production_complete
+            self.logPipeline.utils.report.debug("'{}' skal prøves på nytt.".format(identifier))
+            self.logPipeline.utils.report.debug("</should_retry_book>")
+            return True
 
 
 class InsertMetadataDaisy202(InsertMetadata):

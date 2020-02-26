@@ -153,26 +153,31 @@ class Epub():
         opf = rootfile.attrib["full-path"]
         return opf
 
-    def nav_path(self):
-        opf = None
+    def get_opf_package_element(self):
         opf_path = self.opf_path()
 
         if os.path.isdir(self.book_path):
-            opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
+            return ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
 
         elif os.path.isfile(self.book_path):
             with zipfile.ZipFile(self.book_path, 'r') as archive:
                 opf = archive.read(opf_path)
-                opf = ElementTree.XML(opf)
+                return ElementTree.XML(opf)
 
         else:
+            return None
+
+    def nav_path(self):
+        opf = self.get_opf_package_element()
+
+        if opf is None:
             return None
 
         manifest = opf.findall('{http://www.idpf.org/2007/opf}manifest')[0]
         items = manifest.findall("*")
         for item in items:
             if "properties" in item.attrib and "nav" in re.split(r'\s+', item.attrib["properties"]):
-                return os.path.join(os.path.dirname(opf_path), item.attrib["href"])
+                return os.path.join(os.path.dirname(self.opf_path()), item.attrib["href"])
 
         return None
 
@@ -180,16 +185,10 @@ class Epub():
         return self.meta("dc:identifier")
 
     def spine(self):
-        opf = None
-        opf_path = self.opf_path()
+        opf = self.get_opf_package_element()
 
-        if os.path.isdir(self.book_path):
-            opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
-
-        else:
-            with zipfile.ZipFile(self.book_path, 'r') as archive:
-                opf = archive.read(opf_path)
-                opf = ElementTree.XML(opf)
+        if opf is None:
+            return None
 
         ns = {"opf": "http://www.idpf.org/2007/opf"}
         itemrefs = opf.xpath("//opf:spine/opf:itemref", namespaces=ns)
@@ -209,17 +208,11 @@ class Epub():
     def metadata(self):
         """Read OPF metadata"""
         if not self._metadata:
-            opf = None
-            opf_path = self.opf_path()
+            opf = self.get_opf_package_element()
             self._metadata = {}
 
-            if os.path.isdir(self.book_path):
-                opf = ElementTree.parse(os.path.join(self.book_path, opf_path)).getroot()
-
-            else:
-                with zipfile.ZipFile(self.book_path, 'r') as archive:
-                    opf = archive.read(opf_path)
-                    opf = ElementTree.XML(opf)
+            if opf is None:
+                return self._metadata
 
             opf_metadata = opf.findall('{http://www.idpf.org/2007/opf}metadata')[0]
             for m in opf_metadata.findall("*"):
