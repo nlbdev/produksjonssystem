@@ -163,20 +163,23 @@ class EpubToDtbookAudio(Pipeline):
         return True
 
     def should_retry_book(self, source):
+        if not self.logPipeline:
+            self.logPipeline = DummyPipeline(uid=self.uid + "-dummylogger", title=self.title + " dummy logger", inherit_config_from=self)
+
         epub = Epub(self, source)
         if not epub.isepub(report_errors=False):
-            self.utils.report.warning("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke. Antar at den skal det: {}".format(source))
+            self.logPipeline.utils.report.warning("Boken er ikke en EPUB, kan ikke avgjøre om den skal trigges eller ikke. Antar at den skal det: {}".format(source))
             return True
 
         if Metadata.is_old(epub.identifier()):
-            self.utils.report.error("{} er gammel. Boken blir ikke trigget.".format(epub.identifier()))
+            self.logPipeline.utils.report.error("{} er gammel. Boken blir ikke trigget.".format(epub.identifier()))
             return False
 
         should_produce, _ = Metadata.should_produce(epub.identifier(),
                                                     self.publication_format,
-                                                    report=self.utils.report,
+                                                    report=self.logPipeline.utils.report,
                                                     skip_metadata_validation=True)
-        production_complete, _ = Metadata.production_complete(epub.identifier(), self.publication_format, report=self.utils.report)
+        production_complete, _ = Metadata.production_complete(epub.identifier(), self.publication_format, report=self.logPipeline.utils.report)
         return should_produce and not production_complete
 
 
