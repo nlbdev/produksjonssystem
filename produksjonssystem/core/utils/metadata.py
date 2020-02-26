@@ -348,7 +348,7 @@ class Metadata:
                         normarc_report.info("<ul>")
                         for edition in creative_work["editions"]:
                             normarc_report.info("<li><strong>{}</strong>: {}{}</li>".format(edition["identifier"],
-                                                                                            edition["format"],
+                                                                                            edition["format"] if edition["format"] else "ukjent format",
                                                                                             " (katalogposten er slettet)" if edition["deleted"] else ""))
                         normarc_report.info("</ul>")
 
