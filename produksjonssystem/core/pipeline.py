@@ -763,7 +763,13 @@ class Pipeline():
 
                 if book_path is None:
                     self.considering_retry_book = "Vurderer {} ({} av {})".format(os.path.basename(path), counter, total)
-                    should_retry = self.should_retry_book(path)
+                    should_retry = False
+                    try:
+                        should_retry = self.should_retry_book(path)
+                    except Exception:
+                        logging.exception("Retry missing-tråden feilet når den forsøkte å finne ut om boken skal prøves på nytt: " + self.title)
+                        self.considering_retry_book = None
+                        continue
                     self.considering_retry_book = None
 
                     if should_retry:
