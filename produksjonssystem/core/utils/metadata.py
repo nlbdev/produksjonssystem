@@ -2,6 +2,7 @@ import dateutil.parser
 import datetime
 import logging
 import os
+import pickle
 import re
 import tempfile
 import threading
@@ -962,81 +963,108 @@ class Metadata:
         }
         sources_xpath_filter = " or ".join(["@id = '{}'".format(s) for s in sources])
 
-        if not refresh and Metadata.creative_works:
-            # hopefully boolean(Metadata.creative_works) is an atomic operation, otherwise there
+        if not refresh and Metadata.signatures_cache:
+            # hopefully boolean(Metadata.signatures_cache) is an atomic operation, otherwise there
             # could be a rare race condition here as we don't want to block with Metadata._signatures_updater_cachelock
 
             pass  # don't update the signatures
 
         else:
             with Metadata._signatures_updater_cachelock:
-                signatures_cache = {}
+                if refresh or not Metadata.signatures_cache:  # check this again, in case the condition has changed since we got the lock
+                    signatures_cache = {}
 
-                for dump in bookguru_dumps:
-                    Metadata.signatures_cache[dump["path"]] = {}
+                    signatures_cache_file = None
+                    cache_dir = Config.get("cache_dir", None)
+                    if not cache_dir:
+                        cache_dir = os.getenv("CACHE_DIR", os.path.join(tempfile.gettempdir(), "prodsys-cache"))
+                        if not os.path.isdir(cache_dir):
+                            os.makedirs(cache_dir, exist_ok=True)
+                        Config.set("cache_dir", cache_dir)
+                    signatures_cache_file = os.path.join(cache_dir, "signatures.pickle")
 
-                    if not os.path.isfile(dump["path"]):
-                        report.warning("Quickbase-dump finnes ikke. Kan ikke hente ut e-postsignaturer: {}")
-                        report.debug("Quickbase-dump path: {}".format(dump["path"]))
-                        continue
+                    # try to load from dump file if there are nothing cached in memory
+                    if not Metadata.signatures_cache and signatures_cache_file:
+                        if os.path.isfile(signatures_cache_file):
+                            try:
+                                with open(signatures_cache_file, 'rb') as f:
+                                    loaded_cache = pickle.load(f)
+                                    with Metadata._signatures_cachelock:
+                                        Metadata.signatures_cache = loaded_cache
+                                    report.debug("Loaded signatures cache from: {}".format(signatures_cache_file))
+                            except Exception as e:
+                                logging.exception("Cache file found, but could not parse it", e)
+                        else:
+                            logging.debug("Can't find cache file")
 
-                    report.debug("Updating signatures cache from: {}".format(dump["path"]))
+                    for dump in bookguru_dumps:
+                        signatures_cache[dump["path"]] = {}
 
-                    lusers = {}
-                    id_xpath_filter = " or ".join(["@id = '{}'".format(i) for i in dump["id-rows"]])
-                    f = open(dump["path"], "rb")
-                    context = ElementTree.iterparse(f)  # use a streaming parser for big XML files
-
-                    counter = 0
-                    for action, elem in context:
-                        if elem.tag == "lusers":
-                            report.debug("{}: found lusers".format(dump["path"]))
-                            for luser in elem.xpath("luser"):
-                                lusers[luser.get("id")] = luser.text
-                            report.debug("{}: found {} luser in lusers".format(dump["path"], len(lusers)))
-
-                        if elem.tag != "record":
+                        if not os.path.isfile(dump["path"]):
+                            report.warning("Quickbase-dump finnes ikke. Kan ikke hente ut e-postsignaturer: {}")
+                            report.debug("Quickbase-dump path: {}".format(dump["path"]))
                             continue
 
-                        if not Config.get("system.shouldRun", default=True):
-                            return []  # abort iteration if the system is shutting down
+                        report.debug("Updating signatures cache from: {}".format(dump["path"]))
 
-                        counter += 1
-                        if counter % 10 == 1:
-                            report.debug("{}: processed {} records so far…".format(dump["path"], counter))
+                        lusers = {}
+                        id_xpath_filter = " or ".join(["@id = '{}'".format(i) for i in dump["id-rows"]])
+                        f = open(dump["path"], "rb")
+                        context = ElementTree.iterparse(f)  # use a streaming parser for big XML files
 
-                        identifiers = elem.xpath(f"*[{id_xpath_filter}]/text()")
+                        counter = 0
+                        for action, elem in context:
+                            if elem.tag == "lusers":
+                                report.debug("{}: found lusers".format(dump["path"]))
+                                for luser in elem.xpath("luser"):
+                                    lusers[luser.get("id")] = luser.text
+                                report.debug("{}: found {} luser in lusers".format(dump["path"], len(lusers)))
 
-                        signatures = []
-                        for signature in elem.xpath(f"*[{sources_xpath_filter}]"):
-                            luser = signature.text
-                            if luser and luser in lusers and lusers[luser]:
-                                signatures.append({
-                                    "source-id": signature.get("id"),
-                                    "source": sources[signature.get("id")],
-                                    "value": lusers[luser]
-                                })
-                        for identifier in identifiers:
-                            Metadata.signatures_cache[dump["path"]][identifier] = signatures
+                            if elem.tag != "record":
+                                continue
 
-                    report.debug("{}: done parsing.".format(dump["path"]))
+                            if not Config.get("system.shouldRun", default=True):
+                                return []  # abort iteration if the system is shutting down
 
-                report.debug("Done parsing all Quickbase-dumps.")
+                            counter += 1
+                            if counter % 10 == 1:
+                                report.debug("{}: processed {} records so far…".format(dump["path"], counter))
+
+                            identifiers = elem.xpath(f"*[{id_xpath_filter}]/text()")
+
+                            signatures = []
+                            for signature in elem.xpath(f"*[{sources_xpath_filter}]"):
+                                luser = signature.text
+                                if luser and luser in lusers and lusers[luser]:
+                                    signatures.append({
+                                        "source-id": signature.get("id"),
+                                        "source": sources[signature.get("id")],
+                                        "value": lusers[luser]
+                                    })
+                            for identifier in identifiers:
+                                signatures_cache[dump["path"]][identifier] = signatures
+
+                        report.debug("{}: done parsing.".format(dump["path"]))
+
+                    report.debug("Done parsing all Quickbase-dumps.")
+                    with Metadata._signatures_cachelock:
+                        Metadata.signatures_cache = signatures_cache
+                        Metadata.signatures_last_update = time.time()
+                        with open(signatures_cache_file, 'wb') as f:
+                            pickle.dump(Metadata.signatures_cache, f, -1)
+                            report.debug("Stored signatures cache as: {}".format(signatures_cache_file))
+
+                report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
                 with Metadata._signatures_cachelock:
-                    Metadata.signatures_cache = signatures_cache
-                    Metadata.signatures_last_update = time.time()
-
-            report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
-            with Metadata._signatures_cachelock:
-                for dump in bookguru_dumps:
-                    # iterate in order of `bookguru_dumps`, which means Statped gets checked first
-                    # when library=StatPed, and NLB gets checked first when library=NLB
-                    if dump["path"] not in Metadata.signatures_cache:
-                        continue
-                    for identifier in Metadata.signatures_cache[dump["path"]]:
-                        if identifier in edition_identifiers:
-                            report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
-                            return Metadata.signatures_cache[dump["path"]][identifier]
+                    for dump in bookguru_dumps:
+                        # iterate in order of `bookguru_dumps`, which means Statped gets checked first
+                        # when library=StatPed, and NLB gets checked first when library=NLB
+                        if dump["path"] not in Metadata.signatures_cache:
+                            continue
+                        for identifier in Metadata.signatures_cache[dump["path"]]:
+                            if identifier in edition_identifiers:
+                                report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
+                                return Metadata.signatures_cache[dump["path"]][identifier]
 
         report.debug("Signatures for '{}' was not found.".format("/".join(edition_identifiers)))
         return []
