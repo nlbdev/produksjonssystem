@@ -183,9 +183,9 @@ class Pipeline():
             base_dirs = {}
             for d in dir_base.split(" "):
                 assert "=" in d, (
-                    "Base directories must be a space-separated list with name=path pairs. " +
-                    "For instance: master=/media/archive. " +
-                    "Note that paths can not contain space characters."
+                    "Base directories must be a space-separated list with name=path pairs. "
+                    + "For instance: master=/media/archive. "
+                    + "Note that paths can not contain space characters."
                     )
                 archive_name = d.split("=")[0]
                 archive_path = os.path.normpath(d.split("=")[1]) + "/"
@@ -269,12 +269,11 @@ class Pipeline():
 
         if self.dir_in is not None:
             if Filesystem.ismount(self.dir_in):
-                logging.warning(self.dir_in +
-                                " is the root of a mounted filesystem. " +
-                                "Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
+                logging.warning(self.dir_in
+                                + " is the root of a mounted filesystem. "
+                                + "Please use subdirectories instead, so that mounting/unmounting is not interpreted as file changes.")
             if not os.path.isdir(self.dir_in):
-                logging.error(self.dir_in +
-                              " is not available. Will not start watching.")
+                logging.error(self.dir_in + " is not available. Will not start watching.")
                 return
         self._inactivity_timeout = inactivity_timeout
 
@@ -291,8 +290,8 @@ class Pipeline():
             self.dir_in_obj.add_book_event_handler(self._add_book_to_queue)
 
         # wait for directory watchers to be ready
-        while (self.dir_in_obj and self.dir_in_obj.is_starting() or
-                self.dir_out_obj and self.dir_out_obj.is_starting()):
+        while (self.dir_in_obj and self.dir_in_obj.is_starting()
+                or self.dir_out_obj and self.dir_out_obj.is_starting()):
             self.progress_text = " , ".join([text for text in [
                 self.dir_in_obj.get_status_text() if self.dir_in_obj else None,
                 self.dir_out_obj.get_status_text() if self.dir_out_obj else None
@@ -849,8 +848,8 @@ class Pipeline():
                         pass
 
                     # check if source directory or file should be ignored
-                    elif (self.book["source"] is not None and
-                            Filesystem.shutil_ignore_patterns(os.path.dirname(self.book["source"]), [os.path.basename(self.book["source"])])):
+                    elif (self.book["source"] is not None
+                            and Filesystem.shutil_ignore_patterns(os.path.dirname(self.book["source"]), [os.path.basename(self.book["source"])])):
                         logging.info("Ignoring book: {}".format(self.book["source"]))
 
                     # trigger book event
@@ -941,11 +940,11 @@ class Pipeline():
                                 self.write_to_daily()
 
             except Exception:
-                logging.exception("En feil oppstod ved håndtering av bokhendelse" +
-                                  (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
+                logging.exception("En feil oppstod ved håndtering av bokhendelse"
+                                  + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""))
                 try:
-                    Report.emailPlainText("En feil oppstod ved håndtering av bokhendelse" +
-                                          (": " + str(self.book["name"]) if self.book and "name" in self.book else ""),
+                    Report.emailPlainText("En feil oppstod ved håndtering av bokhendelse"
+                                          + (": " + str(self.book["name"]) if self.book and "name" in self.book else ""),
                                           traceback.format_exc(), self.email_settings["recipients"])
                 except Exception:
                     logging.exception("Could not e-mail exception")
@@ -979,8 +978,8 @@ class Pipeline():
             report_daily.email(recipients_daily,
                                should_attach_log=False)
         except Exception:
-                logging.info("Failed sending daily email")
-                logging.info(traceback.format_exc())
+            logging.info("Failed sending daily email")
+            logging.info(traceback.format_exc())
 
     def write_to_daily(self):
         error = ""
@@ -989,9 +988,9 @@ class Pipeline():
         attachment_title = []
         subject = self.utils.report.title
         for item in self.utils.report._messages["attachment"]:
-            if (self.dir_out is not None and self.dir_out in item["text"] or
-                    self.dir_in is not None and self.dir_in in item["text"] or
-                    self.dir_reports in item["text"]):
+            if (self.dir_out is not None and self.dir_out in item["text"]
+                    or self.dir_in is not None and self.dir_in in item["text"]
+                    or self.dir_reports in item["text"]):
                 base_path = Filesystem.get_base_path(item["text"], self.dir_base)
                 relpath = os.path.relpath(item["text"], base_path) if base_path else None
                 attachment_title.append("{}{}".format(relpath, ("/" if os.path.isdir(item["text"]) else "")))
@@ -1029,8 +1028,12 @@ class Pipeline():
                         epub_identifier = split
                         break
                 if self.utils.report.mailpath != ():
-                    today_status_file.write("\n[{}] {}: {} mail: {}, {}".format(time.strftime("%H:%M:%S"),
-                                            epub_identifier, subject, self.utils.report.mailpath[2], self.utils.report.mailpath[0],))
+                    today_status_file.write("\n[{}] {}: {} mail: {}, {}".format(
+                                                time.strftime("%H:%M:%S"),
+                                                epub_identifier,
+                                                subject,
+                                                self.utils.report.mailpath[2],
+                                                self.utils.report.mailpath[0]))
                 else:
                     today_status_file.write("\n[{}] {}: {}".format(time.strftime("%H:%M:%S"), epub_identifier, subject))
                 if fail is True and error != "":
@@ -1128,8 +1131,8 @@ class DummyPipeline(Pipeline):
         self.considering_retry_book = None
 
         if inherit_config_from:
-            assert (inspect.isclass(inherit_config_from) and issubclass(inherit_config_from, Pipeline) or
-                    not inspect.isclass(inherit_config_from) and issubclass(type(inherit_config_from), Pipeline))
+            assert (inspect.isclass(inherit_config_from) and issubclass(inherit_config_from, Pipeline)
+                    or not inspect.isclass(inherit_config_from) and issubclass(type(inherit_config_from), Pipeline))
             self.dir_in = inherit_config_from.dir_in
             self.dir_out = inherit_config_from.dir_out
             self.dir_in_obj = inherit_config_from.dir_in_obj
