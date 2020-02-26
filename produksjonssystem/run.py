@@ -76,7 +76,7 @@ class Produksjonssystem():
             "project_key": os.getenv("AIRBRAKE_PROJECT_KEY", None),
             "environment": os.getenv("AIRBRAKE_ENVIRONMENT", "development")
         }
-        if self.airbrake_config["project_id"] is not None and self.airbrake_config["project_key"] is not None:
+        if self.airbrake_config["project_id"] and self.airbrake_config["project_key"]:
             notifier = pybrake.Notifier(**self.airbrake_config)
             airbrake_handler = pybrake.LoggingHandler(notifier=notifier, level=logging.ERROR)
             logging.getLogger().addHandler(airbrake_handler)
