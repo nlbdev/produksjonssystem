@@ -139,9 +139,13 @@ class Report():
         self.add_message('SUCCESS', message=message, message_type=message_type, preformatted=preformatted,
                          add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
 
-    def warn(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
+    def warning(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('WARN', message=message, message_type=message_type,  preformatted=preformatted,
                          add_empty_line_last=add_empty_line_last, add_empty_line_between=add_empty_line_between)
+
+    def warn(self, *args, **kwargs):
+        # alias for `warning(…)`
+        self.warning(*args, **kwargs)
 
     def error(self, message, message_type="message", preformatted=False, add_empty_line_last=True, add_empty_line_between=False):
         self.add_message('ERROR', message=message, message_type=message_type,  preformatted=preformatted,
