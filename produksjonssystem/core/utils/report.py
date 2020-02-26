@@ -396,7 +396,7 @@ class Report():
 <html>
 <head>
 <meta charset=\"utf-8\"/>
-<title>"+subject+"</title>
+<title>''' + subject.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + '''</title>
 </head>
 <body>
 ''' + markdown_html + '''
