@@ -379,7 +379,7 @@ class Report():
                     li += "<span style=\"vertical-align: middle; font-size: 200%;\">" + attachment_styles[attachment["severity"]]["icon"] + "</span> "
                     li += "<span style=\"vertical-align: middle; " + attachment_styles[attachment["severity"]]["style"] + "\">"
                     li += "<a href=\"file:///" + attachment["unc"] + "\">" + attachment["title"] + "</a> "
-                    li += self.img_string + "=\" alt=\"" + attachment["smb"] + "\">"
+                    li += "<a href=\"" + attachment["smb"] + "\">" + self.img_string + "=\" alt=\"" + attachment["smb"] + "\"/>" + "</a> "
                     li += "</span>"
                     li += "</li>"
                     markdown_text.append(li)
