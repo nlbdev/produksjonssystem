@@ -469,6 +469,13 @@ class Metadata:
         opf_metadata = Metadata.get_edition_from_api(edition_identifier, format="opf")
         html_head = Metadata.get_edition_from_api(edition_identifier, format="html")
 
+        if opf_metadata is None:
+            report.error("Klarte ikke å hente OPF-metadata fra APIet.")
+            return False
+        if html_head is None:
+            report.error("Klarte ikke å hente HTML-metadata fra APIet.")
+            return False
+
         # Add metadata from EPUB
 
         if epub.book_path is None or not os.path.isdir(epub.book_path):
