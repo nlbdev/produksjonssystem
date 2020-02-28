@@ -999,6 +999,35 @@
     </metadata></x:expect>
     </x:scenario>
     
+    <x:scenario label="Både dc,dj og jp i 019$b">
+        <x:context>
+            <marcxchange:record>
+                <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="b">dc,dj</marcxchange:subfield>
+                    <marcxchange:subfield code="b">jp</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected" xml:space="preserve">    <metadata>
+        <dc:format>DAISY 2.02</dc:format>
+        
+        <meta property="dc:format.other">Audio recording</meta>
+        <meta property="dc:format.other">Compact Disk</meta>
+        <meta property="dc:format.other">Other voice/other</meta>
+        <meta property="dc:format.other">Serial</meta>
+        <meta property="dc:format.other">Magazine</meta>
+        <meta property="dc:format.other.no">Lydopptak</meta>
+        <meta property="dc:format.other.no">CD (kompaktplate)</meta>
+        <meta property="dc:format.other.no">Annen tale/annet</meta>
+        <meta property="dc:format.other.no">Periodika</meta>
+        <meta property="dc:format.other.no">Tidsskrift</meta>
+        <meta property="dc:type.audio">true</meta>
+        <meta property="magazine">true</meta>
+        <meta property="periodical">true</meta>
+    </metadata></x:expect>
+    </x:scenario>
+    
     <x:scenario label="access modes (text / audio)">
         <x:context>
             <marcxchange:record format="normarc" type="Bibliographic">
@@ -1138,19 +1167,6 @@
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected" test="*">
-            <meta property="dc:format.extent.pages">972</meta>
-            <meta property="dc:format.extent.volumes">13</meta>
-        </x:expect>
-    </x:scenario>
-    
-    <x:scenario label="parsing of volumes">
-        <x:context>
-            <marcxchange:datafield tag="300" ind1=" " ind2=" ">
-                <marcxchange:subfield code="a">13 hefter (972 s.)</marcxchange:subfield>
-            </marcxchange:datafield>
-        </x:context>
-        
-        <x:expect label="the metadata should be extracted as expected">
             <meta property="dc:format.extent.pages">972</meta>
             <meta property="dc:format.extent.volumes">13</meta>
         </x:expect>
