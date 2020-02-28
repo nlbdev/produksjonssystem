@@ -1061,17 +1061,17 @@ class Metadata:
                             pickle.dump(Metadata.signatures_cache, f, -1)
                             report.debug("Stored signatures cache as: {}".format(signatures_cache_file))
 
-                report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
-                with Metadata._signatures_cachelock:
-                    for dump in bookguru_dumps:
-                        # iterate in order of `bookguru_dumps`, which means Statped gets checked first
-                        # when library=StatPed, and NLB gets checked first when library=NLB
-                        if dump["path"] not in Metadata.signatures_cache:
-                            continue
-                        for identifier in Metadata.signatures_cache[dump["path"]]:
-                            if identifier in edition_identifiers:
-                                report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
-                                return Metadata.signatures_cache[dump["path"]][identifier]
+        report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
+        with Metadata._signatures_cachelock:
+            for dump in bookguru_dumps:
+                # iterate in order of `bookguru_dumps`, which means Statped gets checked first
+                # when library=StatPed, and NLB gets checked first when library=NLB
+                if dump["path"] not in Metadata.signatures_cache:
+                    continue
+                for identifier in Metadata.signatures_cache[dump["path"]]:
+                    if identifier in edition_identifiers:
+                        report.debug("Found signatures for '{}' in {}.".format("/".join(edition_identifiers), dump["path"]))
+                        return Metadata.signatures_cache[dump["path"]][identifier]
 
         report.debug("Signatures for '{}' was not found.".format("/".join(edition_identifiers)))
         return []
