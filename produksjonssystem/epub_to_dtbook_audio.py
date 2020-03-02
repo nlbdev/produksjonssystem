@@ -85,7 +85,7 @@ class EpubToDtbookAudio(Pipeline):
         nordic_epub = Epub(self, nordic_epubdir)
 
         self.utils.report.info("Oppdaterer metadata...")
-        updated = Metadata.update(self.utils.report, nordic_epub, publication_format=self.publication_format)
+        updated = Metadata.insert_metadata(self.utils.report, nordic_epub, publication_format=self.publication_format)
         if isinstance(updated, bool) and updated is False:
             return False
         nordic_epub.refresh_metadata()
