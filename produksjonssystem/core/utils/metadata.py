@@ -514,7 +514,7 @@ class Metadata:
             name = meta.attrib["name"] if "name" in meta.attrib else None
             content = meta.attrib["content"] if "content" in meta.attrib else meta.text
 
-            if ":" in property and property.split(":")[0] in ["nordic", "a11y"]:
+            if property is not None and ":" in property and property.split(":")[0] in ["nordic", "a11y"]:
                 opf_from_epub.append("        <meta property=\"{}\">{}</meta>".format(property, content))
                 html_from_epub.append("        <meta name=\"{}\" content=\"{}\"/>".format(property, content))
 
