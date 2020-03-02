@@ -9,6 +9,7 @@ import threading
 import time
 
 import requests
+from json import JSONDecodeError
 from lxml import etree as ElementTree
 from difflib import SequenceMatcher
 
@@ -281,7 +282,20 @@ class Metadata:
             response = Metadata.requests_get(edition_url)
 
         if response.status_code == 200:
-            return response.json()['data']
+            try:
+                ret = response.json()
+
+                if "data" not in ret:
+                    report.debug("Could not find data in metadata validation report for {}".format(edition_identifier))
+                    report.debug(ret)
+                    return None
+
+                return ret['data']
+
+            except JSONDecodeError:
+                report.debug("Could not parse metadata validation report for {}".format(edition_identifier))
+                report.debug(traceback.format_exc())
+                return None
 
         else:
             report.debug("Could not get metadata validation report for {}".format(edition_identifier))
@@ -1094,8 +1108,20 @@ class Metadata:
                 response = requests.get(creative_works_url)
 
                 if response.status_code == 200:
-                    Metadata.creative_works = response.json()["data"]
-                    Metadata.creative_works_last_update = time.time()
+                    try:
+                        ret = response.json()
+
+                        if "data" in ret:
+                            Metadata.creative_works = ret["data"]
+                            Metadata.creative_works_last_update = time.time()
+
+                        else:
+                            report.debug("Could not update creative works metadata from: {}".format(creative_works_url))
+                            report.debug(ret)
+
+                    except JSONDecodeError:
+                        report.debug("Could not update creative works metadata from: {}".format(creative_works_url))
+                        report.debug(traceback.format_exc())
 
                 else:
                     report.debug("Could not update creative works metadata from: {}".format(creative_works_url))
