@@ -56,7 +56,7 @@ class DaisyPipelineJob():
     @staticmethod
     def start_engine(pipeline, retries=10):
         running = False
-        with DaisyPipelineJob.start_lock.acquire_timeout(600) as locked:
+        with DaisyPipelineJob.start_lock.acquire_timeout(1200) as locked:
             if locked:
                 pipeline.utils.report.debug("acquired DP2 start lock")
                 while not running and retries > 0:
