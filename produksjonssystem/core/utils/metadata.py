@@ -7,6 +7,7 @@ import re
 import tempfile
 import threading
 import time
+import traceback
 
 import requests
 from json import JSONDecodeError
