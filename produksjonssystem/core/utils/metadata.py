@@ -481,8 +481,8 @@ class Metadata:
 
         # Get OPF/HTML metadata from Bibliofil
 
-        opf_metadata = Metadata.get_edition_from_api(edition_identifier, format="opf")
-        html_head = Metadata.get_edition_from_api(edition_identifier, format="html")
+        opf_metadata = Metadata.get_edition_from_api(edition_identifier, format="opf", report=report)
+        html_head = Metadata.get_edition_from_api(edition_identifier, format="html", report=report)
 
         if opf_metadata is None:
             report.error("Klarte ikke å hente OPF-metadata fra APIet.")
