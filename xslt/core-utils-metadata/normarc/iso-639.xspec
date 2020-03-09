@@ -163,4 +163,29 @@
         </x:expect>
     </x:scenario>
     
+    
+    <x:scenario label="When using name and content attributes, it means we are nesting the OPF content">
+        <x:context>
+            <opf:metadata>
+                <dc:language content="nob"/>
+                <opf:meta name="dc:language.original" content="eng"/>
+            </opf:metadata>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected">
+            <opf:metadata>
+                <dc:language content="nb">
+                    <opf:meta name="dc:language.name.english" content="Norwegian Bokmål"/>
+                    <opf:meta name="dc:language.name.native" content="Norsk Bokmål"/>
+                    <opf:meta name="dc:language.name.norwegian" content="Bokmål"/>
+                </dc:language>
+                <opf:meta name="dc:language.original" content="en">
+                    <opf:meta name="dc:language.original.name.english" content="English"/>
+                    <opf:meta name="dc:language.original.name.native" content="English"/>
+                    <opf:meta name="dc:language.original.name.norwegian" content="Engelsk"/>
+                </opf:meta>
+            </opf:metadata>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
