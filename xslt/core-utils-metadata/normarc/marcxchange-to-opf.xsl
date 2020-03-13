@@ -4,6 +4,7 @@
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:nlb="http://www.nlb.no/"
+                xmlns:nlbbib="http://www.nlb.no/bibliographic"
                 xmlns:SRU="http://www.loc.gov/zing/sru/"
                 xmlns:normarc="info:lc/xmlns/marcxchange-v1"
                 xmlns:schema="http://schema.org/"
@@ -76,7 +77,7 @@
         <xsl:variable name="metadata" as="element()">
             <metadata>
                 <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
-                <xsl:namespace name="nlb" select="'http://www.nlb.no/'"/>
+                <xsl:namespace name="nlbbib" select="'http://www.nlb.no/bibliographic'"/>
                 <xsl:namespace name="schema" select="'http://schema.org/'"/>
                 <xsl:variable name="with-duplicates" as="element()*">
                     <xsl:apply-templates select="node()"/>
@@ -1528,7 +1529,7 @@
                 <xsl:variable name="isbn-issn" select="replace(upper-case(text()),'[^\dX-]','')" as="xs:string"/>
                 <xsl:variable name="length" select="string-length(replace($isbn-issn,'-',''))" as="xs:integer"/>
                 <xsl:if test="not($isbn-issn = '0') and $length gt 0">
-                    <xsl:call-template name="meta"><xsl:with-param name="property" select="concat(if ($length lt 9) then 'issn' else 'isbn', '.original')"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+                    <xsl:call-template name="meta"><xsl:with-param name="property" select="nlb:prefixed-property(concat(if ($length lt 9) then 'issn' else 'isbn', '.original'))"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
                 </xsl:if>
             </xsl:for-each>
         </xsl:if>
@@ -2561,7 +2562,7 @@
                 <xsl:value-of select="$property"/>
             </xsl:when>
             <xsl:when test="starts-with($property, 'bibliofil-id') or starts-with($property, 'normarc-id') or starts-with($property, 'websok')">
-                <xsl:value-of select="concat('nlb:', $property)"/>
+                <xsl:value-of select="concat('nlbbib:', $property)"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat('schema:', $property)"/>

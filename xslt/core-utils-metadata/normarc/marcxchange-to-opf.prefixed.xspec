@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns="http://www.idpf.org/2007/opf"
+               stylesheet="marcxchange-to-opf.xsl">
+    
+    <x:param name="prefix-everything" select="true()"/>
+    
+    <x:scenario label="prefix everything">
+        <x:context>
+            <SRU:searchRetrieveResponse xmlns:SRU="http://www.loc.gov/zing/sru/" xmlns:dc="info:sru/schema/1/dc-v1.1"
+                xmlns:normarc="info:lc/xmlns/marcxchange-v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:DIAG="http://www.loc.gov/zing/sru/diagnostics/">
+                <SRU:version>1.2</SRU:version>
+                <SRU:numberOfRecords>1</SRU:numberOfRecords>
+                <SRU:resultSetId>1312</SRU:resultSetId>
+                <SRU:records>
+                    <SRU:record>
+                        <SRU:recordSchema>info:lc/xmlns/marcxchange-v1</SRU:recordSchema>
+                        <SRU:recordPacking>xml</SRU:recordPacking>
+                        <SRU:recordData>
+                            <marcxchange:record format="bibliofilmarc" type="Bibliographic" xmlns:marcxchange="info:lc/xmlns/marcxchange-v1">
+                                <marcxchange:leader>01285nam  2200361   4500</marcxchange:leader>
+                                <marcxchange:controlfield tag="000">     c</marcxchange:controlfield>
+                                <marcxchange:controlfield tag="001">627958</marcxchange:controlfield>
+                                <marcxchange:controlfield tag="008">170919                j          10nob</marcxchange:controlfield>
+                                <marcxchange:datafield tag="015" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">10791934</marcxchange:subfield>
+                                    <marcxchange:subfield code="b">BibliofilID</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="015" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">42439</marcxchange:subfield>
+                                    <marcxchange:subfield code="b">Dugnadsbasen i BIBLIOFIL</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">u</marcxchange:subfield>
+                                    <marcxchange:subfield code="b">dc,dj</marcxchange:subfield>
+                                    <marcxchange:subfield code="d">R</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="020" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">978-82-16-25998-6</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="041" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="h">eng</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="082" ind1="3" ind2=" ">
+                                    <marcxchange:subfield code="z">h</marcxchange:subfield>
+                                    <marcxchange:subfield code="2">5</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="090" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">627958</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="100" ind1=" " ind2="0">
+                                    <marcxchange:subfield code="a">Hunter, Erin</marcxchange:subfield>
+                                    <marcxchange:subfield code="j">eng.</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">20931800</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="245" ind1="1" ind2="0">
+                                    <marcxchange:subfield code="a">Måneskinn</marcxchange:subfield>
+                                    <marcxchange:subfield code="c">Erin Hunter ; oversatt av Tora Larsen Morset</marcxchange:subfield>
+                                    <marcxchange:subfield code="h">daisy 2.02</marcxchange:subfield>
+                                    <marcxchange:subfield code="n">2/2</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="260" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">Oslo</marcxchange:subfield>
+                                    <marcxchange:subfield code="b">Norsk lyd- og blindeskriftbibliotek</marcxchange:subfield>
+                                    <marcxchange:subfield code="c">2017</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">17192400</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="300" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">9 t. 15 min.</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="440" ind1=" " ind2="0">
+                                    <marcxchange:subfield code="a">Kattekrigerne Serie 2</marcxchange:subfield>
+                                    <marcxchange:subfield code="v">2</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">21323600</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="511" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">Elisabeth Vatn</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">19614200</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="520" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">Fra forlagets omtale: Flere månefaser har gått siden seks katter i all hast la ut fra skogen på en dramatisk reise for å redde klanene. Nå er de seks på vei hjem, men oppe i fjellene møter de en stamme villkatter som har sine egne forfedres profeti å oppfylle.</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="574" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">Originaltittel: Moonrise</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="592" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">31/10/2017</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="596" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">Oslo</marcxchange:subfield>
+                                    <marcxchange:subfield code="b">Juritzen</marcxchange:subfield>
+                                    <marcxchange:subfield code="c">2015</marcxchange:subfield>
+                                    <marcxchange:subfield code="e">273 s.</marcxchange:subfield>
+                                    <marcxchange:subfield code="f">978-82-93304-70-8</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="655" ind1=" " ind2="2">
+                                    <marcxchange:subfield code="a">Fantasy</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">20157000</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="692" ind1=" " ind2="2">
+                                    <marcxchange:subfield code="a">Katter</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">19736100</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="700" ind1=" " ind2="0">
+                                    <marcxchange:subfield code="a">Morset, Tora Larsen</marcxchange:subfield>
+                                    <marcxchange:subfield code="d">1981</marcxchange:subfield>
+                                    <marcxchange:subfield code="j">n.</marcxchange:subfield>
+                                    <marcxchange:subfield code="e">overs.</marcxchange:subfield>
+                                    <marcxchange:subfield code="_">21035300</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="740" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">Moonrise</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="780" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="t">Midnatt</marcxchange:subfield>
+                                    <marcxchange:subfield code="w">627680</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="785" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="t">Daggry</marcxchange:subfield>
+                                    <marcxchange:subfield code="w">627961</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="850" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">NLB/L</marcxchange:subfield>
+                                    <marcxchange:subfield code="s">n</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="856" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="u">URN:NBN:no-nb_nlb_</marcxchange:subfield>
+                                    <marcxchange:subfield code="s">458148548</marcxchange:subfield>
+                                </marcxchange:datafield>
+                            </marcxchange:record>
+                        </SRU:recordData>
+                        <SRU:recordPosition>1</SRU:recordPosition>
+                    </SRU:record>
+                </SRU:records>
+            </SRU:searchRetrieveResponse>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected" xml:space="preserve">    <metadata xmlns="http://www.idpf.org/2007/opf" xmlns:schema="http://schema.org/" xmlns:nlbbib="http://www.nlb.no/bibliographic" xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <dc:identifier id="pub-id">627958</dc:identifier>
+        <dc:title>Måneskinn</dc:title>
+        <dc:creator id="creator-1">Hunter, Erin</dc:creator>
+        <meta property="nlbbib:bibliofil-id" refines="#creator-1">20931800</meta>
+        <meta property="schema:nationality" refines="#creator-1">gb</meta>
+        <dc:format>DAISY 2.02</dc:format>
+        <dc:language>nob</dc:language>
+        <dc:publisher id="publisher-260-1">Norsk lyd- og blindeskriftbibliotek</dc:publisher>
+        <meta property="nlbbib:bibliofil-id" refines="#publisher-260-1">17192400</meta>
+        <meta property="dc:contributor.narrator" id="contributor-511-1">Elisabeth Vatn</meta>
+        <meta property="nlbbib:bibliofil-id" refines="#contributor-511-1">19614200</meta>
+        <meta property="dc:contributor.translator" id="contributor-700-1">Morset, Tora Larsen</meta>
+        <meta property="nlbbib:bibliofil-id" refines="#contributor-700-1">21035300</meta>
+        <meta property="schema:birthDate" refines="#contributor-700-1">1981</meta>
+        <meta property="schema:nationality" refines="#contributor-700-1">no</meta>
+        <meta property="dc:date.available">2017-10-31</meta>
+        <meta property="dc:date.issued">2017</meta>
+        <meta property="dc:date.issued.original">2015</meta>
+        <meta property="dc:date.registered">2017-09-19</meta>
+        <meta property="dc:description.abstract">Fra forlagets omtale: Flere månefaser har gått siden seks katter i all hast la ut fra skogen på en dramatisk reise for å redde klanene. Nå er de seks på vei hjem, men oppe i fjellene møter de en stamme villkatter som har sine egne forfedres profeti å oppfylle.</meta>
+        <meta property="dc:format.extent.duration">9 t. 15 min.</meta>
+        <meta property="dc:format.extent.pages.original">273</meta>
+        <meta property="dc:format.other">Audio recording</meta>
+        <meta property="dc:format.other">Compact Disk</meta>
+        <meta property="dc:format.other">Other voice/other</meta>
+        <meta property="dc:format.other.no">Lydopptak</meta>
+        <meta property="dc:format.other.no">CD (kompaktplate)</meta>
+        <meta property="dc:format.other.no">Annen tale/annet</meta>
+        <meta property="dc:language.original">eng</meta>
+        <meta property="dc:publisher.location">Oslo</meta>
+        <meta property="dc:publisher.location.original">Oslo</meta>
+        <meta property="dc:publisher.original">Juritzen</meta>
+        <meta property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_627958</meta>
+        <meta property="dc:subject.keyword" id="subject-692-1">Katter</meta>
+        <meta property="nlbbib:bibliofil-id" refines="#subject-692-1">19736100</meta>
+        <meta property="dc:title.original">Moonrise</meta>
+        <meta property="dc:title.part">Moonrise</meta>
+        <meta property="dc:title.series" id="series-title-1">Kattekrigerne Serie 2</meta>
+        <meta property="schema:series.position" refines="#series-title-1">2</meta>
+        <meta property="dc:title.series.preceding" id="series-preceding-1">Midnatt</meta>
+        <meta property="dc:identifier.series.preceding" refines="#series-preceding-1">627680</meta>
+        <meta property="dc:identifier.series.preceding.uri" refines="#series-preceding-1">urn:NBN:no-nb_nlb_627680</meta>
+        <meta property="dc:title.series.sequel" id="series-sequel-1">Daggry</meta>
+        <meta property="dc:identifier.series.sequel" refines="#series-sequel-1">627961</meta>
+        <meta property="dc:identifier.series.sequel.uri" refines="#series-sequel-1">urn:NBN:no-nb_nlb_627961</meta>
+        <meta property="dc:type.audio">true</meta>
+        <meta property="dc:type.fiction">true</meta>
+        <meta property="dc:type.genre">Fiction</meta>
+        <meta property="dc:type.genre">Non-biography</meta>
+        <meta property="dc:type.genre" id="subject-655-1">Fantasy</meta>
+        <meta property="dc:type.genre.no" refines="#subject-655-1">Fantasy</meta>
+        <meta property="dc:type.mainGenre" refines="#subject-655-1">Fantasy</meta>
+        <meta property="nlbbib:bibliofil-id" refines="#subject-655-1">20157000</meta>
+        <meta property="dc:type.literaryForm" id="literary-form-019d-1">Roman</meta>
+        <meta property="nlbbib:normarc-id" refines="#literary-form-019d-1">R</meta>
+        <meta property="schema:audience">Child</meta>
+        <meta property="schema:bookEdition">1</meta>
+        <meta property="schema:bookEdition.original">1</meta>
+        <meta property="schema:fileSize">458148548</meta>
+        <meta property="schema:isbn">978-82-16-25998-6</meta>
+        <meta property="schema:isbn.original">978-82-93304-70-8</meta>
+        <meta property="schema:library">NLB</meta>
+        <meta property="schema:position">2</meta>
+        <meta property="schema:typicalAgeRange">11-12</meta>
+    </metadata></x:expect>
+    </x:scenario>
+    
+</x:description>
