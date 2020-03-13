@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/nlbdev/normarc.git
 	branch = master
-	commit = d64e4ff20f095c5c6e44a04f5ab58984f558a013
-	parent = 495fc8dd14243cd85356a8af1eb0b9c431eb9644
+	commit = efbff2ab7bb3ffb53911af598bcbd92fcc2250d4
+	parent = 63f4c3abe42592590df4bc1908aa599e9aa8d8a9
 	cmdver = 0.4.1
 	method = merge
