@@ -25,7 +25,7 @@
     <dc:format>EPUB</dc:format> <!-- Bibliofil@561702 *019$b -->
     <meta property="dc:format.other" opf:alt-rep-lang="no" opf:alt-rep="Elektronisk ressurs">Electronic resource</meta> <!-- Bibliofil@561702 *019$b -->
     <dc:publisher id="publisher">Norsk lyd- og blindeskriftbibliotek</dc:publisher> <!-- Bibliofil@561702 *260 -->
-    <meta property="nlbbib:bibliofil-id" refines="#publisher">19295500</meta>
+    <meta property="nlbbib:bibliofil-id" refines="#publisher">19295500</meta> <!-- refines comment -->
     <meta property="dc:publisher.location.original">Oslo</meta> <!-- Bibliofil@561702 *596$a -->
     <meta property="dc:date.issued">2017</meta> <!-- Bibliofil@561702 *260$c -->
     <dc:source opf:scheme="isbn">urn:isbn:9788205489813</dc:source> <!-- Bibliofil@561702 *596$f -->

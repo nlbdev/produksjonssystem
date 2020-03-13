@@ -78,7 +78,7 @@
                 
                 <xsl:for-each select="(*[not(@refines)] | comment()) except (dc:title[not(@refines)][1], opf:meta[not(@refines)][@property='dc:description.abstract'][1])">
                     <xsl:choose>
-                        <xsl:when test="self::comment() and (not(preceding-sibling::*[not(@refines)]) or (preceding-sibling::text() intersect preceding-sibling::*[not(@refines)][1]/following-sibling::text())[matches(.,'.*\n.*')])">
+                        <xsl:when test="self::comment() and (not(preceding-sibling::*[not(@refines)]) or (preceding-sibling::text() intersect preceding-sibling::*[1]/following-sibling::text())[matches(.,'.*\n.*')])">
                             <xsl:text><![CDATA[
         
         ]]></xsl:text>
