@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
-               xmlns:dc="http://purl.org/dc/elements/1.1/"
-               xmlns:opf="http://www.idpf.org/2007/opf"
                stylesheet="opf-to-html.xsl">
     
     <x:scenario label="Basic test">
-        <x:context xml:space="preserve"><metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production">
+        <x:context xml:space="preserve"><metadata xmlns="http://www.idpf.org/2007/opf" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:nlbbib="http://www.nlb.no/bibliographic" xmlns:nlbprod="http://www.nlb.no/production">
     <!-- Boknummer for EPUB-utgaven -->
     <dc:identifier id="pub-id">561702</dc:identifier> <!-- Bibliofil@561702 *001 -->
     
@@ -26,7 +24,8 @@
     <dc:contributor opf:role="trl">Dagny Holm</dc:contributor> <!-- Bibliofil@561702 *700 -->
     <dc:format>EPUB</dc:format> <!-- Bibliofil@561702 *019$b -->
     <meta property="dc:format.other" opf:alt-rep-lang="no" opf:alt-rep="Elektronisk ressurs">Electronic resource</meta> <!-- Bibliofil@561702 *019$b -->
-    <dc:publisher>Norsk lyd- og blindeskriftbibliotek</dc:publisher> <!-- Bibliofil@561702 *260 -->
+    <dc:publisher id="publisher">Norsk lyd- og blindeskriftbibliotek</dc:publisher> <!-- Bibliofil@561702 *260 -->
+    <meta property="nlbbib:bibliofil-id" refines="#publisher">19295500</meta>
     <meta property="dc:publisher.location.original">Oslo</meta> <!-- Bibliofil@561702 *596$a -->
     <meta property="dc:date.issued">2017</meta> <!-- Bibliofil@561702 *260$c -->
     <dc:source opf:scheme="isbn">urn:isbn:9788205489813</dc:source> <!-- Bibliofil@561702 *596$f -->
@@ -40,7 +39,7 @@
       </meta> <!-- Bibliofil@360081 *520$a -->
 </metadata></x:context>
 
-        <x:expect label="The result should be as expected" xml:space="preserve">    <head xmlns="http://www.w3.org/1999/xhtml">
+        <x:expect label="The result should be as expected" xml:space="preserve">    <head xmlns="http://www.w3.org/1999/xhtml" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:nlbbib="http://www.nlb.no/bibliographic" xmlns:nlbprod="http://www.nlb.no/production" xmlns:schema="http://schema.org/">
         <meta charset="utf-8"/>
         <title>Rampete Robins forundringspakke</title> <!-- Bibliofil@561702 *245$a -->
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -74,11 +73,16 @@
         <meta name="schema:isbn" content="9788205489813"/> <!-- Bibliofil@561702 *596$f -->
         <meta name="schema:audience" content="Juvenile"/> <!-- Bibliofil@561702 *008 -->
     </head></x:expect>
+        
+        <x:expect label="the dc namespace prefix should be declared" test="namespace-uri-for-prefix('dc', /*)" select="'http://purl.org/dc/elements/1.1/'"/>
+        <x:expect label="the schema namespace prefix should be declared" test="namespace-uri-for-prefix('schema', /*)" select="'http://schema.org/'"/>
+        <x:expect label="the nlbprod namespace prefix should be declared" test="namespace-uri-for-prefix('nlbprod', /*)" select="'http://www.nlb.no/production'"/>
+        <x:expect label="the nlbbib namespace prefix should be declared" test="namespace-uri-for-prefix('nlbbib', /*)" select="'http://www.nlb.no/bibliographic'"/>
     </x:scenario>
     
     <x:scenario label="Language names for each language code (names no longer associated to codes in OPF or HTML)">
         <x:context xml:space="preserve">
-    <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production dc: http://purl.org/dc/elements/1.1/">
+    <metadata xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/">
         <!-- Boknummer for EPUB-utgaven -->
         <dc:identifier id="pub-id">558237</dc:identifier>
         

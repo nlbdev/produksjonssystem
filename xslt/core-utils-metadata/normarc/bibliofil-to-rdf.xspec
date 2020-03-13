@@ -474,5 +474,31 @@
             </rdf:RDF>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="handle predefined nlbbib and schema namespaces">
+        <x:context>
+            <opf:metadata>
+                <dc:contributor content="Sødal, Helje Kringlebotn">
+                    <meta name="nlbbib:bibliofil-id" content="17265000"/>
+                    <meta name="schema:birthDate" content="1962"/>
+                </dc:contributor>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <dc:contributor schema:name="Sødal, Helje Kringlebotn">
+                        <nlbbib:bibliofil-id>17265000</nlbbib:bibliofil-id>
+                        <schema:birthDate>1962</schema:birthDate>
+                    </dc:contributor>
+                </rdf:Description>
+                <rdf:Description rdf:ID="...">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="..."/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
 
 </x:description>

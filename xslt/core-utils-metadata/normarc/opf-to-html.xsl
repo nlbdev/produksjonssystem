@@ -30,8 +30,17 @@
                     </xsl:analyze-string>
                 </xsl:if>
                 
-                <!-- Declare predefined EPUB metadata namespaces -->
+                <!-- Copy namespaces from namespaces -->
+                <xsl:for-each select="namespace::*">
+                    <xsl:choose>
+                        <xsl:when test="name() = ('', 'opf', 'xml')"/>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="."/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
                 
+                <!-- Declare predefined EPUB metadata namespaces -->
                 <xsl:for-each select="distinct-values(*/substring-before((@property, name())[1],':'))">
                     <xsl:variable name="prefix" select="."/>
                     <xsl:choose>
@@ -51,25 +60,25 @@
                 <xsl:text><![CDATA[
         ]]></xsl:text>
                 <meta charset="utf-8"/>
-                <xsl:if test="dc:title[1]">
+                <xsl:if test="dc:title[not(@refines)][1]">
                     <xsl:call-template name="copy-meta">
-                        <xsl:with-param name="meta" select="dc:title[1]"/>
+                        <xsl:with-param name="meta" select="dc:title[not(@refines)][1]"/>
                         <xsl:with-param name="rename" select="'title'"/>
                     </xsl:call-template>
                 </xsl:if>
                 <xsl:text><![CDATA[
         ]]></xsl:text>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <xsl:if test="opf:meta[@property='dc:description.abstract']">
+                <xsl:if test="opf:meta[not(@refines)][@property='dc:description.abstract']">
                     <xsl:call-template name="copy-meta">
-                        <xsl:with-param name="meta" select="opf:meta[@property='dc:description.abstract'][1]"/>
+                        <xsl:with-param name="meta" select="opf:meta[not(@refines)][@property='dc:description.abstract'][1]"/>
                         <xsl:with-param name="rename" select="'description'"/>
                     </xsl:call-template>
                 </xsl:if>
                 
-                <xsl:for-each select="(* | comment()) except (dc:title[1], opf:meta[@property='dc:description.abstract'][1])">
+                <xsl:for-each select="(*[not(@refines)] | comment()) except (dc:title[not(@refines)][1], opf:meta[not(@refines)][@property='dc:description.abstract'][1])">
                     <xsl:choose>
-                        <xsl:when test="self::comment() and (not(preceding-sibling::*) or (preceding-sibling::text() intersect preceding-sibling::*[1]/following-sibling::text())[matches(.,'.*\n.*')])">
+                        <xsl:when test="self::comment() and (not(preceding-sibling::*[not(@refines)]) or (preceding-sibling::text() intersect preceding-sibling::*[not(@refines)][1]/following-sibling::text())[matches(.,'.*\n.*')])">
                             <xsl:text><![CDATA[
         
         ]]></xsl:text>

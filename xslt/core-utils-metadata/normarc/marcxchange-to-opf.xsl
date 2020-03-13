@@ -2561,7 +2561,7 @@
             <xsl:when test="not($prefix-everything)">
                 <xsl:value-of select="$property"/>
             </xsl:when>
-            <xsl:when test="starts-with($property, 'bibliofil-id') or starts-with($property, 'normarc-id') or starts-with($property, 'websok')">
+            <xsl:when test="$property = ('series.issn','series.position','periodical','periodicity','magazine','newspaper','watermark','external-production','websok.url','websok.type','bibliofil-id','bibliofil-id.reference','normarc-id','pseudonym','epub-nr')">
                 <xsl:value-of select="concat('nlbbib:', $property)"/>
             </xsl:when>
             <xsl:otherwise>

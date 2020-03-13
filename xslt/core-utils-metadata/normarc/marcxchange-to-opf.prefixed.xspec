@@ -175,7 +175,7 @@
         <meta property="dc:title.original">Moonrise</meta>
         <meta property="dc:title.part">Moonrise</meta>
         <meta property="dc:title.series" id="series-title-1">Kattekrigerne Serie 2</meta>
-        <meta property="schema:series.position" refines="#series-title-1">2</meta>
+        <meta property="nlbbib:series.position" refines="#series-title-1">2</meta>
         <meta property="dc:title.series.preceding" id="series-preceding-1">Midnatt</meta>
         <meta property="dc:identifier.series.preceding" refines="#series-preceding-1">627680</meta>
         <meta property="dc:identifier.series.preceding.uri" refines="#series-preceding-1">urn:NBN:no-nb_nlb_627680</meta>
