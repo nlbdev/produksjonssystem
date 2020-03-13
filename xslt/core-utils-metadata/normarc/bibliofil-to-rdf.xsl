@@ -32,8 +32,8 @@
         <xsl:variable name="identifier" select="$metadata/dc:identifier"/>
         
         <xsl:variable name="resource-creativeWork" select="(
-                                                                $metadata/*[@name='isbn.original' and matches(@content, '.*[\dX-].*')]/concat('urn:isbn:', replace(@content,'[^\dX]','')),
-                                                                $metadata/*[@name='issn.original' and matches(@content, '.*[\dX-].*')]/concat('urn:issn:', replace(@content,'[^\dX]','')),
+                                                                $metadata/*[@name=('schema:isbn.original', 'isbn.original') and matches(@content, '.*[\dX-].*')]/concat('urn:isbn:', replace(@content,'[^\dX]','')),
+                                                                $metadata/*[@name=('schema:issn.original', 'issn.original') and matches(@content, '.*[\dX-].*')]/concat('urn:issn:', replace(@content,'[^\dX]','')),
                                                                 concat('creativeWork_',replace(string(current-time()),'[^\d]',''),'_',generate-id())
                                                             )[1]"/>
         <xsl:variable name="resource-book" select="(

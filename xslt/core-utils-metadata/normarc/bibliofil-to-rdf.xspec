@@ -478,6 +478,7 @@
     <x:scenario label="handle predefined nlbbib and schema namespaces">
         <x:context>
             <opf:metadata>
+                <meta name="schema:isbn.original" content="1234-56-7890"/>
                 <dc:contributor content="Sødal, Helje Kringlebotn">
                     <meta name="nlbbib:bibliofil-id" content="17265000"/>
                     <meta name="schema:birthDate" content="1962"/>
@@ -486,8 +487,10 @@
         </x:context>
         <x:expect label="the metadata should be extracted as expected">
             <rdf:RDF>
-                <rdf:Description rdf:ID="...">
+                <rdf:Description rdf:about="urn:isbn:1234567890">
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
                     <dc:contributor schema:name="Sødal, Helje Kringlebotn">
                         <nlbbib:bibliofil-id>17265000</nlbbib:bibliofil-id>
                         <schema:birthDate>1962</schema:birthDate>
@@ -495,7 +498,7 @@
                 </rdf:Description>
                 <rdf:Description rdf:ID="...">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
-                    <schema:exampleOfWork rdf:resource="..."/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
                 </rdf:Description>
             </rdf:RDF>
         </x:expect>
