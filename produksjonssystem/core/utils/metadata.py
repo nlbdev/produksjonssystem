@@ -106,7 +106,7 @@ class Metadata:
         report.debug("getting edition metadata from: {}".format(edition_url))
         response = Metadata.requests_get(edition_url)
 
-        if response.status_code == 404 and len(edition_identifier) > 6:
+        if response is not None and response.status_code == 404 and len(edition_identifier) > 6:
             # fallback for as long as the API does not
             # support edition identifiers longer than 6 digits
             edition_identifier = edition_identifier[:6]
@@ -120,7 +120,7 @@ class Metadata:
             report.debug("getting edition metadata from: {}".format(edition_url))
             response = Metadata.requests_get(edition_url)
 
-        if response.status_code == 200:
+        if response is not None and response.status_code == 200:
             if format == "json":
                 return response.json()["data"]
             else:

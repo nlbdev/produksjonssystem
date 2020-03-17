@@ -11,6 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../produksjonssystem')))
 from core.pipeline import Pipeline
+from core.utils.metadata import Metadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -30,6 +31,8 @@ class PipelineTest(unittest.TestCase):
         print("----------------------------------------")
         print("TEST: setUp")
         #  logging.getLogger().setLevel(logging.DEBUG)
+        Metadata.requests_get = lambda url, cache_timeout=30: None  # don't perform HTTP requests
+        Metadata.refresh_old_books_cache_if_necessary = lambda report=None: None  # don't perform HTTP requests
         if os.path.exists(self.target):
             shutil.rmtree(self.target)
         os.makedirs(self.dir_in)
@@ -50,6 +53,15 @@ class PipelineTest(unittest.TestCase):
         time.sleep(2)
         shutil.rmtree(self.target)
         #  logging.getLogger().setLevel(logging.INFO)
+
+    def waitUntil(self, max_time, condition_text, fn):
+        start = time.time()
+        while time.time() - start < max_time:
+            print("status: {}, queue: {}".format(self.pipeline.get_status(), ",".join([b["name"] for b in self.pipeline._queue])))
+            if fn(self):
+                return
+            time.sleep(0.5)
+        self.assertEqual(fn(self), True, condition_text)
 
     def test_file(self):
         print("TEST: " + inspect.stack()[0][3])
@@ -167,35 +179,33 @@ class PipelineTest(unittest.TestCase):
 
         # Create a book
         Path(os.path.join(self.dir_in, '1_book')).touch()
-        time.sleep(2)
-        self.assertEqual(len(self.pipeline._queue), 1)
+
+        self.waitUntil(10, "1_book in queue", lambda test: len(test.pipeline._queue) == 1)
         self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '1_book']), 1)
-        time.sleep(1)
+        self.waitUntil(10, "1_book being processed", lambda test: test.pipeline.get_status() == "1_book")
+        self.assertEqual(len(self.pipeline._queue), 0)
 
         # Create two more books while the first one is being processed
         Path(os.path.join(self.dir_in, '3_book')).touch()
-        time.sleep(0.5)
+        self.waitUntil(5, "3_book in queue", lambda test: "3_book" in [b["name"] for b in test.pipeline._queue])
         Path(os.path.join(self.dir_in, '2_book')).touch()
-        time.sleep(3)
-        self.assertEqual(self.pipeline.get_status(), "1_book")
+        self.waitUntil(5, "2_book in queue", lambda test: "2_book" in [b["name"] for b in test.pipeline._queue])
+
         self.assertEqual(len(self.pipeline._queue), 2)
         self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '2_book']), 1)
         self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_book']), 1)
 
         # wait until 1_book should have been processed and 2_book have started
-        time.sleep(6)
-        self.assertEqual(self.pipeline.get_status(), "2_book")
+        self.waitUntil(10, "2_book being processed", lambda test: test.pipeline.get_status() == "2_book")
         self.assertEqual(len(self.pipeline._queue), 1)
         self.assertEqual(len([b['name'] for b in self.pipeline._queue if b['name'] == '3_book']), 1)
 
         # wait until 2_book should have been processed and 3_book have started
-        time.sleep(9)
-        self.assertEqual(self.pipeline.get_status(), "3_book")
+        self.waitUntil(15, "3_book being processed", lambda test: test.pipeline.get_status() == "3_book")
         self.assertEqual(len(self.pipeline._queue), 0)
 
         # wait until 3_book should have finished
-        time.sleep(9)
-        self.assertEqual(self.pipeline.get_status(), "Venter")
+        self.waitUntil(15, "done processing books", lambda test: test.pipeline.get_status() == "Venter")
         self.assertEqual(len(self.pipeline._queue), 0)
 
     def test_get_main_event(self):
