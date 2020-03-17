@@ -2,6 +2,7 @@
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
                stylesheet="group-opf-metadata.xsl">
     
+    <x:param name="include-namespaces" select="'prefix_1: #uri_1 prefix_2: #uri_2'"/>
     <x:param name="include-other-identifiers-placeholder" select="true()"/>
     
     <x:scenario label="Basic test">

@@ -8,7 +8,7 @@
     
     <xsl:output indent="no" omit-xml-declaration="yes"/>
     
-    <xsl:param name="append-prefixes" select="''" as="xs:string"/>
+    <xsl:param name="include-namespaces" select="''" as="xs:string"/>
     <xsl:param name="include-other-identifiers-placeholder" select="false()" as="xs:boolean"/>
     
     <xsl:template match="@* | node()" mode="#all">
@@ -34,20 +34,25 @@
         <xsl:copy exclude-result-prefixes="#all">
             <!-- Set namespaces on the metadata element -->
             <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
+            <xsl:for-each select="tokenize($include-namespaces, '\s+')[position() mod 2 = 1]">
+                <xsl:variable name="prefix" select="replace(., ':', '')"/>
+                <xsl:variable name="uri" select="replace($include-namespaces, concat('(^|.*\s)', $prefix ,':\s*([^\s]+)(\s.*|$)'), '$2')"/>
+                <xsl:namespace name="{$prefix}" select="$uri"/>
+            </xsl:for-each>
+            <xsl:variable name="explicit-prefixes" select="$include-namespaces"/>
             <xsl:for-each select="//opf:meta">
                 <xsl:if test="starts-with(@property, ':')">
                     <xsl:variable name="prefix" select="substring-before(@property, ':')" as="xs:string"/>
-                    <xsl:variable name="namespace-uri" select="namespace-uri-for-prefix($prefix, .)"/>
-                    <xsl:if test="$namespace-uri">
-                        <xsl:namespace name="{$prefix}" select="$namespace-uri"/>
+                    <xsl:if test="concat($prefix, ':') = tokenize($include-namespaces, '\s+')[position() mod 2 = 1]">
+                        <xsl:variable name="namespace-uri" select="namespace-uri-for-prefix($prefix, .)"/>
+                        <xsl:if test="$namespace-uri">
+                            <xsl:namespace name="{$prefix}" select="$namespace-uri"/>
+                        </xsl:if>
                     </xsl:if>
                 </xsl:if>
             </xsl:for-each>
             
             <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
-            <xsl:if test="$append-prefixes">
-                <xsl:attribute name="prefix" select="string-join((@prefix, $append-prefixes), ' ')"/>
-            </xsl:if>
             
             <!-- edition identifier (dc:identifier) before everything else -->
             <xsl:call-template name="comment-line">
