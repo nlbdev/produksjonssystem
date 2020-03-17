@@ -6,18 +6,25 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:schema="http://schema.org/"
-                exclude-result-prefixes="#all"
                 version="2.0">
     
     <xsl:output indent="no"/>
     
     <xsl:template match="@* | node()">
-        <xsl:copy exclude-result-prefixes="#all">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="/*">
+        <xsl:copy>
+            <xsl:copy-of select="namespace::*"/>
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
     
     <xsl:template match="dc:language | dc:language.original | opf:meta[(@property, @name)='dc:language.original']">
+        <xsl:variable name="preceding-whitespace" select="preceding-sibling::text()[1]"/>
         <xsl:variable name="language" select="tokenize((@schema:name, @content, text())[1],'-')[1]"/>
         <xsl:variable name="language" select="$iso-639//language[(iso-639-3, iso-639-1)/text() = $language]"/>
         <xsl:variable name="original" select="if (ends-with((@property, @name, name())[1], '.original')) then '.original' else ''"/>
@@ -28,8 +35,8 @@
                 <xsl:variable name="id" select="(@id, concat('language-', string(count(preceding::dc:language) + 1)))[1]"/>
                 <xsl:variable name="id" select="if ($id = (//@id except @id)) then generate-id() else $id"/>
                 
-                <xsl:copy exclude-result-prefixes="#all">
-                    <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                <xsl:copy>
+                    <xsl:copy-of select="@*"/>
                     <xsl:choose>
                         <xsl:when test="$nested">
                             <!-- nested OPF -->
@@ -37,11 +44,13 @@
                             <xsl:for-each select="$language/(norwegian | english | native)">
                                 <xsl:sort select="name()"/>
                                 <xsl:sort select="text()"/>
+                                <xsl:value-of select="concat($preceding-whitespace, '    ')"/>
                                 <xsl:element name="meta" namespace="http://www.idpf.org/2007/opf">
                                     <xsl:attribute name="name" select="concat('dc:language', $original, '.name.', local-name())"/>
                                     <xsl:attribute name="content" select="text()"/>
                                 </xsl:element>
                             </xsl:for-each>
+                            <xsl:value-of select="$preceding-whitespace"/>
                         </xsl:when>
                         <xsl:otherwise>
                             <!-- flat OPF -->
@@ -55,6 +64,7 @@
                     <xsl:for-each select="$language/(norwegian | english | native)">
                         <xsl:sort select="name()"/>
                         <xsl:sort select="text()"/>
+                        <xsl:value-of select="$preceding-whitespace"/>
                         <xsl:element name="meta" namespace="http://www.idpf.org/2007/opf">
                             <xsl:attribute name="property" select="concat('dc:language', $original, '.name.', local-name())"/>
                             <xsl:attribute name="refines" select="concat('#', $id)"/>
@@ -65,12 +75,13 @@
             </xsl:when>
             <xsl:otherwise>
                 <!-- RDF -->
-                <xsl:copy exclude-result-prefixes="#all">
-                    <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                <xsl:copy>
+                    <xsl:copy-of select="@*"/>
                     <xsl:attribute name="schema:name" select="($language/iso-639-1/text(), $language/parent::language/iso-639-1/text(), text())[1]"/>
                     <xsl:for-each select="$language/(norwegian | english | native)">
                         <xsl:sort select="name()"/>
                         <xsl:sort select="text()"/>
+                        <xsl:value-of select="concat($preceding-whitespace, '    ')"/>
                         <xsl:element name="{concat('dc:language', $original, '.name.', local-name())}">
                             <xsl:value-of select="text()"/>
                         </xsl:element>

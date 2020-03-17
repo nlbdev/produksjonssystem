@@ -32,6 +32,18 @@
         
         <xsl:text>    </xsl:text>
         <xsl:copy exclude-result-prefixes="#all">
+            <!-- Set namespaces on the metadata element -->
+            <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
+            <xsl:for-each select="//opf:meta">
+                <xsl:if test="starts-with(@property, ':')">
+                    <xsl:variable name="prefix" select="substring-before(@property, ':')" as="xs:string"/>
+                    <xsl:variable name="namespace-uri" select="namespace-uri-for-prefix($prefix, .)"/>
+                    <xsl:if test="$namespace-uri">
+                        <xsl:namespace name="{$prefix}" select="$namespace-uri"/>
+                    </xsl:if>
+                </xsl:if>
+            </xsl:for-each>
+            
             <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
             <xsl:if test="$append-prefixes">
                 <xsl:attribute name="prefix" select="string-join((@prefix, $append-prefixes), ' ')"/>
@@ -120,7 +132,7 @@
         
         <xsl:variable name="trailing-space" select="$element/(following-sibling::node()[1] intersect following-sibling::text()[1])" as="text()?"/>
         <xsl:variable name="trailing-comment" select="($element | $trailing-space)/(following-sibling::node()[1] intersect following-sibling::comment()[1])[1]" as="comment()?"/>
-        <xsl:if test="$trailing-space/matches(., ' +')">
+        <xsl:if test="count($trailing-comment) and $trailing-space/matches(., ' +')">
             <xsl:copy-of select="$trailing-space" exclude-result-prefixes="#all"/>
             <xsl:copy-of select="$trailing-comment" exclude-result-prefixes="#all"/>
         </xsl:if>

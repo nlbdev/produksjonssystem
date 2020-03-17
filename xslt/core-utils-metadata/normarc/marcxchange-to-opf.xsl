@@ -79,6 +79,9 @@
                 <xsl:namespace name="dc" select="'http://purl.org/dc/elements/1.1/'"/>
                 <xsl:namespace name="nlbbib" select="'http://www.nlb.no/bibliographic'"/>
                 <xsl:namespace name="schema" select="'http://schema.org/'"/>
+                <xsl:if test="$include-source-reference">
+                    <xsl:namespace name="nlb" select="'http://www.nlb.no/'"/>
+                </xsl:if>
                 <xsl:variable name="with-duplicates" as="element()*">
                     <xsl:apply-templates select="node()"/>
                 </xsl:variable>
@@ -170,7 +173,7 @@
                 <xsl:when test="string($nested) = 'true'">
                     <xsl:for-each select="$metadata">
                         <xsl:copy exclude-result-prefixes="#all">
-                            <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                            <xsl:copy-of select="@* | namespace::*" exclude-result-prefixes="#all"/>
                             <xsl:for-each select="*[not(@refines)] | comment()">
                                 <xsl:choose>
                                     <xsl:when test="self::comment()">
@@ -213,7 +216,7 @@
         
         <xsl:for-each select="$context">
             <xsl:element name="{name()}" exclude-result-prefixes="#all">
-                <xsl:copy-of select="@* except @nlb:metadata-source" exclude-result-prefixes="#all"/>
+                <xsl:copy-of select="@* except @nlb:metadata-source | namespace::*[not(name() = 'nlb')]" exclude-result-prefixes="#all"/>
 
                 <xsl:if test="$include-source-reference">
                     <xsl:copy-of select="namespace::*[name() = 'nlb']"/>
@@ -254,7 +257,7 @@
         
         <xsl:for-each select="$element">
             <xsl:copy exclude-result-prefixes="#all">
-                <xsl:copy-of select="@*" exclude-result-prefixes="#all"/>
+                <xsl:copy-of select="@* | namespace::*" exclude-result-prefixes="#all"/>
                 <xsl:for-each select="node()">
                     <xsl:choose>
                         <xsl:when test="self::*">
