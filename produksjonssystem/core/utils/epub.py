@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import pathlib
 import re
 import stat
@@ -232,6 +233,36 @@ class Epub():
     def refresh_metadata(self):
         self._metadata = None
         self.metadata()
+
+    # iterates over the package document and all the content documents and updates their "prefix"/"epub:prefix" attributes
+    def update_prefixes(self):
+        temp_xml_file_obj = tempfile.NamedTemporaryFile()
+        temp_xml_file = temp_xml_file_obj.name
+
+        opf_path = os.path.join(self.book_path, self.opf_path())
+
+        xslt = Xslt(self.pipeline,
+                    stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "update-epub-prefixes.xsl"),
+                    source=opf_path,
+                    target=temp_xml_file)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_xml_file, opf_path)
+
+        opf_element = self.get_opf_package_element()
+        html_paths = opf_element.xpath("/*/*[local-name()='manifest']/*[@media-type='application/xhtml+xml']/@href")
+        for html_relpath in html_paths:
+            html_path = os.path.normpath(os.path.join(os.path.dirname(opf_path), html_relpath))
+
+            xslt = Xslt(self.pipeline,
+                        stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "update-epub-prefixes.xsl"),
+                        source=html_path,
+                        target=temp_xml_file)
+            if not xslt.success:
+                return False
+            shutil.copy(temp_xml_file, html_path)
+
+        return True
 
     @staticmethod
     def html_to_nav(pipeline, source, target):

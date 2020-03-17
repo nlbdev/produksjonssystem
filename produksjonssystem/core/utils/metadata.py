@@ -605,6 +605,8 @@ class Metadata:
             with open(html_path, "w") as f:
                 f.write(html_content)
 
+        epub.update_prefixes()  # metadata contains prefixes that most likely are not predefined
+
         epub.refresh_metadata()  # refresh cached metadata in the Epub object
 
         return True  # success

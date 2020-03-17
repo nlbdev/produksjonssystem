@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" stylesheet="update-epub-prefixes.xsl">
+    
+    <x:scenario label="Basic test for OPF">
+        <x:context>
+            <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
+                <metadata xmlns="http://www.idpf.org/2007/opf" prefix="nlbprod: http://www.nlb.no/production" xmlns:foo="#bar">
+                    <meta property="z3998:sentence">…</meta>
+                    <meta property="schema:author">…</meta>
+                    <meta property="foo:defined-in-namespace">…</meta>
+                    <meta property="nlbprod:defined-in-prefix">…</meta>
+                </metadata>
+                <manifest>
+                    <item properties="musicxml:musicxml" xmlns:musicxml="http://www.musicxml.org/"/>
+                </manifest>
+                <spine/>
+            </package>
+        </x:context>
+
+        <x:expect label="The result should be as expected">
+            <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/# schema: http://schema.org/ foo: #bar nlbprod: http://www.nlb.no/production musicxml: http://www.musicxml.org/">
+                <metadata xmlns="http://www.idpf.org/2007/opf"  xmlns:foo="#bar">
+                    <meta property="z3998:sentence">…</meta>
+                    <meta property="schema:author">…</meta>
+                    <meta property="foo:defined-in-namespace">…</meta>
+                    <meta property="nlbprod:defined-in-prefix">…</meta>
+                </metadata>
+                <manifest>
+                    <item properties="musicxml:musicxml" xmlns:musicxml="http://www.musicxml.org/"/>
+                </manifest>
+                <spine/>
+            </package>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Basic test for XHTML">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="no" lang="no" xmlns:foo="#bar" epub:prefix="nlbprod: http://www.nlb.no/production">
+                <head/>
+                <body>
+                    <p epub:type="z3998:sentence">…</p>
+                    <p epub:type="schema:author">…</p>
+                    <p epub:type="foo:defined-in-namespace">…</p>
+                    <p epub:type="nlbprod:defined-in-prefix">…</p>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="The result should be as expected">
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="no" lang="no" xmlns:foo="#bar"
+                  epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/# schema: http://schema.org/ foo: #bar nlbprod: http://www.nlb.no/production">
+                <head/>
+                <body>
+                    <p epub:type="z3998:sentence">…</p>
+                    <p epub:type="schema:author">…</p>
+                    <p epub:type="foo:defined-in-namespace">…</p>
+                    <p epub:type="nlbprod:defined-in-prefix">…</p>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

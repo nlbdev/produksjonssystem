@@ -102,13 +102,15 @@ class NordicToNlbpub(Pipeline):
                         return False
                     shutil.copy(temp_html_file, file)
 
+        temp_epub_opf_path = os.path.join(temp_epubdir, temp_epub.opf_path())
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
-                    source=os.path.join(temp_epubdir, temp_epub.opf_path()),
+                    source=temp_epub_opf_path,
                     target=temp_opf_file)
         if not xslt.success:
             return False
-        shutil.copy(temp_opf_file, os.path.join(temp_epubdir, temp_epub.opf_path()))
+        shutil.copy(temp_opf_file, temp_epub_opf_path)
+
         temp_epub.refresh_metadata()
 
         html_dir_obj = tempfile.TemporaryDirectory()
@@ -269,14 +271,6 @@ class NordicToNlbpub(Pipeline):
             return False
         shutil.copy(temp_html_file, html_file)
 
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "update-epub-prefixes.xsl"),
-                    source=html_file,
-                    target=temp_html_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_html_file, html_file)
-
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
         nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
         nlbpub_tempdir = nlbpub_tempdir_obj.name
@@ -284,6 +278,8 @@ class NordicToNlbpub(Pipeline):
         nlbpub = Epub.from_html(self, html_dir, nlbpub_tempdir)
         if nlbpub is None:
             return False
+
+        nlbpub.update_prefixes()
 
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
         archived_path, stored = self.utils.filesystem.storeBook(nlbpub.asDir(), temp_epub.identifier(), overwrite=self.overwrite)
