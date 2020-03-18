@@ -39,10 +39,11 @@ class Bibliofil:
                 lines.append("{};{};{};{}".format(identifier, "docx", "dl", "DOCX (Word)"))
 
             if has_mobi:
+                lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "Mobi / Kindle Format"))
                 lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Send til Kindle"))
 
             if has_epub:
-                lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylle"))
+                lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylla"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "st", "Vis i nettleseren"))
