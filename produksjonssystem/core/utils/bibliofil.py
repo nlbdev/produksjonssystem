@@ -44,6 +44,9 @@ class Bibliofil:
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylle"))
 
+            if has_epub:
+                lines.append("{};{};{};{}".format(identifier, "epub", "st", "Vis i nettleseren"))
+
             logging.info("Sending formatklar-e-mail to {} with content:".format(Config.get("email.formatklar.address")))
             logging.info("\n".join(lines))
             Report.emailPlainText("formatklar: " + identifier,
