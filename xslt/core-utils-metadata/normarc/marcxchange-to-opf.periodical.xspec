@@ -7,7 +7,7 @@
                xmlns="http://www.idpf.org/2007/opf"
                stylesheet="marcxchange-to-opf.xsl">
     
-    <x:param name="identifier" select="'612345022018'"/>
+    <x:param name=" identifier" select="'612345022018'"/>
     <x:param name="include-source-reference" select="'true'"/>
     
     <x:scenario label="Bruk boknummer for å lage utgivelsesår for utgaven og originalen">
@@ -27,6 +27,112 @@
         <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_612345022018</meta>
         <meta nlb:metadata-source="Bibliofil@612345 *596" property="bookEdition.original">1</meta>
         <meta nlb:metadata-source="Bibliofil@612345 *596$f" property="issn.original">0018-2842</meta>
+    </metadata></x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Aftenposten">
+        <x:context xml:space="preserve">
+            <marcxchange:record>
+                <marcxchange:leader>00542nam  2200217   4500</marcxchange:leader>
+                <marcxchange:controlfield tag="000">     c</marcxchange:controlfield>
+                <marcxchange:controlfield tag="001">611823</marcxchange:controlfield>
+                <marcxchange:controlfield tag="008">980611               na          00nob</marcxchange:controlfield>
+                <marcxchange:datafield tag="015" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">10480207</marcxchange:subfield>
+                    <marcxchange:subfield code="b">BibliofilID</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="019" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="b">dc,dj</marcxchange:subfield>
+                    <marcxchange:subfield code="b">jn</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="082" ind1="3" ind2=" ">
+                    <marcxchange:subfield code="2">5</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="082" ind1="3" ind2=" ">
+                    <marcxchange:subfield code="z">h</marcxchange:subfield>
+                    <marcxchange:subfield code="2">5</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="090" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">611823</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="245" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Aftenposten</marcxchange:subfield>
+                    <marcxchange:subfield code="h">daisy 2.02</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="260" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Oslo</marcxchange:subfield>
+                    <marcxchange:subfield code="b">Norsk lyd- og blindeskriftbibliotek</marcxchange:subfield>
+                    <marcxchange:subfield code="c">2016</marcxchange:subfield>
+                    <marcxchange:subfield code="_">17192400</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="511" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Brage Talesyntese</marcxchange:subfield>
+                    <marcxchange:subfield code="_">19209900</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="581" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Abonnement</marcxchange:subfield>
+                    <marcxchange:subfield code="_">20203700</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="650" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">Avis</marcxchange:subfield>
+                    <marcxchange:subfield code="_">20168800</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="850" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="a">NLB/L</marcxchange:subfield>
+                    <marcxchange:subfield code="s">n</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="856" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="u">URN:NBN:no-nb_nlb_</marcxchange:subfield>
+                    <marcxchange:subfield code="s">84515237</marcxchange:subfield>
+                </marcxchange:datafield>
+                <marcxchange:datafield tag="856" ind1=" " ind2=" ">
+                    <marcxchange:subfield code="u">URN:NBN:no-nb_nlb_</marcxchange:subfield>
+                    <marcxchange:subfield code="s">98877287</marcxchange:subfield>
+                </marcxchange:datafield>
+            </marcxchange:record>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected" xml:space="preserve">    <metadata xmlns="http://www.idpf.org/2007/opf">
+        <dc:identifier nlb:metadata-source="Bibliofil@611823 *001" id="pub-id">612345022018</dc:identifier>
+        <dc:title nlb:metadata-source="Bibliofil@611823 *245$a">Aftenposten</dc:title>
+        <dc:format nlb:metadata-source="Bibliofil@611823 *019$b">DAISY 2.02</dc:format>
+        <dc:language nlb:metadata-source="Bibliofil@611823 *008">nob</dc:language>
+        <dc:publisher nlb:metadata-source="Bibliofil@611823 *260$b" id="publisher-260-1">Norsk lyd- og blindeskriftbibliotek</dc:publisher>
+        <meta nlb:metadata-source="Bibliofil@611823 *260$_" property="bibliofil-id" refines="#publisher-260-1">17192400</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *511$a" property="dc:contributor.narrator" id="contributor-511-1">Brage Talesyntese</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *511$_" property="bibliofil-id" refines="#contributor-511-1">19209900</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *008" property="dc:date.available">1998-06-11</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *260$c" property="dc:date.issued">2016</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *001" property="dc:date.issued.original">2018</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *008" property="dc:date.registered">1998-06-11</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other">Audio recording</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other">Compact Disk</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other">Other voice/other</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other">Serial</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other">Newspaper</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other.no">Lydopptak</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other.no">CD (kompaktplate)</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other.no">Annen tale/annet</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other.no">Periodika</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *019$b" property="dc:format.other.no">Avis</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *260$a" property="dc:publisher.location">Oslo</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *001" property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_612345022018</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *650" property="dc:subject.keyword" id="subject-650-1">Avis</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *650$_" property="bibliofil-id" refines="#subject-650-1">20168800</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *511$a" property="dc:type.audio">true</meta>
+        <meta property="dc:type.fiction">false</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *008" property="dc:type.genre">Non-fiction</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *008" property="dc:type.genre">Non-biography</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *511$a" property="dc:type.text">true</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *511$a" property="dc:type.tts">true</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *008" property="audience">Adult</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *245" property="bookEdition">1</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *856$s" property="fileSize">84515237</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *856$s" property="fileSize">98877287</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *850$a" property="library">NLB</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *650" property="newspaper">true</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *650" property="periodical">true</meta>
+        <meta nlb:metadata-source="Bibliofil@611823 *008" property="typicalAgeRange">17-</meta>
     </metadata></x:expect>
     </x:scenario>
 
