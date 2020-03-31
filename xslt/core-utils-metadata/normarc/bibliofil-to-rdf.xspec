@@ -511,8 +511,7 @@
                 <meta name="isbn" content="1234-56-5555"/>
                 <meta name="isbn.original" content="1234-56-7890"/>
                 <meta name="audience" content="Voksen"/>
-                <meta name="audience_age_from" content="6"/>
-                <meta name="audience_age_to" content="10"/>
+                <meta name="typicalAgeRange" content="6-10"/>
             </opf:metadata>
         </x:context>
         <x:expect label="the metadata should be extracted as expected">
@@ -522,8 +521,7 @@
                     <schema:isbn>1234-56-7890</schema:isbn>
                     <dc:source>urn:isbn:1234567890</dc:source>
                     <schema:audience>Voksen</schema:audience>
-                    <schema:audience_age_from>6</schema:audience_age_from>
-                    <schema:audience_age_to>10</schema:audience_age_to>
+                    <schema:typicalAgeRange>6-10</schema:typicalAgeRange>
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_617429">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
