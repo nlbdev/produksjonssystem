@@ -344,6 +344,7 @@
                     <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
                     <schema:isbn>1234-56-7890</schema:isbn>
                     <dc:source>urn:isbn:1234567890</dc:source>
+                    <schema:audience>Voksen</schema:audience>
                 </rdf:Description>
                 <rdf:Description rdf:about="urn:nbn:no-nb_nlb_612345">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
@@ -351,7 +352,6 @@
                     <owl:sameAs rdf:resource="urn:isbn:1234565555"/>
                     <dc:identifier>612345</dc:identifier>
                     <schema:isbn>1234-56-5555</schema:isbn>
-                    <schema:audience>Voksen</schema:audience>
                     <schema:educationalUse>true</schema:educationalUse>
                 </rdf:Description>
             </rdf:RDF>
@@ -499,6 +499,38 @@
                 <rdf:Description rdf:ID="...">
                     <rdf:type rdf:resource="http://schema.org/Book"/>
                     <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Audience and age ranges">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="617429"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                <meta name="audience" content="Voksen"/>
+                <meta name="audience_age_from" content="6"/>
+                <meta name="audience_age_to" content="10"/>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                    <schema:audience>Voksen</schema:audience>
+                    <schema:audience_age_from>6</schema:audience_age_from>
+                    <schema:audience_age_to>10</schema:audience_age_to>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_617429">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                    <owl:sameAs rdf:resource="urn:isbn:1234565555"/>
+                    <dc:identifier>617429</dc:identifier>
+                    <schema:isbn>1234-56-5555</schema:isbn>
                 </rdf:Description>
             </rdf:RDF>
         </x:expect>

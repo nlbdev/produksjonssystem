@@ -209,6 +209,7 @@
         
         <xsl:variable name="creativeWorkProperties" select="('dc:title', 'dc:creator', 'dc:language', 'dc:contributor', 'schema:bookEdition', 'dc:subject', 'dc:type.genre', 'dc:type.fiction', 'dc:type.literaryForm',
                                                              'nlbbib:series.issn', 'nlbbib:series.position', 'nlbbib:periodical', 'nlbbib:periodicity', 'nlbbib:magazine', 'nlbbib:newspaper',
+                                                             'schema:audience', 'schema:audience_age_from', 'schema:audience_age_to',
                                                              $metadata//*[starts-with(@name,'dc:title.') and not(ends-with(@name, '.part') or contains(@name, '.part.'))]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:contributor.') and not(@name='dc:contributor.narrator')]/string(@name),
                                                              $metadata//*[starts-with(@name,'dc:subject.')]/string(@name))"/>
