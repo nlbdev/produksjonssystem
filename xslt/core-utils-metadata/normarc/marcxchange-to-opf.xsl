@@ -399,7 +399,7 @@
         <xsl:variable name="POS33" select="substring(text(),34,1)"/>
         <xsl:variable name="POS34" select="substring(text(),35,1)"/>
         <xsl:variable name="POS35-37" select="substring(text(),36,3)"/>
-
+        
         <xsl:if test="matches($POS00-05,'^\d\d\d\d\d\d$')">
             <xsl:variable name="current-year" select="xs:integer(tokenize(xs:string(current-date()),'-')[1])"/>
             <xsl:variable name="year" select="xs:integer(substring($POS00-05,1,2))"/>
@@ -2186,6 +2186,7 @@
     <xsl:variable name="YEAR_NEGATIVE" select="'.*f.*(Kr.*)?'"/>
     <xsl:variable name="YEAR_VALUE" select="'[^\d]'"/>
     <xsl:variable name="AVAILABLE" select="'^.*?(\d+)[\./]+(\d+)[\./]+(\d+).*?$'"/>
+    <xsl:variable name="ISO_DATE" select="'^\d\d\d\d-\d\d-\d\d$'"/>
     <xsl:variable name="DEWEY" select="'^.*?(\d+\.?\d*).*?$'"/>
 
     <xsl:function name="nlb:parseNationality">
@@ -2508,6 +2509,9 @@
     <xsl:function name="nlb:parseDate">
         <xsl:param name="date"/>
         <xsl:choose>
+            <xsl:when test="matches($date, $ISO_DATE)">
+                <xsl:sequence select="$date"/>
+            </xsl:when>
             <xsl:when test="matches($date, $AVAILABLE)">
                 <xsl:sequence select="replace($date, $AVAILABLE, '$3-$2-$1')"/>
             </xsl:when>

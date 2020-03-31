@@ -1172,4 +1172,16 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="allow ISO-formatted date as available date">
+        <x:context>
+            <marcxchange:datafield tag="592" ind1=" " ind2=" ">
+                <marcxchange:subfield code="a">2016-10-04</marcxchange:subfield>
+            </marcxchange:datafield>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected" test="*">
+            <meta property="dc:date.available">2016-10-04</meta>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
