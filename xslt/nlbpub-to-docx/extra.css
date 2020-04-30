@@ -194,7 +194,7 @@ table {
   
   margin-top: 0em ;
   margin-bottom: 0em ;
-  font-family: Verdana, Helvetica, Arial, sans-serif;
+ 
   width: 100%;
   border-collapse: collapse;
 }
@@ -214,8 +214,7 @@ display: table-caption;
   
   color: #468173;
   width: 100%;
-  font-style: normal;
-  font-weight: 600;
+ 
 }
 table thead {
   border-bottom: 1px solid #468173;
@@ -234,8 +233,7 @@ table th {
   vertical-align: top;
   text-align: left;
   color: #468173;
-  font-style: normal;
-  font-weight: 600;
+  
 }
 table td {
   background: transparent;
@@ -261,14 +259,10 @@ table tfoot td {
   -webkit-border-radius: 0;
   border-radius: 0;
   color: #585858;
-  font-style: italic;
-  font-weight: 400;
   text-align: left;
 }
 
 ttable td p{
-font-family: inherit;
-font-size:10%;
 vertical-align: top;
 text-align: left;
 }

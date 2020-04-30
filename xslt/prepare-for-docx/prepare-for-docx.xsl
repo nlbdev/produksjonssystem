@@ -150,6 +150,7 @@
         </xsl:element>
     </xsl:template>
     
+   
     <xsl:template match="section[f:classes(.) = 'oppgaver1'] | section[f:classes(.) = 'oppgaver2'] | section[f:classes(.) = 'oppgaver3']">
        <section>
                 
@@ -387,11 +388,14 @@
             
          <!--   <xsl:apply-templates select="* except section[f:types(.) = ('toc', 'backmatter', 'index', 'titlepage', 'colophon') and f:classes(.) = ('rearcover')] "/>-->
             
+          <!--  <xsl:apply-templates select="* except section[f:types(.) = ('toc', 'backmatter', 'index', 'colophon', 'titlepage', 'cover')]"/> -->
             <xsl:apply-templates select="* except section[f:types(.) = ('toc', 'backmatter', 'index', 'colophon', 'titlepage', 'cover')]"/>
             <p></p> 
+            <p>Ettertekst: </p>
+            <xsl:apply-templates select="section[f:types(.) = 'backmatter' and not(f:types(.) = 'index')]"/>
+            <p></p> 
             <p>Kolofon: </p>
-             <xsl:apply-templates select="section[f:types(.) = 'frontmatter' and f:types(.) = 'colophon']"/>
-         
+            <xsl:apply-templates select="section[f:types(.) = 'frontmatter' and f:types(.) = 'colophon']"/>
             <p></p> 
             <p>Baksidetekst: </p>
             <xsl:apply-templates select="section[f:types(.) = 'cover']/section[f:classes(.) = 'rearcover']"/>
@@ -402,7 +406,10 @@
     </xsl:template>
 
 
- 
+    <xsl:template match="section[f:types(.) = 'backmatter']">
+             
+        <xsl:apply-templates select="node()"/>
+    </xsl:template>
     <xsl:template match="section[f:types(.) = 'frontmatter' and f:types(.) = 'colophon']">
         
    

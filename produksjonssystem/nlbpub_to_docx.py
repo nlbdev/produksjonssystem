@@ -7,6 +7,9 @@ import sys
 import tempfile
 import traceback
 
+import re
+
+from docx import Document
 from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
@@ -123,15 +126,51 @@ class NLBpubToDocx(Pipeline):
                 "--docx-page-margin-left=70",
                 "--docx-page-margin-right=56",
                 ("--language=" + language) if language else "",
-                #"--base-font-size=13",
+                #"--base-font-size=13"
                 #"--remove-paragraph-spacing",
                 #"--remove-paragraph-spacing-indent-size=-1",
                 "--font-size-mapping=13,13,13,13,13,13,13,13"
             ])
-                                               
+                                                            
 
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
+
+
+
+# -------------  script from kvile ---------------
+
+            
+
+                document = Document(os.path.join(temp_docxdir, epub.identifier() + ".docx"))
+
+                paragraphList = document.paragraphs
+                emptyParagraph = False
+
+                def delete_paragraph(paragraph):
+                   # self.utils.report.info("Delete paragraph: ")
+                    p = paragraph._element
+                    p.getparent().remove(p)
+                    p._p = p._element = None
+
+                for paragraph in document.paragraphs:
+                    if len(paragraph.text) <= 1:
+                        paragraph.text = re.sub(r"^\s(.*)", r"\1", paragraph.text)  #remove space at beginning av p
+                       # self.utils.report.info("Paragraph.text <= 1 ")
+                        if len(paragraph.text) == 0 and emptyParagraph: #if last paragraph also was empty
+                    #        self.utils.report.info("Paragraph.text == 0 ")
+                            delete_paragraph(paragraph)
+                        emptyParagraph = True
+                    else:
+                        emptyParagraph = False
+                
+
+                document.save(os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
+                self.utils.report.info("Temp-fil ble lagret: "+os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
+         
+# ---------- end script from kvile -------
+
+
             else:
                 self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
                 self.utils.report.debug(traceback.format_stack())
