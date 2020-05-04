@@ -24,10 +24,17 @@
         </xsl:copy>
     </xsl:template>
     
+    <!-- For some reason, generate-id returns the same ID in different contexts in some cases? This hopefully fixes it… (although the IDs are longer) -->
+    <xsl:function name="f:generate-id" as="xs:string">
+        <xsl:param name="element" as="element()"/>
+        
+        <xsl:value-of select="string-join($element/ancestor-or-self::*[not(local-name() = ('html', 'body'))]/generate-id(), '')"/>
+    </xsl:function>
+    
     <xsl:template match="h1[not(@id)] | h2[not(@id)] | h3[not(@id)] | h4[not(@id)] | h5[not(@id)] | h6[not(@id)]">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            <xsl:attribute name="id" select="generate-id()"/>
+            <xsl:attribute name="id" select="f:generate-id(.)"/>
             <xsl:apply-templates select="node()"/>
         </xsl:copy>
     </xsl:template>
@@ -42,7 +49,7 @@
 
             <xsl:if test="$chapter-headline">
                 <xsl:element name="{$hx}" namespace="http://www.w3.org/1999/xhtml">
-                    <xsl:attribute name="id" select="generate-id(.)"/>
+                    <xsl:attribute name="id" select="f:generate-id(.)"/>
                     <xsl:attribute name="class" select="'generated-headline hidden-headline'"/>
                     <xsl:value-of select="$chapter-headline"/>
                 </xsl:element>
