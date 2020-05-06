@@ -126,7 +126,7 @@ class NLBpubToDocx(Pipeline):
                 "--docx-page-margin-left=70",
                 "--docx-page-margin-right=56",
                 ("--language=" + language) if language else "",
-                #"--base-font-size=13"
+                "--base-font-size=13",
                 #"--remove-paragraph-spacing",
                 #"--remove-paragraph-spacing-indent-size=-1",
                 "--font-size-mapping=13,13,13,13,13,13,13,13"

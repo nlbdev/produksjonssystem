@@ -191,7 +191,8 @@ table {
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
   border-radius: 0;
-  
+  font-size: 13pt;
+  font-family: "Verdana", sans-serif; 
   margin-top: 0em ;
   margin-bottom: 0em ;
  
@@ -201,7 +202,7 @@ table {
 caption {
   /*background: rgba(70, 129, 115, 0.15);*/
 display: table-caption;
- font-size: 18pt;
+ font-size: 13pt;
   font-family: "Verdana", sans-serif; 
   text-align: center;
   border-style: solid;
