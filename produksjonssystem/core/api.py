@@ -167,7 +167,7 @@ class API():
         logging.debug("joining {}".format(self.thread.name))
         self.thread.join(timeout=60)
 
-        if self.thread.isAlive():
+        if self.thread.is_alive():
             logging.debug("The API thread is still running. Let's ignore it and continue shutdown…")
 
     # endpoint: /shutdown

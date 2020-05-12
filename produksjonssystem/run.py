@@ -490,7 +490,7 @@ class Produksjonssystem():
 
                 else:
                     for thread in threads:
-                        if not thread.isAlive():
+                        if not thread.is_alive():
                             self.info("thread is not running, will restart system: {} is not healty, will restart system...".format(thread))
                             running = False
                             break
