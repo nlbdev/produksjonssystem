@@ -11,6 +11,7 @@ from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+from core.utils.mathml_to_text import Mathml_to_text
 from epub_to_dtbook_audio import EpubToDtbookAudio
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -72,19 +73,12 @@ class NlbpubToTtsDtbook(Pipeline):
         temp_xslt_output_obj = tempfile.NamedTemporaryFile()
         temp_xslt_output = temp_xslt_output_obj.name
 
-        # Transformasjon for å erstatte MathML med tekstuell representasjon
-        # TODO Endre fra placeholder til riktig transformering når denne er klar
-        self.utils.report.info("Erstatter matematiske formler med tekstuell representasjon")
-        self.utils.report.debug("mathml-to-placeholder.xsl")
-        self.utils.report.debug("    source = " + temp_result)
-        self.utils.report.debug("    target = " + temp_xslt_output)
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, "mathml-to-text", "mathml-to-placeholder.xsl"),
-                    source=temp_result,
-                    target=temp_xslt_output)
-        if not xslt.success:
+        self.utils.report.info("Erstatter MathML med en tekstlig representasjon...")
+
+        mathML_result = Mathml_to_text(self, source=temp_result, target=temp_result)
+
+        if not mathML_result.success:
             return False
-        shutil.copy(temp_xslt_output, temp_result)
 
         self.utils.report.info("Konverterer fra XHTML5 til DTBook...")
         self.utils.report.debug("html-to-dtbook.xsl")
