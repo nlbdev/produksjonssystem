@@ -1184,4 +1184,19 @@
         </x:expect>
     </x:scenario>
     
+    
+    <x:scenario label="handle a sequence of values when building metadata (also prints a warning)">
+        <x:context>
+            <marcxchange:datafield tag="653" ind1=" " ind2=" ">
+                <marcxchange:subfield code="a">first value</marcxchange:subfield>
+                <marcxchange:subfield code="a">second value</marcxchange:subfield>
+                <marcxchange:subfield code="a">third value</marcxchange:subfield>
+            </marcxchange:datafield>
+        </x:context>
+        
+        <x:expect label="the metadata should be extracted as expected" test="*">
+            <meta property="dc:subject.keyword" id="subject-653-1">first value second value third value</meta>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

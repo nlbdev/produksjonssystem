@@ -314,18 +314,20 @@
     <xsl:template name="meta">
         <xsl:param name="context" as="element()?" select="."/>
         <xsl:param name="property" as="xs:string"/>
-        <xsl:param name="value" as="xs:string"/>
+        <xsl:param name="value" as="xs:string+"/>
         <xsl:param name="id" as="xs:string?" select="()"/>
         <xsl:param name="refines" as="xs:string?" select="()"/>
 
         <xsl:variable name="dublin-core" select="$property = ('dc:contributor', 'dc:coverage', 'dc:creator', 'dc:date', 'dc:description', 'dc:format', 'dc:identifier',
                                                               'dc:language', 'dc:publisher', 'dc:relation', 'dc:rights', 'dc:source', 'dc:subject', 'dc:title', 'dc:type')" as="xs:boolean"/>
 
+        <xsl:variable name="identifier" as="xs:string?" select="($context/(../* | ../../*)[self::*:controlfield[@tag='001']])[1]/text()"/>
+        <xsl:variable name="tag" select="($context/../@tag, $context/@tag, '???')[1]"/>
+        <xsl:variable name="metadata-source-text" select="concat('Bibliofil', if ($identifier) then concat('@',$identifier) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
+
         <xsl:element name="{if ($dublin-core) then $property else 'meta'}">
             <xsl:if test="$include-source-reference or $include-source-reference-as-comments">
-                <xsl:variable name="identifier" as="xs:string?" select="($context/(../* | ../../*)[self::*:controlfield[@tag='001']])[1]/text()"/>
-                <xsl:variable name="tag" select="($context/../@tag, $context/@tag, '???')[1]"/>
-                <xsl:attribute name="nlb:metadata-source" select="concat('Bibliofil', if ($identifier) then concat('@',$identifier) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
+                <xsl:attribute name="nlb:metadata-source" select="$metadata-source-text"/>
             </xsl:if>
 
             <xsl:if test="not($dublin-core)">
@@ -339,8 +341,15 @@
             <xsl:if test="$refines">
                 <xsl:attribute name="refines" select="concat('#',$refines)"/>
             </xsl:if>
+            
+            <xsl:if test="count($value) gt 1">
+                <xsl:message select="concat('WARNING: more than one value at ', $metadata-source-text)"/>
+                <xsl:for-each select="$value">
+                    <xsl:message select="."/>
+                </xsl:for-each>
+            </xsl:if>
 
-            <xsl:value-of select="$value"/>
+            <xsl:value-of select="string-join($value, ' ')"/>
         </xsl:element>
     </xsl:template>
 
