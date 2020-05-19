@@ -1195,7 +1195,7 @@
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected" test="*">
-            <meta property="dc:subject.keyword" id="subject-653-1">first value second value third value</meta>
+            <meta property="dc:subject.keyword" id="subject-653-1">first value</meta>
         </x:expect>
     </x:scenario>
     

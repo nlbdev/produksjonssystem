@@ -349,7 +349,7 @@
                 </xsl:for-each>
             </xsl:if>
 
-            <xsl:value-of select="string-join($value, ' ')"/>
+            <xsl:value-of select="($value)[1]"/>
         </xsl:element>
     </xsl:template>
 
