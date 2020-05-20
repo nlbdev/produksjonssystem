@@ -213,7 +213,7 @@ display: table-caption;
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
   border-radius: 0;
-  vertical-align: top;
+ /* vertical-align: top; */
   
   color: #468173;
   width: 100%;
@@ -233,7 +233,7 @@ table th {
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
   border-radius: 0;
-  vertical-align: top;
+  /* vertical-align: top; */
   font-size: 13pt;
   font-family: "Verdana", sans-serif; 
   text-align: left;
@@ -252,7 +252,7 @@ table td {
   border-radius: 0;
   font-size: 13pt;
   font-family: "Verdana", sans-serif; 
-  vertical-align: top;
+ /* vertical-align: top; */
   text-align: left;
 }
 table tfoot td {
@@ -280,7 +280,7 @@ text-align: left;
 table td p{
 font-size: 13pt; 
 font-family: "Verdana", sans-serif; 
-vertical-align: top;
+ /* vertical-align: top; */
 text-align: left;
  text-indent:0%;
 padding: 0em; 
