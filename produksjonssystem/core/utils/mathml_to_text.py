@@ -31,7 +31,7 @@ class Mathml_to_text():
 
         if not report:
             self.report = pipeline.utils.report
-        else: 
+        else:
             self.report = report
 
         self.success = False
@@ -87,3 +87,61 @@ class Mathml_to_text():
             self.report.warn("Error returning MathML transformation. Check STEM result")
             self.report.warn(traceback.format_exc(), preformatted=True)
             return "<span>Matematisk formel</span>"
+
+
+class Mathml_validator():
+    """Class used to check MathML in xhtml documents"""
+
+    def __init__(self,
+                 pipeline=None,
+                 stylesheet=None,
+                 source=None,
+                 parameters={},
+                 template=None,
+                 stdout_level="INFO",
+                 stderr_level="INFO",
+                 report=None,
+                 cwd=None):
+        assert pipeline or report
+        assert source or template
+
+        if not report:
+            self.report = pipeline.utils.report
+        else:
+            self.report = report
+
+        self.success = True
+
+        try:
+            tree = etree.parse(source)
+
+            root = tree.getroot()
+            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML"}
+
+            mathML_elements = root.findall(".//m:math", map)
+
+            if len(mathML_elements) is 0:
+                self.report.info("No MathML elements found in document")
+                return
+
+            for element in mathML_elements:
+                print(element.attrib)
+                if "altimg" not in element.attrib:
+                    self.success = False
+                    self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    self.report.error("MathML element does not contain the required attribute altimg")
+                    self.success = False
+                if "display" not in element.attrib:
+                    self.success = False
+                    self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    self.report.error("MathML element does not contain the required attribute display")
+                    self.success = False
+
+            if self.success is True:
+                self.report.info("No errors found in MathML validation")
+            else:
+                self.report.error("MathML validation failed. Check log for details.")
+
+        except Exception:
+            self.report.warn(traceback.format_exc(), preformatted=True)
+            self.report.error("An error occured during the MathML validation")
