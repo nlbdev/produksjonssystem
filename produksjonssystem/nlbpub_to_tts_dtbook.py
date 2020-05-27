@@ -73,7 +73,8 @@ class NlbpubToTtsDtbook(Pipeline):
         temp_xslt_output_obj = tempfile.NamedTemporaryFile()
         temp_xslt_output = temp_xslt_output_obj.name
 
-        self.utils.report.info("Erstatter MathML med en tekstlig representasjon...")
+        # MATHML to stem
+        self.utils.report.info("Erstatter evt. MathML i boka...")
 
         mathML_result = Mathml_to_text(self, source=temp_result, target=temp_result)
 
