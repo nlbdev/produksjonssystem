@@ -35,29 +35,31 @@ class Mathml_to_text():
             self.report = report
 
         self.success = False
+        self.properties = None
 
         try:
-            parser = etree.XMLParser(encoding='utf-8')
-            tree = etree.parse(source, parser=parser)
+            tree = etree.parse(source)
 
             root = tree.getroot()
             map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML"}
 
             mathML_elements = root.findall(".//m:math", map)
+            if len(mathML_elements) is 0:
+                self.report.info("No MathML elements found in document")
 
             for element in mathML_elements:
                 parent = element.getparent()
                 html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                 self.report.info("Inserting transformation: " + html_representation)
 
-                stem_element = etree.fromstring(html_representation, parser=parser)
+                stem_element = etree.fromstring(html_representation)
 
                 if element.tail is not None:
                     stem_element.tail = element.tail
                 parent.insert(parent.index(element) + 1, stem_element)
                 parent.remove(element)
 
-            self.report.info("Transformasjon ferdig, largrer fil.")
+            self.report.info("Transformasjon ferdig, lagrer fil.")
             tree.write(target, method='XML', xml_declaration=True, encoding='UTF-8', pretty_print=False)
 
             self.success = True
