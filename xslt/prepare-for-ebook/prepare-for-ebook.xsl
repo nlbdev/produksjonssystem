@@ -48,7 +48,16 @@
             <xsl:choose>
                 <xsl:when test="upper-case($library) = 'NLB'">
                   <xsl:choose>
-                      <xsl:when test="$language = 'no' or ends-with($language, '-NO')">
+                      <xsl:when test="$language = ('en', 'eng')">
+                          <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
+                              <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
+                              <p>This electronic book is made exclusively for: [Studentens navn], by the Norwegian Library of Talking Books and Braille in <xsl:value-of select="$year"/>.
+                                  No part of this book may be reproduced or distributed in any form or by any means, to other people.
+                                  When the lending period expires, the book must be deleted or returned to the library.
+                                  The user of this book, is responsible for adhering to these requirements.</p>
+                          </section>
+                      </xsl:when>
+                      <xsl:otherwise>
                           <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                               <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
                               <p>Denne e-boka er produsert for: [Studentens navn], av Norsk lyd- og blindeskriftbibliotek i <xsl:value-of select="$year"/>
@@ -57,31 +66,22 @@
                                   Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering,
                                   kan medføre ansvar etter åndsverkloven.</p>
                           </section>
-                      </xsl:when>
-                      <xsl:otherwise>
-                          <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
-                              <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
-                              <p>This electronic book is made exclusively for: [Studentens navn], by the Norwegian Library of Talking Books and Braille in <xsl:value-of select="$year"/>.
-                                  No part of this book may be reproduced or distributed in any form or by any means, to other people.
-                                  When the lending period expires, the book must be deleted or returned to the library.
-                                  The user of this book, is responsible for adhering to these requirements.</p>
-                          </section>
                       </xsl:otherwise>
                   </xsl:choose>
                 </xsl:when>
                 
                 <xsl:when test="upper-case($library) = 'STATPED'">
                     <xsl:choose>
-                        <xsl:when test="$language = 'no' or ends-with($language, '-NO')">
+                        <xsl:when test="$language = ('en', 'eng')">
                             <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
-                                <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
-                                <p>Informasjon om opphavsrett for Statped på norsk her.</p>
+                                <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
+                                <p>Information about copyright for Statped in english here.</p>
                             </section>
                         </xsl:when>
                         <xsl:otherwise>
                             <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
-                                <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
-                                <p>Information about copyright for Statped in english here.</p>
+                                <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
+                                <p>Informasjon om opphavsrett for Statped på norsk her.</p>
                             </section>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -93,7 +93,22 @@
             </xsl:choose>
             
             <xsl:choose>
-                <xsl:when test="$language = 'no' or ends-with($language, '-NO')">
+                <xsl:when test="$language = ('en', 'eng')">
+                    <section epub:type="frontmatter tip" id="bookinfo-section-{generate-id()}">
+                        <h1 id="bookinfo-headline-{generate-id()}">Book information</h1>
+                        <p>The book has <xsl:value-of select="if ($depth = 1) then 'one level'
+                            else concat(if ($depth = 2) then 'two'
+                            else if ($depth = 3) then 'three'
+                            else if ($depth = 4) then 'four'
+                            else if ($depth = 5) then 'five'
+                            else 'six',
+                            ' levels')"/> of headings.</p>
+                        <p>The format of this book is HTML. This file format can be opened in any web browser for reading,
+                            or a text editor for editing purposes (for instance Microsoft Word or LibreOffice Writer).</p>
+                        <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
+                    </section>
+                </xsl:when>
+                <xsl:otherwise>
                     <section epub:type="frontmatter tip" id="bookinfo-section-{generate-id()}">
                         <h1 id="bookinfo-headline-{generate-id()}">Bokinformasjon</h1>
                         <p>E-boka er strukturert slik at overskriftene er plassert på <xsl:value-of select="if ($depth = 1) then 'ett nivå'
@@ -109,21 +124,6 @@
                         <xsl:if test="$library">
                             <figure class="image"><img alt="{$library} logo" src="{upper-case($library)}_logo.png"/></figure>
                         </xsl:if>
-                    </section>
-                </xsl:when>
-                <xsl:otherwise>
-                    <section epub:type="frontmatter tip" id="bookinfo-section-{generate-id()}">
-                        <h1 id="bookinfo-headline-{generate-id()}">Book information</h1>
-                        <p>The book has <xsl:value-of select="if ($depth = 1) then 'one level'
-                            else concat(if ($depth = 2) then 'two'
-                            else if ($depth = 3) then 'three'
-                            else if ($depth = 4) then 'four'
-                            else if ($depth = 5) then 'five'
-                            else 'six',
-                            ' levels')"/> of headings.</p>
-                        <p>The format of this book is HTML. This file format can be opened in any web browser for reading,
-                            or a text editor for editing purposes (for instance Microsoft Word or LibreOffice Writer).</p>
-                        <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
                     </section>
                 </xsl:otherwise>
             </xsl:choose>
