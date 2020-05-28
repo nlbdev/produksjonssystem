@@ -167,6 +167,9 @@ class Report():
             if isinstance(a, Address):
                 _addresses.append(a)
                 continue
+            if not isinstance(a, str) or "@" not in a:
+                logging.debug("not an e-mail address: {} ({})".format(a, type(a)))
+                continue
             name = []
             for n in a.split("@")[0].split("."):
                 name.extend(re.findall("[A-Z]?[^A-Z]+", n))
