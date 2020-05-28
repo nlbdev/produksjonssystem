@@ -116,26 +116,32 @@ class Mathml_validator():
             tree = etree.parse(source)
 
             root = tree.getroot()
-            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML"}
+            self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML"}
 
-            mathML_elements = root.findall(".//m:math", map)
+            mathML_elements = root.findall(".//m:math", self.map)
 
             if len(mathML_elements) is 0:
                 self.report.info("No MathML elements found in document")
                 return
 
             for element in mathML_elements:
-                print(element.attrib)
+                parent = element.getparent()
                 if "altimg" not in element.attrib:
                     self.success = False
                     self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     self.report.error("MathML element does not contain the required attribute altimg")
-                    self.success = False
                 if "display" not in element.attrib:
                     self.success = False
                     self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     self.report.error("MathML element does not contain the required attribute display")
-                    self.success = False
+                else:
+                    display_attrib = element.attrib["display"]
+                    suggested_display_attribute = self.inline_or_block(element, parent)
+                    if display_attrib != suggested_display_attribute and suggested_display_attribute != "flow":
+                        self.success = False
+                        self.report.debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
+                        self.report.info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                        self.report.error(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}")
 
             if self.success is True:
                 self.report.info("No errors found in MathML validation")
@@ -145,3 +151,26 @@ class Mathml_validator():
         except Exception:
             self.report.warn(traceback.format_exc(), preformatted=True)
             self.report.error("An error occured during the MathML validation")
+
+    def inline_or_block(self, element, parent, check_siblings=True):
+        flow_tags = ["figcaption", "dd", "li", "caption", "th", "td", "p"]
+        if etree.QName(parent).localname in flow_tags:
+            return "flow"
+        if element.tail is not None and not element.tail.isspace():
+            return "inline"
+        if check_siblings:
+            parent_text = parent.text
+            if parent_text is not None and parent_text.isspace() is not True:
+                return "inline"
+            inline_elements = ["a", "abbr", "bdo", "br", "code", "dfn", "em", "img", "kbd", "q", "samp", "span", "strong", "sub", "sup"]
+            for inline_element in inline_elements:
+                inline_elements_in_element = parent.findall(inline_element, self.map)
+                if len(inline_elements_in_element) != 0:
+                    return "inline"
+        if parent.getparent() is not None:
+            parent_display = self.inline_or_block(parent, parent.getparent(), check_siblings=False)
+            if parent_display == "inline":
+                return "inline"
+            if parent_display == "flow":
+                return "flow"
+        return "block"
