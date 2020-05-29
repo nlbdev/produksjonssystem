@@ -129,7 +129,7 @@ class Mathml_validator():
 
                 if etree.QName(parent).localname == "p":
                     if element.getprevious() is None and element.getnext() is None and parent.text is None:
-                        if element.tail is None or element.tail.isspace:
+                        if element.tail is None or element.tail.isspace():
                             self.success = False
                             self.report.error("A MathML element cannot be the only element inside parent <p>")
                             self.report.debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
@@ -148,7 +148,7 @@ class Mathml_validator():
                 else:
                     display_attrib = element.attrib["display"]
                     suggested_display_attribute = self.inline_or_block(element, parent)
-                    if display_attrib != suggested_display_attribute and suggested_display_attribute != "flow":
+                    if display_attrib != suggested_display_attribute:
                         self.success = False
                         self.report.debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
                         self.report.info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
