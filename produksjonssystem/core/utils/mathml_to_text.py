@@ -126,14 +126,25 @@ class Mathml_validator():
 
             for element in mathML_elements:
                 parent = element.getparent()
+
+                if etree.QName(parent).localname == "p":
+                    if element.getprevious() is None and element.getnext() is None and parent.text is None:
+                        if element.tail is None or element.tail.isspace:
+                            self.success = False
+                            self.report.error("A MathML element cannot be the only element inside parent <p>")
+                            self.report.debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
+                            self.report.info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+
                 if "altimg" not in element.attrib:
                     self.success = False
                     self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     self.report.error("MathML element does not contain the required attribute altimg")
+
                 if "display" not in element.attrib:
                     self.success = False
                     self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     self.report.error("MathML element does not contain the required attribute display")
+
                 else:
                     display_attrib = element.attrib["display"]
                     suggested_display_attribute = self.inline_or_block(element, parent)
@@ -154,23 +165,37 @@ class Mathml_validator():
 
     def inline_or_block(self, element, parent, check_siblings=True):
         flow_tags = ["figcaption", "dd", "li", "caption", "th", "td", "p"]
-        if etree.QName(parent).localname in flow_tags:
-            return "flow"
-        if element.tail is not None and not element.tail.isspace():
-            return "inline"
+        inline_elements = ["a", "abbr", "bdo", "br", "code", "dfn", "em", "img", "kbd", "q", "samp", "span", "strong", "sub", "sup"]
+
+        parent_text = parent.text
+        sibling_text_not_empty = False
+        sibling_is_inline = False
+        parent_is_inline = False
+
         if check_siblings:
-            parent_text = parent.text
             if parent_text is not None and parent_text.isspace() is not True:
-                return "inline"
-            inline_elements = ["a", "abbr", "bdo", "br", "code", "dfn", "em", "img", "kbd", "q", "samp", "span", "strong", "sub", "sup"]
+                sibling_text_not_empty = True
+
+            elif element.tail is not None and element.tail.isspace() is not True:
+                sibling_text_not_empty = True
+
             for inline_element in inline_elements:
                 inline_elements_in_element = parent.findall(inline_element, self.map)
                 if len(inline_elements_in_element) != 0:
-                    return "inline"
+                    sibling_is_inline = True
+
         if parent.getparent() is not None:
             parent_display = self.inline_or_block(parent, parent.getparent(), check_siblings=False)
             if parent_display == "inline":
+                parent_is_inline = True
+
+        if sibling_is_inline or sibling_text_not_empty or parent_is_inline:
+            return "inline"
+
+        if etree.QName(parent).localname in flow_tags:
+            if element.getprevious() is not None or element.getnext() is not None:
+                return "block"
+            else:
                 return "inline"
-            if parent_display == "flow":
-                return "flow"
+
         return "block"
