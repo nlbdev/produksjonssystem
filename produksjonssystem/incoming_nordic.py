@@ -10,6 +10,7 @@ import traceback
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
+from core.utils.mathml_to_text import Mathml_validator
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -69,6 +70,20 @@ class IncomingNordic(Pipeline):
 
         self.utils.report.debug("Making a copy of the EPUB to work on…")
         epub_fixed, epub_fixed_obj = epub.copy()
+        epub_unzipped = epub_fixed.asDir()
+        nav_path = os.path.join(epub_unzipped, epub_fixed.nav_path())
+        mathML_validation_result = True
+        for root, dirs, files in os.walk(epub_unzipped):
+            for f in files:
+                file = os.path.join(root, f)
+                if not file.endswith(".xhtml") or file is nav_path:
+                    continue
+                self.utils.report.info("Checking MathML in " + file)
+                mathml_validation = Mathml_validator(self, source=file)
+                if not mathml_validation.success:
+                    mathML_validation_result = False
+        if mathML_validation_result is False:
+            return False
 
         self.utils.report.debug("Making sure that the EPUB has the correct file and directory permissions…")
         epub_fixed.fix_permissions()
