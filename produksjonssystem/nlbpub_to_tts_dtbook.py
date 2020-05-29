@@ -12,6 +12,7 @@ from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.mathml_to_text import Mathml_to_text
+from core.utils.mathml_to_text import Mathml_validator
 from epub_to_dtbook_audio import EpubToDtbookAudio
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -75,6 +76,9 @@ class NlbpubToTtsDtbook(Pipeline):
 
         # MATHML to stem
         self.utils.report.info("Erstatter evt. MathML i boka...")
+        mathml_validation = Mathml_validator(self, source=temp_result)
+        if not mathml_validation.success:
+            return False
 
         mathML_result = Mathml_to_text(self, source=temp_result, target=temp_result)
 
