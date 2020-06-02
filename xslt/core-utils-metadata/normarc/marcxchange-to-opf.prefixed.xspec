@@ -84,6 +84,16 @@
                                 <marcxchange:datafield tag="574" ind1=" " ind2=" ">
                                     <marcxchange:subfield code="a">Originaltittel: Moonrise</marcxchange:subfield>
                                 </marcxchange:datafield>
+                                <marcxchange:datafield tag="582" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">EPUB</marcxchange:subfield>
+                                    <marcxchange:subfield code="d">dl</marcxchange:subfield>
+                                    <marcxchange:subfield code="f">epub</marcxchange:subfield>
+                                </marcxchange:datafield>
+                                <marcxchange:datafield tag="582" ind1=" " ind2=" ">
+                                    <marcxchange:subfield code="a">HTML</marcxchange:subfield>
+                                    <marcxchange:subfield code="d">dl</marcxchange:subfield>
+                                    <marcxchange:subfield code="f">html</marcxchange:subfield>
+                                </marcxchange:datafield>
                                 <marcxchange:datafield tag="592" ind1=" " ind2=" ">
                                     <marcxchange:subfield code="a">31/10/2017</marcxchange:subfield>
                                 </marcxchange:datafield>
@@ -196,6 +206,16 @@
         <meta property="schema:bookEdition">1</meta>
         <meta property="schema:bookEdition.original">1</meta>
         <meta property="schema:fileSize">458148548</meta>
+        <meta property="schema:hasDeliveryMethod" id="deliveryFormat-582-1">epub_dl</meta>
+        <dc:format refines="#deliveryFormat-582-1">epub</dc:format>
+        <meta property="schema:deliveryMethod" refines="#deliveryFormat-582-1">dl</meta>
+        <meta property="schema:name" refines="#deliveryFormat-582-1">EPUB</meta>
+        <meta property="schema:position" refines="#deliveryFormat-582-1">1</meta>
+        <meta property="schema:hasDeliveryMethod" id="deliveryFormat-582-2">html_dl</meta>
+        <dc:format refines="#deliveryFormat-582-2">html</dc:format>
+        <meta property="schema:deliveryMethod" refines="#deliveryFormat-582-2">dl</meta>
+        <meta property="schema:name" refines="#deliveryFormat-582-2">HTML</meta>
+        <meta property="schema:position" refines="#deliveryFormat-582-2">2</meta>
         <meta property="schema:isbn">978-82-16-25998-6</meta>
         <meta property="schema:isbn.original">978-82-93304-70-8</meta>
         <meta property="schema:library">NLB</meta>

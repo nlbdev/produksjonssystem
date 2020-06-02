@@ -68,6 +68,16 @@ møter de en stamme villkatter som har sine egne forfedres profeti å oppfylle.<
             <meta property="bookEdition">1</meta>  <!-- Bibliofil@627958 *245 -->
             <meta property="bookEdition.original">1</meta>  <!-- Bibliofil@627958 *596 -->
             <meta property="fileSize">458148548</meta>  <!-- Bibliofil@627958 *856$s -->
+            <meta property="hasDeliveryMethod" id="deliveryFormat-582-1">epub_dl</meta>
+            <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" refines="#deliveryFormat-582-1">epub</dc:format>
+            <meta refines="#deliveryFormat-582-1" property="deliveryMethod">dl</meta>
+            <meta refines="#deliveryFormat-582-1" property="name">EPUB</meta>
+            <meta refines="#deliveryFormat-582-1" property="position">1</meta>
+            <meta property="hasDeliveryMethod" id="deliveryFormat-582-2">html_dl</meta>
+            <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" refines="#deliveryFormat-582-2">html</dc:format>
+            <meta refines="#deliveryFormat-582-2" property="deliveryMethod">dl</meta>
+            <meta refines="#deliveryFormat-582-2" property="name">HTML</meta>
+            <meta refines="#deliveryFormat-582-2" property="position">2</meta>
             <meta property="isbn">978-82-16-25998-6</meta>  <!-- Bibliofil@627958 *020$a -->
             <meta property="isbn.original">978-82-93304-70-8</meta>  <!-- Bibliofil@627958 *596$f -->
             <meta property="library">NLB</meta>  <!-- Bibliofil@627958 *850$a -->
@@ -146,6 +156,16 @@ møter de en stamme villkatter som har sine egne forfedres profeti å oppfylle.<
         <meta property="bookEdition">1</meta>  <!-- Bibliofil@627958 *245 -->
         <meta property="bookEdition.original">1</meta>  <!-- Bibliofil@627958 *596 -->
         <meta property="fileSize">458148548</meta>  <!-- Bibliofil@627958 *856$s -->
+        <meta property="hasDeliveryMethod" id="deliveryFormat-582-1">epub_dl</meta>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" refines="#deliveryFormat-582-1">epub</dc:format>
+        <meta refines="#deliveryFormat-582-1" property="deliveryMethod">dl</meta>
+        <meta refines="#deliveryFormat-582-1" property="name">EPUB</meta>
+        <meta refines="#deliveryFormat-582-1" property="position">1</meta>
+        <meta property="hasDeliveryMethod" id="deliveryFormat-582-2">html_dl</meta>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" refines="#deliveryFormat-582-2">html</dc:format>
+        <meta refines="#deliveryFormat-582-2" property="deliveryMethod">dl</meta>
+        <meta refines="#deliveryFormat-582-2" property="name">HTML</meta>
+        <meta refines="#deliveryFormat-582-2" property="position">2</meta>
         <meta property="isbn">978-82-16-25998-6</meta>  <!-- Bibliofil@627958 *020$a -->
         <meta property="isbn.original">978-82-93304-70-8</meta>  <!-- Bibliofil@627958 *596$f -->
         <meta property="library">NLB</meta>  <!-- Bibliofil@627958 *850$a -->

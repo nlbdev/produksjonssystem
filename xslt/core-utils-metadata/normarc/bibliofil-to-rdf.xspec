@@ -533,5 +533,116 @@
             </rdf:RDF>
         </x:expect>
     </x:scenario>
+    
+    <x:scenario label="Delivery methods">
+        <x:context>
+            <opf:metadata>
+                <dc:identifier content="370001"/>
+                <meta name="isbn" content="1234-56-5555"/>
+                <meta name="isbn.original" content="1234-56-7890"/>
+                
+                <meta name="schema:hasDeliveryMethod" content="epub_dl">
+                    <dc:format content="epub"/>
+                    <meta name="schema:deliveryMethod" content="dl"/>
+                    <meta name="schema:name" content="EPUB"/>
+                    <meta name="schema:position" content="1"/>
+                </meta>
+                
+                <meta name="schema:hasDeliveryMethod" content="html_dl">
+                    <dc:format content="html"/>
+                    <meta name="schema:deliveryMethod" content="dl"/>
+                    <meta name="schema:name" content="HTML"/>
+                    <meta name="schema:position" content="2"/>
+                </meta>
+                
+                <meta name="schema:hasDeliveryMethod" content="epub_no">
+                    <dc:format content="epub"/>
+                    <meta name="schema:deliveryMethod" content="no"/>
+                    <meta name="schema:name" content="Legg til på bokhylla"/>
+                    <meta name="schema:position" content="3"/>
+                </meta>
+                
+                <meta name="schema:hasDeliveryMethod" content="mobi_dl">
+                    <dc:format content="mobi"/>
+                    <meta name="schema:deliveryMethod" content="dl"/>
+                    <meta name="schema:name" content="Mobi / Kindle Format"/>
+                    <meta name="schema:position" content="4"/>
+                </meta>
+                
+                <meta name="schema:hasDeliveryMethod" content="mobi_ki">
+                    <dc:format content="mobi"/>
+                    <meta name="schema:deliveryMethod" content="ki"/>
+                    <meta name="schema:name" content="Send til Kindle"/>
+                    <meta name="schema:position" content="5"/>
+                </meta>
+                
+                <meta name="schema:hasDeliveryMethod" content="epub_st">
+                    <dc:format content="epub"/>
+                    <meta name="schema:deliveryMethod" content="st"/>
+                    <meta name="schema:name" content="Vis i nettleseren"/>
+                    <meta name="schema:position" content="6"/>
+                </meta>
+            </opf:metadata>
+        </x:context>
+        <x:expect label="the metadata should be extracted as expected">
+            <rdf:RDF>
+                <rdf:Description rdf:about="urn:isbn:1234567890">
+                    <rdf:type rdf:resource="http://schema.org/CreativeWork"/>
+                    <schema:isbn>1234-56-7890</schema:isbn>
+                    <dc:source>urn:isbn:1234567890</dc:source>
+                </rdf:Description>
+                <rdf:Description rdf:about="urn:nbn:no-nb_nlb_370001">
+                    <rdf:type rdf:resource="http://schema.org/Book"/>
+                    <schema:exampleOfWork rdf:resource="urn:isbn:1234567890"/>
+                    <owl:sameAs rdf:resource="urn:isbn:1234565555"/>
+                    
+                    <dc:identifier>370001</dc:identifier>
+                    <schema:isbn>1234-56-5555</schema:isbn>
+                    
+                    <schema:hasDeliveryMethod schema:name="epub_dl">
+                        <dc:format>epub</dc:format>
+                        <schema:deliveryMethod>dl</schema:deliveryMethod>
+                        <schema:name>EPUB</schema:name>
+                        <schema:position>1</schema:position>
+                    </schema:hasDeliveryMethod>
+                    
+                    <schema:hasDeliveryMethod schema:name="html_dl">
+                        <dc:format>html</dc:format>
+                        <schema:deliveryMethod>dl</schema:deliveryMethod>
+                        <schema:name>HTML</schema:name>
+                        <schema:position>2</schema:position>
+                    </schema:hasDeliveryMethod>
+                    
+                    <schema:hasDeliveryMethod schema:name="epub_no">
+                        <dc:format>epub</dc:format>
+                        <schema:deliveryMethod>no</schema:deliveryMethod>
+                        <schema:name>Legg til på bokhylla</schema:name>
+                        <schema:position>3</schema:position>
+                    </schema:hasDeliveryMethod>
+                    
+                    <schema:hasDeliveryMethod schema:name="mobi_dl">
+                        <dc:format>mobi</dc:format>
+                        <schema:deliveryMethod>dl</schema:deliveryMethod>
+                        <schema:name>Mobi / Kindle Format</schema:name>
+                        <schema:position>4</schema:position>
+                    </schema:hasDeliveryMethod>
+                    
+                    <schema:hasDeliveryMethod schema:name="mobi_ki">
+                        <dc:format>mobi</dc:format>
+                        <schema:deliveryMethod>ki</schema:deliveryMethod>
+                        <schema:name>Send til Kindle</schema:name>
+                        <schema:position>5</schema:position>
+                    </schema:hasDeliveryMethod>
+                    
+                    <schema:hasDeliveryMethod schema:name="epub_st">
+                        <dc:format>epub</dc:format>
+                        <schema:deliveryMethod>st</schema:deliveryMethod>
+                        <schema:name>Vis i nettleseren</schema:name>
+                        <schema:position>6</schema:position>
+                    </schema:hasDeliveryMethod>
+                </rdf:Description>
+            </rdf:RDF>
+        </x:expect>
+    </x:scenario>
 
 </x:description>

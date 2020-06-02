@@ -93,6 +93,18 @@
                     <schema:isbn>978-82-16-24118-9</schema:isbn>
                     <schema:library>NLB</schema:library>
                     <schema:fileSize>12345678</schema:fileSize>
+                    <schema:hasDeliveryMethod schema:name="epub_dl">
+                        <dc:format>epub</dc:format>
+                        <schema:deliveryMethod>dl</schema:deliveryMethod>
+                        <schema:name>EPUB</schema:name>
+                        <schema:position>1</schema:position>
+                    </schema:hasDeliveryMethod>
+                    <schema:hasDeliveryMethod schema:name="html_dl">
+                        <dc:format>html</dc:format>
+                        <schema:deliveryMethod>dl</schema:deliveryMethod>
+                        <schema:name>HTML</schema:name>
+                        <schema:position>2</schema:position>
+                    </schema:hasDeliveryMethod>
                     <dc:type.audio>true</dc:type.audio>
                     <dc:type.text>true</dc:type.text>
                     <dc:type.braille>true</dc:type.braille>
@@ -173,6 +185,18 @@
                     <isbn name="978-82-16-24118-9"/>
                     <library name="NLB"/>
                     <fileSize name="12345678"/>
+                    <hasDeliveryMethod name="epub_dl">
+                        <format name="epub"/>
+                        <deliveryMethod name="dl"/>
+                        <name name="EPUB"/>
+                        <position name="1"/>
+                    </hasDeliveryMethod>
+                    <hasDeliveryMethod name="html_dl">
+                        <format name="html"/>
+                        <deliveryMethod name="dl"/>
+                        <name name="HTML"/>
+                        <position name="2"/>
+                    </hasDeliveryMethod>
                     <type.audio name="true"/>
                     <type.text name="true"/>
                     <type.braille name="true"/>
