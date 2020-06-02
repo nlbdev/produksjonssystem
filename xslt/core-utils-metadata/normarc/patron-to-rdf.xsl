@@ -174,6 +174,14 @@
         </xsl:for-each>
     </xsl:template>
     
+    <xsl:template match="datafield[@tag='251']" mode="lmarc">
+        <xsl:for-each select="subfield[@code='k']">
+            <xsl:call-template name="lmarc">
+                <xsl:with-param name="name" select="'kindle_email'"/>
+            </xsl:call-template>
+        </xsl:for-each>
+    </xsl:template>
+    
     <xsl:template match="datafield[@tag='261']" mode="lmarc">
         <xsl:for-each select="subfield">
             <xsl:choose>

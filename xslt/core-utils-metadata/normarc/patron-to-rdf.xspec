@@ -78,6 +78,9 @@
                             <datafield tag="250" ind1=" " ind2=" ">
                                 <subfield code="s" type="TINYINT">0</subfield>
                             </datafield>
+                            <datafield tag="251" ind1=" " ind2=" ">
+                                <subfield code="k" type="VARCHAR">my-kindle-address@kindle.com</subfield>
+                            </datafield>
                             <datafield tag="260" ind1=" " ind2=" ">
                                 <subfield code="l" type="CHAR(19)">31/01/2011 11:35:50</subfield>
                                 <subfield code="f" type="LONGTEXT">2011-03-10T01:14:47 2011-03-10T01:14:47 2011-03-16T22:15:06 2011-03-16T22:15:06 2011-03-28T12:32:13 2011-03-28T12:32:13 2016-02-15T14:06:01 2016-02-15T14:06:18 2016-02-15T14:06:27</subfield>
@@ -326,6 +329,7 @@
                         <nlbbib:lmarc_melding rdf:name="Fiktiv f.dato.&#xA;linje 2&#xA;linje 3"/>
                         <nlbbib:lmarc_tlf rdf:name="93211111"/>
                         <nlbbib:lmarc_tlf_type rdf:name="mobilsms"/>
+                        <nlbbib:lmarc_kindle_email rdf:name="my-kindle-address@kindle.com"/>
                         <nlbbib:lmarc_pin rdf:name="1234"/>
                         <nlbbib:lmarc_pin_date rdf:name="2011-03-03"/>
                         <nlbbib:lmarc_preferredPlayer rdf:name="NLBDirekte"/>
