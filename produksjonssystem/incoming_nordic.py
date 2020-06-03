@@ -10,7 +10,7 @@ import traceback
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
-# from core.utils.mathml_to_text import Mathml_validator
+from core.utils.mathml_to_text import Mathml_validator
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -70,20 +70,29 @@ class IncomingNordic(Pipeline):
 
         self.utils.report.debug("Making a copy of the EPUB to work on…")
         epub_fixed, epub_fixed_obj = epub.copy()
-        # epub_unzipped = epub_fixed.asDir()
-        # nav_path = os.path.join(epub_unzipped, epub_fixed.nav_path())
-        # mathML_validation_result = True
-        # for root, dirs, files in os.walk(epub_unzipped):
-        #     for f in files:
-        #         file = os.path.join(root, f)
-        #         if not file.endswith(".xhtml") or file is nav_path:
-        #             continue
-        #         self.utils.report.info("Checking MathML in " + file)
-        #         mathml_validation = Mathml_validator(self, source=file)
-        #         if not mathml_validation.success:
-        #             mathML_validation_result = False
-        # if mathML_validation_result is False:
-        #     return False
+        epub_unzipped = epub_fixed.asDir()
+        nav_path = os.path.join(epub_unzipped, epub_fixed.nav_path())
+        mathML_validation_result = True
+        mathml_error_count = 0
+        mathml_errors_not_shown = 0
+        mathml_report_errors_max = 10
+        for root, dirs, files in os.walk(epub_unzipped):
+            for f in files:
+                file = os.path.join(root, f)
+                if not file.endswith(".xhtml") or file is nav_path:
+                    continue
+                self.utils.report.info("Checking MathML in " + file)
+                mathml_validation = Mathml_validator(self, source=file, report_errors_max=mathml_report_errors_max)
+                if not mathml_validation.success:
+                    mathml_error_count += mathml_validation.error_count
+                    mathml_errors_not_shown += max((mathml_validation.error_count - mathml_report_errors_max), 0)
+                    if mathml_error_count > mathml_report_errors_max:
+                        mathml_report_errors_max = 0  # don't put any more errors for the other HTML documents in the main report
+                    mathML_validation_result = False
+        if mathml_errors_not_shown > 0:
+            self.utils.report.error("{} additional MathML errors not shown in the main report. Check the log for details.".format(mathml_errors_not_shown))
+        if mathML_validation_result is False:
+            return False
 
         self.utils.report.debug("Making sure that the EPUB has the correct file and directory permissions…")
         epub_fixed.fix_permissions()

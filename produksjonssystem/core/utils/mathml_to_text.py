@@ -16,17 +16,11 @@ class Mathml_to_text():
 
     def __init__(self,
                  pipeline=None,
-                 stylesheet=None,
                  source=None,
                  target=None,
-                 parameters={},
-                 template=None,
-                 stdout_level="INFO",
-                 stderr_level="INFO",
-                 report=None,
-                 cwd=None):
+                 report=None):
         assert pipeline or report
-        assert source or template
+        assert source
         assert target
 
         if not report:
@@ -65,7 +59,7 @@ class Mathml_to_text():
             self.success = True
 
         except Exception:
-            self.report.warn(traceback.format_exc(), preformatted=True)
+            self.report.warning(traceback.format_exc(), preformatted=True)
             self.report.error("An error occured during the MathML transformation")
 
     def mathML_transformation(self, mathml):
@@ -84,8 +78,8 @@ class Mathml_to_text():
             html = data["generated"]["html"]
             return html
         except Exception:
-            self.report.warn("Error returning MathML transformation. Check STEM result")
-            self.report.warn(traceback.format_exc(), preformatted=True)
+            self.report.warning("Error returning MathML transformation. Check STEM result")
+            self.report.warning(traceback.format_exc(), preformatted=True)
             return "<span>Matematisk formel</span>"
 
 
@@ -94,16 +88,11 @@ class Mathml_validator():
 
     def __init__(self,
                  pipeline=None,
-                 stylesheet=None,
                  source=None,
-                 parameters={},
-                 template=None,
-                 stdout_level="INFO",
-                 stderr_level="INFO",
-                 report=None,
-                 cwd=None):
+                 report_errors_max=10,
+                 report=None):
         assert pipeline or report
-        assert source or template
+        assert source
 
         if not report:
             self.report = pipeline.utils.report
@@ -111,6 +100,7 @@ class Mathml_validator():
             self.report = report
 
         self.success = True
+        self.error_count = 0
 
         try:
             tree = etree.parse(source)
@@ -120,39 +110,57 @@ class Mathml_validator():
 
             mathML_elements = root.findall(".//m:math", self.map)
 
-            if len(mathML_elements) is 0:
+            if len(mathML_elements) == 0:
                 self.report.info("No MathML elements found in document")
                 return
 
             for element in mathML_elements:
+                element_success = True
+
+                # prevent sending too many errors to the main report
+                if self.error_count < report_errors_max:
+                    debug = self.report.debug
+                    info = self.report.info
+                    warning = self.report.warning
+                    error = self.report.error
+                else:
+                    debug = self.report.debug
+                    info = self.report.debug
+                    warning = self.report.debug
+                    error = self.report.debug
+
                 parent = element.getparent()
 
                 if etree.QName(parent).localname == "p":
                     if element.getprevious() is None and element.getnext() is None and parent.text is None:
                         if element.tail is None or element.tail.isspace():
-                            self.success = False
-                            self.report.error("A MathML element cannot be the only element inside parent <p>")
-                            self.report.debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
-                            self.report.info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                            element_success = False
+                            error("A MathML element cannot be the only element inside parent <p>")
+                            debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
+                            info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
 
                 if "altimg" not in element.attrib:
-                    self.success = False
-                    self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                    self.report.error("MathML element does not contain the required attribute altimg")
+                    element_success = False
+                    info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    error("MathML element does not contain the required attribute altimg")
 
                 if "display" not in element.attrib:
-                    self.success = False
-                    self.report.info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                    self.report.error("MathML element does not contain the required attribute display")
+                    element_success = False
+                    info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    error("MathML element does not contain the required attribute display")
 
                 else:
                     display_attrib = element.attrib["display"]
                     suggested_display_attribute = self.inline_or_block(element, parent)
                     if display_attrib != suggested_display_attribute:
-                        self.success = False
-                        self.report.debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
-                        self.report.info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                        self.report.error(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}")
+                        element_success = False
+                        debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
+                        info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                        error(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}")
+
+                if not element_success:
+                    self.error_count += 1
+                    self.success = False
 
             if self.success is True:
                 self.report.info("No errors found in MathML validation")
@@ -160,7 +168,7 @@ class Mathml_validator():
                 self.report.error("MathML validation failed. Check log for details.")
 
         except Exception:
-            self.report.warn(traceback.format_exc(), preformatted=True)
+            self.report.warning(traceback.format_exc(), preformatted=True)
             self.report.error("An error occured during the MathML validation")
 
     def inline_or_block(self, element, parent, check_siblings=True):
