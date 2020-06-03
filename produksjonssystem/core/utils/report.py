@@ -337,10 +337,11 @@ class Report():
             # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
             markdown_text = []
             for m in self._messages["message"]:
+                text = m['text'].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 if m['preformatted'] is True:
-                    markdown_text.append("<pre>{}</pre>".format(m['text']))
+                    markdown_text.append("<pre>{}</pre>".format(text))
                 elif m['severity'] != 'DEBUG':
-                    markdown_text.append(m['text'])
+                    markdown_text.append(text)
             if attachments != [] or should_attach_log is True:
                 markdown_text.append("\n----\n")
                 markdown_text.append("\n# Lenker\n")

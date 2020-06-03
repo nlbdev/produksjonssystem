@@ -321,8 +321,8 @@ class Metadata:
 
         if creative_work is None:
             if report_metadata_errors:
-                normarc_report.info("<h2>Katalogposten for {}:</h2>\n".format(edition_identifier))
-                report.error("<p>Finner ikke katalogposten. Kan ikke validere.</p>")
+                normarc_report.info("## Katalogposten for {}:\n".format(edition_identifier))
+                report.error("Finner ikke katalogposten. Kan ikke validere.")
             normarc_success = False
 
         else:
@@ -332,11 +332,11 @@ class Metadata:
             for edition in creative_work["editions"]:
                 if edition["format"] == publication_format:
                     if report_metadata_errors:
-                        normarc_report.info("<h2>Katalogposten for {}:</h2>\n".format(edition["identifier"]))
+                        normarc_report.info("## Katalogposten for {}:\n".format(edition["identifier"]))
 
                     if edition["deleted"]:
                         if report_metadata_errors:
-                            normarc_report.info("<p>Hopper over validering. Denne katalogposten ser ut til å være slettet.</p>")
+                            normarc_report.info("Hopper over validering. Denne katalogposten ser ut til å være slettet.")
                         continue
 
                     found = True
@@ -344,7 +344,7 @@ class Metadata:
 
                     if validation_report is None:
                         if report_metadata_errors:
-                            normarc_report.error("\n<p>Klarte ikke å validere katalogposten. Kanskje den ikke finnes?</p>")
+                            normarc_report.error("\nKlarte ikke å validere katalogposten. Kanskje den ikke finnes?")
                         continue
 
                     severity = "success"
@@ -361,23 +361,19 @@ class Metadata:
 
                     if report_metadata_errors:
                         if severity == "success":
-                            normarc_report.info("\n<p>Ingen feil eller advarsler. Katalogposten ser bra ut.</p>")
+                            normarc_report.info("\nIngen feil eller advarsler. Katalogposten ser bra ut.")
 
                         else:
                             if severity == "error":
-                                normarc_report.info("\n<p>Katalogposten er ikke valid.</p>")
+                                normarc_report.info("\nKatalogposten er ikke valid.")
                             else:
-                                normarc_report.info("\n<p>Katalogposten er valid, men inneholder advarsler.</p>")
+                                normarc_report.info("\nKatalogposten er valid, men inneholder advarsler.")
 
-                            normarc_report.info("\n<dl>")
                             for test in validation_report["tests"]:
                                 if test["status"] == "error":
-                                    normarc_report.error("<dt>Feil: {}</dt>".format(test["title"]))
-                                    normarc_report.error("<dd>{}</dd>".format(test["message"]))
+                                    normarc_report.error("- *Feil*: {}, {}".format(test["title"], test["message"]))
                                 else:
-                                    normarc_report.warning("<dt>Advarsel: {}</dt>".format(test["title"]))
-                                    normarc_report.warning("<dd>{}</dd>".format(test["message"]))
-                            normarc_report.info("</dl>")
+                                    normarc_report.warning("- *Advarsel*: {}, {}".format(test["title"], test["message"]))
 
             if not found:
                 normarc_success = False
@@ -385,14 +381,12 @@ class Metadata:
                     normarc_report.error("Finner ikke en katalogpost for {} i formatet '{}'. Disse formatene ble funnet:".format(
                         edition_identifier, publication_format))
                     if len(creative_work["editions"]) == 0:
-                        normarc_report.info("<p>Ingen.</p>")
+                        normarc_report.info("Ingen.")
                     else:
-                        normarc_report.info("<ul>")
                         for edition in creative_work["editions"]:
-                            normarc_report.info("<li><strong>{}</strong>: {}{}</li>".format(edition["identifier"],
-                                                                                            edition["format"] if edition["format"] else "ukjent format",
-                                                                                            " (katalogposten er slettet)" if edition["deleted"] else ""))
-                        normarc_report.info("</ul>")
+                            normarc_report.info("- **{}**: {}{}".format(edition["identifier"],
+                                                                        edition["format"] if edition["format"] else "ukjent format",
+                                                                        " (katalogposten er slettet)" if edition["deleted"] else ""))
 
                     suggestions = Metadata.suggest_similar_editions(edition_identifier, edition_format=publication_format, report=normarc_report)
                     normarc_report.info("Her er noen andre '{}'-katalogposter med lignende titler, ".format(publication_format)
@@ -401,15 +395,12 @@ class Metadata:
                     if len(suggestions) == 0:
                         normarc_report.info("(fant ingen katalogposter med lignende titler)")
                     else:
-                        normarc_report.info("<dl>")
                         for suggestion in suggestions:
-                            normarc_report.info("<dt>{}</dt>".format(suggestion["identifier"]))
-                            normarc_report.info("<dd>{}</dd>".format(suggestion["title"]))
-                        normarc_report.info("</dl>")
+                            normarc_report.info("- *{}*: {}".format(suggestion["identifier"], suggestion["title"]))
 
             if report_metadata_errors:
                 signatureRegistration = Metadata.get_cataloging_signature_from_quickbase(all_identifiers, report=normarc_report)
-                normarc_report.info("<strong>Ansvarlig for katalogisering</strong>: {}".format(signatureRegistration if signatureRegistration else "(ukjent)"))
+                normarc_report.info("**Ansvarlig for katalogisering**: {}".format(signatureRegistration if signatureRegistration else "(ukjent)"))
 
         if not report_metadata_errors:
             return normarc_success
@@ -639,13 +630,12 @@ class Metadata:
         creative_work = Metadata.get_creative_work_from_api(identifier, report=report)
         identifiers = Metadata.get_identifiers(identifier)
 
-        report.info("<h2>Signaturer</h2>")
+        report.info("## Signaturer")
         signatures = Metadata.get_signatures_from_quickbase(identifiers, report=report)
 
         if not signatures:
-            report.info("<p>Fant ingen signaturer.</p>")
+            report.info("Fant ingen signaturer.")
         else:
-            report.info("<dl>")
             already_reported = {}
             for signature in signatures:
                 if signature["source-id"] in already_reported and already_reported[signature["source-id"]] == signature["value"]:
@@ -653,23 +643,19 @@ class Metadata:
                 else:
                     already_reported[signature["source-id"]] = signature["value"]
 
-                report.info("<dt>{}</dt>".format(signature["source"]))
-                report.info("<dd>{}</dd>".format(signature["value"]))
-            report.info("</dl>")
+                report.info("- *{}*: {}".format(signature["source"], signature["value"]))
 
-        report.info("<h2>Lenker til katalogposter</h2>")
+        report.info("## Lenker til katalogposter")
         bibliofil_url = "https://websok.nlb.no/cgi-bin/websok?tnr="
         if creative_work is None:
-            report.error("<p>Finner ikke {} i Bibliofil.</p>".format(identifier))
+            report.error("Finner ikke {} i Bibliofil.".format(identifier))
             return
         else:
-            report.info("<ul>")
             for edition in creative_work["editions"]:
-                report.info("<li><a href=\"{}{}\">{}</a> ({})</li>".format(bibliofil_url, edition["identifier"][:6], edition["identifier"], edition["format"]))
-            report.info("</ul>")
+                report.info("- [{} ({})]({}{})".format(edition["identifier"], edition["format"], bibliofil_url, edition["identifier"][:6]))
 
         if len(creative_work["editions"]) == 1:
-            report.info("<p>Finner ingen andre katalogiserte formater tilhørende denne {}-boka.</p>".format(creative_work["editions"][0]["format"]))
+            report.info("Finner ingen andre katalogiserte formater tilhørende denne {}-boka.".format(creative_work["editions"][0]["format"]))
 
     @staticmethod
     def should_produce(edition_identifier, edition_format, report=logging, skip_metadata_validation=False, use_cache_if_possible=False):
