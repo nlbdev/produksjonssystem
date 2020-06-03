@@ -392,11 +392,11 @@ class Produksjonssystem():
         file_name = os.environ.get("CONFIG_FILE")
         self.emailDoc = ""
         with open(file_name, 'r') as f:
-                try:
-                    self.emailDoc = yaml.load(f, Loader=yaml.FullLoader)
-                except Exception as e:
-                    self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
-                    traceback.print_exc(e)
+            try:
+                self.emailDoc = yaml.load(f, Loader=yaml.FullLoader)
+            except Exception as e:
+                self.info("En feil oppstod under lasting av konfigurasjonsfilen. Sjekk syntaksen til produksjonssystem.yaml")
+                traceback.print_exc(e)
 
         # Make pipelines available from static methods in the Pipeline class
         Pipeline.pipelines = [pipeline[0] for pipeline in self.pipelines]
@@ -497,7 +497,7 @@ class Produksjonssystem():
 
                     for pipeline in self.pipelines:
                         if not pipeline[0].is_healthy():
-                            self.info("pipeline is not healty, will restart system: {}".format(pipeline[0].title))
+                            self.info("pipeline is not healthy, will restart system: {}".format(pipeline[0].title))
                             running = False
 
                 if time.time() - last_thread_usage_log > 600:
