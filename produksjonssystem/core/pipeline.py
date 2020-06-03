@@ -789,6 +789,7 @@ class Pipeline():
     def _handle_book_events_thread(self):
         self.watchdog_bark()
         while self.shouldRun:
+            logging.debug("while self.shouldRun: …")
             self.running = True
             self.watchdog_bark()
 
@@ -800,26 +801,31 @@ class Pipeline():
 
             try:
                 if self.dir_out_obj is not None and not self.dir_out_obj.is_available():
+                    logging.debug("dir_out is not available, waiting 10 seconds…")
                     time.sleep(10)
                     continue
 
                 if self.dir_in is not None and not os.path.isdir(self.dir_in):
                     # when base dir is not available we should stop watching the directory,
                     # this just catches a potential race condition
+                    logging.debug("dir_in does not exist, waiting 1 second…")
                     time.sleep(1)
                     continue
 
                 with self._queue_lock:
                     # list all books where no book event have occured very recently (self._inactivity_timeout)
+                    logging.debug("list all books where no book event have occured very recently (self._inactivity_timeout)")
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
 
                     # process books that were started manually first (manual trigger or book modification)
+                    logging.debug("process books that were started manually first (manual trigger or book modification)")
                     books_autotriggered = [b for b in books if Pipeline.get_main_event(b) == "autotriggered"]
                     books_autotriggered = sorted(books_autotriggered, key=lambda b: b["last_event"])  # process recently autotriggered books last
                     books_manual = [b for b in books if Pipeline.get_main_event(b) != "autotriggered"]
                     books_manual = sorted(books_manual, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
                     books = books_manual
                     if self.should_handle_autotriggered_books():
+                        logging.debug("Don't handle autotriggered books unless should_handle_autotriggered_books() returns True")
                         # Don't handle autotriggered books unless should_handle_autotriggered_books() returns True
                         # This will make sure that certain pipelines only retry books
                         # during working hours, and make sure that certain other pipelines
@@ -838,11 +844,13 @@ class Pipeline():
                         self._queue = new_queue
 
                 if self.book:
+                    logging.debug("Determine order of creation/deletion, as well as type of book event")
                     # Determine order of creation/deletion, as well as type of book event
                     event = Pipeline.get_main_event(self.book)
 
                     # created first, then deleted => ignore
                     if event == "create_before_delete":
+                        logging.debug("created first, then deleted => ignore")
                         pass
 
                     # check if source directory or file should be ignored
@@ -853,29 +861,36 @@ class Pipeline():
                     # trigger book event
                     else:
                         # configure utils before processing book
+                        logging.debug("configure utils before processing book")
                         self.utils.report = Report(self)
                         self.utils.filesystem = Filesystem(self)
                         result = None
 
                         # get some basic metadata (identifier and title) from the book for reporting purposes
+                        logging.debug("get some basic metadata (identifier and title) from the book for reporting purposes")
                         book_metadata = Metadata.get_metadata_from_book(self, self.book["source"] if self.book["source"] else self.book["name"])
 
                         try:
                             self.progress_start = time.time()
                             self.utils.report.debug("Started: {}".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
+                            logging.debug("getting group lock for group '{}'…".format(self.get_group_id()))
                             with Pipeline._group_locks[self.get_group_id()]["lock"]:
                                 Pipeline._group_locks[self.get_group_id()]["current-uid"] = self.uid
 
                                 if event == "created":
+                                    logging.debug("result = self.on_book_created()")
                                     result = self.on_book_created()
 
                                 elif event == "deleted":
+                                    logging.debug("result = self.on_book_deleted()")
                                     result = self.on_book_deleted()
 
                                 else:
+                                    logging.debug("result = self.on_book_modified()")
                                     result = self.on_book_modified()
 
+                                logging.debug("releasing group lock for group '{}'…".format(self.get_group_id()))
                                 Pipeline._group_locks[self.get_group_id()]["current-uid"] = None
 
                         except Exception:
@@ -885,12 +900,16 @@ class Pipeline():
 
                         finally:
                             if Pipeline._group_locks[self.get_group_id()]["current-uid"] == self.uid:
+                                logging.debug("releasing group lock for group '{}'…".format(self.get_group_id()))
                                 Pipeline._group_locks[self.get_group_id()]["current-uid"] = None
 
                             try:
+                                logging.debug("adding production info…")
                                 Metadata.add_production_info(self.utils.report,
                                                              book_metadata["identifier"],
                                                              self.publication_format)
+                                logging.debug("production added")
+
                             except Exception:
                                 self.utils.report.error("An error occured while retrieving production info")
                                 self.utils.report.error(traceback.format_exc(), preformatted=True)
@@ -902,6 +921,7 @@ class Pipeline():
                                     self.utils.report.title = self.title + ": " + self.book["name"] + " lyktes 👍😄" + book_title
                                 else:
                                     self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + book_title
+                                logging.debug(self.utils.report.title)
 
                             if (Metadata.is_old(book_metadata["identifier"], report=self.utils.report)):
                                 self.utils.report.info("{} er gammel. Vi sender derfor ikke en e-post.".format(book_metadata["identifier"]))
@@ -914,20 +934,25 @@ class Pipeline():
                             if self.stopAfterNJobs > 0:
                                 self.stopAfterNJobs -= 1
                             if self.stopAfterNJobs == 0:
+                                logging.debug("stopping after N jobs (N=0)")
                                 self.stop()
 
                             try:
+                                logging.debug("sending e-mail and slack message…")
                                 self.utils.report.email(Report.filterEmailAddresses(self.email_settings["recipients"],
                                                                                     library=book_metadata["library"] if "library" in book_metadata else None),
                                                         should_email=self.utils.report.should_email,
                                                         should_message_slack=self.utils.report.should_message_slack)
+                                logging.debug("sending of e-mail and slack message complete")
                             except Exception:
                                 logging.exception("An error occured while sending email")
                             finally:
                                 logpath = self.utils.report.attachLog()
                                 logging.warning("Logfile: " + logpath)
                             if self.utils.report.should_email:
+                                logging.debug("writing to daily report…")
                                 self.write_to_daily()
+                                logging.debug("done writing to daily report")
 
             except Exception:
                 logging.exception("En feil oppstod ved håndtering av bokhendelse"
@@ -940,9 +965,11 @@ class Pipeline():
                     logging.exception("Could not e-mail exception")
 
             finally:
+                logging.debug("done (self.book = None and time.sleep(1))")
                 self.book = None
                 time.sleep(1)
 
+        logging.debug("running = False")
         self.running = False
 
     def daily_report(self, message):
