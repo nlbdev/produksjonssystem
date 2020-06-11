@@ -324,9 +324,10 @@
         <xsl:variable name="dublin-core" select="$property = ('dc:contributor', 'dc:coverage', 'dc:creator', 'dc:date', 'dc:description', 'dc:format', 'dc:identifier',
                                                               'dc:language', 'dc:publisher', 'dc:relation', 'dc:rights', 'dc:source', 'dc:subject', 'dc:title', 'dc:type')" as="xs:boolean"/>
 
-        <xsl:variable name="identifier" as="xs:string?" select="($context/(../* | ../../*)[self::*:controlfield[@tag='001']])[1]/text()"/>
+        <xsl:variable name="identifier001" as="xs:string?" select="($context/(../* | ../../*)[self::*:controlfield[@tag='001']])[1]/text()"/>
         <xsl:variable name="tag" select="($context/../@tag, $context/@tag, '???')[1]"/>
-        <xsl:variable name="metadata-source-text" select="concat('Bibliofil', if ($identifier) then concat('@',$identifier) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
+        <xsl:variable name="metadata-source-text" select="concat('Bibliofil', if ($identifier001) then concat('@',$identifier001) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
+        <xsl:variable name="metadata-source-text" select="concat($metadata-source-text, if ($identifier001 != $identifier and $property = ('dc:identifier', 'dc:title') and not($refines)) then ' + dc:identifier' else '')"/>
 
         <xsl:element name="{if ($dublin-core) then $property else 'meta'}">
             <xsl:if test="$include-source-reference or $include-source-reference-as-comments">
@@ -1169,7 +1170,16 @@
 
     <xsl:template match="*:datafield[@tag='245']">
         <xsl:for-each select="*:subfield[@code='a']">
-            <xsl:call-template name="meta"><xsl:with-param name="property" select="'dc:title'"/><xsl:with-param name="value" select="text()"/></xsl:call-template>
+            <xsl:variable name="language">
+                <xsl:apply-templates select="../../*[@tag = ('008', '041')]"/>
+            </xsl:variable>
+            <xsl:variable name="language" select="string(($language/dc:language[not(@refines)])[1])"/>
+            
+            <xsl:call-template name="meta">
+                <xsl:with-param name="property" select="'dc:title'"/>
+                <xsl:with-param name="context" select="."/>
+                <xsl:with-param name="value" select="nlb:identifier-in-title(text(), $language)"/>
+            </xsl:call-template>
         </xsl:for-each>
 
         <xsl:for-each select="*:subfield[@code='b']">
@@ -2607,6 +2617,77 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat('schema:', $property)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="nlb:identifier-in-title">
+        <xsl:param name="title" as="xs:string"/>
+        <xsl:param name="language" as="xs:string"/>
+        
+        <xsl:choose>
+            <xsl:when test="string-length($identifier) = 12 and xs:integer(substring($identifier, 9, 2)) le 12">
+                <!-- YY MM DD -->
+                <xsl:variable name="year" select="concat('20', substring($identifier, 7, 2))"/>
+                <xsl:variable name="month" select="substring($identifier, 9, 2)"/>
+                <xsl:variable name="day" select="substring($identifier, 11, 2)"/>
+                
+                <xsl:choose>
+                    <xsl:when test="$language = ('no', 'nor', 'nb', 'nob', 'nn', 'nnn')">
+                        <xsl:variable name="month-name" select="if ($month = '01') then 'januar'
+                                                                else if ($month = '02') then 'februar'
+                                                                else if ($month = '03') then 'mars'
+                                                                else if ($month = '04') then 'april'
+                                                                else if ($month = '05') then 'mai'
+                                                                else if ($month = '06') then 'juni'
+                                                                else if ($month = '07') then 'juli'
+                                                                else if ($month = '08') then 'august'
+                                                                else if ($month = '09') then 'september'
+                                                                else if ($month = '10') then 'oktober'
+                                                                else if ($month = '11') then 'november'
+                                                                else if ($month = '12') then 'desember'
+                                                                else string($month)"/>
+                        
+                        <xsl:value-of select="concat($title, ', ', string(xs:integer($day)), '.', $month-name, ' ', $year)"/>
+                    </xsl:when>
+                    
+                    <xsl:when test="$language = ('en', 'eng')">
+                        <xsl:variable name="month-name" select="if ($month = '01') then 'January'
+                                                                else if ($month = '02') then 'February'
+                                                                else if ($month = '03') then 'March'
+                                                                else if ($month = '04') then 'April'
+                                                                else if ($month = '05') then 'May'
+                                                                else if ($month = '06') then 'June'
+                                                                else if ($month = '07') then 'July'
+                                                                else if ($month = '08') then 'August'
+                                                                else if ($month = '09') then 'September'
+                                                                else if ($month = '10') then 'October'
+                                                                else if ($month = '11') then 'November'
+                                                                else if ($month = '12') then 'December'
+                                                                else string($month)"/>
+                        
+                        <xsl:value-of select="concat($title, ', ', $month-name, ' ', string(xs:integer($day)), if ($day = '01') then 'st'
+                                                                                                               else if ($day = '02') then 'nd'
+                                                                                                               else if ($day = '03') then 'rd'
+                                                                                                               else 'th', ' ', $year)"/>
+                    </xsl:when>
+                    
+                    <xsl:otherwise>
+                        <xsl:value-of select="concat($title, ', ', $year, '-', $month, '-', $day)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            
+            <xsl:when test="string-length($identifier) = 12">
+                <!-- NR YYYY -->
+                <xsl:variable name="number" select="substring($identifier, 7, 2)"/>
+                <xsl:variable name="year" select="substring($identifier, 9, 4)"/>
+                
+                <xsl:value-of select="concat($title, ', ', string(xs:integer($number)), '/', $year)"/>
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <xsl:value-of select="$title"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>

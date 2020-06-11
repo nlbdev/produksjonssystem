@@ -7,7 +7,7 @@
                xmlns="http://www.idpf.org/2007/opf"
                stylesheet="marcxchange-to-opf.xsl">
     
-    <x:param name=" identifier" select="'612345022018'"/>
+    <x:param name="identifier" select="'612345022018'"/>
     <x:param name="include-source-reference" select="'true'"/>
     
     <x:scenario label="Bruk boknummer for å lage utgivelsesår for utgaven og originalen">
@@ -21,7 +21,7 @@
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected" xml:space="preserve">    <metadata>
-        <dc:identifier nlb:metadata-source="Bibliofil@612345 *001" id="pub-id">612345022018</dc:identifier>
+        <dc:identifier nlb:metadata-source="Bibliofil@612345 *001 + dc:identifier" id="pub-id">612345022018</dc:identifier>
         <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued">2018</meta>
         <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:date.issued.original">2018</meta>
         <meta nlb:metadata-source="Bibliofil@612345 *001" property="dc:source.urn-nbn">urn:nbn:no-nb_nlb_612345022018</meta>
@@ -93,8 +93,8 @@
         </x:context>
         
         <x:expect label="the metadata should be extracted as expected" xml:space="preserve">    <metadata xmlns="http://www.idpf.org/2007/opf">
-        <dc:identifier nlb:metadata-source="Bibliofil@611823 *001" id="pub-id">612345022018</dc:identifier>
-        <dc:title nlb:metadata-source="Bibliofil@611823 *245$a">Aftenposten</dc:title>
+        <dc:identifier nlb:metadata-source="Bibliofil@611823 *001 + dc:identifier" id="pub-id">612345022018</dc:identifier>
+        <dc:title nlb:metadata-source="Bibliofil@611823 *245$a + dc:identifier">Aftenposten, 2/2018</dc:title>
         <dc:format nlb:metadata-source="Bibliofil@611823 *019$b">DAISY 2.02</dc:format>
         <dc:language nlb:metadata-source="Bibliofil@611823 *008">nob</dc:language>
         <dc:publisher nlb:metadata-source="Bibliofil@611823 *260$b" id="publisher-260-1">Norsk lyd- og blindeskriftbibliotek</dc:publisher>
