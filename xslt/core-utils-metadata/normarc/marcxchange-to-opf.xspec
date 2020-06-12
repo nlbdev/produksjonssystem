@@ -1239,37 +1239,37 @@
         
         <x:expect label="the metadata should be extracted as expected" xml:space="preserve">    <metadata>
         <meta property="hasDeliveryMethod" id="deliveryFormat-582-1">epub_dl</meta>
-        <dc:format refines="#deliveryFormat-582-1">epub</dc:format>
+        <meta refines="#deliveryFormat-582-1" property="dc:format">epub</meta>
         <meta refines="#deliveryFormat-582-1" property="deliveryMethod">dl</meta>
         <meta refines="#deliveryFormat-582-1" property="name">EPUB</meta>
         <meta refines="#deliveryFormat-582-1" property="position">1</meta>
         
         <meta property="hasDeliveryMethod" id="deliveryFormat-582-2">html_dl</meta>
-        <dc:format refines="#deliveryFormat-582-2">html</dc:format>
+        <meta refines="#deliveryFormat-582-2" property="dc:format">html</meta>
         <meta refines="#deliveryFormat-582-2" property="deliveryMethod">dl</meta>
         <meta refines="#deliveryFormat-582-2" property="name">HTML</meta>
         <meta refines="#deliveryFormat-582-2" property="position">2</meta>
         
         <meta property="hasDeliveryMethod" id="deliveryFormat-582-3">epub_no</meta>
-        <dc:format refines="#deliveryFormat-582-3">epub</dc:format>
+        <meta refines="#deliveryFormat-582-3" property="dc:format">epub</meta>
         <meta refines="#deliveryFormat-582-3" property="deliveryMethod">no</meta>
         <meta refines="#deliveryFormat-582-3" property="name">Legg til på bokhylla</meta>
         <meta refines="#deliveryFormat-582-3" property="position">3</meta>
         
         <meta property="hasDeliveryMethod" id="deliveryFormat-582-4">mobi_dl</meta>
-        <dc:format refines="#deliveryFormat-582-4">mobi</dc:format>
+        <meta refines="#deliveryFormat-582-4" property="dc:format">mobi</meta>
         <meta refines="#deliveryFormat-582-4" property="deliveryMethod">dl</meta>
         <meta refines="#deliveryFormat-582-4" property="name">Mobi / Kindle Format</meta>
         <meta refines="#deliveryFormat-582-4" property="position">4</meta>
         
         <meta property="hasDeliveryMethod" id="deliveryFormat-582-5">mobi_ki</meta>
-        <dc:format refines="#deliveryFormat-582-5">mobi</dc:format>
+        <meta refines="#deliveryFormat-582-5" property="dc:format">mobi</meta>
         <meta refines="#deliveryFormat-582-5" property="deliveryMethod">ki</meta>
         <meta refines="#deliveryFormat-582-5" property="name">Send til Kindle</meta>
         <meta refines="#deliveryFormat-582-5" property="position">5</meta>
         
         <meta property="hasDeliveryMethod" id="deliveryFormat-582-6">epub_st</meta>
-        <dc:format refines="#deliveryFormat-582-6">epub</dc:format>
+        <meta refines="#deliveryFormat-582-6" property="dc:format">epub</meta>
         <meta refines="#deliveryFormat-582-6" property="deliveryMethod">st</meta>
         <meta refines="#deliveryFormat-582-6" property="name">Vis i nettleseren</meta>
         <meta refines="#deliveryFormat-582-6" property="position">6</meta>

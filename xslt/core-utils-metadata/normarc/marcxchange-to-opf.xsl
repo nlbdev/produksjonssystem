@@ -329,12 +329,12 @@
         <xsl:variable name="metadata-source-text" select="concat('Bibliofil', if ($identifier001) then concat('@',$identifier001) else '', ' *', $tag, if ($context/@code) then concat('$',$context/@code) else '')"/>
         <xsl:variable name="metadata-source-text" select="concat($metadata-source-text, if ($identifier001 != $identifier and $property = ('dc:identifier', 'dc:title') and not($refines)) then ' + dc:identifier' else '')"/>
 
-        <xsl:element name="{if ($dublin-core) then $property else 'meta'}">
+        <xsl:element name="{if ($dublin-core and not($refines)) then $property else 'meta'}">
             <xsl:if test="$include-source-reference or $include-source-reference-as-comments">
                 <xsl:attribute name="nlb:metadata-source" select="$metadata-source-text"/>
             </xsl:if>
 
-            <xsl:if test="not($dublin-core)">
+            <xsl:if test="not($dublin-core) or $refines">
                 <xsl:attribute name="property" select="$property"/>
             </xsl:if>
 
