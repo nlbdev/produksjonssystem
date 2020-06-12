@@ -106,25 +106,29 @@ class Metadata:
         report.debug("getting edition metadata from: {}".format(edition_url))
         response = Metadata.requests_get(edition_url)
 
+        short_identifier = None
         if response is not None and response.status_code == 404 and len(edition_identifier) > 6:
             # fallback for as long as the API does not
             # support edition identifiers longer than 6 digits
-            edition_identifier = edition_identifier[:6]
+            short_identifier = edition_identifier[:6]
             report.debug("edition identifier is {} digits long, trying 6 first digits instead…".format(len(edition_identifier)))
 
             if format == "json":
-                edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), edition_identifier)
+                edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), short_identifier)
             else:
-                edition_url = "{}/editions/{}/metadata?format={}".format(Config.get("nlb_api_url"), edition_identifier, format)
+                edition_url = "{}/editions/{}/metadata?format={}".format(Config.get("nlb_api_url"), short_identifier, format)
 
             report.debug("getting edition metadata from: {}".format(edition_url))
             response = Metadata.requests_get(edition_url)
 
         if response is not None and response.status_code == 200:
             if format == "json":
-                return response.json()["data"]
+                result = response.json()["data"]
+                result["identifier"] = edition_identifier  # in case of 12 digit identifiers
             else:
-                return response.text
+                result = response.text
+
+            return result
 
         else:
             report.debug("Could not get metadata for {}".format(edition_identifier))
@@ -149,7 +153,11 @@ class Metadata:
         report.debug("getting creative work metadata from: {}".format(creative_work_url))
         response = Metadata.requests_get(creative_work_url)
         if response.status_code == 200:
-            return response.json()['data']
+            data = response.json()['data']
+            for e in data["editions"]:
+                if len(e["identifier"]) == 6:
+                    e["identifier"] += edition_identifier[6:]  # assume the same trailing digits for all editions
+            return data
 
         else:
             report.debug("Could not get creative work metadata for {}".format(edition_identifier))
@@ -272,12 +280,13 @@ class Metadata:
         report.debug("getting edition metadata validation report from: {}".format(edition_url))
         response = Metadata.requests_get(edition_url)
 
+        short_identifier = None
         if response.status_code == 404 and len(edition_identifier) > 6:
             # fallback for as long as the API does not
             # support edition identifiers longer than 6 digits
-            edition_identifier = edition_identifier[:6]
+            short_identifier = edition_identifier[:6]
             report.debug("edition identifier is {} digits long, trying 6 first digits instead…".format(len(edition_identifier)))
-            edition_url = "{}/editions/{}/metadata-validation-report".format(Config.get("nlb_api_url"), edition_identifier)
+            edition_url = "{}/editions/{}/metadata-validation-report".format(Config.get("nlb_api_url"), short_identifier)
 
             report.debug("getting edition metadata validation report from: {}".format(edition_url))
             response = Metadata.requests_get(edition_url)
