@@ -1,4 +1,4 @@
-import dateutil.parser
+import copy
 import datetime
 import logging
 import os
@@ -8,15 +8,15 @@ import tempfile
 import threading
 import time
 import traceback
-
-import requests
-from json import JSONDecodeError
-from lxml import etree as ElementTree
 from difflib import SequenceMatcher
+from json import JSONDecodeError
+
+import dateutil.parser
+import requests
+from lxml import etree as ElementTree
 
 from core.config import Config
 from core.utils.epub import Epub
-from core.utils.filesystem import Filesystem
 from core.utils.report import Report
 
 
@@ -68,26 +68,6 @@ class Metadata:
                 "response": requests.get(url),
             }
             return Metadata.requests_cache[url]["response"]
-
-    @staticmethod
-    def get_metadata_dir(identifier=None):
-        if not Config.get("metadata_dir"):
-            Metadata.metadata_tempdir_obj = tempfile.TemporaryDirectory(prefix="metadata-")
-            logging.debug("Using temporary directory for metadata: " + Metadata.metadata_tempdir_obj.name)
-            Config.set("metadata_dir", Metadata.metadata_tempdir_obj.name)
-
-        if len(str(identifier)) > 0:
-            return os.path.join(Config.get("metadata_dir"), str(identifier))
-        else:
-            return Config.get("metadata_dir")
-
-    @staticmethod
-    def get_dir_lock(dir):
-        assert dir is not None, "get_dir_lock: dir missing"
-        with Metadata._metadata_dirs_locks_lock:
-            if dir not in Metadata._metadata_dirs_locks:
-                Metadata._metadata_dirs_locks[dir] = threading.RLock()
-            return Metadata._metadata_dirs_locks[dir]
 
     @staticmethod
     def get_edition_from_api(edition_identifier, format="json", report=logging, use_cache_if_possible=False):
@@ -167,10 +147,6 @@ class Metadata:
     def get_identifiers(edition_identifier, report=logging, use_cache_if_possible=False):
         creative_work = Metadata.get_creative_work_from_api(edition_identifier, report=report, use_cache_if_possible=use_cache_if_possible)
 
-        issue = ""
-        if len(edition_identifier) > 6:
-            issue = edition_identifier[6:]
-
         identifiers = []
 
         if creative_work:
@@ -183,9 +159,6 @@ class Metadata:
                 ))
                 if not edition["deleted"]:
                     identifiers.append(edition["identifier"])
-
-        # as long as the API only returns 6 digit identifiers, we need to append the issue digits ourselves
-        identifiers = [i + issue if len(i) <= 6 else i for i in identifiers]
 
         return identifiers
 
@@ -242,36 +215,23 @@ class Metadata:
     def is_old(identifier, report=logging):
         Metadata.refresh_old_books_cache_if_necessary(report=report)
 
+        if len(str(identifier)) == 12:
+            if int(str(identifier)[8:10]) > 12:
+                year = int(str(identifier)[8:12])
+                if datetime.datetime.utcnow().year - year < 5:
+                    # if less than five years ago
+                    return False
+
+            else:
+                year = 2000 + int(str(identifier)[6:8])
+                month = int(str(identifier)[8:10])
+                day = int(str(identifier)[10:12])
+                if datetime.datetime.utcnow() - datetime.datetime(year, month, day) < datetime.timedelta(days=(365.25 * 5)):
+                    # if less than five years ago
+                    return False
+
         with Metadata._old_books_cachelock:
-            return identifier in Metadata.old_books
-
-    @staticmethod
-    def trigger_metadata_pipelines(report, book_id, exclude=None):
-        archive_dirs = {}
-
-        for pipeline_uid in report.pipeline.dirs:
-            if report.pipeline.dirs[pipeline_uid]["in"] == Metadata.get_metadata_dir():
-                archive_dir = report.pipeline.dirs[pipeline_uid]["out"]
-                basepath = Filesystem.get_base_path(archive_dir, report.pipeline.dirs[pipeline_uid]["base"])
-                relpath = os.path.relpath(report.pipeline.dirs[pipeline_uid]["out"], basepath)
-
-                if archive_dir not in archive_dirs:
-                    archive_dirs[archive_dir] = relpath
-
-        for archive_dir in archive_dirs.keys():
-            book_dir = os.path.join(archive_dir, book_id)
-            relpath = archive_dirs[archive_dir]
-            if not os.path.exists(book_dir):
-                report.info("'{}' finnes ikke i '{}'; etterfølgende pipelines blir ikke trigget".format(book_id, relpath))
-                del archive_dirs[archive_dir]
-
-        for pipeline_uid in report.pipeline.dirs:
-            if pipeline_uid == exclude:
-                continue
-            if report.pipeline.dirs[pipeline_uid]["in"] in archive_dirs:
-                with open(os.path.join(report.pipeline.dirs[pipeline_uid]["trigger"], book_id), "w") as triggerfile:
-                    triggerfile.write("autotriggered")
-                report.info("Trigger: {}".format(pipeline_uid))
+            return identifier in Metadata.old_books or identifier[:6] in Metadata.old_books
 
     @staticmethod
     def get_validation_report(edition_identifier, report=logging):
@@ -330,7 +290,7 @@ class Metadata:
 
         if creative_work is None:
             if report_metadata_errors:
-                normarc_report.info("## Katalogposten for {}:\n".format(edition_identifier))
+                normarc_report.info("## Katalogposten for {}:\n".format(edition_identifier[:6]))
                 report.error("Finner ikke katalogposten. Kan ikke validere.")
             normarc_success = False
 
@@ -341,7 +301,7 @@ class Metadata:
             for edition in creative_work["editions"]:
                 if edition["format"] == publication_format:
                     if report_metadata_errors:
-                        normarc_report.info("## Katalogposten for {}:\n".format(edition["identifier"]))
+                        normarc_report.info("## Katalogposten for {}:\n".format(edition["identifier"][:6]))
 
                     if edition["deleted"]:
                         if report_metadata_errors:
@@ -388,12 +348,12 @@ class Metadata:
                 normarc_success = False
                 if report_metadata_errors:
                     normarc_report.error("Finner ikke en katalogpost for {} i formatet '{}'. Disse formatene ble funnet:".format(
-                        edition_identifier, publication_format))
+                        edition_identifier[:6], publication_format))
                     if len(creative_work["editions"]) == 0:
                         normarc_report.info("Ingen.")
                     else:
                         for edition in creative_work["editions"]:
-                            normarc_report.info("- **{}**: {}{}".format(edition["identifier"],
+                            normarc_report.info("- **{}**: {}{}".format(edition["identifier"][:6],
                                                                         edition["format"] if edition["format"] else "ukjent format",
                                                                         " (katalogposten er slettet)" if edition["deleted"] else ""))
 
@@ -449,7 +409,7 @@ class Metadata:
             signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
 
             normarc_report.email(signatureRegistrationAddress,
-                                 subject="Validering av katalogpost: {}".format(edition_identifier))
+                                 subject="Validering av katalogpost: {}".format(edition_identifier[:6]))
             report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
                 ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
 
@@ -1131,12 +1091,22 @@ class Metadata:
 
         with Metadata._creative_works_cachelock:
             for cw in Metadata.creative_works:
+                match = False
                 for edition in cw["editions"]:
                     if (
                         edition["identifier"] == edition_identifier
                         or edition["identifier"] == edition_identifier[:6]  # …since the API doesn't fully support longer edition identifiers yet
                     ):
-                        return cw
+                        match = True
+                if match:
+                    creative_work = copy.deepcopy(cw)
+
+                    # fix 12 digit identifiers if necessary
+                    for edition in creative_work["editions"]:
+                        if len(edition["identifier"]) == 6:
+                            edition["identifier"] += edition_identifier[6:]
+
+                    return creative_work
 
         report.debug("{} was not found in cache".format(edition_identifier))
         return None
