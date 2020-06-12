@@ -24,11 +24,11 @@
         </xsl:copy>
     </xsl:template>
     
-    <!-- For some reason, generate-id returns the same ID in different contexts in some cases? This hopefully fixes it… (although the IDs are longer) -->
+    <!-- generate-id may return IDs that are already present in the document. We'll prepend it with 'generated-headline-' which should avoid conflicting IDs -->
     <xsl:function name="f:generate-id" as="xs:string">
         <xsl:param name="element" as="element()"/>
         
-        <xsl:value-of select="string-join($element/ancestor-or-self::*[not(local-name() = ('html', 'body'))]/generate-id(), '')"/>
+        <xsl:value-of select="concat('generated-headline-', $element/generate-id())"/>
     </xsl:function>
     
     <xsl:template match="h1[not(@id)] | h2[not(@id)] | h3[not(@id)] | h4[not(@id)] | h5[not(@id)] | h6[not(@id)]">
