@@ -8,11 +8,11 @@ import tempfile
 from pathlib import Path
 
 from core.pipeline import Pipeline
-from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
+from core.utils.mathml_to_text import Mathml_to_text, Mathml_validator
+from core.utils.relaxng import Relaxng
+from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
-from core.utils.mathml_to_text import Mathml_to_text
-from core.utils.mathml_to_text import Mathml_validator
 from epub_to_dtbook_audio import EpubToDtbookAudio
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -123,18 +123,19 @@ class NlbpubToTtsDtbook(Pipeline):
         shutil.copy(temp_xslt_output, temp_result)
 
         self.utils.report.info("Validerer DTBook...")
-        with DaisyPipelineJob(self, "dtbook-validator", {"input-dtbook": temp_result, "check-images": "true"}) as dp2_job:
-
-            # get validation report
-            report_file = os.path.join(dp2_job.dir_output, "html-report/html-report.xml")
-            if os.path.isfile(report_file):
-                with open(report_file, 'r') as result_report:
-                    self.utils.report.attachment(result_report.readlines(),
-                                                 os.path.join(self.utils.report.reportDir(), "report.html"), "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
-
-            if dp2_job.status != "DONE":
-                self.utils.report.error("Klarte ikke å validere boken")
-                return False
+        # NOTE: This RelaxNG schema assumes that we're using DTBook 2005-3 and MathML 3.0
+        dtbook_relax = Relaxng(self,
+                               relaxng=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "dtbook-schema/rng/dtbook-2005-3.mathml-3.integration.rng"),
+                               source=temp_result)
+        dtbook_sch = Schematron(self,
+                                schematron=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "dtbook-schema/sch/dtbook.mathml.sch"),
+                                source=temp_result)
+        if not dtbook_relax.success:
+            self.utils.report.error("Validering av DTBook feilet (RelaxNG)")
+        if not dtbook_sch.success:
+            self.utils.report.error("Validering av DTBook feilet (Schematron)")
+        if not dtbook_relax.success or not dtbook_sch.success:
+            return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
         archived_path, stored = self.utils.filesystem.storeBook(temp_resultdir, identifier)
