@@ -21,7 +21,7 @@
         Her kan vi bestemme maks antall p-elementer som kan inngå i ét div.synch-point-wrapper element. 
         Er det flere p-elementer som skal "wrappes sammen", så fordeles de i flere  div.synch-point-wrapper element med omtrent like mange p per wrapper.
     -->
-    <xsl:variable name="maks-antall-p-per-synkpunkt" as="xs:integer" select="6"/>
+    <xsl:variable name="maks-antall-p-per-synkpunkt" as="xs:integer" select="4"/>
 
     <xsl:template match="/">
         <xsl:message>lag-synkroniseringspunkter.xsl (1.0.0 / 2018-02-14)</xsl:message>
