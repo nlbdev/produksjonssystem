@@ -465,8 +465,8 @@ class Metadata:
 
         ns = {"opf": "http://www.idpf.org/2007/opf"}
 
-        opf_from_epub = ["", "    <!-- Metadata fra EPUBen -->"]
-        html_from_epub = ["", "    <!-- Metadata fra EPUBen -->"]
+        opf_from_epub = ["", "        <!-- Metadata fra EPUBen -->"]
+        html_from_epub = ["", "        <!-- Metadata fra EPUBen -->"]
 
         # copy metadata from old to new OPF: property="nordic:*", property="a11y:*" and name="cover"
         # copy metadata from OPF to HTML: property="nordic:*", property="a11y:*"
