@@ -83,7 +83,7 @@ class InsertMetadata(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
 
         self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(
-            self.title, epub.identifier(), self.publication_format, epubTitle)
+            self.title, epub.identifier(), self.publication_format, temp_epub.meta("dc:title"))
         return True
 
     def should_retry_book(self, source):
