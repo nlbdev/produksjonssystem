@@ -82,7 +82,21 @@ class Filesystem():
                             if f in ignore:
                                 continue  # skip ignored files
                             filePath = os.path.join(dirPath, f)
-                            stat = os.stat(filePath)
+                            stat = None
+
+                            # try handling FileNotFoundError: [Errno 2] No such file or directory
+                            stat_retries = 3
+                            while stat_retries > 0:
+                                try:
+                                    stat_retries -= 1
+                                    stat = os.stat(filePath)
+                                except FileNotFoundError as e:
+                                    if stat_retries >= 0:
+                                        logging.warning("Filen eller mappen ble ikke funnet ({}). Prøver igjen…".format(f))
+                                        time.sleep(1)
+                                    else:
+                                        raise e
+
                             st_size = stat.st_size if os.path.isfile(path) else 0
                             st_mtime = round(stat.st_mtime)
                             attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
