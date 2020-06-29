@@ -3407,4 +3407,23 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="value attribute in lists">
+        <x:context>
+            <html:ol id="list_3">
+                <html:li id="li_21" value="1">…</html:li>
+                <html:li id="li_22" value="2">…</html:li>
+                <html:li id="li_23" value="3">…</html:li>
+                <html:li id="li_24" value="4">…</html:li>
+            </html:ol>
+        </x:context>
+        <x:expect label="the value attribute should be removed">
+            <dtbook:list type="ol" id="list_3" depth="1">
+                <dtbook:li id="li_21">…</dtbook:li>
+                <dtbook:li id="li_22">…</dtbook:li>
+                <dtbook:li id="li_23">…</dtbook:li>
+                <dtbook:li id="li_24">…</dtbook:li>
+            </dtbook:list>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

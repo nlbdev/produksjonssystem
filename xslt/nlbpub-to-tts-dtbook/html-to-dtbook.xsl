@@ -1125,6 +1125,8 @@
     <xsl:template name="f:attlist.li">
         <xsl:call-template name="f:attrs"/>
         
+        <!-- the value attribute is not allowed in DTBook
+            
         <xsl:variable name="value" select="f:li-value(.)" as="xs:integer"/>
         <xsl:choose>
             <xsl:when test="exists(@value)">
@@ -1134,6 +1136,8 @@
                 <xsl:attribute name="value" select="$value"/>
             </xsl:when>
         </xsl:choose>
+        
+        -->
     </xsl:template>
 
     <xsl:template match="html:span[f:classes(.)='lic']">
