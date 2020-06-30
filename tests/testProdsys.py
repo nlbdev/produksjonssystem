@@ -105,7 +105,7 @@ else:
 
 audio_identifier = "624328"
 news_identifier = "611823190315"
-identifiers = ["558237", "115437", "221437", "356837", "406837", audio_identifier, news_identifier]
+identifiers = ["558237", "115437", "221437", "370001", "406837", audio_identifier, news_identifier]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
 copyfile(file_path, os.path.join(prodsys.dirs["incoming"], os.path.basename(file_path)))
 dir_path = os.path.join(prodsys.dirs["master"], identifiers[0])
