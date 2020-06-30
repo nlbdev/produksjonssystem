@@ -711,10 +711,16 @@ class Pipeline():
                 if time.time() - last_retry[path] > retry_interval:
                     del last_retry[path]  # a long time sice this path was retried
 
-            filenames = Filesystem.list_book_dir(self.dir_in)
-            total = len(filenames)
-            filenames = (os.path.join(self.dir_in, fileName) for fileName in filenames)
-            filenames = ((os.stat(path).st_mtime, path) for path in filenames)
+            filenames = None
+            total = None
+            try:
+                filenames = Filesystem.list_book_dir(self.dir_in)
+                total = len(filenames)
+                filenames = (os.path.join(self.dir_in, fileName) for fileName in filenames)
+                filenames = ((os.stat(path).st_mtime, path) for path in filenames)
+            except Exception:
+                logging.exception("En feil oppstod ved opplisting av filer i: {}".format(self.dir_in))
+                continue
             counter = 0
             for modification_time, path in reversed(sorted(filenames)):
                 counter += 1
