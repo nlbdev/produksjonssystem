@@ -256,9 +256,11 @@ class Produksjonssystem():
             # e-bok
             [InsertMetadataXhtml(retry_missing=True,
                                  check_identifiers=True,
+                                 during_night_and_weekend=True,
                                  during_working_hours=True),    "nlbpub",              "pub-in-ebook"],
             [PrepareForEbook(retry_missing=True,
                              check_identifiers=True,
+                             during_night_and_weekend=True,
                              during_working_hours=True),        "pub-in-ebook",        "pub-ready-ebook"],
             [PrepareForDocx(retry_missing=True,
                             check_identifiers=True,
