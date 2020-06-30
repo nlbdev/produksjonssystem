@@ -35,7 +35,7 @@ class Mathml_to_text():
             tree = etree.parse(source)
 
             root = tree.getroot()
-            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML"}
+            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml'}
 
             mathML_elements = root.findall(".//m:math", map)
             if len(mathML_elements) is 0:
@@ -106,7 +106,7 @@ class Mathml_validator():
             tree = etree.parse(source)
 
             root = tree.getroot()
-            self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML"}
+            self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml'}
 
             mathML_elements = root.findall(".//m:math", self.map)
 
@@ -181,6 +181,11 @@ class Mathml_validator():
         parent_is_inline = False
 
         if check_siblings:
+
+            for elem in list(parent):
+                if elem.tail is not None and elem.tail.isspace() is not True:
+                    sibling_is_inline = True
+
             if parent_text is not None and parent_text.isspace() is not True:
                 sibling_text_not_empty = True
 
@@ -189,7 +194,7 @@ class Mathml_validator():
 
             for inline_element in inline_elements:
                 inline_elements_in_element = parent.findall(inline_element, self.map)
-                if len(inline_elements_in_element) != 0:
+                if len(inline_elements_in_element) > 0:
                     sibling_is_inline = True
 
         if parent.getparent() is not None:
