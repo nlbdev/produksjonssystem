@@ -206,7 +206,7 @@ class DaisyPipelineJob():
                 self.status = "IDLE"
                 idle_start = time.time()
                 running_start = time.time()
-                idle_timeout = 3600
+                idle_timeout = 3600 * 2
                 running_timeout = 3600
                 timed_out = False
                 while not timed_out and self.status in ["IDLE", "RUNNING"]:
@@ -214,6 +214,7 @@ class DaisyPipelineJob():
                     time.sleep(5)
 
                     if self.status == "IDLE":
+                        self.pipeline.watchdog_bark()  # keep pipeline alive while waiting in queue
                         running_start = time.time()
 
                     procs = DaisyPipelineJob.list_processes()
