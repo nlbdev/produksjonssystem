@@ -42,7 +42,7 @@ from nlbpub_to_html import NlbpubToHtml
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 from nlbpub_to_pef import NlbpubToPef
 from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook
-from nordic_dtbook_to_epub import NordicDTBookToEpub
+# from nordic_dtbook_to_epub import NordicDTBookToEpub
 from nordic_to_nlbpub import NordicToNlbpub
 from prepare_for_braille import PrepareForBraille
 from prepare_for_docx import PrepareForDocx
@@ -228,8 +228,8 @@ class Produksjonssystem():
         # Define pipelines and input/output/report dirs
         self.pipelines = [
             # Konvertering av gamle DTBøker til EPUB 3
-            [NordicDTBookToEpub(retry_missing=True,
-                                only_when_idle=True),         "old_dtbook",          "epub_from_dtbook"],
+            # [NordicDTBookToEpub(retry_missing=True,
+            #                     only_when_idle=True),         "old_dtbook",          "epub_from_dtbook"],
 
             # Mottak, nordic guidelines 2015-1
             # [NLBPUB_incoming_validator(retry_all=True,
