@@ -35,12 +35,9 @@ class Bibliofil:
             if has_html:
                 lines.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
 
-            if has_docx and library == "Statped":
-                lines.append("{};{};{};{}".format(identifier, "docx", "dl", "DOCX (Word)"))
-
             if has_mobi:
                 lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "Mobi / Kindle Format"))
-                lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Send til Kindle"))
+                lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Send til lesebrett"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylla"))
