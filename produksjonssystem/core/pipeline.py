@@ -114,6 +114,7 @@ class Pipeline():
                  retry_all=False,
                  retry_missing=False,
                  retry_old=False,
+                 retry_complete=False,
                  check_identifiers=False,
                  overwrite=True,
                  during_working_hours=None,
@@ -141,6 +142,7 @@ class Pipeline():
         self.retry_all = retry_all
         self.retry_missing = retry_missing
         self.retry_old = retry_old
+        self.retry_complete = retry_complete
         self.check_identifiers = check_identifiers
 
         # By default, only retry during the night or during the weekend.
