@@ -6,6 +6,7 @@ import inspect
 import logging
 import math
 import os
+from random import shuffle
 import re
 import sys
 import tempfile
@@ -821,7 +822,7 @@ class Pipeline():
 
                     # process books that were started manually first (manual trigger or book modification)
                     books_autotriggered = [b for b in books if Pipeline.get_main_event(b) == "autotriggered"]
-                    books_autotriggered = sorted(books_autotriggered, key=lambda b: b["last_event"])  # process recently autotriggered books last
+                    shuffle(books_autotriggered)  # process autotriggered books in random order
                     books_manual = [b for b in books if Pipeline.get_main_event(b) != "autotriggered"]
                     books_manual = sorted(books_manual, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
                     books = books_manual
