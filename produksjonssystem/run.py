@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import datetime
 import logging
-import os
 import sys
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+
+import datetime
+import os
 import threading
 import time
 import traceback

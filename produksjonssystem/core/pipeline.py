@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+
 import datetime
 import inspect
-import logging
 import math
 import os
-from random import shuffle
 import re
-import sys
 import tempfile
 import threading
 import time
 import traceback
 from copy import deepcopy
 from pathlib import Path
+from random import shuffle
 from threading import RLock, Thread
 
 from dotmap import DotMap
