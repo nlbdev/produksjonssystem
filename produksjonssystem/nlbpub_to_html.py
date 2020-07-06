@@ -23,7 +23,7 @@ class NlbpubToHtml(Pipeline):
     title = "NLBPUB til HTML"
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
-    expected_processing_time = 7
+    expected_processing_time = 550
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

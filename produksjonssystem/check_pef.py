@@ -16,7 +16,7 @@ class CheckPef(Pipeline):
     title = "Kontroll av punktskrift"
     labels = ["Punktskrift", "Statped"]
     publication_format = "Braille"
-    expected_processing_time = 10
+    expected_processing_time = 30
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

@@ -23,7 +23,7 @@ class NewspaperSchibsted(Pipeline):
     labels = ["Daisy 2.02"]
     logPipeline = None
     publication_format = "Lydbok"
-    expected_processing_time = 20
+    expected_processing_time = 300
     parentdirs = {
                       "latest": "latest",
                       "archive": "archive"

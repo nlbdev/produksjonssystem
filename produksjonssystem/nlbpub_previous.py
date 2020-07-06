@@ -24,7 +24,7 @@ class NlbpubPrevious(Pipeline):
     title = "NLBPUB tidligere versjoner"
     labels = ["EPUB", "Statped"]
     publication_format = None
-    expected_processing_time = 2
+    expected_processing_time = 520
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

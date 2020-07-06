@@ -26,7 +26,7 @@ class PrepareForEbook(Pipeline):
     title = "Klargjør for e-bok"
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
-    expected_processing_time = 8
+    expected_processing_time = 260
 
     css_tempfile_obj = None
 

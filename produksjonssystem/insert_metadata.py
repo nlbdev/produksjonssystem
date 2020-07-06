@@ -17,7 +17,7 @@ class InsertMetadata(Pipeline):
     # group_title = "Sett inn metadata"
     labels = ["Statped"]
     publication_format = None
-    expected_processing_time = 30
+    expected_processing_time = 500
 
     logPipeline = None
 
@@ -134,7 +134,7 @@ class InsertMetadataDaisy202(InsertMetadata):
     title = "Sett inn metadata for lydbok"
     labels = ["Lydbok", "Metadata", "Statped"]
     publication_format = "DAISY 2.02"
-    expected_processing_time = 1035
+    expected_processing_time = 500
 
 
 class InsertMetadataXhtml(InsertMetadata):
@@ -142,7 +142,7 @@ class InsertMetadataXhtml(InsertMetadata):
     title = "Sett inn metadata for e-bok"
     labels = ["e-bok", "Metadata", "Statped"]
     publication_format = "XHTML"
-    expected_processing_time = 989
+    expected_processing_time = 500
 
 
 class InsertMetadataBraille(InsertMetadata):
@@ -150,4 +150,4 @@ class InsertMetadataBraille(InsertMetadata):
     title = "Sett inn metadata for punktskrift"
     labels = ["Punktskrift", "Metadata", "Statped"]
     publication_format = "Braille"
-    expected_processing_time = 874
+    expected_processing_time = 500

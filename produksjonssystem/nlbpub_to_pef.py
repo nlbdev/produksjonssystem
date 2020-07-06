@@ -20,7 +20,7 @@ class NlbpubToPef(Pipeline):
     title = "NLBPUB til PEF"
     labels = ["Punktskrift", "Statped"]
     publication_format = "Braille"
-    expected_processing_time = 223
+    expected_processing_time = 880
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

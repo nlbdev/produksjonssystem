@@ -25,7 +25,7 @@ class NlbpubToTtsDtbook(Pipeline):
     title = "NLBPUB til DTBook for talesyntese"
     labels = ["Lydbok", "Statped"]
     publication_format = "DAISY 2.02"
-    expected_processing_time = 21
+    expected_processing_time = 300
 
     xslt_dir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "xslt"))
 

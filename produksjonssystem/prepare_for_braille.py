@@ -23,7 +23,7 @@ class PrepareForBraille(Pipeline):
     title = "Klargjør for punktskrift"
     labels = ["Punktskrift", "Statped"]
     publication_format = "Braille"
-    expected_processing_time = 4
+    expected_processing_time = 450
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

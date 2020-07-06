@@ -22,7 +22,7 @@ class PrepareForDocx(Pipeline):
     title = "Klargjør for DOCX"
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
-    expected_processing_time = 6
+    expected_processing_time = 380
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

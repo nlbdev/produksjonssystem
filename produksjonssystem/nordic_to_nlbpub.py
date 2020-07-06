@@ -23,7 +23,7 @@ class NordicToNlbpub(Pipeline):
     title = "Nordisk EPUB til NLBPUB"
     labels = ["EPUB", "Lydbok", "Punktskrift", "e-bok", "Statped"]
     publication_format = None
-    expected_processing_time = 601
+    expected_processing_time = 2000
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])

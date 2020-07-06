@@ -23,7 +23,7 @@ class EpubToDtbookAudio(Pipeline):
     title = "EPUB til DTBook for talesyntese"
     labels = ["Lydbok"]
     publication_format = "DAISY 2.02"
-    expected_processing_time = 1408
+    expected_processing_time = 1740
 
     logPipeline = None
 
