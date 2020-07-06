@@ -97,7 +97,7 @@ class InsertMetadata(Pipeline):
         identifier = Path(source).stem
         assert len(identifier) > 0, "identifier can not be empty"  # just a precaution, should never happen
 
-        if Metadata.is_old(identifier, report=self.logPipeline.utils.report):
+        if not self.retry_old and Metadata.is_old(identifier, report=self.logPipeline.utils.report):
             self.logPipeline.utils.report.info("'{}' er gammel. Boken blir ikke automatisk trigget.".format(identifier))
             self.logPipeline.utils.report.debug("</should_retry_book>")
             return False

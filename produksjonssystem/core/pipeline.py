@@ -113,6 +113,7 @@ class Pipeline():
     def __init__(self,
                  retry_all=False,
                  retry_missing=False,
+                 retry_old=False,
                  check_identifiers=False,
                  overwrite=True,
                  during_working_hours=None,
@@ -139,6 +140,7 @@ class Pipeline():
         self.overwrite = overwrite
         self.retry_all = retry_all
         self.retry_missing = retry_missing
+        self.retry_old = retry_old
         self.check_identifiers = check_identifiers
 
         # By default, only retry during the night or during the weekend.
@@ -915,7 +917,7 @@ class Pipeline():
                                 else:
                                     self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + book_title
 
-                            if (Metadata.is_old(book_metadata["identifier"], report=self.utils.report)):
+                            if not self.retry_old and Metadata.is_old(book_metadata["identifier"], report=self.utils.report):
                                 self.utils.report.info("{} er gammel. Vi sender derfor ikke en e-post.".format(book_metadata["identifier"]))
                                 self.utils.report.should_email = False
 
