@@ -19,6 +19,7 @@ from shutil import copyfile, copytree, rmtree
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 prodsys_path = os.path.join(project_root, "produksjonssystem")
 sys.path.insert(0, prodsys_path)
+os.environ["TEST"] = "1"
 from core.config import Config
 from core.pipeline import DummyPipeline
 from produksjonssystem import run

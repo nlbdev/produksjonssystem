@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 import sys
-logging.basicConfig(stream=sys.stdout,
-                    level=logging.DEBUG,
-                    format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+if os.environ.get("TEST", "false").lower() not in ["true", "1"]:
+    logging.basicConfig(stream=sys.stdout,
+                        level=logging.DEBUG,
+                        format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 
 import datetime
 import inspect
 import math
-import os
 import re
 import tempfile
 import threading
