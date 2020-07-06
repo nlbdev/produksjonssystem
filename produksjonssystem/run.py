@@ -519,6 +519,8 @@ class Produksjonssystem():
         except KeyboardInterrupt:
             pass
 
+        self.shouldRun(False)
+
         for pipeline in self.pipelines:
             pipeline[0].stop()
 
@@ -558,8 +560,6 @@ class Produksjonssystem():
         graph_thread.join()
         if graph_thread:
             logging.debug("joined {}".format(graph_thread.name))
-
-        self.shouldRun(False)
 
         self.info("Venter på at signatur-oppdateringstråden skal stoppe...")
         self._signaturesRefreshThread.join()
