@@ -271,7 +271,7 @@ class PrepareForEbook(Pipeline):
                 default_path = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "ebok.css")
                 shutil.copy(default_path, css_tempfile)
 
-            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ebok.css"
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/v1.1.1/epub.min.css"
             response = requests.get(latest_url)
             if response.status_code == 200:
                 with open(css_tempfile, "wb") as target_file:
