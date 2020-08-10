@@ -50,20 +50,23 @@
                   <xsl:when test="$language = ('en', 'eng')">
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                           <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
-                          <p>This electronic book is made by the Norwegian Library of Talking Books and Braille in <xsl:value-of select="$year"/>.
-                              No part of this book may be reproduced or distributed in any form or by any means, to other people.
-                              When the lending period expires, the book must be deleted or returned to the library.
-                              The user of this book, is responsible for adhering to these requirements.</p>
+                          <p>This edition is produced by NLB in <xsl:value-of select="$year"/> under the provisions of the Copyright Act §55,
+                              and can only be copied for private use. This copy cannot be redistributed. When the loan expires,
+                              all copies must be destroyed or returned to NLB. The copy contains digital watermarking so that it can
+                              be traced back to you as a borrower in the event of misuse. Violation of these terms and conditions, such
+                              as illegal copying of complicity in such illegal copying, may result in liability under the Copyright Act.
+                              Such actions may also result in the loss of the right to borrow books from NLB.</p>
                       </section>
                   </xsl:when>
                   <xsl:otherwise>
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                           <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
-                          <p>Denne e-boka er produsert av Norsk lyd- og blindeskriftbibliotek i <xsl:value-of select="$year"/>
-                              med hjemmel i åndsverkslovens § 17, og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres.
-                              Ved låneperiodens utløp skal alle digitale eksemplar destrueres eller returneres til produsenten.
-                              Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering,
-                              kan medføre ansvar etter åndsverkloven.</p>
+                          <p>Denne utgaven er produsert av NLB i <xsl:value-of select="$year"/> med hjemmel i åndsverkslovens §55,
+                              og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp
+                              skal alle digitale eksemplar destrueres eller returneres til produsenten. Eksemplaret er merket slik
+                              at det kan spores tilbake til deg som låntaker ved misbruk. Brudd på disse avtalevilkårene, som ulovlig
+                              kopiering eller medvirkning til slik ulovlig kopiering, kan medføre ansvar etter åndsverkloven. Slike
+                              handlinger kan også medføre tap av retten til å låne tilrettelagte bøker.</p>
                       </section>
                   </xsl:otherwise>
               </xsl:choose>
