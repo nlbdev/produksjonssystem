@@ -138,8 +138,10 @@
         <xsl:attribute name="xml:lang" select="f:lang(.)"/>
     </xsl:template>
     
-    <!-- remove alt attributes from the TTS-version -->
-    <xsl:template match="@alt"/>
+    <!-- remove alt attribute content from the TTS-version -->
+    <xsl:template match="@alt">
+        <xsl:attribute name="alt" select="''"/>
+    </xsl:template>
     
     <xsl:function name="f:lang" as="xs:string">
         <xsl:param name="lang" as="xs:string"/>

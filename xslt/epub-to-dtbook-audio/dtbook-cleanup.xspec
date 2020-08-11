@@ -239,7 +239,7 @@
                         <level1 id="c1" class="jacketcopy">
                             <prodnote id="c2" class="frontcover" render="optional">
                                 <imggroup>
-                                    <img src="images/cover.jpg" id="img_1"/>
+                                    <img alt="" src="images/cover.jpg" id="img_1"/>
                                 </imggroup>
                             </prodnote>
                         </level1>
