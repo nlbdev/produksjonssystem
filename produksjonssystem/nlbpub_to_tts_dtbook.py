@@ -13,7 +13,6 @@ from core.utils.mathml_to_text import Mathml_to_text, Mathml_validator
 from core.utils.relaxng import Relaxng
 from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
-from epub_to_dtbook_audio import EpubToDtbookAudio
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -102,7 +101,7 @@ class NlbpubToTtsDtbook(Pipeline):
         self.utils.report.debug("    source = " + temp_result)
         self.utils.report.debug("    target = " + temp_xslt_output)
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "dtbook-cleanup.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "dtbook-cleanup.xsl"),
                     source=temp_result,
                     target=temp_xslt_output)
         if not xslt.success:
@@ -115,7 +114,7 @@ class NlbpubToTtsDtbook(Pipeline):
         self.utils.report.debug("    source = " + temp_result)
         self.utils.report.debug("    target = " + temp_xslt_output)
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, EpubToDtbookAudio.uid, "optimaliser-komplekst-innhold.xsl"),
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "optimaliser-komplekst-innhold.xsl"),
                     source=temp_result,
                     target=temp_xslt_output)
         if not xslt.success:
