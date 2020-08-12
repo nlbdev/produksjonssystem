@@ -55,7 +55,9 @@ class Bibliofil:
 
             if has_mobi:
                 lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "Mobi / Kindle Format"))
-                lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
+
+                if size < 20 * 10**6:  # 20 MB
+                    lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylla / forleng lån"))
