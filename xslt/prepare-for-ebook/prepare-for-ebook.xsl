@@ -50,23 +50,32 @@
                   <xsl:when test="$language = ('en', 'eng')">
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                           <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
-                          <p>This edition is produced by NLB in <xsl:value-of select="$year"/> under the provisions of the Copyright Act §55,
-                              and can only be copied for private use. This copy cannot be redistributed. When the loan expires,
-                              all copies must be destroyed or returned to NLB. The copy contains digital watermarking so that it can
-                              be traced back to you as a borrower in the event of misuse. Violation of these terms and conditions, such
-                              as illegal copying of complicity in such illegal copying, may result in liability under the Copyright Act.
-                              Such actions may also result in the loss of the right to borrow books from NLB.</p>
+                          <p>This edition is produced by NLB in <xsl:value-of select="$year"/> pursuant to article 55
+                              of the Norwegian Copyright Act and can be reproduced for private use only.
+                              This copy is not to be redistributed. All digital copies are to be destroyed or returned to the publisher
+                              by the end of the borrowing period. The copy will be marked so that it will be possible to trace it
+                              to the borrower if misused. Violation of these terms of agreement may lead to liability according to
+                              the Copyright Act. Such actions may also result in loss of the right to borrow accessible literature.</p>
                       </section>
+                  </xsl:when>
+                  <xsl:when test="$language = ('nb', 'nob')">
+                    <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
+                        <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
+                        <p>Denne utgaven er produsert av NLB i <xsl:value-of select="$year"/> med hjemmel i åndsverklovens § 55,
+                            og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp
+                            skal alle digitale eksemplar destrueres eller returneres til produsenten. Eksemplaret er merket slik
+                            at det kan spores tilbake til deg som låner ved misbruk. Brudd på disse avtalevilkårene kan medføre ansvar
+                            etter åndsverkloven. Slike handlinger kan også medføre tap av retten til å låne tilrettelagte bøker.</p>
+                    </section>
                   </xsl:when>
                   <xsl:otherwise>
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                           <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
-                          <p>Denne utgaven er produsert av NLB i <xsl:value-of select="$year"/> med hjemmel i åndsverkslovens §55,
-                              og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp
-                              skal alle digitale eksemplar destrueres eller returneres til produsenten. Eksemplaret er merket slik
-                              at det kan spores tilbake til deg som låntaker ved misbruk. Brudd på disse avtalevilkårene, som ulovlig
-                              kopiering eller medvirkning til slik ulovlig kopiering, kan medføre ansvar etter åndsverkloven. Slike
-                              handlinger kan også medføre tap av retten til å låne tilrettelagte bøker.</p>
+                          <p>Denne utgåva er produsert av NLB i <xsl:value-of select="$year"/> med heimel i åndsverklova § 55,
+                              og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
+                              skal alle digitale eksemplar destruerast eller returnerast til produsenten. Eksemplaret er merka slik
+                              at det kan sporast tilbake til deg som lånar ved misbruk. Brot på desse avtalevilkåra kan medføre ansvar
+                              etter åndsverklova. Slike handlingar kan også medføre tap av retten til å låne tilrettelagde bøker.</p>
                       </section>
                   </xsl:otherwise>
               </xsl:choose>
