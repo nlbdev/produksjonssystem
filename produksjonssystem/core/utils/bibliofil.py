@@ -24,10 +24,28 @@ class Bibliofil:
         if format == "XHTML":  # "XHTML" means e-book (we're reusing identifiers previously reserved for XHTML files)
             lines = []
 
-            has_epub = os.path.isdir(os.path.join(Directory.dirs_flat["epub-ebook"], identifier))
+            epub_dir = os.path.join(Directory.dirs_flat["epub-ebook"], identifier)
+            has_epub = os.path.isdir(epub_dir)
             has_html = has_epub  # generated based on the EPUB on the fly
             has_docx = has_epub  # generated based on the EPUB on the fly
             has_mobi = has_epub  # generated based on the EPUB on the fly
+
+            size = 0
+            if has_epub:
+                for root, dirs, files in os.walk(epub_dir):
+                    for file in files:
+                        size += os.path.getsize(file)
+
+                filesize_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+                filesize_xml += "<root>\n"
+                filesize_xml += "<folder><name>{}</name><sizedata>{}</sizedata></folder>\n".format(identifier, size)
+                filesize_xml += "</root>\n"
+
+                logging.info("Sending filesize-e-mail to {} with content:".format(Config.get("email.filesize.address")))
+                logging.info(filesize_xml)
+                Report.emailPlainText("filesize: " + identifier,
+                                      filesize_xml,
+                                      Config.get("email.filesize.address"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "dl", "EPUB"))

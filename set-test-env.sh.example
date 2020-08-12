@@ -13,6 +13,7 @@ export MAIL_USERNAME=""
 export MAIL_PASSWORD=""
 
 export MAIL_FORMATKLAR=
+export MAIL_FILESIZE=
 export ALLOWED_EMAIL_ADDRESSES_IN_TEST=  # comma separated list of e-mails
 
 export BOOK_ARCHIVE_DIRS="master=/tmp/book-archive share=/tmp/book-archive-share distribution=/tmp/book-archive-distribution news=/tmp/book-archive-news"
