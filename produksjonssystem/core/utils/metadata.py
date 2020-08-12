@@ -295,18 +295,16 @@ class Metadata:
             normarc_success = False
 
         else:
-            all_identifiers = [edition["identifier"] for edition in creative_work["editions"]]
+            all_identifiers = [edition["identifier"] for edition in creative_work["editions"] if not edition["deleted"]]
 
             found = False
             for edition in creative_work["editions"]:
+                if edition["deleted"]:
+                    continue
+
                 if edition["format"] == publication_format:
                     if report_metadata_errors:
                         normarc_report.info("## Katalogposten for {}:\n".format(edition["identifier"][:6]))
-
-                    if edition["deleted"]:
-                        if report_metadata_errors:
-                            normarc_report.info("Hopper over validering. Denne katalogposten ser ut til å være slettet.")
-                        continue
 
                     found = True
                     validation_report = Metadata.get_validation_report(edition["identifier"], report=(normarc_report if normarc_report else logging))
@@ -399,7 +397,7 @@ class Metadata:
             library = None
             if creative_work is not None:
                 for edition in creative_work["editions"]:
-                    if edition["library"] is not None:
+                    if not edition["deleted"] and edition["library"] is not None:
                         library = edition["library"]
                         break
             if not library:
@@ -433,7 +431,7 @@ class Metadata:
         creative_work = Metadata.get_creative_work_from_api(epub.identifier(), report=report)
         edition_identifier = None
         for edition in creative_work["editions"]:
-            if edition["format"] == publication_format:
+            if not edition["deleted"] and edition["format"] == publication_format:
                 edition_identifier = edition["identifier"]
         if edition_identifier is None:
             report.error("Fant ikke '{}'-boknummer for {}.".format(publication_format, epub.identifier()))
@@ -621,7 +619,8 @@ class Metadata:
             return
         else:
             for edition in creative_work["editions"]:
-                report.info("- [{} ({})]({}{})".format(edition["identifier"], edition["format"], bibliofil_url, edition["identifier"][:6]))
+                if not edition["deleted"]:
+                    report.info("- [{} ({})]({}{})".format(edition["identifier"], edition["format"], bibliofil_url, edition["identifier"][:6]))
 
         if len(creative_work["editions"]) == 1:
             report.info("Finner ingen andre katalogiserte formater tilhørende denne {}-boka.".format(creative_work["editions"][0]["format"]))
@@ -642,11 +641,11 @@ class Metadata:
             report.info("Fant ikke metadata for '{}'. Boka skal derfor ikke produseres som '{}'.".format(edition_identifier, edition_format))
             return False, True
 
-        found_but_deleted = False
+        found_but_deleted = None
         for edition in creative_work["editions"]:
             if edition["format"] == edition_format:
                 if edition["deleted"]:
-                    found_but_deleted = True
+                    found_but_deleted = edition["identifier"]
                     continue
 
                 report.debug("Metadata exists in Bibliofil ({} is cataloged as the {}-edition of {} through either `596$f` or `599$b`). ".format(
@@ -654,15 +653,15 @@ class Metadata:
                              + "The book should be produced as {}.".format(edition_format))
                 return True, True
 
-        if found_but_deleted:
-            report.info("Metadata for {} finnes i Bibliofil og er valid, men katalogposten er slettet. "
-                        + "Boka skal derfor ikke produseres som '{}'.".format(edition_identifier, edition_format))
+        if found_but_deleted is not None:
+            report.info("Metadata for {} finnes i Bibliofil som {}, men katalogposten er slettet. "
+                        + "Boka skal derfor ikke produseres som '{}'.".format(edition_identifier, found_but_deleted, edition_format))
             return False, True
 
         report.info("Fant ikke en '{}'-versjon av '{}'. Boka skal derfor ikke produseres som '{}'.".format(edition_format, edition_identifier, edition_format))
         report.info("'{}' finnes i følgende formater: {}".format(
             edition_identifier,
-            ", ".join(["{} ({})".format(edition["identifier"], edition["format"]) for edition in creative_work["editions"]])
+            ", ".join(["{} ({})".format(edition["identifier"], edition["format"]) for edition in creative_work["editions"] if not edition["deleted"]])
         ))
         for suggestion in Metadata.suggest_similar_editions(edition_identifier, edition_format=edition_format, report=report):
             report.info("Forslag til lignende katalogpost som ikke er tilknyttet samme åndsverk: {}: {}".format(
