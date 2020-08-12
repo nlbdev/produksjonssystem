@@ -34,7 +34,7 @@ class Bibliofil:
             if has_epub:
                 for root, dirs, files in os.walk(epub_dir):
                     for file in files:
-                        size += os.path.getsize(file)
+                        size += os.path.getsize(os.path.join(root, file))
 
                 filesize_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
                 filesize_xml += "<root>\n"
