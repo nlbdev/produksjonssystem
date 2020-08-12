@@ -27,7 +27,7 @@ class Bibliofil:
             epub_dir = os.path.join(Directory.dirs_flat["epub-ebook"], identifier)
             has_epub = os.path.isdir(epub_dir)
             has_html = has_epub  # generated based on the EPUB on the fly
-            has_docx = has_epub  # generated based on the EPUB on the fly
+            # has_docx = has_epub  # generated based on the EPUB on the fly
             has_mobi = has_epub  # generated based on the EPUB on the fly
 
             size = 0
@@ -64,6 +64,10 @@ class Bibliofil:
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "st", "Vis i nettleseren"))
+
+            if library.upper() != "NLB":
+                report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
+                lines = []
 
             logging.info("Sending formatklar-e-mail to {} with content:".format(Config.get("email.formatklar.address")))
             logging.info("\n".join(lines))
