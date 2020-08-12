@@ -63,7 +63,7 @@ class Bibliofil:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylla / forleng lån"))
 
             if has_epub:
-                lines.append("{};{};{};{}".format(identifier, "epub", "st", "Vis i nettleseren"))
+                lines.append("{};{};{};{}".format(identifier, "epub", "st", "Til Nettleserbok"))
 
             if library.upper() != "NLB":
                 report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
