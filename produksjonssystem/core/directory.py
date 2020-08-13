@@ -183,52 +183,46 @@ class Directory():
                 logging.debug("Can't find cache file")
 
         if self._md5:
-            logging.debug("Loaded directory status from cache file, doing a partial rescan (only check created/deleted)")
+            logging.debug("Loaded directory status from cache file, doing a partial rescan")
 
-            dir_list = Filesystem.list_book_dir(self.dir_path)
-            self.status_text = "Looking for created/deleted"
+        else:
+            logging.debug("Directory status not cached, doing a full rescan")
+            self._md5 = {}
 
-            for book in dir_list:
-                if not self.shouldRun:
-                    self._md5 = {}
-                    return  # break loop if we're shutting down the system
-                if book not in self._md5:
-                    logging.debug("{} is in directory but not in cache: adding to cache".format(book))
-                    self._update_md5(book)
-
-            for book in list(self._md5.keys()):  # list(….keys()) to avoid "RuntimeError: dictionary changed size during iteration"
-                if not self.shouldRun:
-                    self._md5 = {}
-                    return  # break loop if we're shutting down the system
-                if book not in dir_list:
-                    logging.debug("{} is in cache but not in directory: deleting from cache".format(book))
-                    del self._md5[book]
-
-            self.starting = False
-            self.status_text = None
-            return
-
-        logging.info("not loaded from file, we need to do a full rescan")
         dir_list = Filesystem.list_book_dir(self.dir_path)
+        self.status_text = "Looking for created/deleted"
+
+        for book in list(self._md5.keys()):  # list(….keys()) to avoid "RuntimeError: dictionary changed size during iteration"
+            if not self.shouldRun:
+                self._md5 = {}
+                return  # break loop if we're shutting down the system
+            if book not in dir_list:
+                logging.debug("{} is in cache but not in directory: deleting from cache".format(book))
+                del self._md5[book]
+
         md5_count = 0
         self.status_text = "0 / {}".format(len(dir_list))
         for book in dir_list:
             if not self.shouldRun:
                 self._md5 = {}
                 return  # break loop if we're shutting down the system
-            self._update_md5(book)
+            if book not in self._md5:
+                logging.debug("{} is in directory but not in cache: adding to cache".format(book))
+                self._update_md5(book)
             md5_count += 1
             self.status_text = "{} / {}".format(md5_count, len(dir_list))
             if md5_count == 1 or md5_count % 100 == 0:
                 logging.info(self.status_text)
+            if md5_count % 10 == 0:
+                self.store_checksums(while_starting=True)  # if for some reason the system crashes, we don't have to start all over again
 
+        self.store_checksums(while_starting=True)
         self.starting = False
         self.status_text = None
+        return
 
-        self.store_checksums()
-
-    def store_checksums(self):
-        if self.is_starting():
+    def store_checksums(self, while_starting=False):
+        if not while_starting and self.is_starting():
             # Cache is not complete yet. Cache will not be saved
             return
 
