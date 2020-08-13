@@ -142,6 +142,9 @@ class NlbpubToEpub(Pipeline):
             self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return
 
+        self.utils.report.info("Legger til properties i OPF etter behov")
+        temp_epub.update_opf_properties()
+
         if Epubcheck.isavailable():
             epubcheck = Epubcheck(self, opf_path)
             if not epubcheck.success:

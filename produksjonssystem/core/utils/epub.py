@@ -264,6 +264,83 @@ class Epub():
 
         return True
 
+    # Iterates over the content documents in the OPF manifest and updates their property attributes.
+    # Also updates the spine linear property, and adds a reference to the cover image in the metadata.
+    def update_opf_properties(self):
+        opf_path = os.path.join(self.book_path, self.opf_path())
+
+        opf_element = self.get_opf_package_element()
+        metadata = opf_element.xpath("/*/*[local-name()='metadata']")[0]
+        manifest = opf_element.xpath("/*/*[local-name()='manifest']")[0]
+        spine = opf_element.xpath("/*/*[local-name()='spine']")[0]
+
+        cover_id = None
+        types = {}
+
+        for item in manifest:
+            properties = set()
+
+            if item.attrib.get("href", "").split("/")[-1] in ["cover.jpg", "cover.jpeg", "cover.png"]:
+                properties.add("cover-image")
+                cover_id = item.attrib.get("id", cover_id)
+
+            elif (item.attrib.get("media-type", "") == "application/xhtml+xml" and
+                    "nav" not in item.attrib.get("properties", "").split()):
+
+                content_path = os.path.join(os.path.dirname(opf_path), item.attrib.get("href", ""))
+
+                # get type based on the filename (might have to change in the future if we want to use other file naming conventions)
+                epub_type = content_path.split("/")[-1].split("-")[-1].split(".")[0]
+                types[item.attrib.get("id", None)] = epub_type
+
+                with open(content_path) as f:
+                    for line in f:
+                        if "<math" in line or "<m:math" in line or "<math:math" in line:
+                            properties.add("mathml")
+
+                        if ("<script" in line or "<form" in line or "<button" in line or "<fieldset" in line or "<input" in line or
+                                "<object" in line or "<output" in line or "<select" in line or "<textarea" in line):
+                            properties.add("scripted")
+                            # could also check for onclick attributes and similar, and should ideally ignore
+                            # input elements if they have the type attribute is "image"
+
+                        if "<svg" in line:
+                            properties.add("svg")
+                            # we could also check img/@src and iframe/@src for .svg files but it would require XML parsing or a regex.
+                            # object elements could also contain SVG but are even more complex and probably very uncommon in the wild.
+
+                        if "<epub:switch" in line:
+                            properties.add("switch")
+                            # this is deprecated in EPUB 3.2 but can be useful during production if we want to include for instance MusicXML
+
+            if properties:
+                properties = item.attrib.get("properties", "").split() + list(properties)  # add any preexisting properties
+                properties = list(set(properties))  # only include unique properties
+                item.attrib["properties"] = " ".join(properties)
+
+        # reference the cover image from the metadata if it isn't already
+        for meta in metadata:
+            if meta.tag == "{http://www.idpf.org/2007/opf}meta" and meta.attrib.get("name", None) == "cover":
+                cover_id = None
+                break
+        if cover_id is not None:
+            meta = ElementTree.Element("{http://www.idpf.org/2007/opf}meta")
+            meta.attrib["name"] = "cover"
+            meta.attrib["content"] = cover_id
+            metadata.append(meta)
+
+        for itemref in spine:
+            epub_type = types.get(itemref.attrib.get("idref", None))
+            if epub_type in ["cover"]:  # add more types here if there's more we want to be regarded as secondary content (for instance footnotes?)
+                itemref.attrib["linear"] = "no"
+
+        serialized = '<?xml version="1.0" encoding="UTF-8"?>\n' + ElementTree.tostring(opf_element, pretty_print=True).decode('utf-8')
+
+        with open(opf_path, "w") as f:
+            f.write(serialized)
+
+        return True
+
     @staticmethod
     def html_to_nav(pipeline, source, target):
         xslt = Xslt(pipeline,
