@@ -210,9 +210,11 @@ class Report():
 
     @staticmethod
     def emailPlainText(subject, message, recipients, should_email=True):
-        assert isinstance(subject, str)
-        assert isinstance(message, str)
-        assert isinstance(recipients, str) or isinstance(recipients, list)
+        assert isinstance(subject, str), "subject must be a str, was: {}".format(type(subject))
+        assert isinstance(message, str), "message must be a str, was: {}".format(type(message))
+        assert isinstance(recipients, str) or isinstance(recipients, list), (
+            "recipients must be a str or list, was: {}".format(type(recipients))
+        )
 
         smtp = {
             "host": Config.get("email.smtp.host", None),
