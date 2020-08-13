@@ -29,6 +29,7 @@ class Newsletter(Pipeline):
     year_month = ""
     publication_format = "Braille"
     expected_processing_time = 20
+    _triggerNewsletterThread = None
 
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
