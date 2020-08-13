@@ -97,10 +97,11 @@ class Filesystem():
                                     else:
                                         raise e
 
-                            st_size = stat.st_size if os.path.isfile(path) else 0
-                            st_mtime = round(stat.st_mtime)
-                            attributes.extend([filePath, st_mtime, st_size, stat.st_mode])
-                            modified = max(modified, stat.st_mtime)
+                            if stat is not None:
+                                attributes.extend([filePath, round(stat.st_mtime), stat.st_size, stat.st_mode])
+                            else:
+                                attributes.extend([filePath, 0, 0, 0])
+                            modified = max(modified, stat.st_mtime if stat is not None else 0)
                             if shallow:
                                 break
                 except FileNotFoundError as e:
