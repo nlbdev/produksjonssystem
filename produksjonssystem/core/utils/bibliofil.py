@@ -56,14 +56,14 @@ class Bibliofil:
             if has_mobi:
                 lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "Mobi / Kindle Format"))
 
-                if size < 20 * 10**6:  # 20 MB
-                    lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
-
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Legg til på bokhylla / forleng lån"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "st", "Til Nettleserbok"))
+
+            if has_mobi and size < 20 * 10**6:  # 20 MB
+                lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
 
             if library.upper() != "NLB":
                 report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
