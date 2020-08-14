@@ -65,7 +65,7 @@ class Bibliofil:
             if has_mobi and size < 20 * 10**6:  # 20 MB
                 lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
 
-            if library.upper() != "NLB":
+            if library is None or library.upper() != "NLB":
                 report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
                 lines = []
 
