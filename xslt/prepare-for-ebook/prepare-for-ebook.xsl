@@ -162,5 +162,33 @@
             <br/>
         </xsl:if>
     </xsl:template>
+    
+    <!-- make it possible to reference hidden headlines -->
+    <xsl:template match="h1 | h2 | h3 | h4 | h5 | h6">
+        <xsl:variable name="whitespace" select="concat('&#xA;', string-join(for $a in (ancestor::*) return '    ', ''))"/>
+        
+        <xsl:choose>
+            <xsl:when test="(preceding-sibling::div[1] intersect preceding-sibling::*[1])[tokenize(@class, '\s+') = 'hidden-headline-anchor']">
+                <!-- hidden-headline-anchor already present: do nothing -->
+            </xsl:when>
+            
+            <xsl:when test="not(@id)">
+                <!-- if there's no id for some reason: generate one -->
+                <div id="generated-headline-{generate-id()}" class="hidden-headline-anchor"></div>
+                <xsl:value-of select="$whitespace"/>
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <div id="{@id}" class="hidden-headline-anchor"></div>
+                <xsl:value-of select="$whitespace"/>
+            </xsl:otherwise>
+        </xsl:choose>
+        
+        <!-- copy the headline itself, excluding the id attribute -->
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except @id"/>
+            <xsl:apply-templates select="node()"/>
+        </xsl:copy>
+    </xsl:template>
 
 </xsl:stylesheet>

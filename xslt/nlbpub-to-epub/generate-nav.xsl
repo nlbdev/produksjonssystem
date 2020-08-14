@@ -118,8 +118,20 @@
         <xsl:for-each-group select="$headings" group-starting-with="*[f:heading-level(.) = $level]">
             <li>
                 <xsl:variable name="heading" select="current-group()[1]"/>
+
+                <!--
+                    Handle hidden headlines (headlines that are only visible in the navigation document):
+                    
+                    <div id="…" class="hidden-headline-anchor"></div>
+                    <h1 class="hidden-headline">…</h1>
+                    
+                    .hidden-headline { display: none; }
+                -->
+                <xsl:variable name="hidden-headline-anchor" select="($heading/preceding-sibling::div[1] intersect $heading/preceding-sibling::*[1])[tokenize(@class, '\s+') = 'hidden-headline-anchor']"/>
+                <xsl:variable name="heading-id" select="(if ($heading/tokenize(@class, '\s+') = 'hidden-headline') then $hidden-headline-anchor/@id else (), $heading/@id)[1]"/>
+                
                 <xsl:variable name="href" select="substring(base-uri($heading), $base-uri-strip-length)"/>
-                <a href="{$href}#{$heading/@id}"><xsl:value-of select="normalize-space(string-join($heading//text(),''))"/></a>
+                <a href="{$href}#{$heading-id}"><xsl:value-of select="normalize-space(string-join($heading//text(),''))"/></a>
                 <xsl:if test="current-group()[position() gt 1]">
                     <ol>
                         <xsl:call-template name="generate-toc-level">

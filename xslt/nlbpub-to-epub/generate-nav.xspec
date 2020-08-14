@@ -143,8 +143,9 @@
                             <h1 id="h1_5">h3</h1>
                         </section>
                         <h1 id="h1_6">With and without (#2)</h1>
-                        <h2 id="h1_5">h2</h2>
-                        <h3 id="h3_4">h2</h3>
+                        <div id="h1_5" class="hidden-headline-anchor"></div>
+                        <h2 class="hidden-headline">h2</h2>
+                        <h3 id="h3_4">h3</h3>
                         <section>
                             <h4 id="h4_4">h4</h4>
                             <section>
@@ -267,7 +268,7 @@
                                 <ol>
                                     <li><a href="565723-3.xhtml#h1_5">h2</a>
                                         <ol>
-                                            <li><a href="565723-3.xhtml#h3_4">h2</a>
+                                            <li><a href="565723-3.xhtml#h3_4">h3</a>
                                                 <ol>
                                                     <li><a href="565723-3.xhtml#h4_4">h4</a>
                                                         <ol>
