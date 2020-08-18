@@ -246,7 +246,7 @@ class Filesystem():
         else:
             shutil.copy(source, destination)
 
-    def storeBook(self, source, book_id, overwrite=True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None):
+    def storeBook(self, source, book_id, overwrite=True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None, fix_permissions=True):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
         assert book_id
         assert book_id.strip()
@@ -295,6 +295,9 @@ class Filesystem():
 
         Filesystem.touch(target)
 
+        if fix_permissions:
+            Filesystem.fix_permissions(target)
+
         self.pipeline.utils.report.info("{} ble lagt til i {}.".format(book_id, dir_nicename))
 
         if self.pipeline and self.pipeline.dir_out_obj:
@@ -307,6 +310,18 @@ class Filesystem():
             shutil.rmtree(self.pipeline.book["source"])
         elif os.path.isfile(self.pipeline.book["source"]):
             os.remove(self.pipeline.book["source"])
+
+    def fix_permissions(target):
+        # ensure that permissions are correct
+        if os.path.isfile(target):
+            os.chmod(target, 0o644)
+        else:
+            os.chmod(target, 0o777)
+            for root, dirs, files in os.walk(target):
+                for d in dirs:
+                    os.chmod(os.path.join(root, d), 0o777)
+                for f in files:
+                    os.chmod(os.path.join(root, f), 0o644)
 
     def run(self, *args, cwd=None, **kwargs):
         if not cwd:
@@ -393,13 +408,7 @@ class Filesystem():
                     self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                     raise e
 
-            # ensure that permissions are correct
-            os.chmod(target, 0o777)
-            for root, dirs, files in os.walk(target):
-                for d in dirs:
-                    os.chmod(os.path.join(root, d), 0o777)
-                for f in files:
-                    os.chmod(os.path.join(root, f), 0o666)
+            Filesystem.fix_permissions(target)
 
     @staticmethod
     def ismount(path):
