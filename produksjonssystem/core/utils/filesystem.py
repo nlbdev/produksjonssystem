@@ -314,14 +314,14 @@ class Filesystem():
     def fix_permissions(target):
         # ensure that permissions are correct
         if os.path.isfile(target):
-            os.chmod(target, 0o644)
+            os.chmod(target, 0o664)
         else:
             os.chmod(target, 0o777)
             for root, dirs, files in os.walk(target):
                 for d in dirs:
                     os.chmod(os.path.join(root, d), 0o777)
                 for f in files:
-                    os.chmod(os.path.join(root, f), 0o644)
+                    os.chmod(os.path.join(root, f), 0o664)
 
     def run(self, *args, cwd=None, **kwargs):
         if not cwd:
