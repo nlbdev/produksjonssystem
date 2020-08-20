@@ -34,10 +34,23 @@
     <xsl:template match="meta[@name='dcterms:modified']"/>
 
     <!-- insert copyright and usage information right after the titlepage -->
-    <xsl:template match="section[(tokenize(@epub:type,'\s+'), tokenize(@class,'\s+')) = 'titlepage']">
+    <xsl:template match="section[tokenize(@epub:type,'\s+') = 'titlepage']">
         <xsl:next-match/>
-
-        <xsl:variable name="language" select="(/*/@xml:lang/string(.), /*/@lang/string(.), /*/head/meta[@name='dc:language']/@content/string(.))[1]" as="xs:string"/>
+        
+        <xsl:call-template name="create-copyright-page"/>
+    </xsl:template>
+    
+    <!-- if there's no titlepage, insert copyright and usage information as the first frontmatter -->
+    <xsl:template match="body/section[not(tokenize(@epub:type, '\s+') = ('cover', 'titlepage'))][1]">
+        <xsl:if test="not(exists(../section[tokenize(@epub:type,'\s+') = 'titlepage']))">
+            <xsl:call-template name="create-copyright-page"/>
+        </xsl:if>
+        
+        <xsl:next-match/>
+    </xsl:template>
+    
+    <xsl:template name="create-copyright-page">
+        <xsl:variable name="language" select="(/*/@xml:lang/string(.), /*/@lang/string(.), /*/head/meta[@name='dc:language']/@content/string(.), lang(/*))[1]" as="xs:string"/>
         <xsl:variable name="year" select="format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]')"/>
         <xsl:variable name="depth" select="max(//*[matches(local-name(),'^h\d$')]/xs:integer(replace(local-name(),'^h','')))"/>
         <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>

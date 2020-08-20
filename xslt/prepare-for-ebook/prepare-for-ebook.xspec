@@ -5,7 +5,7 @@
                stylesheet="prepare-for-ebook.xsl">
     
     <x:scenario label="Metadata">
-        <x:context function="metadata" xml:space="preserve">
+        <x:context xml:space="preserve">
     <head>
         <meta charset="utf-8"/>
         <title>Valg og velgere</title> <!-- Bibliofil@115437 *245$a -->
@@ -185,6 +185,72 @@
     <div id="abc" class="hidden-headline-anchor"></div>
     <h1 class="hidden-headline">…</h1>
 </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Copyright after titlepage">
+        <x:context>
+            <html xml:lang="en">
+                <head>
+                    <meta name="schema:library" content="NLB"/>
+                </head>
+                <body>
+                    <section epub:type="cover"><h1>Bla bla</h1></section>
+                    <section epub:type="frontmatter titlepage"><h1>Bla bla</h1></section>
+                    <section epub:type="frontmatter colophon"><h1>Bla bla</h1></section>
+                    <section epub:type="frontmatter toc"><h1>Bla bla</h1></section>
+                    <section epub:type="bodymatter chapter"><h1>Bla bla</h1></section>
+                    <section epub:type="bodymatter chapter"><h1>Bla bla</h1></section>
+                    <section epub:type="backmatter index"><h1>Bla bla</h1></section>
+                </body>
+            </html>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <html xml:lang="en">
+                <head>...</head>
+                <body>
+                    <section epub:type="cover">...</section>
+                    <section epub:type="frontmatter titlepage">...</section>
+                    <section epub:type="frontmatter copyright-page" id="...">...</section>
+                    <section epub:type="frontmatter colophon">...</section>
+                    <section epub:type="frontmatter toc">...</section>
+                    <section epub:type="bodymatter chapter">...</section>
+                    <section epub:type="bodymatter chapter">...</section>
+                    <section epub:type="backmatter index">...</section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Copyright before other frontmatter when titlepage is missing">
+        <x:context>
+            <html xml:lang="en">
+                <head>
+                    <meta name="schema:library" content="NLB"/>
+                </head>
+                <body>
+                    <section epub:type="cover"><h1>Bla bla</h1></section>
+                    <section epub:type="frontmatter colophon"><h1>Bla bla</h1></section>
+                    <section epub:type="frontmatter toc"><h1>Bla bla</h1></section>
+                    <section epub:type="bodymatter chapter"><h1>Bla bla</h1></section>
+                    <section epub:type="bodymatter chapter"><h1>Bla bla</h1></section>
+                    <section epub:type="backmatter index"><h1>Bla bla</h1></section>
+                </body>
+            </html>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <html xml:lang="en">
+                <head>...</head>
+                <body>
+                    <section epub:type="cover">...</section>
+                    <section epub:type="frontmatter copyright-page" id="...">...</section>
+                    <section epub:type="frontmatter colophon">...</section>
+                    <section epub:type="frontmatter toc">...</section>
+                    <section epub:type="bodymatter chapter">...</section>
+                    <section epub:type="bodymatter chapter">...</section>
+                    <section epub:type="backmatter index">...</section>
+                </body>
+            </html>
         </x:expect>
     </x:scenario>
     
