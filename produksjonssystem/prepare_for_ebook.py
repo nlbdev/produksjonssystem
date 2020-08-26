@@ -15,6 +15,7 @@ from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.epubcheck import Epubcheck
 from core.utils.xslt import Xslt
+from core.utils.mathml_to_text import Mathml_to_text, Mathml_validator
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -95,6 +96,18 @@ class PrepareForEbook(Pipeline):
 
         temp_xml_obj = tempfile.NamedTemporaryFile()
         temp_xml = temp_xml_obj.name
+
+        # MATHML to stem
+        self.utils.report.info("Erstatter evt. MathML i boka...")
+        mathml_validation = Mathml_validator(self, source=html_file)
+        if not mathml_validation.success:
+            self.utils.report.error("NLBPUB contains MathML errors, aborting...")
+            return False
+
+        mathML_result = Mathml_to_text(self, source=html_file, target=html_file)
+
+        if not mathML_result.success:
+            return False
 
         self.utils.report.info("Lager skjulte overskrifter der det er nødvendig")
         xslt = Xslt(self,
