@@ -35,14 +35,20 @@ class Mathml_to_text():
             tree = etree.parse(source)
 
             root = tree.getroot()
-            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml'}
+            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml', "xml": "http://www.w3.org/XML/1998/namespace"}
 
             mathML_elements = root.findall(".//m:math", map)
+
             if len(mathML_elements) is 0:
                 self.report.info("No MathML elements found in document")
 
             for element in mathML_elements:
                 parent = element.getparent()
+
+                if "{http://www.w3.org/XML/1998/namespace}lang" not in element.attrib:
+                    element.set("{http://www.w3.org/XML/1998/namespace}lang", find_xml_lang(element))
+                print((etree.tostring(element, encoding='unicode', method='xml', with_tail=False)))
+
                 html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                 self.report.info("Inserting transformation: " + html_representation)
 
@@ -106,17 +112,19 @@ class Mathml_validator():
             tree = etree.parse(source)
 
             root = tree.getroot()
-            self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml'}
+            self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml', "xml": "http://www.w3.org/XML/1998/namespace"}
 
             mathML_elements = root.findall(".//m:math", self.map)
+            if len(mathML_elements) == 0:
+                mathML_elements = root.findall(".//math", self.map)
 
             if len(mathML_elements) == 0:
                 self.report.info("No MathML elements found in document")
                 return
 
             for element in mathML_elements:
-                element_success = True
 
+                element_success = True
                 # prevent sending too many errors to the main report
                 if self.error_count < report_errors_max:
                     debug = self.report.debug
@@ -212,3 +220,14 @@ class Mathml_validator():
                 return "inline"
 
         return "block"
+
+
+def find_xml_lang(element):
+    lang = (element.get("{http://www.w3.org/XML/1998/namespace}lang"))
+    if lang is not None:
+        return lang
+
+    parent = element.getparent()
+    if parent is not None:
+        return find_xml_lang(parent)
+    return False
