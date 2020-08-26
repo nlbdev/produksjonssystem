@@ -47,7 +47,6 @@ class Mathml_to_text():
 
                 if "{http://www.w3.org/XML/1998/namespace}lang" not in element.attrib:
                     element.set("{http://www.w3.org/XML/1998/namespace}lang", find_xml_lang(element))
-                print((etree.tostring(element, encoding='unicode', method='xml', with_tail=False)))
 
                 html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                 self.report.info("Inserting transformation: " + html_representation)
