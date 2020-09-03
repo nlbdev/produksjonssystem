@@ -54,7 +54,7 @@ class Bibliofil:
                 lines.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
 
             if has_mobi:
-                lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "Mobi / Kindle Format"))
+                lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "MOBI/Kindle-format"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Til Lydhør/online-spiller"))
