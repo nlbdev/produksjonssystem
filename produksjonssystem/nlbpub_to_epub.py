@@ -5,6 +5,10 @@ import os
 import shutil
 import sys
 import tempfile
+import datetime
+import threading
+import time
+import logging
 
 from lxml import etree as ElementTree
 
@@ -13,6 +17,7 @@ from core.utils.bibliofil import Bibliofil
 from core.utils.epub import Epub
 from core.utils.epubcheck import Epubcheck
 from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -25,6 +30,45 @@ class NlbpubToEpub(Pipeline):
     labels = ["e-bok", "Statped"]
     publication_format = "XHTML"
     expected_processing_time = 550
+
+    _triggerEpubCatalogThread = None
+
+    def start(self, *args, **kwargs):
+        super().start(*args, **kwargs)
+        self._triggerEpubCatalogThread = threading.Thread(target=self._trigger_epub_catalog_thread, name="Update catalog XHTML thread")
+        self._triggerEpubCatalogThread.setDaemon(True)
+        self._triggerEpubCatalogThread.start()
+
+        logging.info("Pipeline \"" + str(self.title) + "\" started watching for newsletters")
+
+    def stop(self, *args, **kwargs):
+        super().stop(*args, **kwargs)
+
+        if self._triggerNewsletterThread and self._triggerNewsletterThread != threading.current_thread():
+            self._triggerNewsletterThread.join()
+
+        logging.info("Pipeline \"" + str(self.title) + "\" stopped")
+
+    def _trigger_epub_catalog_thread(self):
+        last_check = 0
+
+        self.watchdog_bark()
+        while self.shouldRun:
+            time.sleep(5)
+            self.watchdog_bark()
+
+            if not self.dirsAvailable():
+                continue
+
+            max_update_interval = 60 * 60 * 24
+            if time.time() - last_check < max_update_interval:
+                continue
+
+            last_check = time.time()
+            logging.info("Updating formatklar and filesize for ebooks")
+            list_books = Filesystem.list_book_dir(self.dir_out)
+            Bibliofil.update_list_of_books("XHTML", list_books)
+
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
