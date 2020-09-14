@@ -64,22 +64,23 @@ class Bibliofil:
                         catalogoue_changes_needed_formatklar += 1
                         logging.info(f"Distribution formats for edition {identifier} is not correct, will update. Distribution formats: {distribution_formats} vs old {distribution_formats_catalogue}")
 
+                    if has_epub:
+                        lines_formatklar.append("{};{};{};{}".format(identifier, "epub", "no", "Til Lydhør/online-spiller"))
+
+                    if has_epub:
+                        lines_formatklar.append("{};{};{};{}".format(identifier, "epub", "st", "Til Nettleserbok"))
+
+                    if has_epub:
                         lines_formatklar.append("{};{};{};{}".format(identifier, "epub", "dl", "EPUB"))
 
-                        if has_html:
-                            lines_formatklar.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
+                    if has_html:
+                        lines_formatklar.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
 
-                        if has_mobi:
-                            lines_formatklar.append("{};{};{};{}".format(identifier, "mobi", "dl", "Mobi / Kindle Format"))
+                    if has_mobi and size < 20 * 10**6:  # 20 MB
+                        lines_formatklar.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
 
-                        if has_epub:
-                            lines_formatklar.append("{};{};{};{}".format(identifier, "epub", "no", "Til Lydhør/online-spiller"))
-
-                        if has_epub:
-                            lines_formatklar.append("{};{};{};{}".format(identifier, "epub", "st", "Til Nettleserbok"))
-
-                        if has_mobi and size < 20 * 10**6:  # 20 MB
-                            lines_formatklar.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
+                    if has_mobi:
+                        lines_formatklar.append("{};{};{};{}".format(identifier, "mobi", "dl", "MOBI/Kindle-format"))
 
                         if library is None or library.upper() != "NLB":
                             report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
@@ -90,14 +91,14 @@ class Bibliofil:
                 logging.info("Sending filesize-e-mail to {} with content:".format(Config.get("email.filesize.address")))
                 logging.info(filesize_xml)
                 Report.emailPlainText("filesize: ",
-                                    filesize_xml,
-                                    Config.get("email.filesize.address"))
+                                      filesize_xml,
+                                      Config.get("email.filesize.address"))
 
             if catalogoue_changes_needed_formatklar > 0:
                 logging.info(f"{catalogoue_changes_needed_filesize} formatklar catalogue changes needed")
                 Report.emailPlainText("formatklar: ",
-                                    "\n".join(lines_formatklar),
-                                    Config.get("email.formatklar.address"))
+                                      "\n".join(lines_formatklar),
+                                      Config.get("email.formatklar.address"))
             if catalogoue_changes_needed_filesize == catalogoue_changes_needed_formatklar == 0:
                 logging.info(f"No catalog changes needed for format {format}")
 
@@ -144,22 +145,22 @@ class Bibliofil:
                                       Config.get("email.filesize.address"))
 
             if has_epub:
-                lines.append("{};{};{};{}".format(identifier, "epub", "dl", "EPUB"))
-
-            if has_html:
-                lines.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
-
-            if has_mobi:
-                lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "MOBI/Kindle-format"))
-
-            if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "no", "Til Lydhør/online-spiller"))
 
             if has_epub:
                 lines.append("{};{};{};{}".format(identifier, "epub", "st", "Til Nettleserbok"))
 
+            if has_epub:
+                lines.append("{};{};{};{}".format(identifier, "epub", "dl", "EPUB"))
+
+            if has_html:
+                lines.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
+
             if has_mobi and size < 20 * 10**6:  # 20 MB
                 lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
+
+            if has_mobi:
+                lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "MOBI/Kindle-format"))
 
             if library is None or library.upper() != "NLB":
                 report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
@@ -174,3 +175,30 @@ class Bibliofil:
         else:
             report.debug("book_available: unknown format: {}".format(format))
             return
+
+    @staticmethod
+    def list_all_editions():
+        logging.info("Henter oversikt over alle utgaver")
+        try:
+            url = os.path.join(Config.get("nlb_api_url"), "editions")
+            params = {
+                'limit': '-1',
+                'start': '0',
+                'order': 'any',
+                'include-deleted': 'false',
+                'library': 'NLB',
+                'creative-work-metadata': 'none',
+                'editions-metadata': 'all',
+            }
+            headers = {
+                'Accept': "application/json",
+                'Content-Type': "application/json",
+                }
+            logging.info(url)
+            response = requests.request("GET", url, headers=headers, params=params)
+            data = response.json()
+            editions = data["data"]
+            return editions
+        except Exception:
+            logging.exception("Klarte ikke returnere en liste over alle utgaver")
+            return []
