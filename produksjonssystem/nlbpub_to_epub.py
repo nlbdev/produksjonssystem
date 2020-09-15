@@ -44,9 +44,6 @@ class NlbpubToEpub(Pipeline):
     def stop(self, *args, **kwargs):
         super().stop(*args, **kwargs)
 
-        if self._triggerNewsletterThread and self._triggerNewsletterThread != threading.current_thread():
-            self._triggerNewsletterThread.join()
-
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
     def _trigger_epub_catalog_thread(self):
