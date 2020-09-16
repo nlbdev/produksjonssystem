@@ -80,14 +80,9 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
     - `chmod +x /opt/quickbase/get-latest.sh`
     - Valgfritt: kjør `/opt/quickbase/get-latest.sh` i en terminal
 
-- Valgfritt, vi skal slutte med dette: sett opp tilgang til bibliofil CSV for `*596$f`:
-    - Sett miljøvariabelen `ORIGINAL_ISBN_CSV` til å peke på en CSV-fil som inneholder to kolonner: "boknummer" (`*001`) og "ISBN" (`*596$f`)
-    - Denne filen blir automatisk generert og lagret på dokumentlageret som `Fellesdokumenter/IKT/original-isbn.csv`. I drift leses det direkte fra denne filen. For testing er det nok enklere å ta en lokal kopi av filen. Standardinnstillingene i `set-test-env.sh` forutsetter at du har en lokal kopi lagret på skrivebordet.
-    - Hvis miljøvariabelen ikke er satt, eller filen den peker på ikke finnes, så blir dette ignorert. Denne måten å slå opp boknummer basert på `*596$f` i katalogen er kun nyttig for bøker som ikke ligger i Quickbase.
-
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
-    - `sudo apt install python3.8 python3-pip python3-dev`
+    - `sudo apt install python3.8 python3-pip python3-dev python3-apt`
     - `sudo apt install graphviz`  # for plotting
     - `sudo apt install ffmpeg libavcodec-extra`  # for lydutdrag
     - `sudo apt install libxml2-dev libxslt1-dev`  # for lxml i Python
