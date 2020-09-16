@@ -1860,7 +1860,7 @@
                         </dtbook:list>
                     </dtbook:li>
                     <dtbook:li>TEXT7</dtbook:li>
-                    <dtbook:li value="9">TEXT8</dtbook:li>
+                    <dtbook:li>TEXT8</dtbook:li>
                     <dtbook:li>TEXT9</dtbook:li>
                 </dtbook:list>
             </x:expect>
@@ -1890,7 +1890,7 @@
                         </dtbook:list>
                     </dtbook:li>
                     <dtbook:li>TEXT7</dtbook:li>
-                    <dtbook:li value="9">TEXT8</dtbook:li>
+                    <dtbook:li>TEXT8</dtbook:li>
                     <dtbook:li>TEXT9</dtbook:li>
                 </dtbook:list>
             </x:expect>
@@ -1907,9 +1907,9 @@
             <x:expect label="the result should be 10, 9, 5, 4">
                 <dtbook:list type="ol" depth="1" start="10">
                     <dtbook:li>ONE</dtbook:li>
-                    <dtbook:li value="9">TWO</dtbook:li>
-                    <dtbook:li value="5">THREE</dtbook:li>
-                    <dtbook:li value="4">FOUR</dtbook:li>
+                    <dtbook:li>TWO</dtbook:li>
+                    <dtbook:li>THREE</dtbook:li>
+                    <dtbook:li>FOUR</dtbook:li>
                 </dtbook:list>
             </x:expect>
         </x:scenario>
