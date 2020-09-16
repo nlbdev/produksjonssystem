@@ -121,9 +121,19 @@ class NordicToNlbpub(Pipeline):
         temp_epub.asFile(rebuild=True)
 
         self.utils.report.info("Validerer Nordisk EPUB 3...")
-        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": temp_epub.asFile()}) as dp2_job_epub_validate:
+        epub_file = temp_epub.asFile()
+        with DaisyPipelineJob(self,
+                              "nordic-epub3-validate",
+                              {"epub": os.path.basename(epub_file)},
+                              pipeline_and_script_version=[
+                                ("1.12.1", "1.4.2"),
+                                ("1.11.1-SNAPSHOT", "1.3.0"),
+                              ],
+                              context={
+                                os.path.basename(epub_file): epub_file
+                              }) as dp2_job_epub_validate:
             epub_validate_status = None
-            if dp2_job_epub_validate.status == "DONE":
+            if dp2_job_epub_validate.status == "SUCCESS":
                 epub_validate_status = "SUCCESS"
             elif dp2_job_epub_validate.status in ["VALIDATION_FAIL", "FAIL"]:
                 epub_validate_status = "WARN"
@@ -193,8 +203,17 @@ class NordicToNlbpub(Pipeline):
                 self.utils.report.warn("EPUBen er ikke valid, men vi fortsetter alikevel.")
 
         self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": temp_epub.asFile(), "fail-on-error": "false"}) as dp2_job_convert:
-            convert_status = "SUCCESS" if dp2_job_convert.status == "DONE" else "ERROR"
+        with DaisyPipelineJob(self,
+                              "nordic-epub3-to-html",
+                              {"epub": os.path.basename(epub_file), "fail-on-error": "false"},
+                              pipeline_and_script_version=[
+                                ("1.12.1", "1.4.2"),
+                                ("1.11.1-SNAPSHOT", "1.3.0"),
+                              ],
+                              context={
+                                os.path.basename(epub_file): epub_file
+                              }) as dp2_job_convert:
+            convert_status = "SUCCESS" if dp2_job_convert.status == "SUCCESS" else "ERROR"
 
             if convert_status != "SUCCESS":
                 self.utils.report.error("Klarte ikke å konvertere boken")
@@ -213,8 +232,25 @@ class NordicToNlbpub(Pipeline):
                 return False
 
             self.utils.report.info("Validerer Nordisk HTML 5...")
-            with DaisyPipelineJob(self, "nordic-html-validate", {"html": dp2_html_file}) as dp2_job_html_validate:
-                html_validate_status = "SUCCESS" if dp2_job_html_validate.status == "DONE" else "ERROR"
+
+            # create context for Pipeline 2 job
+            html_context = {}
+            for root, dirs, files in os.walk(dp2_html_dir):
+                for file in files:
+                    fullpath = os.path.join(root, file)
+                    relpath = os.path.relpath(fullpath, dp2_html_dir)
+                    html_context[relpath] = fullpath
+
+            with DaisyPipelineJob(self,
+                                  "nordic-html-validate",
+                                  {"html": os.path.basename(dp2_html_file)},
+                                  pipeline_and_script_version=[
+                                    ("1.12.1", "1.4.2"),
+                                    ("1.11.1-SNAPSHOT", "1.3.0"),
+                                  ],
+                                  context=html_context
+                                  ) as dp2_job_html_validate:
+                html_validate_status = "SUCCESS" if dp2_job_html_validate.status == "SUCCESS" else "ERROR"
 
                 report_file = os.path.join(dp2_job_html_validate.dir_output, "html-report/report.xhtml")
 

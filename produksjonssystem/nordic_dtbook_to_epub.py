@@ -92,9 +92,27 @@ class NordicDTBookToEpub(Pipeline):
         shutil.copy(temp_dtbook_file, dtbook)
 
         self.utils.report.info("Validerer Nordisk DTBook...")
-        with DaisyPipelineJob(self, "nordic-dtbook-validate", {"dtbook": dtbook, "no-legacy": "false"}) as dp2_job_dtbook_validate:
+
+        # create context for Pipeline 2 job
+        dtbook_dir = os.path.dirname(dtbook)
+        dtbook_context = {}
+        for root, dirs, files in os.walk(dtbook_dir):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                relpath = os.path.relpath(fullpath, dtbook_dir)
+                dtbook_context[relpath] = fullpath
+
+        with DaisyPipelineJob(self,
+                              "nordic-dtbook-validate",
+                              {"dtbook": os.path.basename(dtbook), "no-legacy": "false"},
+                              pipeline_and_script_version=[
+                                ("1.12.1", "1.4.2"),
+                                ("1.11.1-SNAPSHOT", "1.3.0"),
+                              ],
+                              context=dtbook_context
+                              ) as dp2_job_dtbook_validate:
             dtbook_validate_status = None
-            if dp2_job_dtbook_validate.status == "DONE":
+            if dp2_job_dtbook_validate.status == "SUCCESS":
                 dtbook_validate_status = "SUCCESS"
             elif dp2_job_dtbook_validate.status in ["VALIDATION_FAIL", "FAIL"]:
                 dtbook_validate_status = "WARN"
@@ -161,10 +179,16 @@ class NordicDTBookToEpub(Pipeline):
         temp_htmldir_obj = tempfile.TemporaryDirectory()
         temp_htmldir = temp_htmldir_obj.name
         temp_htmlfile = None
-        with DaisyPipelineJob(self, "nordic-dtbook-to-html", {"dtbook": dtbook,
-                                                              "fail-on-error": "false",
-                                                              "no-legacy": "false"}) as dp2_job_dtbook_to_html:
-            convert_status = "SUCCESS" if dp2_job_dtbook_to_html.status == "DONE" else "ERROR"
+        with DaisyPipelineJob(self,
+                              "nordic-dtbook-to-html",
+                              {"dtbook": os.path.basename(dtbook), "fail-on-error": "false", "no-legacy": "false"},
+                              pipeline_and_script_version=[
+                                ("1.12.1", "1.4.2"),
+                                ("1.11.1-SNAPSHOT", "1.3.0"),
+                              ],
+                              context=dtbook_context
+                              ) as dp2_job_dtbook_to_html:
+            convert_status = "SUCCESS" if dp2_job_dtbook_to_html.status == "SUCCESS" else "ERROR"
 
             convert_report_file = os.path.join(dp2_job_dtbook_to_html.dir_output, "html-report/report.xhtml")
 
@@ -206,11 +230,28 @@ class NordicDTBookToEpub(Pipeline):
         shutil.copy(temp_html_xslt_output, temp_htmlfile)
 
         self.utils.report.info("Konverterer fra Nordisk HTML til Nordisk EPUB3...")
+
+        # create context for Pipeline 2 job
+        html_dir = os.path.dirname(temp_htmlfile)
+        html_context = {}
+        for root, dirs, files in os.walk(html_dir):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                relpath = os.path.relpath(fullpath, html_dir)
+                html_context[relpath] = fullpath
+
         temp_epub_file_obj = tempfile.NamedTemporaryFile()
         temp_epub_file = temp_epub_file_obj.name
-        with DaisyPipelineJob(self, "nordic-html-to-epub3", {"html": temp_htmlfile,
-                                                             "fail-on-error": "false"}) as dp2_job_html_to_epub:
-            convert_status = "SUCCESS" if dp2_job_html_to_epub.status == "DONE" else "ERROR"
+        with DaisyPipelineJob(self,
+                              "nordic-html-to-epub3",
+                              {"html": os.path.basename(temp_htmlfile), "fail-on-error": "false"},
+                              pipeline_and_script_version=[
+                                ("1.12.1", "1.4.2"),
+                                ("1.11.1-SNAPSHOT", "1.3.0"),
+                              ],
+                              context=html_context
+                              ) as dp2_job_html_to_epub:
+            convert_status = "SUCCESS" if dp2_job_html_to_epub.status == "SUCCESS" else "ERROR"
 
             convert_report_file = os.path.join(dp2_job_html_to_epub.dir_output, "html-report/report.xhtml")
 
@@ -234,8 +275,18 @@ class NordicDTBookToEpub(Pipeline):
                 return False
 
             self.utils.report.info("Validerer Nordisk EPUB 3...")
-            with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": dp2_epub_file}) as dp2_job_epub_validate:
-                epub_validate_status = "SUCCESS" if dp2_job_epub_validate.status == "DONE" else "ERROR"
+            epub_file = dp2_epub_file.asFile()
+            with DaisyPipelineJob(self,
+                                  "nordic-epub3-validate",
+                                  {"epub": os.path.basename(epub_file)},
+                                  pipeline_and_script_version=[
+                                    ("1.12.1", "1.4.2"),
+                                    ("1.11.1-SNAPSHOT", "1.3.0"),
+                                  ],
+                                  context={
+                                    os.path.basename(epub_file): epub_file
+                                  }) as dp2_job_epub_validate:
+                epub_validate_status = "SUCCESS" if dp2_job_epub_validate.status == "SUCCESS" else "ERROR"
 
                 report_file = os.path.join(dp2_job_epub_validate.dir_output, "html-report/report.xhtml")
 

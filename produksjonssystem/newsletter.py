@@ -83,9 +83,16 @@ class Newsletter(Pipeline):
 
     def on_book(self):
 
-        self.utils.report.info("Lager nyhetsbrev for punktskrift i pipeline2")
-        with DaisyPipelineJob(self, "nlb:catalog-month", {"month": self.year_month, "make-email": "false"}) as dp2_job_newsletter:
-            if dp2_job_newsletter.status == "DONE":
+        self.utils.report.info("Lager nyhetsbrev i punktskrift med Pipeline 2")
+        with DaisyPipelineJob(self,
+                              "nlb:catalog-month",
+                              {"month": self.year_month, "make-email": "false"},
+                              priority="low",
+                              pipeline_and_script_version=[
+                                ("1.11.1-SNAPSHOT", None),
+                              ],
+                              ) as dp2_job_newsletter:
+            if dp2_job_newsletter.status == "SUCCESS":
                 newsletter = None
                 for file in os.listdir(os.path.join(dp2_job_newsletter.dir_output, "output-dir")):
                     if file.endswith(".xhtml"):
@@ -99,7 +106,7 @@ class Newsletter(Pipeline):
                 os.rename(html_file, os.path.join(os.path.dirname(html_file), self.newsletter_identifier, self.newsletter_identifier + ".html"))
                 html_file = os.path.join(os.path.dirname(html_file), self.newsletter_identifier, self.newsletter_identifier + ".html")
 
-            if dp2_job_newsletter.status != "DONE":
+            if dp2_job_newsletter.status != "SUCCESS":
                 self.utils.report.info("Klarte ikke å konvertere boken")
                 self.utils.report.title = self.title + " feilet 😭👎"
                 return False

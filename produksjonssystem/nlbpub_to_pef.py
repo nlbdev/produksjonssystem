@@ -82,15 +82,29 @@ class NlbpubToPef(Pipeline):
         # ---------- konverter til PEF ----------
 
         braille_arguments = {
-            "source": html_file,
+            "source": os.path.basename(html_file),
             "braille-standard": "(dots:6)(grade:0)",
             "line-spacing": line_spacing,
             "duplex": duplex
         }
         pef_tempdir_object = tempfile.TemporaryDirectory()
 
+        # create context for Pipeline 2 job
+        html_dir = os.path.dirname(html_file)
+        html_context = {}
+        for root, dirs, files in os.walk(html_dir):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                relpath = os.path.relpath(fullpath, html_dir)
+                html_context[relpath] = fullpath
+
         self.utils.report.info("Konverterer fra HTML til PEF...")
-        with DaisyPipelineJob(self, "nlb:html-to-pef", braille_arguments) as dp2_job:
+        with DaisyPipelineJob(self,
+                              "nlb:html-to-pef",
+                              braille_arguments,
+                              pipeline_and_script_version=("1.11.1-SNAPSHOT", "1.10.0-SNAPSHOT"),
+                              context=html_context
+                              ) as dp2_job:
 
             # get conversion report
             if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
@@ -98,9 +112,9 @@ class NlbpubToPef(Pipeline):
                                            os.path.join(self.utils.report.reportDir(), "preview"))
                 self.utils.report.attachment(None,
                                              os.path.join(self.utils.report.reportDir(), "preview" + "/" + identifier + ".pef.html"),
-                                             "SUCCESS" if dp2_job.status == "DONE" else "ERROR")
+                                             "SUCCESS" if dp2_job.status == "SUCCESS" else "ERROR")
 
-            if dp2_job.status != "DONE":
+            if dp2_job.status != "SUCCESS":
                 self.utils.report.info("Klarte ikke å konvertere boken")
                 self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
                 return False
