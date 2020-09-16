@@ -321,7 +321,9 @@ class DaisyPipelineJob():
 
                 # always start a local engine, even if we're not using it (Pipeline 2 Web UI currently depends on having it running)
                 # we should remove this when we've moved the Web UI over to using another Pipeline 2 instance.
-                self.local_start_engine()
+                local_engines = [e for e in DaisyPipelineJob.engines if e["local"]]
+                if len(local_engines) > 0 and not DaisyPipelineJob.is_alive(local_engines[0]):
+                    self.local_start_engine()
 
                 (found_pipeline_version, found_script_version) = (None, None)
 
