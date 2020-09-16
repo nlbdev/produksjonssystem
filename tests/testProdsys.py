@@ -84,6 +84,11 @@ environment = {
     "STOP_AFTER_FIRST_JOB": "true",
     "CACHE_DIR": "{}/cache".format(target_path),
     "NLB_API_URL": "https://api.nlb.no/v1",
+    "REMOTE_PIPELINE2_WS_AUTHENTICATION": "false false false",
+    "REMOTE_PIPELINE2_WS_AUTHENTICATION_KEYS": "none none none",
+    "REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS": "none none none",
+    "REMOTE_PIPELINE2_WS_ENDPOINTS": "http://nlbdocker-dev.lx.nb.no:18150/ws http://nlbdocker-dev.lx.nb.no:18151/ws "
+                                     + "http://nlbdocker-dev.lx.nb.no:18160/ws http://nlbdocker-dev.lx.nb.no:18170/ws",
 }
 
 book_archive_dirs = {}
