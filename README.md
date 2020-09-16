@@ -51,29 +51,13 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
         ```
 
 - installer DAISY Pipeline 2
-    - Kopier Pipeline 2 fra `IKT/DAISY Pipeline/daisy-pipeline2-1.11.tar.gz` og pakk ut til `~/Desktop/daisy-pipeline2`
-    - Tidligere (tror ikke dette virker lenger):
-        - Hvis du ikke har en mappe som heter "Desktop" i hjemmemappen, kjør: `ln --symbolic $HOME/Skrivebord Desktop`
-        - last ned og unzip DAISY Pipeline 2 fra http://repo.nlb.no/pipeline/pipeline2_minimal.zip til `~/Desktop/daisy-pipeline`
-        - i `etc/system.properties`, sett `org.daisy.pipeline.procs` til 4 for å kunne kjøre flere jobber på en gang (valgfritt)
-        - kjør: `updater/linux/pipeline-updater -service="http://repo.nlb.no/pipeline/" -install-dir=$HOME/Desktop/daisy-pipeline/ -descriptor=$HOME/Desktop/daisy-pipeline/etc/releaseDescriptor.xml -version=current -force`
-        - opprett `cli/config.yml` med følgende innhold:
-            ```
-            host: http://localhost
-            port: 8181
-            ws_path: ws
-            ws_timeup: 25
-            exec_line: ../bin/pipeline2
-            local: true
-            client_key: clientid
-            client_secret: supersecret
-            timeout: 60
-            debug: false
-            starting: true
-            ```
+    - Lokal instans:
+        - Kopier Pipeline 2 fra `IKT/DAISY Pipeline/daisy-pipeline2-1.11.tar.gz` og pakk ut til `~/Desktop/daisy-pipeline2`
+    - Ekstern(e) instans(er) (kjørende på annen PC/server):
+        - Sett opp `REMOTE_PIPELINE2_WS_*`-miljøvariablene. Se `set-test-env.sh.example` for eksempel.
 
 - installer ACE:
-    - `apt-get install -y build-essential`
+    - `sudo apt-get install -y build-essential`
     - `curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -`
     - `sudo apt-get install nodejs`
     - `sudo PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install @daisy/ace -g`
