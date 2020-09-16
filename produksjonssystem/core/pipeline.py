@@ -970,6 +970,11 @@ class Pipeline():
                                                   'preformatted': False})
         report_daily.title = "Dagsrapport for " + self.title
         recipients_daily = []
+
+        if not self.config or not self.email_settings:
+            logging.info("Missing configuration. Unable to send daily reports.")
+            return
+
         for key in self.config:
             if key == "daily":
                 for recipient_daily in self.config[key]:
