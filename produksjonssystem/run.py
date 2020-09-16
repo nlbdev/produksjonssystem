@@ -87,7 +87,7 @@ class Produksjonssystem():
             logging.getLogger().addHandler(airbrake_handler)
         else:
             self.airbrake_config = None
-            logging.warn("Airbrake.io not configured (missing AIRBRAKE_PROJECT_ID and/or AIRBRAKE_PROJECT_KEY)")
+            logging.warning("Airbrake.io not configured (missing AIRBRAKE_PROJECT_ID and/or AIRBRAKE_PROJECT_KEY)")
 
         # Set environment variables (mainly useful when testing)
         if environment:
