@@ -129,9 +129,10 @@ class DaisyPipelineJob():
 
     def local_start_engine(self, retries=10):
         running = False
+        self.pipeline.utils.report.debug("[local_start_engine] trying to acquire DP2 start lock")
         with DaisyPipelineJob.start_lock.acquire_timeout(3000) as locked:
             if locked:
-                self.pipeline.utils.report.debug("acquired DP2 start lock")
+                self.pipeline.utils.report.debug("[local_start_engine] acquired DP2 start lock")
                 while not running and retries > 0:
                     retries -= 1
                     procs = DaisyPipelineJob.local_list_processes()
@@ -226,11 +227,12 @@ class DaisyPipelineJob():
 
                         time.sleep(5)  # Wait a few seconds after starting Pipeline 2 before releasing the lock
 
-                self.pipeline.utils.report.debug("releasing DP2 start lock")
+                self.pipeline.utils.report.debug("[local_start_engine] releasing DP2 start lock")
                 return running
 
             else:
                 self.pipeline.utils.report.error("Ventet for lenge på tilgang til Pipeline 2")
+                self.pipeline.utils.report.debug("[local_start_engine] could not acquire DP2 start lock")
 
         return False
 
@@ -311,9 +313,10 @@ class DaisyPipelineJob():
         return self
 
     def choose_engine(self, use_local=False):
+        self.pipeline.utils.report.debug("[choose_engine] trying to aquire DP2 engine lock")
         with DaisyPipelineJob.engine_lock.acquire_timeout(600) as locked:
             if locked:
-                self.pipeline.utils.report.debug("aquired DP2 engine lock")
+                self.pipeline.utils.report.debug("[choose_engine] aquired DP2 engine lock")
 
                 self.engine = None
                 min_queue_size = float('Inf')
@@ -377,12 +380,12 @@ class DaisyPipelineJob():
                 else:
                     self.pipeline.utils.report.warning("Fant ingen brukbar Pipeline 2-instans")
 
-                self.pipeline.utils.report.debug("releasing DP2 engine lock")
+                self.pipeline.utils.report.debug("[choose_engine] releasing DP2 engine lock")
                 return self.engine is not None
 
             else:
                 self.pipeline.utils.report.error("Ventet for lenge på tilgang til Pipeline 2")
-                self.pipeline.utils.report.debug("could not aquire DP2 engine lock")
+                self.pipeline.utils.report.debug("[choose_engine] could not aquire DP2 engine lock")
                 return None
 
     def script_available(self, engine, pipeline_version, script_version):
@@ -575,8 +578,10 @@ class DaisyPipelineJob():
         return self.status
 
     def delete_job(self, engine, job_id):
+        self.pipeline.utils.report.debug("[delete_job] trying to aquire DP2 engine lock")
         with DaisyPipelineJob.engine_lock.acquire_timeout(600) as locked:
             if locked:
+                self.pipeline.utils.report.debug("[delete_job] aquired DP2 engine lock")
                 url = DaisyPipelineJob.encode_url(engine, "/jobs/{}".format(job_id), {})
                 try:
                     response = requests.delete(url)
@@ -586,15 +591,17 @@ class DaisyPipelineJob():
                     else:
                         self.pipeline.utils.report.warning("Klarte ikke å slette Pipeline 2-jobb: {} @ {}".format(job_id, engine["endpoint"]))
 
+                    self.pipeline.utils.report.debug("[delete_job] releasing DP2 engine lock")
                     return response.ok
 
                 except Exception:
                     self.pipeline.utils.report.exception("Klarte ikke å slette Pipeline 2-jobb: {} @ {}".format(job_id, engine["endpoint"]))
+                    self.pipeline.utils.report.debug("[delete_job] releasing DP2 engine lock")
                     return False
 
             else:
                 self.pipeline.utils.report.error("Ventet for lenge på tilgang til Pipeline 2")
-                self.pipeline.utils.report.debug("could not aquire DP2 engine lock")
+                self.pipeline.utils.report.debug("[delete_job] could not aquire DP2 engine lock")
                 return False
 
     def get_log(self):
