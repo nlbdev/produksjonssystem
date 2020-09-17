@@ -65,7 +65,7 @@ class DaisyPipelineJob():
             DaisyPipelineJob.dp2_home = os.getenv("PIPELINE2_HOME", "/opt/daisy-pipeline2")
         DaisyPipelineJob.dp2_cli = DaisyPipelineJob.dp2_home + "/cli/dp2"
 
-        if os.path.isfile(DaisyPipelineJob.dp2_cli): # and False:  # disabled for now, need to test DP2 WS
+        if os.path.isfile(DaisyPipelineJob.dp2_cli):
             if not os.getenv("JAVA_HOME"):
                 logging.warning(
                     "JAVA_HOME is not set! It should be set to a Java 8 installation, for instance:\n"
