@@ -60,11 +60,8 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        temp_html_file_obj = tempfile.NamedTemporaryFile()
-        temp_html_file = temp_html_file_obj.name
-
-        temp_opf_file_obj = tempfile.NamedTemporaryFile()
-        temp_opf_file = temp_opf_file_obj.name
+        temp_xml_file_obj = tempfile.NamedTemporaryFile()
+        temp_xml_file = temp_xml_file_obj.name
 
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
@@ -72,46 +69,29 @@ class NordicToNlbpub(Pipeline):
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
 
-        self.utils.report.info("Rydder opp i nordisk EPUB")
+        self.utils.report.info("Rydder opp i nordisk EPUB nav.xhtml")
         nav_path = os.path.join(temp_epubdir, temp_epub.nav_path())
-        for root, dirs, files in os.walk(temp_epubdir):
-            for f in files:
-                file = os.path.join(root, f)
-                if not file.endswith(".xhtml"):
-                    continue
-
-                if file == nav_path:
-                    xslt = Xslt(self,
-                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
-                                source=file,
-                                target=temp_html_file,
-                                parameters={
-                                    "cover": " ".join([item["href"] for item in temp_epub.spine()]),
-                                    "base": os.path.dirname(os.path.join(temp_epubdir, temp_epub.opf_path())) + "/"
-                                })
-                    if not xslt.success:
-                        return False
-                    shutil.copy(temp_html_file, file)
-
-                else:
-                    xslt = Xslt(self,
-                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
-                                source=file,
-                                target=temp_html_file)
-                    if not xslt.success:
-                        return False
-                    shutil.copy(temp_html_file, file)
-
-        temp_epub_opf_path = os.path.join(temp_epubdir, temp_epub.opf_path())
         xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
-                    source=temp_epub_opf_path,
-                    target=temp_opf_file)
+                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
+                    source=nav_path,
+                    target=temp_xml_file,
+                    parameters={
+                        "cover": " ".join([item["href"] for item in temp_epub.spine()]),
+                        "base": os.path.dirname(os.path.join(temp_epubdir, temp_epub.opf_path())) + "/"
+                    })
         if not xslt.success:
             return False
-        shutil.copy(temp_opf_file, temp_epub_opf_path)
+        shutil.copy(temp_xml_file, nav_path)
 
-        temp_epub.refresh_metadata()
+        self.utils.report.info("Rydder opp i nordisk EPUB package.opf")
+        opf_path = os.path.join(temp_epubdir, temp_epub.opf_path())
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
+                    source=opf_path,
+                    target=temp_xml_file)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_xml_file, opf_path)
 
         html_dir_obj = tempfile.TemporaryDirectory()
         html_dir = html_dir_obj.name
@@ -302,10 +282,10 @@ class NordicToNlbpub(Pipeline):
         self.utils.report.info("Rydder opp i nordisk HTML")
         xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
                     source=html_file,
-                    target=temp_html_file)
+                    target=temp_xml_file)
         if not xslt.success:
             return False
-        shutil.copy(temp_html_file, html_file)
+        shutil.copy(temp_xml_file, html_file)
 
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
         nlbpub_tempdir_obj = tempfile.TemporaryDirectory()

@@ -29,4 +29,17 @@
         </xsl:copy>
     </xsl:template>
     
+    <xsl:template match="html:meta[@name='dc:identifier']">
+        <xsl:variable name="test" select="starts-with(@content, 'TEST')" as="xs:boolean"/>
+        <xsl:variable name="identifier" select="replace(@content, '[^\d]', '')" as="xs:string"/>
+        
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:attribute name="content" select="concat(if ($test) then 'TEST' else '', $identifier)"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    
+    <xsl:template match="html:meta[@name='dtb:uid']"/>
+    
 </xsl:stylesheet>
