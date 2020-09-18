@@ -1,6 +1,5 @@
 import logging
 import os
-import json
 
 import requests
 
@@ -56,8 +55,6 @@ class Bibliofil:
 
                     distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, has_mobi, size)
                     distribution_formats_catalogue = book["distribution"]
-                    print(distribution_formats)
-                    print(book["distribution"])
 
                     if distribution_formats != distribution_formats_catalogue:
 
@@ -130,23 +127,12 @@ class Bibliofil:
                                       filesize_xml,
                                       Config.get("email.filesize.address"))
 
-            if has_epub:
-                lines.append("{};{};{};{}".format(identifier, "epub", "no", "Til Lydhør/online-spiller"))
-
-            if has_epub:
-                lines.append("{};{};{};{}".format(identifier, "epub", "st", "Til Nettleserbok"))
-
-            if has_epub:
-                lines.append("{};{};{};{}".format(identifier, "epub", "dl", "EPUB"))
-
-            if has_html:
-                lines.append("{};{};{};{}".format(identifier, "html", "dl", "HTML"))
-
-            if has_mobi and size < 20 * 10**6:  # 20 MB
-                lines.append("{};{};{};{}".format(identifier, "mobi", "ki", "Til Kindle/PocketBook"))
-
-            if has_mobi:
-                lines.append("{};{};{};{}".format(identifier, "mobi", "dl", "MOBI/Kindle-format"))
+            distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, has_mobi, size)
+            for distribution_format in distribution_formats:
+                lines.append("{};{};{};{}".format(identifier,
+                             distribution_format["name"],
+                             distribution_format["format"],
+                             distribution_format["method"]))
 
             if library is None or library.upper() != "NLB":
                 report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
