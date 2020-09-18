@@ -33,9 +33,9 @@ class Newsletter(Pipeline):
 
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
-        self._triggerNewsletterThread = threading.Thread(target=self._trigger_newsletter_thread, name="Newsletter thread")
-        self._triggerNewsletterThread.setDaemon(True)
-        self._triggerNewsletterThread.start()
+    #   self._triggerNewsletterThread = threading.Thread(target=self._trigger_newsletter_thread, name="Newsletter thread")
+    #  self._triggerNewsletterThread.setDaemon(True)
+    # self._triggerNewsletterThread.start()
 
         logging.info("Pipeline \"" + str(self.title) + "\" started watching for newsletters")
 
