@@ -39,7 +39,7 @@ class Mathml_to_text():
 
             mathML_elements = root.findall(".//m:math", map)
 
-            if len(mathML_elements) is 0:
+            if len(mathML_elements) == 0:
                 self.report.info("No MathML elements found in document")
 
             for element in mathML_elements:
