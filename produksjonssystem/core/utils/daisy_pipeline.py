@@ -263,6 +263,7 @@ class DaisyPipelineJob():
                 idle_timeout = 3600 * 2
                 running_timeout = 3600
                 timed_out = False
+                engine_died = False
                 while not timed_out and self.status in ["IDLE", "RUNNING"]:
                     timed_out = self.status == "IDLE" and time.time() - idle_start > idle_timeout or time.time() - running_start > running_timeout
                     time.sleep(5)
@@ -271,7 +272,14 @@ class DaisyPipelineJob():
                         self.pipeline.watchdog_bark()  # keep pipeline alive while waiting in queue
                         running_start = time.time()
 
-                    if not DaisyPipelineJob.is_alive(self.engine):
+                    is_alive = False
+                    for retry in range(10):
+                        is_alive = DaisyPipelineJob.is_alive(self.engine)
+                        if is_alive:
+                            break
+                        time.sleep(5)
+                    if not is_alive:
+                        engine_died = True
                         self.pipeline.utils.report.error("Pipeline 2 kjører ikke lenger. Avbryter…")
                         break
 
@@ -288,6 +296,9 @@ class DaisyPipelineJob():
                     # if we're using a local engine, we should stop the engine as it might have crashed
                     if self.engine["local"]:
                         DaisyPipelineJob.local_stop_engine(self.pipeline)
+
+                elif engine_died:
+                    pass  # Nothing we can do
 
                 else:
                     # get job log (the run method will log stdout/stderr as debug output)
