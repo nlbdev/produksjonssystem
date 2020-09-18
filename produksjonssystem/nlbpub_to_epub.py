@@ -35,11 +35,11 @@ class NlbpubToEpub(Pipeline):
 
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
-        self._triggerEpubCatalogThread = threading.Thread(target=self._trigger_epub_catalog_thread, name="Update catalog XHTML thread")
-        self._triggerEpubCatalogThread.setDaemon(True)
-        self._triggerEpubCatalogThread.start()
+       # self._triggerEpubCatalogThread = threading.Thread(target=self._trigger_epub_catalog_thread, name="Update catalog XHTML thread")
+      #  self._triggerEpubCatalogThread.setDaemon(True)
+     #   self._triggerEpubCatalogThread.start()
 
-        logging.info("Pipeline \"" + str(self.title) + "\" started watching for newsletters")
+      #  logging.info("Pipeline \"" + str(self.title) + "\" started watching for needed catalog changes in XHTML distribution formats")
 
     def stop(self, *args, **kwargs):
         super().stop(*args, **kwargs)
