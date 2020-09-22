@@ -14,12 +14,13 @@ class Bibliofil:
     def update_list_of_books(format, identifiers, report=logging):
         if format == "XHTML":  # "XHTML" means e-book (we're reusing identifiers previously reserved for XHTML files)
 
-            catalogoue_changes_needed_filesize = 0
-            catalogoue_changes_needed_formatklar = 0
+            catalog_changes_needed_filesize = 0
+            catalog_changes_needed_formatklar = 0
 
             editions = Bibliofil.list_all_editions()
             filesize_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
             filesize_xml += "<root>\n"
+            lines_formatklar = []
 
             for book in editions:
                 identifier = book["identifier"]
@@ -30,7 +31,6 @@ class Bibliofil:
                     if library is None or library.upper() != "NLB":
                         logging.info("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
                         continue
-                    lines_formatklar = []
 
                     epub_dir = os.path.join(Directory.dirs_flat["epub-ebook"], book["identifier"])
                     has_epub = os.path.isdir(epub_dir)
@@ -45,21 +45,21 @@ class Bibliofil:
                         for root, dirs, files in os.walk(epub_dir):
                             for file in files:
                                 size += os.path.getsize(os.path.join(root, file))
-                        size_catalogue = 0
+                        size_catalog = 0
                         if book["fileSize"] is not None:
-                            size_catalogue = int(book["fileSize"])
-                        if size != size_catalogue and size != 0:
-                            logging.info(f"Filesize for edition: {identifier} is not correct, will update. New filesize: {size} vs old {size_catalogue}")
-                            catalogoue_changes_needed_filesize += 1
+                            size_catalog = int(book["fileSize"])
+                        if size != size_catalog and size != 0:
+                            logging.info(f"Filesize for edition: {identifier} is not correct, will update. New filesize: {size} vs old {size_catalog}")
+                            catalog_changes_needed_filesize += 1
                             filesize_xml += "<folder><name>{}</name><sizedata>{}</sizedata></folder>\n".format(book["identifier"], size)
 
                     distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, has_mobi, size)
-                    distribution_formats_catalogue = book["distribution"]
+                    distribution_formats_catalog = book["distribution"]
 
-                    if distribution_formats != distribution_formats_catalogue:
+                    if distribution_formats != distribution_formats_catalog:
 
-                        catalogoue_changes_needed_formatklar += 1
-                        logging.info(f"Distribution formats for edition {identifier} is not correct, will update. Distribution formats: {distribution_formats} vs old {distribution_formats_catalogue}")
+                        catalog_changes_needed_formatklar += 1
+                        logging.info(f"Distribution formats for edition {identifier} is not correct, will update. Distribution formats: {distribution_formats} vs old {distribution_formats_catalog}")
 
                         for distribution_format in distribution_formats:
                             lines_formatklar.append("{};{};{};{}".format(identifier,
@@ -67,8 +67,8 @@ class Bibliofil:
                                                     distribution_format["format"],
                                                     distribution_format["method"]))
 
-            if catalogoue_changes_needed_filesize > 0:
-                logging.info(f"{catalogoue_changes_needed_filesize} filesize catalogue changes needed")
+            if catalog_changes_needed_filesize > 0:
+                logging.info(f"{catalog_changes_needed_filesize} filesize catalog changes needed")
                 filesize_xml += "</root>\n"
                 logging.info("Sending filesize-e-mail to {} with content:".format(Config.get("email.filesize.address")))
                 logging.info(filesize_xml)
@@ -76,13 +76,13 @@ class Bibliofil:
                                       filesize_xml,
                                       Config.get("email.filesize.address"))
 
-            if catalogoue_changes_needed_formatklar > 0:
-                logging.info(f"{catalogoue_changes_needed_formatklar} formatklar catalogue changes needed")
-                print("\n".join(lines_formatklar))
+            if catalog_changes_needed_formatklar > 0:
+                logging.info(f"{catalog_changes_needed_formatklar} formatklar catalog changes needed")
+                logging.info("\n".join(lines_formatklar))
                 Report.emailPlainText("formatklar: ",
                                       "\n".join(lines_formatklar),
                                       Config.get("email.formatklar.address"))
-            if catalogoue_changes_needed_filesize == catalogoue_changes_needed_formatklar == 0:
+            if catalog_changes_needed_filesize == catalog_changes_needed_formatklar == 0:
                 logging.info(f"No catalog changes needed for format {format}")
 
         else:
