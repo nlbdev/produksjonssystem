@@ -194,14 +194,14 @@ class Bibliofil:
 
         if has_epub:
             distribution_formats.append({
-                                        "name": "EPUB",
+                                        "name": "Last ned EPUB",
                                         "format": "epub",
                                         "method": "dl"
                                         })
 
         if has_html:
             distribution_formats.append({
-                                        "name": "HTML",
+                                        "name": "Last ned HTML",
                                         "format": "html",
                                         "method": "dl"
                                         })
@@ -215,7 +215,7 @@ class Bibliofil:
 
         if has_mobi:
             distribution_formats.append({
-                                        "name": "Til MOBI/Kindle-format",
+                                        "name": "Last ned MOBI/Kindle-format",
                                         "format": "mobi",
                                         "method": "dl"
                                         })
