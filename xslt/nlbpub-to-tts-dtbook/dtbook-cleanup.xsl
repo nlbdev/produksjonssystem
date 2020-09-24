@@ -146,9 +146,6 @@
     <xsl:function name="f:lang" as="xs:string">
         <xsl:param name="lang" as="xs:string"/>
         <xsl:choose>
-            <xsl:when test="tokenize($lang,'-')[1] = ('nb','nn')">
-                <xsl:value-of select="'no'"/>
-            </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="tokenize($lang,'-')[1]"/>
             </xsl:otherwise>
