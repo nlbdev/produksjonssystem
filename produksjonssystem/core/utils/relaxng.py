@@ -24,8 +24,8 @@ class Relaxng():
 
         if not cwd:
             assert report.pipeline.dir_in is not None, (
-                "RelaxNG: for pipelines with no input directory, " +
-                "the current working directory needs to be explicitly set."
+                "RelaxNG: for pipelines with no input directory, "
+                + "the current working directory needs to be explicitly set."
             )
             cwd = report.pipeline.dir_in
 
@@ -33,7 +33,7 @@ class Relaxng():
         if not(Xslt.jing_jar is None):
             process = pipeline.utils.filesystem.run(["java", "-jar", Xslt.jing_jar, "-t", relaxng, source])
 
-        if process.returncode == 0:
+            if process.returncode == 0:
                 self.success = True
 
         process_string = (process.stdout.decode("utf-8").strip())
@@ -69,17 +69,17 @@ class Relaxng():
         </html>
         """
         if attach_report:
-                    relaxng_report_dir = os.path.join(report.reportDir(), "relaxng")
-                    os.makedirs(relaxng_report_dir, exist_ok=True)
-                    name = ".".join(os.path.basename(relaxng).split(".")[:-1])
-                    available_path = os.path.join(relaxng_report_dir, "{}.html".format(name))
-                    if os.path.exists(available_path):
-                        for i in range(2, 100000):
-                            available_path = os.path.join(relaxng_report_dir, "{}-{}.html".format(name, i))  # assumes we won't have move than 1000 reports
-                            if not os.path.exists(available_path):
-                                break
-                    if os.path.exists(available_path):
-                        report.warn("Klarte ikke å finne et tilgjengelig filnavn for rapporten")
-                    else:
-                        report.debug("Lagrer rapport som {}".format(available_path))
-                        report.attachment(html, available_path, "SUCCESS" if self.success else "ERROR")
+            relaxng_report_dir = os.path.join(report.reportDir(), "relaxng")
+            os.makedirs(relaxng_report_dir, exist_ok=True)
+            name = ".".join(os.path.basename(relaxng).split(".")[:-1])
+            available_path = os.path.join(relaxng_report_dir, "{}.html".format(name))
+            if os.path.exists(available_path):
+                for i in range(2, 100000):
+                    available_path = os.path.join(relaxng_report_dir, "{}-{}.html".format(name, i))  # assumes we won't have move than 1000 reports
+                    if not os.path.exists(available_path):
+                        break
+            if os.path.exists(available_path):
+                report.warn("Klarte ikke å finne et tilgjengelig filnavn for rapporten")
+            else:
+                report.debug("Lagrer rapport som {}".format(available_path))
+                report.attachment(html, available_path, "SUCCESS" if self.success else "ERROR")
