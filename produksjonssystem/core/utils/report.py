@@ -212,6 +212,11 @@ class Report():
     def emailPlainText(subject, message, recipients, should_email=True):
         assert isinstance(subject, str), "subject must be a str, was: {}".format(type(subject))
         assert isinstance(message, str), "message must be a str, was: {}".format(type(message))
+
+        if recipients is None:
+            logging.info("No recipients given, e-mail won't be sent: '" + subject + "'")
+            return
+
         assert isinstance(recipients, str) or isinstance(recipients, list), (
             "recipients must be a str or list, was: {}".format(type(recipients))
         )
