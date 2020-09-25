@@ -1103,15 +1103,15 @@ class Pipeline():
 
     # This should be overridden
     def on_book_created(self):
-        logging.info("Book created (unhandled book event): "+self.book['name'])
+        logging.info("Book created (unhandled book event): " + self.book['name'])
 
     # This should be overridden
     def on_book_modified(self):
-        logging.info("Book modified (unhandled book event): "+self.book['name'])
+        logging.info("Book modified (unhandled book event): " + self.book['name'])
 
     # This should be overridden
     def on_book_deleted(self):
-        logging.info("Book deleted (unhandled book event): "+self.book['name'])
+        logging.info("Book deleted (unhandled book event): " + self.book['name'])
 
 
 class DummyPipeline(Pipeline):

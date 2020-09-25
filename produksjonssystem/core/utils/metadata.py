@@ -63,6 +63,7 @@ class Metadata:
                     return Metadata.requests_cache[cached_url]["response"]
 
             # cache the response, and return it
+            logging.debug("Updating cache for: {}".format(url))
             Metadata.requests_cache[url] = {
                 "timeout": time.time() + cache_timeout,
                 "response": requests.get(url),
@@ -195,6 +196,7 @@ class Metadata:
         with Metadata._old_books_cachelock:
             if time.time() - Metadata.old_books_last_update > 3600 * 24:
                 editions_url = Config.get("nlb_api_url") + "/editions?limit=-1&editions-metadata=all"
+                logging.debug("Updating old books cache: {}".format(editions_url))
                 response = requests.get(editions_url)
 
                 if response.status_code == 200:
@@ -670,8 +672,8 @@ class Metadata:
                 return True, True
 
         if found_but_deleted is not None:
-            report.info("Metadata for {} finnes i Bibliofil som {}, men katalogposten er slettet. "
-                        + "Boka skal derfor ikke produseres som '{}'.".format(edition_identifier, found_but_deleted, edition_format))
+            report.info("Metadata for {} finnes i Bibliofil som {}, men katalogposten er slettet. ".format(edition_identifier, found_but_deleted)
+                        + "Boka skal derfor ikke produseres som '{}'.".format(edition_format))
             return False, True
 
         report.info("Fant ikke en '{}'-versjon av '{}'. Boka skal derfor ikke produseres som '{}'.".format(edition_format, edition_identifier, edition_format))
@@ -1082,6 +1084,7 @@ class Metadata:
         with Metadata._creative_works_cachelock:
             if time.time() - Metadata.creative_works_last_update > 3600:
                 creative_works_url = Config.get("nlb_api_url") + "/creative-works?limit=-1&editions-metadata=simple"
+                logging.debug("Updating creative works cache: {}".format(creative_works_url))
                 response = requests.get(creative_works_url)
 
                 if response.status_code == 200:
@@ -1102,7 +1105,6 @@ class Metadata:
 
                 else:
                     report.debug("Could not update creative works metadata from: {}".format(creative_works_url))
-
 
     @staticmethod
     def get_creative_work_from_cache(edition_identifier, report=logging):
