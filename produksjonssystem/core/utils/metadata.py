@@ -696,11 +696,9 @@ class Metadata:
 
         found_format = False
         for edition in creative_work["editions"]:
-            if edition["format"] == publication_format:
-                if edition["available"]:
-                    report.info("Boka '{}' ble gjort tilgjengelig for utlån som '{}' i formatet '{}' på datoen '{}'. ".format(
-                                    edition_identifier, edition["identifier"], publication_format, edition["available"])
-                                + "Boka er derfor ferdig produsert.")
+            if edition["format"] == publication_format and not edition["deleted"]:
+                if edition["isAvailable"]:
+                    report.info("Boka er utlånbar, og er derfor ferdig produsert.")
                     return True
                 else:
                     report.info("Boka '{}' er katalogisert som '{}' med formatet '{}' men den er ikke markert som klar til utlån. ".format(
