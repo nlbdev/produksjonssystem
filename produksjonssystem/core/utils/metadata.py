@@ -71,6 +71,10 @@ class Metadata:
 
     @staticmethod
     def get_edition_from_api(edition_identifier, format="json", report=logging, use_cache_if_possible=False):
+        if not Config.get("nlb_api_url"):
+            report.warning("nlb_api_url is not set, unable to get metadata from API")
+            return None
+
         if format == "json" and use_cache_if_possible:
             cached_data = Metadata.get_creative_work_from_cache(edition_identifier, report=report)
             if cached_data and edition_identifier in cached_data["editions"]:
@@ -116,6 +120,10 @@ class Metadata:
 
     @staticmethod
     def get_creative_work_from_api(edition_identifier, editions_metadata="simple", report=logging, use_cache_if_possible=False):
+        if not Config.get("nlb_api_url"):
+            report.warning("nlb_api_url is not set, unable to get metadata from API")
+            return None
+
         if editions_metadata == "simple" and use_cache_if_possible:
             cached_data = Metadata.get_creative_work_from_cache(edition_identifier, report=report)
             if cached_data:
@@ -180,6 +188,10 @@ class Metadata:
 
     @staticmethod
     def refresh_old_books_cache_if_necessary(report=logging):
+        if not Config.get("nlb_api_url"):
+            report.warning("nlb_api_url is not set, unable to get metadata from API")
+            return
+
         with Metadata._old_books_cachelock:
             if time.time() - Metadata.old_books_last_update > 3600 * 24:
                 editions_url = Config.get("nlb_api_url") + "/editions?limit=-1&editions-metadata=all"
@@ -235,6 +247,10 @@ class Metadata:
 
     @staticmethod
     def get_validation_report(edition_identifier, report=logging):
+        if not Config.get("nlb_api_url"):
+            report.warning("nlb_api_url is not set, unable to get metadata from API")
+            return None
+
         edition_url = "{}/editions/{}/metadata-validation-report".format(Config.get("nlb_api_url"), edition_identifier)
 
         report.debug("getting edition metadata validation report from: {}".format(edition_url))
@@ -1059,6 +1075,10 @@ class Metadata:
 
     @staticmethod
     def refresh_creative_work_cache_if_necessary(report=logging):
+        if not Config.get("nlb_api_url"):
+            report.warning("nlb_api_url is not set, unable to get metadata from API")
+            return
+
         with Metadata._creative_works_cachelock:
             if time.time() - Metadata.creative_works_last_update > 3600:
                 creative_works_url = Config.get("nlb_api_url") + "/creative-works?limit=-1&editions-metadata=simple"
