@@ -1080,8 +1080,8 @@ class Metadata:
             report.warning("nlb_api_url is not set, unable to get metadata from API")
             return
 
-        with Metadata._creative_works_cachelock:
-            if time.time() - Metadata.creative_works_last_update > 3600:
+        if time.time() - Metadata.creative_works_last_update > 3600:
+            with Metadata._creative_works_cachelock:
                 creative_works_url = Config.get("nlb_api_url") + "/creative-works?limit=-1&editions-metadata=simple"
                 logging.debug("Updating creative works cache: {}".format(creative_works_url))
                 response = requests.get(creative_works_url)
@@ -1135,17 +1135,17 @@ class Metadata:
     def filter_identifiers(identifiers_in, identifiers_out, format=None, report=logging):
         Metadata.refresh_creative_work_cache_if_necessary(report=report)
 
+        # first, we only care about identifiers that are not present in both directories
+        distinct_identifiers_in = list(set(identifiers_in).difference(set(identifiers_out)))
+        distinct_identifiers_out = list(set(identifiers_out).difference(set(identifiers_in)))
+        identifiers_in = distinct_identifiers_in
+        identifiers_out = distinct_identifiers_out
+
         creative_works_in = {identifier: Metadata.get_creative_work_from_cache(identifier, report=report) for identifier in identifiers_in}
         creative_works_out = [Metadata.get_creative_work_from_cache(identifier, report=report) for identifier in identifiers_out]
 
         for identifier in list(creative_works_in.keys()):
             if creative_works_in[identifier] is None:
-                del creative_works_in[identifier]
-                continue
-
-            if identifier in identifiers_out:
-                # if the same number is present in the list of output identifiers:
-                # don't bother checking other editions of the same creative work
                 del creative_works_in[identifier]
                 continue
 
