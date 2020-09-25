@@ -324,7 +324,7 @@ class Directory():
                             if deep_md5 != self._md5[book]["deep"]:
                                 self._md5[book]["modified"] = int(time.time())
                                 self._update_md5(book)
-                                logging.debug("book modified (and was recently modified, might be in the middle of a copy operation): {}".format(book))
+                                logging.debug("book modified (and was recently modified, might be in the middle of a copy operation): {}".format(book["name"]))
                                 self.notify_book_event_handlers(book, "modified")
 
                         time.sleep(0.1)  # a small nap
