@@ -17,3 +17,5 @@ xslt/**/*-result.xml
 
 .ropeproject
 
+
+.vscode/settings.json
