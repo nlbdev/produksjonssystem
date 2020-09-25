@@ -686,7 +686,7 @@ class Pipeline():
             if not self.dirsAvailable():
                 continue
 
-            retry_interval = 60 * 60  # 1 hour
+            retry_interval = 10 * 60  # 10 minutes
 
             if time.time() - last_retry < retry_interval:
                 continue
@@ -708,7 +708,7 @@ class Pipeline():
             if not self.dirsAvailable():
                 continue
 
-            retry_interval = 60 * 60 * 4  # 4 hours
+            retry_interval = 10 * 60  # 10 minutes
             rescan_interval = 60 * 15  # 15 minutes
             last_retry = {}  # { "[path]": [last-retry] }
 
