@@ -42,6 +42,8 @@ class Metadata:
     _old_books_cachelock = threading.RLock()
 
     creative_works = []
+    creative_works_editions = {}
+    editions = {}
     creative_works_last_update = 0
     _creative_works_cachelock = threading.RLock()
 
@@ -1080,8 +1082,11 @@ class Metadata:
             report.warning("nlb_api_url is not set, unable to get metadata from API")
             return
 
-        if time.time() - Metadata.creative_works_last_update > 3600:
-            with Metadata._creative_works_cachelock:
+        if time.time() - Metadata.creative_works_last_update <= 3600:
+            return  # don't bother waiting for lock
+
+        with Metadata._creative_works_cachelock:
+            if time.time() - Metadata.creative_works_last_update > 3600:
                 creative_works_url = Config.get("nlb_api_url") + "/creative-works?limit=-1&editions-metadata=simple"
                 logging.debug("Updating creative works cache: {}".format(creative_works_url))
                 response = requests.get(creative_works_url)
@@ -1092,6 +1097,17 @@ class Metadata:
 
                         if "data" in ret:
                             Metadata.creative_works = ret["data"]
+                            Metadata.creative_works_editions = {}
+                            Metadata.editions = {}
+                            for cw in Metadata.creative_works:
+                                Metadata.creative_works_editions[cw["identifier"]] = []
+                                for edition in cw["editions"]:
+                                    if not edition["deleted"]:
+                                        Metadata.creative_works_editions[cw["identifier"]].append(edition["identifier"])
+                                        Metadata.editions[edition["identifier"]] = {
+                                            "format": edition["format"],
+                                            "creativeWork": cw["identifier"]
+                                        }
                             Metadata.creative_works_last_update = time.time()
 
                         else:
@@ -1110,6 +1126,10 @@ class Metadata:
         Metadata.refresh_creative_work_cache_if_necessary(report=report)
 
         with Metadata._creative_works_cachelock:
+            # if the edition doesn't exist; don't bother searching for its creative work
+            if edition_identifier not in Metadata.editions:
+                return None
+
             for cw in Metadata.creative_works:
                 match = False
                 for edition in cw["editions"]:
@@ -1141,15 +1161,33 @@ class Metadata:
         identifiers_in = distinct_identifiers_in
         identifiers_out = distinct_identifiers_out
 
-        creative_works_in = {identifier: Metadata.get_creative_work_from_cache(identifier, report=report) for identifier in identifiers_in}
-        creative_works_out = [Metadata.get_creative_work_from_cache(identifier, report=report) for identifier in identifiers_out]
+        creative_works_in = {}
+        creative_works_out = {}
+        with Metadata._creative_works_cachelock:
+            for identifier in identifiers_in:
+                short_identifier = identifier[:6]
+                suffix = identifier[6:]
+                if short_identifier not in Metadata.editions:
+                    continue
+                edition = Metadata.editions[short_identifier]
+                other_identifiers = Metadata.creative_works_editions.get(edition["creativeWork"], [])
+                creative_works_in[short_identifier + suffix] = {
+                    other + suffix: Metadata.editions[other] for other in other_identifiers if other in Metadata.editions
+                }
+
+            for identifier in identifiers_out:
+                short_identifier = identifier[:6]
+                suffix = identifier[6:]
+                if short_identifier not in Metadata.editions:
+                    continue
+                edition = Metadata.editions[short_identifier]
+                other_identifiers = Metadata.creative_works_editions.get(edition["creativeWork"], [])
+                creative_works_out[short_identifier + suffix] = {
+                    other + suffix: Metadata.editions[other] for other in other_identifiers if other in Metadata.editions
+                }
 
         for identifier in list(creative_works_in.keys()):
-            if creative_works_in[identifier] is None:
-                del creative_works_in[identifier]
-                continue
-
-            creative_work_formats = [edition["format"] for edition in creative_works_in[identifier]["editions"] if not edition["deleted"]]
+            creative_work_formats = [creative_works_in[identifier][edition]["format"] for edition in creative_works_in[identifier]]
 
             # check if we should produce the edition in the format `format`
             if format is not None and format not in creative_work_formats:
@@ -1159,22 +1197,19 @@ class Metadata:
             # check if the edition is in identifiers_out
             output_identifier = None
             found = False
-            for creative_work_out in creative_works_out:
-                for edition_out in creative_work_out["editions"]:
-                    if edition_out["deleted"]:
-                        continue
-
+            for identifier_out in creative_works_out:
+                for edition_out in creative_works_out[identifier_out]:
                     if format == edition_out["format"]:
-                        output_identifier = edition_out["identifier"]
+                        output_identifier = identifier_out
 
-                    if identifier == edition_out["identifier"]:
+                    if identifier == identifier_out:
                         found = True
 
                 if found:
                     break
 
             if found and (format is None or output_identifier in identifiers_out or identifier in identifiers_out):
-                # edition is already produced, delete it
+                # edition is already produced, delete it from the list
                 del creative_works_in[identifier]
                 continue
 
