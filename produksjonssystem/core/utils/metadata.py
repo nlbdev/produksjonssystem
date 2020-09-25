@@ -1131,6 +1131,83 @@ class Metadata:
         return None
 
     @staticmethod
+    def filter_identifiers(identifiers, formats=[None], report=logging):
+        Metadata.refresh_creative_work_cache_if_necessary(report=report)
+
+        matching = []
+        matching_deleted = []
+
+        # …since the API doesn't fully support longer edition identifiers yet:
+        long_and_short_identifiers = []
+        for identifier in identifiers:
+            long_and_short_identifiers.append(identifier)
+            if len(identifier) > 6:
+                long_and_short_identifiers.append(identifier[:6])
+
+        with Metadata._creative_works_cachelock:
+            if not Metadata.creative_works:
+                report.warning("no cached creative works, unable to filter")
+                return identifiers
+
+            for cw in Metadata.creative_works:
+                for edition in cw["editions"]:
+                    matches = [i for i in identifiers if i.startswith(edition["identifier"])]
+                    if len(matches) == 0:
+                        continue
+
+                    # None = any format
+                    if None in formats or edition["format"] in formats:
+                        if edition["deleted"]:
+                            matching_deleted.extend(matches)
+                        else:
+                            matching.extend(matches)
+
+        for identifier in identifiers:
+            if identifier.startswith("TEST"):
+                matching.append(identifier)  # books with filenames starting with "TEST" should always be produced
+
+        return (matching, matching_deleted)
+
+    @staticmethod
+    def sort_identifiers(identifiers, report=logging):
+        # Sorts identifiers by the preferred handling order.
+        # The most recently cataloged editions are handled first.
+        # This means that we can convert many old books if necessary,
+        # without blocking newer productions.
+
+        Metadata.refresh_creative_work_cache_if_necessary(report=report)
+
+        sorted = []
+
+        # find registration dates for each identifier
+        with Metadata._creative_works_cachelock:
+            if not Metadata.creative_works:
+                report.warning("no cached creative works, unable to sort")
+                return identifiers
+
+            for cw in Metadata.creative_works:
+                for edition in cw["editions"]:
+                    sort_value = edition["identifier"]
+                    if "registered" in edition and edition["registered"] is not None:
+                        sort_value = edition["registered"]
+                    elif "available" in edition and edition["available"] is not None:
+                        sort_value = edition["available"]
+                    matches = [i for i in identifiers if i.startswith(edition["identifier"])]
+                    for match in matches:
+                        sorted.append((match, sort_value))
+
+        # sort by registration date, then remove the registration date from the list
+        sorted.sort(key=lambda tup: tup[1], reverse=True)
+        sorted = [tup[0] for tup in sorted]
+
+        # append any identifiers we couldn't find a registration date for at the end of the list
+        for identifier in identifiers:
+            if identifier not in sorted:
+                sorted.append(identifier)
+
+        return sorted
+
+    @staticmethod
     def suggest_similar_editions(edition_identifier, edition_format=None, limit=10, report=logging):
         Metadata.refresh_creative_work_cache_if_necessary(report=report)
 

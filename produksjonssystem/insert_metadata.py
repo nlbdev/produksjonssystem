@@ -84,49 +84,8 @@ class InsertMetadata(Pipeline):
 
         self.utils.report.title = "{}: {} har fått {}-spesifikk metadata og er klar til å produseres 👍😄 {}".format(
             self.title, epub.identifier(), self.publication_format, temp_epub.meta("dc:title"))
+
         return True
-
-    def should_retry_book(self, source):
-        if not self.logPipeline:
-            self.logPipeline = DummyPipeline(uid=self.uid + "-dummylogger", title=self.title + " dummy logger", inherit_config_from=self)
-
-        # To be able to extract <should_retry_book>…</should_retry_book> from the logs
-        # for easier debugging of why books are not produced.
-        self.logPipeline.utils.report.debug("<should_retry_book>")
-
-        identifier = Path(source).stem
-        assert len(identifier) > 0, "identifier can not be empty"  # just a precaution, should never happen
-
-        if not self.retry_old and Metadata.is_old(identifier, report=self.logPipeline.utils.report):
-            self.logPipeline.utils.report.info("'{}' er gammel. Boken blir ikke automatisk trigget.".format(identifier))
-            self.logPipeline.utils.report.debug("</should_retry_book>")
-            return False
-
-        should_produce, _ = Metadata.should_produce(identifier,
-                                                    self.publication_format,
-                                                    report=self.logPipeline.utils.report,
-                                                    skip_metadata_validation=True,
-                                                    use_cache_if_possible=True)
-        production_complete = False if self.retry_complete else Metadata.production_complete(identifier,
-                                                                                             self.publication_format,
-                                                                                             report=self.logPipeline.utils.report,
-                                                                                             use_cache_if_possible=True)
-
-        if not should_produce:
-            self.logPipeline.utils.report.info("'{}' skal ikke produseres. Boken blir ikke automatisk trigget.".format(identifier))
-            self.logPipeline.utils.report.debug("</should_retry_book>")
-            return False
-
-        elif production_complete:
-            self.logPipeline.utils.report.info("'{}' er allerede ferdig produsert. Boken blir ikke automatisk trigget.".format(identifier))
-            self.logPipeline.utils.report.debug("</should_retry_book>")
-            return False
-
-        else:
-            # should_produce and not production_complete
-            self.logPipeline.utils.report.debug("'{}' skal prøves på nytt.".format(identifier))
-            self.logPipeline.utils.report.debug("</should_retry_book>")
-            return True
 
 
 class InsertMetadataDaisy202(InsertMetadata):

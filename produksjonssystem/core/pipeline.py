@@ -724,10 +724,35 @@ class Pipeline():
             filenames = None
             total = None
             try:
-                filenames = Filesystem.list_book_dir(self.dir_in)
+                # list files and directories
+                filenames_in = Filesystem.list_book_dir(self.dir_in)
+                filenames_out = Filesystem.list_book_dir(self.dir_out, subdirs=self.parentdirs)
+
+                # only use file stems (i.e. "123" instead of "123.epub")
+                identifiers_in = [filename.split(".")[0] for filename in filenames_in]
+                identifiers_out = [filename.split("/")[-1].split(".")[0] for filename in filenames_out]
+
+                # only use identifiers that exist in the catalog
+                (identifiers_in, _) = Metadata.filter_identifiers(identifiers_in)
+                (identifiers_out, _) = Metadata.filter_identifiers(identifiers_out, formats=["EPUB", self.publication_format])
+
+                # exclude list of identifiers in output directory from identifiers in input directory
+                missing_identifiers = list(set(identifiers_in).difference(set(identifiers_out)))
+                missing_identifiers = Metadata.sort_identifiers(missing_identifiers)
+                filenames = []
+                for identifier in missing_identifiers:
+                    if identifier in filenames_in:
+                        filenames.append(identifier)
+                    else:
+                        # find full filename in case of file extensions (i.e. "123.epub" instead of "123")
+                        for filename in filenames_in:
+                            if identifier == filename.split(".")[0]:
+                                filenames.append(filename)
+                                break
+
+                # make filenames into absolute paths
+                filenames = [os.path.join(self.dir_in, filename) for filename in filenames]
                 total = len(filenames)
-                filenames = [os.path.join(self.dir_in, fileName) for fileName in filenames]
-                shuffle(filenames)  # retry books in random order
             except Exception:
                 logging.exception("En feil oppstod ved opplisting av filer i: {}".format(self.dir_in))
                 continue
@@ -736,7 +761,9 @@ class Pipeline():
                 counter += 1
 
                 try:
-                    self.considering_retry_book = "Vurderer {} av {}".format(counter, total)
+                    filename = os.path.basename(path)
+
+                    self.considering_retry_book = "Prøver {} ({} av {})".format(filename, counter, total)
                     logging.debug(self.considering_retry_book)
 
                     if path in last_retry:
@@ -748,53 +775,14 @@ class Pipeline():
 
                     if not (self.dirsAvailable() and self.shouldRun):
                         break  # break loop if we're shutting down the system or directory is unavailable
-                    fileName = Path(path).name
-                    fileStem = Path(path).stem
-                    edition_identifiers = [fileStem]
 
-                    book_path = None
+                    should_retry = self.should_retry_book(path)
 
-                    # Try with the same identifier as the input (i.e. don't lookup metadata in Bibliofil).
-                    # This can save a lot of time in most pipelines as the same identifier is used in both the input and output directories.
-                    try:
-                        book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
-
-                    except Exception:
-                        logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
-                        continue
-
-                    # If we didn't find the book in the output directory, and `check_identifiers` is True, find all possible identifiers
-                    if book_path is None and self.check_identifiers:
-                        found_identifiers = None
-                        for identifier in edition_identifiers:
-                            found_identifiers = Metadata.get_identifiers(identifier, use_cache_if_possible=True)
-                            if found_identifiers:
-                                break
-                        if found_identifiers:
-                            edition_identifiers = found_identifiers
-
-                        try:
-                            book_path = Filesystem.book_path_in_dir(self.dir_out, edition_identifiers, subdirs=self.parentdirs)
-
-                        except Exception:
-                            logging.exception("Retry missing-tråden feilet under søking etter filer i ut-mappa for: " + self.title)
-                            continue
-
-                    if book_path is None:
-                        self.considering_retry_book = "Vurderer {} ({} av {})".format(os.path.basename(path), counter, total)
-                        logging.debug(self.considering_retry_book)
-                        should_retry = False
-                        try:
-                            should_retry = self.should_retry_book(path)
-                        except Exception:
-                            logging.exception("Retry missing-tråden feilet når den forsøkte å finne ut om boken skal prøves på nytt: " + self.title)
-                            continue
-
-                        if should_retry:
-                            logging.info(fileName + " finnes ikke i ut-mappen. Trigger denne boken.")
-                            self.trigger(fileName)
-                        else:
-                            logging.info(fileName + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
+                    if should_retry:
+                        logging.info(filename + " finnes ikke i ut-mappen. Trigger denne boken.")
+                        self.trigger(filename)
+                    else:
+                        logging.info(filename + " finnes ikke i ut-mappen, men trigger alikevel ikke denne.")
 
                 except Exception:
                     logging.exception("Retry missing-tråden feilet for: {}".format(self.title))
@@ -830,8 +818,18 @@ class Pipeline():
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
 
                     # process books that were started manually first (manual trigger or book modification)
+                    # process autotriggered books in the order they were cataloged in
                     books_autotriggered = [b for b in books if Pipeline.get_main_event(b) == "autotriggered"]
-                    shuffle(books_autotriggered)  # process autotriggered books in random order
+                    autotriggered_identifiers = [b["name"] for b in books]
+                    autotriggered_identifiers = Metadata.sort_identifiers(autotriggered_identifiers)
+                    books_autotriggered_sorted = []
+                    for identifier in autotriggered_identifiers:
+                        for b in books_autotriggered:
+                            if b["name"] == identifier:
+                                books_autotriggered_sorted.append(b)
+                                break
+                    books_autotriggered = books_autotriggered_sorted
+
                     books_manual = [b for b in books if Pipeline.get_main_event(b) != "autotriggered"]
                     books_manual = sorted(books_manual, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
                     books = books_manual
