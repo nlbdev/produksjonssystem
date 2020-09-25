@@ -35,7 +35,12 @@ class Mathml_to_text():
             tree = etree.parse(source)
 
             root = tree.getroot()
-            map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml', "xml": "http://www.w3.org/XML/1998/namespace"}
+            map = {
+                'epub': 'http://www.idpf.org/2007/ops',
+                'm': "http://www.w3.org/1998/Math/MathML",
+                None: 'http://www.w3.org/1999/xhtml',
+                "xml": "http://www.w3.org/XML/1998/namespace"
+            }
 
             mathML_elements = root.findall(".//m:math", map)
 
@@ -43,6 +48,17 @@ class Mathml_to_text():
                 self.report.info("No MathML elements found in document")
 
             for element in mathML_elements:
+                if not pipeline.shouldRun:
+                    # converting all MathML elements can take a long time,
+                    # so if we're shutting down the system while converting
+                    # MathML, we'll just make this conversion fail.
+                    self.success = False
+                    break
+
+                # converting all MathML elements can take a long time,
+                # so run watchdog_bark here.
+                pipeline.watchdog_bark()
+
                 parent = element.getparent()
 
                 if "{http://www.w3.org/XML/1998/namespace}lang" not in element.attrib:
