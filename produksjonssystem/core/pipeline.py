@@ -733,11 +733,9 @@ class Pipeline():
                 identifiers_out = [filename.split("/")[-1].split(".")[0] for filename in filenames_out]
 
                 # only use identifiers that exist in the catalog
-                (identifiers_in, _) = Metadata.filter_identifiers(identifiers_in)
-                (identifiers_out, _) = Metadata.filter_identifiers(identifiers_out, formats=["EPUB", self.publication_format])
+                missing_identifiers = Metadata.filter_identifiers(identifiers_in, identifiers_out, format=self.publication_format)
 
                 # exclude list of identifiers in output directory from identifiers in input directory
-                missing_identifiers = list(set(identifiers_in).difference(set(identifiers_out)))
                 missing_identifiers = Metadata.sort_identifiers(missing_identifiers)
                 filenames = []
                 for identifier in missing_identifiers:

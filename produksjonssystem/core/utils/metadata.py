@@ -1132,42 +1132,59 @@ class Metadata:
         return None
 
     @staticmethod
-    def filter_identifiers(identifiers, formats=[None], report=logging):
+    def filter_identifiers(identifiers_in, identifiers_out, format=None, report=logging):
         Metadata.refresh_creative_work_cache_if_necessary(report=report)
 
-        matching = []
-        matching_deleted = []
+        creative_works_in = {identifier: Metadata.get_creative_work_from_cache(identifier, report=report) for identifier in identifiers_in}
+        creative_works_out = [Metadata.get_creative_work_from_cache(identifier, report=report) for identifier in identifiers_out]
 
-        # …since the API doesn't fully support longer edition identifiers yet:
-        long_and_short_identifiers = []
-        for identifier in identifiers:
-            long_and_short_identifiers.append(identifier)
-            if len(identifier) > 6:
-                long_and_short_identifiers.append(identifier[:6])
+        for identifier in list(creative_works_in.keys()):
+            if creative_works_in[identifier] is None:
+                del creative_works_in[identifier]
+                continue
 
-        with Metadata._creative_works_cachelock:
-            if not Metadata.creative_works:
-                report.warning("no cached creative works, unable to filter")
-                return identifiers
+            if identifier in identifiers_out:
+                # if the same number is present in the list of output identifiers:
+                # don't bother checking other editions of the same creative work
+                del creative_works_in[identifier]
+                continue
 
-            for cw in Metadata.creative_works:
-                for edition in cw["editions"]:
-                    matches = [i for i in identifiers if i.startswith(edition["identifier"])]
-                    if len(matches) == 0:
+            creative_work_formats = [edition["format"] for edition in creative_works_in[identifier]["editions"] if not edition["deleted"]]
+
+            # check if we should produce the edition in the format `format`
+            if format is not None and format not in creative_work_formats:
+                del creative_works_in[identifier]
+                continue
+
+            # check if the edition is in identifiers_out
+            output_identifier = None
+            found = False
+            for creative_work_out in creative_works_out:
+                for edition_out in creative_work_out["editions"]:
+                    if edition_out["deleted"]:
                         continue
 
-                    # None = any format
-                    if None in formats or edition["format"] in formats:
-                        if edition["deleted"]:
-                            matching_deleted.extend(matches)
-                        else:
-                            matching.extend(matches)
+                    if format == edition_out["format"]:
+                        output_identifier = edition_out["identifier"]
 
-        for identifier in identifiers:
-            if identifier.startswith("TEST"):
-                matching.append(identifier)  # books with filenames starting with "TEST" should always be produced
+                    if identifier == edition_out["identifier"]:
+                        found = True
 
-        return (matching, matching_deleted)
+                if found:
+                    break
+
+            if found and (format is None or output_identifier in identifiers_out or identifier in identifiers_out):
+                # edition is already produced, delete it
+                del creative_works_in[identifier]
+                continue
+
+        missing_identifiers = list(creative_works_in.keys())
+
+        for identifier in identifiers_in:
+            if identifier.startswith("TEST") and identifier not in identifiers_out:
+                missing_identifiers.append(identifier)  # books with filenames starting with "TEST" should always be produced
+
+        return missing_identifiers
 
     @staticmethod
     def sort_identifiers(identifiers, report=logging):
