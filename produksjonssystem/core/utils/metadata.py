@@ -78,10 +78,11 @@ class Metadata:
 
         if format == "json" and use_cache_if_possible:
             cached_data = Metadata.get_creative_work_from_cache(edition_identifier, report=report)
-            if cached_data and edition_identifier in cached_data["editions"]:
-                return cached_data["editions"][edition_identifier]
-            else:
-                report.debug("Could not find the creative work for '{}' in the cache. Will have to try the API directly instead.".format(edition_identifier))
+            for edition in cached_data["editions"]:
+                if edition["identifier"] == edition_identifier:
+                    return edition
+            report.debug("Could not find the creative work for '{}' in the cache.".format(edition_identifier))
+            return None
 
         if format == "json":
             edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), edition_identifier)
