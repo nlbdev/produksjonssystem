@@ -30,6 +30,7 @@ class PrepareForEbook(Pipeline):
     expected_processing_time = 260
 
     css_tempfile_obj = None
+    css_tempfile_statped_obj = None
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -140,15 +141,15 @@ class PrepareForEbook(Pipeline):
         library = temp_epub.meta("schema:library")
         library = library.upper() if library else library
         logo = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}_logo.png".format(library))
-        stylesheet = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}.css".format(library))
 
         if os.path.isfile(logo):
             shutil.copy(logo, os.path.join(html_dir, os.path.basename(logo)))
 
-        PrepareForEbook.update_css(libary)
+        PrepareForEbook.update_css()
 
-        if not os.path.isfile(stylesheet):
-            stylesheet = PrepareForEbook.css_tempfile_obj.name
+        stylesheet = PrepareForEbook.css_tempfile_obj.name
+        if library is not None and library.lower() == "statped":
+            stylesheet = PrepareForEbook.css_tempfile_statped_obj.name
         shutil.copy(stylesheet, os.path.join(html_dir, "ebok.css"))
 
         self.utils.report.info("Legger til logoen i OPF-manifestet")
@@ -257,11 +258,14 @@ class PrepareForEbook(Pipeline):
         return True
 
     @staticmethod
-    def update_css(library):
+    def update_css():
         if PrepareForEbook.css_tempfile_obj is None:
             PrepareForEbook.css_tempfile_obj = tempfile.NamedTemporaryFile()
+        if PrepareForEbook.css_tempfile_statped_obj is None:
+            PrepareForEbook.css_tempfile_statped_obj = tempfile.NamedTemporaryFile()
 
         css_tempfile = PrepareForEbook.css_tempfile_obj.name
+        css_tempfile_statped = PrepareForEbook.css_tempfile_statped_obj.name
 
         stat = os.stat(css_tempfile)
         st_size = stat.st_size
@@ -271,17 +275,20 @@ class PrepareForEbook(Pipeline):
             if st_size == 0:
                 default_path = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "ebok.css")
                 shutil.copy(default_path, css_tempfile)
-            
-            # get correct stylesheet
-            if libary is not None and library.lower() == "statped":
-                latest_url = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
-            else:
-                latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/v1.1.1/epub.min.css"
-            
+
+            latest_url_statped = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
+
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/v1.1.1/epub.min.css"
+
             response = requests.get(latest_url)
+            response_statped = requests.get(latest_url_statped)
             if response.status_code == 200:
                 with open(css_tempfile, "wb") as target_file:
                     target_file.write(response.content)
+
+            if response_statped.status_code == 200:
+                with open(css_tempfile_statped, "wb") as target_file_statped:
+                    target_file_statped.write(response_statped.content)
 
 
 if __name__ == "__main__":
