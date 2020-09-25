@@ -504,7 +504,16 @@ class Filesystem():
         return None
 
     @staticmethod
-    def list_book_dir(dir):
+    def list_book_dir(dir, subdirs=None):
+        if subdirs:
+            combined = []
+            for p in subdirs:
+                subdir = subdirs[p]
+                subdirpath = os.path.join(dir, subdir)
+                for filename in Filesystem.list_book_dir(subdirpath):
+                    combined.append(os.path.join(subdir, filename))
+            return combined
+
         dirlist = os.listdir(dir)
 
         if threading.current_thread().getName().endswith("event in nlbpub") and dir.endswith("master/NLBPUB/"):  # debugging strange bug
