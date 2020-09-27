@@ -1198,7 +1198,10 @@ class Metadata:
             output_identifier = None
             found = False
             for identifier_out in creative_works_out:
-                for edition_out in creative_works_out[identifier_out]:
+                creative_work_out = creative_works_out[identifier_out]
+                for edition_identifier_out in creative_work_out:
+                    edition_out = creative_work_out[edition_identifier_out]
+
                     if format == edition_out["format"]:
                         output_identifier = identifier_out
 
