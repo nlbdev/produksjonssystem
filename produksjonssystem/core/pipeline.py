@@ -715,6 +715,16 @@ class Pipeline():
             if time.time() - last_rescan < rescan_interval:
                 continue
 
+            # Check if there are autotriggered books already in the queue,
+            # and if so, wait 60 seconds until checking again.
+            # If there are autotriggered books in the queue, then we want
+            # the pipeline to finish processing them before we add more.
+            with self._queue_lock:
+                for book in self._queue:
+                    if Pipeline.get_main_event(book) == "autotriggered":
+                        last_rescan += 60
+                        continue
+
             last_rescan = time.time()
 
             for path in list(last_retry.keys()):  # use .keys() to be able to delete from dict
