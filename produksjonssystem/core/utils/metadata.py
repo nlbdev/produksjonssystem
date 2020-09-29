@@ -86,6 +86,7 @@ class Metadata:
             report.debug("Could not find the creative work for '{}' in the cache.".format(edition_identifier))
             return None
 
+        edition_url = None
         if format == "json":
             edition_url = "{}/editions/{}".format(Config.get("nlb_api_url"), edition_identifier)
         else:
@@ -111,7 +112,10 @@ class Metadata:
 
         if response is not None and response.status_code == 200:
             if format == "json":
-                result = response.json()["data"]
+                response_json = response.json()
+                if "data" not in response_json:
+                    raise Exception("No 'data' in response: {}".format(edition_url))
+                result = response_json["data"]
                 result["identifier"] = edition_identifier  # in case of 12 digit identifiers
             else:
                 result = response.text
