@@ -78,7 +78,6 @@ environment = {
     "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
     "REPORTS_DIR": "/tmp/prodsys-rapporter",  # always the same, so that it's easier to view the dashboard(s)
     "DEBUG": "true",
-    "ORIGINAL_ISBN_CSV": os.path.join(os.path.dirname(__file__), "original-isbn.csv"),
     "CONFIG_FILE": os.path.join(os.path.dirname(__file__), "produksjonssystem.yaml"),
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
     "STOP_AFTER_FIRST_JOB": "true",
@@ -89,6 +88,16 @@ environment = {
     "REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS": "none none none",
     "REMOTE_PIPELINE2_WS_ENDPOINTS": "http://nlbdocker-dev.lx.nb.no:18150/ws http://nlbdocker-dev.lx.nb.no:18151/ws "
                                      + "http://nlbdocker-dev.lx.nb.no:18160/ws http://nlbdocker-dev.lx.nb.no:18170/ws",
+    "MAIL_SERVER":"",
+    "MAIL_PORT":"",
+    "MAIL_USERNAME":"",
+    "MAIL_PASSWORD":"",
+    "MAIL_FORMATKLAR":"",
+    "MAIL_FILESIZE":"",
+    "ALLOWED_EMAIL_ADDRESSES_IN_TEST":"",
+    "AIRBRAKE_ENVIRONMENT":"dev",
+    "AIRBRAKE_PROJECT_ID":"",
+    "AIRBRAKE_PROJECT_KEY":"",
 }
 
 book_archive_dirs = {}
