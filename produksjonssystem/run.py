@@ -296,7 +296,7 @@ class Produksjonssystem():
             [NlbpubToPef(retry_missing=True,
                          check_identifiers=True,
                          during_working_hours=True),            "pub-ready-braille",   "pef"],
-            [CheckPef(),                                        "pef",                 "pef-checked"],
+            # [CheckPef(),                                        "pef",                 "pef-checked"],
 
             # innlest lydbok
             [InsertMetadataDaisy202(retry_missing=True,
