@@ -554,7 +554,7 @@ class Filesystem():
 
     @staticmethod
     def book_path_in_dir(dir, identifiers, subdirs=None):
-        # check "pipelien parent directories" (i.e. subdirectories)
+        # check "pipeline parent directories" (i.e. subdirectories)
         if isinstance(subdirs, dict) and len(subdirs) >= 1:
             for key in subdirs:
                 for name in Filesystem.list_book_dir(os.path.join(dir, subdirs[key])):
