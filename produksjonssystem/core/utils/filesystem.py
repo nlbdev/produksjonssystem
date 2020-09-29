@@ -172,7 +172,12 @@ class Filesystem():
 
         # use shutil.copytree if the target does not exist yet (no need to merge copy)
         if not os.path.exists(dst):
-            return shutil.copytree(src, dst, ignore=Filesystem.shutil_ignore_patterns)
+            try:
+                return shutil.copytree(src, dst, ignore=Filesystem.shutil_ignore_patterns)
+            except shutil.Error:
+                short_src = os.path.sep.join(src.split(os.path.sep)[:3]) + os.path.sep + "…"
+                short_dst = os.path.sep.join(dst.split(os.path.sep)[:3]) + os.path.sep + "…"
+                raise Exception("An error occured while copying from {} to {}".format(short_src, short_dst))
 
         src_list = os.listdir(src)
         dst_list = os.listdir(dst)
@@ -186,7 +191,13 @@ class Filesystem():
             if item not in ignore:
                 if os.path.isdir(src_subpath):
                     if item not in dst_list:
-                        shutil.copytree(src_subpath, dst_subpath, ignore=Filesystem.shutil_ignore_patterns)
+                        try:
+                            shutil.copytree(src_subpath, dst_subpath, ignore=Filesystem.shutil_ignore_patterns)
+                        except shutil.Error:
+                            short_src = os.path.sep.join(src.split(os.path.sep)[:3]) + os.path.sep + "…"
+                            short_dst = os.path.sep.join(dst.split(os.path.sep)[:3]) + os.path.sep + "…"
+                            raise Exception("An error occured while copying from {} to {}".format(short_src, short_dst))
+
                     else:
                         self.copytree(src_subpath, dst_subpath)
                 else:
