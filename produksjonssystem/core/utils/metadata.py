@@ -432,7 +432,7 @@ class Metadata:
             signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
 
             normarc_report.email(signatureRegistrationAddress,
-                                 subject="Validering av katalogpost: {}".format(edition_identifier[:6]))
+                                 subject="Validering av katalogpost: {} 😭👎".format(edition_identifier[:6]))
             report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
                 ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
 
