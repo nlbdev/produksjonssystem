@@ -1166,7 +1166,7 @@ class Metadata:
         identifiers_out = distinct_identifiers_out
 
         creative_works_in = {}
-        creative_works_out = {}
+        creative_works_out = []
         with Metadata._creative_works_cachelock:
             for identifier in identifiers_in:
                 short_identifier = identifier[:6]
@@ -1186,9 +1186,9 @@ class Metadata:
                     continue
                 edition = Metadata.editions[short_identifier]
                 other_identifiers = Metadata.creative_works_editions.get(edition["creativeWork"], [])
-                creative_works_out[short_identifier + suffix] = {
+                creative_works_out.append({
                     other + suffix: Metadata.editions[other] for other in other_identifiers if other in Metadata.editions
-                }
+                })
 
         for identifier in list(creative_works_in.keys()):
             creative_work_formats = [creative_works_in[identifier][edition]["format"] for edition in creative_works_in[identifier]]
@@ -1198,25 +1198,8 @@ class Metadata:
                 del creative_works_in[identifier]
                 continue
 
-            # check if the edition is in identifiers_out
-            output_identifier = None
-            found = False
-            for identifier_out in creative_works_out:
-                creative_work_out = creative_works_out[identifier_out]
-                for edition_identifier_out in creative_work_out:
-                    edition_out = creative_work_out[edition_identifier_out]
-
-                    if format == edition_out["format"]:
-                        output_identifier = identifier_out
-
-                    if identifier == identifier_out:
-                        found = True
-
-                if found:
-                    break
-
-            if found and (format is None or output_identifier in identifiers_out or identifier in identifiers_out):
-                # edition is already produced, delete it from the list
+            # check if the creative work is already in creative_works_out (using the identifier for another format)
+            if creative_works_in[identifier] in creative_works_out:
                 del creative_works_in[identifier]
                 continue
 
