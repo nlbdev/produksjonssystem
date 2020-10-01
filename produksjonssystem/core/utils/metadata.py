@@ -152,8 +152,10 @@ class Metadata:
         response = Metadata.requests_get(creative_work_url)
         if response.status_code == 200:
             response_json = response.json()
-            report.debug("response as JSON:")
-            report.debug(response_json)
+            if "data" not in response_json:
+                report.debug("response as JSON:")
+                report.debug(response_json)
+                raise Exception("No 'data' in response: {}".format(creative_work_url))
             data = response_json['data']
             for e in data["editions"]:
                 if len(e["identifier"]) == 6:
