@@ -199,7 +199,12 @@ class PrepareForEbook(Pipeline):
             response = requests.get(edition_url)
             self.utils.report.debug("looking for cover image in: {}".format(edition_url))
             if response.status_code == 200:
-                data = response.json()['data']
+                response_json = response.json()
+                if "data" not in response_json:
+                    self.utils.report.debug("response as JSON:")
+                    self.utils.report.debug(response_json)
+                    raise Exception("No 'data' in response: {}".format(edition_url))
+                data = response_json["data"]
                 cover_url = data["coverUrlLarge"]
                 if cover_url is not None and cover_url.startswith("http"):
                     response = requests.get(cover_url)
