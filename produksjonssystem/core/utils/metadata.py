@@ -115,7 +115,7 @@ class Metadata:
                 response_json = response.json()
                 if "data" not in response_json:
                     report.debug("response as JSON:")
-                    report.debug(response_json)
+                    report.debug(str(response_json))
                     raise Exception("No 'data' in response: {}".format(edition_url))
                 result = response_json["data"]
                 result["identifier"] = edition_identifier  # in case of 12 digit identifiers
@@ -154,7 +154,7 @@ class Metadata:
             response_json = response.json()
             if "data" not in response_json:
                 report.debug("response as JSON:")
-                report.debug(response_json)
+                report.debug(str(response_json))
                 raise Exception("No 'data' in response: {}".format(creative_work_url))
             data = response_json['data']
             for e in data["editions"]:

@@ -202,7 +202,7 @@ class PrepareForEbook(Pipeline):
                 response_json = response.json()
                 if "data" not in response_json:
                     self.utils.report.debug("response as JSON:")
-                    self.utils.report.debug(response_json)
+                    self.utils.report.debug(str(response_json))
                     raise Exception("No 'data' in response: {}".format(edition_url))
                 data = response_json["data"]
                 cover_url = data["coverUrlLarge"]
