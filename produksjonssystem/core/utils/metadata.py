@@ -151,7 +151,10 @@ class Metadata:
         report.debug("getting creative work metadata from: {}".format(creative_work_url))
         response = Metadata.requests_get(creative_work_url)
         if response.status_code == 200:
-            data = response.json()['data']
+            response_json = response.json()
+            report.debug("response as JSON:")
+            report.debug(response_json)
+            data = response_json['data']
             for e in data["editions"]:
                 if len(e["identifier"]) == 6:
                     e["identifier"] += edition_identifier[6:]  # assume the same trailing digits for all editions
