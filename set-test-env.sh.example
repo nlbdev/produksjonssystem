@@ -6,6 +6,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export TEST=true
 
 export NLB_API_URL=https://api.nlb.no/v1
+export HOST=0.0.0.0
+export PORT=3875
 
 export MAIL_SERVER=""
 export MAIL_PORT="25"
