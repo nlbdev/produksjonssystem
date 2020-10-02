@@ -80,6 +80,13 @@ class API():
                               self.update,
                               methods=["GET", "PUT"])
 
+        self.app.add_url_rule(self.root_path+"/lines/",
+                              "lines",
+                              self.lines)
+        self.app.add_url_rule(self.root_path+"/lines/<line_id>/",
+                              "line",
+                              self.line)
+
         self.app.add_url_rule(self.root_path+"/pipelines/",  # deprecated
                               "steps",
                               self.steps)
@@ -210,6 +217,14 @@ class API():
             return jsonify(process.stdout.decode("utf-8")), 200
         else:
             return jsonify(process.stderr.decode("utf-8")), 500
+
+    # endpoint: /lines
+    def lines(self):
+        return "TODO"
+
+    # endpoint: /lines/<line_id>
+    def line(self, line_id):
+        return "TODO"
 
     # endpoint: /steps
     def steps(self):
