@@ -80,10 +80,6 @@ class API():
                               self.update,
                               methods=["GET", "PUT"])
 
-        self.app.add_url_rule(self.root_path+"/creative-works/",
-                              "creative-works",
-                              self.creativeWorks)
-
         self.app.add_url_rule(self.root_path+"/pipelines/",  # deprecated
                               "steps",
                               self.steps)
@@ -139,6 +135,10 @@ class API():
         self.app.add_url_rule(self.root_path+"/directories/<directory_id>/editions/",
                               "directory_editions",
                               self.directory_editions)
+
+        self.app.add_url_rule(self.root_path+"/creative-works/",
+                              "creative-works",
+                              self.creativeWorks)
 
         self.app.add_url_rule(self.root_path+"/editions/<edition_id>/reports/",
                               "reports",
@@ -210,11 +210,6 @@ class API():
             return jsonify(process.stdout.decode("utf-8")), 200
         else:
             return jsonify(process.stderr.decode("utf-8")), 500
-
-    # endpoint: /creative-works
-    def creativeWorks(self):
-        # [ "<isbn>", "<isbn>", "<isbn>", "-<edition_id>", "-<edition_id>", "-<edition_id>" ]
-        return "TODO"
 
     # endpoint: /steps
     def steps(self):
@@ -387,6 +382,11 @@ class API():
                 pipeline.trigger(edition_id, auto=False)
                 result.append(pipeline.uid)
         return jsonify(result)
+
+    # endpoint: /creative-works
+    def creativeWorks(self):
+        # [ "<isbn>", "<isbn>", "<isbn>", "-<edition_id>", "-<edition_id>", "-<edition_id>" ]
+        return "TODO"
 
     def reports(self, edition_id):
         path = Config.get("reports_dir")
