@@ -84,29 +84,48 @@ class API():
                               "creative-works",
                               self.creativeWorks)
 
-        self.app.add_url_rule(self.root_path+"/pipelines/",
-                              "pipelines",
-                              self.pipelines)
+        self.app.add_url_rule(self.root_path+"/pipelines/",  # deprecated
+                              "steps",
+                              self.steps)
+        self.app.add_url_rule(self.root_path+"/steps/",
+                              "steps",
+                              self.steps)
 
-        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/",
-                              "pipeline",
-                              self.pipeline)
+        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/",  # deprecated
+                              "step",
+                              self.step)
+        self.app.add_url_rule(self.root_path+"/steps/<pipeline_id>/",
+                              "step",
+                              self.step)
 
-        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/creative-works/",
-                              "pipeline_creativeWorks",
-                              self.pipeline_creativeWorks)
+        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/creative-works/",  # deprecated
+                              "step_creativeWorks",
+                              self.step_creativeWorks)
+        self.app.add_url_rule(self.root_path+"/steps/<pipeline_id>/creative-works/",
+                              "step_creativeWorks",
+                              self.step_creativeWorks)
 
-        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/editions/",
-                              "pipeline_editions",
-                              self.pipeline_editions)
+        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/editions/",  # deprecated
+                              "step_editions",
+                              self.step_editions)
+        self.app.add_url_rule(self.root_path+"/steps/<pipeline_id>/editions/",
+                              "step_editions",
+                              self.step_editions)
 
-        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/editions/<edition_id>/",
-                              "pipeline_edition",
-                              self.pipeline_edition)
+        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/editions/<edition_id>/",  # deprecated
+                              "step_edition",
+                              self.step_edition)
+        self.app.add_url_rule(self.root_path+"/steps/<pipeline_id>/editions/<edition_id>/",
+                              "step_edition",
+                              self.step_edition)
 
-        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/editions/<edition_id>/trigger/",
-                              "pipeline_trigger",
-                              self.pipeline_trigger,
+        self.app.add_url_rule(self.root_path+"/pipelines/<pipeline_id>/editions/<edition_id>/trigger/",  # deprecated
+                              "step_trigger",
+                              self.step_trigger,
+                              methods=["GET", "POST"])
+        self.app.add_url_rule(self.root_path+"/steps/<pipeline_id>/editions/<edition_id>/trigger/",
+                              "step_trigger",
+                              self.step_trigger,
                               methods=["GET", "POST"])
 
         self.app.add_url_rule(self.root_path+"/directories/",
@@ -197,15 +216,15 @@ class API():
         # [ "<isbn>", "<isbn>", "<isbn>", "-<edition_id>", "-<edition_id>", "-<edition_id>" ]
         return "TODO"
 
-    # endpoint: /pipelines
-    def pipelines(self):
+    # endpoint: /steps
+    def steps(self):
         result = {}
         for pipeline in Pipeline.pipelines:
             result[pipeline.uid] = pipeline.title
         return jsonify(result)
 
-    # endpoint: /pipelines/<pipeline_id>
-    def pipeline(self, pipeline_id):
+    # endpoint: /step/<pipeline_id>
+    def step(self, pipeline_id):
         pipeline = [pipeline for pipeline in Pipeline.pipelines if pipeline.uid == pipeline_id]
         pipeline = pipeline[0] if pipeline else None
 
@@ -233,13 +252,13 @@ class API():
             "queue": pipeline.get_queue()
         })
 
-    # endpoint: /pipelines/<pipeline_id>/creative-works
-    def pipeline_creativeWorks(self, pipeline_id):
+    # endpoint: /steps/<pipeline_id>/creative-works
+    def step_creativeWorks(self, pipeline_id):
         # { "<edition_id>": }
         return "TODO"
 
-    # endpoint: /pipelines/<pipeline_id>/editions
-    def pipeline_editions(self, pipeline_id):
+    # endpoint: /steps/<pipeline_id>/editions
+    def step_editions(self, pipeline_id):
         pipeline = [pipeline for pipeline in Pipeline.pipelines if pipeline.uid == pipeline_id]
         pipeline = pipeline[0] if pipeline else None
 
@@ -251,8 +270,8 @@ class API():
             directory_id = directory_id[0] if directory_id else None
             return self.directory_editions(directory_id)
 
-    # endpoint: /pipelines/<pipeline_id>/editions/<edition_id>
-    def pipeline_edition(self, pipeline_id, edition_id):
+    # endpoint: /steps/<pipeline_id>/editions/<edition_id>
+    def step_edition(self, pipeline_id, edition_id):
         pipeline = [pipeline for pipeline in Pipeline.pipelines if pipeline.uid == pipeline_id]
         pipeline = pipeline[0] if pipeline else None
 
@@ -264,8 +283,8 @@ class API():
             directory_id = directory_id[0] if directory_id else None
             return self.directory_edition(directory_id, edition_id)
 
-    # endpoint: /pipelines/<pipeline_id>/editions/<edition_id>/trigger
-    def pipeline_trigger(self, pipeline_id, edition_id):
+    # endpoint: /steps/<pipeline_id>/editions/<edition_id>/trigger
+    def step_trigger(self, pipeline_id, edition_id):
         pipeline = [pipeline for pipeline in Pipeline.pipelines if pipeline.uid == pipeline_id]
         pipeline = pipeline[0] if pipeline else None
 
