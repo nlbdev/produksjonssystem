@@ -20,7 +20,13 @@ import psutil  # noqa
 import pybrake  # noqa
 import yaml  # noqa
 
+import core.endpoints.creativeWorks  # noqa
+import core.endpoints.directories  # noqa
+import core.endpoints.editions  # noqa
+import core.endpoints.lines  # noqa
+import core.endpoints.steps  # noqa
 from core.api import API  # noqa
+
 from core.config import Config  # noqa
 from core.directory import Directory  # noqa
 from core.pipeline import DummyPipeline, Pipeline  # noqa
