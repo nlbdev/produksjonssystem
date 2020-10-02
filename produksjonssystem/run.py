@@ -9,49 +9,49 @@ if os.environ.get("TEST", "false").lower() not in ["true", "1"]:
                         level=logging.DEBUG,
                         format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 
-import datetime
-import threading
-import time
-import traceback
-from collections import OrderedDict
-from threading import Thread
+import datetime  # noqa
+import threading  # noqa
+import time  # noqa
+import traceback  # noqa
+from collections import OrderedDict  # noqa
+from threading import Thread  # noqa
 
-import psutil
-import pybrake
-import yaml
+import psutil  # noqa
+import pybrake  # noqa
+import yaml  # noqa
 
-from core.api import API
-from core.config import Config
-from core.directory import Directory
-from core.pipeline import DummyPipeline, Pipeline
-from core.plotter import Plotter
-from core.utils.filesystem import Filesystem
-from core.utils.slack import Slack
-from core.utils.metadata import Metadata
+from core.api import API  # noqa
+from core.config import Config  # noqa
+from core.directory import Directory  # noqa
+from core.pipeline import DummyPipeline, Pipeline  # noqa
+from core.plotter import Plotter  # noqa
+from core.utils.filesystem import Filesystem  # noqa
+from core.utils.slack import Slack  # noqa
+from core.utils.metadata import Metadata  # noqa
 
 # Import pipelines
-from check_pef import CheckPef
+from check_pef import CheckPef  # noqa
 # from incoming_NLBPUB import (NLBPUB_incoming_validator,
-#                              NLBPUB_incoming_warning, NLBPUB_validator)
-from incoming_nordic import IncomingNordic
+#                              NLBPUB_incoming_warning, NLBPUB_validator)  # noqa
+from incoming_nordic import IncomingNordic  # noqa
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
-                             InsertMetadataXhtml)
-from make_abstracts import Audio_Abstract
-from newsletter import Newsletter
-from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted
-from nlbpub_previous import NlbpubPrevious
-from nlbpub_to_docx import NLBpubToDocx
-from nlbpub_to_epub import NlbpubToEpub
-from nlbpub_to_html import NlbpubToHtml
-from nlbpub_to_narration_epub import NlbpubToNarrationEpub
-from nlbpub_to_pef import NlbpubToPef
-from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook
-# from nordic_dtbook_to_epub import NordicDTBookToEpub
-from nordic_to_nlbpub import NordicToNlbpub
-from prepare_for_braille import PrepareForBraille
-from prepare_for_docx import PrepareForDocx
-from prepare_for_ebook import PrepareForEbook
-# from update_metadata import UpdateMetadata
+                             InsertMetadataXhtml)  # noqa
+from make_abstracts import Audio_Abstract  # noqa
+from newsletter import Newsletter  # noqa
+from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted  # noqa
+from nlbpub_previous import NlbpubPrevious  # noqa
+from nlbpub_to_docx import NLBpubToDocx  # noqa
+from nlbpub_to_epub import NlbpubToEpub  # noqa
+from nlbpub_to_html import NlbpubToHtml  # noqa
+from nlbpub_to_narration_epub import NlbpubToNarrationEpub  # noqa
+from nlbpub_to_pef import NlbpubToPef  # noqa
+from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook  # noqa
+# from nordic_dtbook_to_epub import NordicDTBookToEpub  # noqa
+from nordic_to_nlbpub import NordicToNlbpub  # noqa
+from prepare_for_braille import PrepareForBraille  # noqa
+from prepare_for_docx import PrepareForDocx  # noqa
+from prepare_for_ebook import PrepareForEbook  # noqa
+# from update_metadata import UpdateMetadata  # noqa
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
