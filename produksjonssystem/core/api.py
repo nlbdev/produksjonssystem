@@ -220,11 +220,16 @@ class API():
 
     # endpoint: /lines
     def lines(self):
-        return "TODO"
+        return jsonify(Config.get("production-lines")), 200
 
     # endpoint: /lines/<line_id>
     def line(self, line_id):
-        return "TODO"
+        lines = Config.get("production-lines")
+        line = [line for line in lines if line["id"] == line_id]
+        if line:
+            return jsonify(line[0]), 200
+        else:
+            return "", 404
 
     # endpoint: /steps
     def steps(self):

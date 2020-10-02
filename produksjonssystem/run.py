@@ -322,6 +322,74 @@ class Produksjonssystem():
                             during_night_and_weekend=True),     "daisy202",            "abstracts"],
         ]
 
+    # Could possibly be moved to a configuration file
+    production_lines = [
+        {
+            "id": "epub",
+            "name": "Bestilling og mottak av EPUB",
+            "steps": ["incoming-nordic", "dummy_manuellmottakskontroll", "nordic-epub-to-nlbpub"],
+        },
+        {
+            "id": "narration",
+            "name": "Innlesing",
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-narration-epub", "dummy_innlesingmedhindenburg", "create-abstracts"],
+        },
+        {
+            "id": "tts",
+            "name": "Talesyntese",
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts"],
+            "filters": {
+                "libraries": ["NLB"],
+            },
+        },
+        {
+            "id": "schibsted",
+            "name": "Schibsted-aviser",
+            "steps": ["newspaper-schibsted", "dummy_talesynteseipipeline1foraviser", "create-abstracts"],
+            "filters": {
+                "libraries": ["NLB"],
+            },
+        },
+        {
+            "id": "braille",
+            "name": "Punktskrift",
+            "steps": ["insert-metadata-braille", "prepare-for-braille", "nlbpub-to-pef"],
+        },
+        {
+            "id": "braille-newsletter",
+            "name": "Nyhetsbrev i punktskrift",
+            "steps": ["newsletter-to-braille", "nlbpub-to-pef"],
+            "filters": {
+                "libraries": ["NLB"],
+            },
+        },
+        {
+            "id": "e-book",
+            "name": "E-bøker",
+            "steps": ["insert-metadata-xhtml", "prepare-for-ebook", "nlbpub-to-epub"],
+            "filters": {
+                "libraries": ["NLB"],
+            },
+        },
+        {
+            "id": "html",
+            "name": "E-bøker som HTML",
+            "steps": ["insert-metadata-xhtml", "prepare-for-ebook", "nlbpub-to-html"],
+            "filters": {
+                "libraries": ["Statped"],
+            },
+        },
+        {
+            "id": "docx",
+            "name": "E-bøker som DOCX",
+            "steps": ["insert-metadata-xhtml", "prepare-for-docx", "nlbpub-to-docx"],
+            "filters": {
+                "libraries": ["Statped"],
+            },
+        },
+    ]
+    Config.set("production-lines", production_lines)
+
     # ---------------------------------------------------------------------------
     # Don't edit below this line if you only want to add/remove/modify a pipeline
     # ---------------------------------------------------------------------------
