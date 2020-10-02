@@ -43,6 +43,7 @@ class API():
         self.airbrake_config = airbrake_config
 
         self.app = Flask(__name__)
+        self.app.url_map.strict_slashes = False
         self.host = os.getenv("API_HOST", default="0.0.0.0")
         self.port = os.getenv("API_PORT", default=3875)
         self.root_path = "{}{}".format(root_path, "/v{}".format(API.version) if include_version else "")
