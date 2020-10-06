@@ -65,7 +65,7 @@ class Mathml_to_text():
                     element.set("{http://www.w3.org/XML/1998/namespace}lang", find_xml_lang(element))
 
                 html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                self.report.info("Inserting transformation: " + html_representation)
+                self.report.debug("Inserting transformation: " + html_representation)
 
                 stem_element = etree.fromstring(html_representation)
 
