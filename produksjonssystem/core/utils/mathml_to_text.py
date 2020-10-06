@@ -46,36 +46,38 @@ class Mathml_to_text():
 
             if len(mathML_elements) == 0:
                 self.report.info("No MathML elements found in document")
+            else:
+                self.report.info("Replacing MathML elements in document with spoken math")
 
-            for element in mathML_elements:
-                if not pipeline.shouldRun:
+                for element in mathML_elements:
+                    if not pipeline.shouldRun:
+                        # converting all MathML elements can take a long time,
+                        # so if we're shutting down the system while converting
+                        # MathML, we'll just make this conversion fail.
+                        self.success = False
+                        break
+
                     # converting all MathML elements can take a long time,
-                    # so if we're shutting down the system while converting
-                    # MathML, we'll just make this conversion fail.
-                    self.success = False
-                    break
+                    # so run watchdog_bark here.
+                    pipeline.watchdog_bark()
 
-                # converting all MathML elements can take a long time,
-                # so run watchdog_bark here.
-                pipeline.watchdog_bark()
+                    parent = element.getparent()
 
-                parent = element.getparent()
+                    if "{http://www.w3.org/XML/1998/namespace}lang" not in element.attrib:
+                        element.set("{http://www.w3.org/XML/1998/namespace}lang", find_xml_lang(element))
 
-                if "{http://www.w3.org/XML/1998/namespace}lang" not in element.attrib:
-                    element.set("{http://www.w3.org/XML/1998/namespace}lang", find_xml_lang(element))
+                    html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    self.report.debug("Inserting transformation: " + html_representation)
 
-                html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                self.report.debug("Inserting transformation: " + html_representation)
+                    stem_element = etree.fromstring(html_representation)
 
-                stem_element = etree.fromstring(html_representation)
+                    if element.tail is not None:
+                        stem_element.tail = element.tail
+                    parent.insert(parent.index(element) + 1, stem_element)
+                    parent.remove(element)
 
-                if element.tail is not None:
-                    stem_element.tail = element.tail
-                parent.insert(parent.index(element) + 1, stem_element)
-                parent.remove(element)
-
-            self.report.info("Transformasjon ferdig, lagrer fil.")
-            tree.write(target, method='XML', xml_declaration=True, encoding='UTF-8', pretty_print=False)
+                self.report.info("Transformasjon ferdig, lagrer fil.")
+                tree.write(target, method='XML', xml_declaration=True, encoding='UTF-8', pretty_print=False)
 
             self.success = True
 
