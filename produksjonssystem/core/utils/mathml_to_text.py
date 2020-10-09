@@ -131,6 +131,10 @@ class Mathml_validator():
             root = tree.getroot()
             self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml', "xml": "http://www.w3.org/XML/1998/namespace"}
 
+            asciimath_elements = root.findall(".//asciimath", self.map)
+            if len(asciimath_elements) >= 1:
+                self.report.warning("This document may contain asciimath. This should be investigated")
+
             mathML_elements = root.findall(".//m:math", self.map)
             if len(mathML_elements) == 0:
                 mathML_elements = root.findall(".//math", self.map)
@@ -169,6 +173,18 @@ class Mathml_validator():
                     info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     error("MathML element does not contain the required attribute altimg")
 
+                if "alttext" not in element.attrib:
+                    element_success = False
+                    info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    error("MathML element does not contain the required attribute alttext")
+
+                alttext = element.attrib["alttext"]
+                if len(alttext) <= 1 and len(etree.tostring(element, encoding='unicode', method='xml', with_tail=False)) >=200:
+                    element_success = False
+                    info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
+                    error("MathML element does not contain a correct alttext")
+
+
                 if "display" not in element.attrib:
                     element_success = False
                     info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
@@ -193,6 +209,7 @@ class Mathml_validator():
                 self.report.error("MathML validation failed. Check log for details.")
 
         except Exception:
+            self.success = False
             self.report.warning(traceback.format_exc(), preformatted=True)
             self.report.error("An error occured during the MathML validation")
 
