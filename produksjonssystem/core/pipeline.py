@@ -823,18 +823,24 @@ class Pipeline():
                     # list all books where no book event have occured very recently (self._inactivity_timeout)
                     books = [b for b in self._queue if int(time.time()) - b["last_event"] > self._inactivity_timeout]
 
+
+                    # COMMENTED OUT TO TRY A NEW AUTOTRIGGERED METHOD
+
                     # process books that were started manually first (manual trigger or book modification)
                     # process autotriggered books in the order they were cataloged in
+           #         books_autotriggered = [b for b in books if Pipeline.get_main_event(b) == "autotriggered"]
+           #         autotriggered_identifiers = [b["name"] for b in books]
+            #        autotriggered_identifiers = Metadata.sort_identifiers(autotriggered_identifiers)
+             #       books_autotriggered_sorted = []
+             #       for identifier in autotriggered_identifiers:
+              #          for b in books_autotriggered:
+               #             if b["name"] == identifier:
+                #                books_autotriggered_sorted.append(b)
+                 #               break
+                  #  books_autotriggered = books_autotriggered_sorted
+
                     books_autotriggered = [b for b in books if Pipeline.get_main_event(b) == "autotriggered"]
-                    autotriggered_identifiers = [b["name"] for b in books]
-                    autotriggered_identifiers = Metadata.sort_identifiers(autotriggered_identifiers)
-                    books_autotriggered_sorted = []
-                    for identifier in autotriggered_identifiers:
-                        for b in books_autotriggered:
-                            if b["name"] == identifier:
-                                books_autotriggered_sorted.append(b)
-                                break
-                    books_autotriggered = books_autotriggered_sorted
+                    books_autotriggered = sorted(books_autotriggered, key=lambda b: b["last_event"], reverse=False)  # process recently autotriggered books last
 
                     books_manual = [b for b in books if Pipeline.get_main_event(b) != "autotriggered"]
                     books_manual = sorted(books_manual, key=lambda b: b["last_event"], reverse=True)  # process recently modified books first
