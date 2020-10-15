@@ -737,7 +737,7 @@
                     </xsl:when>
                     <xsl:when test="$SPRÅK.nn">
                         <xsl:text>Denne tilrettelagde utgåva inneheld tekst og lyd som er synkronisert, 
-                            det vil seie at det er [muleg|mogleg] å spele av lydboka samtidig som teksten kan visast på ein skjerm. </xsl:text>
+                            det vil seie at det er mogleg å spele av lydboka samtidig som teksten kan visast på ein skjerm. </xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>Denne tilrettelagte utgaven inneholder tekst og lyd som er synkronisert, 
@@ -766,7 +766,7 @@
                         <xsl:text>.</xsl:text>
                     </xsl:when>
                     <xsl:when test="$SPRÅK.nn">
-                        <xsl:text>Det er muleg å navigere i lydboka på </xsl:text>
+                        <xsl:text>Det er mogleg å navigere i lydboka på </xsl:text>
                         <xsl:value-of
                             select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
                         <xsl:text> overskriftsnivå</xsl:text>
