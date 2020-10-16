@@ -416,7 +416,7 @@ class API():
             return Response("No report for edition: " + edition_id, status=404)
         result = []
         with open(path_report, 'r') as report:
-            result = report.read()
+            result = report.read().splitlines()
         return jsonify(result)
 
     # endpoint: /
