@@ -998,7 +998,8 @@ class Pipeline():
                 recipients_daily.append(rec)
         try:
             report_daily.email(recipients_daily,
-                               should_attach_log=False)
+                               should_attach_log=False,
+                               should_escape_chars=False)
         except Exception:
             logging.info("Failed sending daily email")
             logging.info(traceback.format_exc())

@@ -271,7 +271,7 @@ class Report():
 
         Slack.slack(text=subject, attachments=None)
 
-    def email(self, recipients, subject=None, should_email=True, should_message_slack=True, should_attach_log=True):
+    def email(self, recipients, subject=None, should_email=True, should_message_slack=True, should_attach_log=True, should_escape_chars=True):
         if not subject:
             assert isinstance(self.title, str) or self.pipeline is not None, "either title or pipeline must be specified when subject is missing"
             subject = self.title if self.title else self.pipeline.title
@@ -344,7 +344,8 @@ class Report():
             # 1. join lines with severity SUCCESS/INFO/WARN/ERROR
             markdown_text = []
             for m in self._messages["message"]:
-                text = m['text'].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                if should_escape_chars:
+                    text = m['text'].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 if m['preformatted'] is True:
                     markdown_text.append("<pre>{}</pre>".format(text))
                 elif m['severity'] != 'DEBUG':
