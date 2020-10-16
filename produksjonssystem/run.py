@@ -633,8 +633,8 @@ class Produksjonssystem():
                     number_produced = 0
                     number_failed = 0
                     file = os.path.join(daily_dir, pipeline[0].uid)
-                    message = "<h1>Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "</h1>\n"
-                    content = "\n<h2>Bøker som har gått gjennom:</h2>"
+                    message = "## Produsert i pipeline: " + pipeline[0].title + ": " + yesterday + "\n"
+                    content = "\n## Bøker som har gått gjennom:"
                     report_content = ""
                     dirs = []
                     if pipeline[0].dir_out:
@@ -653,7 +653,7 @@ class Produksjonssystem():
                     else:
                         content = content + "\nIngen ble produsert\n"
 
-                    content = content + "\n<h2>Bøker som har feilet:</h2>"
+                    content = content + "\n## Bøker som har feilet:"
                     if (os.path.isfile(file + "-FAIL.txt")):
                         with open(file + "-FAIL.txt", "r") as report_file_fail:
                             report_content = report_file_fail.readlines()
@@ -663,7 +663,7 @@ class Produksjonssystem():
                                     number_failed += 1
                     else:
                         content = content + "\nIngen feilet\n"
-                    message = message + "\n<h2>Totalt ble {} produsert og {} feilet</h2>\n".format(number_produced, number_failed)
+                    message = message + "\n## Totalt ble {} produsert og {} feilet\n".format(number_produced, number_failed)
                     message = message + content
                     pipeline[0].daily_report(message)
                 except Exception:
