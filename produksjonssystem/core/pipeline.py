@@ -71,7 +71,7 @@ class Pipeline():
     running = False
     shouldHandleBooks = True
     should_retry_during_working_hours = False
-    should_retry_during_night_and_weekend = False
+    should_retry_during_night_and_weekend = True
     should_retry_only_when_idle = False
     _inactivity_timeout = 10
     _bookHandlerThread = None
@@ -150,8 +150,8 @@ class Pipeline():
         # set both variables explicitly.
         # To reduce server load, only_when_idle can be set to True, which will
         # only allow the pipeline to retry books when the whole system is idle.
-        self.should_retry_during_working_hours = during_working_hours if isinstance(during_working_hours, bool) else False
-        self.should_retry_during_night_and_weekend = during_night_and_weekend if isinstance(during_night_and_weekend, bool) else not bool(during_working_hours)
+        self.should_retry_during_working_hours = during_working_hours if isinstance(during_working_hours, bool) else True
+        self.should_retry_during_night_and_weekend = during_night_and_weekend if isinstance(during_night_and_weekend, bool) else True
         self.should_retry_only_when_idle = only_when_idle if isinstance(only_when_idle, bool) else False
 
         self._queue_lock = RLock()
