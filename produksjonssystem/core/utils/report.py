@@ -346,6 +346,8 @@ class Report():
             for m in self._messages["message"]:
                 if should_escape_chars:
                     text = m['text'].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                else:
+                    text = m['text']
                 if m['preformatted'] is True:
                     markdown_text.append("<pre>{}</pre>".format(text))
                 elif m['severity'] != 'DEBUG':
