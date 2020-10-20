@@ -426,6 +426,10 @@ class Metadata:
                 report._messages[message_type].append(message)
 
         if not normarc_success:
+            if Config.get("nlb_api_url"):
+                nlb_api_url = Config.get("nlb_api_url")
+                normarc_report.info("Sjekk validering av katalogpost her:")
+                normarc_report.info(f"{nlb_api_url}/editions/{edition_identifier[:6]}/metadata-validation-report?format=html")
             library = None
             if creative_work is not None:
                 for edition in creative_work["editions"]:
