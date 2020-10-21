@@ -184,7 +184,6 @@ class Mathml_validator():
                     info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     error("MathML element does not contain a correct alttext")
 
-
                 if "display" not in element.attrib:
                     element_success = False
                     info(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
