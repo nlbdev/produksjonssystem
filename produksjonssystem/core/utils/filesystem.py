@@ -230,6 +230,12 @@ class Filesystem():
         assert destination, "Filesystem.copy(): destination must be specified"
         assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory: " + str(source)
         self.pipeline.utils.report.debug("Copying from '" + source + "' to '" + destination + "'")
+
+        if os.path.isdir(source):
+            files_source = os.listdir(source)
+        else:
+            files_source = [source]
+
         if os.path.isdir(source):
             try:
                 if os.path.exists(destination):
@@ -256,6 +262,18 @@ class Filesystem():
                     raise
         else:
             shutil.copy(source, destination)
+        if len(files_source) >= 2:        
+            files_dir_out = os.listdir(destination)
+            all_files_copied = True
+            for file in files_source:
+                if file not in files_dir_out:
+                    all_files_copied = False
+                    self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy().")
+                    break
+        else: 
+            if os.path.isfile(destination):
+                all_files_copied = False
+                self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy().")
 
     def storeBook(self, source, book_id, overwrite=True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None, fix_permissions=True):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
@@ -266,6 +284,12 @@ class Filesystem():
         assert "/" not in book_id
         assert not parentdir or ".." not in parentdir
         assert not parentdir or "/" not in parentdir
+
+        if os.path.isdir(source):
+            files_source = os.listdir(source)
+        else:
+            files_source = [source]
+
         if not dir_out:
             assert self.pipeline.dir_out is not None, (
                 "When storing a book from a pipeline with no output directory, " +
@@ -313,6 +337,19 @@ class Filesystem():
 
         if self.pipeline and self.pipeline.dir_out_obj:
             self.pipeline.dir_out_obj.suggest_rescan(book_id)
+        
+        if len(files_source) >= 2:        
+            files_dir_out = os.listdir(target)
+            all_files_copied = True
+            for file in files_source:
+                if file not in files_dir_out:
+                    all_files_copied = False
+                    self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
+                    break
+        else: 
+            if os.path.isfile(target):
+                all_files_copied = False
+                self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
 
         return target, True
 
