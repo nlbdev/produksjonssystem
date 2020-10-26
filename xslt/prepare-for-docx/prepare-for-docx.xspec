@@ -139,7 +139,27 @@
             </ul>
         </x:expect>
     </x:scenario>
-    
+   
+    <x:scenario label="Don't Insert -- for class=list-unstyled">
+        <x:context>
+            <p><strong>Egenskaper:</strong></p>
+            <ul class="list-unstyled">
+                <li>Du er serviceinnstilt.</li>
+                <li>Du har gode samarbeidsevner og kan jobbe selvstendig.</li>
+                <li>Du kan håndtere stress.</li>
+                <li>Du er ansvarsbevisst og tar initiativ.</li>
+            </ul>
+        </x:context> 
+        <x:expect label="-- should not be inserted in unordered list"> 
+            <p>_Egenskaper:_</p>
+            <ul class="list-unstyled">
+                <li>Du er serviceinnstilt.</li>
+                <li>Du har gode samarbeidsevner og kan jobbe selvstendig.</li>
+                <li>Du kan håndtere stress.</li>
+                <li>Du er ansvarsbevisst og tar initiativ.</li>
+            </ul>
+        </x:expect>
+    </x:scenario>
     <x:scenario label="Insert -- in unordered list">
         <x:context>
             <ul>
@@ -827,18 +847,7 @@
         </x:expect>
     </x:scenario>
 
-    <x:scenario label="remove titlepage and index">
-        <x:context>
-            <body>
-                <section epub:type="frontmatter titlepage"/>
-                <section epub:type="bodymatter chapter"/>
-                <section epub:type="backmatter index"/>
-            </body>
-        </x:context>
-        <x:expect label="the titlepage should be removed" test="count(//html:body/html:section[tokenize(@epub:type, '\s+') = 'titlepage'])" select="0"/>
-        <x:expect label="the chapter should not be removed" test="count(//html:body/html:section[tokenize(@epub:type, '\s+') = 'chapter'])" select="1"/>
-        <x:expect label="the index should be removed" test="count(//html:body/html:section[tokenize(@epub:type, '\s+') = 'index'])" select="0"/>
-    </x:scenario>
+
 
  <!--   <x:scenario label="move toc to the start">
         <x:context>

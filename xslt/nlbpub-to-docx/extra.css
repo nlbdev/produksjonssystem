@@ -119,7 +119,11 @@ margin-left: 12%;
 text-indent:2%;
 }
 
+ol{
 
+font-size: 13pt;
+  font-family: "Verdana", sans-serif; 
+}
 
 figure {
 padding: 0em; 

@@ -60,8 +60,11 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        temp_xml_file_obj = tempfile.NamedTemporaryFile()
-        temp_xml_file = temp_xml_file_obj.name
+        temp_html_file_obj = tempfile.NamedTemporaryFile()
+        temp_html_file = temp_html_file_obj.name
+
+        temp_opf_file_obj = tempfile.NamedTemporaryFile()
+        temp_opf_file = temp_opf_file_obj.name
 
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
@@ -69,29 +72,54 @@ class NordicToNlbpub(Pipeline):
         self.utils.filesystem.copy(self.book["source"], temp_epubdir)
         temp_epub = Epub(self, temp_epubdir)
 
-        self.utils.report.info("Rydder opp i nordisk EPUB nav.xhtml")
+        self.utils.report.info("Rydder opp i nordisk EPUB")
         nav_path = os.path.join(temp_epubdir, temp_epub.nav_path())
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
-                    source=nav_path,
-                    target=temp_xml_file,
-                    parameters={
-                        "cover": " ".join([item["href"] for item in temp_epub.spine()]),
-                        "base": os.path.dirname(os.path.join(temp_epubdir, temp_epub.opf_path())) + "/"
-                    })
-        if not xslt.success:
-            return False
-        shutil.copy(temp_xml_file, nav_path)
+        for root, dirs, files in os.walk(temp_epubdir):
+            for f in files:
+                file = os.path.join(root, f)
+                if not file.endswith(".xhtml"):
+                    continue
 
-        self.utils.report.info("Rydder opp i nordisk EPUB package.opf")
-        opf_path = os.path.join(temp_epubdir, temp_epub.opf_path())
+                if file == nav_path:
+                    xslt = Xslt(self,
+                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
+                                source=file,
+                                target=temp_html_file,
+                                parameters={
+                                    "cover": " ".join([item["href"] for item in temp_epub.spine()]),
+                                    "base": os.path.dirname(os.path.join(temp_epubdir, temp_epub.opf_path())) + "/"
+                                })
+                    if not xslt.success:
+                        return False
+                    shutil.copy(temp_html_file, file)
+
+                else:
+                    xslt = Xslt(self,
+                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-epub.xsl"),
+                                source=file,
+                                target=temp_html_file)
+                    if not xslt.success:
+                        return False
+                    shutil.copy(temp_html_file, file)
+
+                    xslt = Xslt(self,
+                                stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-asciimath-epub.xsl"),
+                                source=file,
+                                target=temp_html_file)
+                    if not xslt.success:
+                        return False
+                    shutil.copy(temp_html_file, file)
+
+        temp_epub_opf_path = os.path.join(temp_epubdir, temp_epub.opf_path())
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
-                    source=opf_path,
-                    target=temp_xml_file)
+                    source=temp_epub_opf_path,
+                    target=temp_opf_file)
         if not xslt.success:
             return False
-        shutil.copy(temp_xml_file, opf_path)
+        shutil.copy(temp_opf_file, temp_epub_opf_path)
+
+        temp_epub.refresh_metadata()
 
         html_dir_obj = tempfile.TemporaryDirectory()
         html_dir = html_dir_obj.name
@@ -101,20 +129,9 @@ class NordicToNlbpub(Pipeline):
         temp_epub.asFile(rebuild=True)
 
         self.utils.report.info("Validerer Nordisk EPUB 3...")
-        epub_file = temp_epub.asFile()
-        with DaisyPipelineJob(self,
-                              "nordic-epub3-validate",
-                              {"epub": os.path.basename(epub_file)},
-                              pipeline_and_script_version=[
-                                ("1.13.4", "1.4.5"),
-                                ("1.12.1", "1.4.2"),
-                                ("1.11.1-SNAPSHOT", "1.3.0"),
-                              ],
-                              context={
-                                os.path.basename(epub_file): epub_file
-                              }) as dp2_job_epub_validate:
+        with DaisyPipelineJob(self, "nordic-epub3-validate", {"epub": temp_epub.asFile()}) as dp2_job_epub_validate:
             epub_validate_status = None
-            if dp2_job_epub_validate.status == "SUCCESS":
+            if dp2_job_epub_validate.status == "DONE":
                 epub_validate_status = "SUCCESS"
             elif dp2_job_epub_validate.status in ["VALIDATION_FAIL", "FAIL"]:
                 epub_validate_status = "WARN"
@@ -184,18 +201,8 @@ class NordicToNlbpub(Pipeline):
                 self.utils.report.warn("EPUBen er ikke valid, men vi fortsetter alikevel.")
 
         self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-        with DaisyPipelineJob(self,
-                              "nordic-epub3-to-html",
-                              {"epub": os.path.basename(epub_file), "fail-on-error": "false"},
-                              pipeline_and_script_version=[
-                                ("1.13.4", "1.4.5"),
-                                ("1.12.1", "1.4.2"),
-                                ("1.11.1-SNAPSHOT", "1.3.0"),
-                              ],
-                              context={
-                                os.path.basename(epub_file): epub_file
-                              }) as dp2_job_convert:
-            convert_status = "SUCCESS" if dp2_job_convert.status == "SUCCESS" else "ERROR"
+        with DaisyPipelineJob(self, "nordic-epub3-to-html", {"epub": temp_epub.asFile(), "fail-on-error": "false"}) as dp2_job_convert:
+            convert_status = "SUCCESS" if dp2_job_convert.status == "DONE" else "ERROR"
 
             if convert_status != "SUCCESS":
                 self.utils.report.error("Klarte ikke å konvertere boken")
@@ -214,26 +221,8 @@ class NordicToNlbpub(Pipeline):
                 return False
 
             self.utils.report.info("Validerer Nordisk HTML 5...")
-
-            # create context for Pipeline 2 job
-            html_context = {}
-            for root, dirs, files in os.walk(dp2_html_dir):
-                for file in files:
-                    fullpath = os.path.join(root, file)
-                    relpath = os.path.relpath(fullpath, dp2_html_dir)
-                    html_context[relpath] = fullpath
-
-            with DaisyPipelineJob(self,
-                                  "nordic-html-validate",
-                                  {"html": os.path.basename(dp2_html_file)},
-                                  pipeline_and_script_version=[
-                                    ("1.13.4", "1.4.5"),
-                                    ("1.12.1", "1.4.2"),
-                                    ("1.11.1-SNAPSHOT", "1.3.0"),
-                                  ],
-                                  context=html_context
-                                  ) as dp2_job_html_validate:
-                html_validate_status = "SUCCESS" if dp2_job_html_validate.status == "SUCCESS" else "ERROR"
+            with DaisyPipelineJob(self, "nordic-html-validate", {"html": dp2_html_file}) as dp2_job_html_validate:
+                html_validate_status = "SUCCESS" if dp2_job_html_validate.status == "DONE" else "ERROR"
 
                 report_file = os.path.join(dp2_job_html_validate.dir_output, "html-report/report.xhtml")
 
@@ -285,10 +274,10 @@ class NordicToNlbpub(Pipeline):
         self.utils.report.info("Rydder opp i nordisk HTML")
         xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
                     source=html_file,
-                    target=temp_xml_file)
+                    target=temp_html_file)
         if not xslt.success:
             return False
-        shutil.copy(temp_xml_file, html_file)
+        shutil.copy(temp_html_file, html_file)
 
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
         nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
