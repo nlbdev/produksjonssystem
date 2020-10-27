@@ -83,6 +83,29 @@ class NlbpubToTtsDtbook(Pipeline):
 
         if not mathML_result.success:
             return False
+        
+        self.utils.report.info("Setter inn lydbokavtalen...")
+        self.utils.report.debug("bokinfo-tts-dtbook.xsl")
+        self.utils.report.debug("    source = " + temp_result)
+        self.utils.report.debug("    target = " + temp_xslt_output)
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "bokinfo-tts-dtbook.xsl"),
+                    source=temp_result,
+                    target=temp_xslt_output)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_xslt_output, temp_result)
+
+        library = epub.meta("schema:library")
+        library = library.upper() if library else library
+        logo = os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "{}_logo.png".format(library))
+
+        if os.path.isfile(logo):
+           # epub_dir = os.path.join(temp_resultdir, "EPUB")
+            image_dir = os.path.join(temp_resultdir, "images")
+            if not os.path.isdir(image_dir):
+                os.mkdir(image_dir)
+            shutil.copy(logo, image_dir)
 
         self.utils.report.info("Konverterer fra XHTML5 til DTBook...")
         self.utils.report.debug("html-to-dtbook.xsl")
