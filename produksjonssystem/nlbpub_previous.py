@@ -54,7 +54,7 @@ class NlbpubPrevious(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
-        if not epub.identifier():
+        if not epub.identifier() or not epub.identifier.isnumeric() or len(epub.identifier) > 6:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
