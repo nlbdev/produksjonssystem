@@ -56,7 +56,7 @@
                               Most DAISY reading systems make it possible to navigate by headings and page numbers. If footnotes, side bars and production notes is present in the book, it is also possible to navigate using these elements.
                               If you detect any pronunciation errors in the book, please let us know at: talesyntese@nlb.no
                           </p>
-                          <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
+                          <figure class="image"><img alt="NLB logo" src="images/{upper-case($library)}_logo.png"/></figure>
                       </section>
                   </xsl:when>
                   <xsl:when test="$language = ('nb', 'nob', 'no')">
@@ -80,7 +80,7 @@
                             Vi er glade for å få tilbakemelding på ord eller vendinger som Clara uttaler feil. Vennligst send en e post til talesyntese@nlb.no. 
                             Beskriv hvilke ord som er feiluttalt og oppgi hele setningen som inneholder ordene. På forhånd takk!
                         </p>
-                        <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
+                        <figure class="image"><img alt="NLB logo" src="images/{upper-case($library)}_logo.png"/></figure>
                     </section>
                   </xsl:when>
                   <xsl:otherwise>
@@ -105,7 +105,7 @@
                               Vi er glade for å få tilbakemelding på ord eller vendingar som Hulda uttaler feil. Ver vennleg og send ei e-post til talesyntese@nlb.no. 
                               Beskriv kva ord som er feiluttalt og heile setninga som inneheld orda. På førehand takk!
                           </p>
-                          <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
+                          <figure class="image"><img alt="NLB logo" src="images/{upper-case($library)}_logo.png"/></figure>
                       </section>
                   </xsl:otherwise>
               </xsl:choose>
@@ -128,7 +128,7 @@
                                     else if ($depth = 5) then 'five'
                                     else 'six',
                                     ' levels')"/> of headings.</p>
-                                <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
+                                <figure class="image"><img alt="NLB logo" src="images/{upper-case($library)}_logo.png"/></figure>
                             </section>
                         </xsl:when>
                         <xsl:otherwise>
