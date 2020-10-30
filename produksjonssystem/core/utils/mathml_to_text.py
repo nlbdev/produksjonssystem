@@ -131,7 +131,7 @@ class Mathml_validator():
             root = tree.getroot()
             self.map = {'epub': 'http://www.idpf.org/2007/ops', 'm': "http://www.w3.org/1998/Math/MathML", None: 'http://www.w3.org/1999/xhtml', "xml": "http://www.w3.org/XML/1998/namespace"}
 
-            asciimath_elements = root.findall(".//asciimath", self.map)
+            asciimath_elements = root.findall(".//*[@class='asciimath']", self.map)
             if len(asciimath_elements) >= 1:
                 self.report.warning("This document may contain asciimath. This should be investigated")
 
