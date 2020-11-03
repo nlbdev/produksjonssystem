@@ -39,7 +39,7 @@
               <xsl:choose>
                   <xsl:when test="$language = ('en', 'eng')">
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
-                          <h1 id="copyright-headline-{generate-id()}">Audiobook agreement</h1>
+                          <h1 id="copyright-headline-{generate-id()}">The Audiobook Agreement</h1>
                           <p>
                               This edition is produced by NLB in <xsl:value-of select="$year"/> pursuant to article 55
                               of the Norwegian Copyright Act and can be reproduced for private use only.
