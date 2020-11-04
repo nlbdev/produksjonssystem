@@ -431,21 +431,30 @@ class Metadata:
                 normarc_report.info("Sjekk validering av katalogpost her:")
                 normarc_report.info(f"{nlb_api_url}/editions/{edition_identifier[:6]}/metadata-validation-report?format=html")
             library = None
+            registered = ["1980-01-01"]
             if creative_work is not None:
                 for edition in creative_work["editions"]:
-                    if not edition["deleted"] and edition["library"] is not None:
+                    if edition["deleted"]:
+                        continue
+                    if edition["registered"] is not None:
+                        registered.append(edition["registered"])
+                    if edition["library"] is not None:
                         library = edition["library"]
-                        break
             if not library:
                 library = Metadata.get_library_from_identifier(edition_identifier)
+            registered = sorted(registered)[-1]
 
             Metadata.add_production_info(normarc_report, edition_identifier, publication_format=publication_format)
             signatureRegistrationAddress = Report.filterEmailAddresses(signatureRegistrationAddress, library=library)
 
-            normarc_report.email(signatureRegistrationAddress,
-                                 subject="Validering av katalogpost: {} 😭👎".format(edition_identifier[:6]))
-            report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
-                ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
+            year = datetime.datetime.now().year
+            if registered.split("-")[0] in [str(year), str(year - 1)]:  # if registered this or previous year
+                normarc_report.email(signatureRegistrationAddress,
+                                     subject="Validering av katalogpost: {} 😭👎".format(edition_identifier[:6]))
+                report.warn("Katalogposten i Bibliofil er ikke gyldig. E-post ble sendt til: {}".format(
+                    ", ".join([addr.lower() for addr in signatureRegistrationAddress])))
+            else:
+                report.warn("Katalogposten i Bibliofil er ikke gyldig, men katalogposten er gammel og e-post ble derfor ikke sendt til bibliotekar.")
 
             return False
 
