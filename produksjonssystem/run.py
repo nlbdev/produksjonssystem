@@ -625,6 +625,9 @@ class Produksjonssystem():
             if not os.path.isdir(daily_dir):
                 continue
             for pipeline in self.pipelines:
+                
+                if pipeline[0].uid == "insert-metadata-daisy202" or pipeline[0].uid == "insert-metadata-xhtml" or pipeline[0].uid == "insert-metadata-braille" or "create-abstracts":
+                    continue
                 if "dummy" in pipeline[0].uid:
                     continue
                 if os.path.isfile(os.path.join(daily_dir, pipeline[0].uid + ".html")):
@@ -778,7 +781,12 @@ class Produksjonssystem():
 
         message = ""
         first_dir_log = True
+        timeout = 600
+        timeout_start = time.time()
+
         for line in content:
+            if time.time() < timeout_start + timeout:
+                return message
             if "(li) " in line:
                 line = line.replace("(li) ", "")
                 message = message + "\n<ul>\n<li>" + line + "</li>\n</ul>"
