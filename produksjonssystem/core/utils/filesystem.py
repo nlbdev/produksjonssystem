@@ -337,16 +337,12 @@ class Filesystem():
 
         if len(files_source) >= 2:
             files_dir_out = os.listdir(target)
-            all_files_copied = True
             for file in files_source:
                 if file not in files_dir_out:
-                    all_files_copied = False
                     self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
                     break
-        else:
-            if os.path.isfile(target):
-                all_files_copied = False
-                self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
+        elif os.path.isfile(source) and not os.path.isfile(target):
+            self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
 
         return target, True
 
