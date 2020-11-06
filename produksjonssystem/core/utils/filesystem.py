@@ -262,18 +262,15 @@ class Filesystem():
                     raise
         else:
             shutil.copy(source, destination)
-        if len(files_source) >= 2:        
+
+        if len(files_source) >= 2:
             files_dir_out = os.listdir(destination)
-            all_files_copied = True
             for file in files_source:
                 if file not in files_dir_out:
-                    all_files_copied = False
-                    self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy().")
-                    break
-        else: 
-            if os.path.isfile(destination):
-                all_files_copied = False
-                self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy().")
+                    self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy(): " + str(file))
+
+        elif os.path.isfile(source) and not os.path.isfile(destination):
+            self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy(): " + str(source))
 
     def storeBook(self, source, book_id, overwrite=True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None, fix_permissions=True):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
@@ -337,8 +334,8 @@ class Filesystem():
 
         if self.pipeline and self.pipeline.dir_out_obj:
             self.pipeline.dir_out_obj.suggest_rescan(book_id)
-        
-        if len(files_source) >= 2:        
+
+        if len(files_source) >= 2:
             files_dir_out = os.listdir(target)
             all_files_copied = True
             for file in files_source:
@@ -346,7 +343,7 @@ class Filesystem():
                     all_files_copied = False
                     self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
                     break
-        else: 
+        else:
             if os.path.isfile(target):
                 all_files_copied = False
                 self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.storeBook().")
