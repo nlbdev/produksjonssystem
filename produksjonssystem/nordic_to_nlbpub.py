@@ -6,12 +6,12 @@ import shutil
 import sys
 import tempfile
 
-from lxml import etree as ElementTree
-
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+from lxml import etree as ElementTree
+from pathlib import Path
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -64,9 +64,19 @@ class NordicToNlbpub(Pipeline):
         temp_xml_file = temp_xml_file_obj.name
 
         self.utils.report.info("Lager en kopi av EPUBen")
+        temp_epubdir_withimages_obj = tempfile.TemporaryDirectory()
+        temp_epubdir_withimages = temp_epubdir_withimages_obj.name
+        self.utils.filesystem.copy(self.book["source"], temp_epubdir_withimages)
+
+        self.utils.report.info("Lager en kopi av EPUBen med tomme bildefiler")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
+        self.utils.filesystem.copy(temp_epubdir_withimages, temp_epubdir)
+        for root, dirs, files in os.walk(os.path.join(temp_epubdir, "EPUB", "images")):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                os.remove(fullpath)
+                Path(fullpath).touch()
         temp_epub = Epub(self, temp_epubdir)
 
         self.utils.report.info("Rydder opp i nordisk EPUB nav.xhtml")
@@ -148,6 +158,15 @@ class NordicToNlbpub(Pipeline):
         nlbpub = Epub.from_html(self, html_dir, nlbpub_tempdir)
         if nlbpub is None:
             return False
+
+        self.utils.report.info("Erstatter tomme bildefiler med faktiske bildefiler")
+        for root, dirs, files in os.walk(os.path.join(nlbpub_tempdir, "EPUB", "images")):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                relpath = os.path.relpath(fullpath, nlbpub_tempdir)
+                os.remove(fullpath)
+                self.utils.filesystem.copy(os.path.join(temp_epubdir_withimages, relpath), fullpath)
+        temp_epub = Epub(self, temp_epubdir)
 
         nlbpub.update_prefixes()
 
