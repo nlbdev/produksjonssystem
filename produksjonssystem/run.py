@@ -628,7 +628,7 @@ class Produksjonssystem():
 
                 if not self.shouldRun():
                     break
-                if pipeline[0].uid == "insert-metadata-daisy202" or pipeline[0].uid == "insert-metadata-xhtml" or pipeline[0].uid == "insert-metadata-braille" or "create-abstracts":
+                if pipeline[0].uid == "insert-metadata-daisy202" or pipeline[0].uid == "insert-metadata-xhtml" or pipeline[0].uid == "insert-metadata-braille" or pipeline[0].uid == "create-abstracts":
                     continue
                 if "dummy" in pipeline[0].uid:
                     continue
