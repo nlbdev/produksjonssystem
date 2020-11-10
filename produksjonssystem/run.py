@@ -787,7 +787,7 @@ class Produksjonssystem():
         timeout_start = time.time()
 
         for line in content:
-            if time.time() < timeout_start + timeout:
+            if time.time() > timeout_start + timeout:
                 return message
             if "(li) " in line:
                 line = line.replace("(li) ", "")
