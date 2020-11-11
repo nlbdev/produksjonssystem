@@ -108,6 +108,7 @@ class Mathml_to_text():
 
 class Mathml_validator():
     """Class used to check MathML in xhtml documents"""
+    """NOTE: WHEN THE VALIDATOR IS UPDATED - ALSO UPDATE /docs/mathml_to_text/nlb_mathml_validator.py"""
 
     def __init__(self,
                  pipeline=None,
