@@ -473,11 +473,11 @@
     </xsl:template>
   
         
-        
-   
-    <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p">
+       <xsl:template match="ol[ancestor::section[not(f:types(.) = 'toc')]]/li/p">
         <p><xsl:apply-templates select="node()"/></p>
-    </xsl:template>
+    </xsl:template>  
+   
+   
     
   <!--  <xsl:template match="ul/li[not(*)]">
         <li>
@@ -498,13 +498,23 @@
     </xsl:template>  -->
     
     
-   <xsl:template match="ul/li">
+    <xsl:template match="ul/li">
         <li>
             <xsl:apply-templates select="@*"/>
             <xsl:text>-- </xsl:text>       
             <xsl:apply-templates select="node()"/>
         </li>
     </xsl:template> 
+                
+    <xsl:template match="ul[f:classes(.) = 'list-unstyled']/li">
+        <li>
+            <xsl:apply-templates select="@*"/>
+            
+            <xsl:apply-templates select="node()"/>
+        </li>
+    </xsl:template>    
+    
+    
     
       
     <xsl:template match="figcaption/p">
