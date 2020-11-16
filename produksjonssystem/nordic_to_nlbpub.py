@@ -10,6 +10,7 @@ from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+from core.utils.metadata import Metadata
 from lxml import etree as ElementTree
 from pathlib import Path
 
@@ -107,6 +108,15 @@ class NordicToNlbpub(Pipeline):
         html_dir = html_dir_obj.name
         html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
 
+        self.utils.report.info("Finner ut hvilket bibliotek boka tilhører…")
+        edition_metadata = Metadata.get_edition_from_api(epub.identifier(), report=self.utils.report)
+        library = None
+        if edition_metadata is not None and edition_metadata["library"] is not None:
+            library = edition_metadata["library"]
+        else:
+            library = Metadata.get_library_from_identifier(epub.identifier(), self.utils.report)
+        self.utils.report.info(f"Boka tilhører '{library}'")
+
         self.utils.report.info("Zipper oppdatert versjon av EPUBen...")
         temp_epub.asFile(rebuild=True)
 
@@ -150,6 +160,16 @@ class NordicToNlbpub(Pipeline):
         if not xslt.success:
             return False
         shutil.copy(temp_xml_file, html_file)
+
+        if library.lower() == "statped":
+            self.utils.report.info("Konverterer fra ASCIIMath til norsk punktnotasjon…")
+            xslt = Xslt(self,
+                        stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-asciimath-epub.xsl"),
+                        source=html_file,
+                        target=temp_xml_file)
+            if not xslt.success:
+                return False
+            shutil.copy(temp_xml_file, html_file)
 
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
         nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
