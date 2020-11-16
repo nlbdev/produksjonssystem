@@ -139,7 +139,27 @@
             </ul>
         </x:expect>
     </x:scenario>
-    
+   
+    <x:scenario label="Don't Insert -- for class=list-unstyled">
+        <x:context>
+            <p><strong>Egenskaper:</strong></p>
+            <ul class="list-unstyled">
+                <li>Du er serviceinnstilt.</li>
+                <li>Du har gode samarbeidsevner og kan jobbe selvstendig.</li>
+                <li>Du kan håndtere stress.</li>
+                <li>Du er ansvarsbevisst og tar initiativ.</li>
+            </ul>
+        </x:context> 
+        <x:expect label="-- should not be inserted in unordered list"> 
+            <p>_Egenskaper:_</p>
+            <ul class="list-unstyled">
+                <li>Du er serviceinnstilt.</li>
+                <li>Du har gode samarbeidsevner og kan jobbe selvstendig.</li>
+                <li>Du kan håndtere stress.</li>
+                <li>Du er ansvarsbevisst og tar initiativ.</li>
+            </ul>
+        </x:expect>
+    </x:scenario>
     <x:scenario label="Insert -- in unordered list">
         <x:context>
             <ul>

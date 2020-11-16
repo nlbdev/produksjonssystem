@@ -506,6 +506,13 @@
         </li>
     </xsl:template> 
     
+    <xsl:template match="ul[f:classes(.) = 'list-unstyled']/li">
+        <li>
+            <xsl:apply-templates select="@*"/>
+            
+            <xsl:apply-templates select="node()"/>
+        </li>
+    </xsl:template>    
       
     <xsl:template match="figcaption/p">
             <xsl:apply-templates select="text()"/>        
