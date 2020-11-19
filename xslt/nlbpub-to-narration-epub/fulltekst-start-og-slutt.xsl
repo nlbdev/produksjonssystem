@@ -19,6 +19,7 @@
         <xsl:if test="not(upper-case($library) = 'STATPED')">
             <xsl:call-template name="info-om-boka"/>
         </xsl:if>
+        <xsl:call-template name="info-om-den-tilrettelagte-utgaven"/>
     </xsl:template>
 
     <xsl:template name="generer-tittel">
@@ -230,14 +231,15 @@
                         <xsl:text> in </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                        <xsl:text>
-                            pursuant to article 55
-                            of the Norwegian Copyright Act and can be reproduced for private use only.
-                            This copy is not to be redistributed. All digital copies are to be destroyed or returned to the publisher
-                            by the end of the borrowing period. The copy will be marked so that it will be possible to trace it
-                            to the borrower if misused. Violation of these terms of agreement may lead to liability according to
-                            the Copyright Act. Such actions may also result in loss of the right to borrow accessible literature.
-                        </xsl:text>
+                        <xsl:text> pursuant to article 17a of the Norwegian Copyright Act and can be reproduced for private use only. 
+                            This copy is not to be redistributed. 
+                            All digital copies are to be destroyed or returned to the publisher by the end of the borrowing period. 
+                            The copy will be marked so that it will be possible to trace it to the borrower if misused.</xsl:text>
+                    </p>
+                    <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                        <xsl:text>Violation of these terms of agreement may lead to liability according to the Copyright Act. 
+                            Such actions may also result in loss of the right to borrow accessible literature.</xsl:text>
                     </p>
                 </xsl:when>
                 <xsl:when test="$SPRÅK.nn">
@@ -248,12 +250,16 @@
                         <xsl:text> i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                        <xsl:text>  
-                              med heimel i åndsverklova § 55,
-                              og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
-                              skal alle digitale eksemplar destruerast eller returnerast til produsenten. Eksemplaret er merka slik
-                              at det kan sporast tilbake til deg som lånar ved misbruk. Brot på desse avtalevilkåra kan medføre ansvar
-                              etter åndsverklova. Slike handlingar kan også medføre tap av retten til å låne tilrettelagde bøker.</xsl:text>
+                        <xsl:text> med heimel i åndsverklova § 17a, og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over skal
+                        alle digitale eksemplar destruerast eller returnerast til produsenten.
+                        Eksemplaret er merka slik at det kan sporast tilbake til deg som lånar ved
+                        misbruk.</xsl:text>
+                    </p>
+                    <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                        <xsl:text>Brot på desse avtalevilkåra kan medføre ansvar etter åndsverklova.
+                        Slike handlingar kan også medføre tap av retten til å låne tilrettelagde
+                        lydbøker.</xsl:text>
                     </p>
                 </xsl:when>
                 <xsl:otherwise>
@@ -264,10 +270,14 @@
                         <xsl:text> i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                        <xsl:text> 
-                            med hjemmel i åndsverkslovens §55, og kan kun kopieres til privat bruk.
-                            Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp skal alle digitale eksemplar destrueres eller returneres til produsenten. 
-                            Eksemplaret er merket slik at det kan spores tilbake til deg som låntaker ved misbruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til slik ulovlig kopiering, kan medføre ansvar etter åndsverkloven. 
+                        <xsl:text> med hjemmel i åndsverklovens § 17a, og kan kun kopieres til privat bruk. 
+                            Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp skal alle digitale eksemplar 
+                            destrueres eller returneres til produsenten. Eksemplaret er merket slik at det kan spores tilbake 
+                            til deg som låner ved misbruk.</xsl:text>
+                    </p>
+                    <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                        <xsl:text>Brudd på disse avtalevilkårene kan medføre ansvar etter åndsverkloven. 
                             Slike handlinger kan også medføre tap av retten til å låne tilrettelagte lydbøker.</xsl:text>
                     </p>
                 </xsl:otherwise>
@@ -283,7 +293,6 @@
         <xsl:variable name="STRUKTUR.level2" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]/section"/>
         <xsl:variable name="STRUKTUR.level3" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]/section/section"/>
         <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean" select="count(//*[@epub:type eq 'pagebreak']) gt 1"/>
-        <xsl:variable name="STRUKTUR.dybde" as="xs:integer" select="max(for $e in //section return count($e/ancestor-or-self::section))"/>
         
         <section epub:type="frontmatter" id="nlb-level1-om-boka">
             <h1>
@@ -329,6 +338,15 @@
                             </xsl:choose>
                         </p>
                     </xsl:if>
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
+                        <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                            <xsl:text>The original ISBN is </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
+                            <xsl:text>.</xsl:text>
+                        </p>
+                    </xsl:if>
                     <xsl:if
                         test="fnk:metadata-finnes('dc:date.issued.original') and fnk:metadata-finnes('bookEdition.original')">
                         <p>
@@ -368,87 +386,6 @@
                             </xsl:if>
                         </p>
                     </xsl:if>
-                    
-                    <xsl:if test="count($STRUKTUR.level1.typer) eq 1">
-                        <!-- Vi forutsetter at det bare er én type på nivå 1
-                    20171018-psps: Sjekke om det er greit
-                    Bør vi gjøre noe hvis det ikke er tilfelle.
-                -->
-                        <p>
-                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-                            <xsl:choose>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
-                                    <!-- Tre nivåer, første nivå er deler -->
-                                            <xsl:text>The book consists of </xsl:text>
-                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                            <xsl:text> parts and </xsl:text>
-                                            <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                            <xsl:text> chapters with subheadings.</xsl:text>
-
-                                </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2">
-                                    <!-- To nivåer, første nivå er deler -->
-                                            <xsl:text>The book consists of </xsl:text>
-                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                            <xsl:text> parts and </xsl:text>
-                                            <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                            <xsl:text> chapters.</xsl:text>
-                                    
-                                </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part')">
-                                    <!-- Bare ett nivå, første nivå er deler -->
-                                            <xsl:text>The book consists of </xsl:text>
-                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                            <xsl:text> parts.</xsl:text>
-                                </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter') and $STRUKTUR.level2">
-                                    <!-- To (eller flere) nivåer, første nivå er kapitler -->
-                                            <xsl:text>The book consists of </xsl:text>
-                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                            <xsl:text> chapters with subheadings.</xsl:text>
-                                </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
-                                    <!-- Bare ett nivå, første nivå er kapitler -->
-                                            <xsl:text>The book consists of </xsl:text>
-                                            <xsl:choose>
-                                                <xsl:when test="count($STRUKTUR.level1) eq 1">
-                                                    <xsl:text>one chapter.</xsl:text>
-                                                </xsl:when>
-                                                <xsl:otherwise>
-                                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                                    <xsl:text> chapters .</xsl:text>
-                                                </xsl:otherwise>
-                                            </xsl:choose>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                            <xsl:text>The book is not divided into chapters, but is made up of sections of variable length.</xsl:text>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </p>
-                    </xsl:if>
-                    
-                    <p>
-                        <xsl:text>This edition contains synchronised text and audio.
-                            It is possible to listen to the audiobook while the text is displayed on a screen.</xsl:text>
-                        <xsl:text>It is possible to navigate the audiobook by </xsl:text>
-                        <xsl:choose>
-                            <xsl:when test="$STRUKTUR.dybde eq 1">
-                                <xsl:text> one heading level.</xsl:text>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of
-                                    select="fnk:tall-til-tallord($STRUKTUR.dybde, false(), false())"/>
-                                <xsl:text> heading levels</xsl:text>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="$STRUKTUR.har-sidetall">
-                            <xsl:text> and by page numbers</xsl:text>
-                        </xsl:if>
-                        <xsl:text>.</xsl:text>
-                    </p>
 
                 </xsl:when>
                 <xsl:when test="$SPRÅK.nn">
@@ -479,6 +416,15 @@
                                     <xsl:text>.</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
+                        </p>
+                    </xsl:if>
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
+                        <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                            <xsl:text>ISBN-nummeret til originalen er  </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
+                            <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
                     <xsl:if
@@ -520,81 +466,6 @@
                             </xsl:if>
                         </p>
                     </xsl:if>
-                    
-                    <xsl:if test="count($STRUKTUR.level1.typer) eq 1">
-                        <!-- Vi forutsetter at det bare er én type på nivå 1
-                    20171018-psps: Sjekke om det er greit
-                    Bør vi gjøre noe hvis det ikke er tilfelle.
-                -->
-                        <p>
-                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
-                            <xsl:choose>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
-                                    <!-- Tre nivåer, første nivå er deler -->
-                                    <xsl:text>Boka består av </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> deler og </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                    <xsl:text> kapittel med underkapittel.</xsl:text>
-                                    
-                                </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2">
-                                    <!-- To nivåer, første nivå er deler -->
-                                    <xsl:text>Boka består av </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> deler og </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                    <xsl:text> underkapittel.</xsl:text>
-                                    
-                                </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part')">
-                                    <!-- Bare ett nivå, første nivå er deler -->
-                                    <xsl:text>Boka består av </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> deler.</xsl:text>
-                                </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter') and $STRUKTUR.level2">
-                                    <!-- To (eller flere) nivåer, første nivå er kapitler -->
-                                    <xsl:text>Boka består av </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> kapittel med undekapittel.</xsl:text>
-                                </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
-                                    <!-- Bare ett nivå, første nivå er kapitler -->
-                                    <xsl:text>Boka består av </xsl:text>
-                                    <xsl:choose>
-                                        <xsl:when test="count($STRUKTUR.level1) eq 1">
-                                            <xsl:text>ett kapittel.</xsl:text>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                            <xsl:text> kapitler.</xsl:text>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:text>Boka er ikkje delt inn i kapittel, men består av lengre og kortare avsnitt.</xsl:text>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </p>
-                    </xsl:if>
-
-                    <p>
-                        <xsl:text>Denne tilrettelagde utgåva inneheld tekst og lyd som er synkronisert, 
-                            det vil seie at det er mogleg å spele av lydboka samtidig som teksten kan visast på ein skjerm. </xsl:text>
-                        <xsl:text>Det er mogleg å navigere i lydboka på </xsl:text>
-                        <xsl:value-of
-                            select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
-                        <xsl:text> overskriftsnivå</xsl:text>
-                        <xsl:if test="$STRUKTUR.har-sidetall">
-                            <xsl:text> og på sidetal</xsl:text>
-                        </xsl:if>
-                        <xsl:text>.</xsl:text>
-                        
-                    </p>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:if
@@ -624,6 +495,15 @@
                                     <xsl:text>.</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
+                        </p>
+                    </xsl:if>
+                    <xsl:if test="fnk:metadata-finnes('schema:isbn')">
+                        <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                            <xsl:text>Originalens ISBN er </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('schema:isbn', true(), false())"/>
+                            <xsl:text>.</xsl:text>
                         </p>
                     </xsl:if>
                     <xsl:if
@@ -665,49 +545,131 @@
                             </xsl:if>
                         </p>
                     </xsl:if>
-                    <xsl:if test="count($STRUKTUR.level1.typer) eq 1">
-                        <!-- Vi forutsetter at det bare er én type på nivå 1
+                </xsl:otherwise>
+            </xsl:choose>
+
+            <xsl:if test="count($STRUKTUR.level1.typer) eq 1">
+                <!-- Vi forutsetter at det bare er én type på nivå 1
                     20171018-psps: Sjekke om det er greit
                     Bør vi gjøre noe hvis det ikke er tilfelle.
                 -->
-                        <p>
-                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                <p>
+                    <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                    <xsl:choose>
+                        <xsl:when
+                            test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
+                            <!-- Tre nivåer, første nivå er deler -->
                             <xsl:choose>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
-                                    <!-- Tre nivåer, første nivå er deler -->
+                                <xsl:when test="$SPRÅK.en">
+                                    <xsl:text>The book consists of </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> parts and </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
+                                    <xsl:text> chapters with subheadings.</xsl:text>
+                                </xsl:when>
+                                <xsl:when test="$SPRÅK.nn">
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> deler og </xsl:text>
+                                    <xsl:text> deler  og </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
+                                    <xsl:text> kapittel med underkapittel.</xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text>Boka består av </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> deler  og </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level2)"/>
                                     <xsl:text> kapitler med underkapitler.</xsl:text>
-                                    
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:when>
+                        <xsl:when
+                            test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2">
+                            <!-- To nivåer, første nivå er deler -->
+                            <xsl:choose>
+                                <xsl:when test="$SPRÅK.en">
+                                    <xsl:text>The book consists of </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> parts and </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
+                                    <xsl:text> chapters.</xsl:text>
                                 </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2">
-                                    <!-- To nivåer, første nivå er deler -->
+                                <xsl:when test="$SPRÅK.nn">
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> deler og </xsl:text>
+                                    <xsl:text> deler  og </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                    <xsl:text> underkapitler.</xsl:text>
-                                    
+                                    <xsl:text> kapittel.</xsl:text>
                                 </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part')">
-                                    <!-- Bare ett nivå, første nivå er deler -->
+                                <xsl:otherwise>
+                                    <xsl:text>Boka består av </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> deler  og </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
+                                    <xsl:text> kapitler.</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
+
+                        </xsl:when>
+                        <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part')">
+                            <!-- Bare ett nivå, første nivå er deler -->
+                            <xsl:choose>
+                                <xsl:when test="$SPRÅK.en">
+                                    <xsl:text>The book consists of </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> parts.</xsl:text>
+                                </xsl:when>
+                                <!-- Samme tekst for nynorsk og bokmål -->
+                                <xsl:otherwise>
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level1)"/>
                                     <xsl:text> deler.</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:when>
+                        <xsl:when
+                            test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter') and $STRUKTUR.level2">
+                            <!-- To (eller flere) nivåer, første nivå er kapitler -->
+                            <xsl:choose>
+                                <xsl:when test="$SPRÅK.en">
+                                    <xsl:text>The book consists of </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> chapters with subheadings.</xsl:text>
                                 </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter') and $STRUKTUR.level2">
-                                    <!-- To (eller flere) nivåer, første nivå er kapitler -->
+                                <xsl:when test="$SPRÅK.nn">
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> kapitler med undekapitler.</xsl:text>
+                                    <xsl:text> kapittel  med underkapittel.</xsl:text>
                                 </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
-                                    <!-- Bare ett nivå, første nivå er kapitler -->
+                                <xsl:otherwise>
+                                    <xsl:text>Boka består av </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> kapitler  med underkapitler.</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:when>
+                        <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
+                            <!-- Bare ett nivå, første nivå er kapitler -->
+                            <xsl:choose>
+                                <xsl:when test="$SPRÅK.en">
+                                    <xsl:text>The book consists of </xsl:text>
+                                    <xsl:choose>
+                                        <xsl:when test="count($STRUKTUR.level1) eq 1">
+                                            <xsl:text>one chapter.</xsl:text>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                            <xsl:text> chapters .</xsl:text>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:when>
+                                <xsl:when test="$SPRÅK.nn">
+                                    <xsl:text>Boka består av </xsl:text>
+                                    <xsl:value-of
+                                        select="fnk:tall-til-tallord(count($STRUKTUR.level1), true(), false())"/>
+                                    <xsl:text> kapittel.</xsl:text>
+                                </xsl:when>
+                                <xsl:otherwise>
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:choose>
                                         <xsl:when test="count($STRUKTUR.level1) eq 1">
@@ -718,16 +680,102 @@
                                             <xsl:text> kapitler.</xsl:text>
                                         </xsl:otherwise>
                                     </xsl:choose>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:choose>
+                                <xsl:when test="$SPRÅK.en">
+                                    <xsl:text>The book is not divided into chapters, but is made up of sections of variable length.</xsl:text>
+                                </xsl:when>
+                                <xsl:when test="$SPRÅK.nn">
+                                    <xsl:text>Boka er ikkje delt inn i kapittel, men består av lengre og kortare avsnitt.</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:text>Boka er ikke delt inn i kapitler, men består av lengre og kortere avsnitt.</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
-                        </p>
-                    </xsl:if>
-                    <p>
+
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </p>
+            </xsl:if>
+        </section>
+    </xsl:template>
+
+    <xsl:template name="info-om-den-tilrettelagte-utgaven">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="STRUKTUR.dybde" as="xs:integer" select="max(for $e in //section return count($e/ancestor-or-self::section))"/>
+        <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean" select="count(//*[@epub:type eq 'pagebreak']) gt 1"/>
+        
+        <section epub:type="frontmatter" id="nlb-level1-om-lydboka">
+            <h1>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                <xsl:choose>
+                    <xsl:when test="upper-case($library) = 'STATPED'">
+                        <xsl:text>Informasjon ved bruk av denne lydboka</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:choose>
+                            <xsl:when test="$SPRÅK.en">About the accessible edition</xsl:when>
+                            <xsl:when test="$SPRÅK.nn">
+                                <xsl:text>Om den tilrettelagde utgåva</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:text>Om den tilrettelagte utgaven</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </h1>
+            <p>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                <xsl:choose>
+                    <xsl:when test="$SPRÅK.en">
+                        <xsl:text>This edition contains synchronised text and audio.
+                            It is possible to listen to the audiobook while the text is displayed on a screen.</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="$SPRÅK.nn">
+                        <xsl:text>Denne tilrettelagde utgåva inneheld tekst og lyd som er synkronisert, 
+                            det vil seie at det er mogleg å spele av lydboka samtidig som teksten kan visast på ein skjerm. </xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
                         <xsl:text>Denne tilrettelagte utgaven inneholder tekst og lyd som er synkronisert, 
                             det vil si at det er mulig å spille av lydboka samtidig som teksten vises på en skjerm. </xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </p>
+            <p>
+                <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                <xsl:choose>
+                    <xsl:when test="$SPRÅK.en">
+                        <xsl:text>It is possible to navigate the audiobook by </xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="$STRUKTUR.dybde eq 1">
+                                <xsl:text> one heading level.</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of
+                                    select="fnk:tall-til-tallord($STRUKTUR.dybde, false(), false())"/>
+                                <xsl:text> heading levels</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="$STRUKTUR.har-sidetall">
+                            <xsl:text> and by page numbers</xsl:text>
+                        </xsl:if>
+                        <xsl:text>.</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="$SPRÅK.nn">
+                        <xsl:text>Det er mogleg å navigere i lydboka på </xsl:text>
+                        <xsl:value-of
+                            select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
+                        <xsl:text> overskriftsnivå</xsl:text>
+                        <xsl:if test="$STRUKTUR.har-sidetall">
+                            <xsl:text> og på sidetal</xsl:text>
+                        </xsl:if>
+                        <xsl:text>.</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
                         <xsl:text>Det er mulig å navigere i lydboka på </xsl:text>
                         <xsl:value-of
                             select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
@@ -743,9 +791,9 @@
                             <xsl:text> og på sidetall</xsl:text>
                         </xsl:if>
                         <xsl:text>.</xsl:text>
-                    </p>
-                </xsl:otherwise>
-            </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </p>
         </section>
     </xsl:template>
 
