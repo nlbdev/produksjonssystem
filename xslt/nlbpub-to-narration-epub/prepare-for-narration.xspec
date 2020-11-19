@@ -107,8 +107,9 @@
                     <section epub:type="frontmatter" id="nlb-level1-om-boka">
                         <h1 class="nlb-ekstra-informasjon">Om boka</h1>
                         <p class="nlb-ekstra-informasjon">Boka er utgitt av [MANGLER FORVENTET METADATA: dc:publisher.original], [MANGLER FORVENTET METADATA: dc:publisher.location.original], i [MANGLER FORVENTET METADATA: dc:date.issued.original].</p>
+                        <p>Denne tilrettelagte utgaven inneholder tekst og lyd som er synkronisert, 
+                            det vil si at det er mulig å spille av lydboka samtidig som teksten vises på en skjerm. Det er mulig å navigere i lydboka på ett overskriftsnivå.</p>
                     </section>
-                    <section epub:type="frontmatter" id="nlb-level1-om-lydboka">...</section>
                     <section id="ch1-19">...</section>
                 </body>
             </html>
@@ -142,8 +143,9 @@
                     <section epub:type="frontmatter" id="nlb-level1-om-boka">
                         <h1 class="nlb-ekstra-informasjon">Om boka</h1>
                         <p class="nlb-ekstra-informasjon">Boka er utgitt av [MANGLER FORVENTET METADATA: dc:publisher.original], [MANGLER FORVENTET METADATA: dc:publisher.location.original], i [MANGLER FORVENTET METADATA: dc:date.issued.original], og er på 2 sider.</p>
+                        <p>Denne tilrettelagte utgaven inneholder tekst og lyd som er synkronisert, 
+                            det vil si at det er mulig å spille av lydboka samtidig som teksten vises på en skjerm. Det er mulig å navigere i lydboka på ett overskriftsnivå og på sidetall.</p>
                     </section>
-                    <section epub:type="frontmatter" id="nlb-level1-om-lydboka">...</section>
                     <section id="ch1-19">...</section>
                 </body>
             </html>
