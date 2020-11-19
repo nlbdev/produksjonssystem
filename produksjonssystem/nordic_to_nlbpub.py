@@ -126,6 +126,7 @@ class NordicToNlbpub(Pipeline):
                               "nordic-epub3-to-html",
                               {"epub": os.path.basename(epub_file), "fail-on-error": "false"},
                               pipeline_and_script_version=[
+                                ("1.13.6", "1.4.6"),
                                 ("1.13.4", "1.4.5"),
                                 ("1.12.1", "1.4.2"),
                                 ("1.11.1-SNAPSHOT", "1.3.0"),
