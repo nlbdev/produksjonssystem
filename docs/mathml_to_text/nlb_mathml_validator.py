@@ -77,7 +77,7 @@ def validate(path, oneline=False):
 
         mathML_elements = root.findall(".//m:math", nsmap)
         if len(mathML_elements) == 0:
-            mathML_elements = root.findAll(".//math", nsmap)
+            mathML_elements = root.findall(".//math", nsmap)
 
         if len(mathML_elements) == 0:
             logging.info(f"{filename} - No <math> elements found " +
