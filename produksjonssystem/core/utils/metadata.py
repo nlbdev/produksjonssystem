@@ -131,7 +131,7 @@ class Metadata:
             return None
 
     @staticmethod
-    def get_creative_work_from_api(edition_identifier, editions_metadata="simple", report=logging, use_cache_if_possible=False):
+    def get_creative_work_from_api(edition_identifier, editions_metadata="simple", report=logging, use_cache_if_possible=False, creative_work_metadata="simple"):
         if not Config.get("nlb_api_url"):
             report.warning("nlb_api_url is not set, unable to get metadata from API")
             return None
@@ -148,7 +148,7 @@ class Metadata:
         if not edition:
             return None
 
-        creative_work_url = "{}/creative-works/{}?editions-metadata={}".format(Config.get("nlb_api_url"), edition["creativeWork"], editions_metadata)
+        creative_work_url = "{}/creative-works/{}?editions-metadata={}&creative-work-metadata={}".format(Config.get("nlb_api_url"), edition["creativeWork"], editions_metadata, creative_work_metadata)
 
         report.debug("getting creative work metadata from: {}".format(creative_work_url))
         response = Metadata.requests_get(creative_work_url)
