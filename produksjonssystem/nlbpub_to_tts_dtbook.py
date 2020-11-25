@@ -10,6 +10,7 @@ from pathlib import Path
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.mathml_to_text import Mathml_to_text, Mathml_validator
+from core.utils.metadata import Metadata
 from core.utils.relaxng import Relaxng
 from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
@@ -95,6 +96,20 @@ class NlbpubToTtsDtbook(Pipeline):
         if not xslt.success:
             return False
         shutil.copy(temp_xslt_output, temp_result)
+
+        creative_work_metadata = Metadata.get_creative_work_from_api(identifier, editions_metadata="all", use_cache_if_possible=True, creative_work_metadata="all")
+        if creative_work_metadata["magazine"] is True:
+            self.utils.report.info("Fjerner sidetall fordi det er et tidsskrift...")
+            self.utils.report.debug("remove-pagenum.xsl")
+            self.utils.report.debug("    source = " + temp_result)
+            self.utils.report.debug("    target = " + temp_xslt_output)
+            xslt = Xslt(self,
+                        stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "remove-pagenum.xsl"),
+                        source=temp_result,
+                        target=temp_xslt_output)
+            if not xslt.success:
+                return False
+            shutil.copy(temp_xslt_output, temp_result)
 
         library = epub.meta("schema:library")
         library = library.upper() if library else library
