@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+    xmlns:nlb="http://www.nlb.no/"
+    xmlns:marcxchange="info:lc/xmlns/marcxchange-v1"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dtbook="http://www.daisy.org/z3986/2005/dtbook/"
+    xmlns:schema="http://schema.org/"
+    xmlns:frbr="http://purl.org/vocab/frbr/core#"
+    xmlns:nlbbib="http://www.nlb.no/bibliographic"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+    stylesheet="remove-pagenum.xsl">
+    <x:scenario label="Scenario for testing a function">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="no" lang="no" epub:prefix="dc: http://purl.org/dc/elements/1.1/ nlbprod: http://www.nlb.no/production schema: http://schema.org/ nlbbib: http://www.nlb.no/bibliographic nordic: http://www.mtm.se/epub/ dcterms: http://purl.org/dc/terms/">
+            <head xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:nlbbib="http://www.nlb.no/bibliographic" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production">
+        
+                <!-- Metadata fra EPUBen -->
+                <meta name="nordic:guidelines" content="2015-1" />
+                <meta name="nordic:supplier" content="Textalk AB" />
+        
+                <meta name="dcterms:modified" content="2020-10-13T12:19:34Z" />
+            </head><body>
+        
+             <section epub:type="cover" id="c1">
+              <section class="frontcover" id="c2">
+                 <figure class="image">
+                    <img alt="image" src="images/cover.jpg" />
+                 </figure>
+              </section>
+              <section id="d6e1322" epub:type="bodymatter chapter">
+              <h1 id="d6e1323">Forside</h1>
+              <section id="d6e1325">
+                 <div epub:type="pagebreak" class="page-normal" id="d6e1327-1" title="1"></div>
+                 <figure class="image">
+                    <img src="images/ar-61861-tf-4293213-1-normal.jpg" alt="image" id="d6e1329" />
+                 </figure>
+              </section>
+                    </section>
+                 </section>
+            </body></html>
+        </x:context>
+        <x:expect label="The pagebreak should be removed here">
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="no" lang="no" epub:prefix="dc: http://purl.org/dc/elements/1.1/ nlbprod: http://www.nlb.no/production schema: http://schema.org/ nlbbib: http://www.nlb.no/bibliographic nordic: http://www.mtm.se/epub/ dcterms: http://purl.org/dc/terms/">
+                <head xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:nlbbib="http://www.nlb.no/bibliographic" xmlns:schema="http://schema.org/" xmlns:nlbprod="http://www.nlb.no/production">
+                    
+                    <!-- Metadata fra EPUBen -->
+                    <meta name="nordic:guidelines" content="2015-1" />
+                    <meta name="nordic:supplier" content="Textalk AB" />
+                    
+                    <meta name="dcterms:modified" content="2020-10-13T12:19:34Z" />
+                </head><body>
+                    
+                    <section epub:type="cover" id="c1">
+                        <section class="frontcover" id="c2">
+                            <figure class="image">
+                                <img alt="image" src="images/cover.jpg" />
+                            </figure>
+                        </section>
+                        <section id="d6e1322" epub:type="bodymatter chapter">
+                            <h1 id="d6e1323">Forside</h1>
+                            <section id="d6e1325">
+                                <figure class="image">
+                                    <img src="images/ar-61861-tf-4293213-1-normal.jpg" alt="image" id="d6e1329" />
+                                </figure>
+                            </section>
+                        </section>
+                    </section>
+                </body></html>
+        </x:expect>
+
+    </x:scenario>
+</x:description>
