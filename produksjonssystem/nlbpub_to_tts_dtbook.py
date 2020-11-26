@@ -98,18 +98,21 @@ class NlbpubToTtsDtbook(Pipeline):
         shutil.copy(temp_xslt_output, temp_result)
 
         creative_work_metadata = Metadata.get_creative_work_from_api(identifier, editions_metadata="all", use_cache_if_possible=True, creative_work_metadata="all")
-        if creative_work_metadata["magazine"] is True:
-            self.utils.report.info("Fjerner sidetall fordi det er et tidsskrift...")
-            self.utils.report.debug("remove-pagenum.xsl")
-            self.utils.report.debug("    source = " + temp_result)
-            self.utils.report.debug("    target = " + temp_xslt_output)
-            xslt = Xslt(self,
-                        stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "remove-pagenum.xsl"),
-                        source=temp_result,
-                        target=temp_xslt_output)
-            if not xslt.success:
-                return False
-            shutil.copy(temp_xslt_output, temp_result)
+        if creative_work_metadata is not None:
+            if creative_work_metadata["magazine"] is True:
+                self.utils.report.info("Fjerner sidetall fordi det er et tidsskrift...")
+                self.utils.report.debug("remove-pagenum.xsl")
+                self.utils.report.debug("    source = " + temp_result)
+                self.utils.report.debug("    target = " + temp_xslt_output)
+                xslt = Xslt(self,
+                            stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "remove-pagenum.xsl"),
+                            source=temp_result,
+                            target=temp_xslt_output)
+                if not xslt.success:
+                    return False
+                shutil.copy(temp_xslt_output, temp_result)
+        else:
+            self.utils.report.warning("Klarte ikke finne et åndsverk tilknyttet denne utgaven. Konverterer likevel.")
 
         library = epub.meta("schema:library")
         library = library.upper() if library else library
