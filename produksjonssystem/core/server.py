@@ -457,7 +457,7 @@ def join():
     requests.post(base_url + kill_endpoint)
 
     logging.debug("joining {}".format(thread.name))
-    thread.join(timeout=60)
+    thread.join(timeout=5)
 
     if thread.is_alive():
         logging.debug("The API thread is still running. Let's ignore it and continue shutdown…")
