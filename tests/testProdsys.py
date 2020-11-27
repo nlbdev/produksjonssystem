@@ -95,6 +95,8 @@ environment = {
     "MAIL_FORMATKLAR":"",
     "MAIL_FILESIZE":"",
     "ALLOWED_EMAIL_ADDRESSES_IN_TEST":"",
+    "DAILY_REPORTS_ENABLED": "false",
+    "SIGNATURES_ENABLED": "false",
     "AIRBRAKE_ENVIRONMENT":"dev",
     "AIRBRAKE_PROJECT_ID":"",
     "AIRBRAKE_PROJECT_KEY":"",

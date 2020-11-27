@@ -418,17 +418,21 @@ class Produksjonssystem():
         self._configThread.setDaemon(True)
         self._configThread.start()
 
-        self._dailyReportThread = Thread(target=self._daily_report_thread, name="daily report")
-        self._dailyReportThread.setDaemon(True)
-        self._dailyReportThread.start()
+        Config.set("dailyReports.enabled", os.environ.get("DAILY_REPORTS_ENABLED", "true").lower() in ["true", "1"])
+        if Config.get("dailyReports.enabled"):
+            self._dailyReportThread = Thread(target=self._daily_report_thread, name="daily report")
+            self._dailyReportThread.setDaemon(True)
+            self._dailyReportThread.start()
 
         self._systemStatusThread = Thread(target=self._system_status_thread, name="system status")
         self._systemStatusThread.setDaemon(True)
         self._systemStatusThread.start()
 
-        self._signaturesRefreshThread = Thread(target=self._signatures_refresh_thread, name="signatures refresh")
-        self._signaturesRefreshThread.setDaemon(True)
-        self._signaturesRefreshThread.start()
+        Config.set("signatures.enabled", os.environ.get("SIGNATURES_ENABLED", "true").lower() in ["true", "1"])
+        if Config.get("signatures.enabled"):
+            self._signaturesRefreshThread = Thread(target=self._signatures_refresh_thread, name="signatures refresh")
+            self._signaturesRefreshThread.setDaemon(True)
+            self._signaturesRefreshThread.start()
 
         for pipeline in self.pipelines:
             email_settings = {
@@ -557,14 +561,16 @@ class Produksjonssystem():
         if graph_thread:
             logging.debug("joined {}".format(graph_thread.name))
 
-        self.info("Venter på at signatur-oppdateringstråden skal stoppe...")
-        self._signaturesRefreshThread.join()
+        if Config.get("signatures.enabled"):
+            self.info("Venter på at signatur-oppdateringstråden skal stoppe...")
+            self._signaturesRefreshThread.join()
 
         self.info("Venter på at konfigtråden skal stoppe...")
         self._configThread.join()
 
-        self.info("Venter på at dagsrapport-tråden skal stoppe...")
-        self._dailyReportThread.join()
+        if Config.get("dailyReports.enabled"):
+            self.info("Venter på at dagsrapport-tråden skal stoppe...")
+            self._dailyReportThread.join()
 
         self.info("Venter på at systemstatus-tråden skal stoppe...")
         self._systemStatusThread.join()
