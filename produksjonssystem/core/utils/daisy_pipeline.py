@@ -134,6 +134,9 @@ class DaisyPipelineJob():
             if locked:
                 self.pipeline.utils.report.debug("[local_start_engine] acquired DP2 start lock")
                 while not running and retries > 0:
+                    if not self.pipeline.shouldRun:
+                        break  # exit this function if we're shutting down the system
+
                     retries -= 1
                     procs = DaisyPipelineJob.local_list_processes()
                     if DaisyPipelineJob.pid:
@@ -198,7 +201,7 @@ class DaisyPipelineJob():
                         except subprocess.CalledProcessError:
                             self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
                             self.pipeline.utils.report.warn("En feil oppstod når Pipeline 2 startet. Vi venter noen sekunder og prøver igjen...")
-                            time.sleep(10)
+                            time.sleep(5)
                             try:
                                 # start engine if it's not started already
                                 self.pipeline.utils.report.info("Starter lokal instans av Pipeline 2…")
@@ -265,6 +268,11 @@ class DaisyPipelineJob():
                 timed_out = False
                 engine_died = False
                 while not timed_out and self.status in ["IDLE", "RUNNING"]:
+                    if not self.pipeline.shouldRun:
+                        self.pipeline.utils.report.error("Systemet er i ferd med å slå seg av, og Pipeline 2-jobben ble derfor ikke ferdig.")
+                        self.status = None
+                        break
+
                     timed_out = self.status == "IDLE" and time.time() - idle_start > idle_timeout or time.time() - running_start > running_timeout
                     time.sleep(5)
 
@@ -349,6 +357,11 @@ class DaisyPipelineJob():
                         )
 
                     for engine in DaisyPipelineJob.engines:
+                        if not self.pipeline.shouldRun:
+                            self.pipeline.utils.report.error("Systemet er i ferd med å slå seg av, og Pipeline 2-jobben ble derfor ikke startet.")
+                            self.status = None
+                            break
+
                         if engine["local"]:
                             has_local = True
 

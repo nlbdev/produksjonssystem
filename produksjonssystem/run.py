@@ -472,7 +472,7 @@ class Produksjonssystem():
         system_process.cpu_percent()  # first value returned is 0.0, which we ignore
         try:
             running = True
-            time.sleep(10)  # wait a few seconds before staring to monitor the system (extra precaution to avoid race conditions during startup)
+            time.sleep(5)  # wait a few seconds before starting to monitor the system (extra precaution to avoid race conditions during startup)
             while running:
                 time.sleep(1)
 

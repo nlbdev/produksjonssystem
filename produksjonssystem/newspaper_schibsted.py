@@ -63,6 +63,10 @@ class NewspaperSchibsted(Pipeline):
 
             last_check = time.time()
             for date in os.listdir(self.dir_in):
+                if not self.shouldRun:
+                    logging.error("Systemet er i ferd med å slå seg av, og avistråden blir derfor ikke ferdig kjørt.")
+                    break
+
                 if re.match(r"^\d\d\d\d-\d\d-\d\d$", date):
                     date_numbers = re.sub(r"^\d\d(\d\d)-(\d\d)-(\d\d)$", r"\1\2\3", date)
                     already_produced = False

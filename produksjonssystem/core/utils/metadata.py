@@ -1030,6 +1030,9 @@ class Metadata:
                             logging.debug("Can't find cache file")
 
                     for dump in bookguru_dumps:
+                        if not Config.get("system.shouldRun"):
+                            return []  # exit from this function here if we're shutting down the system
+
                         signatures_cache[dump["path"]] = {}
 
                         if not os.path.isfile(dump["path"]):
@@ -1085,6 +1088,9 @@ class Metadata:
                         with open(signatures_cache_file, 'wb') as f:
                             pickle.dump(Metadata.signatures_cache, f, -1)
                             report.debug("Stored signatures cache as: {}".format(signatures_cache_file))
+
+        if not Config.get("system.shouldRun"):
+            return []  # exit from this function here if we're shutting down the system
 
         report.debug("Locating '{}' in signature cache…".format("/".join(edition_identifiers)))
         with Metadata._signatures_cachelock:

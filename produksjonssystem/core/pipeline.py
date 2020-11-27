@@ -648,7 +648,7 @@ class Pipeline():
     def _monitor_book_triggers_thread(self):
         self.watchdog_bark()
         while self.shouldRun:
-            time.sleep(10)
+            time.sleep(5)
             self.watchdog_bark()
 
             if not os.path.isdir(self.dir_trigger):
@@ -658,6 +658,9 @@ class Pipeline():
                 continue
 
             for f in os.listdir(self.dir_trigger):
+                if not self.shouldRun:
+                    break  # stop iterating if we're shutting down the system
+
                 if f == "_name":
                     continue
                 triggerfile = os.path.join(self.dir_trigger, f)
@@ -810,7 +813,7 @@ class Pipeline():
 
             try:
                 if self.dir_out_obj is not None and not self.dir_out_obj.is_available():
-                    time.sleep(10)
+                    time.sleep(5)
                     continue
 
                 if self.dir_in is not None and not os.path.isdir(self.dir_in):
