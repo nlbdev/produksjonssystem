@@ -595,21 +595,29 @@ class Metadata:
         for html_relpath in html_paths:
             html_path = os.path.normpath(os.path.join(os.path.dirname(opf_path), html_relpath))
 
-            # Update metadata in HTML by replacing the existing <head>…</head> with `html_head`
+            # Update metadata in HTML by replacing the existing <head>…</head> with `html_head`,
+            # and set the `xml:lang` and `lang` attributes of the root element to the value of `dc:language`
+            html_document = ElementTree.parse(html_path)
+            html = html_document.getroot()
+            old_head = html.xpath("/*/*[local-name()='head']")[0]  # assume that there's a <head>
+            new_head = ElementTree.fromstring(html_head, )
 
-            html_content = None
-            with open(html_path) as f:
-                html_content = "".join(f.readlines())
+            # replace old_head with new_head
+            if old_head.tail is not None:
+                new_head.tail = old_head.tail
+            html.insert(html.index(old_head) + 1, new_head)
+            html.remove(old_head)
+            html.text = '\n    '
 
-            html_content = (
-                html_content[:html_content.find("<head")].rstrip()
-                + "\n"
-                + html_head
-                + html_content[html_content.find("</head>") + len("</head>"):]
-            )
+            # set the `xml:lang` and `lang` attributes
+            languages = [e.attrib["content"]
+                         for e in new_head.xpath("//*[local-name()='meta' and @name='dc:language']")
+                         if "content" in e.attrib]
+            if len(languages) == 1 and languages[0] not in ["mul", ""]:
+                html.set("{http://www.w3.org/XML/1998/namespace}lang", languages[0])
+                html.set("lang", languages[0])
 
-            with open(html_path, "w") as f:
-                f.write(html_content)
+            html_document.write(html_path, method='XML', xml_declaration=True, encoding='UTF-8', pretty_print=False)
 
         epub.update_prefixes()  # metadata contains prefixes that most likely are not predefined
 
