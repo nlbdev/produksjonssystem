@@ -9,7 +9,7 @@
         <x:context xml:space="preserve"><title>  Test
         test  </title></x:context>
 
-        <x:expect label="the result should be as expected" xml:spec="preserve"><title>Test test</title></x:expect>
+        <x:expect label="the result should be as expected" xml:space="preserve"><title>Test test</title></x:expect>
     </x:scenario>
     
     <x:scenario label="Make sure that there's whitespace after sup and sub (test for https://github.com/nlbdev/pipeline/issues/227)">
@@ -75,6 +75,22 @@
                 <p xml:space="preserve">xxx <span><sub>yyy</sub></span> <span>zzz</span></p>
                 <p xml:space="preserve">xxx <span><sub>yyy</sub> </span> <span>zzz</span></p>
             </div>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Replace language codes nb and nn with no (default CSS forces uncontracted braille for all other languages than no).">
+        <x:context>
+            <p xml:lang="en" lang="en">…</p>
+            <p xml:lang="nb" lang="nb">…</p>
+            <p xml:lang="nn" lang="nn">…</p>
+            <p xml:lang="no" lang="no">…</p>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <p xml:lang="en" lang="en">…</p>
+            <p xml:lang="no" lang="no">…</p>
+            <p xml:lang="no" lang="no">…</p>
+            <p xml:lang="no" lang="no">…</p>
         </x:expect>
     </x:scenario>
 

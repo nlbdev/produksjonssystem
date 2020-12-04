@@ -45,4 +45,15 @@
         </xsl:choose>
     </xsl:template>
     
+    <xsl:template match="@xml:lang | @lang">
+        <xsl:choose>
+            <xsl:when test=". = ('nb', 'nn')">
+                <xsl:attribute name="{name()}" select="'no'" exclude-result-prefixes="#all"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    
 </xsl:stylesheet>
