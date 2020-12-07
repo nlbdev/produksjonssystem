@@ -14,6 +14,7 @@ from core.utils.metadata import Metadata
 from core.utils.relaxng import Relaxng
 from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
+from nlbpub_to_narration_epub import NlbpubToNarrationEpub
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -84,7 +85,19 @@ class NlbpubToTtsDtbook(Pipeline):
 
         if not mathML_result.success:
             return False
-        
+
+        self.utils.report.info("Fikser Webarch-oppmerking")
+        self.utils.report.debug("webarch-fixup.xsl")
+        self.utils.report.debug("    source = " + temp_result)
+        self.utils.report.debug("    target = " + temp_xslt_output)
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToNarrationEpub.uid, "webarch-fixup.xsl"),
+                    source=temp_result,
+                    target=temp_xslt_output)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_xslt_output, temp_result)
+
         self.utils.report.info("Setter inn lydbokavtalen...")
         self.utils.report.debug("bokinfo-tts-dtbook.xsl")
         self.utils.report.debug("    source = " + temp_result)

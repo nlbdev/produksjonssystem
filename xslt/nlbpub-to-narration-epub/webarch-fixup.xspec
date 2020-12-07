@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="webarch-fixup.xsl">
+    
+    <x:scenario label="Sections with only a figure">
+        <x:context>
+            <section  id="d6e1035" epub:type="bodymatter chapter">
+                <h1 id="d6e1036">Første side</h1>
+                <section id="d6e1038">
+                    <div epub:type="pagebreak" class="page-normal" id="d6e1040-1" title="1"></div>
+                    <figure class="image">
+                        <img src="images/ar-67069-tf-4595789-1-normal.jpg" alt="image" id="d6e1042" />
+                    </figure>
+                </section>
+                <p><a href="#d6e1038">Reference to section element</a></p>
+            </section>
+        </x:context>
+        <x:expect label="The section should be unwrapped">
+            <section id="d6e1035" epub:type="bodymatter chapter">
+                <h1 id="d6e1036">Første side</h1>
+                <div epub:type="pagebreak" class="page-normal" id="d6e1040-1" title="1"></div>
+                <figure class="image">
+                    <img src="images/ar-67069-tf-4595789-1-normal.jpg" alt="image" id="d6e1042" />
+                </figure>
+                <p><a href="#d6e1040-1">Reference to section element</a></p>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>

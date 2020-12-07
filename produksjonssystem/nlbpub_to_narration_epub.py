@@ -107,6 +107,19 @@ class NlbpubToNarrationEpub(Pipeline):
             return False
         shutil.copy(temp_html, html_file)
 
+        self.utils.report.info("Fikser Webarch-oppmerking")
+        self.utils.report.debug("webarch-fixup.xsl")
+        self.utils.report.debug("    source = " + html_file)
+        self.utils.report.debug("    target = " + temp_html)
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToNarrationEpub.uid, "webarch-fixup.xsl"),
+                    source=html_file,
+                    target=temp_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_html, html_file)
+
         self.utils.report.info("Lager usynlige overskrifter der det trengs...")
         self.utils.report.debug("create-hidden-headlines.xsl")
         self.utils.report.debug("    source = " + html_file)
