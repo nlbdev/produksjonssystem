@@ -3437,7 +3437,7 @@
                 </html:section>
             </html:section>
         </x:context>
-        <x:expect label="…">
+        <x:expect label="the h2 should become a p">
             <dtbook:level1 class="jacketcopy" id="c1">
                 <dtbook:prodnote id="c2" class="frontcover" render="optional">
                     <dtbook:p id="frontcover-heading">Hjemmet</dtbook:p>
