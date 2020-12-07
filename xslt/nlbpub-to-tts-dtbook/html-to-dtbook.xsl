@@ -1007,10 +1007,27 @@
     </xsl:template>
 
     <xsl:template match="html:h1 | html:h2 | html:h3 | html:h4 | html:h5 | html:h6">
-        <xsl:element name="h{if (parent::*/f:types(.)=('sidebar','z3998:poem','z3998:verse') or parent::*/f:classes(.)='linegroup') then 'd' else f:level(.)}">
-            <xsl:call-template name="f:attlist.h"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:element>
+        <xsl:choose>
+            <xsl:when test="parent::*/f:types(.)=('sidebar','z3998:poem','z3998:verse') or parent::*/f:classes(.)='linegroup'">
+                <hd>
+                    <xsl:call-template name="f:attlist.h"/>
+                    <xsl:apply-templates select="node()"/>
+                </hd>
+            </xsl:when>
+            <xsl:when test="ancestor::html:section[f:classes(.)=('frontcover','rearcover','leftflap','rightflap') and exists(html:h2 | html:h3 | html:h4 | html:h5 | html:h6)]">
+                <!-- hX must be in a levelX, so we turn this into a p instead -->
+                <p>
+                    <xsl:call-template name="f:attlist.h"/>
+                    <xsl:apply-templates select="node()"/>
+                </p>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:element name="h{f:level(.)}">
+                    <xsl:call-template name="f:attlist.h"/>
+                    <xsl:apply-templates select="node()"/>
+                </xsl:element>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template name="f:attlist.h">
