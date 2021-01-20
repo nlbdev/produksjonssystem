@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:epub="http://www.idpf.org/2007/ops"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="ta-vekk-innhold.xsl">
+    
+    <x:scenario label="Remove titlepage and colophon">
+        <x:context>
+            <html>
+                <head>
+                    <title>Title</title>
+                </head>
+                <body>
+                    <section epub:type="cover">
+                        <div epub:type="pagebreak" title="i"/>
+                    </section>
+                    <section epub:type="frontmatter colophon">
+                        <div epub:type="pagebreak" title="ii"/>
+                        <h1>Kolofon</h1>
+                        <div epub:type="pagebreak" title="iii"/>
+                    </section>
+                    <section epub:type="frontmatter titlepage">
+                        <div epub:type="pagebreak" title="iv"/>
+                        <h1>Tittelside</h1>
+                        <div epub:type="pagebreak" title="v"/>
+                    </section>
+                    <section epub:type="frontmatter dedication">
+                        <div epub:type="pagebreak" title="vi"/>
+                        <h1>Dedikasjon</h1>
+                        <div epub:type="pagebreak" title="vii"/>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <div epub:type="pagebreak" title="1"/>
+                        <h1>Kapittel 1</h1>
+                        <div epub:type="pagebreak" title="2"/>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <div epub:type="pagebreak" title="3"/>
+                        <h1>Kapittel 2</h1>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <div epub:type="pagebreak" title="4"/>
+                        <h1>Kapittel 3</h1>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+
+        <x:expect label="The titlepage should be removed">
+            <html>
+                <head>
+                    <title>Title</title>
+                </head>
+                <body>
+                    <section epub:type="cover">
+                        <div epub:type="pagebreak" title="i"/>
+                    </section>
+                    <!--Kolofonen er fjernet i lydbokutgaven-->
+                    <!--Tittelsiden er fjernet i lydbokutgaven-->
+                    <section epub:type="frontmatter dedication">
+                        <div epub:type="pagebreak" title="ii"/>
+                        <div epub:type="pagebreak" title="iii"/>
+                        <div epub:type="pagebreak" title="iv"/>
+                        <div epub:type="pagebreak" title="v"/>
+                        <div epub:type="pagebreak" title="vi"/>
+                        <h1>Dedikasjon</h1>
+                        <div epub:type="pagebreak" title="vii"/>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <div epub:type="pagebreak" title="1"/>
+                        <h1>Kapittel 1</h1>
+                        <div epub:type="pagebreak" title="2"/>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <div epub:type="pagebreak" title="3"/>
+                        <h1>Kapittel 2</h1>
+                    </section>
+                    <section epub:type="bodymatter chapter">
+                        <div epub:type="pagebreak" title="4"/>
+                        <h1>Kapittel 3</h1>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+
+</x:description>

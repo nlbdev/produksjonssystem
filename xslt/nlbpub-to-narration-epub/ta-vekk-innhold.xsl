@@ -55,15 +55,26 @@
         <xsl:comment>Kolofonen er fjernet i lydbokutgaven</xsl:comment>
     </xsl:template>
     
+    <!-- Følgende template fjerner tittelsiden -->
+    <xsl:template match="section[fnk:epub-type(@epub:type, 'titlepage')]">
+        <xsl:message>* Fjerner tittelsiden</xsl:message>
+        <xsl:comment>Tittelsiden er fjernet i lydbokutgaven</xsl:comment>
+    </xsl:template>
+    
     <!-- og dersom det kommer et section-elementet etter kolofonen, så hentes pagebreak fra det fjernede elementet til begynnelsen av dette elementet -->
-    <xsl:template
-        match="section[fnk:epub-type(preceding-sibling::section[1]/@epub:type, 'colophon')]">
+    <xsl:template match="section[preceding-sibling::section[1]/tokenize(@epub:type, '\s+') = ('colophon', 'titlepage') and not(tokenize(@epub:type, '\s+') = ('colophon', 'titlepage'))]">
+        <xsl:variable name="this" select="."/>
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:copy-of select="@*"/>
             
-            <xsl:message>* Henter sidetall fra kolofonen som er fjernet</xsl:message>
-            <xsl:copy-of
-                select="preceding-sibling::section[1]/descendant::element()[fnk:epub-type(@epub:type, 'pagebreak')]"/>
+            
+            <!-- colophon and/or titlepage sections, including sections between those sections and this section -->
+            <xsl:variable name="deleted-sections" select="preceding-sibling::section[tokenize(@epub:type, '\s+') = ('colophon', 'titlepage')]/(. | following-sibling::section) intersect preceding-sibling::section"/>
+            <!-- colophon and/or titlepage sections, except those where the following section is not this section, and hot a colophon or titlepage -->
+            <xsl:variable name="deleted-sections" select="$deleted-sections[following-sibling::section[1][. intersect $this or tokenize(@epub:type, '\s+') = ('colophon', 'titlepage')]]"/>
+            
+            <xsl:message>* Henter sidetall fra kolofonen og/eller tittelsiden som er fjernet</xsl:message>
+            <xsl:copy-of select="$deleted-sections/descendant::*[fnk:epub-type(@epub:type, 'pagebreak')]" exclude-result-prefixes="#all"/>
             
             <xsl:apply-templates/>
         </xsl:copy>
