@@ -24,7 +24,7 @@
     <xsl:variable name="maks-antall-p-per-synkpunkt" as="xs:integer" select="4"/>
 
     <xsl:template match="/">
-        <xsl:message>lag-synkroniseringspunkter.xsl (1.0.0 / 2018-02-14)</xsl:message>
+        <xsl:message>lag-synkroniseringspunkter.xsl</xsl:message>
         <xsl:message>* Transformerer ... </xsl:message>
         <xsl:message>* Lager synkroniseringspunkter ... </xsl:message>
 
@@ -36,111 +36,136 @@
             <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template match="section/p[descendant::span[@epub:type eq 'pagebreak']]" priority="5">
-        <!-- section/p-elementer med sidetall skal gjengis som de er, og skal ikke wrappes i  noe
-            Merk @priority som sikrer at den overstyrer andre regler
-        -->
+    
+    <xsl:template match="section">
         <xsl:copy exclude-result-prefixes="#all">
-            <xsl:copy-of select="@*"/>
-            <xsl:apply-templates/>
+            <xsl:apply-templates select="@*"/>
+            
+            <xsl:for-each-group select="*" group-adjacent="boolean(self::p and not(descendant::*[tokenize(@epub:type, '\s+') = ('pagebreak', 'noteref')]))">
+                <xsl:choose>
+                    <xsl:when test="current-grouping-key()">
+                        <xsl:call-template name="create-synch-point-wrapper-div">
+                            <xsl:with-param name="elements" select="current-group()"/>
+                        </xsl:call-template>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="current-group()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each-group>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template
-        match="
-            section/p[(local-name(preceding-sibling::element()[1]) eq 'p') and not(preceding-sibling::element()[1]/descendant::span[@epub:type eq 'pagebreak'])]">
-        <!-- Denne matcher alle section/p som følger etter en p (med mindre det har sidetall, se over)
-            Slike p-elementer skal tas bort, ettersom de håndteres av template-under
-        -->
-        <!-- Bare for debugging: 
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:copy-of select="@*"/>
-            <xsl:attribute name="style" select="'text-decoration: line-through;'"/>
-            <xsl:apply-templates/>
-        </xsl:copy> -->
-    </xsl:template>
-
-    <xsl:template
-        match="
-            section/p[
-            not(preceding-sibling::element())
-            or
-            (local-name(preceding-sibling::element()[1]) ne 'p')
-            or
-            preceding-sibling::element()[1]/descendant::span[@epub:type eq 'pagebreak']
-            ]">
-        <!-- Hvis dette p-elemnetet er
-            det første barnet i section-elementet, eller
-            det første p-elementet etter et annet element, eller
-            det første p-elementet etter et p-element som inneholder sidetall
-            Da skal følgende skje:
-            Ta dette p-elementet, og alle etterfølgende p-elementer, fram til et element som ikke er p-element eller fram til et p-element som inneholder sidetall, og samle dem i et div-element.
-            
-        -->
-        <xsl:variable name="alle-relevante-p-elementer" as="element()+">
-            <xsl:sequence select="current()"/>
-            <xsl:choose>
-                <xsl:when
-                    test="
-                        every $e in following-sibling::element()
-                            satisfies (local-name($e) eq 'p') and not($e/descendant::span[@epub:type eq 'pagebreak'])">
-                    <!-- ALLE etterfølgende søsken er p-elementer, og ingen av dem inneholder sidetall, så gjør det enkelt: ta med alle etterfølgende søsken -->
-                    <xsl:sequence select="following-sibling::element()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <!-- okay, ting er ikke så enkelt. Finn fram til første etterfølgende element som ikke er p, eller som er p, men inneholder sidetall -->
-                    <xsl:variable name="neste-ikke-p" as="element()?"
-                        select="following-sibling::element()[(local-name() ne 'p') or exists(descendant::span[@epub:type eq 'pagebreak'])][1]"/>
-                    <!-- Og med utgangspunkt i gjeldende p, så velger vi alle etterfølgende p som er før dette avvikende elementet -->
-                    <xsl:sequence select="following-sibling::p[. &lt;&lt; $neste-ikke-p]"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
-        <!-- Gjør litt aritmetikk for å fordele disse p element jevnt i korrekt antall synkpunkter -->
-        <xsl:variable name="antall-p" as="xs:integer" select="count($alle-relevante-p-elementer)"/>
-        <xsl:variable name="antall-synkpunkter" as="xs:integer"
-            select="xs:integer(ceiling($antall-p div $maks-antall-p-per-synkpunkt))"/>
-        <xsl:variable name="antall-p-per-synkpunkt" as="xs:integer"
-            select="xs:integer(ceiling($antall-p div $antall-synkpunkter))"/>
-        <xsl:variable name="sp.id" as="xs:string" select="generate-id()"/>
-
-        <!-- Fordel p-elementer i synkpunkter (Merk at hvis alle p får plass i et synk-punkt, så vil for-each under ikke ha noen effekt) -->
-        <xsl:for-each select="1 to $antall-synkpunkter - 1">
-            <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',current())}">
-                <xsl:apply-templates
-                    select="$alle-relevante-p-elementer[(position() ge (current() - 1) * $antall-p-per-synkpunkt + 1) and position() le (current() * $antall-p-per-synkpunkt)]"
-                    mode="inkluder-i-wrapper"/>
+    
+    <xsl:template name="create-synch-point-wrapper-div">
+        <xsl:param name="elements" as="element()*"/>
+        
+        <!-- Some arithmetic to distribute the elements evenly across the correct number of wrappers -->
+        <xsl:variable name="number-of-wrappers" as="xs:integer" select="xs:integer(ceiling(count($elements) div $maks-antall-p-per-synkpunkt))"/>
+        <xsl:variable name="elements-per-wrapper" as="xs:integer" select="xs:integer(ceiling(count($elements) div $number-of-wrappers))"/>
+        <xsl:variable name="wrapper-id" select="generate-id($elements[1])"/>
+        
+        <!-- Distribute the elements into wrappers (Note that if all elements fit within a single wrapper, then this for-each will have no effect) -->
+        <xsl:for-each select="1 to $number-of-wrappers - 1">
+            <xsl:variable name="elements-in-this-wrapper" select="$elements[(position() ge (current() - 1) * $elements-per-wrapper + 1) and position() le (current() * $elements-per-wrapper)]"/>
+            <div class="synch-point-wrapper" id="{concat('nlb-sp-', $wrapper-id, '-', current())}">
+                <xsl:apply-templates select="$elements-in-this-wrapper">
+                    <xsl:with-param name="wrapped" select="true()" tunnel="yes"/>
+                </xsl:apply-templates>
             </div>
         </xsl:for-each>
         
-        <!-- Og så resten av avsnittene -->
-        <div class="synch-point-wrapper" id="{concat('nlb-sp-',$sp.id,'-',$antall-synkpunkter)}">
-            <xsl:apply-templates
-                select="$alle-relevante-p-elementer[position() ge (($antall-synkpunkter - 1) * $antall-p-per-synkpunkt + 1)]"
-                mode="inkluder-i-wrapper"/>
-
+        <!-- And then the rest of the elements -->
+        <xsl:variable name="elements-in-this-wrapper" select="$elements[position() ge (($number-of-wrappers - 1) * $elements-per-wrapper + 1)]"/>
+        <div class="synch-point-wrapper" id="{concat('nlb-sp-', $wrapper-id, '-', $number-of-wrappers)}">
+            <xsl:apply-templates select="$elements-in-this-wrapper">
+                <xsl:with-param name="wrapped" select="true()" tunnel="yes"/>
+            </xsl:apply-templates>
         </div>
     </xsl:template>
     
     <!-- wrap linegroups in synch-point-wrapper divs -->
     <xsl:template match="div[tokenize(@class,'\s+') = 'linegroup']">
         <div class="synch-point-wrapper" id="{concat('nlb-sp-',generate-id())}">
-            <xsl:next-match/>
+            <xsl:next-match>
+                <xsl:with-param name="wrapped" select="true()" tunnel="yes"/>
+            </xsl:next-match>
         </div>
     </xsl:template>
+    
+    <xsl:template match="p">
+        <xsl:param name="wrapped" select="false()" tunnel="yes"/>
+        <xsl:choose>
+            <xsl:when test="$wrapped">
+                <xsl:next-match/>
+            </xsl:when>
+            
+            <xsl:when test="descendant::*[tokenize(@epub:type, '\s+') = ('pagebreak', 'noteref')]">
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@*"/>
 
-
-
-
-
-    <xsl:template match="p" mode="inkluder-i-wrapper">
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:copy-of select="@*"/>
-            <!--<xsl:attribute name="style" select="'border:1pt solid green;'"/>-->
-            <xsl:apply-templates/>
-        </xsl:copy>
-
+                    <xsl:variable name="this" select="."/>
+                    <xsl:variable name="stop-at" select="descendant::*[tokenize(@epub:type, '\s+') = ('pagebreak', 'noteref')]"/>
+                    <xsl:variable name="wrapper-id" select="generate-id()"/>
+                    
+                    <xsl:for-each-group select="descendant::node()" group-adjacent="boolean(not(self::node() intersect $stop-at/descendant-or-self::node()))">
+                        <xsl:choose>
+                            <xsl:when test="current-grouping-key()">
+                                <xsl:call-template name="create-synch-point-wrapper-span">
+                                    <xsl:with-param name="wrapper-id" select="concat($wrapper-id, '-', position())"/>
+                                    <xsl:with-param name="nodes" select="current-group()/ancestor-or-self::node() intersect $this/node()"/>
+                                    <xsl:with-param name="descendants" select="current-group()"/>
+                                </xsl:call-template>
+                            </xsl:when>
+                            <xsl:when test="self::node() intersect $stop-at">
+                                <xsl:apply-templates select="current-group() intersect $stop-at"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <!-- descendants of $stop-at => ignore, already processed -->
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each-group>
+                </xsl:copy>
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <xsl:next-match/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
+    
+    <xsl:template name="create-synch-point-wrapper-span">
+        <xsl:param name="wrapper-id" as="xs:string"/>
+        <xsl:param name="nodes" as="node()*"/>
+        <xsl:param name="descendants" as="node()*"/>
+        
+        <span class="synch-point-wrapper" id="{concat('nlb-sp-', $wrapper-id)}">
+            <xsl:apply-templates select="$nodes" mode="filter-descendants">
+                <xsl:with-param name="wrapped" select="true()" tunnel="yes"/>
+                <xsl:with-param name="descendants" select="$descendants"/>
+            </xsl:apply-templates>
+        </span>
+    </xsl:template>
+    
+    <xsl:template match="node()" mode="filter-descendants">
+        <xsl:param name="descendants" as="node()*"/>
+        
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:copy-of select="@* except @id" exclude-result-prefixes="#all"/>
+            <xsl:if test="boolean(self::node() intersect $descendants)">
+                <xsl:copy-of select="@id"/>
+            </xsl:if>
+            <xsl:apply-templates select="node()[./descendant-or-self::node() intersect $descendants]" mode="#current">
+                <xsl:with-param name="descendants" select="$descendants"/>
+            </xsl:apply-templates>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="a[tokenize(@epub:type, '\s+') = 'noteref']">
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@*"/>
+            <xsl:text>Note </xsl:text>
+            <xsl:value-of select="replace(normalize-space(.), '(^[\[\(]|[\]\)]$)', '')"/>
+        </xsl:copy>
+    </xsl:template>
+
 </xsl:stylesheet>

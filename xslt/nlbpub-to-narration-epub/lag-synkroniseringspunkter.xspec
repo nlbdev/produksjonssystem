@@ -6,6 +6,9 @@
     <!-- 
         (c) 2018 NLB
         Per Sennels, 13.04.2018
+        
+        (c) 2021 NLB
+        Jostein Austvik Jacobsen, 20.01.2021
     -->
 
     <x:scenario label="Etterfølgende p-elementer ...">
@@ -123,6 +126,57 @@
                     </div>
                 </div>
                 <div class="synch-point-wrapper" id="...">
+                    <p>…</p>
+                </div>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="sync-point-wrapper and note references">
+        <!-- https://github.com/nlbdev/produksjonssystem/issues/300 -->
+        <x:context>
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <p>…</p>
+                <p>…</p>
+                <p>…</p>
+                <p>Dette er en setning.
+Se på dette<a href="#abc" epub:type="noteref" class="noteref">[1]</a> ordet.
+En setning til.
+Se på fargene blå<a href="#b" epub:type="noteref" class="noteref">[2]</a>,
+<span class="foo" id="asdf">rød<a href="#r" epub:type="noteref" class="noteref">[3]</a> og</span>
+grønn<a href="#g" epub:type="noteref" class="noteref">[4]</a>.</p>
+                <p>…</p>
+                <p>…</p>
+                <p>…</p>
+            </section>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <div class="synch-point-wrapper" id="...">
+                    <p>…</p>
+                    <p>…</p>
+                    <p>…</p>
+                </div>
+                <p>
+                    <span class="synch-point-wrapper" id="...">Dette er en setning.
+Se på dette</span>
+                    <a href="#abc" epub:type="noteref" class="noteref">Note 1</a>
+                    <span class="synch-point-wrapper" id="..."> ordet.
+En setning til.
+Se på fargene blå</span>
+                    <a href="#b" epub:type="noteref" class="noteref">Note 2</a>
+                    <span class="synch-point-wrapper" id="...">,
+<span class="foo" id="asdf">rød</span></span>
+                    <a href="#r" epub:type="noteref" class="noteref">Note 3</a>
+                    <span class="synch-point-wrapper" id="..."><span class="foo"> og</span>
+grønn</span>
+                    <a href="#g" epub:type="noteref" class="noteref">Note 4</a>
+                    <span class="synch-point-wrapper" id="...">.</span>
+                </p>
+                <div class="synch-point-wrapper" id="...">
+                    <p>…</p>
+                    <p>…</p>
                     <p>…</p>
                 </div>
             </section>
