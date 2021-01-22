@@ -253,7 +253,7 @@
     <xsl:template match="html:section | html:article">
         <xsl:call-template name="f:copy-preceding-comments"/>
         <xsl:variable name="level" select="f:level(.)"/>
-        <xsl:element name="level{f:level(.)}">
+        <xsl:element name="level{$level}">
             <xsl:call-template name="f:attlist.level">
                 <xsl:with-param name="classes" select="if (self::html:article) then 'article' else ()" tunnel="yes"/>
                 <!--<xsl:with-param name="level-classes"
@@ -262,19 +262,32 @@
             </xsl:call-template>
 
             <xsl:variable name="headline" select="(html:*[matches(local-name(),'^h\d$')])[1]"/>
+            <xsl:variable name="initial-pagebreak" select="$headline/following-sibling::*[1][f:types(.)='pagebreak']"/>
+            <xsl:variable name="move-pagebreaks" select="not($headline/preceding-sibling::*[1][f:types(.)='pagebreak']) and $headline/following-sibling::*[1][f:types(.)='pagebreak']" as="xs:boolean"/>
 
-            <xsl:choose>
-                <xsl:when test="not($headline/preceding-sibling::*[1][f:types(.)='pagebreak']) and $headline/following-sibling::*[1][f:types(.)='pagebreak']">
-                    <!-- [tpb126] pagenum must not occur directly after hx unless the hx is preceded by a pagenum -->
-                    <xsl:variable name="initial-pagebreak" select="$headline/following-sibling::*[1][f:types(.)='pagebreak']"/>
-                    <xsl:apply-templates select="$initial-pagebreak"/>
-                    <xsl:apply-templates select="$headline"/>
-                    <xsl:apply-templates select="node()[not(. intersect $initial-pagebreak) and not(. intersect $headline)]"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates select="node()"/>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:if test="$move-pagebreaks">
+                <!-- [tpb126] pagenum must not occur directly after hx unless the hx is preceded by a pagenum -->
+                <xsl:apply-templates select="$initial-pagebreak"/>
+                <xsl:apply-templates select="$headline"/>
+            </xsl:if>
+            
+            <xsl:variable name="nodes" select="if ($move-pagebreaks) then node()[not(. intersect $initial-pagebreak) and not(. intersect $headline)] else node()" as="node()*"/>
+            <xsl:for-each-group select="$nodes" group-starting-with="html:h1 | html:h2 | html:h3 | html:h4 | html:h5 | html:h6 | html:section | html:article">
+                <xsl:choose>
+                    <xsl:when test="current-group()[1][self::html:h1 | self::html:h2 | self::html:h3 | self::html:h4 | self::html:h5 | self::html:h6] and not($headline intersect current-group())">
+                        <xsl:element name="level{$level + 1}">
+                            <xsl:call-template name="f:attlist.level">
+                                <xsl:with-param name="classes" select="if (self::html:article) then 'article' else ()" tunnel="yes"/>
+                                <xsl:with-param name="except" select="'id'" tunnel="yes"/>
+                            </xsl:call-template>
+                            <xsl:apply-templates select="current-group()"/>
+                        </xsl:element>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates select="current-group()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each-group>
 
         </xsl:element>
     </xsl:template>
@@ -1418,32 +1431,19 @@
     <xsl:function name="f:level" as="xs:integer">
         <xsl:param name="element" as="element()"/>
         <xsl:variable name="level" select="($element/ancestor-or-self::html:*[self::html:section or self::html:article or self::html:aside or self::html:nav or self::html:body])[last()]"/>
-        <xsl:variable name="level-nodes" select="f:level-nodes($level)"/>
-        <xsl:variable name="h-in-section" select="$level-nodes[self::html:h1 or self::html:h2 or self::html:h3 or self::html:h4 or self::html:h5 or self::html:h6]"/>
-        <xsl:variable name="h" select="$h-in-section[1]"/>
-        <xsl:variable name="sections" select="$level/ancestor-or-self::*[self::html:section or self::html:article or self::html:aside or self::html:nav]"/>
-        <xsl:variable name="explicit-level" select="count($sections)-1"/>
-        <xsl:variable name="h-in-level-numbers" select="if ($h-in-section) then reverse($h-in-section/xs:integer(number(replace(local-name(),'^h','')))) else 1"/>
-        <xsl:variable name="implicit-level" select="if ($h-in-level-numbers[1] = 6) then 6 else ()"/>
-        <xsl:variable name="h-in-level-numbers" select="$h-in-level-numbers[not(.=6)]"/>
-        <xsl:variable name="implicit-level" select="($implicit-level, if ($h-in-level-numbers[1] = 5) then 5 else ())"/>
-        <xsl:variable name="h-in-level-numbers" select="$h-in-level-numbers[not(.=5)]"/>
-        <xsl:variable name="implicit-level" select="($implicit-level, if ($h-in-level-numbers[1] = 4) then 4 else ())"/>
-        <xsl:variable name="h-in-level-numbers" select="$h-in-level-numbers[not(.=4)]"/>
-        <xsl:variable name="implicit-level" select="($implicit-level, if ($h-in-level-numbers[1] = 3) then 3 else ())"/>
-        <xsl:variable name="h-in-level-numbers" select="$h-in-level-numbers[not(.=3)]"/>
-        <xsl:variable name="implicit-level" select="($implicit-level, if ($h-in-level-numbers[1] = 2) then 2 else ())"/>
-        <xsl:variable name="implicit-level" select="($implicit-level, if ($h-in-level-numbers = 1) then 1 else ())"/>
-        <xsl:variable name="implicit-level" select="count($implicit-level)"/>
-
-        <xsl:variable name="level" select="$explicit-level + $implicit-level"/>
-        <xsl:sequence select="max((1,min(($level, 6))))"/>
-        <!--
-            NOTE: DTBook only supports 6 levels when using the explicit level1-level6 / h1-h6 elements,
-            so min(($level, 6)) is used to flatten deeper structures.
-            The implicit level / hd elements could be used in cases where the structures are deeper.
-            However, our tools would have to support those elements.
-        -->
+        <xsl:variable name="level-depth" select="count($level/ancestor-or-self::*[self::html:section or self::html:article or self::html:aside or self::html:nav])"/>
+        <xsl:variable name="preceding-headings-in-level" select="$element/(ancestor-or-self::* intersect $level/*)/(. | preceding-sibling::*)[self::html:h1 or self::html:h2 or self::html:h3 or self::html:h4 or self::html:h5 or self::html:h6]"/>
+        
+        <xsl:choose>
+            <xsl:when test="count($preceding-headings-in-level) le 1">
+                <!-- level based only on sectioning depth -->
+                <xsl:value-of select="min(($level-depth, 6))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- level should be one deeper than the sectioning depth -->
+                <xsl:value-of select="min(($level-depth + 1, 6))"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <xsl:function name="f:level-nodes" as="node()*">

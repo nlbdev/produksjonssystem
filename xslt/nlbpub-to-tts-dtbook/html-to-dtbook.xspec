@@ -3449,4 +3449,75 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="level3 vs level2 regression test">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml"
+                  xmlns:epub="http://www.idpf.org/2007/ops"
+                  xml:lang="nb"
+                  lang="nb">
+                <head>
+                    <meta name="dc:identifier" content="123456"/>
+                </head>
+                <body>
+                    <section epub:type="bodymatter chapter">
+                        <h1 id="h1">h1</h1>
+                        <section>
+                            <h2 id="h2.1">h2.1</h2>
+                        </section>
+                        <section>
+                            <h2 id="h2.2">h2.2</h2>
+                            
+                            <section>
+                                <h3 id="h3.1">h3.1</h3>
+                            </section>
+                            
+                            <h3 id="h3.2">h3.2</h3>
+                            <p>…</p>
+                            
+                            <section>
+                                <h3 id="h3.3">h3.3</h3>
+                            </section>
+                        </section>
+                        
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/"
+                    version="2005-3"
+                    xml:lang="nb">
+                <head>
+                    <meta name="dtb:uid" content="123456"/>
+                    <meta name="dc:Identifier" content="123456"/>
+                </head>
+                <book>
+                    <frontmatter />
+                    <bodymatter>
+                        <level1 class="chapter">
+                            <h1 id="h1">h1</h1>
+                            <level2>
+                                <h2 id="h2.1">h2.1</h2>
+                            </level2>
+                            <level2>
+                                <h2 id="h2.2">h2.2</h2>
+                                <level3>
+                                    <h3 id="h3.1">h3.1</h3>
+                                </level3>
+                                <level3>
+                                    <h3 id="h3.2">h3.2</h3>
+                                    <p>…</p>
+                                </level3>
+                                <level3>
+                                    <h3 id="h3.3">h3.3</h3>
+                                </level3>
+                            </level2>
+                        </level1>
+                    </bodymatter>
+                </book>
+            </dtbook>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
