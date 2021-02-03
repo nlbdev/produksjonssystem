@@ -8,6 +8,7 @@ import tempfile
 from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
+from core.utils.metadata import Metadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -57,6 +58,8 @@ class NlbpubToPef(Pipeline):
         html_xml = ElementTree.parse(html_file).getroot()
         identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
 
+        metadata = Metadata.get_metadata_from_book(self, temp_htmldir)
+
         line_spacing = "single"
         duplex = "true"
         for e in html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:format.linespacing']"):
@@ -87,6 +90,11 @@ class NlbpubToPef(Pipeline):
             "line-spacing": line_spacing,
             "duplex": duplex
         }
+
+        if metadata["library"].lower() == "statped":
+            braille_arguments["apply-default-stylesheet"] = False
+            braille_arguments["stylesheet"] = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss"
+
         pef_tempdir_object = tempfile.TemporaryDirectory()
 
         # create context for Pipeline 2 job
