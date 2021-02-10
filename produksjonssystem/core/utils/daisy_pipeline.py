@@ -493,39 +493,58 @@ class DaisyPipelineJob():
 
         for input in script.xpath("/d:script/d:input", namespaces=DaisyPipelineJob.dp2_ws_namespace):
             if input.attrib["name"] in self.arguments:
-                value = self.arguments[input.attrib["name"]]
+                values = []
+                argument = self.arguments[input.attrib["name"]]
+                if not isinstance(argument, list):
+                    argument = [argument]
+                for argument_value in argument:
+                    value = argument_value
 
-                if self.engine["local"] and self.context:
-                    # we're dealing with a local Pipeline 2 instance, which we assume are running with localfs=true,
-                    # so that we need to use file: URIs
-                    for href in self.context:
-                        if value == href:
-                            value = self.context[href]
-                            value = pathlib.PurePath(value) if value[0] == "/" else pathlib.PureWindowsPath(value)
-                            value = value.as_uri()
+                    if self.engine["local"] and self.context:
+                        # we're dealing with a local Pipeline 2 instance, which we assume are running with localfs=true,
+                        # so that we need to use file: URIs
+                        for href in self.context:
+                            if value == href:
+                                value = self.context[href]
+                                value = pathlib.PurePath(value) if value[0] == "/" else pathlib.PureWindowsPath(value)
+                                value = value.as_uri()
 
-                jobRequest.append(ElementTree.XML(
-                    "<input name=\"{}\" xmlns=\"http://www.daisy.org/ns/pipeline/data\"><item value=\"{}\"/></input>".format(
-                        input.attrib["name"], value
-                    )))
+                    values.append(value)
+
+                input_xml = "<input name=\"{}\" xmlns=\"http://www.daisy.org/ns/pipeline/data\">".format(input.attrib["name"])
+                for value in values:
+                    input_xml += "<item value=\"{}\"/>".format(value)
+                input_xml += "</input>"
+                jobRequest.append(ElementTree.XML(input_xml))
 
         for option in script.xpath("/d:script/d:option", namespaces=DaisyPipelineJob.dp2_ws_namespace):
             if option.attrib["name"] in self.arguments:
-                value = self.arguments[option.attrib["name"]]
+                values = []
+                argument = self.arguments[option.attrib["name"]]
+                if not isinstance(argument, list):
+                    argument = [argument]
+                for argument_value in argument:
+                    value = argument_value
 
-                if self.engine["local"] and self.context and option.attrib.get("type") in ["anyFileURI", "anyDirURI"]:
-                    # we're dealing with a local Pipeline 2 instance, which we assume are running with localfs=true,
-                    # so that we need to use file: URIs
-                    for href in self.context:
-                        if value == href:
-                            value = self.context[href]
-                            value = pathlib.PurePath(value) if value[0] == "/" else pathlib.PureWindowsPath(value)
-                            value = value.as_uri()
+                    if self.engine["local"] and self.context and option.attrib.get("type") in ["anyFileURI", "anyDirURI"]:
+                        # we're dealing with a local Pipeline 2 instance, which we assume are running with localfs=true,
+                        # so that we need to use file: URIs
+                        for href in self.context:
+                            if value == href:
+                                value = self.context[href]
+                                value = pathlib.PurePath(value) if value[0] == "/" else pathlib.PureWindowsPath(value)
+                                value = value.as_uri()
 
-                jobRequest.append(ElementTree.XML(
-                    "<option name=\"{}\" xmlns=\"http://www.daisy.org/ns/pipeline/data\">{}</option>".format(
-                        option.attrib["name"], value
-                    )))
+                    values.append(value)
+
+                option_xml = "<option name=\"{}\" xmlns=\"http://www.daisy.org/ns/pipeline/data\">".format(option.attrib["name"])
+                if len(values) == 1:
+                    option_xml += values[0]
+                else:
+                    for value in values:
+                        option_xml += "<item value=\"{}\"/>".format(value)
+                option_xml += "</option>"
+                jobRequest.append(ElementTree.XML(option_xml))
 
         # Temporary files
         jobRequest_file_obj = tempfile.NamedTemporaryFile(suffix=".xml")
