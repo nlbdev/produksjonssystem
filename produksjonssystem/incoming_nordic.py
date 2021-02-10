@@ -3,13 +3,16 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import traceback
 
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
+from core.utils.xslt import Xslt
 from core.utils.mathml_to_text import Mathml_validator
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -68,11 +71,22 @@ class IncomingNordic(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return
 
+        self.utils.report.info("Lager en kopi av EPUBen med tomme bildefiler")
+        temp_noimages_epubdir_obj = tempfile.TemporaryDirectory()
+        temp_noimages_epubdir = temp_noimages_epubdir_obj.name
+        self.utils.filesystem.copy(epub.asDir(), temp_noimages_epubdir)
+        for root, dirs, files in os.walk(os.path.join(temp_noimages_epubdir, "EPUB", "images")):
+            for file in files:
+                fullpath = os.path.join(root, file)
+                os.remove(fullpath)
+                shutil.copy(os.path.join(Xslt.xslt_dir, IncomingNordic.uid, "reference-files", "demobilde.jpg"), fullpath)
+        temp_noimages_epub = Epub(self, temp_noimages_epubdir)
+
         self.utils.report.info("Validerer EPUB med epubcheck og nordiske retningslinjer...")
-        epub_file = epub.asFile()
+        epub_noimages_file = temp_noimages_epub.asFile()
         with DaisyPipelineJob(self,
                               "nordic-epub3-validate",
-                              {"epub": os.path.basename(epub_file)},
+                              {"epub": os.path.basename(epub_noimages_file)},
                               priority="high",
                               pipeline_and_script_version=[
                                 ("1.13.6", "1.4.6"),
@@ -81,7 +95,7 @@ class IncomingNordic(Pipeline):
                                 ("1.11.1-SNAPSHOT", "1.3.0"),
                               ],
                               context={
-                                os.path.basename(epub_file): epub_file
+                                os.path.basename(epub_noimages_file): epub_noimages_file
                               }) as dp2_job:
 
             # get validation report
