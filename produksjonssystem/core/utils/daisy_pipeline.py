@@ -579,9 +579,13 @@ class DaisyPipelineJob():
                 if context_file is not None:
                     context_file.close()
 
-        job = ElementTree.XML(response.split("?>")[-1])
+        try:
+            job = ElementTree.XML(response.split("?>")[-1])
+            self.job_id = job.attrib["id"]
+        except Exception as e:
+            logging.debug(response)
+            raise e
 
-        self.job_id = job.attrib["id"]
         return self.job_id
 
     def get_status(self):
