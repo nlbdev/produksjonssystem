@@ -39,6 +39,8 @@ class DaisyPipelineJob():
     arguments = None
     context = None
     priority = None
+    found_pipeline_version = None
+    found_script_version = None
 
     # treat these as class variables, specific for local jobs
     pid = None
@@ -347,7 +349,7 @@ class DaisyPipelineJob():
                 if len(local_engines) > 0 and not DaisyPipelineJob.is_alive(local_engines[0]):
                     self.local_start_engine()
 
-                (found_pipeline_version, found_script_version) = (None, None)
+                (self.found_pipeline_version, self.found_script_version) = (None, None)
 
                 for (pipeline_version, script_version) in self.pipeline_and_script_version:
                     if (pipeline_version, script_version) != self.pipeline_and_script_version[0]:
@@ -381,7 +383,7 @@ class DaisyPipelineJob():
                         if queue_size < min_queue_size:
                             # smaller queue than any previously found: use this engine
                             self.engine = engine
-                            (found_pipeline_version, found_script_version) = (pipeline_version, script_version)
+                            (self.found_pipeline_version, self.found_script_version) = (pipeline_version, script_version)
                         if queue_size == 0:
                             # empty queue: no point checking other engines
                             break
@@ -399,8 +401,8 @@ class DaisyPipelineJob():
 
                 if self.engine:
                     self.pipeline.utils.report.info("Bruker Pipeline 2-instans på: {}".format(self.engine["endpoint"]))
-                    self.pipeline.utils.report.info("Pipeline 2-versjon: {}".format(found_pipeline_version))
-                    self.pipeline.utils.report.info("Versjon av {}: {}".format(self.script, found_script_version))
+                    self.pipeline.utils.report.info("Pipeline 2-versjon: {}".format(self.found_pipeline_version))
+                    self.pipeline.utils.report.info("Versjon av {}: {}".format(self.script, self.found_script_version))
                 else:
                     self.pipeline.utils.report.warning("Fant ingen brukbar Pipeline 2-instans")
 
