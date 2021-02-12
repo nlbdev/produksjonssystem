@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import mimetypes
 import os
 import sys
 import tempfile
@@ -163,6 +164,18 @@ class NlbpubToPef(Pipeline):
 
         # ---------- konverter til PEF ----------
 
+        # create context for Pipeline 2 job
+        html_dir = os.path.dirname(html_file)
+        html_context = {}
+        for root, dirs, files in os.walk(html_dir):
+            for file in files:
+                kind = mimetypes.guess_type(file)[0]
+                if kind is not None and kind.split("/")[0] in ["image", "video", "audio"]:
+                    continue  # ignore media files
+                fullpath = os.path.join(root, file)
+                relpath = os.path.relpath(fullpath, html_dir)
+                html_context[relpath] = fullpath
+
         script_id = "nlb:html-to-pef"
         pipeline_and_script_version = [
             ("1.11.1-SNAPSHOT", "1.10.0-SNAPSHOT"),
@@ -179,15 +192,6 @@ class NlbpubToPef(Pipeline):
             braille_arguments["stylesheet"] = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss"
 
         pef_tempdir_object = tempfile.TemporaryDirectory()
-
-        # create context for Pipeline 2 job
-        html_dir = os.path.dirname(html_file)
-        html_context = {}
-        for root, dirs, files in os.walk(html_dir):
-            for file in files:
-                fullpath = os.path.join(root, file)
-                relpath = os.path.relpath(fullpath, html_dir)
-                html_context[relpath] = fullpath
 
         self.utils.report.info("Konverterer fra HTML til PEF...")
         found_pipeline_version = None
