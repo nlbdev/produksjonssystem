@@ -187,9 +187,41 @@ class NlbpubToPef(Pipeline):
             "duplex": duplex,
         }
 
-        if metadata["library"].lower() == "statped":
-            braille_arguments["apply-default-stylesheet"] = False
-            braille_arguments["stylesheet"] = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss"
+        if metadata["library"].lower() == "statped" and False:
+            # use DAISYs version of PIP instead
+            script_id = "html-to-pef"
+            pipeline_and_script_version = [
+                ("1.13.6", "4.0.0"),
+            ]
+
+            braille_arguments = {
+                "html": os.path.basename(html_file),
+                "transform": "(translator:liblouis)(formatter:dotify)(lang:no)(dots:6)(grade:0)",
+                "stylesheet": " ".join([
+                    # 1. better volume breaking, and also removes title page and print toc, moves the colophon and copyright page to the end of the book
+                    # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/pre-processing.xsl",
+
+                    # 2. DAISY: TOC generation
+                    # "https://raw.githubusercontent.com/daisy/pipeline/master/modules/braille/xml-to-pef/src/main/resources/xml/xslt/generate-toc.xsl",
+
+                    # 3. NLB: Add table classes based on the dimensions of the table, for better handling of tables
+                    # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/add-table-classes.xsl",
+
+                    # 4. NLB: Generate a new title page and about page in the frontmatter
+                    # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/insert-boilerplate.xsl",
+
+                    # 5. Statped-specific SCSS
+                    "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss",
+                ]),
+                "line-spacing": line_spacing,
+                "duplex": duplex,
+            }
+
+            # use DAISYs version of PIP
+            script_id = "html-to-pef"
+            pipeline_and_script_version = [
+                ("1.13.6", "4.0.0"),
+            ]
 
         pef_tempdir_object = tempfile.TemporaryDirectory()
 
