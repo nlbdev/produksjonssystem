@@ -7,9 +7,11 @@ import shutil
 import smtplib
 import tempfile
 import time
+
 from datetime import datetime, timedelta, timezone
 from email.headerregistry import Address
 from email.message import EmailMessage
+from pprint import pformat
 
 import markdown
 from dotmap import DotMap
@@ -103,11 +105,12 @@ class Report():
             lines = message
         else:
             lines = [message]
+        lines = [line if isinstance(line, str) else pformat(line) for line in lines]  # make everything into a string
 
         if message_type not in self._messages:
             self._messages[message_type] = []
 
-        lines = [l for line in lines for l in line.split("\n")]
+        lines = [subline for line in lines for subline in line.split("\n")]
         if add_empty_line_between:
             spaced_lines = []
             for line in lines:
