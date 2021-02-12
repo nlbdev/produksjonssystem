@@ -4,6 +4,7 @@
 import os
 import sys
 import tempfile
+import traceback
 
 from lxml import etree as ElementTree
 
@@ -14,6 +15,84 @@ from core.utils.daisy_pipeline import DaisyPipelineJob
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
+
+
+def transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata):
+    html_xml = ElementTree.parse(html_file).getroot()
+    pef_xml_document = ElementTree.parse(pef_file)
+    pef_xml = pef_xml_document.getroot()
+    html_meta_elements = html_xml.xpath("/*/*[local-name()='head']/*")
+    pef_meta = pef_xml.xpath("/*/*[local-name()='head']/*[local-name()='meta']")[0]
+    pef_meta_elements = pef_xml.xpath("/*/*[local-name()='head']/*[local-name()='meta']/*")
+
+    dc = "{http://purl.org/dc/elements/1.1/}"
+    tail = None
+    lasttail = None
+    for meta in pef_meta_elements:
+        if tail is None:
+            tail = meta.tail
+        lasttail = meta.tail
+        if meta.tag in [f"{dc}format", f"{dc}date"] or meta.tag.endswith("sheet-count"):
+            meta.tail = tail  # keep, and make sure the trailing whitespace is the same for all elements
+        else:
+            pef_meta.remove(meta)
+
+    for meta in html_meta_elements:
+        tag = None
+        text = None
+        name = meta.tag.split("}")[-1]
+        namespace = None
+        namespace = meta.tag.split("}")[0].split("{")[-1]
+
+        # title has its own element in HTML, so we need to handle it explicitly here
+        if name == "title":
+            namespace = "http://purl.org/dc/elements/1.1/"
+            tag = "{" + namespace + "}title"
+            text = meta.text
+
+        # meta charset, link, script etc.
+        elif name != "meta" or "name" not in meta.attrib or "content" not in meta.attrib:
+            continue  # not relevant
+
+        # we use the dc:format from the preexisting PEF metadata, and ignore some other metadata as well
+        elif meta.attrib["name"] in ["dc:format", "dcterms:modified", "viewport"]:
+            continue  # ignore these
+
+        # description doesn't use a prefix in HTML, so we need to handle it explicitly here
+        elif meta.attrib["name"] == "description":
+            namespace = "http://purl.org/dc/elements/1.1/"
+            tag = "{" + namespace + "}description.abstract"
+            text = meta.attrib["content"]
+
+        # all other meta elements
+        else:
+            prefix = meta.attrib["name"].split(":")[0] if ":" in meta.attrib["name"] else None
+            namespace = None
+            if prefix is not None:
+                namespace = meta.nsmap.get(prefix)
+            if namespace is None:
+                continue  # namespace not found - only metadata with a namespace will (can) be included
+
+            tag = "{" + namespace + "}" + meta.attrib["name"].split(":")[1]
+            text = meta.attrib["content"]
+
+        element = ElementTree.Element(tag, nsmap={prefix: meta.nsmap[prefix] for prefix in meta.nsmap if meta.nsmap[prefix] == namespace})
+        element.text = text
+        element.tail = tail
+        pef_meta.append(element)
+
+    for (tagname, prefix, namespace, attribname, value) in additional_metadata:
+        element = ElementTree.Element("{" + namespace + "}" + tagname, nsmap={prefix: namespace})
+        if attribname is not None:
+            element.attrib["name"] = attribname
+        element.text = value
+        element.tail = tail
+        pef_meta.append(element)
+
+    # set correct whitespace trailing the last meta element
+    pef_meta.xpath("*")[-1].tail = lasttail
+
+    pef_xml_document.write(pef_file, method='XML', xml_declaration=True, encoding='UTF-8', pretty_print=False)
 
 
 class NlbpubToPef(Pipeline):
@@ -84,11 +163,15 @@ class NlbpubToPef(Pipeline):
 
         # ---------- konverter til PEF ----------
 
+        script_id = "nlb:html-to-pef"
+        pipeline_and_script_version = [
+            ("1.11.1-SNAPSHOT", "1.10.0-SNAPSHOT"),
+        ]
         braille_arguments = {
             "source": os.path.basename(html_file),
             "braille-standard": "(dots:6)(grade:0)",
             "line-spacing": line_spacing,
-            "duplex": duplex
+            "duplex": duplex,
         }
 
         if metadata["library"].lower() == "statped":
@@ -107,12 +190,16 @@ class NlbpubToPef(Pipeline):
                 html_context[relpath] = fullpath
 
         self.utils.report.info("Konverterer fra HTML til PEF...")
+        found_pipeline_version = None
+        found_script_version = None
         with DaisyPipelineJob(self,
-                              "nlb:html-to-pef",
+                              script_id,
                               braille_arguments,
-                              pipeline_and_script_version=("1.11.1-SNAPSHOT", "1.10.0-SNAPSHOT"),
+                              pipeline_and_script_version=pipeline_and_script_version,
                               context=html_context
                               ) as dp2_job:
+            found_pipeline_version = dp2_job.found_pipeline_version
+            found_script_version = dp2_job.found_script_version
 
             # get conversion report
             if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
@@ -137,6 +224,34 @@ class NlbpubToPef(Pipeline):
             self.utils.filesystem.copy(dp2_pef_dir, pef_tempdir_object.name)
 
             self.utils.report.info("Boken ble konvertert.")
+
+        self.utils.report.info("Kopierer metadata fra HTML til PEF...")
+        try:
+            pef_file = None
+            for root, dirs, files in os.walk(pef_tempdir_object.name):
+                for f in files:
+                    if f.endswith(".pef"):
+                        pef_file = os.path.join(root, f)
+            if not pef_file or not os.path.isfile(pef_file):
+                self.utils.report.error(self.book["name"] + ": Klarte ikke å finne en PEF-fil.")
+            else:
+                additional_metadata = []
+                additional_metadata.append(("daisy-pipeline-engine-version", "nlbprod", "http://www.nlb.no/production", None, found_pipeline_version))
+                additional_metadata.append(("daisy-pipeline-script-id", "nlbprod", "http://www.nlb.no/production", None, script_id))
+                additional_metadata.append(("daisy-pipeline-script-version", "nlbprod", "http://www.nlb.no/production", None, found_script_version))
+                for argument in braille_arguments:
+                    if argument in ["source", "html"]:
+                        continue  # skip HTML file path
+                    values = braille_arguments[argument]
+                    values = values if isinstance(values, list) else [values]
+                    for value in values:
+                        additional_metadata.append(("daisy-pipeline-argument", "nlbprod", "http://www.nlb.no/production", argument, value))
+
+                transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata)
+
+        except Exception:
+            self.report.warning(traceback.format_exc(), preformatted=True)
+            self.report.error("An error occured while trying to insert metadata about the conversion")
 
         self.utils.report.info("Kopierer til PEF-arkiv.")
         archived_path, stored = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
