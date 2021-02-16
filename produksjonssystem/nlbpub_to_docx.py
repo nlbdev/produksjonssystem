@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -52,7 +53,7 @@ class NLBpubToDocx(Pipeline):
             epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
-        
+
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
@@ -97,6 +98,18 @@ class NLBpubToDocx(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
 
+        temp_xml_file_obj = tempfile.NamedTemporaryFile()
+        temp_xml_file = temp_xml_file_obj.name
+
+        self.utils.report.info("Konverterer fra ASCIIMath til norsk punktnotasjon…")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, NLBpubToDocx.uid, "nordic-asciimath-epub.xsl"),
+                    source=html_file,
+                    target=temp_xml_file)
+        if not xslt.success:
+            return False
+        shutil.copy(temp_xml_file, html_file)
+
                 # ---------- konverter HTML-fila til DOCX ----------
 
         temp_docxdir_obj = tempfile.TemporaryDirectory()
@@ -131,7 +144,7 @@ class NLBpubToDocx(Pipeline):
                 #"--remove-paragraph-spacing-indent-size=-1",
                 "--font-size-mapping=13,13,13,13,13,13,13,13"
             ])
-                                                            
+
 
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
@@ -140,7 +153,7 @@ class NLBpubToDocx(Pipeline):
 
 # -------------  script from kvile ---------------
 
-            
+
 
                 document = Document(os.path.join(temp_docxdir, epub.identifier() + ".docx"))
 
@@ -163,11 +176,11 @@ class NLBpubToDocx(Pipeline):
                         emptyParagraph = True
                     else:
                         emptyParagraph = False
-                
+
 
                 document.save(os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
                 self.utils.report.info("Temp-fil ble lagret: "+os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
-         
+
 # ---------- end script from kvile -------
 
 

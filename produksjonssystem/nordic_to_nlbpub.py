@@ -162,16 +162,6 @@ class NordicToNlbpub(Pipeline):
             return False
         shutil.copy(temp_xml_file, html_file)
 
-        if library.lower() == "statped":
-            self.utils.report.info("Konverterer fra ASCIIMath til norsk punktnotasjon…")
-            xslt = Xslt(self,
-                        stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-asciimath-epub.xsl"),
-                        source=html_file,
-                        target=temp_xml_file)
-            if not xslt.success:
-                return False
-            shutil.copy(temp_xml_file, html_file)
-
         self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
         nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
         nlbpub_tempdir = nlbpub_tempdir_obj.name
