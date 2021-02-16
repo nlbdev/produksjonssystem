@@ -599,7 +599,11 @@ class Metadata:
             html_document = ElementTree.parse(html_path)
             html = html_document.getroot()
             old_head = html.xpath("/*/*[local-name()='head']")[0]  # assume that there's a <head>
-            new_head = ElementTree.fromstring(html_head, )
+            try:
+                new_head = ElementTree.fromstring(html_head)
+            except Exception:
+                logging.debug(html_head)
+                raise
 
             # replace old_head with new_head
             if old_head.tail is not None:
