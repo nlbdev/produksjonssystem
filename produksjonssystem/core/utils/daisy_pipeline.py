@@ -265,8 +265,8 @@ class DaisyPipelineJob():
                 self.status = "IDLE"
                 idle_start = time.time()
                 running_start = time.time()
-                idle_timeout = 3600 * 2
-                running_timeout = 3600
+                idle_timeout = 3600 * 2.5
+                running_timeout = 3600 * 2
                 timed_out = False
                 engine_died = False
                 while not timed_out and self.status in ["IDLE", "RUNNING"]:
