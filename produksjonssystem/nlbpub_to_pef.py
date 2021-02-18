@@ -35,8 +35,6 @@ def transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata)
         lasttail = meta.tail
         if meta.tag in [f"{dc}format", f"{dc}date"] or meta.tag.endswith("sheet-count"):
             meta.tail = tail  # keep, and make sure the trailing whitespace is the same for all elements
-        else:
-            pef_meta.remove(meta)
 
     for meta in html_meta_elements:
         tag = None
@@ -79,6 +77,8 @@ def transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata)
 
         element = ElementTree.Element(tag, nsmap={prefix: meta.nsmap[prefix] for prefix in meta.nsmap if meta.nsmap[prefix] == namespace})
         element.text = text
+        if namespace == "http://purl.org/dc/elements/1.1/":
+            element = ElementTree.Comment(" " + ElementTree.tounicode(element) + " ")
         element.tail = tail
         pef_meta.append(element)
 
@@ -87,6 +87,8 @@ def transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata)
         if attribname is not None:
             element.attrib["name"] = attribname
         element.text = value
+        if namespace == "http://purl.org/dc/elements/1.1/":
+            element = ElementTree.Comment(" " + ElementTree.tounicode(element) + " ")
         element.tail = tail
         pef_meta.append(element)
 
@@ -286,8 +288,8 @@ class NlbpubToPef(Pipeline):
                 transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata)
 
         except Exception:
-            self.report.warning(traceback.format_exc(), preformatted=True)
-            self.report.error("An error occured while trying to insert metadata about the conversion")
+            self.utils.report.warning(traceback.format_exc(), preformatted=True)
+            self.utils.report.error("An error occured while trying to insert metadata about the conversion")
 
         self.utils.report.info("Kopierer til PEF-arkiv.")
         archived_path, stored = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
