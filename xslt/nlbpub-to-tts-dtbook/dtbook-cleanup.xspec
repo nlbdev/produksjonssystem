@@ -283,4 +283,87 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="when there's a nlbbib:responsibilityStatement - use it as docauthor">
+        <x:context>
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="228974"/>
+                    <meta name="dc:Identifier" content="228974"/>
+                    <meta name="dc:Title" content="Lek og samspill i et mangfoldsperspektiv"/>
+                    <meta name="dc:Date" content="2019-11-06" />
+                    <meta name="dc:Contributor" content="Fodstad, Cecilie Dyrkorn"/>
+                    <meta name="dc:Contributor" content="Hopperstad, Marit Holm"/>
+                    <meta name="dc:Contributor" content="Kalkman, Kris"/>
+                    <meta name="dc:Contributor" content="Kanstad, Marit"/>
+                    <meta name="dc:Contributor" content="Kibsgaard, Sonja"/>
+                    <meta name="dc:Contributor" content="Kulset, Nora"/>
+                    <meta name="dc:Contributor" content="Olsen, Torild Marie"/>
+                    <meta name="dc:Contributor" content="Valenta, Marko"/>
+                    <meta name="dc:contributor.editor" content="Kanstad, Marit"/>
+                    <meta name="dc:contributor.editor" content="Kibsgaard, Sonja"/>
+                    <meta name="dc:contributor.narrator" content="Brage Talesyntese"/>
+                    <meta name="nlbbib:responsibilityStatement" content="Sonja Kibsgaard og Marit Kanstad (red.)"/>
+                </head>
+                <book>
+                    <frontmatter>
+                        <doctitle>Lek og samspill i et mangfoldsperspektiv</doctitle>
+                        <docauthor>Marit Kanstad (red.)</docauthor>
+                        <docauthor>Sonja Kibsgaard (red.)</docauthor>
+                        <level1 id="c1" class="jacketcopy">
+                            <prodnote id="c2" class="frontcover" render="optional">
+                                <imggroup>
+                                    <img alt="image" src="images/cover.jpg" id="img_1"/>
+                                </imggroup>
+                            </prodnote>
+                        </level1>
+                        <level1 id="d6e720-0" class="chapter">
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p>Lorem ipsum</p>
+                        </level1>
+                    </frontmatter>
+                </book>
+            </dtbook>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <dtbook xmlns="http://www.daisy.org/z3986/2005/dtbook/" version="2005-3">
+                <head>
+                    <meta name="dtb:uid" content="228974"/>
+                    <meta name="dc:Identifier" content="228974"/>
+                    <meta name="dc:Title" content="Lek og samspill i et mangfoldsperspektiv"/>
+                    <meta name="dc:Date" content="2019-11-06" />
+                    <meta name="dc:Contributor" content="Fodstad, Cecilie Dyrkorn"/>
+                    <meta name="dc:Contributor" content="Hopperstad, Marit Holm"/>
+                    <meta name="dc:Contributor" content="Kalkman, Kris"/>
+                    <meta name="dc:Contributor" content="Kanstad, Marit"/>
+                    <meta name="dc:Contributor" content="Kibsgaard, Sonja"/>
+                    <meta name="dc:Contributor" content="Kulset, Nora"/>
+                    <meta name="dc:Contributor" content="Olsen, Torild Marie"/>
+                    <meta name="dc:Contributor" content="Valenta, Marko"/>
+                    <!-- not allowed in DTBook: <meta name="dc:contributor.editor" content="Kanstad, Marit"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:contributor.editor" content="Kibsgaard, Sonja"/> -->
+                    <!-- not allowed in DTBook: <meta name="dc:contributor.narrator" content="Brage Talesyntese"/> -->
+                    <meta name="nlbbib:responsibilityStatement" content="Sonja Kibsgaard og Marit Kanstad (red.)"/>
+                </head>
+                <book>
+                    <frontmatter>
+                        <doctitle>Lek og samspill i et mangfoldsperspektiv</doctitle>
+                        <docauthor>Sonja Kibsgaard og Marit Kanstad (red.)</docauthor>
+                        <level1 id="c1" class="jacketcopy">
+                            <prodnote id="c2" class="frontcover" render="optional">
+                                <imggroup>
+                                    <img alt="" src="images/cover.jpg" id="img_1"/>
+                                </imggroup>
+                            </prodnote>
+                        </level1>
+                        <level1 id="d6e720-0" class="chapter">
+                            <h1 id="d6e725">Lek og samspill i et mangfoldsperspektiv</h1>
+                            <p>Lorem ipsum</p>
+                        </level1>
+                    </frontmatter>
+                </book>
+            </dtbook>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

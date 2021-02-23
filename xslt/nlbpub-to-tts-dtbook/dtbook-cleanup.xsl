@@ -52,19 +52,29 @@
     <xsl:template match="doctitle">
         <xsl:next-match/>
         
-        <xsl:variable name="authors" select="/*/head/meta[lower-case(@name)='dc:creator']/@content" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:contributor.editor']/concat(string-join(reverse(tokenize(@content,' *, *')),' '),' (red.)')" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher.original']/@content" as="xs:string*"/>
-        <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher']/@content" as="xs:string*"/>
-        <xsl:for-each select="$authors">
-            <docauthor>
-                <xsl:value-of select="string-join(reverse(tokenize(.,' *, *')),' ')"/>
-            </docauthor>
-        </xsl:for-each>
-        <xsl:if test="count($authors) = 0">
-            <xsl:message select="'Fant ingen forfattere (dc:creator) eller redaktører (dc:contributor.editor).'"/>
-            <xsl:copy-of select="following-sibling::docauthor" exclude-result-prefixes="#all"/>
-        </xsl:if>
+        <xsl:variable name="responsibilityStatement" select="/*/head/meta[@name = 'nlbbib:responsibilityStatement']/@content" as="xs:string?"/>
+        <xsl:choose>
+            <xsl:when test="$responsibilityStatement">
+                <docauthor>
+                    <xsl:value-of select="$responsibilityStatement"/>
+                </docauthor>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="authors" select="/*/head/meta[lower-case(@name)='dc:creator']/@content" as="xs:string*"/>
+                <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:contributor.editor']/concat(string-join(reverse(tokenize(@content,' *, *')),' '),' (red.)')" as="xs:string*"/>
+                <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher.original']/@content" as="xs:string*"/>
+                <xsl:variable name="authors" select="if (count($authors)) then $authors else /*/head/meta[lower-case(@name)='dc:publisher']/@content" as="xs:string*"/>
+                <xsl:for-each select="$authors">
+                    <docauthor>
+                        <xsl:value-of select="string-join(reverse(tokenize(.,' *, *')),' ')"/>
+                    </docauthor>
+                </xsl:for-each>
+                <xsl:if test="count($authors) = 0">
+                    <xsl:message select="'Fant ingen forfattere (dc:creator) eller redaktører (dc:contributor.editor).'"/>
+                    <xsl:copy-of select="following-sibling::docauthor" exclude-result-prefixes="#all"/>
+                </xsl:if>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <xsl:template match="docauthor"/>
