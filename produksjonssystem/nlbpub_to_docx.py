@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import traceback
+import zipfile
 
 import re
 
@@ -16,6 +17,8 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+
+from pathlib import Path
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -53,7 +56,7 @@ class NLBpubToDocx(Pipeline):
             epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
-
+        
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
@@ -67,7 +70,10 @@ class NLBpubToDocx(Pipeline):
         # language must be exctracted from epub or else docx default language (nb) wil be used in the converted file
         language = ""
         try:
-            language = " (" + epub.meta("dc:language") + ") "
+           #language = " (" + epub.meta("dc:language") + ") "
+           language = epub.meta("dc:language")
+          
+          
         except Exception:
             pass
 
@@ -138,27 +144,47 @@ class NLBpubToDocx(Pipeline):
                 "--docx-page-margin-bottom=42",
                 "--docx-page-margin-left=70",
                 "--docx-page-margin-right=56",
+                #"--language="+epub.meta('dc:language'),
                 ("--language=" + language) if language else "",
                 "--base-font-size=13",
                 #"--remove-paragraph-spacing",
                 #"--remove-paragraph-spacing-indent-size=-1",
                 "--font-size-mapping=13,13,13,13,13,13,13,13"
             ])
-
+                                                            
 
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
 
 
-
+            
 # -------------  script from kvile ---------------
-
-
-
                 document = Document(os.path.join(temp_docxdir, epub.identifier() + ".docx"))
 
                 paragraphList = document.paragraphs
                 emptyParagraph = False
+              
+                # ny kode 2021-01-20
+                #folder = os.path.join(temp_docxdir)
+                
+                folder = Path(temp_docxdir)
+                # slutt ny kode 
+
+
+                #self.utils.report.info("Folder: "+folder)
+
+                def zipdir(src, dst, zip_name):
+                    os.chdir(dst)
+                    ziph = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+                    for root, dirs, files in os.walk(src):
+                        for file in files:
+                            ziph.write(os.path.join(root, file), arcname=os.path.join(root.replace(src, ""), file))
+                    ziph.close()
+
+                def writeFile(txt, dst):
+                    tempFile = open(folder / dst,"w+")
+                    tempFile.write(txt)
+                    tempFile.close()
 
                 def delete_paragraph(paragraph):
                    # self.utils.report.info("Delete paragraph: ")
@@ -176,11 +202,32 @@ class NLBpubToDocx(Pipeline):
                         emptyParagraph = True
                     else:
                         emptyParagraph = False
-
+                
 
                 document.save(os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
                 self.utils.report.info("Temp-fil ble lagret: "+os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
 
+
+                
+
+                wordFile = os.path.join(temp_docxdir, epub.identifier() + "_clean.docx")
+
+                zipDocument = zipfile.ZipFile((folder / wordFile))
+                tempFolder = "temp"
+                zipDocument.extractall(folder/ tempFolder)
+                zipDocument.close()
+                zippedFile = tempFolder + "/word/numbering.xml"
+                xmlFile = open((folder / zippedFile), 'r+')
+                xmlText = xmlFile.read()
+                xmlText = re.sub(r'w:left="1152"', r'w:left="360"', xmlText)
+                xmlText = re.sub(r'w:left="1512"', r'w:left="720"', xmlText)
+                xmlText = re.sub(r'w:left="1872"', r'w:left="1080"', xmlText)
+
+
+                writeFile(xmlText, zippedFile)
+                zipdir(str(folder / tempFolder), str(folder), os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
+              
+         
 # ---------- end script from kvile -------
 
 

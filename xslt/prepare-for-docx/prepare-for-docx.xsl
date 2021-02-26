@@ -108,7 +108,7 @@
   
         <xsl:template match="aside[f:classes(.) = 'sidebar']">
             <xsl:element name="aside">
-            <p lang="no" xml:lang="no"></p>
+                <p> <span xml:lang="no" lang="no"></span></p>
             <xsl:apply-templates select="node()"/>
            
             </xsl:element>
@@ -116,7 +116,7 @@
     
     <xsl:template match="div[f:classes(.) = 'linegroup']">
         <xsl:element name="div">
-        <p lang="no" xml:lang="no"></p>
+            <p> <span xml:lang="no" lang="no"></span></p>
         <xsl:apply-templates select="node()"/>
        
         </xsl:element>
@@ -124,7 +124,7 @@
     
     <xsl:template match="div[f:classes(.) = 'ramme1'] | div[f:classes(.) = 'ramme2'] | div[f:classes(.) = 'ramme3'] | div[f:classes(.) = 'ramme4'] | div[f:classes(.) = 'ramme5'] | div[f:classes(.) = 'ramme6']">
         <xsl:element name="div">
-        <p lang="no" xml:lang="no"></p>
+            <p> <span xml:lang="no" lang="no"></span></p>
         <xsl:apply-templates select="node()"/>
        
         </xsl:element>
@@ -135,18 +135,16 @@
     <xsl:template match="div[f:classes(.) = 'ramdoc']">
         <p></p>
         <xsl:element name="div">
-            <p lang="no" xml:lang="no">Ramme:</p>
-            <xsl:apply-templates select="node()"/>
-           
-        </xsl:element>
+            <p> <span xml:lang="no" lang="no">Ramme:</span></p>
+              <xsl:apply-templates select="node()"/>
+            </xsl:element>
     </xsl:template>
     
     <xsl:template match="aside[f:classes(.) = 'ramdoc']">
         <p></p>
         <xsl:element name="aside">
-            <p lang="no" xml:lang="no">Ramme:</p>
-            <xsl:apply-templates select="node()"/>
-          
+            <p> <span xml:lang="no" lang="no">Ramme:</span></p>
+                <xsl:apply-templates select="node()"/>
         </xsl:element>
     </xsl:template>
     
@@ -172,9 +170,9 @@
         <xsl:if test="string-length(@alt) gt 0">
         <xsl:if test="not($is-inside-figure)">
             <p></p>
-            <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>Bilde:</p>                
+            <p><xsl:attribute name="class">margpos</xsl:attribute><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>Bilde:</p>                
         </xsl:if>            
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="concat('Forklaring: ', @alt)"/></p>
+            <p><xsl:attribute name="class">margpos</xsl:attribute><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute><xsl:value-of select="concat('Forklaring: ', @alt)"/></p>
         <xsl:if test="not($is-inside-figure)">
         <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute></p> 
         </xsl:if>
@@ -183,7 +181,7 @@
 
     <xsl:template match="figure[f:classes(.) = 'image']">
         <p></p>
-        <p><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>Bilde:</p>        
+        <p><xsl:attribute name="class">margpos</xsl:attribute><xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>Bilde:</p>        
         <xsl:copy exclude-result-prefixes="#all">
         <xsl:apply-templates select="@*"/>
         <xsl:apply-templates select="node()"/>
@@ -230,10 +228,11 @@
    
     
 
-    <xsl:template match="ol[parent::section[f:types(.) = 'toc']]">
+    <xsl:template match="ol[parent::section[f:types(.) = 'toc']]" priority="10">
     <xsl:copy exclude-result-prefixes="#all">
     <xsl:apply-templates select="@*"/>
-    <li  lang="no" xml:lang="no">xxx1 <a href="#statped_merknad"> <span class="lic">Merknad</span></a></li>
+   
+        <li> <span xml:lang="no" lang="no">xxx1</span> <a href="#statped_merknad"> <span class="lic"><span xml:lang="no" lang="no">Merknad</span></span></a></li>
     <xsl:apply-templates select="node()"/>
     </xsl:copy>
     </xsl:template>
@@ -304,7 +303,7 @@
             <xsl:variable name="isbn" select="/*/head/meta[@name = 'schema:isbn']/@content"/>
 
             <p>
-                <xsl:attribute name="lang">no</xsl:attribute><xsl:attribute name="xml:lang">no</xsl:attribute>
+                <xsl:attribute name="xml:lang">no</xsl:attribute><xsl:attribute name="lang">no</xsl:attribute>
                 <xsl:value-of select="$title"/>
              <!--   <xsl:if test="$language">
                     <xsl:value-of select="concat(' - ', $language)"/>
@@ -376,14 +375,14 @@
             
        
             <div>
-                <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Generell merknad for Statpeds leselistbøker:</h1>
-                <p lang="no" xml:lang="no">Filen har en klikkbar innholdsfortegnelse.</p>
-                <p lang="no" xml:lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</p>
-                <p lang="no" xml:lang="no">--- innleder sidetallet.</p>
-                <p lang="no" xml:lang="no">Uthevingstegnet er slik: _.</p>
-                <p lang="no" xml:lang="no">Eksempel: _Denne setningen er uthevet._</p>
-                <p lang="no" xml:lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</p>
-                <p lang="no" xml:lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</p>
+                <h1 id="statped_merknad"> <span xml:lang="no" lang="no"> xxx1 Generell merknad for Statpeds leselistbøker:</span></h1>
+                <p> <span xml:lang="no" lang="no">Filen har en klikkbar innholdsfortegnelse.</span></p>
+                <p> <span xml:lang="no" lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</span></p>
+                <p> <span xml:lang="no" lang="no">--- innleder sidetallet.</span></p>
+                <p> <span xml:lang="no" lang="no">Uthevingstegnet er slik: _.</span></p>
+                <p> <span xml:lang="no" lang="no">Eksempel: _Denne setningen er uthevet._</span></p>
+                <p> <span xml:lang="no" lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</span></p>
+                <p> <span xml:lang="no" lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</span></p>
               </div>
             
          <!--   <xsl:apply-templates select="* except section[f:types(.) = ('toc', 'backmatter', 'index', 'titlepage', 'colophon') and f:classes(.) = ('rearcover')] "/>-->
@@ -400,7 +399,7 @@
             <p>Baksidetekst: </p>
             <xsl:apply-templates select="section[f:types(.) = 'cover']/section[f:classes(.) = 'rearcover']"/>
             <p></p> 
-            <p lang="no" xml:lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>Statped.</p>
+            <p> <span xml:lang="no" lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br/>Statped.</span></p>
         </xsl:copy>
        
     </xsl:template>
@@ -497,14 +496,14 @@
         </li>
     </xsl:template>  -->
     
-    
+<!--    
    <xsl:template match="ul/li">
         <li>
             <xsl:apply-templates select="@*"/>
-            <xsl:text>-- </xsl:text>       
+            <xsl:text>** </xsl:text>       
             <xsl:apply-templates select="node()"/>
         </li>
-    </xsl:template> 
+    </xsl:template> -->
     
     <xsl:template match="ul[f:classes(.) = 'list-unstyled']/li">
         <li>
@@ -536,6 +535,7 @@
             <xsl:attribute name="class">list-style-type-none</xsl:attribute> 
             <xsl:attribute name="style">list-style-type: none;</xsl:attribute>
             <xsl:for-each-group select="dt | dd" group-starting-with="dt">
+              
                 <xsl:element name="li">
                     <!-- apply templates to the dt and all directly following dd elements -->
                     <xsl:apply-templates select="current-group()"/>
@@ -544,14 +544,14 @@
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="dt">
+    <xsl:template match="dt" priority="10">
         <!-- rename to span -->
         <xsl:element name="span">
             <xsl:apply-templates select="@* | node()"/>
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="dd">
+    <xsl:template match="dd" priority="10">
         <!-- rename to span -->
         <xsl:element name="span">
             <xsl:apply-templates select="@* | node()"/>
@@ -559,8 +559,54 @@
     </xsl:template>
     
     
+    <!-- ******* [not(self::dd)]***************-->
+    <xsl:template match="p[@xml:lang | @lang]"> 
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except (@xml:lang | @lang)"/>
+            <xsl:element name="span">
+                <xsl:apply-templates select="@xml:lang | @lang"/>
+                <xsl:apply-templates select="node()"/>
+            </xsl:element>
+        </xsl:copy>
+    </xsl:template> 
     
-    
+  <!--  <xsl:template match="li[@xml:lang | @lang]"> 
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except (@xml:lang | @lang)"/>
+            <xsl:element name="span">
+                <xsl:apply-templates select="@xml:lang | @lang"/>
+                <xsl:apply-templates select="node()"/>
+            </xsl:element>
+        </xsl:copy>
+    </xsl:template>
+    <xsl:template match="h1[@xml:lang | @lang]"> 
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except (@xml:lang | @lang)"/>
+            <xsl:element name="span">
+                <xsl:apply-templates select="@xml:lang | @lang"/>
+                <xsl:apply-templates select="node()"/>
+            </xsl:element>
+        </xsl:copy>
+    </xsl:template> 
+    <xsl:template match="h2[@xml:lang | @lang]"> 
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except (@xml:lang | @lang)"/>
+            <xsl:element name="span">
+                <xsl:apply-templates select="@xml:lang | @lang"/>
+                <xsl:apply-templates select="node()"/>
+            </xsl:element>
+        </xsl:copy>
+    </xsl:template> 
+    <xsl:template match="h3[@xml:lang | @lang]"> 
+        <xsl:copy exclude-result-prefixes="#all">
+            <xsl:apply-templates select="@* except (@xml:lang | @lang)"/>
+            <xsl:element name="span">
+                <xsl:apply-templates select="@xml:lang | @lang"/>
+                <xsl:apply-templates select="node()"/>
+            </xsl:element>
+        </xsl:copy>
+    </xsl:template> 
+     --> 
     <xsl:function name="f:types">
         <xsl:param name="element" as="element()"/>
         <xsl:sequence select="tokenize($element/@epub:type, '\s+')"/>

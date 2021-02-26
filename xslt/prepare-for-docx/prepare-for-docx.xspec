@@ -83,6 +83,8 @@
         </x:scenario>
    
    
+    
+    
    
     <x:scenario label="Transform definition list to unordered list">
         <x:context>
@@ -123,19 +125,31 @@
         <x:expect label="unordered list">
     
         
-            <ul class="list-style-type-none" style="list-style-type: none;">
-                <li><span>a bunch of snobs [ə bᴧntʃ əv 'snɒbz]: </span>
+            <ul xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                class="list-style-type-none"
+                style="list-style-type: none;">
+                <li>
+                    <span>a bunch of snobs [ə bᴧntʃ əv 'snɒbz]: </span>
                     <span lang="no"
-                        xml:lang="no">en gjeng snobber</span></li>
-                <li><span>a sign of [əˈsaɪn ɒv]: </span>
+                        xml:lang="no">en gjeng snobber</span>
+                </li>
+                <li>
+                    <span>a sign of [əˈsaɪn ɒv]: </span>
                     <span lang="no"
-                        xml:lang="no">et tegn på</span></li>        
-                <li><span>AD (adv.) [eɪ ˈdiː]: </span>
+                        xml:lang="no">et tegn på</span>
+                </li>
+                <li>
+                    <span>AD (adv.) [eɪ ˈdiː]: </span>
                     <span lang="no"
-                        xml:lang="no">(år) etter Kristus (e.Kr.)</span></li>                
-                <li><span>add (v) [æd]: </span>
+                        xml:lang="no">(år) etter Kristus (e.Kr.)</span>
+                </li>
+                <li>
+                    <span>add (v) [æd]: </span>
                     <span lang="no"
-                        xml:lang="no">tilsette</span></li>              
+                        xml:lang="no">tilsette</span>
+                </li>
             </ul>
         </x:expect>
     </x:scenario>
@@ -160,149 +174,7 @@
             </ul>
         </x:expect>
     </x:scenario>
-    <x:scenario label="Insert -- in unordered list">
-        <x:context>
-            <ul>
-                <li>Irak: 21.000</li>
-                <li>Somalia: 20.000</li>
-                <li>Iran: 12.700</li>
-                <li>Bosnia Hercegovina: 12.200</li>
-                <li>Vietnam: 11.500</li>
-                <li>Afghanistan: 11.000</li>
-                <li>Kosovo: 8.500</li>
-                <li>Eritrea: 7.600</li>
-                <li>Sri Lanka: 6.500</li>
-                <li>Russland: 5.000</li>
-                <li>Chile: 4.900</li>
-                <li>Etiopia: 4.000</li>
-                <li>Myanmar/Burma: 2.700</li>
-                <li>Det palestinske området: 2.700</li>
-                <li>Tyrkia: 2.500</li>
-                <li>Pakistan: 1.800</li>
-                <li>Kongo: 1.700</li>
-                <li>Kroatia: 1.700</li>
-                <li>Sudan 1.400 </li>
-            </ul>
-            
-            <aside class="prodnote" epub:type="z3998:production" id="desc-21">
-                <p><strong>Samfunnsvitenskapelig Forskning:</strong></p>
-                <ul>
-                    <li><p>Kvantitativ metode</p>
-                        <ul>
-                            <li>Spørreundersøkelse</li>
-                            <li>Registerdata</li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li>Forskningsetikk</li>
-                </ul>
-                <ul>
-                    <li><p>Kvalitativ metode</p>
-                        <ul>
-                            <li>Kvalitativt intervju</li>
-                            <li>Dokumentstudie</li>
-                            <li>Feltarbeid</li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li>Problemstilling</li>
-                </ul>
-                <ul>
-                    <li>Teori</li>
-                </ul>
-                <ul>
-                    <li>Metode</li>
-                </ul>
-                <ul>
-                    <li>Empiri</li>
-                </ul>
-            </aside>
-           
-           
-            <div>
-            <p>Grovt sett kan vi si at sosialantropologien har et dobbelt siktemål med sin forskning:</p>
-            <ul>
-                <li><p>For det første skal den bringe fram kunnskap om de store <em>kulturelle variasjonene</em> i verden.</p>
-                    <p>Sosialantropologer ser på hva som er spesielt og unikt ved gruppa de studerer. </p></li>
-                <li>For det andre er sosialantropologene opptatt av å forklare hva kulturer og mennesker kan ha felles. </li>
-            </ul>
-            </div>
-        </x:context>
-       
-        
-        <x:expect label="-- should be inserted in unordered list">  
-            <ul>
-                <li>-- Irak: 21.000</li>
-                <li>-- Somalia: 20.000</li>
-                <li>-- Iran: 12.700</li>
-                <li>-- Bosnia Hercegovina: 12.200</li>
-                <li>-- Vietnam: 11.500</li>
-                <li>-- Afghanistan: 11.000</li>
-                <li>-- Kosovo: 8.500</li>
-                <li>-- Eritrea: 7.600</li>
-                <li>-- Sri Lanka: 6.500</li>
-                <li>-- Russland: 5.000</li>
-                <li>-- Chile: 4.900</li>
-                <li>-- Etiopia: 4.000</li>
-                <li>-- Myanmar/Burma: 2.700</li>
-                <li>-- Det palestinske området: 2.700</li>
-                <li>-- Tyrkia: 2.500</li>
-                <li>-- Pakistan: 1.800</li>
-                <li>-- Kongo: 1.700</li>
-                <li>-- Kroatia: 1.700</li>
-                <li>-- Sudan 1.400 </li>
-            </ul>
-            <aside class="prodnote" epub:type="z3998:production" id="desc-21">
-                <p>_Samfunnsvitenskapelig Forskning:_</p>
-                <ul>
-                    <li>-- <p>Kvantitativ metode</p>
-                        <ul>
-                            <li>-- Spørreundersøkelse</li>
-                            <li>-- Registerdata</li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li>-- Forskningsetikk</li>
-                </ul>
-                <ul>
-                    <li>-- <p>Kvalitativ metode</p>
-                        <ul>
-                            <li>-- Kvalitativt intervju</li>
-                            <li>-- Dokumentstudie</li>
-                            <li>-- Feltarbeid</li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul>
-                    <li>-- Problemstilling</li>
-                </ul>
-                <ul>
-                    <li>-- Teori</li>
-                </ul>
-                <ul>
-                    <li>-- Metode</li>
-                </ul>
-                <ul>
-                    <li>-- Empiri</li>
-                </ul>
-            </aside>
-            
-            <div>
-                <p>Grovt sett kan vi si at sosialantropologien har et dobbelt siktemål med sin forskning:</p>
-                <ul>
-                    <li>-- <p>For det første skal den bringe fram kunnskap om de store _kulturelle variasjonene_ i verden.</p>
-                        <p>Sosialantropologer ser på hva som er spesielt og unikt ved gruppa de studerer. </p></li>
-                    <li>-- For det andre er sosialantropologene opptatt av å forklare hva kulturer og mennesker kan ha felles. </li>
-                </ul>
-            </div>
-        </x:expect>
-    </x:scenario>
-    
-    
-    
+   
     
     
     <x:scenario label="Insert >>> in ordered list for exercises">
@@ -445,39 +317,51 @@
         </x:context>
 
         <x:expect label="result2">
-            <section epub:type="frontmatter toc" id="level1_4">
-                <h1 lang="no" xml:lang="no" id="h1_3">INNHOLD</h1>
+            <section xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                epub:type="frontmatter toc"
+                id="level1_4">
+                <h1 lang="no"
+                    xml:lang="no"
+                    id="h1_3">INNHOLD</h1>
                 <ol>
-                    <li lang="no" xml:lang="no">xxx1 <a href="#statped_merknad">
-                        <span class="lic">Merknad</span>
+                    <li>
+                        <span xml:lang="no"
+                            lang="no">xxx1</span>
+                        <a href="#statped_merknad">
+                            <span class="lic">
+                                <span xml:lang="no"
+                                    lang="no">Merknad</span>
+                            </span>
                         </a>
                     </li>
                     <li>xxx1 <a href="#h1_4">
                         <span class="lic">Del 1 Samfunnsfag og vitenskapelige tenkemåter</span>
-                        </a>
+                    </a>
                         <ol>
                             <li>xxx2 <a href="#h2_1">
                                 <span class="lic">Kapittel 1 Samfunnsfag og vitenskapelige tenkemåter</span>
                                 <span class="lic">10</span>
-                                </a>
+                            </a>
                             </li>
                         </ol>
                     </li>
                     <li>xxx1 <a href="#h1_5">
                         <span class="lic">Del 2 Sosialisering</span>
-                        </a>
+                    </a>
                         <ol>
                             <li>xxx2 <a href="#h2_3">
                                 <span class="lic">Kapittel 3 Hva er et samfunn?</span>
                                 <span class="lic">54</span>
-                                </a>
+                            </a>
                             </li>
                         </ol>
                     </li>
                     <li>xxx1 <a href="#h1_9">
                         <span class="lic">Sentrale begreper</span>
                         <span class="lic">279</span>
-                        </a>
+                    </a>
                     </li>
                 </ol>
             </section>
@@ -591,30 +475,82 @@
        
         <x:expect label="Mark with 'Ramme:'">
             <div xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml">
-                <p lang="no"
-                    xml:lang="no" />
+                <p>
+                    <span xml:lang="no"
+                        lang="no" />
+                </p>
                 <p class="line">But hope remains when pride is gone</p>
                 <p class="line">And it keeps you moving on</p>
                 <p class="line">Calling you across the borderline</p>
             </div><div xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml">
                 <p />
                 <aside>
-                    <p lang="no"
-                        xml:lang="no">Ramme:</p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Ramme:</span>
+                    </p>
                     <p>WARNING! WATCH OUT FOR GRIZZLY BEARS!</p>
                     <p>Hopefully they will run away.</p>
                 </aside>
             </div><p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml" /><div xmlns:epub="http://www.idpf.org/2007/ops"
+                    xmlns:html="http://www.w3.org/1999/xhtml"
                     xmlns="http://www.w3.org/1999/xhtml">
-                    <p lang="no"
-                        xml:lang="no">Ramme:</p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Ramme:</span>
+                    </p>
                     <p>_Eksempel_</p>
                 </div>
         </x:expect>
     </x:scenario>
+    
+ 
+                
+                <!-- ***********-->
+                <x:scenario label="xml:lang">
+                    <x:context>
+                        <h1 xml:lang="no" lang="no" id="d1e474">Innhold</h1>
+                        <ol class="list-type-none" style="list-style-type: none;">
+                            <li xml:lang="no" lang="no">Side Kapittel</li>
+                        </ol>
+                        <p xml:lang="no" lang="no">Dette spillet kan brukes til å repetere ord og uttrykk fra <span xml:lang="fr" lang="fr"><em>C’est chouette 2</em></span>. «J’ai, tu...» betyr at verbet skal bøyes i alle personer i presens, eller at du skal lage en setning der du bruker verbet i en av personene. En klokkeskive betyr at du sier hvor mye klokka er: « il est... heures ». Dommeren følger med i fasiten som står bakerst i boka på side 282. Enkelte ganger er det flere svaralternativer, men ikke alle mulige svar. Dommeren har lov til å spørre læreren om uttalen av ordene og uttrykkene i fasiten mens det spilles.</p>
+                        <p xml:lang="no" lang="no">For å spille trenger du en terning og en spillebrikke (binders, viskelær osv.).</p>
+                    </x:context>
+                                    
+                    <x:expect label="Mark with span omitted">
+                        <h1 xmlns:epub="http://www.idpf.org/2007/ops"
+                            xmlns:html="http://www.w3.org/1999/xhtml"
+                            xmlns="http://www.w3.org/1999/xhtml"
+                            xml:lang="no"
+                            lang="no"
+                            id="d1e474">xxx1 Innhold</h1><ol xmlns:epub="http://www.idpf.org/2007/ops"
+                                xmlns:html="http://www.w3.org/1999/xhtml"
+                                xmlns="http://www.w3.org/1999/xhtml"
+                                class="list-type-none"
+                                style="list-style-type: none;">
+                                <li xml:lang="no"
+                                    lang="no">Side Kapittel</li>
+                            </ol><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                xmlns:html="http://www.w3.org/1999/xhtml"
+                                xmlns="http://www.w3.org/1999/xhtml">
+                                <span xml:lang="no"
+                                    lang="no">Dette spillet kan brukes til å repetere ord og uttrykk fra <span xml:lang="fr"
+                                        lang="fr">_C’est chouette 2_</span>. «J’ai, tu...» betyr at verbet skal bøyes i alle personer i presens, eller at du skal lage en setning der du bruker verbet i en av personene. En klokkeskive betyr at du sier hvor mye klokka er: « il est... heures ». Dommeren følger med i fasiten som står bakerst i boka på side 282. Enkelte ganger er det flere svaralternativer, men ikke alle mulige svar. Dommeren har lov til å spørre læreren om uttalen av ordene og uttrykkene i fasiten mens det spilles.</span>
+                            </p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                xmlns:html="http://www.w3.org/1999/xhtml"
+                                xmlns="http://www.w3.org/1999/xhtml">
+                                <span xml:lang="no"
+                                    lang="no">For å spille trenger du en terning og en spillebrikke (binders, viskelær osv.).</span>
+                            </p>
+                    </x:expect>
+                </x:scenario>
+                <!-- ************ -->
     <!-- ***********-->
     <x:scenario label="em and strong">
         <x:context>
@@ -671,36 +607,45 @@
 
         <x:expect label="removed image; optionally replace with alt text">
             <div xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml">
                 <p />
-                <p lang="no"
+                <p class="margpos"
+                    lang="no"
                     xml:lang="no">Bilde:</p>
-                <p lang="no"
+                <p class="margpos"
+                    lang="no"
                     xml:lang="no">Forklaring: image</p>
                 <p lang="no"
                     xml:lang="no" />
                 <p />
-                <p lang="no"
+                <p class="margpos"
+                    lang="no"
                     xml:lang="no">Bilde:</p>
-                <p lang="no"
+                <p class="margpos"
+                    lang="no"
                     xml:lang="no">Forklaring: God Bildetekst</p>
                 <p lang="no"
                     xml:lang="no" />
                 <p />
-                <p lang="no"
+                <p class="margpos"
+                    lang="no"
                     xml:lang="no">Bilde:</p>
                 <figure class="image">
-                    <p lang="no"
+                    <p class="margpos"
+                        lang="no"
                         xml:lang="no">Forklaring: foto</p>
                     <p>Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>
                 </figure>
                 <p lang="no"
                     xml:lang="no" />
                 <p />
-                <p lang="no"
+                <p class="margpos"
+                    lang="no"
                     xml:lang="no">Bilde:</p>
                 <figure class="image">
-                    <p lang="no"
+                    <p class="margpos"
+                        lang="no"
                         xml:lang="no">Forklaring: figure-image</p>
                     <figcaption> Bildetekst: figcaption-image</figcaption>
                 </figure>
@@ -708,10 +653,12 @@
                     xml:lang="no" />
                 <figure class="image-series">
                     <p />
-                    <p lang="no"
+                    <p class="margpos"
+                        lang="no"
                         xml:lang="no">Bilde:</p>
                     <figure class="image">
-                        <p lang="no"
+                        <p class="margpos"
+                            lang="no"
                             xml:lang="no">Forklaring: figure-image-series-1</p>
                         <figcaption> Bildetekst: <span>figcaption-image-series-1</span>
                         </figcaption>
@@ -719,10 +666,12 @@
                     <p lang="no"
                         xml:lang="no" />
                     <p />
-                    <p lang="no"
+                    <p class="margpos"
+                        lang="no"
                         xml:lang="no">Bilde:</p>
                     <figure class="image">
-                        <p lang="no"
+                        <p class="margpos"
+                            lang="no"
                             xml:lang="no">Forklaring: figure-image-series-2</p>
                         <figcaption> Bildetekst: figcaption-image-series-2</figcaption>
                     </figure>
@@ -777,46 +726,94 @@
         </x:context>
 
         <x:expect label="boilerplate text should be inserted">
-            <html>
+            <html xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml">
                 <head>
-                    <meta charset="UTF-8"/>
+                    <meta charset="UTF-8" />
                     <title>Mangfold</title>
-                    <meta name="dc:identifier" content="562230"/>
-                    <meta name="viewport" content="width=device-width"/>
-                    <meta name="nordic:guidelines" content="2015-1"/>
-                    <meta name="nordic:supplier" content="AEL Data"/>
-                    <meta name="dc:language" content="no"/>
-                    <meta name="dc:language" content="en"/>
-                    <meta name="dc:format" content="EPUB3"/>
-                    <meta name="dc:creator" content="Westersjø, Martin"/>
-                    <meta name="dc:creator" content="Kval, Karl-Eirik"/>
-                    <meta name="dc:creator" content="Andreassen, Odd Gunnar"/>
-                    <meta name="dc:creator" content="Henningsen, Rune"/>
-                    <meta name="dc:date" content="2018-01-13"/>
-                    <meta name="dc:publisher" content="Statped læringsressurser og teknologiutvikling"/>
-                    <meta name="schema:isbn" content="978-82-02-37172-2"/>
-                    <meta name="dc:publisher.location" content="Oslo"/>
-                    <meta name="dc:date.issued" content="2018"/>
-                    <meta name="dc:date.issued.original" content="2012"/>
-                    <meta name="schema:bookEdition.original" content="1"/>
-                    <meta name="dc:publisher.original" content="Cappelen Damm"/>
-                    <meta name="dc:source" content="urn:isbn:9788200000000"/>
-                    <meta name="schema:library" content="Statped"/>
-                    <meta name="dcterms:modified" content="2018-07-03T12:41:47+00:00"/>
+                    <meta name="dc:identifier"
+                        content="562230" />
+                    <meta name="viewport"
+                        content="width=device-width" />
+                    <meta name="nordic:guidelines"
+                        content="2015-1" />
+                    <meta name="nordic:supplier"
+                        content="AEL Data" />
+                    <meta name="dc:language"
+                        content="no" />
+                    <meta name="dc:language"
+                        content="en" />
+                    <meta name="dc:format"
+                        content="EPUB3" />
+                    <meta name="dc:creator"
+                        content="Westersjø, Martin" />
+                    <meta name="dc:creator"
+                        content="Kval, Karl-Eirik" />
+                    <meta name="dc:creator"
+                        content="Andreassen, Odd Gunnar" />
+                    <meta name="dc:creator"
+                        content="Henningsen, Rune" />
+                    <meta name="dc:date"
+                        content="2018-01-13" />
+                    <meta name="dc:publisher"
+                        content="Statped læringsressurser og teknologiutvikling" />
+                    <meta name="schema:isbn"
+                        content="978-82-02-37172-2" />
+                    <meta name="dc:publisher.location"
+                        content="Oslo" />
+                    <meta name="dc:date.issued"
+                        content="2018" />
+                    <meta name="dc:date.issued.original"
+                        content="2012" />
+                    <meta name="schema:bookEdition.original"
+                        content="1" />
+                    <meta name="dc:publisher.original"
+                        content="Cappelen Damm" />
+                    <meta name="dc:source"
+                        content="urn:isbn:9788200000000" />
+                    <meta name="schema:library"
+                        content="Statped" />
+                    <meta name="dcterms:modified"
+                        content="2018-07-03T12:41:47+00:00" />
                     <style>...</style>
                 </head>
                 <body>
-                    <p lang="no" xml:lang="no">Mangfold - no/en<br/> - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br/>Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
-                                       
+                    <p lang="no"
+                        xml:lang="no">Mangfold - no/en<br /> - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br />Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
                     <div>
-                        <h1 id="statped_merknad" lang="no" xml:lang="no">xxx1 Generell merknad for Statpeds leselistbøker:</h1>
-                        <p lang="no" xml:lang="no">Filen har en klikkbar innholdsfortegnelse.</p>
-                        <p lang="no" xml:lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</p>
-                        <p lang="no" xml:lang="no">--- innleder sidetallet.</p>
-                        <p lang="no" xml:lang="no">Uthevingstegnet er slik: _.</p>
-                        <p lang="no" xml:lang="no">Eksempel: _Denne setningen er uthevet._</p>
-                        <p lang="no" xml:lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</p>
-                        <p lang="no" xml:lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</p>
+                        <h1 id="statped_merknad">
+                            <span lang="no"
+                                xml:lang="no"> xxx1 Generell merknad for Statpeds leselistbøker:</span>
+                        </h1>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">Filen har en klikkbar innholdsfortegnelse.</span>
+                        </p>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</span>
+                        </p>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">--- innleder sidetallet.</span>
+                        </p>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">Uthevingstegnet er slik: _.</span>
+                        </p>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">Eksempel: _Denne setningen er uthevet._</span>
+                        </p>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</span>
+                        </p>
+                        <p>
+                            <span lang="no"
+                                xml:lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</span>
+                        </p>
                     </div>
                     <section>
                         <p>Første kapittel.</p>
@@ -832,16 +829,18 @@
                     </section>
                     <section>
                         <p>Andre kapittel.</p>
-                    </section><p />
-            
+                    </section>
+                    <p />
                     <p>Ettertekst: </p>
                     <p />
                     <p>Kolofon: </p>
                     <p />
                     <p>Baksidetekst: </p>
                     <p />
-                    <p lang="no"
-                        xml:lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br />Statped.</p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br />Statped.</span>
+                    </p>
                 </body>
             </html>
         </x:expect>
