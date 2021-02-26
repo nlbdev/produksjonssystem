@@ -22,103 +22,29 @@ u {
   text-decoration: underline;
 }
 
+ul {list-style-type: disc;}
+ul ul  {list-style-type: disc;}
+ul ul ul  {list-style-type: disc;}
+ul ul ul ul {list-style-type: disc;}
 
 
-ol.nomargin {
-list-style-type: none;
-  margin-left: -57px;
-}
-/*
-ol {
-    counter-reset: item inherit;
-padding: 0em; 
-margin-left: -20px;
-  display: block; 
-}
+ol ul  {list-style-type: disc;}
+ul ol ul  {list-style-type: disc;}
+ul ul ol ul {list-style-type: disc;}
 
 
-ol > li {
-    counter-increment: item;
-}
 
-ol ol > li {
-    display: block;
-}
+.hang {
 
-ol ol > li:before {
-    content: counters(item, ".") ". ";
-    margin-left: -20px;
-}
-*/
-li{
-padding-left: 0px;
- 
-}
-
-/*ol {
-padding-left: 0px;
-list-style-type: decimal; 
-text-indent:0%;
-}
-ol ol {
-  list-style-type: lower-latin;
- text-indent:2%;
-} 
-
-ol ol ol {
-  list-style-type: decimal;
- text-indent4%;
-}
-ol ol ol ol {
-  list-style-type: lower-latin;
- text-indent:6%;
-}
-
-
-ol p {
-  margin-bottom: 0;
-}
-ol img {
-  margin-bottom: 1.5em;
-}*/
-
-ul {
-  list-style-type: none;
-  }
-ul ul {
-  list-style-type: none;
- text-indent:2%;
-}
-ul ul ul {
-  list-style-type: none;
- text-indent:4%;
-}
-ul ul ul ul {
-  list-style-type: none;
- text-indent:6%;
-}
-ul li > p {
- text-indent:2%; 
-}
-
-ol ul{
- text-indent:12%;
+text-indent: -1em;
+margin-left: 4em;
 
 }
-ol p{
- text-indent:2%;
 
+.margpos {
+text-indent: 0em;
+margin-left: 0em;
 }
-ol li p{
-margin-left: 12%;
-text-indent:2%;
-}
-
-ol ul li{
-margin-left: 12%;
-text-indent:2%;
-}
-
 
 
 figure {
