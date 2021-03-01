@@ -24,10 +24,6 @@ class NewspaperSchibsted(Pipeline):
     logPipeline = None
     publication_format = "Lydbok"
     expected_processing_time = 300
-    parentdirs = {
-                      "latest": "latest",
-                      "archive": "archive"
-                      }
 
     def start(self, *args, **kwargs):
         super().start(*args, **kwargs)
@@ -70,7 +66,7 @@ class NewspaperSchibsted(Pipeline):
                 if re.match(r"^\d\d\d\d-\d\d-\d\d$", date):
                     date_numbers = re.sub(r"^\d\d(\d\d)-(\d\d)-(\d\d)$", r"\1\2\3", date)
                     already_produced = False
-                    for book in os.listdir(os.path.join(self.dir_out, self.parentdirs["archive"])):
+                    for book in os.listdir(self.dir_out):
                         if book.endswith(date_numbers+".xml"):
                             already_produced = True
                     if not already_produced:
@@ -180,16 +176,8 @@ class NewspaperSchibsted(Pipeline):
 
             archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
                                                                     newspapers[paper]["id"] + date_numbers,
-                                                                    parentdir=self.parentdirs["archive"],
                                                                     file_extension="xml")
             self.utils.report.attachment(None, archived_path, "DEBUG")
-
-            if date_numbers == time.strftime('%y%m%d'):
-                archived_path, stored = self.utils.filesystem.storeBook(temp_dtbook,
-                                                                        paper,
-                                                                        parentdir=self.parentdirs["latest"],
-                                                                        file_extension="xml")
-                self.utils.report.attachment(None, archived_path, "DEBUG")
 
         self.utils.report.info("Dagens Schibsted-aviser er ferdig produsert")
         self.utils.report.title = self.title + ": " + " dagens Schibsted-aviser ble produsert 👍😄"
