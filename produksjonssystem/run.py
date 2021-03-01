@@ -130,7 +130,7 @@ class Produksjonssystem():
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
-        Config.set("newsfeed_dir", os.path.join(book_archive_dirs["news"], "avisfeeder"))
+        Config.set("newsfeed_dir", os.path.join(book_archive_dirs["master"], "innkommende/schibsted-aviser/avisfeeder"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
 
@@ -197,7 +197,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
         self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
-        self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["news"], "dtbookfiler")
+        self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-aviser-til-talesyntese")
 
         self.dirs_ranked.append({
             "id": "publication-out",
@@ -226,7 +226,7 @@ class Produksjonssystem():
 
         # by default, the inactivity timeout for all directories are 10 seconds,
         # but they can be overridden here
-        # for instance: self.dirs_inactivity_timeouts["news"] = 300
+        # for instance: self.dirs_inactivity_timeouts["master"] = 300
         self.dirs_inactivity_timeouts = {}
 
         # Define pipelines and input/output/report dirs
