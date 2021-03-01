@@ -189,6 +189,27 @@ class NlbpubToPef(Pipeline):
             "duplex": duplex,
         }
 
+        # for custom Statped options using NLBs PIP (remove `and False` or replace with `or True` to test)
+        if metadata["library"].lower() == "statped" and False:
+            # see: https://github.com/nlbdev/pipeline/blob/nlb/nlb/book-to-pef/src/main/resources/xml/html-to-pef.xpl#L146-L167
+            #
+            # (1) 'http://www.nlb.no/pipeline/modules/braille/pre-processing.xsl',
+            # (2) 'http://www.daisy.org/pipeline/modules/braille/xml-to-pef/generate-toc.xsl',
+            # (3) if ($default-table-class = '') then resolve-uri('add-table-classes.xsl') else (),
+            # (4) if ($insert-boilerplate = 'true') then 'http://www.nlb.no/pipeline/modules/braille/insert-boilerplate.xsl' else (),
+            # (5) if ($apply-default-stylesheet = 'true') then 'http://www.nlb.no/pipeline/modules/braille/default.scss' else (),
+            # (6) if ($stylesheet) then tokenize($stylesheet,',') else ()),' ')"/>
+
+            braille_arguments["insert-boilerplate"] = "false"  # disable (4)
+            braille_arguments["apply-default-stylesheet"] = "false"  # disable (5)
+
+            # (1-3) will still be included. Specifying (6) let's us include replacements for (4) and (5)
+            braille_arguments["stylesheet"] = ",".join([
+                "http://www.nlb.no/pipeline/modules/braille/insert-boilerplate.xsl",
+                "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss"
+            ])
+
+        # for custom Statped options using DAISYs PIP (remove `and False` or replace with `or True` to test)
         if metadata["library"].lower() == "statped" and False:
             # use DAISYs version of PIP instead
             script_id = "html-to-pef"
