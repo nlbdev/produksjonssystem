@@ -82,7 +82,6 @@
                 <meta name="dc:Date" content="{$date}"/>
                 <meta name="generator" content="schibsted-to-dtbook.xsl"/>
                 <meta name="description" content="Input document for Daisy production"/>
-                <link href="dtbook.2005.basic.css" rel="stylesheet" type="text/css"/>
             </head>
             <book>
                 <frontmatter>
