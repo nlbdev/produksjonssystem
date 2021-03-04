@@ -240,12 +240,6 @@ class NlbpubToPef(Pipeline):
                 "duplex": duplex,
             }
 
-            # use DAISYs version of PIP
-            script_id = "html-to-pef"
-            pipeline_and_script_version = [
-                ("1.13.6", "4.0.0"),
-            ]
-
         pef_tempdir_object = tempfile.TemporaryDirectory()
 
         self.utils.report.info("Konverterer fra HTML til PEF...")
