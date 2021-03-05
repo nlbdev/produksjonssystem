@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns="http://www.w3.org/1999/xhtml"
+               stylesheet="dummy-jpg.xsl">
+    
+    <x:scenario label="Replace image references with dummy.jpg">
+        <x:context>
+            <html>
+                <head>
+                    <title>Dummy test</title>
+                </head>
+                <body>
+                    <a href="https://nlb.no">NLB</a>
+                    <img src="https://nlb.no/example.jpg" alt="External image"/>
+                    <img src="images/cover.jpg" alt="Cover image"/>
+                    <img src="images/other.jpg" alt="Internal image"/>
+                    <math altimg="images/equation.png" alttext="altimg attribute"/>
+                    <img src="images/equation.svg#fragment" alt="reference with fragment identifier"/>
+                </body>
+            </html>
+        </x:context>
+
+        <x:expect label="The result should be as expected">
+            <html>
+                <head>
+                    <title>Dummy test</title>
+                </head>
+                <body>
+                    <a href="https://nlb.no">NLB</a>
+                    <img src="https://nlb.no/example.jpg" alt="External image"/>
+                    <img src="images/cover.jpg" alt="Cover image"/>
+                    <img src="images/dummy.jpg" alt="Internal image"/>
+                    <math altimg="images/dummy.jpg" alttext="altimg attribute"/>
+                    <img src="images/dummy.jpg#fragment" alt="reference with fragment identifier"/>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+</x:description>
