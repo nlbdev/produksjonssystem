@@ -33,7 +33,11 @@
         </xsl:for-each>
     </xsl:template>
     
-    <xsl:template match="section">
+    <xsl:template match="section" name="section">
+        <xsl:variable name="document-lang" select="string((ancestor::html/(@lang, @xml:lang))[last()])" as="xs:string"/>
+        <xsl:variable name="ancestor-lang" select="string((ancestor::*/(@lang, @xml:lang))[last()])" as="xs:string"/>
+        <xsl:variable name="section-lang" select="string((@lang, @xml:lang)[last()])" as="xs:string"/>
+        
         <xsl:choose>
             <xsl:when test="f:should-insert-break-point(.)">
                 <xsl:if test="not(self::section intersect ancestor::body/section[1])">
@@ -44,17 +48,31 @@
                 </xsl:call-template>
                 <div>
                     <xsl:call-template name="apply-global-attributes"/>
+                    <xsl:if test="$section-lang = '' and $ancestor-lang != $document-lang">
+                        <xsl:attribute name="lang" select="$ancestor-lang" exclude-result-prefixes="#all"/>
+                        <xsl:attribute name="xml:lang" select="$ancestor-lang" exclude-result-prefixes="#all"/>
+                    </xsl:if>
                     <xsl:attribute name="class" select="string-join((@class, 'section-start'), ' ')"></xsl:attribute>
                 </div>
-                <xsl:apply-templates select="node()"/>
+                <xsl:call-template name="unwrap-nodes">
+                    <xsl:with-param name="context" select="."/>
+                    <xsl:with-param name="nodes" select="node()"/>
+                </xsl:call-template>
             </xsl:when>
             
             <xsl:when test="exists(descendant::section[f:should-insert-break-point(.)])">
                 <div>
                     <xsl:call-template name="apply-global-attributes"/>
+                    <xsl:if test="$section-lang = '' and $ancestor-lang != ''">
+                        <xsl:attribute name="lang" select="$ancestor-lang" exclude-result-prefixes="#all"/>
+                        <xsl:attribute name="xml:lang" select="$ancestor-lang" exclude-result-prefixes="#all"/>
+                    </xsl:if>
                     <xsl:attribute name="class" select="string-join((@class, 'section-start'), ' ')"></xsl:attribute>
                 </div>
-                <xsl:apply-templates select="node()"/>
+                <xsl:call-template name="unwrap-nodes">
+                    <xsl:with-param name="context" select="."/>
+                    <xsl:with-param name="nodes" select="node()"/>
+                </xsl:call-template>
             </xsl:when>
             
             <xsl:otherwise>
@@ -64,6 +82,45 @@
                 </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template name="unwrap-nodes">
+        <xsl:param name="context" as="element()"/>
+        <xsl:param name="nodes" as="node()*"/>
+        
+        <xsl:variable name="document-lang" select="string(($context/ancestor::html/(@lang, @xml:lang))[last()])" as="xs:string"/>
+        <xsl:variable name="ancestor-lang" select="string(($context/ancestor-or-self::*/(@lang, @xml:lang))[last()])" as="xs:string"/>
+        
+        <xsl:for-each select="$nodes">
+            <xsl:choose>
+                <xsl:when test="$ancestor-lang = ''">
+                    <!-- no language override found, nothing to do (shouldn't happen, there will at the very least be a lang at the html element) -->
+                    <xsl:apply-templates select="."/>
+                </xsl:when>
+                
+                <xsl:when test="self::section">
+                    <!-- section elements are handled in its own template -->
+                    <xsl:apply-templates select="."/>
+                </xsl:when>
+                
+                <xsl:when test="not(self::*)">
+                    <!-- nothing to do about non-element nodes (i.e. whitespace and comment nodes) -->
+                    <xsl:apply-templates select="."/>
+                </xsl:when>
+                
+                <xsl:otherwise>
+                    <xsl:copy exclude-result-prefixes="#all">
+                        <xsl:apply-templates select="@*"/>
+                        <xsl:variable name="element-lang" select="string((@lang, @xml:lang)[last()])" as="xs:string"/>
+                        <xsl:if test="$element-lang = '' and $ancestor-lang != $document-lang">
+                            <xsl:attribute name="xml:lang" select="$ancestor-lang" exclude-result-prefixes="#all"/>
+                            <xsl:attribute name="lang" select="$ancestor-lang" exclude-result-prefixes="#all"/>
+                        </xsl:if>
+                        <xsl:apply-templates select="node()"/>
+                    </xsl:copy>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
     
     <xsl:function name="f:should-insert-break-point" as="xs:boolean">
