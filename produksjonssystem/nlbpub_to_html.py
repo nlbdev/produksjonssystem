@@ -12,6 +12,7 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -39,7 +40,7 @@ class NlbpubToHtml(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -61,8 +62,8 @@ class NlbpubToHtml(Pipeline):
 
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
-        temp_epub = Epub(self, temp_epubdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
+        temp_epub = Epub(self.utils.report, temp_epubdir)
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 

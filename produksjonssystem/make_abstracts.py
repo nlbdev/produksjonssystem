@@ -9,9 +9,11 @@ import time
 import traceback
 
 from lxml import etree as ElementTree
+from pydub import AudioSegment
 
 from core.pipeline import Pipeline
-from pydub import AudioSegment
+from core.utils.filesystem import Filesystem
+
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -51,7 +53,7 @@ class Audio_Abstract(Pipeline):
 
         temp_absdir_obj = tempfile.TemporaryDirectory()
         temp_absdir = temp_absdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_absdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_absdir)
 
         file_exists = {
                        "abstracts": False,

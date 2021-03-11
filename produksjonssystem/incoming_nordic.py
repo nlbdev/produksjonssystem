@@ -57,7 +57,7 @@ class IncomingNordic(Pipeline):
         return self.on_book()
 
     def on_book(self):
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
         epubTitle = ""
         try:
             epubTitle = " (" + epub.meta("dc:title") + ") "

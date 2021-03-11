@@ -23,6 +23,7 @@ from lxml import etree as ElementTree
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from core.utils.timeout_lock import TimeoutLock
+from core.utils.filesystem import Filesystem
 
 
 class DaisyPipelineJob():
@@ -669,7 +670,7 @@ class DaisyPipelineJob():
                 shutil.copyfileobj(r.raw, f)
 
         if os.path.isfile(result) and os.path.getsize(result) > 0:
-            self.pipeline.utils.filesystem.unzip(result, self.dir_output)
+            Filesystem.unzip(self.pipeline.utils.report, result, self.dir_output)
 
     @staticmethod
     def is_alive(engine):

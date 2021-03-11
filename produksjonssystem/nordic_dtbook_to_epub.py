@@ -14,6 +14,7 @@ from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
 from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -44,7 +45,7 @@ class NordicDTBookToEpub(Pipeline):
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
 
-        metadata = Metadata.get_metadata_from_book(self, self.book["source"])
+        metadata = Metadata.get_metadata_from_book(self.utils.report, self.book["source"])
         metadata["identifier"] = re.sub(r"[^\d]", "", metadata["identifier"])
         if not metadata["identifier"]:
             self.utils.report.error("Klarte ikke å bestemme boknummer for {}".format(self.book["name"]))
@@ -55,7 +56,7 @@ class NordicDTBookToEpub(Pipeline):
         self.utils.report.info("Lager en kopi av DTBoken")
         temp_dtbookdir_obj = tempfile.TemporaryDirectory()
         temp_dtbookdir = temp_dtbookdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_dtbookdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_dtbookdir)
 
         # find DTBook XML
         dtbook = None
@@ -214,7 +215,7 @@ class NordicDTBookToEpub(Pipeline):
                 self.utils.report.error("Finner ikke 'output-dir' for den konverterte boken: {}".format(dp2_html_dir))
                 return False
 
-            self.utils.filesystem.copy(dp2_html_dir, temp_htmldir)
+            Filesystem.copy(self.utils.report, dp2_html_dir, temp_htmldir)
             temp_htmlfile = os.path.join(temp_htmldir, metadata["identifier"] + ".xhtml")
 
         if not os.path.isfile(temp_htmlfile):
@@ -351,9 +352,9 @@ class NordicDTBookToEpub(Pipeline):
                     self.utils.report.error("Klarte ikke å validere EPUB 3-versjonen av boken")
                     return False
 
-            self.utils.filesystem.copy(dp2_epub_file, temp_epub_file)
+            Filesystem.copy(self.utils.report, dp2_epub_file, temp_epub_file)
 
-        epub = Epub(self, temp_epub_file)
+        epub = Epub(self.utils.report, temp_epub_file)
         if not epub.isepub():
             return False
 

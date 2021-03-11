@@ -887,7 +887,7 @@ class Pipeline():
                         result = None
 
                         # get some basic metadata (identifier and title) from the book for reporting purposes
-                        book_metadata = Metadata.get_metadata_from_book(self, self.book["source"] if self.book["source"] else self.book["name"])
+                        book_metadata = Metadata.get_metadata_from_book(self.utils.report, self.book["source"] if self.book["source"] else self.book["name"])
 
                         try:
                             self.progress_start = time.time()

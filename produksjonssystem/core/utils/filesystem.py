@@ -160,7 +160,8 @@ class Filesystem():
             logging.exception("Filen eller mappen ble ikke funnet. Kanskje noen slettet den?")
             raise e
 
-    def copytree(self, src, dst):
+    @staticmethod
+    def copytree(report, src, dst):
         assert os.path.isdir(src)
 
         # check if ancestor directory should be ignored
@@ -199,14 +200,14 @@ class Filesystem():
                             raise Exception("An error occured while copying from {} to {}".format(short_src, short_dst))
 
                     else:
-                        self.copytree(src_subpath, dst_subpath)
+                        Filesystem.copytree(report, src_subpath, dst_subpath)
                 else:
                     # Report files that have changed but where the target could not be overwritten
                     if os.path.exists(dst_subpath):
                         src_md5 = Filesystem.path_md5(src_subpath, shallow=False)
                         dst_md5 = Filesystem.path_md5(dst_subpath, shallow=False)
                         if src_md5 != dst_md5:
-                            self.pipeline.utils.report.error("Klarte ikke å erstatte filen med nyere versjon: " + dst_subpath)
+                            report.error("Klarte ikke å erstatte filen med nyere versjon: " + dst_subpath)
                     else:
                         shutil.copy(src_subpath, dst_subpath)
 
@@ -220,16 +221,17 @@ class Filesystem():
                 else:
                     message += "fil"
                 message += " som ikke skal eksistere lenger: " + dst_subpath
-                self.pipeline.utils.report.error(message)
+                report.error(message)
 
         return dst
 
-    def copy(self, source, destination):
+    @staticmethod
+    def copy(report, source, destination):
         """Copy the `source` file or directory to the `destination`"""
         assert source, "Filesystem.copy(): source must be specified"
         assert destination, "Filesystem.copy(): destination must be specified"
         assert os.path.isdir(source) or os.path.isfile(source), "Filesystem.copy(): source must be either a file or a directory: " + str(source)
-        self.pipeline.utils.report.debug("Copying from '" + source + "' to '" + destination + "'")
+        report.debug("Copying from '" + source + "' to '" + destination + "'")
 
         if os.path.isdir(source):
             files_source = os.listdir(source)
@@ -240,12 +242,12 @@ class Filesystem():
             try:
                 if os.path.exists(destination):
                     if os.listdir(destination):
-                        self.pipeline.utils.report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(
+                        report.info("{} finnes i {} fra før. Eksisterende kopi blir slettet.".format(
                             os.path.basename(destination),
                             os.path.dirname(destination))
                         )
                     shutil.rmtree(destination, ignore_errors=True)
-                self.copytree(source, destination)
+                Filesystem.copytree(report, source, destination)
             except shutil.Error as errors:
                 warnings = []
                 for arg in errors.args[0]:
@@ -257,7 +259,7 @@ class Filesystem():
                 warnings = list(set(warnings))  # distinct warnings
                 for warning in warnings:
                     if warning is not None:
-                        self.pipeline.utils.report.warn(warning)
+                        report.warn(warning)
                 if None in warnings:
                     raise
         else:
@@ -267,10 +269,10 @@ class Filesystem():
             files_dir_out = os.listdir(destination)
             for file in files_source:
                 if file not in files_dir_out:
-                    self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy(): " + str(file))
+                    report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av Filesystem.copy(): " + str(file))
 
         elif os.path.isfile(source) and not os.path.isfile(destination):
-            self.pipeline.utils.report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av filesystem.copy(): " + str(source))
+            report.warn("WARNING: Det ser ut som det mangler noen filer som ble kopiert av Filesystem.copy(): " + str(source))
 
     def storeBook(self, source, book_id, overwrite=True, move=False, parentdir=None, dir_out=None, file_extension=None, subdir=None, fix_permissions=True):
         """Store `book_id` from `source` into `pipeline.dir_out`"""
@@ -323,7 +325,7 @@ class Filesystem():
         if move:
             shutil.move(source, target)
         else:
-            self.copy(source, target)
+            Filesystem.copy(self.pipeline.utils.report, source, target)
 
         Filesystem.touch(target)
 
@@ -415,7 +417,8 @@ class Filesystem():
 
         return completedProcess
 
-    def zip(self, directory, file):
+    @staticmethod
+    def zip(report, directory, file):
         """Zip the contents of `dir`"""
         assert directory, "zip: directory must be specified: "+str(directory)
         assert os.path.isdir(directory), "zip: directory must exist and be a directory: "+directory
@@ -424,10 +427,11 @@ class Filesystem():
         with zipfile.ZipFile(file, 'w') as archive:
             for f in dirpath.rglob('*'):
                 relative = str(f.relative_to(dirpath))
-                self.pipeline.utils.report.debug("zipping: " + relative)
+                report.debug("zipping: " + relative)
                 archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
 
-    def unzip(self, archive, target):
+    @staticmethod
+    def unzip(report, archive, target):
         """Unzip the contents of `archive`, as `dir`"""
         assert archive, "unzip: archive must be specified: "+str(archive)
         assert os.path.exists(archive), "unzip: archive must exist: "+archive
@@ -438,15 +442,15 @@ class Filesystem():
             os.makedirs(target)
 
         if os.path.isdir(archive):
-            self.copy(archive, target)
+            Filesystem.copy(report, archive, target)
 
         else:
             with zipfile.ZipFile(archive, "r") as zip_ref:
                 try:
                     zip_ref.extractall(target)
                 except EOFError as e:
-                    self.pipeline.utils.report.error("En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?")
-                    self.pipeline.utils.report.debug(traceback.format_exc(), preformatted=True)
+                    report.error("En feil oppstod ved lesing av ZIP-filen. Kanskje noen endret eller slettet den?")
+                    report.debug(traceback.format_exc(), preformatted=True)
                     raise e
 
             Filesystem.fix_permissions(target)

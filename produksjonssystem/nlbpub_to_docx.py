@@ -17,6 +17,7 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 
 from pathlib import Path
 
@@ -49,7 +50,7 @@ class NLBpubToDocx(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -81,8 +82,8 @@ class NLBpubToDocx(Pipeline):
 
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
-        temp_epub = Epub(self, temp_epubdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
+        temp_epub = Epub(self.utils.report, temp_epubdir)
 
         opf_path = temp_epub.opf_path()
         if not opf_path:

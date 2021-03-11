@@ -15,6 +15,7 @@ from core.utils.relaxng import Relaxng
 from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -47,7 +48,7 @@ class NlbpubToTtsDtbook(Pipeline):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
 
         self.utils.report.info("Locating HTML file")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
         if not epub.isepub():
             return False
         assert epub.isepub(), "The input must be an EPUB"
@@ -62,7 +63,7 @@ class NlbpubToTtsDtbook(Pipeline):
         self.utils.report.info("lag en kopi av boka")
         temp_resultdir_obj = tempfile.TemporaryDirectory()
         temp_resultdir = temp_resultdir_obj.name
-        self.utils.filesystem.copy(os.path.dirname(html_file), temp_resultdir)
+        Filesystem.copy(self.utils.report, os.path.dirname(html_file), temp_resultdir)
         temp_result = os.path.join(temp_resultdir, identifier + ".xml")
 
         self.utils.report.info("sletter EPUB-spesifikke filer")
