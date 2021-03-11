@@ -62,7 +62,7 @@ class Epubcheck():
                 else:
                     root_path = os.path.dirname(root_path)
 
-            epub = Epub(pipeline, root_path)
+            epub = Epub(pipeline.utils.report, root_path)
             source = epub.asFile()
 
         try:

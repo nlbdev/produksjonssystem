@@ -6,13 +6,14 @@ import shutil
 import sys
 import tempfile
 
+from pathlib import Path
+
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.metadata import Metadata
-from lxml import etree as ElementTree
-from pathlib import Path
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -41,7 +42,7 @@ class NordicToNlbpub(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -67,18 +68,18 @@ class NordicToNlbpub(Pipeline):
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_withimages_obj = tempfile.TemporaryDirectory()
         temp_epubdir_withimages = temp_epubdir_withimages_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir_withimages)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir_withimages)
 
         self.utils.report.info("Lager en kopi av EPUBen med tomme bildefiler")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(temp_epubdir_withimages, temp_epubdir)
+        Filesystem.copy(self.utils.report, temp_epubdir_withimages, temp_epubdir)
         for root, dirs, files in os.walk(os.path.join(temp_epubdir, "EPUB", "images")):
             for file in files:
                 fullpath = os.path.join(root, file)
                 os.remove(fullpath)
                 Path(fullpath).touch()
-        temp_epub = Epub(self, temp_epubdir)
+        temp_epub = Epub(self.utils.report, temp_epubdir)
 
         self.utils.report.info("Rydder opp i nordisk EPUB nav.xhtml")
         nav_path = os.path.join(temp_epubdir, temp_epub.nav_path())
@@ -152,7 +153,7 @@ class NordicToNlbpub(Pipeline):
                 self.utils.report.info("Kanskje filnavnet er forskjellig fra IDen?")
                 return False
 
-            self.utils.filesystem.copy(dp2_html_dir, html_dir)
+            Filesystem.copy(self.utils.report, dp2_html_dir, html_dir)
 
         self.utils.report.info("Rydder opp i nordisk HTML")
         xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
@@ -184,8 +185,8 @@ class NordicToNlbpub(Pipeline):
                 fullpath = os.path.join(root, file)
                 relpath = os.path.relpath(fullpath, nlbpub_tempdir)
                 os.remove(fullpath)
-                self.utils.filesystem.copy(os.path.join(temp_epubdir_withimages, relpath), fullpath)
-        temp_epub = Epub(self, temp_epubdir)
+                Filesystem.copy(self.utils.report, os.path.join(temp_epubdir_withimages, relpath), fullpath)
+        temp_epub = Epub(self.utils.report, temp_epubdir)
 
         nlbpub.update_prefixes()
 

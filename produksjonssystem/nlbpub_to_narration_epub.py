@@ -13,6 +13,7 @@ from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from prepare_for_ebook import PrepareForEbook
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -43,7 +44,7 @@ class NlbpubToNarrationEpub(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -65,8 +66,8 @@ class NlbpubToNarrationEpub(Pipeline):
 
         narration_epubdir_obj = tempfile.TemporaryDirectory()
         narration_epubdir = narration_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], narration_epubdir)
-        nlbpub = Epub(self, narration_epubdir)
+        Filesystem.copy(self.utils.report, self.book["source"], narration_epubdir)
+        nlbpub = Epub(self.utils.report, narration_epubdir)
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 

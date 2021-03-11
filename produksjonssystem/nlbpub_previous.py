@@ -13,6 +13,7 @@ import yaml
 
 from core.pipeline import Pipeline
 from core.utils.epub import Epub
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -41,7 +42,7 @@ class NlbpubPrevious(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -62,7 +63,7 @@ class NlbpubPrevious(Pipeline):
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
 
         if not os.path.exists(os.path.join(self.dir_out, epub.identifier())):
             os.makedirs(os.path.join(self.dir_out, epub.identifier()))

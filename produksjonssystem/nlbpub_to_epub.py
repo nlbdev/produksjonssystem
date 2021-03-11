@@ -82,7 +82,7 @@ class NlbpubToEpub(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -104,8 +104,8 @@ class NlbpubToEpub(Pipeline):
 
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
-        temp_epub = Epub(self, temp_epubdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
+        temp_epub = Epub(self.utils.report, temp_epubdir)
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 

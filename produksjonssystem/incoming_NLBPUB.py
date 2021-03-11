@@ -10,6 +10,7 @@ from core.utils.epub import Epub
 from core.utils.relaxng import Relaxng
 from core.utils.schematron import Schematron
 from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -41,7 +42,7 @@ class IncomingNLBPUB(Pipeline):
         return self.on_book()
 
     def on_book(self):
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
         epubTitle = ""
         try:
             epubTitle = " (" + epub.meta("dc:title") + ") "
@@ -62,8 +63,8 @@ class IncomingNLBPUB(Pipeline):
         self.utils.report.info("Lager kopi av EPUB...")
         nordic_epubdir_obj = tempfile.TemporaryDirectory()
         nordic_epubdir = nordic_epubdir_obj.name
-        self.utils.filesystem.copy(epub.asDir(), nordic_epubdir)
-        nordic_epub = Epub(self, nordic_epubdir)
+        Filesystem.copy(self.pipeline.utils.report, epub.asDir(), nordic_epubdir)
+        nordic_epub = Epub(self.utils.report, nordic_epubdir)
 
         html_file = os.path.join(nordic_epubdir, "EPUB", nordic_epub.identifier() + ".xhtml")
         nav_file = os.path.join(nordic_epubdir, "EPUB", "nav" + ".xhtml")

@@ -35,7 +35,7 @@ class CheckPef(Pipeline):
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
 
-        metadata = Metadata.get_metadata_from_book(self, self.book["source"])
+        metadata = Metadata.get_metadata_from_book(self.utils.report, self.book["source"])
         needs_manual_approval = True
         if "nlb:needs-manual-approval" in metadata and metadata["nlb:needs-manual-approval"] == "false":
             needs_manual_approval = False

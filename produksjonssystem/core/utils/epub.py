@@ -11,12 +11,13 @@ import zipfile
 from lxml import etree as ElementTree
 
 from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 
 
 class Epub():
     """Methods for working with EPUB files/filesets"""
 
-    pipeline = None
+    report = None
     _metadata = None
     book_path = None
     book_path_file = None
@@ -26,10 +27,10 @@ class Epub():
 
     uid = "core-utils-epub"
 
-    def __init__(self, pipeline, book_path):
+    def __init__(self, report, book_path):
         if not os.path.exists(book_path):
-            pipeline.utils.report.error("Epub {} finnes ikke lenger.".format(book_path))
-        self.pipeline = pipeline
+            report.error("Epub {} finnes ikke lenger.".format(book_path))
+        self.report = report
         self.book_path = book_path
 
     def asFile(self, rebuild=False):
@@ -69,15 +70,15 @@ class Epub():
             mimetype = dirpath / 'mimetype'
             if not os.path.isfile(str(mimetype)):
                 with open(str(mimetype), "w") as f:
-                    self.pipeline.utils.report.debug("creating mimetype file")
+                    self.report.debug("creating mimetype file")
                     f.write("application/epub+zip")
-            self.pipeline.utils.report.debug("zipping: mimetype")
+            self.report.debug("zipping: mimetype")
             archive.write(str(mimetype), 'mimetype', compress_type=zipfile.ZIP_STORED)
             for f in dirpath.rglob('*'):
                 relative = str(f.relative_to(dirpath))
                 if relative == "mimetype":
                     continue
-                self.pipeline.utils.report.debug("zipping: " + relative)
+                self.report.debug("zipping: " + relative)
                 archive.write(str(f), relative, compress_type=zipfile.ZIP_DEFLATED)
 
         return file
@@ -97,14 +98,14 @@ class Epub():
         else:
             self._temp_obj_dir = tempfile.TemporaryDirectory()
             self.book_path_dir = self._temp_obj_dir.name
-            self.pipeline.utils.filesystem.unzip(self.book_path, self.book_path_dir)
+            Filesystem.unzip(self.report, self.book_path, self.book_path_dir)
             return self.book_path_dir
 
     def isepub(self, report_errors=True):
         # EPUBen må inneholde en "EPUB/package.opf"-fil (en ekstra sjekk for å være sikker på at dette er et EPUB-filsett)
         if os.path.isdir(self.book_path) and not os.path.isfile(os.path.join(self.book_path, "EPUB/package.opf")):
             if report_errors:
-                self.pipeline.utils.report.error(
+                self.report.error(
                     os.path.basename(self.book_path) + ": EPUB/package.opf eksisterer ikke. Kan ikke validere EPUB.")
             return False
 
@@ -113,24 +114,24 @@ class Epub():
                 with zipfile.ZipFile(self.book_path, 'r') as archive:
                     if "mimetype" not in [item.filename for item in archive.filelist]:
                         if report_errors:
-                            self.pipeline.utils.report.warn("No 'mimetype' file in ZIP; this is not an EPUB: " + self.book_path)
+                            self.report.warn("No 'mimetype' file in ZIP; this is not an EPUB: " + self.book_path)
                         return False
 
                     mimetype = archive.read("mimetype").decode("utf-8")
                     if not mimetype.startswith("application/epub+zip"):
                         if report_errors:
-                            self.pipeline.utils.report.warn(
+                            self.report.warn(
                                 "The 'mimetype' file does not start with the text 'application/epub+zip'; this is not an EPUB: " + self.book_path)
                         return False
 
                     if "META-INF/container.xml" not in [item.filename for item in archive.filelist]:
                         if report_errors:
-                            self.pipeline.utils.report.warn("No 'META-INF/container.xml' file in ZIP; this is not an EPUB: " + self.book_path)
+                            self.report.warn("No 'META-INF/container.xml' file in ZIP; this is not an EPUB: " + self.book_path)
                         return False
 
             except zipfile.BadZipfile:
                 if report_errors:
-                    self.pipeline.utils.report.warn("The book is a file, but not a ZIP file. This is not an EPUB: " + self.book_path)
+                    self.report.warn("The book is a file, but not a ZIP file. This is not an EPUB: " + self.book_path)
                 return False
 
         return True
@@ -241,7 +242,7 @@ class Epub():
 
         opf_path = os.path.join(self.book_path, self.opf_path())
 
-        xslt = Xslt(self.pipeline,
+        xslt = Xslt(report=self.report,
                     stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "update-epub-prefixes.xsl"),
                     source=opf_path,
                     target=temp_xml_file)
@@ -254,7 +255,7 @@ class Epub():
         for html_relpath in html_paths:
             html_path = os.path.normpath(os.path.join(os.path.dirname(opf_path), html_relpath))
 
-            xslt = Xslt(self.pipeline,
+            xslt = Xslt(report=self.report,
                         stylesheet=os.path.join(Xslt.xslt_dir, Epub.uid, "update-epub-prefixes.xsl"),
                         source=html_path,
                         target=temp_xml_file)
@@ -368,7 +369,7 @@ class Epub():
         os.makedirs(meta_dir)
 
         # copy dir_in to dir_out/EPUB
-        pipeline.utils.filesystem.copytree(dir_in, epub_dir)
+        Filesystem.copytree(pipeline.utils.report, dir_in, epub_dir)
 
         # find html file
         html_file = None
@@ -431,13 +432,13 @@ class Epub():
             container.write("    </rootfiles>\n")
             container.write("</container>\n")
 
-        return Epub(pipeline, dir_out)
+        return Epub(pipeline.utils.report, dir_out)
 
     def copy(self):
         epub_tempfile_obj = tempfile.NamedTemporaryFile()
         epub_tempfile = epub_tempfile_obj.name
-        self.pipeline.utils.filesystem.copy(self.asFile(), epub_tempfile)
-        return Epub(self.pipeline, epub_tempfile), epub_tempfile_obj
+        Filesystem.copy(self.report, self.asFile(), epub_tempfile)
+        return Epub(self.report, epub_tempfile), epub_tempfile_obj
 
     def fix_permissions(self):
         dir = self.asDir()

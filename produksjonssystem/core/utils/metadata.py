@@ -757,12 +757,12 @@ class Metadata:
         return False
 
     @staticmethod
-    def get_metadata_from_book(pipeline, path, force_update=False):
-        book_metadata = Metadata._get_metadata_from_book(pipeline, path, force_update)
+    def get_metadata_from_book(report, path, force_update=False):
+        book_metadata = Metadata._get_metadata_from_book(report, path, force_update)
 
         # if not explicitly defined in the metadata, assign library based on the identifier
         if "library" not in book_metadata and "identifier" in book_metadata:
-            book_metadata["library"] = Metadata.get_library_from_identifier(book_metadata["identifier"], report=pipeline.utils.report)
+            book_metadata["library"] = Metadata.get_library_from_identifier(book_metadata["identifier"], report=report)
 
         return book_metadata
 
@@ -781,7 +781,7 @@ class Metadata:
         return library
 
     @staticmethod
-    def _get_metadata_from_book(pipeline, path, force_update):
+    def _get_metadata_from_book(report, path, force_update):
         # Initialize book_metadata with the identifier based on the filename
         book_metadata = {
             "identifier": re.sub(r"\.[^\.]*$", "", os.path.basename(path))
@@ -808,7 +808,7 @@ class Metadata:
 
         # Try getting EPUB metadata
         if os.path.exists(path):
-            epub = Epub(pipeline, path)
+            epub = Epub(report, path)
             if epub.isepub(report_errors=False):
                 book_metadata["identifier"] = epub.identifier()
                 book_metadata["title"] = epub.meta("dc:title")
@@ -942,7 +942,7 @@ class Metadata:
         name = pipeline.book["name"] if pipeline.book else ""
 
         if pipeline.book and pipeline.book["source"]:
-            book_metadata = Metadata.get_metadata_from_book(pipeline, pipeline.book["source"])
+            book_metadata = Metadata.get_metadata_from_book(pipeline.utils.report, pipeline.book["source"])
             if "title" in book_metadata:
                 name += ": " + book_metadata["title"][:25] + ("…" if len(book_metadata["title"]) > 25 else "")
 

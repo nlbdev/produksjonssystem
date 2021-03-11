@@ -7,6 +7,7 @@ from pathlib import Path
 from core.pipeline import DummyPipeline, Pipeline
 from core.utils.epub import Epub
 from core.utils.metadata import Metadata
+from core.utils.filesystem import Filesystem
 
 
 class InsertMetadata(Pipeline):
@@ -36,7 +37,7 @@ class InsertMetadata(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:
@@ -69,8 +70,8 @@ class InsertMetadata(Pipeline):
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_epubdir)
-        temp_epub = Epub(self, temp_epubdir)
+        Filesystem.copy(self.pipeline.utils.report, self.book["source"], temp_epubdir)
+        temp_epub = Epub(self.utils.report, temp_epubdir)
 
         is_valid = Metadata.insert_metadata(self.utils.report, temp_epub, publication_format=self.publication_format, report_metadata_errors=False)
         if not is_valid:

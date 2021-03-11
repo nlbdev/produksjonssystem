@@ -12,6 +12,7 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.metadata import Metadata
 from core.utils.daisy_pipeline import DaisyPipelineJob
+from core.utils.filesystem import Filesystem
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -124,7 +125,7 @@ class NlbpubToPef(Pipeline):
         self.utils.report.info("Lager en kopi av filsettet")
         temp_htmldir_obj = tempfile.TemporaryDirectory()
         temp_htmldir = temp_htmldir_obj.name
-        self.utils.filesystem.copy(self.book["source"], temp_htmldir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_htmldir)
 
         self.utils.report.info("Finner HTML-fila")
         html_file = None
@@ -256,8 +257,9 @@ class NlbpubToPef(Pipeline):
 
             # get conversion report
             if os.path.isdir(os.path.join(dp2_job.dir_output, "preview-output-dir")):
-                self.utils.filesystem.copy(os.path.join(dp2_job.dir_output, "preview-output-dir"),
-                                           os.path.join(self.utils.report.reportDir(), "preview"))
+                Filesystem.copy(self.utils.report,
+                                os.path.join(dp2_job.dir_output, "preview-output-dir"),
+                                os.path.join(self.utils.report.reportDir(), "preview"))
                 self.utils.report.attachment(None,
                                              os.path.join(self.utils.report.reportDir(), "preview" + "/" + identifier + ".pef.html"),
                                              "SUCCESS" if dp2_job.status == "SUCCESS" else "ERROR")
@@ -274,7 +276,7 @@ class NlbpubToPef(Pipeline):
                 self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
                 return False
 
-            self.utils.filesystem.copy(dp2_pef_dir, pef_tempdir_object.name)
+            Filesystem.copy(self.utils.report, dp2_pef_dir, pef_tempdir_object.name)
 
             self.utils.report.info("Boken ble konvertert.")
 
