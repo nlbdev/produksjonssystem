@@ -25,7 +25,7 @@ import core.endpoints.directories  # noqa
 import core.endpoints.editions  # noqa
 import core.endpoints.lines  # noqa
 import core.endpoints.steps  # noqa
-from core.api import API  # noqa
+import core.server  # noqa
 
 from core.config import Config  # noqa
 from core.directory import Directory  # noqa
@@ -483,8 +483,7 @@ class Produksjonssystem():
 
         self.shouldRun(True)
 
-        self.api = API(shutdown_function=self.stop, airbrake_config=self.airbrake_config)
-        self.api.start(hot_reload=False)
+        self.server = core.server.start(hot_reload=False, airbrake_config=self.airbrake_config, shutdown_function=self.stop)
 
         self._configThread = Thread(target=self._config_thread, name="config")
         self._configThread.setDaemon(True)
@@ -648,7 +647,7 @@ class Produksjonssystem():
         self._systemStatusThread.join()
 
         self.info("Venter på at API-tråden skal stoppe...")
-        self.api.join()
+        self.server.join()
 
     def shouldRun(self, set=None):
         if set is not None:
