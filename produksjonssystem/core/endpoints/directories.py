@@ -85,11 +85,12 @@ def getDirectoryEditions(directory_id):
     if not path:
         return None, 404
 
-    elif not os.path.isdir(path):
+    elif path not in Directory.dirs:
         return None, 404
 
     else:
-        return jsonify([Path(file).stem for file in Filesystem.list_book_dir(path)])
+        names = list(Directory.dirs[path]._md5.keys())
+        return jsonify([Path(name).stem for name in names]), 200
 
 
 @core.server.route(core.server.root_path + '/directories/<directory_id>/editions/<edition_id>/', require_auth=None, methods=["GET", "HEAD"])
