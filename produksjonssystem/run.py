@@ -36,7 +36,7 @@ from core.utils.slack import Slack  # noqa
 from core.utils.metadata import Metadata  # noqa
 
 # Import pipelines
-from check_pef import CheckPef  # noqa
+# from check_pef import CheckPef  # noqa
 # from incoming_NLBPUB import (NLBPUB_incoming_validator,
 #                              NLBPUB_incoming_warning, NLBPUB_validator)  # noqa
 from incoming_nordic import IncomingNordic  # noqa
