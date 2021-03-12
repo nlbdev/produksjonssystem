@@ -3,9 +3,9 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
 
-./test_system.sh && \
-./test_xspec.sh && \
-./test_unit.sh
+./test_system.sh "$@" && \
+./test_xspec.sh "$@" && \
+./test_unit.sh "$@"
 RESULT="$?"
 
 if [ "$RESULT" = "0" ]; then
