@@ -30,14 +30,15 @@ if os.path.exists(target_path):
     rmtree(target_path)
 os.makedirs(target_path)
 
-# send log to test.log
-logfile = "{0}/{1}.log".format(target_path, "test")
-if os.path.exists(logfile):
-    os.remove(logfile)
-fileHandler = logging.FileHandler(logfile)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
-fileHandler.setFormatter(logFormatter)
-logging.getLogger().addHandler(fileHandler)
+# unless "--verbose" is used; send log to test.log
+if "--verbose" not in sys.argv:
+    logfile = "{0}/{1}.log".format(target_path, "test")
+    if os.path.exists(logfile):
+        os.remove(logfile)
+    fileHandler = logging.FileHandler(logfile)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+    fileHandler.setFormatter(logFormatter)
+    logging.getLogger().addHandler(fileHandler)
 
 # store results in test-results.txt
 test_results_file = os.path.join(target_path, "test-results.txt")
