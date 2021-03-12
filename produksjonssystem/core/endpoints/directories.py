@@ -92,33 +92,38 @@ def getDirectoryEditions(directory_id):
         return jsonify([Path(file).stem for file in Filesystem.list_book_dir(path)])
 
 
-@core.server.route(core.server.root_path + '/directories/<directory_id>/editions/<edition_id>/', require_auth=None)
+@core.server.route(core.server.root_path + '/directories/<directory_id>/editions/<edition_id>/', require_auth=None, methods=["GET", "HEAD"])
 def directory_edition(directory_id, edition_id):
     core.server.expected_args(request, ["force_update"])
 
     force_update = request.args.get("force_update", "false").lower() == "true"
 
-    return getDirectoryEdition(directory_id, edition_id, force_update)
+    return getDirectoryEdition(directory_id, edition_id, force_update, request.method)
 
 
-def getDirectoryEdition(directory_id, edition_id, force_update):
+def getDirectoryEdition(directory_id, edition_id, force_update, method):
     path = os.path.normpath(Directory.dirs_flat[directory_id]) if directory_id in Directory.dirs_flat else None
 
     if not path:
-        return None, 404
+        return "", 404
 
     book_path = None
-    for name in Filesystem.list_book_dir(path):
-        if Path(name).stem == edition_id:
-            book_path = os.path.join(path, name)
-            break
+    if path in Directory.dirs:
+        names = list(Directory.dirs[path]._md5.keys())
+        for name in names:
+            if Path(name).stem == edition_id:
+                book_path = os.path.join(path, name)
+                break
 
     if not book_path:
-        return None, 404
+        return "", 404
 
-    return jsonify(Metadata.get_metadata_from_book(logging,
-                                                   book_path,
-                                                   force_update=force_update))
+    if method == "HEAD":
+        return "", 200
+    else:
+        return jsonify(Metadata.get_metadata_from_book(logging,
+                                                       book_path,
+                                                       force_update=force_update)), 200
 
 
 @core.server.route(core.server.root_path + '/directories/<directory_id>/editions/<edition_id>/trigger/', require_auth=None, methods=["GET", "PUT", "POST"])
