@@ -12,7 +12,6 @@ import re
 import sys
 import threading
 import time
-import zipfile
 from shutil import copyfile, copytree, rmtree
 
 # import produksjonssystem from relative directory
@@ -20,9 +19,9 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 prodsys_path = os.path.join(project_root, "produksjonssystem")
 sys.path.insert(0, prodsys_path)
 os.environ["TEST"] = "1"
-from core.config import Config
-from core.pipeline import DummyPipeline
-from produksjonssystem import run
+from core.config import Config  # noqa
+from core.pipeline import DummyPipeline  # noqa
+from produksjonssystem import run  # noqa
 
 # make target directory
 target_path = os.path.join(project_root, "target", "system")
@@ -89,18 +88,18 @@ environment = {
     "REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS": "none none none",
     "REMOTE_PIPELINE2_WS_ENDPOINTS": "http://nlbdocker-dev.lx.nb.no:18150/ws http://nlbdocker-dev.lx.nb.no:18151/ws "
                                      + "http://nlbdocker-dev.lx.nb.no:18160/ws http://nlbdocker-dev.lx.nb.no:18170/ws",
-    "MAIL_SERVER":"",
-    "MAIL_PORT":"",
-    "MAIL_USERNAME":"",
-    "MAIL_PASSWORD":"",
-    "MAIL_FORMATKLAR":"",
-    "MAIL_FILESIZE":"",
-    "ALLOWED_EMAIL_ADDRESSES_IN_TEST":"",
-    "DAILY_REPORTS_ENABLED": "false",
-    "SIGNATURES_ENABLED": "false",
-    "AIRBRAKE_ENVIRONMENT":"dev",
-    "AIRBRAKE_PROJECT_ID":"",
-    "AIRBRAKE_PROJECT_KEY":"",
+    "MAIL_SERVER": "",
+    "MAIL_PORT": "",
+    "MAIL_USERNAME": "",
+    "MAIL_PASSWORD": "",
+    "MAIL_FORMATKLAR": "",
+    "MAIL_FILESIZE": "",
+    "ALLOWED_EMAIL_ADDRESSES_IN_TEST": "",
+    "DAILY_REPORTS_ENABLED":  "false",
+    "SIGNATURES_ENABLED":  "false",
+    "AIRBRAKE_ENVIRONMENT": "dev",
+    "AIRBRAKE_PROJECT_ID": "",
+    "AIRBRAKE_PROJECT_KEY": "",
 }
 
 book_archive_dirs = {}
