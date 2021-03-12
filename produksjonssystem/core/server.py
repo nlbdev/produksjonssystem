@@ -80,10 +80,10 @@ mock_jwt_claims = None
 root_path = "/prodsys"
 version = 1
 host = os.getenv("HOST", default="0.0.0.0")
-port = os.getenv("PORT", default=80)
+port = os.getenv("PORT", default=3875)
 root_path = "{}/v{}".format(root_path, version)
 base_url = "http://{}{}{}".format(host,
-                                  ":{}".format(port) if port != 80 else "",
+                                  ":{}".format(port) if port != 3875 else "",
                                   root_path)
 
 thread = None
