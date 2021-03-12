@@ -70,7 +70,7 @@ class InsertMetadata(Pipeline):
         self.utils.report.info("Lager en kopi av EPUBen")
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
-        Filesystem.copy(self.pipeline.utils.report, self.book["source"], temp_epubdir)
+        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
         temp_epub = Epub(self.utils.report, temp_epubdir)
 
         is_valid = Metadata.insert_metadata(self.utils.report, temp_epub, publication_format=self.publication_format, report_metadata_errors=False)

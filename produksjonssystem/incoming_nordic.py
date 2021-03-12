@@ -14,8 +14,9 @@ from lxml import etree as ElementTree
 from core.pipeline import Pipeline
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
-from core.utils.xslt import Xslt
+from core.utils.filesystem import Filesystem
 from core.utils.mathml_to_text import Mathml_validator
+from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -76,7 +77,7 @@ class IncomingNordic(Pipeline):
         self.utils.report.info("Lager en kopi av EPUBen med tomme bildefiler")
         temp_noimages_epubdir_obj = tempfile.TemporaryDirectory()
         temp_noimages_epubdir = temp_noimages_epubdir_obj.name
-        self.utils.filesystem.copy(epub.asDir(), temp_noimages_epubdir)
+        Filesystem.copy(self.utils.report, epub.asDir(), temp_noimages_epubdir)
         if os.path.isdir(os.path.join(temp_noimages_epubdir, "EPUB", "images")):
             temp_xml_obj = tempfile.NamedTemporaryFile()
             temp_xml = temp_xml_obj.name
@@ -167,7 +168,7 @@ class IncomingNordic(Pipeline):
             shutil.copy(os.path.join(Xslt.xslt_dir, IncomingNordic.uid, "reference-files", "demobilde.jpg"),
                         os.path.join(temp_noimages_epubdir, "EPUB", "images", "dummy.jpg"))
 
-        temp_noimages_epub = Epub(self, temp_noimages_epubdir)
+        temp_noimages_epub = Epub(self.utils.report, temp_noimages_epubdir)
 
         self.utils.report.info("Validerer EPUB med epubcheck og nordiske retningslinjer...")
         epub_noimages_file = temp_noimages_epub.asFile()
