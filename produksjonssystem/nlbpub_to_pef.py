@@ -220,7 +220,7 @@ class NlbpubToPef(Pipeline):
 
             braille_arguments = {
                 "html": os.path.basename(html_file),
-                "transform": "(translator:liblouis)(formatter:dotify)(lang:no)(dots:6)(grade:0)",
+                "transform": "(formatter:dotify)(translator:liblouis)(grade:1)",
                 "stylesheet": " ".join([
                     # 1. better volume breaking, and also removes title page and print toc, moves the colophon and copyright page to the end of the book
                     # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/pre-processing.xsl",
@@ -237,8 +237,8 @@ class NlbpubToPef(Pipeline):
                     # 5. Statped-specific SCSS
                     "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss",
                 ]),
-                "line-spacing": line_spacing,
-                "duplex": duplex,
+                # "line-spacing": line_spacing,
+                # "duplex": duplex,
             }
 
         pef_tempdir_object = tempfile.TemporaryDirectory()
