@@ -21,6 +21,7 @@ from flask import redirect, request
 from flask.json import JSONEncoder
 from werkzeug.exceptions import HTTPException, InternalServerError
 
+from core.config import Config
 from core.utils.filesystem import Filesystem
 
 
@@ -339,6 +340,7 @@ def shutdown():
     global shutdown_function
 
     shouldRun = False
+    Config.set("system.shouldRun", False)
 
     if shutdown_function:
         shutdown_function()
