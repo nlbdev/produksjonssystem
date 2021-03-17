@@ -42,6 +42,7 @@ class NewspaperSchibsted(Pipeline):
         logging.info("Pipeline \"" + str(self.title) + "\" stopped")
 
     def _trigger_Newspaper_thread(self):
+        logging.info("Started watching for Schibsted newspapers")
         last_check = 0
         # If feed found trigger newspaper
 
@@ -51,9 +52,10 @@ class NewspaperSchibsted(Pipeline):
             self.watchdog_bark()
 
             if not self.dirsAvailable():
+                logging.info("Directory with Schibsted newspapers are not available")
                 continue
 
-            max_update_interval = 60
+            max_update_interval = 300
             if time.time() - last_check < max_update_interval:
                 continue
 
@@ -72,6 +74,8 @@ class NewspaperSchibsted(Pipeline):
                     if not already_produced:
                         logging.info("Lager avis for: " + date)
                         self.trigger(date)
+
+        logging.info("Stopped watching for Schibsted newspapers")
 
     def on_book_deleted(self):
         self.utils.report.should_email = False
