@@ -546,9 +546,11 @@ class Pipeline():
     # Whether or not input/output directories are available (in case of network problems)
     def dirsAvailable(self):
         if self.dir_in_obj and not self.dir_in_obj.is_available():
+            logging.debug("dirsAvailable failed on dir_in: {} and not {}".format(bool(self.dir_in_obj), self.dir_in_obj.is_available()))
             return False
 
         if self.dir_out_obj and not self.dir_out_obj.is_available():
+            logging.debug("dirsAvailable failed on dir_out: {} and not {}".format(bool(self.dir_out_obj), self.dir_out_obj.is_available()))
             return False
 
         return True

@@ -249,6 +249,8 @@ class Directory():
 
     def is_available(self):
         if self.last_availability_check_time >= time.time() - 10:
+            if not self.last_availability_check_time:
+                logging.debug("Directory is not available (cached result)" + (": {}".format(self.dir_path) if self.dir_path else ""))
             return self.last_availability_check_result
 
         self.last_availability_check_time = time.time()
