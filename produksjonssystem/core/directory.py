@@ -255,6 +255,7 @@ class Directory():
 
         if self.dir_path is None:
             self.last_availability_check_result = True
+            logging.debug("Directory is not available (dir_path is not defined)")
             return self.last_availability_check_result
 
         self.last_availability_check_result = False
@@ -270,7 +271,10 @@ class Directory():
         self.last_availability_check_result = os.path.isdir(self.dir_path) and mount_is_mounted
 
         if not self.last_availability_check_result:
-            logging.warning("{} is not available".format(self.dir_path))
+            logging.warning("Directory is not available: " + str(self.dir_path))
+            logging.debug(str(self.dir_path) + " is " + ("" if os.path.isdir(self.dir_path) else "not ") + " a directory.")
+            logging.debug(str(self.dir_path) + " is " + ("" if is_mount else "not ") + " a mounted filesystem.")
+            logging.debug(str(self.dir_path) + " does " + ("" if contains_books else "not ") + " contain books.")
 
         return self.last_availability_check_result
 
