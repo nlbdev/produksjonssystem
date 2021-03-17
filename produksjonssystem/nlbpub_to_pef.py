@@ -141,7 +141,7 @@ class NlbpubToPef(Pipeline):
         html_xml = ElementTree.parse(html_file).getroot()
         identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
 
-        metadata = Metadata.get_metadata_from_book(self, temp_htmldir)
+        metadata = Metadata.get_metadata_from_book(self.utils.report, temp_htmldir)
 
         line_spacing = "single"
         duplex = "true"
