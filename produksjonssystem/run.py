@@ -559,6 +559,8 @@ class Produksjonssystem():
                 if os.path.exists(stopfile):
                     self.stop()
                     os.remove(stopfile)
+                elif not self.shouldRun():
+                    self.stop()
 
                 if os.getenv("STOP_AFTER_FIRST_JOB", False):
                     running = 0
