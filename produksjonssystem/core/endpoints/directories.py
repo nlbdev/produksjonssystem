@@ -131,7 +131,7 @@ def getDirectoryEdition(directory_id, edition_id, force_update, method):
 def directory_edition_trigger(directory_id, edition_id):
     core.server.expected_args(request, [])
 
-    triggerDirectoryEdition(directory_id, edition_id)
+    return triggerDirectoryEdition(directory_id, edition_id)
 
 
 def triggerDirectoryEdition(directory_id, edition_id):
