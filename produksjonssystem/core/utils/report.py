@@ -261,7 +261,7 @@ class Report():
                 if isinstance(smtp["host"], str) and isinstance(smtp["port"], str):
                     with smtplib.SMTP(smtp["host"] + ":" + smtp["port"]) as s:
                         s.ehlo()
-                        s.starttls()
+                        # s.starttls()
                         if smtp["user"] and smtp["pass"]:
                             s.login(smtp["user"], smtp["pass"])
                         else:
@@ -442,7 +442,7 @@ class Report():
                     logging.info("[e-mail] SMTP server: {}".format(smtp_server))
                     with smtplib.SMTP(smtp_server) as s:
                         s.ehlo()
-                        s.starttls()
+                        # s.starttls()
                         if smtp["user"] and smtp["pass"]:
                             s.login(smtp["user"], smtp["pass"])
                         else:
