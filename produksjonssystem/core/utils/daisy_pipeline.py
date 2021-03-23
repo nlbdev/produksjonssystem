@@ -567,6 +567,8 @@ class DaisyPipelineJob():
             jobRequest_document.write(jobRequest_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
             jobRequest_file = open(jobRequest_path, 'rb')
             multipart_fields["job-request"] = ('jobRequest.xml', jobRequest_file, 'application/xml')
+            with open(jobRequest_path) as f:
+                self.pipeline.utils.report.debug("Job request: " + "".join(f.readlines()))
 
             # URL to POST to
             url = DaisyPipelineJob.encode_url(self.engine, "/jobs", {})
