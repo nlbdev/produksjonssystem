@@ -257,7 +257,6 @@ class Directory():
 
         if self.dir_path is None:
             self.last_availability_check_result = True
-            logging.debug("Directory is not available (dir_path is not defined)")
             return self.last_availability_check_result
 
         self.last_availability_check_result = False
