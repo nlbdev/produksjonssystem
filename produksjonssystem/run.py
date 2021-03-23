@@ -23,6 +23,7 @@ import yaml  # noqa
 import core.endpoints.creativeWorks  # noqa
 import core.endpoints.directories  # noqa
 import core.endpoints.editions  # noqa
+import core.endpoints.health  # noqa
 import core.endpoints.lines  # noqa
 import core.endpoints.steps  # noqa
 import core.server  # noqa
