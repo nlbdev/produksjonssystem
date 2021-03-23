@@ -649,7 +649,7 @@ class Produksjonssystem():
         self._systemStatusThread.join()
 
         self.info("Venter på at API-tråden skal stoppe...")
-        self.server.join()
+        self.server.join(timeout=10)
 
     def shouldRun(self, set=None):
         if set is not None:
