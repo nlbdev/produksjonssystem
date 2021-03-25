@@ -10,7 +10,7 @@ pybrake==0.4.2
 pydub==0.23.0
 python-docx==0.8.10
 python_dateutil==2.8.1
-PyYAML==5.1.1
+PyYAML==5.4
 requests==2.20.0
 requests_toolbelt==0.9.1
 slackclient==2.0.1
