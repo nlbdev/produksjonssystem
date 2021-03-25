@@ -250,7 +250,7 @@
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text>  
                               med heimel i åndsverklova § 55,
-                              og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
+                              og kan berre kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
                               skal alle digitale eksemplar destruerast eller returnerast til produsenten. Eksemplaret er merka slik
                               at det kan sporast tilbake til deg som lånar ved misbruk. Brot på desse avtalevilkåra kan medføre ansvar
                               etter åndsverklova. Slike handlingar kan også medføre tap av retten til å låne tilrettelagde bøker.</xsl:text>
