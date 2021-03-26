@@ -37,7 +37,7 @@
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="section">
+    <xsl:template match="section" name="handle-as-section">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
             
@@ -85,11 +85,7 @@
     
     <!-- wrap linegroups in synch-point-wrapper divs -->
     <xsl:template match="div[tokenize(@class,'\s+') = 'linegroup']">
-        <div class="synch-point-wrapper" id="{concat('nlb-sp-',generate-id())}">
-            <xsl:next-match>
-                <xsl:with-param name="wrapped" select="true()" tunnel="yes"/>
-            </xsl:next-match>
-        </div>
+        <xsl:call-template name="handle-as-section"/>
     </xsl:template>
     
     <xsl:template match="p">
