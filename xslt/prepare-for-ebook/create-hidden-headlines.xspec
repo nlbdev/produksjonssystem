@@ -199,13 +199,13 @@
                         <p>Chapter</p>
                     </section>
                     <section epub:type="bodymatter chapter">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
                         <p>Chapter</p>
                         <section>
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                             <section>
-                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter</h3>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter</h3>
                                 <p>Chapter</p>
                                 <section>
                                     <h4 id="..." class="generated-headline hidden-headline">Chapter</h4>
@@ -213,7 +213,7 @@
                                 </section>
                             </section>
                             <section>
-                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter</h3>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter</h3>
                                 <p>Chapter</p>
                                 <section>
                                     <h4 id="..." class="generated-headline hidden-headline">Chapter</h4>
@@ -223,7 +223,7 @@
                         </section>
                     </section>
                     <section epub:type="bodymatter part">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Part</h1>
                         <section epub:type="chapter">
                             <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
@@ -237,13 +237,13 @@
                             <p>Chapter</p>
                         </section>
                         <section epub:type="chapter">
-                            <h2 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter...</h2>
+                            <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
                             <section epub:type="subchapter">
-                                <h3 id="..." class="generated-headline hidden-headline">Chapter Chapter Chapter</h3>
+                                <h3 id="..." class="generated-headline hidden-headline">Chapter</h3>
                                 <p>Chapter</p>
                                 <section>
-                                    <h4 id="..." class="generated-headline hidden-headline">Chapter Chapter</h4>
+                                    <h4 id="..." class="generated-headline hidden-headline">Chapter</h4>
                                     <p>Chapter</p>
                                     <section>
                                         <h5 id="..." class="generated-headline hidden-headline">Chapter</h5>
@@ -289,7 +289,7 @@
                         </section>
                     </section>
                     <section epub:type="bodymatter part">
-                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
+                        <h1 id="..." class="generated-headline hidden-headline">Part</h1>
                         <section epub:type="chapter">
                             <h2 id="..." class="generated-headline hidden-headline">Chapter</h2>
                             <p>Chapter</p>
@@ -1251,6 +1251,108 @@
                                 <p class="line"><em>det blir stillare og stillare innover</em></p>
                                 <p class="line"><em>underlege ekkolydar minner</em></p>
                                 <p class="line"><em>om ord ...</em></p>
+                            </div>
+                        </section>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Don't use content from subsections when generating headlines">
+        <x:context>
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section id="chapter_1_section" epub:type="bodymatter chapter">
+                        <section epub:type="z3998:poem" class="poem" id="poem_1">
+                            <div class="linegroup">
+                                <p class="line">Lorem ipsum dolor sit amet</p>
+                                <p class="line">consectetur adipisicing elit</p>
+                                <p class="line">sed do eiusmod tempor incididunt</p>
+                                <p class="line">ut labore et dolore magna aliqua</p>
+                            </div>
+                        </section>
+                        <section epub:type="z3998:poem" class="poem" id="poem_2">
+                            <div class="linegroup">
+                                <p class="line">Ut enim ad minim veniam</p>
+                                <p class="line">quis nostrud exercitation ullamco</p>
+                                <p class="line">laboris nisi ut aliquip</p>
+                                <p class="line">ex ea commodo consequat</p>
+                            </div>
+                        </section>
+                    </section>
+                    <section id="chapter_2_section" epub:type="bodymatter chapter">
+                        <p>This section has text before the first subsection.</p>
+                        <section epub:type="z3998:poem" class="poem" id="poem_3">
+                            <div class="linegroup">
+                                <p class="line">ut labore et dolore magna aliqua</p>
+                                <p class="line">sed do eiusmod tempor incididunt</p>
+                                <p class="line">consectetur adipisicing elit</p>
+                                <p class="line">Lorem ipsum dolor sit amet</p>
+                            </div>
+                        </section>
+                        <section epub:type="z3998:poem" class="poem" id="poem_4">
+                            <div class="linegroup">
+                                <p class="line">ex ea commodo consequat</p>
+                                <p class="line">laboris nisi ut aliquip</p>
+                                <p class="line">quis nostrud exercitation ullamco</p>
+                                <p class="line">Ut enim ad minim veniam</p>
+                            </div>
+                        </section>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="The result should be as expected'">
+            <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                <head>
+                    <title>Test</title>
+                </head>
+                <body>
+                    <section id="chapter_1_section" epub:type="bodymatter chapter">
+                        <h1 id="..." class="generated-headline hidden-headline">Chapter</h1>
+                        <section epub:type="z3998:poem" class="poem" id="poem_1">
+                            <h2 id="..." class="generated-headline hidden-headline">Lorem ipsum dolor...</h2>
+                            <div class="linegroup">
+                                <p class="line">Lorem ipsum dolor sit amet</p>
+                                <p class="line">consectetur adipisicing elit</p>
+                                <p class="line">sed do eiusmod tempor incididunt</p>
+                                <p class="line">ut labore et dolore magna aliqua</p>
+                            </div>
+                        </section>
+                        <section epub:type="z3998:poem" class="poem" id="poem_2">
+                            <h2 id="..." class="generated-headline hidden-headline">Ut enim ad...</h2>
+                            <div class="linegroup">
+                                <p class="line">Ut enim ad minim veniam</p>
+                                <p class="line">quis nostrud exercitation ullamco</p>
+                                <p class="line">laboris nisi ut aliquip</p>
+                                <p class="line">ex ea commodo consequat</p>
+                            </div>
+                        </section>
+                    </section>
+                    <section id="chapter_2_section" epub:type="bodymatter chapter">
+                        <h1 id="..." class="generated-headline hidden-headline">This section has...</h1>
+                        <p>This section has text before the first subsection.</p>
+                        <section epub:type="z3998:poem" class="poem" id="poem_3">
+                            <h2 id="..." class="generated-headline hidden-headline">ut labore et...</h2>
+                            <div class="linegroup">
+                                <p class="line">ut labore et dolore magna aliqua</p>
+                                <p class="line">sed do eiusmod tempor incididunt</p>
+                                <p class="line">consectetur adipisicing elit</p>
+                                <p class="line">Lorem ipsum dolor sit amet</p>
+                            </div>
+                        </section>
+                        <section epub:type="z3998:poem" class="poem" id="poem_4">
+                            <h2 id="..." class="generated-headline hidden-headline">ex ea commodo...</h2>
+                            <div class="linegroup">
+                                <p class="line">ex ea commodo consequat</p>
+                                <p class="line">laboris nisi ut aliquip</p>
+                                <p class="line">quis nostrud exercitation ullamco</p>
+                                <p class="line">Ut enim ad minim veniam</p>
                             </div>
                         </section>
                     </section>

@@ -67,7 +67,8 @@
 
         <xsl:choose>
             <xsl:when test="($matter = $alwaysFromText) or ($section/f:types(.) = $alwaysFromText)">
-                <xsl:value-of select="f:chapter-first-text($section)"/>
+                <xsl:variable name="first-text"  select="f:chapter-first-text($section)"/>
+                <xsl:value-of select="if ($first-text != '') then $first-text else f:chapter-translation($matter, $section)"/>
             </xsl:when>
             
             <xsl:when test="$matter = 'cover'">
@@ -76,7 +77,8 @@
                         <xsl:value-of select="f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:when test="$cover-headlines = 'from-text'">
-                        <xsl:value-of select="f:chapter-first-text($section)"/>
+                        <xsl:variable name="first-text"  select="f:chapter-first-text($section)"/>
+                        <xsl:value-of select="if ($first-text != '') then $first-text else f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="''"/>
@@ -90,7 +92,8 @@
                         <xsl:value-of select="f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:when test="$frontmatter-headlines = 'from-text'">
-                        <xsl:value-of select="f:chapter-first-text($section)"/>
+                        <xsl:variable name="first-text"  select="f:chapter-first-text($section)"/>
+                        <xsl:value-of select="if ($first-text != '') then $first-text else f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="''"/>
@@ -104,7 +107,8 @@
                         <xsl:value-of select="f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:when test="$bodymatter-headlines = 'from-text'">
-                        <xsl:value-of select="f:chapter-first-text($section)"/>
+                        <xsl:variable name="first-text"  select="f:chapter-first-text($section)"/>
+                        <xsl:value-of select="if ($first-text != '') then $first-text else f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="''"/>
@@ -118,7 +122,8 @@
                         <xsl:value-of select="f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:when test="$backmatter-headlines = 'from-text'">
-                        <xsl:value-of select="f:chapter-first-text($section)"/>
+                        <xsl:variable name="first-text"  select="f:chapter-first-text($section)"/>
+                        <xsl:value-of select="if ($first-text != '') then $first-text else f:chapter-translation($matter, $section)"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="''"/>
@@ -145,7 +150,7 @@
     <xsl:function name="f:chapter-first-text">
         <xsl:param name="section" as="element()"/>
         
-        <xsl:variable name="text" select="string-join(($section//text()[normalize-space()])[position() le 10], ' ')" as="xs:string"/>
+        <xsl:variable name="text" select="string-join((($section//text() except $section//section//text())[normalize-space()])[position() le 10], ' ')" as="xs:string"/>
         <xsl:variable name="text" select="normalize-space($text)" as="xs:string"/>
         <xsl:variable name="text" select="string(replace($text, '^(.*?[a-zA-ZæøåÆØÅ].*?)\..*', '$1'))" as="xs:string"/>
         
@@ -160,8 +165,8 @@
 ```
 </xsl:text>
                 </xsl:message>
-                <xsl:message terminate="yes" select="concat(
-                    'No usable text content for headline available at: ',
+                <xsl:message select="concat(
+                    'No usable text content for headline available. Falling back to type-based headline. At: ',
                     '/', string-join((for $e in ($section/ancestor-or-self::*) return concat('*[', count($e/preceding-sibling::*) + 1, ']')), '/'),
                     if ($section/@id) then concat(' (', $section/name(), '[@id=''', $section/@id, '''])') else '')"/>
             </xsl:when>
