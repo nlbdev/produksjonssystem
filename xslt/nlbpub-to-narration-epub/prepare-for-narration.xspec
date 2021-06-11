@@ -186,7 +186,7 @@
                 
                 <figure class="image">
                     <img href="…"/>
-                    <figcaption><span class="nlb-ekstra-informasjon">Bildetekst: </span>Inline image caption<span class="nlb-ekstra-informasjon"> Bildetekst slutt.</span></figcaption>
+                    <figcaption><span class="nlb-ekstra-informasjon">Bildetekst: </span>Inline image caption</figcaption>
                 </figure>
                 
                 <figure class="image">
@@ -194,7 +194,6 @@
                     <figcaption>
                         <p class="nlb-ekstra-informasjon">Bildetekst: </p>
                         <p>Block image caption</p>
-                        <p class="nlb-ekstra-informasjon"> Bildetekst slutt.</p>
                     </figcaption>
                 </figure>
             </section>

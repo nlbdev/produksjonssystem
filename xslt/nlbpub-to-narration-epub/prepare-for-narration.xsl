@@ -165,10 +165,7 @@
             </xsl:call-template>
             
             <xsl:apply-templates select="node()"/>
-            
-            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
-                <xsl:with-param name="informasjon" select="' Bildetekst slutt.'"/>
-            </xsl:call-template>
+
         </xsl:copy>
     </xsl:template>
     
