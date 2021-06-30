@@ -2,12 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
 import sys
-if os.environ.get("TEST", "false").lower() not in ["true", "1"]:
-    logging.basicConfig(stream=sys.stdout,
-                        level=logging.DEBUG,
-                        format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
 
 import datetime  # noqa
 import threading  # noqa
@@ -78,9 +75,20 @@ class Produksjonssystem():
     airbrake_config = None
 
     def __init__(self, environment=None):
-        logging.basicConfig(stream=sys.stdout,
-                            level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO,
-                            format="%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s")
+        logger = logging.getLogger()
+        if os.environ.get("LOCATION_LOG_FILE") is not None:
+            logfile = os.environ.get("LOCATION_LOG_FILE")
+        else:
+            logfile = "/tmp/produksjonssystem.log"
+        handler = TimedRotatingFileHandler(logfile,
+                                           when="d",
+                                           interval=7,
+                                           backupCount=5)
+        fmt = "%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s"
+        formatter = logging.Formatter(fmt=fmt)
+        handler.setFormatter(formatter)
+        handler.setLevel(level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO)
+        logger.addHandler(handler)
 
         # add airbrake.io handler
         self.airbrake_config = {
