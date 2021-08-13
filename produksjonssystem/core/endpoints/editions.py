@@ -66,12 +66,32 @@ def getReport(edition_id, job_id):
 
     if not path:
         return Response(None, status=404)
-    id_split = job_id.split("-")
-    month = id_split[0] + "-" + id_split[1]
-    path_report = os.path.join(path, "logs", month, edition_id, job_id, "log.txt")
-    if not os.path.exists(path_report):
-        return Response("No report for edition: " + edition_id, status=404)
-    result = []
+
+    # Return last report
+    if not job_id[0].isnumeric():
+        month = datetime.now(timezone.utc).strftime("%Y-%m")
+        report_path = os.path.join(path, "logs", month, edition_id)
+        files_edition = os.listdir(report_path)
+        report = None
+        for file in files_edition:
+            if job_id in file:
+                if report is None:
+                    report = os.path.join(report_path, file)
+
+                elif os.path.getmtime(os.path.join(report_path, file)) > os.path.getmtime(report):
+                    report = os.path.join(report_path, file)
+        if report is None:
+            return Response("No report for edition: " + edition_id, status=404)
+        path_report = os.path.join(report, "log.txt")
+
+    # Return specific report
+    else:
+        id_split = job_id.split("-")
+        month = id_split[0] + "-" + id_split[1]
+        path_report = os.path.join(path, "logs", month, edition_id, job_id, "log.txt")
+        if not os.path.exists(path_report):
+            return Response("No report for edition: " + edition_id, status=404)
+        result = []
     with open(path_report, 'r') as report:
         result = report.read().splitlines()
     return jsonify(result)
