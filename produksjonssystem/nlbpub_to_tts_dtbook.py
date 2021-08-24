@@ -197,6 +197,10 @@ class NlbpubToTtsDtbook(Pipeline):
         if not dtbook_sch.success:
             self.utils.report.error("Validering av DTBook feilet (Schematron)")
         if not dtbook_relax.success or not dtbook_sch.success:
+            tempfile_stored = os.path.join(self.utils.report.reportDir(), os.path.basename(temp_result))
+            shutil.copy(temp_result, tempfile_stored)
+            self.utils.report.info(f"Validering av DTBook feilet, lagrer temp fil for feilsøking: {tempfile_stored}")
+            self.utils.report.attachment(None, tempfile_stored, "DEBUG")
             return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til DTBook-arkiv.")
