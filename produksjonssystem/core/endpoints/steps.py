@@ -135,7 +135,7 @@ def getStepEdition(step_id, edition_id):
     else:
         directory_id = [dir for dir in Directory.dirs_flat if os.path.normpath(Directory.dirs_flat[dir]) == os.path.normpath(pipeline.dir_out)][:1]
         directory_id = directory_id[0] if directory_id else None
-        return getDirectoryEdition(directory_id, edition_id)
+        return getDirectoryEdition(directory_id, edition_id, False, "GET")
 
 
 @core.server.route(core.server.root_path + '/steps/<step_id>/editions/<edition_id>/trigger', require_auth=None, methods=["GET", "PUT", "POST"])
