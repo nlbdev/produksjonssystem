@@ -97,7 +97,7 @@ class Metadata:
 
         short_identifier = None
         status_code = response.json()["statusCode"] if response.status_code == 200 and format == "json" else response.status_code  # https://github.com/nlbdev/api-internal/issues/177
-        if response is not None and status_code == 404 and len(edition_identifier) > 6:
+        if response is not None and status_code in [404, 500] and len(edition_identifier) > 6:
             # fallback for as long as the API does not
             # support edition identifiers longer than 6 digits
             short_identifier = edition_identifier[:6]
@@ -275,7 +275,7 @@ class Metadata:
         response = Metadata.requests_get(edition_url)
 
         short_identifier = None
-        if response.status_code == 404 and len(edition_identifier) > 6:
+        if response.status_code in [404, 500] and len(edition_identifier) > 6:
             # fallback for as long as the API does not
             # support edition identifiers longer than 6 digits
             short_identifier = edition_identifier[:6]
