@@ -83,5 +83,87 @@
             </html>
         </x:expect>
     </x:scenario>
-
+    
+    <x:scenario label="Regression test for duplicated page breaks">
+        <x:context>
+            <html xml:lang="nn" lang="nn">
+                <head>
+                    <meta charset="utf-8"/>
+                    <title>Hytta som forsvann</title>
+                </head>
+                <body>
+                    <section epub:type="cover" id="level1_1">
+                        <section class="frontcover" id="prodnote_1">
+                            <figure class="image"><img alt="image" src="images/cover.jpg"/></figure>
+                        </section>
+                    </section>
+                    <section epub:type="frontmatter colophon" id="level1_2">
+                        <div class="page-normal" epub:type="pagebreak" id="page-1" title="1"></div>
+                        <p>© Det Norske Samlaget 2020</p>
+                    </section>
+                    <section epub:type="frontmatter" id="level1_3">
+                        <div class="page-normal" epub:type="pagebreak" id="page-2" title="2"></div>
+                        <h1 id="h1_1">Om denne boka</h1>
+                        <p>På garden der Vanja bur, er dyra nett sleppte ut på beite.</p>
+                        <div class="page-normal" epub:type="pagebreak" id="page-3" title="3"></div>
+                    </section>
+                    <section epub:type="frontmatter titlepage" id="level1_4">
+                        <div class="page-normal" epub:type="pagebreak" id="page-4" title="4"></div>
+                        <h1 class="title" epub:type="fulltitle" id="h1_2">Hytta som forsvann</h1>
+                        <p class="docauthor" epub:type="z3998:author"><em>RUTH LILLEGRAVEN</em></p>
+                        <p class="docauthor" epub:type="z3998:author"><em>JENS KRISTENSE</em>N</p>
+                        <p>KLODEKLUBBEN</p>
+                    </section>
+                    <section epub:type="frontmatter" id="level1_5">
+                        <h1 id="h1_3">LIMSIDE</h1>
+                        <figure class="image"><img alt="image" src="images/581644-002.jpg"/></figure>
+                    </section>
+                    <section epub:type="bodymatter chapter" id="level1_6">
+                        <div class="page-normal" epub:type="pagebreak" id="page-5" title="5"></div>
+                        <h1 id="h1_4">KAPITTEL 1 MØTE PÅ GARDEN</h1>
+                        <figure class="image"><img alt="image" src="images/581644-003.jpg"/></figure>
+                        <p>Vanja har besøk av Sivert og Mo. Det er vår. Dei har fri frå skulen i fire dagar og god tid til å leggje planar for Klodeklubben.</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+        <x:expect label="The titlepage should be removed">
+            <html xml:lang="nn" lang="nn">
+                <head>
+                    <meta charset="utf-8"/>
+                    <title>Hytta som forsvann</title>
+                </head>
+                <body>
+                    <section epub:type="cover" id="level1_1">
+                        <section class="frontcover" id="prodnote_1">
+                            <figure class="image"><img alt="image" src="images/cover.jpg"/></figure>
+                        </section>
+                    </section>
+                    <!--Kolofonen er fjernet i lydbokutgaven-->
+                    <section epub:type="frontmatter" id="level1_3">
+                        <div class="page-normal" epub:type="pagebreak" id="page-1" title="1"></div>
+                        <div class="page-normal" epub:type="pagebreak" id="page-2" title="2"></div>
+                        <h1 id="h1_1">Om denne boka</h1>
+                        <p>På garden der Vanja bur, er dyra nett sleppte ut på beite.</p>
+                        <div class="page-normal" epub:type="pagebreak" id="page-3" title="3"></div>
+                    </section>
+                    <!--Tittelsiden er fjernet i lydbokutgaven-->
+                    <section epub:type="frontmatter" id="level1_5">
+                        <div class="page-normal" epub:type="pagebreak" id="page-4" title="4"></div>
+                        <h1 id="h1_3">LIMSIDE</h1>
+                        <figure class="image"><img alt="image" src="images/581644-002.jpg"/>
+                        </figure>
+                    </section>
+                    <section epub:type="bodymatter chapter" id="level1_6">
+                        <div class="page-normal" epub:type="pagebreak" id="page-5" title="5"></div>
+                        <h1 id="h1_4">KAPITTEL 1 MØTE PÅ GARDEN</h1>
+                        <figure class="image"><img alt="image" src="images/581644-003.jpg"/></figure>
+                        <p>Vanja har besøk av Sivert og Mo. Det er vår. Dei har fri frå skulen i fire dagar og god tid til å leggje planar for Klodeklubben.</p>
+                    </section>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

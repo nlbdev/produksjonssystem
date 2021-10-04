@@ -61,7 +61,7 @@
         <xsl:comment>Tittelsiden er fjernet i lydbokutgaven</xsl:comment>
     </xsl:template>
     
-    <!-- og dersom det kommer et section-elementet etter kolofonen, så hentes pagebreak fra det fjernede elementet til begynnelsen av dette elementet -->
+    <!-- og dersom det kommer et section-element etter kolofonen eller tittelsiden, så hentes pagebreak fra det fjernede elementet til begynnelsen av dette elementet -->
     <xsl:template match="section[preceding-sibling::section[1]/tokenize(@epub:type, '\s+') = ('colophon', 'titlepage') and not(tokenize(@epub:type, '\s+') = ('colophon', 'titlepage'))]">
         <xsl:variable name="this" select="."/>
         <xsl:copy exclude-result-prefixes="#all">
@@ -70,8 +70,8 @@
             
             <!-- colophon and/or titlepage sections, including sections between those sections and this section -->
             <xsl:variable name="deleted-sections" select="preceding-sibling::section[tokenize(@epub:type, '\s+') = ('colophon', 'titlepage')]/(. | following-sibling::section) intersect preceding-sibling::section"/>
-            <!-- colophon and/or titlepage sections, except those where the following section is not this section, and hot a colophon or titlepage -->
-            <xsl:variable name="deleted-sections" select="$deleted-sections[following-sibling::section[1][. intersect $this or tokenize(@epub:type, '\s+') = ('colophon', 'titlepage')]]"/>
+            <!-- colophon and/or titlepage sections, except those preceding a non-deleted section other than this section -->
+            <xsl:variable name="deleted-sections" select="if (exists(preceding-sibling::section[not(tokenize(@epub:type, '\s+') = ('colophon', 'titlepage'))])) then preceding-sibling::section[not(tokenize(@epub:type, '\s+') = ('colophon', 'titlepage'))][1]/following-sibling::section intersect $deleted-sections else $deleted-sections"/>
             
             <xsl:message>* Henter sidetall fra kolofonen og/eller tittelsiden som er fjernet</xsl:message>
             <xsl:copy-of select="$deleted-sections/descendant::*[fnk:epub-type(@epub:type, 'pagebreak')]" exclude-result-prefixes="#all"/>
