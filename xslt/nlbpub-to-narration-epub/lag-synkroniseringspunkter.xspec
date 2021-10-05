@@ -189,4 +189,19 @@ grønn</span>
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="regression test for duplicate 'Note' ('Note Note 1' etc.)">
+        <!-- https://github.com/nlbdev/produksjonssystem/issues/325 -->
+        <x:context>
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <p><a id="noteref_1" class="noteref" epub:type="noteref" href="#c011"><span class="nlb-ekstra-informasjon">Note </span>1</a></p>
+            </section>
+        </x:context>
+        
+        <x:expect label="the result should be as expected">
+            <section epub:type="bodymatter chapter" xmlns="http://www.w3.org/1999/xhtml">
+                <p><a id="noteref_1" class="noteref" epub:type="noteref" href="#c011">Note 1</a></p>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>

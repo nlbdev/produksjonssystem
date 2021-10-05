@@ -159,7 +159,9 @@
     <xsl:template match="a[tokenize(@epub:type, '\s+') = 'noteref']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
-            <xsl:text>Note </xsl:text>
+            <xsl:if test="not(contains(lower-case(string-join(.//text(), '')), 'note'))">
+                <xsl:text>Note </xsl:text>
+            </xsl:if>
             <xsl:value-of select="replace(normalize-space(.), '(^[\[\(]|[\]\)]$)', '')"/>
         </xsl:copy>
     </xsl:template>
