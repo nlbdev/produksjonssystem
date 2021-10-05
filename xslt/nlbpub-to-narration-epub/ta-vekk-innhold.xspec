@@ -128,7 +128,7 @@
             </html>
         </x:context>
         
-        <x:expect label="The titlepage should be removed">
+        <x:expect label="The pagebreaks should not be duplicated">
             <html xml:lang="nn" lang="nn">
                 <head>
                     <meta charset="utf-8"/>
