@@ -74,7 +74,7 @@ class Produksjonssystem():
     api = None
     airbrake_config = None
 
-    def __init__(self, environment=None):
+    def __init__(self, environment=None, verbose=False):
         logger = logging.getLogger()
         if os.environ.get("LOCATION_LOG_FILE") is not None:
             logfile = os.environ.get("LOCATION_LOG_FILE")
@@ -89,6 +89,11 @@ class Produksjonssystem():
         handler.setFormatter(formatter)
         handler.setLevel(level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO)
         logger.addHandler(handler)
+        if verbose:
+            consoleHandler = logging.StreamHandler(sys.stdout)
+            consoleHandler.setFormatter(formatter)
+            consoleHandler.setLevel(level=logging.DEBUG if os.environ.get("DEBUG", "1") == "1" else logging.INFO)
+            logger.addHandler(consoleHandler)
 
         # add airbrake.io handler
         self.airbrake_config = {
@@ -413,7 +418,7 @@ class Produksjonssystem():
         logging.info(text)
         Slack.slack(text, None)
 
-    def run(self, debug=False):
+    def run(self, debug=False, verbose=False):
         try:
             if debug:
                 logging.getLogger().setLevel(logging.DEBUG)
@@ -912,6 +917,7 @@ class Produksjonssystem():
 
 if __name__ == "__main__":
     threading.current_thread().setName("main thread")
-    debug = "debug" in sys.argv or os.environ.get("DEBUG", "1") == "1"
-    produksjonssystem = Produksjonssystem()
+    debug = "debug" in sys.argv or os.environ.get("DEBUG", "0") == "1"
+    verbose = "verbose" in sys.argv or os.environ.get("VERBOSE", "0") == "1"
+    produksjonssystem = Produksjonssystem(verbose=verbose)
     produksjonssystem.run(debug=debug)
