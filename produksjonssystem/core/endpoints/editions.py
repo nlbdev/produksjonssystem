@@ -61,12 +61,18 @@ def job(edition_id, job_id):
 # list all files in the job directory
 @core.server.route(core.server.root_path + '/editions/<edition_id>/jobs/<job_id>/files', require_auth=None)
 def job_files(edition_id, job_id):
-    core.server.expected_args(request, ["include-other-identifiers"])
+    core.server.expected_args(request, ["step-id", "line-id", "include-other-identifiers"])
 
+    step_id = core.server.get_arg(request, "step-id", default="", type=str)
+    line_id = core.server.get_arg(request, "line-id", default="", type=str)
     include_other_identifiers = core.server.get_arg(request, "include-other-identifiers", default="true", type=str)
+
+    step_id = step_id if step_id else None
+    line_id = line_id if line_id else None
     include_other_identifiers = include_other_identifiers == "true"
 
-    path_report, status = get_report_path(edition_id, job_id, include_other_identifiers=include_other_identifiers)
+    # note that step_id and line_id is only relevant here if job_id is "latest"
+    path_report, status = get_report_path(edition_id, job_id, step_id=step_id, line_id=line_id, include_other_identifiers=include_other_identifiers)
     if not status == 200:
         return path_report, status
 
@@ -88,12 +94,18 @@ def job_files(edition_id, job_id):
 # get a file from the job directory
 @core.server.route(core.server.root_path + '/editions/<edition_id>/jobs/<job_id>/files/<path:path>', require_auth=None)
 def job_file(edition_id, job_id, path):
-    core.server.expected_args(request, ["include-other-identifiers"])
+    core.server.expected_args(request, ["step-id", "line-id", "include-other-identifiers"])
 
+    step_id = core.server.get_arg(request, "step-id", default="", type=str)
+    line_id = core.server.get_arg(request, "line-id", default="", type=str)
     include_other_identifiers = core.server.get_arg(request, "include-other-identifiers", default="true", type=str)
+
+    step_id = step_id if step_id else None
+    line_id = line_id if line_id else None
     include_other_identifiers = include_other_identifiers == "true"
 
-    path_report, status = get_report_path(edition_id, job_id, include_other_identifiers=include_other_identifiers, path=path)
+    # note that step_id and line_id is only relevant here if job_id is "latest"
+    path_report, status = get_report_path(edition_id, job_id, path=path, step_id=step_id, line_id=line_id, include_other_identifiers=include_other_identifiers)
     if not status == 200:
         return path_report, status
 
