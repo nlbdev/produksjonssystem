@@ -81,7 +81,7 @@ class Produksjonssystem():
         else:
             logfile = "/tmp/produksjonssystem.log"
         handler = TimedRotatingFileHandler(logfile,
-                                           when="d",
+                                           when="D",
                                            interval=7,
                                            backupCount=5)
         fmt = "%(asctime)s %(levelname)-8s [%(threadName)-30s] %(message)s"
