@@ -250,6 +250,12 @@ class PrepareForEbook(Pipeline):
         if Epubcheck.isavailable():
             epubcheck = Epubcheck(self, opf_path)
             if not epubcheck.success:
+                tempfile_stored_opf = os.path.join(self.utils.report.reportDir(), os.path.basename(opf_path))
+                shutil.copy(opf_path, tempfile_stored_opf)
+                tempfile_stored = os.path.join(self.utils.report.reportDir(), os.path.basename(html_file))
+                shutil.copy(html_file, tempfile_stored)
+                self.utils.report.info(f"Validering av DTBook feilet, lagrer temp fil for feilsøking: {tempfile_stored}")
+                self.utils.report.attachment(None, tempfile_stored, "DEBUG")
                 self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
                 return
         else:
