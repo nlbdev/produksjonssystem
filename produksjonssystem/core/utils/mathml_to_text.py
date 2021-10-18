@@ -102,8 +102,20 @@ class Mathml_to_text():
             return html
         except Exception:
             self.report.warning("Error returning MathML transformation. Check STEM result")
-            self.report.warning(traceback.format_exc(), preformatted=True)
-            return "<span>Matematisk formel</span>"
+        #    self.report.warning(traceback.format_exc(), preformatted=True)
+            element = etree.fromstring(mathml)
+            display_attrib = element.attrib["display"]
+            lang_attrib = element.attrib["{http://www.w3.org/XML/1998/namespace}lang"]
+            if display_attrib == "inline":
+                if lang_attrib == "nb" or lang_attrib == "nob" or lang_attrib == "nn":
+                    return "<span>Matematisk formel</span>"
+                else:
+                    return "<span>Mathematical formula</span>"
+            else:
+                if lang_attrib == "nb" or lang_attrib == "nob" or lang_attrib == "nn":
+                    return "<p>Matematisk formel</p>"
+                else:
+                    return "<p>Mathematical formula</p>"
 
 
 class Mathml_validator():
