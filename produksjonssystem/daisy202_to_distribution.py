@@ -74,7 +74,12 @@ class Daisy202ToDistribution(Pipeline):
         audio_title = " (" + nccdoc.xpath("string(//*[@name='dc:title']/@content)") + ") "
         edition_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
 
-        if edition_identifier == (""):
+        if nccdoc.docinfo.encoding != 'utf-8':
+            self.utils.report.error(self.book["name"] + ": Encodingen til filen er ikke utf-8, avbryter.")
+            self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+            return False
+
+        if edition_identifier == ("") or str(edition_identifier) != str(self.book["name"]):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
             self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
             return False
@@ -145,6 +150,17 @@ class Daisy202ToDistribution(Pipeline):
         dc_rights = nccdoc.xpath("string(//*[@name='dc:rights']/@content)")
         if not len(dc_rights) >= 1:
                 self.utils.report.error(f"{edition_identifier} finner ikke dc:rights, dette må boka ha")
+                return False
+
+        dc_narrator = nccdoc.xpath("string(//*[@name='dc:narrator']/@content)")
+        if not len(dc_narrator) >= 1:
+                self.utils.report.error(f"{edition_identifier} finner ikke dc:narrator, dette må boka ha")
+                return False
+
+        multimedia_types = ["audioOnly", "audioNcc", "audioPartText", "audioFullText", "textPartAudio", "textNcc"]
+        dc_multimedia_type = nccdoc.xpath("string(//*[@name='dc:multimediatype']/@content)")
+        if dc_multimedia_type not in multimedia_types:
+                self.utils.report.error(f"{edition_identifier} har ikke en valid multimediatype, dette må boka ha. Multimediatype er {dc_multimedia_type}")
                 return False
 
         status = self.validate_book(os.path.join(temp_dir, "ncc.html"))
