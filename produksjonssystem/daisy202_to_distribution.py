@@ -8,6 +8,8 @@ import subprocess
 import tempfile
 import traceback
 from pathlib import Path
+from pydub import AudioSegment
+from pydub.utils import mediainfo
 
 from lxml import etree as ElementTree
 
@@ -43,9 +45,7 @@ class Daisy202ToDistribution(Pipeline):
 
     def on_book(self):
         if self.dp1_home is "" or self.validator_script is "":
-            if self.init_environment():
-                self.utils.report.info("Pipeline1 ble funnet")
-            else:
+            if not self.init_environment():
                 self.utils.report.error("Pipeline1 ble ikke funnet. Avbryter..")
                 return False
 
@@ -63,7 +63,9 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return False
         try:
-            nccdoc = ElementTree.parse(os.path.join(temp_dir, "ncc.html")).getroot()
+            ncc_tree = ElementTree.parse(os.path.join(temp_dir, "ncc.html"))
+            ncc_encoding = ncc_tree.docinfo.encoding.lower()
+            nccdoc = ncc_tree.getroot()
 
         except Exception:
             self.utils.report.info("Klarte ikke lese ncc fila. Sjekk loggen for detaljer.")
@@ -74,8 +76,8 @@ class Daisy202ToDistribution(Pipeline):
         audio_title = " (" + nccdoc.xpath("string(//*[@name='dc:title']/@content)") + ") "
         edition_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
 
-        if nccdoc.docinfo.encoding != 'utf-8':
-            self.utils.report.error(self.book["name"] + ": Encodingen til filen er ikke utf-8, avbryter.")
+        if ncc_encoding != 'utf-8':
+            self.utils.report.error(self.book["name"] + ": Encodingen til filen er ikke utf-8, (f{ncc_encoding}) avbryter.")
             self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
             return False
 
@@ -136,32 +138,63 @@ class Daisy202ToDistribution(Pipeline):
                 if file_book != "images":
                     self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
                     return False
-            if file_book.endswith(".mp3") and file_book.startswith("temp"):
-                os.remove(file_book)
-            if file_book.endswith(".wav"):
+            elif file_book.endswith(".mp3"):
+                if file_book.startswith("temp"):
+                    os.remove(file_book)
+                else:
+                    audio_file = os.path.join(temp_dir, file_book)
+                    segment = AudioSegment.from_mp3(audio_file)
+                    if segment.channels != 1:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke er single channel")
+                        return False
+                    accepted_sample_rate = [22050, 44100]
+                    accepted_bitrate = [32, 48, 64] # kbps
+                    sample_rate = segment.frame_rate
+                    if sample_rate not in accepted_sample_rate:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig sample rate ({sample_rate})")
+                        return False
+                    bitrate = int(float(mediainfo(audio_file)["bit_rate"])/1000)
+                    if bitrate not in accepted_bitrate:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate})")
+                        return False
+
+            elif file_book.endswith(".wav"):
                 self.utils.report.error(f"Boka {edition_identifier} inneholder .wav filer, avbryter")
                 return False
 
         dc_creator = nccdoc.xpath("string(//*[@name='dc:creator']/@content)")
         if not len(dc_creator) >= 1:
-                self.utils.report.error(f"{edition_identifier} finner ikke dc:creator, dette må boka ha")
-                return False
+            self.utils.report.error(f"{edition_identifier} finner ikke dc:creator, dette må boka ha")
+            return False
 
-        dc_rights = nccdoc.xpath("string(//*[@name='dc:rights']/@content)")
-        if not len(dc_rights) >= 1:
-                self.utils.report.error(f"{edition_identifier} finner ikke dc:rights, dette må boka ha")
-                return False
+      #  dc_rights = nccdoc.xpath("string(//*[@name='dc:rights']/@content)")
+      #  if not len(dc_rights) >= 1:
+      #          self.utils.report.error(f"{edition_identifier} finner ikke dc:rights, dette må boka ha")
+      #          return False
 
-        dc_narrator = nccdoc.xpath("string(//*[@name='dc:narrator']/@content)")
+        dc_narrator = nccdoc.xpath("string(//*[@name='ncc:narrator']/@content)")
         if not len(dc_narrator) >= 1:
-                self.utils.report.error(f"{edition_identifier} finner ikke dc:narrator, dette må boka ha")
-                return False
+            self.utils.report.error(f"{edition_identifier} finner ikke ncc:narrator, dette må boka ha")
+            return False
 
         multimedia_types = ["audioOnly", "audioNcc", "audioPartText", "audioFullText", "textPartAudio", "textNcc"]
-        dc_multimedia_type = nccdoc.xpath("string(//*[@name='dc:multimediatype']/@content)")
-        if dc_multimedia_type not in multimedia_types:
-                self.utils.report.error(f"{edition_identifier} har ikke en valid multimediatype, dette må boka ha. Multimediatype er {dc_multimedia_type}")
-                return False
+        ncc_multimedia_type = nccdoc.xpath("string(//*[@name='ncc:multimediaType']/@content)")
+        if ncc_multimedia_type not in multimedia_types:
+            self.utils.report.error(f"{edition_identifier} har ikke en valid ncc:multimediaType, dette må boka ha. Multimediatype er {ncc_multimedia_type}")
+            return False
+       # print(ElementTree.tostring(nccdoc, encoding='utf8', method='xml'))
+        first_head_class = nccdoc.xpath("string(//*[local-name()='h1'][1]/@class)")
+        second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])")
+
+        accepted_second_head = ["Lydbokavtalen", "Audiobook agreement", "Tigar announcement"]
+
+        if first_head_class != "title":
+            self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
+            return False
+
+        if second_head not in accepted_second_head:
+            self.utils.report.error(f"{edition_identifier} andre heading {second_head} er ikke Lydbokavtalen, Audiobook agreement, eller Tigar announcement")
+            return False
 
         status = self.validate_book(os.path.join(temp_dir, "ncc.html"))
         if status == "ERROR" or status is False:
