@@ -134,6 +134,7 @@ class Daisy202ToDistribution(Pipeline):
 
         files_book = os.listdir(temp_dir)
         playlist_extensions = ["m3u", "m3u8", "pls", "wpl", "xspf"]
+        contains_playlist = False
 
         for file_book in files_book:
             file_book_path = os.path.join(temp_dir, file_book)
@@ -156,7 +157,7 @@ class Daisy202ToDistribution(Pipeline):
                     if sample_rate not in accepted_sample_rate:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig sample rate ({sample_rate})")
                         return False
-                    bitrate = int(float(mediainfo(audio_file)["bit_rate"])/1000)
+                    bitrate = round(float(mediainfo(audio_file)["bit_rate"])/1000)
                     if bitrate not in accepted_bitrate:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate})")
                         return False
@@ -164,11 +165,12 @@ class Daisy202ToDistribution(Pipeline):
             elif file_book.endswith(".wav"):
                 self.utils.report.error(f"Boka {edition_identifier} inneholder .wav filer, avbryter")
                 return False
-            contains_playlist = False
-            for ext in playlist_extensions:
-                if file_book.endswith(ext):
-                    contains_playlist = True
-                    os.rename(file_book_path, os.path.join(temp_dir, audio_title + ext))
+
+            else:
+                for ext in playlist_extensions:
+                    if file_book.endswith(ext):
+                        contains_playlist = True
+                        os.rename(file_book_path, os.path.join(temp_dir, audio_title + ext))
 
             if contains_playlist is False:
                 self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
