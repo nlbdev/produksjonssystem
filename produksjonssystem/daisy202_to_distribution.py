@@ -133,7 +133,10 @@ class Daisy202ToDistribution(Pipeline):
                 return False
 
         files_book = os.listdir(temp_dir)
+        playlist_extensions = ["m3u", "m3u8", "pls", "wpl", "xspf"]
+
         for file_book in files_book:
+            file_book_path = os.path.join(temp_dir, file_book)
             if os.path.isdir(file_book):
                 if file_book != "images":
                     self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
@@ -160,6 +163,15 @@ class Daisy202ToDistribution(Pipeline):
 
             elif file_book.endswith(".wav"):
                 self.utils.report.error(f"Boka {edition_identifier} inneholder .wav filer, avbryter")
+                return False
+            contains_playlist = False
+            for ext in playlist_extensions:
+                if file_book.endswith(ext):
+                    contains_playlist = True
+                    os.rename(file_book_path, os.path.join(temp_dir, audio_title + ext))
+
+            if contains_playlist is False:
+                self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
                 return False
 
         dc_creator = nccdoc.xpath("string(//*[@name='dc:creator']/@content)")
