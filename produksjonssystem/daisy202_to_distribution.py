@@ -139,6 +139,7 @@ class Daisy202ToDistribution(Pipeline):
         files_book = os.listdir(temp_dir)
         playlist_extensions = ["m3u", "m3u8", "pls", "wpl", "xspf"]
         contains_playlist = False
+        small_file = False
 
         for file_book in files_book:
             file_book_path = os.path.join(temp_dir, file_book)
@@ -165,6 +166,12 @@ class Daisy202ToDistribution(Pipeline):
                     if bitrate not in accepted_bitrate:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate})")
                         return False
+                    file_size = os.path.getsize(audio_file)
+                    if file_size >= 1048576 and file_size <= 4194304:
+                        small_file = True
+                    if file_size >= 157286400:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som er større enn 150MB")
+                        return False
 
             elif file_book.endswith(".wav"):
                 self.utils.report.error(f"Boka {edition_identifier} inneholder .wav filer, avbryter")
@@ -178,6 +185,9 @@ class Daisy202ToDistribution(Pipeline):
 
             if contains_playlist is False and library != "Statped" and library != "KABB":
                 self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
+                return False
+            if small_file is False and library != "Statped":
+                self.utils.report.error(f"Boka {edition_identifier} inneholder ingen fil mellom 1-4 MB")
                 return False
 
         dc_creator = nccdoc.xpath("string(//*[@name='dc:creator']/@content)")
@@ -197,9 +207,9 @@ class Daisy202ToDistribution(Pipeline):
             return False
 
         first_head_class = nccdoc.xpath("string(//*[local-name()='h1'][1]/@class)")
-        second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])")
+        second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])").lower()
 
-        accepted_second_head = ["Lydbokavtalen", "Audiobook agreement", "Tigar announcement"]
+        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "tigar announcement", "nlb"]
 
         if first_head_class != "title":
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
