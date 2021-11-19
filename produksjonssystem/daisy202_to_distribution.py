@@ -44,7 +44,7 @@ class Daisy202ToDistribution(Pipeline):
         self.on_book()
 
     def on_book(self):
-        if self.dp1_home is "" or self.validator_script is "":
+        if self.dp1_home == "" or self.validator_script == "":
             if not self.init_environment():
                 self.utils.report.error("Pipeline1 ble ikke funnet. Avbryter..")
                 return False
@@ -108,12 +108,14 @@ class Daisy202ToDistribution(Pipeline):
             return False
 
         creative_work_metadata = None
+        edition_metadata = None
 
         timeout = 0
         while creative_work_metadata is None and timeout < 5:
 
             timeout = timeout + 1
             creative_work_metadata = Metadata.get_creative_work_from_api(edition_identifier, editions_metadata="all", use_cache_if_possible=True, creative_work_metadata="all")
+            edition_metadata = Metadata.get_edition_from_api(edition_identifier)
             if creative_work_metadata is not None:
                 break
 
@@ -121,14 +123,16 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.warning("Klarte ikke finne et åndsverk tilknyttet denne utgaven. Prøver igjen senere.")
             return False
 
+        library = edition_metadata["library"]
+
         periodical = False
         if creative_work_metadata["newspaper"] is True or creative_work_metadata["magazine"] is True:
             periodical = True
-            if len(edition_identifier) is not 12:
+            if len(edition_identifier) != 12:
                 self.utils.report.error(f"Boka {edition_identifier} er en avis eller et magasin, men utgavenummeret har ikke 12 siffer")
                 return False
         else:
-            if len(edition_identifier) is not 6:
+            if len(edition_identifier) != 6:
                 self.utils.report.error(f"Boka {edition_identifier} har ikke 6 siffer")
                 return False
 
@@ -142,7 +146,7 @@ class Daisy202ToDistribution(Pipeline):
                 if file_book != "images":
                     self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
                     return False
-            elif file_book.endswith(".mp3"):
+            elif file_book.endswith(".mp3") and library != "Statped":
                 if file_book.startswith("temp"):
                     os.remove(file_book)
                 else:
@@ -172,7 +176,7 @@ class Daisy202ToDistribution(Pipeline):
                         contains_playlist = True
                         os.rename(file_book_path, os.path.join(temp_dir, audio_title + ext))
 
-            if contains_playlist is False:
+            if contains_playlist is False and library != "Statped" and library != "KABB":
                 self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
                 return False
 
@@ -180,11 +184,6 @@ class Daisy202ToDistribution(Pipeline):
         if not len(dc_creator) >= 1:
             self.utils.report.error(f"{edition_identifier} finner ikke dc:creator, dette må boka ha")
             return False
-
-      #  dc_rights = nccdoc.xpath("string(//*[@name='dc:rights']/@content)")
-      #  if not len(dc_rights) >= 1:
-      #          self.utils.report.error(f"{edition_identifier} finner ikke dc:rights, dette må boka ha")
-      #          return False
 
         dc_narrator = nccdoc.xpath("string(//*[@name='ncc:narrator']/@content)")
         if not len(dc_narrator) >= 1:
@@ -196,7 +195,7 @@ class Daisy202ToDistribution(Pipeline):
         if ncc_multimedia_type not in multimedia_types:
             self.utils.report.error(f"{edition_identifier} har ikke en valid ncc:multimediaType, dette må boka ha. Multimediatype er {ncc_multimedia_type}")
             return False
-       # print(ElementTree.tostring(nccdoc, encoding='utf8', method='xml'))
+
         first_head_class = nccdoc.xpath("string(//*[local-name()='h1'][1]/@class)")
         second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])")
 
@@ -206,7 +205,7 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
             return False
 
-        if second_head not in accepted_second_head:
+        if second_head not in accepted_second_head and library != "Statped":
             self.utils.report.error(f"{edition_identifier} andre heading {second_head} er ikke Lydbokavtalen, Audiobook agreement, eller Tigar announcement")
             return False
 
@@ -223,7 +222,13 @@ class Daisy202ToDistribution(Pipeline):
                 self.utils.report.attachment(None, archived_path_multi, "DEBUG")
                 shutil.rmtree(os.path.join(self.dir_in, folder))
 
-        self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), "nlb", "daisy202")
+        if library != "Statped":
+            css_format = "Statped"
+        elif edition_metadata["includesText"] is True:
+            css_format = "daisy202"
+        else:
+            css_format = "daisy202-ncc"
+        self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), "nlb", css_format)
 
         # TODO: Kopiere over til nlbsamba også
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
@@ -246,7 +251,7 @@ class Daisy202ToDistribution(Pipeline):
 
     def validate_book(self, path_ncc):
 
-        if self.dp1_home is "":
+        if self.dp1_home == "":
             self.utils.report.error("Pipeline1 ble ikke funnet. Avslutter..")
             return False
         input = "--input=" + path_ncc
