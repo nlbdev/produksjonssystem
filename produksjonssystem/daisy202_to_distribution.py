@@ -246,6 +246,7 @@ class Daisy202ToDistribution(Pipeline):
             css_format = "daisy202"
         else:
             css_format = "daisy202-ncc"
+        self.utils.report.info(f"Inserting CSS: {css_format}")
         self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), "nlb", css_format)
 
         # TODO: Kopiere over til nlbsamba også
