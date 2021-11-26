@@ -219,7 +219,6 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
         self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-aviser-til-talesyntese")
-        self.dirs_ranked[-1]["dirs"]["daisy202-ready"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok")
 
         self.dirs_ranked.append({
             "id": "publication-out",
@@ -233,6 +232,8 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
         self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
         self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering")
+        self.dirs_ranked[-1]["dirs"]["daisy202-dist"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-validated")
 
         # Make a key/value version of dirs_ranked for convenience
         self.dirs = {
@@ -347,7 +348,7 @@ class Produksjonssystem():
             # lydbok distribusjon 
             [Daisy202ToDistribution(retry_all=True,
                                     during_working_hours=True,
-                                    during_night_and_weekend=True),       "daisy202-ready",            "daisy202"],
+                                    during_night_and_weekend=True),       "daisy202-ready",            "daisy202-dist"],
         ]
 
     # Could possibly be moved to a configuration file
