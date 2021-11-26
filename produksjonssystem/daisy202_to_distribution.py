@@ -24,7 +24,7 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class Daisy202ToDistribution(Pipeline):
     uid = "daisy202-to-distribution"
-    title = "Daisy 2.02 til Distribusjon"
+    title = "Daisy 2.02 til validering"
     labels = ["Lydbok", "Statped"]
     publication_format = "DAISY 2.02"
     expected_processing_time = 550
@@ -87,9 +87,10 @@ class Daisy202ToDistribution(Pipeline):
             return False
 
         root_directory = Path(temp_dir)
+        max_size = 702545920 - 20971520
         size = sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
         multi_volume = False
-        if size >= 702545920:
+        if size >= max_size:
             self.utils.report.info(f"{edition_identifier} er på størrelse {size}, sjekker om det er en multivolum bok.")
             multi_volume = True
 
@@ -101,8 +102,14 @@ class Daisy202ToDistribution(Pipeline):
                 if file.startswith(self.book["name"]) and file[-1].isdigit() and file[-2] == "_":
                     self.utils.report.info(f"{file} er en del av multi volum boka {edition_identifier}")
                     multi_volume_dirs.append(file)
+                    multi_volume_directory = Path(os.path.join(self.dir_in, file))
+                    multi_volume_size = size = sum(f.stat().st_size for f in multi_volume_directory.glob('**/*') if f.is_file())
+                    if multi_volume_size >= max_size:
+                        self.utils.report.info(f" Multi volum mappen {file} er på størrelse {multi_volume_size}, dette er for stort")
+                        self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+                        return False
 
-            if len(multi_volume_dirs) <= 1:
+            if len(multi_volume_dirs) <= 0:
                 self.utils.report.error(f"{edition_identifier} bør være en multivolum bok, men har ikke flere multivolum mapper. Avbryter.")
                 self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
             return False
@@ -143,6 +150,7 @@ class Daisy202ToDistribution(Pipeline):
 
         for file_book in files_book:
             file_book_path = os.path.join(temp_dir, file_book)
+            self.utils.report.debug(f"Checking file: {file_book}")
             if os.path.isdir(file_book):
                 if file_book != "images":
                     self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
@@ -183,12 +191,12 @@ class Daisy202ToDistribution(Pipeline):
                         contains_playlist = True
                         os.rename(file_book_path, os.path.join(temp_dir, audio_title + ext))
 
-            if contains_playlist is False and library != "Statped" and library != "KABB":
-                self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
-                return False
-            if small_file is False and library != "Statped":
-                self.utils.report.error(f"Boka {edition_identifier} inneholder ingen fil mellom 1-4 MB")
-                return False
+        if contains_playlist is False and library != "Statped" and library != "KABB":
+            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
+            return False
+        if small_file is False and library != "Statped":
+            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen fil mellom 1-4 MB")
+            return False
 
         dc_creator = nccdoc.xpath("string(//*[@name='dc:creator']/@content)")
         if not len(dc_creator) >= 1:
