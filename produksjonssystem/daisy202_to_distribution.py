@@ -197,7 +197,7 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
             return False
         if small_file is False and library != "Statped":
-            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen fil mellom 1-4 MB")
+            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen lydfil mellom 1-4 MB")
             return False
 
         dc_creator = nccdoc.xpath("string(//*[@name='dc:creator']/@content)")
