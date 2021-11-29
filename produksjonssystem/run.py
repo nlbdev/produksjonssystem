@@ -37,6 +37,7 @@ from core.utils.metadata import Metadata  # noqa
 # from check_pef import CheckPef  # noqa
 # from incoming_NLBPUB import (NLBPUB_incoming_validator,
 #                              NLBPUB_incoming_warning, NLBPUB_validator)  # noqa
+from daisy202_to_distribution import Daisy202ToDistribution # noqa
 from incoming_nordic import IncomingNordic  # noqa
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
                              InsertMetadataXhtml)  # noqa
@@ -231,6 +232,8 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
         self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
         self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering")
+        self.dirs_ranked[-1]["dirs"]["daisy202-dist"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-validert")
 
         # Make a key/value version of dirs_ranked for convenience
         self.dirs = {
@@ -265,6 +268,7 @@ class Produksjonssystem():
             # [DummyPipeline("Manuell sjekk av NLBPUB",
             #                labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
             #  [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
+
             [IncomingNordic(retry_all=True,
                             during_working_hours=True,
                             during_night_and_weekend=True),       "incoming",            "master"],
@@ -340,6 +344,11 @@ class Produksjonssystem():
             [Audio_Abstract(retry_missing=True,
                             during_working_hours=True,
                             during_night_and_weekend=True),     "daisy202",            "abstracts"],
+
+            # lydbok distribusjon 
+            [Daisy202ToDistribution(retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready",            "daisy202-dist"],
         ]
 
     # Could possibly be moved to a configuration file
@@ -352,12 +361,12 @@ class Produksjonssystem():
         {
             "id": "narration",
             "name": "Innlesing",
-            "steps": ["insert-metadata-daisy202", "nlbpub-to-narration-epub", "dummy_innlesingmedhindenburg", "create-abstracts"],
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-narration-epub", "dummy_innlesingmedhindenburg", "create-abstracts", "daisy202-to-distribution"],
         },
         {
             "id": "tts",
             "name": "Talesyntese",
-            "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts"],
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts", "daisy202-to-distribution"],
             "filters": {
                 "libraries": ["NLB"],
             },
@@ -365,7 +374,7 @@ class Produksjonssystem():
         {
             "id": "schibsted",
             "name": "Schibsted-aviser",
-            "steps": ["newspaper-schibsted", "dummy_talesynteseipipeline1foraviser", "create-abstracts"],
+            "steps": ["newspaper-schibsted", "dummy_talesynteseipipeline1foraviser", "create-abstracts", "daisy202-to-distribution"],
             "filters": {
                 "libraries": ["NLB"],
             },

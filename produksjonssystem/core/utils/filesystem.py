@@ -4,6 +4,7 @@ import hashlib
 import logging
 import os
 import re
+import requests
 import shutil
 import socket
 import subprocess
@@ -365,6 +366,24 @@ class Filesystem():
                     os.chmod(os.path.join(root, d), 0o777)
                 for f in files:
                     os.chmod(os.path.join(root, f), 0o664)
+
+    @staticmethod
+    def insert_css(path, library, format):
+
+        latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ncc.min.css"
+        if library == "Statped":
+            latest_url = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
+        elif format == "epub":
+            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/epub.css"
+        elif format == "daisy202":
+            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/html.min.css"
+        elif format == "daisy202-ncc":
+            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ncc.min.css"
+
+        response = requests.get(latest_url)
+        if response.status_code == 200:
+            with open(path, "wb") as target_file:
+                target_file.write(response.content)
 
     def run(self, *args, cwd=None, **kwargs):
         if not cwd:
