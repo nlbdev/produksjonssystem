@@ -369,6 +369,8 @@ class Filesystem():
 
     @staticmethod
     def insert_css(path, library, format):
+
+        latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ncc.min.css"
         if library == "Statped":
             latest_url = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
         elif format == "epub":
