@@ -148,6 +148,8 @@ class Daisy202ToDistribution(Pipeline):
         contains_playlist = False
         small_file = False
 
+        self.utils.report.info("Validerer filer...")
+
         for file_book in files_book:
             file_book_path = os.path.join(temp_dir, file_book)
             self.utils.report.debug(f"Checking file: {file_book}")
@@ -165,14 +167,14 @@ class Daisy202ToDistribution(Pipeline):
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke er single channel")
                         return False
                     accepted_sample_rate = [22050, 44100]
-                    accepted_bitrate = [32, 48, 64] # kbps
+                    accepted_bitrate = [31, 32, 33, 47, 48, 49, 63, 64, 65]  # kbps
                     sample_rate = segment.frame_rate
                     if sample_rate not in accepted_sample_rate:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig sample rate ({sample_rate})")
                         return False
                     bitrate = round(float(mediainfo(audio_file)["bit_rate"])/1000)
                     if bitrate not in accepted_bitrate:
-                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate})")
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate} kbps)")
                         return False
                     file_size = os.path.getsize(audio_file)
                     if file_size >= 1048576 and file_size <= 4194304:
@@ -240,14 +242,14 @@ class Daisy202ToDistribution(Pipeline):
                 self.utils.report.attachment(None, archived_path_multi, "DEBUG")
                 shutil.rmtree(os.path.join(self.dir_in, folder))
 
-        if library != "Statped":
+        if library == "Statped":
             css_format = "Statped"
         elif edition_metadata["includesText"] is True:
             css_format = "daisy202"
         else:
             css_format = "daisy202-ncc"
         self.utils.report.info(f"Inserting CSS: {css_format}")
-        self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), "nlb", css_format)
+        self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), library, css_format)
 
         # TODO: Kopiere over til nlbsamba også
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
