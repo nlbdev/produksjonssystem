@@ -44,6 +44,8 @@ class Daisy202ToDistribution(Pipeline):
         self.on_book()
 
     def on_book(self):
+        self.utils.reprt.info("Validerer Daisy 2.02 lydbok")
+
         if self.dp1_home == "" or self.validator_script == "":
             if not self.init_environment():
                 self.utils.report.error("Pipeline1 ble ikke funnet. Avbryter..")
@@ -60,6 +62,7 @@ class Daisy202ToDistribution(Pipeline):
         Filesystem.copy(self.utils.report, self.book["source"], temp_dir)
 
         if not os.path.isfile(os.path.join(temp_dir, "ncc.html")):
+            self.utils.report.error("Finner ikke ncc fila")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎. Er dette en daisy 2.02 lydbok med en ncc.html fil?"
             return False
         try:
@@ -70,6 +73,7 @@ class Daisy202ToDistribution(Pipeline):
         except Exception:
             self.utils.report.info("Klarte ikke lese ncc fila. Sjekk loggen for detaljer.")
             self.utils.report.debug(traceback.format_exc(), preformatted=True)
+            return False
 
         edition_identifier = ""
         audio_title = ""
@@ -78,12 +82,12 @@ class Daisy202ToDistribution(Pipeline):
 
         if ncc_encoding != 'utf-8':
             self.utils.report.error(self.book["name"] + ": Encodingen til filen er ikke utf-8, (f{ncc_encoding}) avbryter.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         if edition_identifier == ("") or str(edition_identifier) != str(self.book["name"]):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
         root_directory = Path(temp_dir)
@@ -93,6 +97,8 @@ class Daisy202ToDistribution(Pipeline):
         if size >= max_size:
             self.utils.report.info(f"{edition_identifier} er på størrelse {size}, sjekker om det er en multivolum bok.")
             multi_volume = True
+        else:
+            self.utils.report.info(f"{edition_identifier} er på størrelse {size} bytes")
 
         multi_volume_dirs = []
         if multi_volume:
@@ -114,6 +120,7 @@ class Daisy202ToDistribution(Pipeline):
                 self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
             return False
 
+        self.utils.report.info("Henter metadata fra api.nlb.no")
         creative_work_metadata = None
         edition_metadata = None
 
