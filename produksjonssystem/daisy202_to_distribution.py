@@ -44,7 +44,7 @@ class Daisy202ToDistribution(Pipeline):
         self.on_book()
 
     def on_book(self):
-        self.utils.reprt.info("Validerer Daisy 2.02 lydbok")
+        self.utils.report.info("Validerer Daisy 2.02 lydbok")
 
         if self.dp1_home == "" or self.validator_script == "":
             if not self.init_environment():
