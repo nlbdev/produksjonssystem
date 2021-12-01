@@ -118,7 +118,7 @@ class Daisy202ToDistribution(Pipeline):
             if len(multi_volume_dirs) <= 0:
                 self.utils.report.error(f"{edition_identifier} bør være en multivolum bok, men har ikke flere multivolum mapper. Avbryter.")
                 self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
-            return False
+                return False
 
         self.utils.report.info("Henter metadata fra api.nlb.no")
         creative_work_metadata = None
