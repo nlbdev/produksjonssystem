@@ -73,7 +73,7 @@ class Pipeline():
     should_retry_during_working_hours = False
     should_retry_during_night_and_weekend = True
     should_retry_only_when_idle = False
-    _inactivity_timeout = 10
+    _inactivity_timeout = 30
     _bookHandlerThread = None
     _bookRetryThread = None
     _bookMonitorThread = None
