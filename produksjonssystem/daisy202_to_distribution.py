@@ -155,6 +155,10 @@ class Daisy202ToDistribution(Pipeline):
         contains_playlist = False
         small_file = False
 
+        if "default.css" in files_book:
+            self.utils.report.info("Erstatter default.css med en tom fil")
+            open(os.path.join(temp_dir, "default.css"), 'w').close()
+
         self.utils.report.info("Validerer filer...")
 
         for file_book in files_book:
@@ -226,7 +230,7 @@ class Daisy202ToDistribution(Pipeline):
         first_head_class = nccdoc.xpath("string(//*[local-name()='h1'][1]/@class)")
         second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])").lower()
 
-        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "tigar announcement", "nlb"]
+        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "the audiobook agreement", "tigar announcement", "nlb"]
 
         if first_head_class != "title":
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
