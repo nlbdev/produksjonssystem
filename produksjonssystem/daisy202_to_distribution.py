@@ -57,6 +57,10 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.should_email = False
             return False
 
+        if os.path.isdir(os.path.join(self.dir_out, folder)):
+            self.utils.report.error(f"{folder} finnes allerede i ut-mappa, avbryter.")
+            return False
+
         temp_obj = tempfile.TemporaryDirectory()
         temp_dir = temp_obj.name
         Filesystem.copy(self.utils.report, self.book["source"], temp_dir)
