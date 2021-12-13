@@ -3,7 +3,7 @@ blinker==1.4
 dotmap==1.2.20
 Flask==1.0.3
 graphviz==0.5.2
-lxml==4.6.3
+lxml==4.6.5
 Markdown==2.6.11
 psutil==5.6.6
 pybrake==0.4.2
