@@ -3,6 +3,8 @@ import os
 
 import requests
 
+from datetime import datetime
+
 from core.config import Config
 from core.directory import Directory
 from core.utils.report import Report
@@ -91,7 +93,7 @@ class Bibliofil:
 
 
     @staticmethod
-    def book_available(format, identifier, report=logging):
+    def book_available(format, identifier, report=logging, title=""):
         library = None
 
         # get the appropriate book identifier(s)
@@ -143,6 +145,21 @@ class Bibliofil:
             Report.emailPlainText("formatklar: " + identifier,
                                   "\n".join(lines),
                                   Config.get("email.formatklar.address"))
+
+        if format == "DAISY 2.02":
+            lines = []
+            text = "Abklar;624595;08.12.2021;624595112021;November;"
+            #Abklar;nummer;dagensdato;boknummer-måned-år(mappenummer);Tittel(dc:title eller fra metadata for utgave)eks: Hjemmet, 44/2021
+            #string emailMessage = "Abklar;" + tidskrift + ";" + todaydatemail + ";" + finalDirectory + ";" + myTitle+";";
+            #Aviser
+            #string emailMessage = "Abklar;" + folderNameExp + ";" + todaydatemail + ";" + folderNameExp + Program.folderDatePerodika+ ";"+  ";";
+            dato = datetime.today().strftime('%Y.%m.%d')
+            mmyyyy = datetime.today().strftime('%m%Y')
+            identifier_short = identifier[:6]
+            text = f"Abklar;{identifier_short};{dato};{identifier};{title};"
+            logging.info("Sending abklar-e-mail to {} with content:".format(Config.get("email.abklar.address")))
+            logging.info(text)
+            Report.emailPlainText("Abklar", text, Config.get("email.abklar.address"))
 
         else:
             report.debug("book_available: unknown format: {}".format(format))

@@ -14,6 +14,7 @@ from pydub.utils import mediainfo
 from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
+from core.utils.bibliofil import Bibliofil
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 
@@ -206,7 +207,7 @@ class Daisy202ToDistribution(Pipeline):
                 for ext in playlist_extensions:
                     if file_book.endswith(ext):
                         contains_playlist = True
-                        os.rename(file_book_path, os.path.join(temp_dir, audio_title + ext))
+                        os.rename(file_book_path, os.path.join(temp_dir, edition_identifier + "." + ext))
 
         if contains_playlist is False and library != "Statped" and library != "KABB":
             self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
@@ -268,6 +269,13 @@ class Daisy202ToDistribution(Pipeline):
 
         # TODO: Kopiere over til nlbsamba også
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
+
+        if periodical:
+            available_title = ""
+            if creative_work_metadata["newspaper"] is False:
+                available_title = audio_title
+            Bibliofil.book_available("DAISY 2.02", edition_identifier, title=available_title)
+
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.title = self.title + ": " + edition_identifier + " er valid 👍😄" + audio_title
         self.utils.filesystem.deleteSource()
