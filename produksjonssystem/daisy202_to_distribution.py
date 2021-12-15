@@ -100,36 +100,6 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
-        root_directory = Path(temp_dir)
-        max_size = 702545920 - 20971520
-        size = sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
-        multi_volume = False
-        if size >= max_size:
-            self.utils.report.info(f"{edition_identifier} er på størrelse {size}, sjekker om det er en multivolum bok.")
-            multi_volume = True
-        else:
-            self.utils.report.info(f"{edition_identifier} er på størrelse {size} bytes")
-
-        multi_volume_dirs = []
-        if multi_volume:
-            files_dir = os.listdir(self.dir_in)
-
-            for file in files_dir:
-                if file.startswith(self.book["name"]) and file[-1].isdigit() and file[-2] == "_":
-                    self.utils.report.info(f"{file} er en del av multi volum boka {edition_identifier}")
-                    multi_volume_dirs.append(file)
-                    multi_volume_directory = Path(os.path.join(self.dir_in, file))
-                    multi_volume_size = size = sum(f.stat().st_size for f in multi_volume_directory.glob('**/*') if f.is_file())
-                    if multi_volume_size >= max_size:
-                        self.utils.report.info(f" Multi volum mappen {file} er på størrelse {multi_volume_size}, dette er for stort")
-                        self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
-                        return False
-
-            if len(multi_volume_dirs) <= 0:
-                self.utils.report.error(f"{edition_identifier} bør være en multivolum bok, men har ikke flere multivolum mapper. Avbryter.")
-                self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
-                return False
-
         self.utils.report.info("Henter metadata fra api.nlb.no")
         creative_work_metadata = None
         edition_metadata = None
@@ -160,65 +130,49 @@ class Daisy202ToDistribution(Pipeline):
                 self.utils.report.error(f"Boka {edition_identifier} har ikke 6 siffer")
                 return False
 
+        root_directory = Path(temp_dir)
+        max_size = 702545920 - 20971520
+        size = sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
+        multi_volume = False
+        if size >= max_size:
+            self.utils.report.info(f"{edition_identifier} er på størrelse {size}, sjekker om det er en multivolum bok.")
+            multi_volume = True
+        else:
+            self.utils.report.info(f"{edition_identifier} er på størrelse {size} bytes")
+
+        multi_volume_dirs = []
+        if multi_volume:
+            files_dir = os.listdir(self.dir_in)
+
+            for file in files_dir:
+                if file.startswith(self.book["name"]) and file[-1].isdigit() and file[-2] == "_":
+                    self.utils.report.info(f"{file} er en del av multi volum boka {edition_identifier}")
+                    multi_volume_dirs.append(file)
+                    multi_volume_directory = Path(os.path.join(self.dir_in, file))
+                    multi_volume_size = size = sum(f.stat().st_size for f in multi_volume_directory.glob('**/*') if f.is_file())
+                    if multi_volume_size >= max_size:
+                        self.utils.report.info(f" Multi volum mappen {file} er på størrelse {multi_volume_size}, dette er for stort")
+                        self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+                        return False
+                    else:
+                        multi_volume_files = os.listdir(multi_volume_directory)
+                        self.utils.report.info(f"Validerer filer til multi volum {file}...")
+                        if self.check_files(edition_identifier, multi_volume_files, library, multi_volume_directory, multi_volume) is False:
+                            return False
+
+            if len(multi_volume_dirs) <= 0:
+                self.utils.report.error(f"{edition_identifier} bør være en multivolum bok, men har ikke flere multivolum mapper. Avbryter.")
+                self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+                return False
+
         files_book = os.listdir(temp_dir)
-        playlist_extensions = ["m3u", "m3u8", "pls", "wpl", "xspf"]
-        contains_playlist = False
-        small_file = False
 
         if "default.css" in files_book:
             self.utils.report.info("Erstatter default.css med en tom fil")
             open(os.path.join(temp_dir, "default.css"), 'w').close()
 
         self.utils.report.info("Validerer filer...")
-
-        for file_book in files_book:
-            file_book_path = os.path.join(temp_dir, file_book)
-            self.utils.report.debug(f"Checking file: {file_book}")
-            if os.path.isdir(file_book):
-                if file_book != "images":
-                    self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
-                    return False
-            elif file_book.endswith(".mp3") and library != "Statped":
-                if file_book.startswith("temp"):
-                    os.remove(file_book)
-                else:
-                    audio_file = os.path.join(temp_dir, file_book)
-                    segment = AudioSegment.from_mp3(audio_file)
-                    if segment.channels != 1:
-                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke er single channel")
-                        return False
-                    accepted_sample_rate = [22050, 44100]
-                    accepted_bitrate = [31, 32, 33, 47, 48, 49, 63, 64, 65]  # kbps
-                    sample_rate = segment.frame_rate
-                    if sample_rate not in accepted_sample_rate:
-                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig sample rate ({sample_rate})")
-                        return False
-                    bitrate = round(float(mediainfo(audio_file)["bit_rate"])/1000)
-                    if bitrate not in accepted_bitrate:
-                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate} kbps)")
-                        return False
-                    file_size = os.path.getsize(audio_file)
-                    if file_size >= 524288 and file_size <= 4194304:
-                        small_file = True
-                    if file_size >= 157286400:
-                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som er større enn 150MB")
-                        return False
-
-            elif file_book.endswith(".wav"):
-                self.utils.report.error(f"Boka {edition_identifier} inneholder .wav filer, avbryter")
-                return False
-
-            else:
-                for ext in playlist_extensions:
-                    if file_book.endswith(ext):
-                        contains_playlist = True
-                        os.rename(file_book_path, os.path.join(temp_dir, edition_identifier + "." + ext))
-
-        if contains_playlist is False and library != "Statped" and library != "KABB":
-            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
-            return False
-        if small_file is False and library != "Statped":
-            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen lydfil mellom 1-4 MB")
+        if self.check_files(edition_identifier, files_book, library, temp_dir, False) is False:
             return False
 
         dc_creator = nccdoc.xpath("string(//*[@name='dc:creator']/@content)")
@@ -272,7 +226,7 @@ class Daisy202ToDistribution(Pipeline):
         self.utils.report.info(f"Inserting CSS: {css_format}")
         self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), library, css_format)
 
-        # TODO: Fjerne noen sjekker aviser aviser
+        # TODO: Fjerne noen sjekker aviser
         # TODO: sjekke at multivolum bøker har filer som kan vannmerkes
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
         if self.nlbsamba_out != "":
@@ -333,6 +287,61 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error("Det tok for lang tid å kjøre Daisy 2.02 validator og den ble derfor stoppet.")
             self.utils.report.title = self.title
             return False
+
+    def check_files(self, edition_identifier, files_book, library, temp_dir, multi_volume):
+        playlist_extensions = ["m3u", "m3u8", "pls", "wpl", "xspf"]
+        contains_playlist = False
+        small_file = False
+        for file_book in files_book:
+            file_book_path = os.path.join(temp_dir, file_book)
+            self.utils.report.debug(f"Checking file: {file_book}")
+            if os.path.isdir(file_book):
+                if file_book != "images":
+                    self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
+                    return False
+            elif file_book.endswith(".mp3") and library != "Statped":
+                if file_book.startswith("temp"):
+                    os.remove(file_book_path)
+                else:
+                    audio_file = os.path.join(temp_dir, file_book)
+                    segment = AudioSegment.from_mp3(audio_file)
+                    if segment.channels != 1:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke er single channel")
+                        return False
+                    accepted_sample_rate = [22050, 44100]
+                    accepted_bitrate = [31, 32, 33, 47, 48, 49, 63, 64, 65]  # kbps
+                    sample_rate = segment.frame_rate
+                    if sample_rate not in accepted_sample_rate:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig sample rate ({sample_rate})")
+                        return False
+                    bitrate = round(float(mediainfo(audio_file)["bit_rate"])/1000)
+                    if bitrate not in accepted_bitrate:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate} kbps)")
+                        return False
+                    file_size = os.path.getsize(audio_file)
+                    if file_size >= 524288 and file_size <= 4194304:
+                        small_file = True
+                    if file_size >= 157286400:
+                        self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som er større enn 150MB")
+                        return False
+
+            elif file_book.endswith(".wav"):
+                self.utils.report.error(f"Boka {edition_identifier} inneholder .wav filer, avbryter")
+                return False
+
+            else:
+                for ext in playlist_extensions:
+                    if file_book.endswith(ext):
+                        contains_playlist = True
+                        os.rename(file_book_path, os.path.join(temp_dir, edition_identifier + "." + ext))
+
+        if contains_playlist is False and library != "Statped" and library != "KABB" and multi_volume is False:
+            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
+            return False
+        if small_file is False and library != "Statped":
+            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen lydfil mellom 0.5-4 MB")
+            return False
+        return True
 
 
 if __name__ == "__main__":
