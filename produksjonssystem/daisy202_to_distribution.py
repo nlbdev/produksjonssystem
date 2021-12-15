@@ -15,6 +15,7 @@ from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
 from core.utils.bibliofil import Bibliofil
+from core.config import Config
 from core.utils.filesystem import Filesystem
 from core.utils.metadata import Metadata
 
@@ -31,6 +32,7 @@ class Daisy202ToDistribution(Pipeline):
     expected_processing_time = 550
     dp1_home = ""
     validator_script = ""
+    nlbsamba_out = ""
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -61,6 +63,9 @@ class Daisy202ToDistribution(Pipeline):
         if os.path.isdir(os.path.join(self.dir_out, folder)):
             self.utils.report.error(f"{folder} finnes allerede i ut-mappa, avbryter.")
             return False
+
+        if self.nlbsamba_out == "":
+            self.nlbsamba_out = Config.get("nlbsamba.dir")
 
         temp_obj = tempfile.TemporaryDirectory()
         temp_dir = temp_obj.name
@@ -193,7 +198,7 @@ class Daisy202ToDistribution(Pipeline):
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate} kbps)")
                         return False
                     file_size = os.path.getsize(audio_file)
-                    if file_size >= 1048576 and file_size <= 4194304:
+                    if file_size >= 524288 and file_size <= 4194304:
                         small_file = True
                     if file_size >= 157286400:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som er større enn 150MB")
@@ -267,8 +272,12 @@ class Daisy202ToDistribution(Pipeline):
         self.utils.report.info(f"Inserting CSS: {css_format}")
         self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), library, css_format)
 
-        # TODO: Kopiere over til nlbsamba også
+        # TODO: Fjerne noen sjekker aviser aviser
+        # TODO: sjekke at multivolum bøker har filer som kan vannmerkes
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
+        if self.nlbsamba_out != "":
+            archived_path_samba, stored_samba = self.utils.filesystem.storeBook(temp_dir, edition_identifier, dir_out=self.nlbsamba_out)
+            self.utils.report.attachment(None, archived_path_samba, "DEBUG")
 
         if periodical:
             available_title = ""
