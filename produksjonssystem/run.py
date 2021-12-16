@@ -145,6 +145,7 @@ class Produksjonssystem():
         Config.set("email.smtp.pass", os.environ.get("MAIL_PASSWORD", None))
         Config.set("email.formatklar.address", os.environ.get("MAIL_FORMATKLAR"))
         Config.set("email.filesize.address", os.environ.get("MAIL_FILESIZE"))
+        Config.set("email.abklar.address", os.environ.get("MAIL_ABKLAR"))
 
         # Configure NLB API URL
         Config.set("nlb_api_url", os.environ.get("NLB_API_URL"))
@@ -154,6 +155,7 @@ class Produksjonssystem():
         Config.set("newsfeed_dir", os.path.join(book_archive_dirs["master"], "innkommende/schibsted-aviser/avisfeeder"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
+        Config.set("nlbsamba.dir", os.environ.get("NLBSAMBA_DIR"))
 
         # Define directories (using OrderedDicts to preserve order when plotting)
         self.dirs_ranked = []
