@@ -132,7 +132,7 @@
         </x:context>
         
         <x:expect label="The result should be as expected">
-            <section class="poem" epub:type="bodymatter chapter z3998:poem" id="level1_7">
+            <section class="poem" epub:type="bodymatter z3998:poem" id="level1_7">
                 <h1 id="h1_1">Navn på dikt</h1>
                 <div class="linegroup">
                     <p class="line">Lorem ipsum dolor sit amet!</p>
