@@ -36,6 +36,7 @@ class Daisy202ToDistribution(Pipeline):
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
+        self.utils.report.should_email = False
         self.utils.report.title = self.title + " EPUB-kilde slettet: " + self.book['name']
 
     def on_book_modified(self):
