@@ -248,7 +248,7 @@
                         <xsl:text> i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                        <xsl:text>  
+                        <xsl:text>
                               med heimel i åndsverklova § 55,
                               og kan berre kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
                               skal alle digitale eksemplar destruerast eller returnerast til produsenten. Eksemplaret er merka slik
@@ -264,7 +264,7 @@
                         <xsl:text> i </xsl:text>
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                        <xsl:text> 
+                        <xsl:text>
                             med hjemmel i åndsverkslovens §55, og kan kun kopieres til privat bruk.
                             Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp skal alle digitale eksemplar destrueres eller returneres til produsenten. 
                             Eksemplaret er merket slik at det kan spores tilbake til deg som låntaker ved misbruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til slik ulovlig kopiering, kan medføre ansvar etter åndsverkloven. 
@@ -431,8 +431,8 @@
                     </xsl:if>
                     
                     <p>
-                        <xsl:text>This edition contains synchronised text and audio.
-                            It is possible to listen to the audiobook while the text is displayed on a screen.</xsl:text>
+                        <xsl:text>This is an audiobook with text. </xsl:text>
+                        <xsl:text>It is possible to search for words in the text. </xsl:text>
                         <xsl:text>It is possible to navigate the audiobook by </xsl:text>
                         <xsl:choose>
                             <xsl:when test="$STRUKTUR.dybde eq 1">
@@ -560,7 +560,7 @@
                                     <!-- To (eller flere) nivåer, første nivå er kapitler -->
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> kapittel med undekapittel.</xsl:text>
+                                    <xsl:text> kapittel med underkapittel.</xsl:text>
                                 </xsl:when>
                                 <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
                                     <!-- Bare ett nivå, første nivå er kapitler -->
@@ -583,8 +583,8 @@
                     </xsl:if>
 
                     <p>
-                        <xsl:text>Denne tilrettelagde utgåva inneheld tekst og lyd som er synkronisert, 
-                            det vil seie at det er mogleg å spele av lydboka samtidig som teksten kan visast på ein skjerm. </xsl:text>
+                        <xsl:text>Dette er ei lydbok med tekst. </xsl:text>
+                        <xsl:text>Det er mogleg å søke på ord i teksten. </xsl:text>
                         <xsl:text>Det er mogleg å navigere i lydboka på </xsl:text>
                         <xsl:value-of
                             select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
@@ -593,7 +593,6 @@
                             <xsl:text> og på sidetal</xsl:text>
                         </xsl:if>
                         <xsl:text>.</xsl:text>
-                        
                     </p>
                 </xsl:when>
                 <xsl:otherwise>
@@ -704,7 +703,7 @@
                                     <!-- To (eller flere) nivåer, første nivå er kapitler -->
                                     <xsl:text>Boka består av </xsl:text>
                                     <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> kapitler med undekapitler.</xsl:text>
+                                    <xsl:text> kapitler med underkapitler.</xsl:text>
                                 </xsl:when>
                                 <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
                                     <!-- Bare ett nivå, første nivå er kapitler -->
@@ -726,14 +725,14 @@
                         </p>
                     </xsl:if>
                     <p>
-                        <xsl:text>Denne tilrettelagte utgaven inneholder tekst og lyd som er synkronisert, 
-                            det vil si at det er mulig å spille av lydboka samtidig som teksten vises på en skjerm. </xsl:text>
+                        <xsl:text>Dette er en lydbok med tekst. </xsl:text>
+                        <xsl:text>Det er mulig å søke på ord i teksten. </xsl:text>
                         <xsl:text>Det er mulig å navigere i lydboka på </xsl:text>
                         <xsl:value-of
                             select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
                         <xsl:choose>
                             <xsl:when test="$STRUKTUR.dybde eq 1">
-                                <xsl:text> overskriftsnivå</xsl:text>        
+                                <xsl:text> overskriftsnivå</xsl:text>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:text> overskriftsnivåer</xsl:text>
