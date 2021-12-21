@@ -296,6 +296,14 @@ class Daisy202ToDistribution(Pipeline):
         for file_book in files_book:
             file_book_path = os.path.join(temp_dir, file_book)
             self.utils.report.debug(f"Checking file: {file_book}")
+            if file_book == "_nettleserbok.html":
+                self.utils.report.info(f"Sletter {file_book}")
+                os.remove(file_book_path)
+                continue
+            if file_book == "nettleserbok.min.css":
+                self.utils.report.info(f"Sletter {file_book}")
+                os.remove(file_book_path)
+                continue
             if os.path.isdir(file_book):
                 if file_book != "images":
                     self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
