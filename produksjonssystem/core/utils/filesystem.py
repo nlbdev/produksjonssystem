@@ -94,7 +94,7 @@ class Filesystem():
                                 except FileNotFoundError as e:
                                     if stat_retries >= 0:
                                         logging.warning("Filen eller mappen ble ikke funnet ({}). Prøver igjen…".format(f))
-                                        time.sleep(1)
+                                        # time.sleep(1)
                                     else:
                                         raise e
 
