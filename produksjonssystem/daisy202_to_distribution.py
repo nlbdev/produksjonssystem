@@ -67,6 +67,8 @@ class Daisy202ToDistribution(Pipeline):
 
         if self.nlbsamba_out == "":
             self.nlbsamba_out = Config.get("nlbsamba.dir")
+        if self.nlbsamba_out is None:
+            self.nlbsamba_out = ""
 
         temp_obj = tempfile.TemporaryDirectory()
         temp_dir = temp_obj.name
@@ -235,12 +237,28 @@ class Daisy202ToDistribution(Pipeline):
         self.utils.report.info(f"Inserting CSS: {css_format}")
         self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), library, css_format)
 
-        # TODO: Fjerne noen sjekker aviser
-        # TODO: sjekke at multivolum bøker har filer som kan vannmerkes
+        files_temp = os.listdir(temp_dir)
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
         if self.nlbsamba_out != "":
             archived_path_samba, stored_samba = self.utils.filesystem.storeBook(temp_dir, edition_identifier, dir_out=self.nlbsamba_out)
             self.utils.report.attachment(None, archived_path_samba, "DEBUG")
+
+        files_out = os.listdir(os.path.join(self.dir_out, edition_identifier))
+        if self.nlbsamba_out != "":
+            if len(files_temp) == len(os.listdir(os.path.join(self.nlbsamba_out, edition_identifier))):
+                with open(os.path.join(self.nlbsamba_out, edition_identifier, '.donedaisy'), 'w') as file:
+                    self.utils.report.debug(".donedaisy created")
+            else:
+                self.utils.report.error(f"MANGLER FILER i {self.nlbsamba_out}, sjekk utmappa")
+                return False
+        if len(files_temp) == len(files_out):
+            with open(os.path.join(self.dir_out, edition_identifier, '.donedaisy'), 'w') as file:
+                self.utils.report.debug(".donedaisy created")
+        else:
+            self.utils.report.error(f"MANGLER FILER i {self.dir_out}, sjekk utmappa")
+            return False
+
+        self.utils.report.info("Boka er godkjent og overført")
 
         if periodical:
             available_title = ""
