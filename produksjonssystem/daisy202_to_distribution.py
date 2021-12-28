@@ -88,7 +88,7 @@ class Daisy202ToDistribution(Pipeline):
 
         edition_identifier = ""
         audio_title = ""
-        audio_title = " (" + nccdoc.xpath("string(//*[@name='dc:title']/@content)") + ") "
+        audio_title = nccdoc.xpath("string(//*[@name='dc:title']/@content)")
         edition_identifier = nccdoc.xpath("string(//*[@name='dc:identifier']/@content)")
 
         if ncc_encoding != 'utf-8':
@@ -118,7 +118,15 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.warning("Klarte ikke finne et åndsverk tilknyttet denne utgaven. Prøver igjen senere.")
             return False
 
-        library = edition_metadata["library"]
+        library = edition_metadata["library"].lower()
+
+        # in case of wrong upper lower cases
+        if library == "nlb":
+            library = "NLB"
+        elif library == "statped":
+            library = "Statped"
+        elif library == "kabb":
+            library = "KABB"
 
         periodical = False
         if creative_work_metadata["newspaper"] is True or creative_work_metadata["magazine"] is True:
@@ -201,7 +209,7 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
             return False
 
-        if second_head not in accepted_second_head and library != "Statped":
+        if second_head not in accepted_second_head and library != "Statped" and creative_work_metadata["newspaper"] is False:
             self.utils.report.error(f"{edition_identifier} andre heading {second_head} er ikke Lydbokavtalen, Audiobook agreement, eller Tigar announcement")
             return False
 
@@ -304,7 +312,7 @@ class Daisy202ToDistribution(Pipeline):
                 self.utils.report.info(f"Sletter {file_book}")
                 os.remove(file_book_path)
                 continue
-            if os.path.isdir(file_book):
+            if os.path.isdir(file_book_path):
                 if file_book != "images":
                     self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
                     return False
