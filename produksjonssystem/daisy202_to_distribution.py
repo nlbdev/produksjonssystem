@@ -62,7 +62,7 @@ class Daisy202ToDistribution(Pipeline):
             return False
 
         if os.path.isdir(os.path.join(self.dir_out, folder)):
-            self.utils.report.error(f"{folder} finnes allerede i ut-mappa, avbryter.")
+            self.utils.report.error(f"{folder} finnes allerede på share, avbryter.")
             return False
 
         if self.nlbsamba_out == "":
@@ -98,8 +98,10 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
-        if edition_identifier == ("") or str(edition_identifier) != str(self.book["name"]):
-            self.utils.report.error(self.book["name"] + ": Klarte ikke å bestemme boknummer basert på dc:identifier.")
+        str_edition_identifier = str(edition_identifier)
+        str_book_name = str(self.book["name"])
+        if edition_identifier == ("") or str_edition_identifier != str_book_name:
+            self.utils.report.error(self.book["name"] + f": Klarte ikke å bestemme boknummer basert på dc:identifier. dc:identifier: {str_edition_identifier} mappenavn: {str_book_name}")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return False
 
