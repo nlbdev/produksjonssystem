@@ -334,7 +334,7 @@ class Daisy202ToDistribution(Pipeline):
                 continue
             if os.path.isdir(file_book_path):
                 if file_book != "images":
-                    self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe (f{file_book}) enn images, avbryter")
+                    self.utils.report.error(f"Boka {edition_identifier} inneholder en annen undermappe ({file_book}) enn images, avbryter")
                     return False
             elif file_book.endswith(".mp3") and library != "Statped":
                 if file_book.startswith("temp"):
