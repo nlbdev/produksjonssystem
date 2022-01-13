@@ -153,7 +153,7 @@ class Bibliofil:
             #string emailMessage = "Abklar;" + tidskrift + ";" + todaydatemail + ";" + finalDirectory + ";" + myTitle+";";
             #Aviser
             #string emailMessage = "Abklar;" + folderNameExp + ";" + todaydatemail + ";" + folderNameExp + Program.folderDatePerodika+ ";"+  ";";
-            dato = datetime.today().strftime('%Y.%m.%d')
+            dato = datetime.today().strftime('%d.%m.%Y')
             mmyyyy = datetime.today().strftime('%m%Y')
             identifier_short = identifier[:6]
             text = f"Abklar;{identifier_short};{dato};{identifier};{title};"
