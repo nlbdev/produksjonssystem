@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
                xmlns:epub="http://www.idpf.org/2007/ops"
-               xpath-default-namespace="http://www.w3.org/1999/xhtml"
                xmlns="http://www.w3.org/1999/xhtml"
                stylesheet="prepare-for-braille.xsl">
 
@@ -83,15 +82,67 @@
             <p xml:lang="en" lang="en">…</p>
             <p xml:lang="nb" lang="nb">…</p>
             <p xml:lang="nn" lang="nn">…</p>
-            <p xml:lang="no" lang="no">…</p>
+            <p xml:lang="de" lang="de">…</p>
+            <p xml:lang="fr" lang="fr">…</p>
+            <p xml:lang="es" lang="es">…</p>
+            <meta name="dc:language" content="en"/>
+            <meta name="dc:language" content="nb"/>
+            <meta name="dc:language" content="nn"/>
+            <meta name="dc:language" content="de"/>
+            <meta name="dc:language" content="fr"/>
+            <meta name="dc:language" content="es"/>
         </x:context>
-        
+      
         <x:expect label="the result should be as expected">
             <p xml:lang="en" lang="en">…</p>
             <p xml:lang="no" lang="no">…</p>
             <p xml:lang="no" lang="no">…</p>
-            <p xml:lang="no" lang="no">…</p>
+            <p xml:lang="de" lang="de">…</p>
+            <p xml:lang="fr" lang="fr">…</p>
+            <p xml:lang="es" lang="es">…</p>
+            <meta name="dc:language" content="en"/>
+            <meta name="dc:language" content="no"/>
+            <meta name="dc:language" content="no"/>
+            <meta name="dc:language" content="de"/>
+            <meta name="dc:language" content="fr"/>
+            <meta name="dc:language" content="es"/>
         </x:expect>
     </x:scenario>
-
+    
+    <x:scenario label="set dc:language='no'">
+        <x:context>
+            <html xml:lang="nn" lang="nn">
+                <head>
+                    <meta charset="UTF-8"/>
+                    <title>Citizens</title>
+                    <meta name="dc:identifier" content="862120"/>
+                    <meta name="dc:language" content="en"/>
+                    <meta name="dc:language" content="nb"/>
+                    <meta name="dc:language" content="nn"/>
+                </head>
+                <body xml:lang="nb" lang="nb">
+                    <p xml:lang="en">…</p>
+                    <p xml:lang="nn">…</p>
+                    <p xml:lang="no">…</p>
+                </body>
+            </html>
+        </x:context>
+        <x:expect label="lang='no'">
+            <html xml:lang="no" lang="no">
+                <head>
+                    <meta charset="UTF-8"/>
+                    <title>Citizens</title>
+                    <meta name="dc:identifier" content="862120"/>
+                    <meta name="dc:language" content="en"/>
+                    <meta name="dc:language" content="no"/>
+                    <meta name="dc:language" content="no"/>
+                </head>
+                <body xml:lang="no" lang="no">
+                    <p xml:lang="en">…</p>
+                    <p xml:lang="no">…</p>
+                    <p xml:lang="no">…</p>
+                </body>
+            </html>
+        </x:expect>
+    </x:scenario>
 </x:description>
