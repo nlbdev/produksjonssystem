@@ -37,7 +37,7 @@ class Daisy202ToDistribution(Pipeline):
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
         self.utils.report.should_email = False
-        self.utils.report.title = self.title + " EPUB-kilde slettet: " + self.book['name']
+        self.utils.report.title = self.title + " kilde slettet: " + self.book['name']
 
     def on_book_modified(self):
         self.utils.report.info("Endret bok i mappa: " + self.book['name'])
@@ -213,7 +213,7 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
             return False
 
-        if second_head not in accepted_second_head and library != "Statped" and creative_work_metadata["newspaper"] is False:
+        if second_head not in accepted_second_head and library != "Statped" and creative_work_metadata["newspaper"] is False and not (creative_work_metadata["magazine"] is True and library == "KABB"):
             self.utils.report.error(f"{edition_identifier} andre heading {second_head} er ikke Lydbokavtalen, Audiobook agreement, eller Tigar announcement")
             return False
 
