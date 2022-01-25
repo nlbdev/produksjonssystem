@@ -215,7 +215,7 @@ class NlbpubToPef(Pipeline):
             # use DAISYs version of PIP instead
             script_id = "html-to-pef"
             pipeline_and_script_version = [
-                ("1.14.2", "4.1.0"),
+                ("1.14.4", "4.1.0"),
             ]
 
             braille_arguments = {
