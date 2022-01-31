@@ -356,7 +356,7 @@ class Daisy202ToDistribution(Pipeline):
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate} kbps)")
                         return False
                     file_size = os.path.getsize(audio_file)
-                    if file_size >= 524288 and file_size <= 4194304:
+                    if file_size >= 102400 and file_size <= 8388608:
                         small_file = True
                     if file_size >= 157286400:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som er større enn 150MB")
@@ -376,7 +376,7 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
             return False
         if small_file is False and library != "Statped":
-            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen lydfil mellom 0.5-4 MB")
+            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen lydfil mellom 0.1-8 MB")
             return False
         return True
 
