@@ -228,6 +228,9 @@ class Daisy202ToDistribution(Pipeline):
                 self.utils.report.debug(f"Flytter multivolum fil {folder}")
                 archived_path_multi, stored = self.utils.filesystem.storeBook(os.path.join(self.dir_in, folder), folder)
                 self.utils.report.attachment(None, archived_path_multi, "DEBUG")
+                if self.nlbsamba_out != "":
+                    archived_path_samba_multi, stored_samba_multi = self.utils.filesystem.storeBook(os.path.join(self.dir_in, folder), folder, dir_out=self.nlbsamba_out)
+                    self.utils.report.attachment(None, archived_path_samba_multi, "DEBUG")
                 shutil.rmtree(os.path.join(self.dir_in, folder))
 
         if library == "Statped":
