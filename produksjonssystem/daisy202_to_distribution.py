@@ -180,7 +180,7 @@ class Daisy202ToDistribution(Pipeline):
 
         files_book = os.listdir(temp_dir)
 
-        if "default.css" in files_book:
+        if "default.css" in files_book and library != "Statped":
             self.utils.report.info("Erstatter default.css med en tom fil")
             open(os.path.join(temp_dir, "default.css"), 'w').close()
 
@@ -217,11 +217,12 @@ class Daisy202ToDistribution(Pipeline):
             self.utils.report.error(f"{edition_identifier} andre heading {second_head} er ikke Lydbokavtalen, Audiobook agreement, eller Tigar announcement")
             return False
 
-        status = self.validate_book(os.path.join(temp_dir, "ncc.html"))
-        if status == "ERROR" or status is False:
-            self.utils.report.error("Pipeline validator: Boka er ikke valid. Se rapport.")
-            return False
-        self.utils.report.info("Pipeline validator: Boka er valid")
+        if library != "Statped":
+            status = self.validate_book(os.path.join(temp_dir, "ncc.html"))
+            if status == "ERROR" or status is False:
+                self.utils.report.error("Pipeline validator: Boka er ikke valid. Se rapport.")
+                return False
+            self.utils.report.info("Pipeline validator: Boka er valid")
 
         if multi_volume:
             for folder in multi_volume_dirs:
@@ -240,7 +241,8 @@ class Daisy202ToDistribution(Pipeline):
         else:
             css_format = "daisy202-ncc"
         self.utils.report.info(f"Inserting CSS: {css_format}")
-        self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), library, css_format)
+        if library != "Statped":
+            self.utils.filesystem.insert_css(os.path.join(temp_dir, "default.css"), library, css_format)
 
         files_temp = os.listdir(temp_dir)
         archived_path, stored = self.utils.filesystem.storeBook(temp_dir, edition_identifier)
