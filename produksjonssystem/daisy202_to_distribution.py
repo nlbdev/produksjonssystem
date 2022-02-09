@@ -9,7 +9,7 @@ import tempfile
 import traceback
 from pathlib import Path
 from pydub import AudioSegment
-from pydub.utils import mediainfo
+from mutagen.mp3 import MP3
 
 from lxml import etree as ElementTree
 
@@ -356,7 +356,8 @@ class Daisy202ToDistribution(Pipeline):
                     if sample_rate not in accepted_sample_rate:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig sample rate ({sample_rate})")
                         return False
-                    bitrate = round(float(mediainfo(audio_file)["bit_rate"])/1000)
+                    f = MP3(audio_file)
+                    bitrate = round(f.info.bitrate/1000)
                     if bitrate not in accepted_bitrate:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som ikke har en riktig bitrate ({bitrate} kbps)")
                         return False

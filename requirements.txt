@@ -14,3 +14,4 @@ PyYAML==5.1.1
 requests==2.20.0
 requests_toolbelt==0.9.1
 slackclient==2.0.1
+mutagen==1.45.1
