@@ -165,7 +165,7 @@ class Daisy202ToDistribution(Pipeline):
                     multi_volume_size = size = sum(f.stat().st_size for f in multi_volume_directory.glob('**/*') if f.is_file())
                     if multi_volume_size >= max_size:
                         self.utils.report.info(f" Multi volum mappen {file} er på størrelse {multi_volume_size}, dette er for stort")
-                        self.utils.report.title = self.title + ": " + self.book["name"] + "Lydbok feilet 😭👎"
+                        self.utils.report.title = self.title + ": " + self.book["name"] + " Lydbok feilet 😭👎"
                         return False
                     else:
                         multi_volume_files = os.listdir(multi_volume_directory)

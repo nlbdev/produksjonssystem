@@ -55,7 +55,8 @@ from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook  # noqa
 from nordic_to_nlbpub import NordicToNlbpub  # noqa
 from prepare_for_braille import PrepareForBraille  # noqa
 from prepare_for_docx import PrepareForDocx  # noqa
-from prepare_for_ebook import PrepareForEbook  # noqa
+from prepare_for_ebook import PrepareForEbook
+from statped_nlbpub_to_nlbpub import StatpedNlbpubToNlbpub  # noqa
 # from update_metadata import UpdateMetadata  # noqa
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
@@ -170,6 +171,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
         # self.dirs_ranked[-1]["dirs"]["incoming-for-approval"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk-manuell-mottakskontroll")
         self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
+        self.dirs_ranked[-1]["dirs"]["incoming-statped-nlbpub"] = os.path.join(book_archive_dirs["master"], "innkommende/statped-nlbpub")
 
         self.dirs_ranked.append({
             "id": "source-in",
@@ -278,6 +280,9 @@ class Produksjonssystem():
                             overwrite=False,
                             during_working_hours=True,
                             during_night_and_weekend=True),   "master",              "nlbpub"],
+            [StatpedNlbpubToNlbpub(retry_all=True,
+                                   during_working_hours=True,
+                                   during_night_and_weekend=True),       "incoming-statped-nlbpub",            "nlbpub"],
 
             # Grunnlagsfiler
             [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
