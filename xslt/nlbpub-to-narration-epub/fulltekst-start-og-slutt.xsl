@@ -265,7 +265,7 @@
                         <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
                         <xsl:value-of select="format-date(current-date(), '[Y]')"/>
                         <xsl:text>
-                            med hjemmel i åndsverkslovens §55, og kan kun kopieres til privat bruk.
+                            med hjemmel i åndsverklovens §55, og kan kun kopieres til privat bruk.
                             Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp skal alle digitale eksemplar destrueres eller returneres til produsenten. 
                             Eksemplaret er merket slik at det kan spores tilbake til deg som låntaker ved misbruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til slik ulovlig kopiering, kan medføre ansvar etter åndsverkloven. 
                             Slike handlinger kan også medføre tap av retten til å låne tilrettelagte lydbøker.</xsl:text>
