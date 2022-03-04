@@ -12,6 +12,10 @@ import zipfile
 import re
 
 from docx import Document
+from docx.shared import Inches, Cm, Pt, RGBColor
+from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml.ns import qn
+
 from lxml import etree as ElementTree
 
 from core.pipeline import Pipeline
@@ -24,7 +28,6 @@ from pathlib import Path
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
     sys.exit(1)
-
 
 class NLBpubToDocx(Pipeline):
     uid = "nlbpub-to-docx"
@@ -50,14 +53,14 @@ class NLBpubToDocx(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self.utils.report, self.book["source"])
+        epub = Epub(self, self.book["source"])
 
         epubTitle = ""
         try:
             epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
-        
+
         # sjekk at dette er en EPUB
         if not epub.isepub():
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
@@ -73,8 +76,8 @@ class NLBpubToDocx(Pipeline):
         try:
            #language = " (" + epub.meta("dc:language") + ") "
            language = epub.meta("dc:language")
-          
-          
+
+
         except Exception:
             pass
 
@@ -83,7 +86,7 @@ class NLBpubToDocx(Pipeline):
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
         Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
-        temp_epub = Epub(self.utils.report, temp_epubdir)
+        temp_epub = Epub(self, temp_epubdir)
 
         opf_path = temp_epub.opf_path()
         if not opf_path:
@@ -127,7 +130,7 @@ class NLBpubToDocx(Pipeline):
             process = self.utils.filesystem.run([
                 "/usr/bin/ebook-convert",
                 html_file,
-                os.path.join(temp_docxdir, epub.identifier() + ".docx"),
+                os.path.join(temp_docxdir, epub.identifier() + "_calibre.docx"),
                 "--chapter=/",
                 "--chapter-mark=none",
                 "--page-breaks-before=/",
@@ -152,25 +155,22 @@ class NLBpubToDocx(Pipeline):
                 #"--remove-paragraph-spacing-indent-size=-1",
                 "--font-size-mapping=13,13,13,13,13,13,13,13"
             ])
-                                                            
 
             if process.returncode == 0:
                 self.utils.report.info("Boken ble konvertert.")
 
-
-            
 # -------------  script from kvile ---------------
-                document = Document(os.path.join(temp_docxdir, epub.identifier() + ".docx"))
-
-                paragraphList = document.paragraphs
+                document = Document(os.path.join(temp_docxdir, epub.identifier() + "_calibre.docx"))
                 emptyParagraph = False
-              
+                normalParagraph = "Normal"
+                normalParagraphNoIndent = "NormalNoIndent"
+                headingIndent = Cm(1.25)
+                fontSize = Pt(13)
                 # ny kode 2021-01-20
                 #folder = os.path.join(temp_docxdir)
-                
-                folder = Path(temp_docxdir)
-                # slutt ny kode 
 
+                folder = Path(temp_docxdir)
+                # slutt ny kode
 
                 #self.utils.report.info("Folder: "+folder)
 
@@ -193,25 +193,126 @@ class NLBpubToDocx(Pipeline):
                     p.getparent().remove(p)
                     p._p = p._element = None
 
+                def delete_element(element):
+                    element.getparent().remove(element)
+                    element._element = None
+
+                indent = Cm(0.44)
+                hangingIndentList = Cm(0.63)
+                document.styles[normalParagraph].font.size = fontSize
+                document.styles[normalParagraph].paragraph_format.first_line_indent = indent
+                styleNoIndent = document.styles.add_style('NormalNoIndent', WD_STYLE_TYPE.PARAGRAPH)
+                styleNoIndent.base_style = document.styles[normalParagraph]
+                document.styles[normalParagraphNoIndent].paragraph_format.first_line_indent = Cm(0)
+
+                # set style to normal for regular paragraphs, set keep_with_next to false, remove multiple empty paragraphs, and remove empty p after page nr or heading
                 for paragraph in document.paragraphs:
-                    if len(paragraph.text) <= 1:
+                    # deleting empty text-elements
+                    emptyTextElementList = document.element.xpath("//w:t[. = '']")
+                    for emptyTextElement in emptyTextElementList:
+                        delete_element(emptyTextElement)
+                    paragraph.paragraph_format.keep_with_next = None
+                    if re.match("Para 0[1-9]|[0-9] Block|Para [0-9]", paragraph.style.name) and paragraph.style.font.underline != True:
+                        paragraph.style = normalParagraph
+                    if len(paragraph.text) <= 1 or re.match(r"^--- \d+ til ", paragraph.text) or paragraph.style.name[0:7] == "Heading": # if empty p or page nr or heading
                         paragraph.text = re.sub(r"^\s(.*)", r"\1", paragraph.text)  #remove space at beginning av p
                        # self.utils.report.info("Paragraph.text <= 1 ")
-                        if len(paragraph.text) == 0 and emptyParagraph: #if last paragraph also was empty
+                        if len(paragraph.text) == 0 and emptyParagraph: #if last p also was empty or page nr
                     #        self.utils.report.info("Paragraph.text == 0 ")
                             delete_paragraph(paragraph)
                         emptyParagraph = True
                     else:
                         emptyParagraph = False
-                
+                        if re.match(r"^\s*STATPED_DUMMYTEXT_LI_OL\s*$", paragraph.text):
+                            paragraph.text = ""
+                # no indent after Heading, page-nr, or paragraphs starting with "Bilde: ", paragraphs in only bold (text=^_[^_]*_$) and the paragraph after p in only bold, or on empty p.
+                removeIndent = False
+                for paragraph in document.paragraphs:
+                    #remove space at beginning of line after <br/>
+                    spaceAfterBreakList = paragraph._element.xpath(r'w:r/w:br[@w:clear="none"]/following::w:t[@xml:space="preserve"][1]')
+                    if len(spaceAfterBreakList) > 0:
+                        for spaceAfterBreakElement in spaceAfterBreakList:
+                            if re.match('^ ', spaceAfterBreakElement.text) and not(spaceAfterBreakElement.xpath(r'preceding-sibling::*[1][self::w:t]')):
+                                spaceAfterBreakElement.text = re.sub(r"^ ", r"", spaceAfterBreakElement.text)
+                    #remove break before paragraph end
+                        breakBeforeParagraphEndList = paragraph._element.xpath(r'w:r[last()]/w:br[@w:clear="none" and not(following-sibling::*)]')
+                        if len(breakBeforeParagraphEndList) > 0:
+                            delete_element(breakBeforeParagraphEndList[0])
 
-                document.save(os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
-                self.utils.report.info("Temp-fil ble lagret: "+os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
+                    t = paragraph.text.strip()
+                    if re.match(r"^Bilde: |^Forklaring: |^--- \d+ til |^_[^_]*_$|^STATPED_DUMMYTEXT_LIST_UNSTYLED|^STATPED_DUMMYTEXT_P_BEFORE_DL", t) or ((removeIndent or len(t)==0) and paragraph.style.name == "Normal"):
+                        paragraph.style = normalParagraphNoIndent
+                    # Remove dummy-text and set hengemarg
+                    if re.match(r"^(STATPED_DUMMYTEXT_LIST_UNSTYLED|STATPED_DUMMYTEXT_DL)", paragraph.text):
+                        paragraph.paragraph_format.left_indent = hangingIndentList #Pt(0)
+                        paragraph.paragraph_format.first_line_indent = -hangingIndentList #Pt(-20)
+                    if re.match(r"^STATPED_DUMMYTEXT", paragraph.text):
+                        paragraph.text = re.sub(r"^(STATPED_DUMMYTEXT_LIST_UNSTYLED|STATPED_DUMMYTEXT_DL|STATPED_DUMMYTEXT_P_BEFORE_DL)", "", paragraph.text)
+                    if len(t) == 0 or paragraph.style.name[0:7] == "Heading" or re.match(r"^--- \d+ til |^_[^_]*_$", t):
+                        removeIndent = True
+                    else:
+                        removeIndent = False
+
+                # remove bold from Headings.
+                paraStylesWithoutBoldOrUnderline = [] #list of all para-styles without underline or bold
+                paraStylesWithoutUnderline = [] #list of all para-styles without underline
+                for style in document.styles:
+                    if style.name[0:7] == "Heading":
+                        style.font.bold = None
+                        style.paragraph_format.left_indent = headingIndent #Pt(0)
+                        style.paragraph_format.first_line_indent = -headingIndent #Pt(-20)
+                        style.paragraph_format.space_before = Pt(0)
+                        style.paragraph_format.space_after = Pt(0)
+                        style_element = style._element
+                        spacing = style_element.xpath(r'w:pPr/w:spacing')[0]
+                        spacing.set(qn('w:beforeLines'), "0")
+                        spacing.set(qn('w:afterLines'), "0")
+                    if style.name[0:5] == "Para ":
+                        if style.font.underline != True:
+                            paraStylesWithoutUnderline.append(style.name)
+                            if style.font.bold != True:
+                                paraStylesWithoutBoldOrUnderline.append(style.name)
+
+                # find all para-styles with wanted properties in tables and change style
+                paraStylesInTables = []
+                #for paraStyleWithoutBoldOrUnderline in paraStylesWithoutBoldOrUnderline:
+                for paraStyleWithoutUnderline in paraStylesWithoutUnderline:
+                    for element in document.element.xpath("//w:tbl//w:p//w:pStyle[@w:val = '" + paraStyleWithoutUnderline + "']"):
+                        paraStylesInTables.append(element)
+                for paraStyleInTables in paraStylesInTables:
+                    paraStyleInTables.attrib['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val'] =  normalParagraphNoIndent # or normalParagraph
+
+                # uncomment if you want to modify first p in a cell
+                # firstParaStylesInTables = []
+                # for paraStyleWithoutBoldOrUnderline in paraStylesWithoutBoldOrUnderline:
+                #     for element in document.element.xpath("//w:tc//w:p[position()=1]//w:pStyle[@w:val = '" + normalParagraph + "']"):
+                #         firstParaStylesInTables.append(element)
+                # for paraStyleInTables in firstParaStylesInTables:
+                #     paraStyleInTables.attrib['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val'] = normalParagraphNoIndent
 
 
-                
+                # tables missing required <w:tblGrid>, so throws: docx.oxml.exceptions.InvalidXmlError: required ``<w:tblGrid>`` child element not present
+                #from docx.table import _Cell, Table
+                #from docx.oxml.text.paragraph import CT_P
+                # for row in table.columns:
+                #     try:
+                #         for cell in row.cells:
+                #             firstP = True
+                #             for p in cell.paragraphs:
+                #                 if p.style.font.underline != True and re.match(r"^Para | Block",p.style.name):
+                #                     if firstP:
+                #                         p.style = "NormalNoIndent"
+                #                         firstP = False
+                #                     else:
+                #                         p.style = "Normal"
+                #     except Exception as e:
+                #         pass
 
-                wordFile = os.path.join(temp_docxdir, epub.identifier() + "_clean.docx")
+
+                document.save(os.path.join(temp_docxdir, epub.identifier() + ".docx"))
+                self.utils.report.info("Temp-fil ble lagret: "+os.path.join(temp_docxdir, epub.identifier() + ".docx"))
+
+                wordFile = os.path.join(temp_docxdir, epub.identifier() + ".docx")
 
                 zipDocument = zipfile.ZipFile((folder / wordFile))
                 tempFolder = "temp"
@@ -223,14 +324,13 @@ class NLBpubToDocx(Pipeline):
                 xmlText = re.sub(r'w:left="1152"', r'w:left="360"', xmlText)
                 xmlText = re.sub(r'w:left="1512"', r'w:left="720"', xmlText)
                 xmlText = re.sub(r'w:left="1872"', r'w:left="1080"', xmlText)
-
+                xmlText = re.sub(r'<w:numFmt w:val="lowerLetter"/><w:lvlText w:val="%([1-9])\."/>', r'<w:numFmt w:val="lowerLetter"/><w:lvlText w:val="%\1)"/>', xmlText) # a. as a) in lists
+                #xmlText = re.sub(r'<w:lvlText w:val="%(1|2)\."/>', r'<w:lvlText w:val="%\1)"/>', xmlText) # a. as a), and 1. as 1) in lists
 
                 writeFile(xmlText, zippedFile)
-                zipdir(str(folder / tempFolder), str(folder), os.path.join(temp_docxdir, epub.identifier() + "_clean.docx"))
-              
-         
-# ---------- end script from kvile -------
+                zipdir(str(folder / tempFolder), str(folder), os.path.join(temp_docxdir, epub.identifier() + ".docx"))
 
+# ---------- end script from kvile -------
 
             else:
                 self.utils.report.error("En feil oppstod ved konvertering til DOCX for " + epub.identifier())
@@ -253,7 +353,6 @@ class NLBpubToDocx(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
-
 
 if __name__ == "__main__":
     NLBpubToDocx().run()

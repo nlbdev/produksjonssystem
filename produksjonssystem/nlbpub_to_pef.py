@@ -135,7 +135,7 @@ class NlbpubToPef(Pipeline):
                     html_file = os.path.join(root, f)
         if not html_file or not os.path.isfile(html_file):
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne en HTML-fil.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet "
             return False
 
         html_xml = ElementTree.parse(html_file).getroot()
@@ -160,7 +160,7 @@ class NlbpubToPef(Pipeline):
         identifier = identifier[0].attrib["content"] if identifier and "content" in identifier[0].attrib else None
         if not identifier:
             self.utils.report.error(self.book["name"] + ": Klarte ikke å finne boknummer i HTML-fil.")
-            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet "
             return False
         epub_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='nlbprod:identifier.epub']")
         epub_identifier = epub_identifier[0].attrib["content"] if epub_identifier and "content" in epub_identifier[0].attrib else None
@@ -206,40 +206,55 @@ class NlbpubToPef(Pipeline):
 
             # (1-3) will still be included. Specifying (6) let's us include replacements for (4) and (5)
             braille_arguments["stylesheet"] = ",".join([
-                "http://www.nlb.no/pipeline/modules/braille/insert-boilerplate.xsl",
+                "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/xslt/insert-boilerplate.xsl",
                 "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss"
             ])
 
         # for custom Statped options using DAISYs PIP (remove `and False` or replace with `or True` to test)
-        if metadata["library"].lower() == "statped" and False:
+        if metadata["library"].lower() == "statped" and True:
             # use DAISYs version of PIP instead
             script_id = "html-to-pef"
             pipeline_and_script_version = [
-                ("1.14.4", "4.1.0"),
-            ]
+                ("1.14.4", "4.2.0"),
+                ("1.14.4-SNAPSHOT", "4.1.1"),
+                ("1.14.3", "4.1.1"),
+                ("1.14.2", "4.1.0"),
+                ("1.13.6", "1.4.6"),
+                ("1.13.4", "1.4.5"),
+                ("1.12.1", "1.4.2"),
+                ("1.11.1-SNAPSHOT", "1.3.0"),
+           ]
+
 
             braille_arguments = {
                 "html": os.path.basename(html_file),
-                "transform": "(formatter:dotify)(translator:liblouis)(grade:1)",
+                "transform": "(formatter:dotify)(translator:liblouis)(dots:6)(grade:0)",
                 "stylesheet": " ".join([
                     # 1. better volume breaking, and also removes title page and print toc, moves the colophon and copyright page to the end of the book
-                    # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/pre-processing.xsl",
+                   # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/pre-processing.xsl",
+                    "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/xslt/pre-processing.xsl",
 
-                    # 2. DAISY: TOC generation
-                    # "https://raw.githubusercontent.com/daisy/pipeline/master/modules/braille/xml-to-pef/src/main/resources/xml/xslt/generate-toc.xsl",
+                    #"https://raw.githubusercontent.com/daisy/pipeline/master/modules/braille/xml-to-pef/src/main/resources/xml/xslt/generate-toc.xsl",
 
                     # 3. NLB: Add table classes based on the dimensions of the table, for better handling of tables
-                    # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/add-table-classes.xsl",
+                    "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/add-table-classes.xsl",
 
                     # 4. NLB: Generate a new title page and about page in the frontmatter
                     # "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/insert-boilerplate.xsl",
-
+                   "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/xslt/insert-boilerplate.xsl",
                     # 5. Statped-specific SCSS
                     "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/scss/braille.scss",
                 ]),
-                # "line-spacing": line_spacing,
-                # "duplex": duplex,
-            }
+                "page-width": '38',
+                "page-height": '29',
+                "toc-depth": '2',
+		"maximum-number-of-sheets": '50',
+                "include-production-notes" : 'true',
+                "hyphenation" : 'false',
+                "allow-volume-break-inside-leaf-section-factor" : '10',
+		"prefer-volume-break-before-higher-level-factor" : '1',
+                "stylesheet-parameters": "(skip-margin-top-of-page:true)",
+               }
 
         pef_tempdir_object = tempfile.TemporaryDirectory()
 
@@ -266,14 +281,14 @@ class NlbpubToPef(Pipeline):
 
             if dp2_job.status != "SUCCESS":
                 self.utils.report.info("Klarte ikke å konvertere boken")
-                self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
+                self.utils.report.title = self.title + ": " + identifier + " feilet " + bookTitle
                 return False
 
             dp2_pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
 
             if not os.path.isdir(dp2_pef_dir):
                 self.utils.report.info("Finner ikke den konverterte boken.")
-                self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
+                self.utils.report.title = self.title + ": " + identifier + " feilet " + bookTitle
                 return False
 
             Filesystem.copy(self.utils.report, dp2_pef_dir, pef_tempdir_object.name)
@@ -312,9 +327,10 @@ class NlbpubToPef(Pipeline):
         archived_path, stored = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
         self.utils.report.attachment(None, archived_path, "DEBUG")
 
-        self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄" + bookTitle
+        self.utils.report.title = self.title + ": " + identifier + " ble konvertert " + bookTitle
         return True
 
 
 if __name__ == "__main__":
     NlbpubToPef().run()
+
