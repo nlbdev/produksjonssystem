@@ -52,7 +52,7 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 
 - installer DAISY Pipeline 2
     - Lokal instans:
-        - Kopier Pipeline 2 fra `IKT/DAISY Pipeline/daisy-pipeline2-1.11.tar.gz` og pakk ut til `~/Desktop/daisy-pipeline2`
+        - Kopier Pipeline 2 fra `sharepoint NLB-Teknologiavdelingen Pipeline/daisy-pipeline2-1.11.tar.gz` og pakk ut til `~/Desktop/daisy-pipeline2`
     - Ekstern(e) instans(er) (kjørende på annen PC/server):
         - Sett opp `REMOTE_PIPELINE2_WS_*`-miljøvariablene. Se `set-test-env.sh.example` for eksempel.
 
