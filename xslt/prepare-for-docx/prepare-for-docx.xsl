@@ -122,7 +122,7 @@
    <xsl:template match="figcaption/p[f:movePageBefore(.)=false()] | figure[f:classes(.) = 'image']/aside/p[f:movePageBefore(.)=false()] | caption/p[f:movePageBefore(.)=false()]" priority="3">
       <xsl:apply-templates/>
       <xsl:if test="position() != last() and not(exists(following-sibling::*[1][name() = 'ol' or name() = 'ul' or name() = 'table']))">
-         <br/>
+         <br/>         
       </xsl:if>
       <xsl:for-each select="descendant::span[f:types(.) = 'pagebreak']">
          <xsl:call-template name="create-pagebreak">
@@ -159,7 +159,7 @@
          <xsl:apply-templates select="node()"/>
       </xsl:copy>
    </xsl:template>
-
+ 
    <xsl:function name="f:imgAlt">
       <xsl:param name="element" as="element()"/>
       <xsl:choose>
@@ -237,7 +237,7 @@
          <xsl:apply-templates/>
       </p>
    </xsl:template>
-
+ 
    <xsl:template match="ol[parent::section[f:types(.) = 'toc']]" priority="10">
       <xsl:for-each select="descendant::span[f:types(.) = 'pagebreak']">
          <xsl:call-template name="create-pagebreak"/>
@@ -401,13 +401,13 @@
          <p/>
 
 <!-- ny tekst -  test nnorsk eller norsk -->
-
+   
 
          <xsl:choose>
          <xsl:when test="//meta[@name='dc:language']/string(@content)= 'nn'">
            <p>
-            <span xml:lang="nn" lang="nn">Opphavsrett Statped:<br>Denne boka er lagd til rette for elevar med synssvekking. Ifølgje lov om opphavsrett kan ho ikkje brukast av andre. Teksten er tilpassa for lesing med skjermlesar og leselist. Kopiering er berre tillate til eige bruk.
-            Brot på desse avtalevilkåra, slik som ulovleg kopiering eller medverknad til ulovleg kopiering, kan medføre ansvar etter åndsverklova.en.</br></span>
+              <span xml:lang="nn" lang="nn">Opphavsrett Statped:<br>Denne boka er lagd til rette for elevar med synssvekking. Ifølgje lov om opphavsrett kan ho ikkje brukast av andre. Teksten er tilpassa for lesing med skjermlesar og leselist. Kopiering er berre tillate til eige bruk. Brot på desse avtalevilkåra, slik som ulovleg kopiering eller medverknad til ulovleg kopiering, kan medføre ansvar etter åndsverklova.</br></span>
+              
             </p>
 
              </xsl:when>
@@ -415,19 +415,18 @@
          <xsl:otherwise>
 
              <p>
-            <span xml:lang="no" lang="no">Opphavsrett Statped:<br>Denne boka er tilrettelagt for elever med synssvekkelse. Ifølge lov om opphavsrett kan den ikke brukes av andre. Teksten er tilpasset for lesing med skjermleser og leselist. Kopiering er kun tillatt til eget bruk.
-	    Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.</br></span>
+            <span xml:lang="no" lang="no">Opphavsrett Statped:<br>Denne boka er tilrettelagt for elever med synssvekkelse. Ifølge lov om opphavsrett kan den ikke brukes av andre. Teksten er tilpasset for lesing med skjermleser og leselist. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.</br></span>
             </p>
 
           </xsl:otherwise>
 
        </xsl:choose>
+   
 
-
-
+        
       </xsl:copy>
    </xsl:template>
-
+   
    <xsl:template match="section[f:types(.) = 'colophon']/*[matches(name(), 'h[1-6]')]" />
 
    <xsl:template match="em | strong">

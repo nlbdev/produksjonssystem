@@ -53,7 +53,7 @@ class NLBpubToDocx(Pipeline):
 
     def on_book(self):
         self.utils.report.attachment(None, self.book["source"], "DEBUG")
-        epub = Epub(self, self.book["source"])
+        epub = Epub(self.utils.report, self.book["source"])
 
         epubTitle = ""
         try:

@@ -54,7 +54,7 @@
             <figcaption>
                 <p>«Vi drog for å utforske månen, men det viktigaste vi oppdaga, var jorda.»
                     Astronaut William Anders skal ha sagt dette etter romferda med Apollo 8
-                    rundt månen i 1968, året før den første månelandinga.</p></figcaption>
+                    rundt månen i 1968, året før den første månelandinga.</p></figcaption>           
         </x:context>
         
         <x:expect label="p-element removed">
@@ -64,7 +64,7 @@
                 lang="no"
                 xml:lang="no">Bildetekst: «Vi drog for å utforske månen, men det viktigaste vi oppdaga, var jorda.»
                     Astronaut William Anders skal ha sagt dette etter romferda med Apollo 8
-                    rundt månen i 1968, året før den første månelandinga.</p>
+                    rundt månen i 1968, året før den første månelandinga.</p>       
         </x:expect>
     </x:scenario>
     
@@ -75,7 +75,7 @@
                 <table>
                     <caption><strong>Noen kjennetegn ved de ulike
                         forskningsmetodene</strong></caption>
-                </table>
+                </table>   
             </x:context>
             
         <x:expect label="Inserted text Tabell: before table ">
@@ -165,8 +165,8 @@
                 <li>Du kan håndtere stress.</li>
                 <li>Du er ansvarsbevisst og tar initiativ.</li>
             </ul>
-        </x:context>
-        <x:expect label="-- should not be inserted in unordered list">
+        </x:context> 
+        <x:expect label="-- should not be inserted in unordered list"> 
             <p xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml">_Egenskaper:_</p><p xmlns:epub="http://www.idpf.org/2007/ops"
@@ -203,7 +203,7 @@
             
         </x:context>
         
-        <x:expect label=">>> should be inserted in ordered list ">
+        <x:expect label=">>> should be inserted in ordered list ">  
             <section xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
@@ -225,7 +225,7 @@
             </section>
                
            </x:expect>
-    </x:scenario>
+    </x:scenario> 
     
     
     
@@ -476,7 +476,7 @@
                 <p>WARNING! WATCH OUT FOR GRIZZLY BEARS!</p>
                  <p>Hopefully they will run away.</p>
            </aside>
-            </div>
+            </div>   
             <div class="anything ramdoc">
                 <p><strong>Eksempel</strong></p>
             </div>
@@ -564,15 +564,11 @@
     <!-- ***********-->
     <x:scenario label="em and strong">
         <x:context>
-            <p><em>Rachel</em></p>
-            <p><strong>Fun on a Board</strong></p>
-            <li>xxx2 <a href="#ch2-1"><span class="lic"><strong>1.2 Barn og unges oppvekstmiljø</strong></span> <span class="lic"><strong>36</strong></span></a>
-            </li>
+            <p><strong>Element 9</strong></p>
         </x:context>
         
         <x:expect label="Mark with '_'">
-            <p>_Rachel_</p><p>_Fun on a Board_</p><li>xxx2 <a href="#ch2-1">_1.2 Barn og unges oppvekstmiljø_ _36_</a>
-                    </li>
+            <p>_Element 9_</p>
         </x:expect>
     </x:scenario>
 <!-- ************ -->
@@ -803,8 +799,8 @@
                     <p />
                     <p>
                         <span xml:lang="no"
-                            lang="no">Opphavsrett Statped:<br>Denne boka er tilrettelagt for elever med synssvekkelse. Ifølge lov om opphavsrett kan den ikke brukes av andre. Teksten er tilpasset for lesing med skjermleser og leselist. Kopiering er kun tillatt til eget bruk.
-            Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.</br>
+                            lang="no">Opphavsrett Statped:<br>Denne boka er tilrettelagt for elever med synssvekkelse. Ifølge lov om opphavsrett kan den ikke brukes av andre. Teksten er tilpasset for lesing med skjermleser og leselist. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.</br>
+                            
                         </span>
                     </p>
                 </body>
@@ -969,9 +965,8 @@
                 <p>Baksidetekst:</p>
                 <p />
                 <p>
-                    <span xml:lang="nn" lang="nn">Opphavsrett Statped:<br>Denne boka er lagd til rette for elevar med synssvekking. Ifølgje lov om opphavsrett kan ho ikkje brukast av andre. Teksten er tilpassa for lesing med skjermlesar og leselist. Kopiering er berre tillate til eige bruk.
-                        Brot på desse avtalevilkåra, slik som ulovleg kopiering eller medverknad til ulovleg kopiering, kan medføre ansvar etter åndsverklova.en.</br></span>
-                </p>
+                    <span xml:lang="nn" lang="nn">Opphavsrett Statped:<br>Denne boka er lagd til rette for elevar med synssvekking. Ifølgje lov om opphavsrett kan ho ikkje brukast av andre. Teksten er tilpassa for lesing med skjermlesar og leselist. Kopiering er berre tillate til eige bruk. Brot på desse avtalevilkåra, slik som ulovleg kopiering eller medverknad til ulovleg kopiering, kan medføre ansvar etter åndsverklova.</br></span>
+                 </p>
             </body>
         </html>
     </x:expect>
