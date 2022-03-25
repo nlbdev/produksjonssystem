@@ -281,14 +281,14 @@ class NlbpubToPef(Pipeline):
 
             if dp2_job.status != "SUCCESS":
                 self.utils.report.info("Klarte ikke å konvertere boken")
-                self.utils.report.title = self.title + ": " + identifier + " feilet " + bookTitle
+                self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
                 return False
 
             dp2_pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
 
             if not os.path.isdir(dp2_pef_dir):
                 self.utils.report.info("Finner ikke den konverterte boken.")
-                self.utils.report.title = self.title + ": " + identifier + " feilet " + bookTitle
+                self.utils.report.title = self.title + ": " + identifier + " feilet 😭👎" + bookTitle
                 return False
 
             Filesystem.copy(self.utils.report, dp2_pef_dir, pef_tempdir_object.name)
@@ -327,7 +327,7 @@ class NlbpubToPef(Pipeline):
         archived_path, stored = self.utils.filesystem.storeBook(pef_tempdir_object.name, identifier)
         self.utils.report.attachment(None, archived_path, "DEBUG")
 
-        self.utils.report.title = self.title + ": " + identifier + " ble konvertert " + bookTitle
+        self.utils.report.title = self.title + ": " + identifier + " ble konvertert 👍😄" + bookTitle
         return True
 
 
