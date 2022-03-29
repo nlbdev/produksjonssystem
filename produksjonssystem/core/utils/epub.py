@@ -341,6 +341,19 @@ class Epub():
             f.write(serialized)
 
         return True
+            
+    def extract_xhtml_files(self):
+        """Extract all XHTML files from the EPUB"""
+        
+        # extract the EPUB to a temporary directory
+        self.asDir()
+
+        # extract all XHTML files from the EPUB
+        xhtml_files = []
+        for f in pathlib.Path(self.book_path_dir).rglob('*.xhtml'):
+            xhtml_files.append(str(f))
+
+        return xhtml_files
 
     @staticmethod
     def html_to_nav(pipeline, source, target):
