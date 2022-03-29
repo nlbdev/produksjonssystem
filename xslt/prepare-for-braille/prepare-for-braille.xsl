@@ -7,8 +7,6 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:param name="force-norwegian" select="'false'"/>
-    
     <xsl:output method="xhtml" include-content-type="no" indent="no"/>
     
     <xsl:template match="@* | node()">
@@ -47,9 +45,20 @@
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="@xml:lang | @lang | meta[@name='dc:language']/@content">
+    <xsl:template match="@xml:lang | @lang">
         <xsl:choose>
-            <xsl:when test=". = ('nb', 'nn', 'nob', 'nno') or $force-norwegian = 'true'">
+            <xsl:when test=". = ('nb', 'nn', 'en', 'de', 'fr', 'es')">
+                <xsl:attribute name="{name()}" select="'no'" exclude-result-prefixes="#all"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="//meta[@name='dc:language']/@content">
+        <xsl:choose>
+            <xsl:when test=". = ('nb', 'nn', 'en', 'de', 'fr', 'es')">
                 <xsl:attribute name="{name()}" select="'no'" exclude-result-prefixes="#all"/>
             </xsl:when>
             <xsl:otherwise>

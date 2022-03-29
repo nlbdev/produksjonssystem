@@ -16,9 +16,12 @@
                 <h6>Overskrift nivå 6</h6>
             </div>
         </x:context>
+        
+      
 
         <x:expect label="result">
             <div>
+                <p />
                 <h1>xxx1 Overskrift nivå 1</h1>
                 <h2>xxx2 Overskrift nivå 2</h2>
                 <h3>xxx3 Overskrift nivå 3</h3>
@@ -55,9 +58,13 @@
         </x:context>
         
         <x:expect label="p-element removed">
-            <figcaption>«Vi drog for å utforske månen, men det viktigaste vi oppdaga, var jorda.»
+            <p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                lang="no"
+                xml:lang="no">Bildetekst: «Vi drog for å utforske månen, men det viktigaste vi oppdaga, var jorda.»
                     Astronaut William Anders skal ha sagt dette etter romferda med Apollo 8
-                    rundt månen i 1968, året før den første månelandinga.</figcaption>            
+                    rundt månen i 1968, året før den første månelandinga.</p>       
         </x:expect>
     </x:scenario>
     
@@ -72,13 +79,14 @@
             </x:context>
             
         <x:expect label="Inserted text Tabell: before table ">
-           <p></p>
-            <p>Tabell:</p>
-                <table xmlns:epub="http://www.idpf.org/2007/ops"
-                    xmlns="http://www.w3.org/1999/xhtml">
-                    <caption>_Noen kjennetegn ved de ulike
-                        forskningsmetodene_</caption>
-                </table>
+            <p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml" /><p xmlns:epub="http://www.idpf.org/2007/ops"
+                    xmlns:html="http://www.w3.org/1999/xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml">Tabell: _Noen kjennetegn ved de ulike
+                        forskningsmetodene_</p><table xmlns:epub="http://www.idpf.org/2007/ops"
+                        xmlns:html="http://www.w3.org/1999/xhtml"
+                        xmlns="http://www.w3.org/1999/xhtml" />
             </x:expect>
         </x:scenario>
    
@@ -124,33 +132,27 @@
         
         <x:expect label="unordered list">
     
-        
-            <ul xmlns:epub="http://www.idpf.org/2007/ops"
+            <p xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:html="http://www.w3.org/1999/xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                class="list-style-type-none"
-                style="list-style-type: none;">
-                <li>
-                    <span>a bunch of snobs [ə bᴧntʃ əv 'snɒbz]: </span>
-                    <span lang="no"
-                        xml:lang="no">en gjeng snobber</span>
-                </li>
-                <li>
-                    <span>a sign of [əˈsaɪn ɒv]: </span>
-                    <span lang="no"
-                        xml:lang="no">et tegn på</span>
-                </li>
-                <li>
-                    <span>AD (adv.) [eɪ ˈdiː]: </span>
-                    <span lang="no"
-                        xml:lang="no">(år) etter Kristus (e.Kr.)</span>
-                </li>
-                <li>
-                    <span>add (v) [æd]: </span>
-                    <span lang="no"
-                        xml:lang="no">tilsette</span>
-                </li>
-            </ul>
+                xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_DL<span>a bunch of snobs: </span>
+                <span lang="no"
+                    xml:lang="no">en gjeng snobber</span>
+            </p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_DL<span>a sign of: </span>
+                <span lang="no"
+                    xml:lang="no">et tegn på</span>
+            </p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_DL<span>AD (adv.): </span>
+                <span lang="no"
+                    xml:lang="no">(år) etter Kristus (e.Kr.)</span>
+            </p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_DL<span>add (v): </span>
+                <span lang="no"
+                    xml:lang="no">tilsette</span>
+            </p>
         </x:expect>
     </x:scenario>
    
@@ -165,13 +167,19 @@
             </ul>
         </x:context> 
         <x:expect label="-- should not be inserted in unordered list"> 
-            <p>_Egenskaper:_</p>
-            <ul class="list-unstyled">
-                <li>Du er serviceinnstilt.</li>
-                <li>Du har gode samarbeidsevner og kan jobbe selvstendig.</li>
-                <li>Du kan håndtere stress.</li>
-                <li>Du er ansvarsbevisst og tar initiativ.</li>
-            </ul>
+            <p xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml">_Egenskaper:_</p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                    xmlns:html="http://www.w3.org/1999/xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_LIST_UNSTYLEDDu er serviceinnstilt.</p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                        xmlns:html="http://www.w3.org/1999/xhtml"
+                        xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_LIST_UNSTYLEDDu har gode samarbeidsevner og kan jobbe selvstendig.</p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                            xmlns:html="http://www.w3.org/1999/xhtml"
+                            xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_LIST_UNSTYLEDDu kan håndtere stress.</p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                xmlns:html="http://www.w3.org/1999/xhtml"
+                                xmlns="http://www.w3.org/1999/xhtml">STATPED_DUMMYTEXT_LIST_UNSTYLEDDu er ansvarsbevisst og tar initiativ.</p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                    xmlns:html="http://www.w3.org/1999/xhtml"
+                                    xmlns="http://www.w3.org/1999/xhtml" />
         </x:expect>
     </x:scenario>
    
@@ -196,18 +204,25 @@
         </x:context>
         
         <x:expect label=">>> should be inserted in ordered list ">  
-            <section>
-             
+            <section xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                class="oppgaver1"
+                id="ch1-6">
+                <p />
                 <h3 id="d1e2227">xxx3 Test deg selv</h3>
                 <ol start="5">
-                        <li><p>_2.2.10_ Ola Bjerk er gårdbruker. </p>
+                    <li>
+                        <p>_2.2.10_ Ola Bjerk er gårdbruker. </p>
                         <p>Kari Lind leser annonsen med interesse.</p>
                         <p>Drøft og løs tvisten mellom Ola og Kari.</p>
                     </li>
-                    <li><p>_2.2.11_ Per Bjerk er gårdbruker. </p></li>
+                    <li>
+                        <p>_2.2.11_ Per Bjerk er gårdbruker. </p>
+                    </li>
                 </ol>
-            
-            </section> 
+                <p />
+            </section>
                
            </x:expect>
     </x:scenario> 
@@ -336,32 +351,19 @@
                             </span>
                         </a>
                     </li>
-                    <li>xxx1 <a href="#h1_4">
-                        <span class="lic">Del 1 Samfunnsfag og vitenskapelige tenkemåter</span>
-                    </a>
+                    <li>xxx1 <a href="#h1_4">Del 1 _Samfunnsfag og vitenskapelige tenkemåter_</a>
                         <ol>
-                            <li>xxx2 <a href="#h2_1">
-                                <span class="lic">Kapittel 1 Samfunnsfag og vitenskapelige tenkemåter</span>
-                                <span class="lic">10</span>
-                            </a>
+                            <li>xxx2 <a href="#h2_1">_Kapittel 1 Samfunnsfag og vitenskapelige tenkemåter_ 10</a>
                             </li>
                         </ol>
                     </li>
-                    <li>xxx1 <a href="#h1_5">
-                        <span class="lic">Del 2 Sosialisering</span>
-                    </a>
+                    <li>xxx1 <a href="#h1_5">Del 2 _Sosialisering_</a>
                         <ol>
-                            <li>xxx2 <a href="#h2_3">
-                                <span class="lic">Kapittel 3 Hva er et samfunn?</span>
-                                <span class="lic">54</span>
-                            </a>
+                            <li>xxx2 <a href="#h2_3">_Kapittel 3 Hva er et samfunn?_ 54</a>
                             </li>
                         </ol>
                     </li>
-                    <li>xxx1 <a href="#h1_9">
-                        <span class="lic">Sentrale begreper</span>
-                        <span class="lic">279</span>
-                    </a>
+                    <li>xxx1 <a href="#h1_9">_Sentrale begreper_ 279</a>
                     </li>
                 </ol>
             </section>
@@ -402,7 +404,9 @@
         </x:context>
 
         <x:expect label="result3">
-            <div>
+            <div xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:html="http://www.w3.org/1999/xhtml"
+                xmlns="http://www.w3.org/1999/xhtml">
                 <div>
                     <p />
                     <div epub:type="pagebreak"
@@ -410,43 +414,48 @@
                     <p />
                     <div epub:type="pagebreak"
                         title="2">--- 2 til 9</div>
-                    <h1>xxx1 En overskrift.</h1>
+                    <h1>xxx1 En overskrift.<span epub:type="pagebreak"
+                        title="2" />
+                    </h1>
                     <p />
                     <div epub:type="pagebreak"
                         title="3">--- 3 til 9</div>
                     <p />
                     <div epub:type="pagebreak"
                         title="4">--- 4 til 9</div>
-                    <!-- avsnitt -->
-                        <p />
+                    <p>En setning <p />
                         <div epub:type="pagebreak"
-                            title="5">--- 5 til 9</div>
-                        <p />
-                        <div epub:type="pagebreak"
-                            title="6">--- 6 til 9</div>
-                        <p />
+                            title="5">--- 5 til 9</div> med _linjeskift <span epub:type="pagebreak">6</span> inni_ seg. <p />
                         <div epub:type="pagebreak"
                             title="7">--- 7 til 9</div>
-                        <p>En setning  med _linjeskift  inni_ seg. </p>
-                        <!-- liste -->
-                            <ol>
-                                <li>
-                                    <p />
-                                    <div epub:type="pagebreak"
-                                        title="8">--- 8 til 9</div>
-                                </li>
-                            </ol>
-                      <!-- tabell -->
+                    </p>
                     <p />
-                    <p>Tabell:</p>
+                    <div epub:type="pagebreak"
+                        title="5">--- 5 til 9</div>
+                    <p />
+                    <div epub:type="pagebreak"
+                        title="6">--- 6 til 9</div>
+                    <p />
+                    <div epub:type="pagebreak"
+                        title="7">--- 7 til 9</div>
+                    <ol>
+                        <li>
+                            <span epub:type="pagebreak"
+                                title="8" />
+                            <p />
+                            <div epub:type="pagebreak"
+                                title="8">--- 8 til 9</div>
+                        </li>
+                    </ol>
+                    <p />
+                    <p />
+                    <div epub:type="pagebreak"
+                        title="9">--- 9 til 9</div>
+                    <p>Tabell: </p>
                     <table>
                         <tbody>
                             <tr>
-                                <td>
-                                    <p />
-                                    <div epub:type="pagebreak"
-                                        title="9">--- 9 til 9</div>
-                                </td>
+                                <td>--</td>
                             </tr>
                         </tbody>
                     </table>
@@ -474,39 +483,38 @@
         </x:context>
        
         <x:expect label="Mark with 'Ramme:'">
-            <div xmlns:epub="http://www.idpf.org/2007/ops"
-                xmlns:html="http://www.w3.org/1999/xhtml"
-                xmlns="http://www.w3.org/1999/xhtml">
-                <p>
-                    <span xml:lang="no"
-                        lang="no" />
-                </p>
-                <p class="line">But hope remains when pride is gone</p>
-                <p class="line">And it keeps you moving on</p>
-                <p class="line">Calling you across the borderline</p>
-            </div><div xmlns:epub="http://www.idpf.org/2007/ops"
-                xmlns:html="http://www.w3.org/1999/xhtml"
-                xmlns="http://www.w3.org/1999/xhtml">
-                <p />
-                <aside>
-                    <p>
-                        <span xml:lang="no"
-                            lang="no">Ramme:</span>
-                    </p>
-                    <p>WARNING! WATCH OUT FOR GRIZZLY BEARS!</p>
-                    <p>Hopefully they will run away.</p>
-                </aside>
-            </div><p xmlns:epub="http://www.idpf.org/2007/ops"
+            <p xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml" /><div xmlns:epub="http://www.idpf.org/2007/ops"
                     xmlns:html="http://www.w3.org/1999/xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    class="anything linegroup">
+                    <p class="line">But hope remains when pride is gone</p>
+                    <p class="line">And it keeps you moving on</p>
+                    <p class="line">Calling you across the borderline</p>
+                </div><div xmlns:epub="http://www.idpf.org/2007/ops"
+                    xmlns:html="http://www.w3.org/1999/xhtml"
                     xmlns="http://www.w3.org/1999/xhtml">
-                    <p>
-                        <span xml:lang="no"
-                            lang="no">Ramme:</span>
-                    </p>
-                    <p>_Eksempel_</p>
-                </div>
+                    <p />
+                    <aside>
+                        <p>
+                            <span xml:lang="no"
+                                lang="no">Ramme:</span>
+                        </p>
+                        <p>WARNING! WATCH OUT FOR GRIZZLY BEARS!</p>
+                        <p>Hopefully they will run away.</p>
+                    </aside>
+                </div><p xmlns:epub="http://www.idpf.org/2007/ops"
+                    xmlns:html="http://www.w3.org/1999/xhtml"
+                    xmlns="http://www.w3.org/1999/xhtml" /><div xmlns:epub="http://www.idpf.org/2007/ops"
+                        xmlns:html="http://www.w3.org/1999/xhtml"
+                        xmlns="http://www.w3.org/1999/xhtml">
+                        <p>
+                            <span xml:lang="no"
+                                lang="no">Ramme:</span>
+                        </p>
+                        <p>_Eksempel_</p>
+                    </div>
         </x:expect>
     </x:scenario>
     
@@ -524,47 +532,43 @@
                     </x:context>
                                     
                     <x:expect label="Mark with span omitted">
-                        <h1 xmlns:epub="http://www.idpf.org/2007/ops"
+                        <p xmlns:epub="http://www.idpf.org/2007/ops"
                             xmlns:html="http://www.w3.org/1999/xhtml"
-                            xmlns="http://www.w3.org/1999/xhtml"
-                            xml:lang="no"
-                            lang="no"
-                            id="d1e474">xxx1 Innhold</h1><ol xmlns:epub="http://www.idpf.org/2007/ops"
+                            xmlns="http://www.w3.org/1999/xhtml" /><h1 xmlns:epub="http://www.idpf.org/2007/ops"
                                 xmlns:html="http://www.w3.org/1999/xhtml"
                                 xmlns="http://www.w3.org/1999/xhtml"
-                                class="list-type-none"
-                                style="list-style-type: none;">
-                                <li xml:lang="no"
-                                    lang="no">Side Kapittel</li>
-                            </ol><p xmlns:epub="http://www.idpf.org/2007/ops"
-                                xmlns:html="http://www.w3.org/1999/xhtml"
-                                xmlns="http://www.w3.org/1999/xhtml">
-                                <span xml:lang="no"
-                                    lang="no">Dette spillet kan brukes til å repetere ord og uttrykk fra <span xml:lang="fr"
-                                        lang="fr">_C’est chouette 2_</span>. «J’ai, tu...» betyr at verbet skal bøyes i alle personer i presens, eller at du skal lage en setning der du bruker verbet i en av personene. En klokkeskive betyr at du sier hvor mye klokka er: « il est... heures ». Dommeren følger med i fasiten som står bakerst i boka på side 282. Enkelte ganger er det flere svaralternativer, men ikke alle mulige svar. Dommeren har lov til å spørre læreren om uttalen av ordene og uttrykkene i fasiten mens det spilles.</span>
-                            </p><p xmlns:epub="http://www.idpf.org/2007/ops"
-                                xmlns:html="http://www.w3.org/1999/xhtml"
-                                xmlns="http://www.w3.org/1999/xhtml">
-                                <span xml:lang="no"
-                                    lang="no">For å spille trenger du en terning og en spillebrikke (binders, viskelær osv.).</span>
-                            </p>
+                                xml:lang="no"
+                                lang="no"
+                                id="d1e474">xxx1 Innhold</h1><ol xmlns:epub="http://www.idpf.org/2007/ops"
+                                    xmlns:html="http://www.w3.org/1999/xhtml"
+                                    xmlns="http://www.w3.org/1999/xhtml"
+                                    class="list-type-none"
+                                    style="list-style-type: none;">
+                                    <li xml:lang="no"
+                                        lang="no">Side Kapittel</li>
+                                </ol><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                    xmlns:html="http://www.w3.org/1999/xhtml"
+                                    xmlns="http://www.w3.org/1999/xhtml" /><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                        xmlns:html="http://www.w3.org/1999/xhtml"
+                                        xmlns="http://www.w3.org/1999/xhtml"
+                                        xml:lang="no"
+                                        lang="no">Dette spillet kan brukes til å repetere ord og uttrykk fra <span xml:lang="fr"
+                                            lang="fr">_C’est chouette 2_</span>. «J’ai, tu...» betyr at verbet skal bøyes i alle personer i presens, eller at du skal lage en setning der du bruker verbet i en av personene. En klokkeskive betyr at du sier hvor mye klokka er: « il est... heures ». Dommeren følger med i fasiten som står bakerst i boka på side 282. Enkelte ganger er det flere svaralternativer, men ikke alle mulige svar. Dommeren har lov til å spørre læreren om uttalen av ordene og uttrykkene i fasiten mens det spilles.</p><p xmlns:epub="http://www.idpf.org/2007/ops"
+                                                xmlns:html="http://www.w3.org/1999/xhtml"
+                                                xmlns="http://www.w3.org/1999/xhtml"
+                                                xml:lang="no"
+                                                lang="no">For å spille trenger du en terning og en spillebrikke (binders, viskelær osv.).</p>
                     </x:expect>
                 </x:scenario>
                 <!-- ************ -->
     <!-- ***********-->
     <x:scenario label="em and strong">
         <x:context>
-            <p><em>Rachel</em></p>
-            <p><strong>Fun on a Board</strong></p>
-            <li>xxx2 <a href="#ch2-1"><span class="lic"><strong>1.2 Barn og unges oppvekstmiljø</strong></span> <span class="lic"><strong>36</strong></span></a>
-            </li>
+            <p><strong>Element 9</strong></p>
         </x:context>
         
         <x:expect label="Mark with '_'">
-            <p>_Rachel_</p>
-            <p>_Fun on a Board_</p>
-            <li>xxx2 <a href="#ch2-1"><span class="lic">1.2 Barn og unges oppvekstmiljø</span> <span class="lic">36</span></a>
-            </li>
+            <p>_Element 9_</p>
         </x:expect>
     </x:scenario>
 <!-- ************ -->
@@ -608,76 +612,31 @@
         <x:expect label="removed image; optionally replace with alt text">
             <div xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:html="http://www.w3.org/1999/xhtml"
-                xmlns="http://www.w3.org/1999/xhtml">
-                <p />
-                <p class="margpos"
-                    lang="no"
-                    xml:lang="no">Bilde:</p>
-                <p class="margpos"
-                    lang="no"
-                    xml:lang="no">Forklaring: image</p>
+                xmlns="http://www.w3.org/1999/xhtml">[][][image][God Bildetekst]<p />
                 <p lang="no"
-                    xml:lang="no" />
-                <p />
-                <p class="margpos"
-                    lang="no"
-                    xml:lang="no">Bilde:</p>
-                <p class="margpos"
-                    lang="no"
-                    xml:lang="no">Forklaring: God Bildetekst</p>
+                    xml:lang="no">Bilde: foto</p>
                 <p lang="no"
-                    xml:lang="no" />
+                    xml:lang="no">Forklaring: Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>
                 <p />
-                <p class="margpos"
-                    lang="no"
-                    xml:lang="no">Bilde:</p>
-                <figure class="image">
-                    <p class="margpos"
-                        lang="no"
-                        xml:lang="no">Forklaring: foto</p>
-                    <p>Her er det 5 små bilder som hører til hvert av bokas fem kapitler. Disse blir beskrevet der de dukker opp senere i boka.</p>
-                </figure>
-                <p lang="no"
-                    xml:lang="no" />
                 <p />
-                <p class="margpos"
-                    lang="no"
-                    xml:lang="no">Bilde:</p>
-                <figure class="image">
-                    <p class="margpos"
-                        lang="no"
-                        xml:lang="no">Forklaring: figure-image</p>
-                    <figcaption> Bildetekst: figcaption-image</figcaption>
-                </figure>
                 <p lang="no"
-                    xml:lang="no" />
-                <figure class="image-series">
-                    <p />
-                    <p class="margpos"
-                        lang="no"
-                        xml:lang="no">Bilde:</p>
-                    <figure class="image">
-                        <p class="margpos"
-                            lang="no"
-                            xml:lang="no">Forklaring: figure-image-series-1</p>
-                        <figcaption> Bildetekst: <span>figcaption-image-series-1</span>
-                        </figcaption>
-                    </figure>
-                    <p lang="no"
-                        xml:lang="no" />
-                    <p />
-                    <p class="margpos"
-                        lang="no"
-                        xml:lang="no">Bilde:</p>
-                    <figure class="image">
-                        <p class="margpos"
-                            lang="no"
-                            xml:lang="no">Forklaring: figure-image-series-2</p>
-                        <figcaption> Bildetekst: figcaption-image-series-2</figcaption>
-                    </figure>
-                    <p lang="no"
-                        xml:lang="no" />
-                </figure>
+                    xml:lang="no">Bilde: figure-image</p>
+                <p lang="no"
+                    xml:lang="no">Bildetekst: figcaption-image</p>
+                <p />
+                <p />
+                <p lang="no"
+                    xml:lang="no">Bilde: figure-image-series-1</p>
+                <p lang="no"
+                    xml:lang="no">Bildetekst: <span>figcaption-image-series-1</span>
+                </p>
+                <p />
+                <p />
+                <p lang="no"
+                    xml:lang="no">Bilde: figure-image-series-2</p>
+                <p lang="no"
+                    xml:lang="no">Bildetekst: figcaption-image-series-2</p>
+                <p />
             </div>
         </x:expect>
     </x:scenario>
@@ -726,7 +685,7 @@
         </x:context>
 
         <x:expect label="boilerplate text should be inserted">
-            <html xmlns:epub="http://www.idpf.org/2007/ops"
+             <html xmlns:epub="http://www.idpf.org/2007/ops"
                 xmlns:html="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml">
                 <head>
@@ -779,40 +738,41 @@
                     <style>...</style>
                 </head>
                 <body>
-                    <p lang="no"
-                        xml:lang="no">Mangfold - no/en<br /> - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br />Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
+                    <p xml:lang="no"
+                        lang="no">Mangfold - no/en<br />(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br />Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
                     <div>
+                        <p />
                         <h1 id="statped_merknad">
-                            <span lang="no"
-                                xml:lang="no"> xxx1 Generell merknad for Statpeds leselistbøker:</span>
+                            <span xml:lang="no"
+                                lang="no">xxx1 Generell merknad for Statpeds leselistbøker:</span>
                         </h1>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">Filen har en klikkbar innholdsfortegnelse.</span>
+                            <span xml:lang="no"
+                                lang="no">Filen har en klikkbar innholdsfortegnelse.</span>
                         </p>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</span>
+                            <span xml:lang="no"
+                                lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</span>
                         </p>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">--- innleder sidetallet.</span>
+                            <span xml:lang="no"
+                                lang="no">--- innleder sidetallet.</span>
                         </p>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">Uthevingstegnet er slik: _.</span>
+                            <span xml:lang="no"
+                                lang="no">Uthevingstegnet er slik: _.</span>
                         </p>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">Eksempel: _Denne setningen er uthevet._</span>
+                            <span xml:lang="no"
+                                lang="no">Eksempel: _Denne setningen er uthevet._</span>
                         </p>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</span>
+                            <span xml:lang="no"
+                                lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</span>
                         </p>
                         <p>
-                            <span lang="no"
-                                xml:lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</span>
+                            <span xml:lang="no"
+                                lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</span>
                         </p>
                     </div>
                     <section>
@@ -831,22 +791,187 @@
                         <p>Andre kapittel.</p>
                     </section>
                     <p />
-                    <p>Ettertekst: </p>
+                    <p>Ettertekst:</p>
                     <p />
-                    <p>Kolofon: </p>
+                    <p>Kolofon:</p>
                     <p />
-                    <p>Baksidetekst: </p>
+                    <p>Baksidetekst:</p>
                     <p />
                     <p>
                         <span xml:lang="no"
-                            lang="no">Denne boka er tilrettelagt for synshemmede. Ifølge lov om opphavsrett kan den ikke brukes av andre. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.<br />Statped.</span>
+                            lang="no">Opphavsrett Statped:<br>Denne boka er tilrettelagt for elever med synssvekkelse. Ifølge lov om opphavsrett kan den ikke brukes av andre. Teksten er tilpasset for lesing med skjermleser og leselist. Kopiering er kun tillatt til eget bruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til ulovlig kopiering, kan medføre ansvar etter åndsverkloven.</br>
+                            
+                        </span>
                     </p>
                 </body>
             </html>
         </x:expect>
     </x:scenario>
 
-
+    <x:scenario label="Insert boilerplate text nynorsk">
+        <x:context>
+            <html>
+                <head>
+                    <meta charset="UTF-8"/>
+                    <title>Mangfold</title>
+                    <meta name="dc:identifier" content="562230"/>
+                    <meta name="viewport" content="width=device-width"/>
+                    <meta name="nordic:guidelines" content="2015-1"/>
+                    <meta name="nordic:supplier" content="AEL Data"/>
+                    <meta name="dc:language" content="nn"/>
+                    <meta name="dc:language" content="en"/>
+                    <meta name="dc:format" content="EPUB3"/>
+                    <meta name="dc:creator" content="Westersjø, Martin"/>
+                    <meta name="dc:creator" content="Kval, Karl-Eirik"/>
+                    <meta name="dc:creator" content="Andreassen, Odd Gunnar"/>
+                    <meta name="dc:creator" content="Henningsen, Rune"/>
+                    <meta name="dc:date" content="2018-01-13"/>
+                    <meta name="dc:publisher" content="Statped læringsressurser og teknologiutvikling"/>
+                    <meta name="schema:isbn" content="978-82-02-37172-2"/>
+                    <meta name="dc:publisher.location" content="Oslo"/>
+                    <meta name="dc:date.issued" content="2018"/>
+                    <meta name="dc:date.issued.original" content="2012"/>
+                    <meta name="schema:bookEdition.original" content="1"/>
+                    <meta name="dc:publisher.original" content="Cappelen Damm"/>
+                    <meta name="dc:source" content="urn:isbn:9788200000000"/>
+                    <meta name="schema:library" content="Statped"/>
+                    <meta name="dcterms:modified" content="2018-07-03T12:41:47+00:00"/>
+                </head>
+                <body>
+                    <section>
+                        <p>Første kapittel.</p>
+                        <div epub:type="pagebreak" title="4"/>
+                        <div epub:type="pagebreak" title="10"/>
+                        <div epub:type="pagebreak" title="298"/>
+                    </section>
+                    <section>
+                        <p>Andre kapittel.</p>
+                    </section>
+                </body>
+            </html>
+        </x:context>
+        
+    <x:expect label="boilerplate text should be inserted nynorsk">
+        <html xmlns:epub="http://www.idpf.org/2007/ops"
+            xmlns:html="http://www.w3.org/1999/xhtml"
+            xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+                <meta charset="UTF-8" />
+                <title>Mangfold</title>
+                <meta name="dc:identifier"
+                    content="562230" />
+                <meta name="viewport"
+                    content="width=device-width" />
+                <meta name="nordic:guidelines"
+                    content="2015-1" />
+                <meta name="nordic:supplier"
+                    content="AEL Data" />
+                <meta name="dc:language"
+                    content="nn" />
+                <meta name="dc:language"
+                    content="en" />
+                <meta name="dc:format"
+                    content="EPUB3" />
+                <meta name="dc:creator"
+                    content="Westersjø, Martin" />
+                <meta name="dc:creator"
+                    content="Kval, Karl-Eirik" />
+                <meta name="dc:creator"
+                    content="Andreassen, Odd Gunnar" />
+                <meta name="dc:creator"
+                    content="Henningsen, Rune" />
+                <meta name="dc:date"
+                    content="2018-01-13" />
+                <meta name="dc:publisher"
+                    content="Statped læringsressurser og teknologiutvikling" />
+                <meta name="schema:isbn"
+                    content="978-82-02-37172-2" />
+                <meta name="dc:publisher.location"
+                    content="Oslo" />
+                <meta name="dc:date.issued"
+                    content="2018" />
+                <meta name="dc:date.issued.original"
+                    content="2012" />
+                <meta name="schema:bookEdition.original"
+                    content="1" />
+                <meta name="dc:publisher.original"
+                    content="Cappelen Damm" />
+                <meta name="dc:source"
+                    content="urn:isbn:9788200000000" />
+                <meta name="schema:library"
+                    content="Statped" />
+                <meta name="dcterms:modified"
+                    content="2018-07-03T12:41:47+00:00" />
+                <style>...</style>
+            </head>
+            <body>
+                <p xml:lang="no"
+                    lang="no">Mangfold - nn/en<br />(s. 4-298) - Martin Westersjø, Karl-Eirik Kval, Odd Gunnar Andreassen og Rune Henningsen<br />Cappelen Damm - 1.utg. - ISBN: 978-82-02-37172-2</p>
+                <div>
+                    <p />
+                    <h1 id="statped_merknad">
+                        <span xml:lang="no"
+                            lang="no">xxx1 Generell merknad for Statpeds leselistbøker:</span>
+                    </h1>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Filen har en klikkbar innholdsfortegnelse.</span>
+                    </p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">xxx innleder overskrifter. Overskriftsnivået vises med tall: xxx1, xxx2 osv.</span>
+                    </p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">--- innleder sidetallet.</span>
+                    </p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Uthevingstegnet er slik: _.</span>
+                    </p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Eksempel: _Denne setningen er uthevet._</span>
+                    </p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Ordforklaringer, gloser eller stikkord finner du etter hovedteksten og eventuelle bilder.</span>
+                    </p>
+                    <p>
+                        <span xml:lang="no"
+                            lang="no">Eventuelle stikkordsregistre og kilder er utelatt. Kolofonen og baksideteksten finner du til slutt i denne filen.</span>
+                    </p>
+                </div>
+                <section>
+                    <p>Første kapittel.</p>
+                    <p />
+                    <div epub:type="pagebreak"
+                        title="4">--- 4 til 298</div>
+                    <p />
+                    <div epub:type="pagebreak"
+                        title="10">--- 10 til 298</div>
+                    <p />
+                    <div epub:type="pagebreak"
+                        title="298">--- 298 til 298</div>
+                </section>
+                <section>
+                    <p>Andre kapittel.</p>
+                </section>
+                <p />
+                <p>Ettertekst:</p>
+                <p />
+                <p>Kolofon:</p>
+                <p />
+                <p>Baksidetekst:</p>
+                <p />
+                <p>
+                    <span xml:lang="nn" lang="nn">Opphavsrett Statped:<br>Denne boka er lagd til rette for elevar med synssvekking. Ifølgje lov om opphavsrett kan ho ikkje brukast av andre. Teksten er tilpassa for lesing med skjermlesar og leselist. Kopiering er berre tillate til eige bruk. Brot på desse avtalevilkåra, slik som ulovleg kopiering eller medverknad til ulovleg kopiering, kan medføre ansvar etter åndsverklova.</br></span>
+                 </p>
+            </body>
+        </html>
+    </x:expect>
+    </x:scenario>
+    
 
  <!--   <x:scenario label="move toc to the start">
         <x:context>

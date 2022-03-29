@@ -1,4 +1,5 @@
 /config.env
+/set-env.sh
 /set-test-env.sh
 
 # test logs/results

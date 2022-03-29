@@ -13,7 +13,6 @@ from core.pipeline import Pipeline
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.filesystem import Filesystem
-from core.utils.metadata import Metadata
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -67,8 +66,6 @@ class PrepareForBraille(Pipeline):
         Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
         temp_epub = Epub(self.utils.report, temp_epubdir)
 
-        metadata = Metadata.get_metadata_from_book(self.utils.report, temp_epubdir)
-
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 
         opf_path = temp_epub.opf_path()
@@ -94,28 +91,15 @@ class PrepareForBraille(Pipeline):
         temp_html_obj = tempfile.NamedTemporaryFile()
         temp_html = temp_html_obj.name
 
-        if metadata["library"].lower() == "statped":
-            self.utils.report.info("Tilpasser innhold for punktskrift (Statped)...")
-            xslt = Xslt(self,
-                        stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBraille.uid, "prepare-for-braille.xsl"),
-                        parameters={"force-norwegian": "true"},
-                        source=html_file,
-                        target=temp_html)
-            if not xslt.success:
-                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                return False
-            shutil.copy(temp_html, html_file)
-
-        else:
-            self.utils.report.info("Tilpasser innhold for punktskrift...")
-            xslt = Xslt(self,
-                        stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBraille.uid, "prepare-for-braille.xsl"),
-                        source=html_file,
-                        target=temp_html)
-            if not xslt.success:
-                self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-                return False
-            shutil.copy(temp_html, html_file)
+        self.utils.report.info("Tilpasser innhold for punktskrift...")
+        xslt = Xslt(self,
+                    stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBraille.uid, "prepare-for-braille.xsl"),
+                    source=html_file,
+                    target=temp_html)
+        if not xslt.success:
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            return False
+        shutil.copy(temp_html, html_file)
 
         # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
 

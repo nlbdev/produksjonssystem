@@ -64,7 +64,7 @@ class PrepareForDocx(Pipeline):
         temp_epubdir_obj = tempfile.TemporaryDirectory()
         temp_epubdir = temp_epubdir_obj.name
         Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
-        temp_epub = Epub(self.utils.report, temp_epubdir)
+        temp_epub = Epub(self, temp_epubdir)
 
         # ---------- gjør tilpasninger i HTML-fila med XSLT ----------
 
