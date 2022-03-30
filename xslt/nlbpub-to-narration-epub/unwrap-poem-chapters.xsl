@@ -47,7 +47,7 @@
     </xsl:template>
     
     <xsl:template match="h1 | h2 | h3 | h4 | h5 | h6" mode="rename-hx">
-        <xsl:element name="h{min((count(ancestor::section), 6))}" exclude-result-prefixes="#all">
+        <xsl:element name="h{min((count(ancestor::section | ancestor::aside | ancestor::article), 6))}" exclude-result-prefixes="#all">
             <xsl:apply-templates select="@* | node()" mode="#current"/>
         </xsl:element>
     </xsl:template>

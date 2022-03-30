@@ -247,4 +247,77 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Regression test - sidebars getting wrong heading level">
+        <x:context>
+            <section epub:type="bodymatter part" id="level1_5">
+                <div class="page-normal" epub:type="pagebreak" id="page-9" title="9"></div>
+                <h1 id="h1_4">Del 1: Framgangsmåter</h1>
+                <section epub:type="chapter" id="level2_9">
+                    <div class="page-normal" epub:type="pagebreak" id="page-16" title="16"></div>
+                    <h2 id="h2_9">Kilder og kildekritikk</h2>
+                    <section id="level3_12">
+                        <h3 id="h3_13">Hvordan så huset ut da det var nytt?</h3>
+                        <p>I historiefaget arbeider både du som elev og en historiker med mange ulike
+                            kilder, og disse brukes i et forsøk på å rekonstruere en tid som har vært.
+                            Arbeidet kan på flere måter sammenlignes med en byggmesters arbeid med å
+                            gjenreise et gammelt byggverk. En god del byggesteiner – men langt fra alle
+                            – er bevart, det finnes ingen rettledning for hvordan byggeprosessen skal
+                            foregå, heller ikke tegninger av det originale byggverket. Med sin kjennskap
+                            til ulike byggestiler og teknikker vil byggmesteren likevel være i stand til
+                            å reise en bygning. Kombinasjonen av byggesteiner, og dermed også det
+                            ferdige resultatet, avhenger av byggmesterens tanker om hvordan den
+                            opprinnelige bygningen kan ha sett ut. Det gjenreiste byggverket vil altså
+                            ikke være en eksakt kopi av den opprinnelige, men byggmesterens tolkning av
+                            den. Dermed er det sannsynlig å tenke seg at en annen byggmester, som har
+                            gått i lære et annet sted, som er ekspert på andre teknikker og bruker andre
+                            bindemidler, ville valgt en annen løsning.</p>
+                        <aside class="sidebar ramme bg-gray" epub:type="sidebar" id="aside_4">
+                            <h4 id="h4_8">Underveisoppgaver</h4>
+                            <ul>
+                                <li>Hva tror du kan brukes som kilder for å finne ut mer om fortiden?
+                                    Hvilke kilder ville du brukt om du skulle finne ut hvordan
+                                    hjemstedet ditt var i middelalderen? Begrunn svarene.</li>
+                            </ul>
+                        </aside>
+                    </section>
+                </section>
+            </section>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <section epub:type="bodymatter part" id="level1_5">
+                <div class="page-normal" epub:type="pagebreak" id="page-9" title="9"></div>
+                <h1 id="h1_4">Del 1: Framgangsmåter</h1>
+                <section epub:type="chapter" id="level2_9">
+                    <div class="page-normal" epub:type="pagebreak" id="page-16" title="16"></div>
+                    <h2 id="h2_9">Kilder og kildekritikk</h2>
+                    <section id="level3_12">
+                        <h3 id="h3_13">Hvordan så huset ut da det var nytt?</h3>
+                        <p>I historiefaget arbeider både du som elev og en historiker med mange ulike
+                            kilder, og disse brukes i et forsøk på å rekonstruere en tid som har vært.
+                            Arbeidet kan på flere måter sammenlignes med en byggmesters arbeid med å
+                            gjenreise et gammelt byggverk. En god del byggesteiner – men langt fra alle
+                            – er bevart, det finnes ingen rettledning for hvordan byggeprosessen skal
+                            foregå, heller ikke tegninger av det originale byggverket. Med sin kjennskap
+                            til ulike byggestiler og teknikker vil byggmesteren likevel være i stand til
+                            å reise en bygning. Kombinasjonen av byggesteiner, og dermed også det
+                            ferdige resultatet, avhenger av byggmesterens tanker om hvordan den
+                            opprinnelige bygningen kan ha sett ut. Det gjenreiste byggverket vil altså
+                            ikke være en eksakt kopi av den opprinnelige, men byggmesterens tolkning av
+                            den. Dermed er det sannsynlig å tenke seg at en annen byggmester, som har
+                            gått i lære et annet sted, som er ekspert på andre teknikker og bruker andre
+                            bindemidler, ville valgt en annen løsning.</p>
+                        <aside class="sidebar ramme bg-gray" epub:type="sidebar" id="aside_4">
+                            <h4 id="h4_8">Underveisoppgaver</h4>
+                            <ul>
+                                <li>Hva tror du kan brukes som kilder for å finne ut mer om fortiden?
+                                    Hvilke kilder ville du brukt om du skulle finne ut hvordan
+                                    hjemstedet ditt var i middelalderen? Begrunn svarene.</li>
+                            </ul>
+                        </aside>
+                    </section>
+                </section>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
