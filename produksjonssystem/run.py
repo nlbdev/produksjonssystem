@@ -48,6 +48,7 @@ from nlbpub_previous import NlbpubPrevious  # noqa
 from nlbpub_to_docx import NLBpubToDocx  # noqa
 from nlbpub_to_epub import NlbpubToEpub  # noqa
 from nlbpub_to_html import NlbpubToHtml  # noqa
+from nlbpub_to_latex import NlbpubToTex # noqa
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub  # noqa
 from nlbpub_to_pef import NlbpubToPef  # noqa
 from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook  # noqa
@@ -232,6 +233,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
         self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
         self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
+        self.dirs_ranked[-1]["dirs"]["latex"] = os.path.join(book_archive_dirs["master"], "utgave-ut/LaTeX")
         self.dirs_ranked[-1]["dirs"]["epub-ebook"] = os.path.join(book_archive_dirs["share"], "daisy202/EPUB")
         self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
         self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
@@ -301,6 +303,9 @@ class Produksjonssystem():
             [PrepareForDocx(retry_missing=True,
                             check_identifiers=True,
                             during_working_hours=True),         "pub-in-ebook",        "pub-ready-docx"],
+            [NlbpubToTex(retry_missing=True,
+                         during_night_and_weekend=True,
+                         during_working_hours=True),            "pub-in-ebook",        "latex"],
             [NlbpubToEpub(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True,
@@ -403,6 +408,14 @@ class Produksjonssystem():
             "id": "e-book",
             "name": "E-bøker",
             "steps": ["insert-metadata-xhtml", "prepare-for-ebook", "nlbpub-to-epub"],
+            "filters": {
+                "libraries": ["NLB"],
+            },
+        },
+        {
+            "id": "latex",
+            "name": "E-bøker som LaTeX",
+            "steps": ["insert-metadata-xhtml", "nlbpub-to-tex"],
             "filters": {
                 "libraries": ["NLB"],
             },
