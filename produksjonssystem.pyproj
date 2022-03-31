@@ -11,9 +11,10 @@
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{789894c7-04a9-4a11-a6b5-3f4435165112};{1b580a1a-fdb3-4b32-83e1-6407eb2722e6};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Web launcher</LaunchProvider>
-    <InterpreterId />
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <PythonWsgiHandler>{StartupModule}.wsgi_app</PythonWsgiHandler>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -178,6 +179,7 @@
     <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="docs\" />
     <Folder Include="docs\mathml_to_text" />
     <Folder Include="docs\update-metadata" />
     <Folder Include="produksjonssystem" />
@@ -186,61 +188,101 @@
     <Folder Include="produksjonssystem\core\utils" />
     <Folder Include="tests" />
     <Folder Include="tests\624328" />
+    <Folder Include="tests\tools\" />
+    <Folder Include="tests\tools\xspec\" />
     <Folder Include="tests\tools\xspec\graphics" />
+    <Folder Include="tests\tools\xspec\src\" />
     <Folder Include="tests\tools\xspec\src\ant" />
     <Folder Include="tests\tools\xspec\src\reporter" />
+    <Folder Include="tests\tools\xspec\src\schematron\" />
     <Folder Include="tests\tools\xspec\src\schematron\iso-schematron" />
+    <Folder Include="tests\tools\xspec\test\" />
+    <Folder Include="tests\tools\xspec\test\end-to-end\" />
+    <Folder Include="tests\tools\xspec\test\end-to-end\cases\" />
     <Folder Include="tests\tools\xspec\test\end-to-end\cases\expected" />
+    <Folder Include="xslt\" />
+    <Folder Include="xslt\core-utils-schematron\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\classes\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\classes\com\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\classes\com\schematron\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\classes\com\schematron\ant" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\resources" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\resource" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\src\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\src\com\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\src\com\schematron\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\src\com\schematron\ant" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\test\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\test\ant" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\code\" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\code\FromSchematron\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\code\FromSchematron\9573-11-a1" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\test\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\test\crdl" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\schematron\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\schematron\code" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\" />
     <Folder Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results" />
+    <Folder Include="xslt\incoming-nordic\" />
     <Folder Include="xslt\incoming-nordic\reference-files" />
     <Folder Include="xslt\nlbpub-to-docx" />
     <Folder Include="xslt\nlbpub-to-tts-dtbook" />
     <Folder Include="xslt\prepare-for-ebook" />
   </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.9</Version>
+      <Description>env (Python 3.9 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <ProjectExtensions>
     <VisualStudio>
-    <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-    <WebProjectProperties>
-        <AutoAssignPort>True</AutoAssignPort>
-        <UseCustomServer>True</UseCustomServer>
-        <CustomServerUrl>http://localhost</CustomServerUrl>
-        <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-    </WebProjectProperties>
-    </FlavorProperties>
-    <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
-    <WebProjectProperties>
-        <StartPageUrl>
-        </StartPageUrl>
-        <StartAction>CurrentPage</StartAction>
-        <AspNetDebugging>True</AspNetDebugging>
-        <SilverlightDebugging>False</SilverlightDebugging>
-        <NativeDebugging>False</NativeDebugging>
-        <SQLDebugging>False</SQLDebugging>
-        <ExternalProgram>
-        </ExternalProgram>
-        <StartExternalURL>
-        </StartExternalURL>
-        <StartCmdLineArguments>
-        </StartCmdLineArguments>
-        <StartWorkingDirectory>
-        </StartWorkingDirectory>
-        <EnableENC>False</EnableENC>
-        <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
-    </WebProjectProperties>
-    </FlavorProperties>
-</VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <AutoAssignPort>True</AutoAssignPort>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
   </ProjectExtensions>
 </Project>
