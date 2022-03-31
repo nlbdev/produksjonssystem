@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0ab7b4a6-cf87-4b07-8fae-e5e664611e42}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile />
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{789894c7-04a9-4a11-a6b5-3f4435165112};{1b580a1a-fdb3-4b32-83e1-6407eb2722e6};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Web launcher</LaunchProvider>
+    <InterpreterId />
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
+    <PythonWsgiHandler>{StartupModule}.wsgi_app</PythonWsgiHandler>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="dashboard-demo.gif" />
+    <Content Include="dashboard.html" />
+    <Content Include="docs\update-metadata\diagram.png" />
+    <Content Include="gitkraken-pull-rebase.png" />
+    <Content Include="pylama.ini" />
+    <Content Include="requirements.txt" />
+    <Content Include="tests\624328\content.html" />
+    <Content Include="tests\624328\default.css" />
+    <Content Include="tests\624328\ncc.html" />
+    <Content Include="tests\624328\nlb.ico" />
+    <Content Include="tests\tools\xspec\graphics\3angle-down.gif" />
+    <Content Include="tests\tools\xspec\graphics\3angle-right.gif" />
+    <Content Include="tests\tools\xspec\src\ant\make-path.js" />
+    <Content Include="tests\tools\xspec\src\reporter\test-report.css" />
+    <Content Include="tests\tools\xspec\src\schematron\iso-schematron\readme.txt" />
+    <Content Include="tests\tools\xspec\src\schematron\iso-schematron\schematron-skeleton-api.htm" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\schematron-01-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xquery-tutorial-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-50-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-55-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-focus-1-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-function-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-import-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-imported-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-pending-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-rule-result-norm.html" />
+    <Content Include="tests\tools\xspec\test\end-to-end\cases\expected\xspec-three-dots-result-norm.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\classes\com\schematron\ant\package.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\allclasses-frame.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\allclasses-noframe.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use\SchematronReport.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use\SchematronResult.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use\SchematronTask.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use\SVRLHandler.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use\Validator.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use\ValidatorFactory.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\package-frame.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\package-summary.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\package-tree.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\package-use.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\SchematronReport.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\SchematronResult.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\SchematronTask.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\SVRLHandler.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\Validator.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\ValidatorFactory.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\constant-values.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\deprecated-list.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\help-doc.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-1.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-2.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-3.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-4.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-5.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-6.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-7.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-8.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files\index-9.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\overview-tree.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\resources\inherit.gif" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\stylesheet.css" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\resource\LICENSE.resolver.txt" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\resource\NOTICE-resolver.txt" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\src\com\schematron\ant\package.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\test\ant\log.txt" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\converters\code\FromSchematron\9573-11-a1\stdex.css" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\converters\test\crdl\1221748549960preview.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\schematron\code\readme.txt" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\schematron\code\schematron-skeleton-api.htm" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Additional_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Annotations_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\AttributeGroup_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Attribute_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\ComplexType_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\DataTypes_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Element_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Errata10_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Group_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\IdentityConstraint_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\ModelGroups_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Notations_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Particles_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Regex_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Schema_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\SimpleType_w3c_report.html" />
+    <Content Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results\Wildcards_w3c_report.html" />
+    <Content Include="xslt\incoming-nordic\reference-files\demobilde.jpg" />
+    <Content Include="xslt\incoming-nordic\reference-files\standardreferanse.css" />
+    <Content Include="xslt\nlbpub-to-docx\extra.css" />
+    <Content Include="xslt\nlbpub-to-tts-dtbook\KABB_logo.png" />
+    <Content Include="xslt\nlbpub-to-tts-dtbook\NLB_logo.png" />
+    <Content Include="xslt\nlbpub-to-tts-dtbook\STATPED_logo.png" />
+    <Content Include="xslt\prepare-for-ebook\ebok.css" />
+    <Content Include="xslt\prepare-for-ebook\KABB_logo.png" />
+    <Content Include="xslt\prepare-for-ebook\NLB_logo.png" />
+    <Content Include="xslt\prepare-for-ebook\STATPED_logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="docs\mathml_to_text\nlb_mathml_validator.py" />
+    <Compile Include="produksjonssystem\check_pef.py" />
+    <Compile Include="produksjonssystem\core\config.py" />
+    <Compile Include="produksjonssystem\core\directory.py" />
+    <Compile Include="produksjonssystem\core\endpoints\creativeWorks.py" />
+    <Compile Include="produksjonssystem\core\endpoints\directories.py" />
+    <Compile Include="produksjonssystem\core\endpoints\editions.py" />
+    <Compile Include="produksjonssystem\core\endpoints\health.py" />
+    <Compile Include="produksjonssystem\core\endpoints\lines.py" />
+    <Compile Include="produksjonssystem\core\endpoints\steps.py" />
+    <Compile Include="produksjonssystem\core\pipeline.py" />
+    <Compile Include="produksjonssystem\core\plotter.py" />
+    <Compile Include="produksjonssystem\core\server.py" />
+    <Compile Include="produksjonssystem\core\utils\api.py" />
+    <Compile Include="produksjonssystem\core\utils\bibliofil.py" />
+    <Compile Include="produksjonssystem\core\utils\compare_with_reference.py" />
+    <Compile Include="produksjonssystem\core\utils\daisy_pipeline.py" />
+    <Compile Include="produksjonssystem\core\utils\epub.py" />
+    <Compile Include="produksjonssystem\core\utils\epubcheck.py" />
+    <Compile Include="produksjonssystem\core\utils\filesystem.py" />
+    <Compile Include="produksjonssystem\core\utils\mathml_to_text.py" />
+    <Compile Include="produksjonssystem\core\utils\metadata.py" />
+    <Compile Include="produksjonssystem\core\utils\relaxng.py" />
+    <Compile Include="produksjonssystem\core\utils\report.py" />
+    <Compile Include="produksjonssystem\core\utils\schematron.py" />
+    <Compile Include="produksjonssystem\core\utils\slack.py" />
+    <Compile Include="produksjonssystem\core\utils\timeout_lock.py" />
+    <Compile Include="produksjonssystem\core\utils\xslt.py" />
+    <Compile Include="produksjonssystem\daisy202_to_distribution.py" />
+    <Compile Include="produksjonssystem\incoming_NLBPUB.py" />
+    <Compile Include="produksjonssystem\incoming_nordic.py" />
+    <Compile Include="produksjonssystem\insert_metadata.py" />
+    <Compile Include="produksjonssystem\make_abstracts.py" />
+    <Compile Include="produksjonssystem\newsletter.py" />
+    <Compile Include="produksjonssystem\newspaper_schibsted.py" />
+    <Compile Include="produksjonssystem\nlbpub_previous.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_docx.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_epub.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_html.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_latex.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_narration_epub.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_pef.py" />
+    <Compile Include="produksjonssystem\nlbpub_to_tts_dtbook.py" />
+    <Compile Include="produksjonssystem\nordic_dtbook_to_epub.py" />
+    <Compile Include="produksjonssystem\nordic_to_nlbpub.py" />
+    <Compile Include="produksjonssystem\prepare_for_braille.py" />
+    <Compile Include="produksjonssystem\prepare_for_docx.py" />
+    <Compile Include="produksjonssystem\prepare_for_ebook.py" />
+    <Compile Include="produksjonssystem\run.py" />
+    <Compile Include="produksjonssystem\statped_nlbpub_to_nlbpub.py" />
+    <Compile Include="produksjonssystem\__init__.py" />
+    <Compile Include="tests\restore_files.py" />
+    <Compile Include="tests\testProdsys.py" />
+    <Compile Include="tests\test_filesystem.py" />
+    <Compile Include="tests\test_pipeline.py" />
+    <Compile Include="tests\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="docs\mathml_to_text" />
+    <Folder Include="docs\update-metadata" />
+    <Folder Include="produksjonssystem" />
+    <Folder Include="produksjonssystem\core" />
+    <Folder Include="produksjonssystem\core\endpoints" />
+    <Folder Include="produksjonssystem\core\utils" />
+    <Folder Include="tests" />
+    <Folder Include="tests\624328" />
+    <Folder Include="tests\tools\xspec\graphics" />
+    <Folder Include="tests\tools\xspec\src\ant" />
+    <Folder Include="tests\tools\xspec\src\reporter" />
+    <Folder Include="tests\tools\xspec\src\schematron\iso-schematron" />
+    <Folder Include="tests\tools\xspec\test\end-to-end\cases\expected" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\classes\com\schematron\ant" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\com\schematron\ant\class-use" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\index-files" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\doc\resources" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\resource" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\code\src\com\schematron\ant" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\ant-schematron\test\ant" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\code\FromSchematron\9573-11-a1" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\converters\test\crdl" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\schematron\code" />
+    <Folder Include="xslt\core-utils-schematron\schematron\trunk\xsd2sch\results" />
+    <Folder Include="xslt\incoming-nordic\reference-files" />
+    <Folder Include="xslt\nlbpub-to-docx" />
+    <Folder Include="xslt\nlbpub-to-tts-dtbook" />
+    <Folder Include="xslt\prepare-for-ebook" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+    <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+    <WebProjectProperties>
+        <AutoAssignPort>True</AutoAssignPort>
+        <UseCustomServer>True</UseCustomServer>
+        <CustomServerUrl>http://localhost</CustomServerUrl>
+        <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+    </WebProjectProperties>
+    </FlavorProperties>
+    <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+    <WebProjectProperties>
+        <StartPageUrl>
+        </StartPageUrl>
+        <StartAction>CurrentPage</StartAction>
+        <AspNetDebugging>True</AspNetDebugging>
+        <SilverlightDebugging>False</SilverlightDebugging>
+        <NativeDebugging>False</NativeDebugging>
+        <SQLDebugging>False</SQLDebugging>
+        <ExternalProgram>
+        </ExternalProgram>
+        <StartExternalURL>
+        </StartExternalURL>
+        <StartCmdLineArguments>
+        </StartCmdLineArguments>
+        <StartWorkingDirectory>
+        </StartWorkingDirectory>
+        <EnableENC>False</EnableENC>
+        <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+    </WebProjectProperties>
+    </FlavorProperties>
+</VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -20,3 +20,6 @@ xslt/**/*-result.xml
 
 
 .vscode/settings.json
+.vs/
+env/Lib/site-packages/
+env/Scripts/
