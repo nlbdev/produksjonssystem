@@ -215,6 +215,8 @@ class NlbpubToPef(Pipeline):
             # use DAISYs version of PIP instead
             script_id = "html-to-pef"
             pipeline_and_script_version = [
+                ("1.14.6", None),
+                ("1.14.5", None),
                 ("1.14.4", "4.2.0"),
                 ("1.14.4-SNAPSHOT", "4.1.1"),
                 ("1.14.3", "4.1.1"),
