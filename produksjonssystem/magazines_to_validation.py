@@ -58,32 +58,63 @@ class MagazinesToValidation(Pipeline):
                 continue
 
             max_update_interval = 60
+            weekday = datetime.datetime.today().strftime('%A')
+            clock = datetime.datetime.today().strftime('%H%M')
             if time.time() - last_check < max_update_interval:
+                continue
+            if not ((weekday == "Monday" or weekday == "Thursday") and clock == "0700"):
                 continue
 
             last_check = time.time()
+            checked_magazines = []
             magazines = os.listdir(self.dir_in)
+            magazines.sort
             for magazine in magazines:
                 identifier = magazine[:6]
+                if len(magazine) != 12 or identifier in checked_magazines:
+                    continue
                 logging.info(f"Examining {identifier}...")
                 magazines_with_identifier = []
                 for mag in magazines:
                     if mag.startswith(identifier):
                         magazines_with_identifier.append(mag)
-                        magazines_with_identifier.sort
-                        logging.info(magazines_with_identifier)
+                checked_magazines.append(identifier)
+                logging.info(magazines_with_identifier)
+                earliest_magazine = magazines_with_identifier[0]
+                earliest_magazine_year = earliest_magazine[8:12]
+                earliest_magazine_number = earliest_magazine[6:8]
+                for magazine_with_identifier in magazines_with_identifier:
+                    edition_number = magazine_with_identifier[6:8]
+                    year = magazine_with_identifier[8:12]
+                    if year < earliest_magazine_year or year == earliest_magazine_year and edition_number < earliest_magazine_number:
+                        print(magazine_with_identifier)
+                        earliest_magazine = magazine_with_identifier
+                        earliest_magazine_number = edition_number
+                        earliest_magazine_year = year
+                logging.info(f"{earliest_magazine} vil bli overført til validering")
+                self.trigger(earliest_magazine, auto=True)
 
 
     def on_book_deleted(self):
+        self.utils.report.should_email = False
         return True
 
     def on_book_modified(self):
-        return True
+        return self.on_book()
 
     def on_book_created(self):
+        self.utils.report.should_email = False
         return True
 
     def on_book(self):
+        print(self.get_main_event(self.book))
+        if self.get_main_event(self.book) != "autotriggered":
+            return True
+        archived_path, stored = self.utils.filesystem.storeBook(self.book["source"], self.book["name"])
+        self.utils.report.attachment(None, archived_path, "DEBUG")
+        self.utils.report.info(self.book["name"] + " er overført til validering")
+        self.utils.report.title = self.title + ": " + self.book["name"] + " er overført til validering 👍😄"
+        self.utils.filesystem.deleteSource()
         return True
 
 
