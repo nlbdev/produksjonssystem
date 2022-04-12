@@ -4,16 +4,11 @@
 import datetime
 import logging
 import os
-import shutil
 import sys
-import tempfile
 import threading
 import time
 
 from core.pipeline import Pipeline
-from core.utils.daisy_pipeline import DaisyPipelineJob
-from core.utils.filesystem import Filesystem
-from core.utils.xslt import Xslt
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -115,6 +110,7 @@ class MagazinesToValidation(Pipeline):
         self.utils.report.info(self.book["name"] + " er overført til validering")
         self.utils.report.title = self.title + ": " + self.book["name"] + " er overført til validering 👍😄"
         self.utils.filesystem.deleteSource()
+        self.utils.report.info("Sletter utgave i inn mappen")
         return True
 
 
