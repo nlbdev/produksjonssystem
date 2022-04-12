@@ -41,6 +41,7 @@ from daisy202_to_distribution import Daisy202ToDistribution # noqa
 from incoming_nordic import IncomingNordic  # noqa
 from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
                              InsertMetadataXhtml)  # noqa
+from magazines_to_validation import MagazinesToValidation
 from make_abstracts import Audio_Abstract  # noqa
 from newsletter import Newsletter  # noqa
 from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted  # noqa
@@ -220,6 +221,7 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
         self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
         self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
+        self.dirs_ranked[-1]["dirs"]["pub-ready-magazine"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/tidsskrifter")
         self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
         self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-aviser-til-talesyntese")
@@ -352,10 +354,11 @@ class Produksjonssystem():
                             during_working_hours=True,
                             during_night_and_weekend=True),     "daisy202",            "abstracts"],
 
-            # lydbok distribusjon 
+            # lydbok distribusjon
             [Daisy202ToDistribution(retry_all=True,
                                     during_working_hours=True,
                                     during_night_and_weekend=True),       "daisy202-ready",            "daisy202-dist"],
+            [MagazinesToValidation(retry_missing=False),       "pub-ready-magazine",            "daisy202-ready"],
         ]
 
     # Could possibly be moved to a configuration file
