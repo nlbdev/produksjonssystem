@@ -57,7 +57,7 @@ class MagazinesToValidation(Pipeline):
             clock = datetime.datetime.today().strftime('%H%M')
             if time.time() - last_check < max_update_interval:
                 continue
-            if not ((weekday == "Monday" or weekday == "Thursday") and clock == "0700"):
+            if not ((weekday == "Monday" or weekday == "Wednesday" or weekday == "Friday") and clock == "1000"):
                 continue
 
             last_check = time.time()
