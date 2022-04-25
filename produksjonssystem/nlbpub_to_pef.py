@@ -287,6 +287,9 @@ class NlbpubToPef(Pipeline):
                 return False
 
             dp2_pef_dir = os.path.join(dp2_job.dir_output, "pef-output-dir")
+            dp2_new_pef_dir = os.path.join(dp2_job.dir_output, "output-dir")
+            if not os.path.exists(dp2_pef_dir) and os.path.exists(dp2_new_pef_dir):
+                dp2_pef_dir = dp2_new_pef_dir
 
             if not os.path.isdir(dp2_pef_dir):
                 self.utils.report.info("Finner ikke den konverterte boken.")
@@ -335,4 +338,3 @@ class NlbpubToPef(Pipeline):
 
 if __name__ == "__main__":
     NlbpubToPef().run()
-
