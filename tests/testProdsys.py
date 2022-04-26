@@ -153,10 +153,16 @@ for pipeline in prodsys.pipelines:
     if pipeline[0].uid == "newsletter-to-braille":
         pipeline[0].stop()
 
+# Don't test magazine transfer, only works at a certain time
+for pipeline in prodsys.pipelines:
+    print(pipeline[0].uid)
+    if pipeline[0].uid == "magazines-to-validation":
+        pipeline[0].stop()
+
 expect_dirs = {}
 for pipeline in prodsys.pipelines:
     if (not pipeline[0].uid in ["update-metadata", "incoming-NLBPUB", "NLBPUB-incoming-validator", "NLBPUB-incoming-warning", "NLBPUB-validator-final",
-                                "nordic-dtbook-to-epub", "nlbpub-to-pef", "check-pef"]
+                                "nordic-dtbook-to-epub", "nlbpub-to-pef", "check-pef", "magazines-to-validation"]
        and not isinstance(pipeline[0], DummyPipeline)
        and pipeline[2]):
         expect_dirs[pipeline[0].uid] = {
