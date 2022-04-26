@@ -17,9 +17,6 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 
 class MagazinesToValidation(Pipeline):
     uid = "magazines-to-validation"
-    title = "Nyhetsbrev punkt"
-    labels = ["Punktskrift"]
-    uid = "magazines-to-validation"
     title = "Tidsskrift til validering"
     labels = ["Lydbok"]
     publication_format = "DAISY 2.02"
