@@ -320,4 +320,37 @@
         </x:expect>
     </x:scenario>
     
+    <x:scenario label="Regression test - handle z3998:verse that does not have a z3998:poem">
+        <x:context>
+            <section id="level1_4" epub:type="bodymatter chapter">
+                <h1 id="h1_2">Uferdig selvportrett</h1>
+                <section epub:type="z3998:verse" class="poem" id="poem_3">
+                    <div id="linegroup_3" class="linegroup">
+                        <p class="line">Jeg tar farvel med mor, hun gir meg</p>
+                        <p class="line">en nøkkel, men det finnes</p>
+                        <p class="line">ingen nøkkel, bare hånden utstrakt</p>
+                        <p class="line">og avskjeden, et knapt hørlig</p>
+                        <p class="line">etterskjelv: en kongle lander</p>
+                        <p class="line">i en vannpytt</p>
+                        <p class="line">og det er ennå ikke høst.</p>
+                    </div>
+                </section>
+            </section>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <section id="level1_4" class="poem" epub:type="bodymatter z3998:poem">
+                <h1 id="h1_2">Uferdig selvportrett</h1>
+                <div id="linegroup_3" class="linegroup">
+                    <p class="line">Jeg tar farvel med mor, hun gir meg</p>
+                    <p class="line">en nøkkel, men det finnes</p>
+                    <p class="line">ingen nøkkel, bare hånden utstrakt</p>
+                    <p class="line">og avskjeden, et knapt hørlig</p>
+                    <p class="line">etterskjelv: en kongle lander</p>
+                    <p class="line">i en vannpytt</p>
+                    <p class="line">og det er ennå ikke høst.</p>
+                </div>
+            </section>
+        </x:expect>
+    </x:scenario>
+    
 </x:description>
