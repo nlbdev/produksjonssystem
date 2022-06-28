@@ -149,7 +149,7 @@ class NLBpubToDocx(Pipeline):
                 "--docx-page-margin-left=70",
                 "--docx-page-margin-right=56",
                 #"--language="+epub.meta('dc:language'),
-                ("--language=" + language) if language else "",
+                #("--language=" + language) if language else "",
                 "--base-font-size=13",
                 #"--remove-paragraph-spacing",
                 #"--remove-paragraph-spacing-indent-size=-1",
