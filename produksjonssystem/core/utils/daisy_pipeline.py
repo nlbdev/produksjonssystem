@@ -98,6 +98,8 @@ class DaisyPipelineJob():
                     "secret": secrets[e] if e < len(secrets) else None,
                     "local": False,
                 })
+            # try local engines last
+            DaisyPipelineJob.engines = [e for e in DaisyPipelineJob.engines if not e["local"]] + [e for e in DaisyPipelineJob.engines if e["local"]]
 
     @staticmethod
     def local_stop_engine(pipeline):
@@ -346,12 +348,15 @@ class DaisyPipelineJob():
 
                 # always start a local engine, even if we're not using it (Pipeline 2 Web UI currently depends on having it running)
                 # we should remove this when we've moved the Web UI over to using another Pipeline 2 instance.
-                local_engines = [e for e in DaisyPipelineJob.engines if e["local"]]
-                if len(local_engines) > 0 and not DaisyPipelineJob.is_alive(local_engines[0]):
+                local_engine = [e for e in DaisyPipelineJob.engines if e["local"]]
+                local_engine = local_engine[0] if len(local_engine) == 1 else None
+                if local_engine is not None and not DaisyPipelineJob.is_alive(local_engine):
                     self.local_start_engine()
 
                 (self.found_pipeline_version, self.found_script_version) = (None, None)
 
+                alive_responses = {}
+                scripts_responses = {}
                 for (pipeline_version, script_version) in self.pipeline_and_script_version:
                     if (pipeline_version, script_version) != self.pipeline_and_script_version[0]:
                         self.pipeline.utils.report.warning("Desired version of Pipeline 2 engine and version of script not found.")
@@ -359,6 +364,7 @@ class DaisyPipelineJob():
                             "Trying Pipeline 2 engine version '{}' and script version '{}' instead…".format(pipeline_version, script_version)
                         )
 
+                    engines = [engine for engine in DaisyPipelineJob.engines if not engine["local"]] + [engine for engine in DaisyPipelineJob.engines if engine["local"]]
                     for engine in DaisyPipelineJob.engines:
                         if not self.pipeline.shouldRun:
                             self.pipeline.utils.report.error("Systemet er i ferd med å slå seg av, og Pipeline 2-jobben ble derfor ikke startet.")
@@ -366,17 +372,16 @@ class DaisyPipelineJob():
                             break
 
                         if engine["local"]:
-                            has_local = True
+                            # local engines are always last in DaisyPipelineJob.engines, so at this point there are no more remote engines
+                            if self.engine is not None:
+                                break  # don't use local engine if we already have a remote engine
+                            self.pipeline.utils.report.warning("No remote version of the Pipeline 2 engine with the desired engine and script version were found.")
+                            self.pipeline.utils.report.warning("Trying local Pipeline 2 engine instead…")
 
-                        if engine["local"] and not use_local:
-                            # we're looking for remote engines: skip local engines
-                            continue
-
-                        if not engine["local"] and use_local:
-                            # we're looking for local engines: skip remote engines
-                            continue
-
-                        if not self.script_available(engine, pipeline_version=pipeline_version, script_version=script_version):
+                        script_available, engine_alive, engine_scripts = self.script_available(engine, pipeline_version=pipeline_version, script_version=script_version, alive=alive_responses.get(engine), scripts=scripts_responses.get(engine))
+                        alive_responses[engine] = engine_alive
+                        scripts_responses[engine] = engine_scripts
+                        if not script_available:
                             # desired script is not available or engine is not available: don't use this engine
                             continue
 
@@ -391,14 +396,6 @@ class DaisyPipelineJob():
 
                     if self.engine:
                         break  # if we've found an appropriate engine, don't try alternative versions
-
-                # Only start a local engine if no other engine is available
-                if not self.engine and has_local:
-                    self.pipeline.utils.report.warning("No remote version of the Pipeline 2 engine with the desired engine and script version were found.")
-                    self.pipeline.utils.report.warning("Trying local Pipeline 2 engine instead…")
-
-                    if self.local_start_engine():
-                        self.choose_engine(use_local=True)
 
                 if self.engine:
                     self.pipeline.utils.report.info("Bruker Pipeline 2-instans på: {}".format(self.engine["endpoint"]))
@@ -415,24 +412,22 @@ class DaisyPipelineJob():
                 self.pipeline.utils.report.debug("[choose_engine] could not aquire DP2 engine lock")
                 return None
 
-    def script_available(self, engine, pipeline_version, script_version):
-        alive = None
-        scripts = None
-
-        try:
-            self.pipeline.utils.report.debug(DaisyPipelineJob.encode_url(engine, "/alive", {}))
-            alive = requests.get(DaisyPipelineJob.encode_url(engine, "/alive", {}))
-            if alive.ok:
-                alive = str(alive.content, 'utf-8')
-                alive = ElementTree.XML(alive.split("?>")[-1])
-            else:
+    def script_available(self, engine, pipeline_version, script_version, alive=None, scripts=None):
+        if not alive:
+            try:
+                self.pipeline.utils.report.debug(DaisyPipelineJob.encode_url(engine, "/alive", {}))
+                alive = requests.get(DaisyPipelineJob.encode_url(engine, "/alive", {}))
+                if alive.ok:
+                    alive = str(alive.content, 'utf-8')
+                    alive = ElementTree.XML(alive.split("?>")[-1])
+                else:
+                    alive = None
+            except Exception:
                 alive = None
-        except Exception:
-            alive = None
 
-        if alive is None:
-            self.pipeline.utils.report.warning("Pipeline 2 kjører ikke på: {}".format(engine["endpoint"]))
-            return False
+            if alive is None:
+                self.pipeline.utils.report.warning("Pipeline 2 kjører ikke på: {}".format(engine["endpoint"]))
+                return False, alive, scripts
 
         # find engine version
         engine_pipeline_version = alive.attrib.get("version")
@@ -441,21 +436,22 @@ class DaisyPipelineJob():
         if pipeline_version is not None and pipeline_version != engine_pipeline_version:
             self.pipeline.utils.report.debug("Incorrect version of Pipeline 2. Looking for {} but found {}.".format(pipeline_version,
                                                                                                                     engine_pipeline_version))
-            return False
+            return False, alive, scripts
 
-        try:
-            scripts = requests.get(DaisyPipelineJob.encode_url(engine, "/scripts", {}))
-            if scripts.ok:
-                scripts = str(scripts.content, 'utf-8')
-                scripts = ElementTree.XML(scripts.split("?>")[-1])
-            else:
+        if not scripts:
+            try:
+                scripts = requests.get(DaisyPipelineJob.encode_url(engine, "/scripts", {}))
+                if scripts.ok:
+                    scripts = str(scripts.content, 'utf-8')
+                    scripts = ElementTree.XML(scripts.split("?>")[-1])
+                else:
+                    scripts = None
+            except Exception:
                 scripts = None
-        except Exception:
-            scripts = None
 
-        if scripts is None:
-            self.pipeline.utils.report.warning("Klarte ikke å hente liste over skript fra Pipeline 2 på: {}".format(engine["endpoint"]))
-            return False
+            if scripts is None:
+                self.pipeline.utils.report.warning("Klarte ikke å hente liste over skript fra Pipeline 2 på: {}".format(engine["endpoint"]))
+                return False, alive, scripts
 
         # find script
         engine_script = scripts.xpath("/d:scripts/d:script[@id='{}']".format(self.script), namespaces=DaisyPipelineJob.dp2_ws_namespace)
@@ -464,7 +460,7 @@ class DaisyPipelineJob():
         # test if script was found
         if engine_script is None:
             self.pipeline.utils.report.debug("Script not found: {}".format(self.script))
-            return False
+            return False, alive, scripts
 
         # find script version
         engine_script_version = engine_script.xpath("d:version", namespaces=DaisyPipelineJob.dp2_ws_namespace) if len(engine_script) else None
@@ -474,9 +470,9 @@ class DaisyPipelineJob():
         if script_version is not None and script_version != engine_script_version:
             self.pipeline.utils.report.debug("Incorrect version of Pipeline 2. Looking for {} but found {}.".format(script_version,
                                                                                                                     engine_script_version))
-            return False
+            return False, alive, scripts
 
-        return True
+        return True, alive, scripts
 
     def __exit__(self, exc_type, exc_value, trace):
         if self.job_id:
