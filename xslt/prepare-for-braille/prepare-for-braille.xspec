@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
                xmlns:epub="http://www.idpf.org/2007/ops"
+            
                xmlns="http://www.w3.org/1999/xhtml"
                stylesheet="prepare-for-braille.xsl">
 
@@ -152,4 +153,59 @@
             </head>>
         </x:expect>
     </x:scenario>
+    <x:scenario label="Ny ol liste med tall, med startverdi.">
+        <x:context>
+            <div>
+            <ol start="20">
+                <li>Ny ol liste med tall, med startverdi 20.</li>
+                <li>Nytt listepunkt i ny ol liste med tall med startverdi 20. Skal være nummerert som punkt 21</li>
+            </ol>
+            </div>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <div>
+            <ol start="20" style="counter-reset:list-item 19">
+                <li>Ny ol liste med tall, med startverdi 20.</li>
+                <li>Nytt listepunkt i ny ol liste med tall med startverdi 20. Skal være nummerert som punkt 21</li>
+            </ol>
+            </div>
+        </x:expect>
+    </x:scenario>
+    
+   <!-- <x:scenario label="Add marks">
+        <x:context>
+            <figure class="image"><img alt="foto" src="images/861430-001.jpg" /><aside class="prodnote" epub:type="z3998:production" id="bild_1">
+                <p>Sideoppsett i boka med foto, stikkord og margtekst.</p>
+                <ul>
+                    <li>Reflect and listen: Listen to people speaking
+                        about different topics.</li>
+                    <li>Reflect and listen: Begin to reflect upon the
+                        topics in the chapter.</li>
+                    <li>What you will learn in this chapter.</li>
+                    <li>Words to learn and to use when you work with the
+                        chapter.</li>
+                </ul>
+            </aside>
+            </figure>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <figure class="image"><img alt="foto" src="images/861430-001.jpg" /><aside class="prodnote" epub:type="z3998:production" id="bild_1">
+                <p>⠰⠄Sideoppsett i boka med foto, stikkord og margtekst.</p>
+                <ul>
+                    <li>Reflect and listen: Listen to people speaking
+                        about different topics.</li>
+                    <li>Reflect and listen: Begin to reflect upon the
+                        topics in the chapter.</li>
+                    <li>What you will learn in this chapter.</li>
+                    <li>Words to learn and to use when you work with the
+                        chapter.</li>
+                </ul>⠠⠆</aside>
+            </figure> 
+            
+          </x:expect>
+    </x:scenario>-->
+    
+    
+   
+   
 </x:description>
