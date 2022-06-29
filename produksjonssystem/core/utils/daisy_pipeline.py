@@ -377,10 +377,10 @@ class DaisyPipelineJob():
                                 break  # don't use local engine if we already have a remote engine
                             self.pipeline.utils.report.warning("No remote version of the Pipeline 2 engine with the desired engine and script version were found.")
                             self.pipeline.utils.report.warning("Trying local Pipeline 2 engine instead…")
-
-                        script_available, engine_alive, engine_scripts = self.script_available(engine, pipeline_version=pipeline_version, script_version=script_version, alive=alive_responses.get(engine), scripts=scripts_responses.get(engine))
-                        alive_responses[engine] = engine_alive
-                        scripts_responses[engine] = engine_scripts
+                        
+                        script_available, engine_alive, engine_scripts = self.script_available(engine, pipeline_version=pipeline_version, script_version=script_version, alive=alive_responses.get(engine["endpoint"]), scripts=scripts_responses.get(engine["endpoint"]))
+                        alive_responses[engine["endpoint"]] = engine_alive
+                        scripts_responses[engine["endpoint"]] = engine_scripts
                         if not script_available:
                             # desired script is not available or engine is not available: don't use this engine
                             continue
