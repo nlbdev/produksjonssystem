@@ -175,6 +175,8 @@ class DaisyPipelineJob():
                                 self.pipeline.utils.report.debug("Could not kill Pipeline 2 instance (PID: {})".format(p.pid))
                         time.sleep(1)
                         self.pipeline.utils.report.debug("Pipeline 2 processes after stopping/killing: {}".format(len(DaisyPipelineJob.local_list_processes())))
+                    else:
+                        self.pipeline.utils.report.debug("no unexpected Pipeline 2 instances found")
 
                     procs = DaisyPipelineJob.local_list_processes()
                     running = len(procs) == 1
@@ -336,7 +338,13 @@ class DaisyPipelineJob():
 
         return self
 
-    def choose_engine(self, use_local=False):
+    def choose_engine(self):
+        # always start a local engine, even if we're not using it (Pipeline 2 Web UI currently depends on having it running)
+        # we should remove this when we've moved the Web UI over to using another Pipeline 2 instance.
+        local_engines = [e for e in DaisyPipelineJob.engines if e["local"]]
+        if len(local_engines) > 0 and not DaisyPipelineJob.is_alive(local_engines[0]):
+            self.local_start_engine()
+
         self.pipeline.utils.report.debug("[choose_engine] trying to aquire DP2 engine lock")
         with DaisyPipelineJob.engine_lock.acquire_timeout(600) as locked:
             if locked:
@@ -344,14 +352,6 @@ class DaisyPipelineJob():
 
                 self.engine = None
                 min_queue_size = float('Inf')
-                has_local = False
-
-                # always start a local engine, even if we're not using it (Pipeline 2 Web UI currently depends on having it running)
-                # we should remove this when we've moved the Web UI over to using another Pipeline 2 instance.
-                local_engine = [e for e in DaisyPipelineJob.engines if e["local"]]
-                local_engine = local_engine[0] if len(local_engine) == 1 else None
-                if local_engine is not None and not DaisyPipelineJob.is_alive(local_engine):
-                    self.local_start_engine()
 
                 (self.found_pipeline_version, self.found_script_version) = (None, None)
 
@@ -383,6 +383,10 @@ class DaisyPipelineJob():
                         scripts_responses[engine] = engine_scripts
                         if not script_available:
                             # desired script is not available or engine is not available: don't use this engine
+                            continue
+
+                        if engine["local"] and self.engine:
+                            # prefer remote engines, even if they have a longer queue
                             continue
 
                         queue_size = self.get_queue_size(engine)
