@@ -1195,4 +1195,10 @@
         <map-to lang="fra">zoulou</map-to>
     </language>
     <!--   -->
+    <language lang="sme se" info="nord-samisk: nord-samisk">
+        <map-to lang="nb">nord-samisk</map-to>
+        <map-to lang="nn">nord-samisk</map-to>
+        <map-to lang="en">Northern Sami</map-to>
+        <map-to lang="fra">Sami du Nord</map-to>
+    </language>
 </languages>

@@ -55,6 +55,12 @@
                             select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                         <xsl:text> som les.</xsl:text>
                     </xsl:when>
+                    <xsl:when test="$SPRÅK.se">
+                        <xsl:text>Lea </xsl:text>
+                        <xsl:value-of
+                            select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
+                        <xsl:text> guhte lohká.</xsl:text>
+                    </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>Det er </xsl:text>
                         <xsl:value-of
@@ -154,27 +160,41 @@
                     <xsl:choose>
                         <xsl:when test="$SPRÅK.en">
                             <xsl:text>You've been listening to </xsl:text>
+                            <em>
+                                <xsl:apply-templates select="//title/child::node()"/>
+                            </em>
+                            <xsl:text>, by </xsl:text>
+                            <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
+                            <xsl:text>.</xsl:text>
                         </xsl:when>
                         <xsl:when test="$SPRÅK.nn">
                             <xsl:text>Du høyrde </xsl:text>
+                            <em>
+                                <xsl:apply-templates select="//title/child::node()"/>
+                            </em>
+                            <xsl:text>, av </xsl:text>
+                            <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
+                            <xsl:text>.</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.se">
+                            <xsl:text>Don logai </xsl:text>
+                            <em>
+                                <xsl:apply-templates select="//title/child::node()"/>
+                            </em>
+                            <xsl:text>, lea </xsl:text>
+                            <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
+                            <xsl:text>.</xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:text>Du hørte </xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <em>
-                        <xsl:apply-templates select="//title/child::node()"/>
-                    </em>
-                    <xsl:choose>
-                        <xsl:when test="$SPRÅK.en">
-                            <xsl:text>, by </xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
+                            <em>
+                                <xsl:apply-templates select="//title/child::node()"/>
+                            </em>
                             <xsl:text>, av </xsl:text>
+                            <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
+                            <xsl:text>.</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
-                    <xsl:value-of select="fnk:hent-metadata-verdi('dc:creator', false(), true())"/>
-                    <xsl:text>.</xsl:text>
                 </p>
                 <p>
                     <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
@@ -190,6 +210,12 @@
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
                             <xsl:text> som las.</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.se">
+                            <xsl:text>Lei </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:contributor.narrator', false(), true())"/>
+                            <xsl:text> guhte logai.</xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:text>Det var </xsl:text>
@@ -213,6 +239,9 @@
                     <xsl:choose>
                         <xsl:when test="$SPRÅK.en">
                             <xsl:text>The audiobook agreement</xsl:text>
+                        </xsl:when>
+                        <xsl:when test="$SPRÅK.se">
+                            <xsl:text>Jietnagirjesoahpamuš</xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:text>Lydbokavtalen</xsl:text>
@@ -256,6 +285,23 @@
                               etter åndsverklova. Slike handlingar kan også medføre tap av retten til å låne tilrettelagde bøker.</xsl:text>
                     </p>
                 </xsl:when>
+                <xsl:when test="$SPRÅK.se">
+                    <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                        <xsl:text>Dán veršuvdna lea </xsl:text>
+                        <xsl:value-of select="$library"/>
+                        <xsl:text> buvttadan jagi </xsl:text>
+                        <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
+                        <xsl:value-of select="format-date(current-date(), '[Y]')"/>
+                        <xsl:text>
+                                vuoigŋaduodjelága § 55 mielde, ja dan oažžu dušše fal priváhta
+                                atnui máŋget. Ii leat lohpi dán gahppala juohkit viiddaseabbot. Luoikkahanáigodaga loahpas galget buot
+                                digitála gáhppálagat duššaduvvot dahje máhcahuvvot buvttadeaddjái. Gahppal lea merkejuvvon nu, ahte dan
+                                sáhttá guorrat dutnje luoikkaheaddjái jus vearrut adnojuvvo. Dáid sohpamušeavttuid rihkkun sáhttá
+                                mielddisbuktit ovddasvástádusa vuoigŋaduodjelága mielde. Dakkár dagut sáhttet maid mielddisbuktit ahte
+                                vuoigatvuohta luoikkahit heivehuvvon jietnagirjjiid manahuvvo.</xsl:text>
+                    </p>
+                </xsl:when>
                 <xsl:otherwise>
                     <p>
                         <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
@@ -291,6 +337,9 @@
                 <xsl:choose>
                     <xsl:when test="$SPRÅK.en">
                         <xsl:text>About the book</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="$SPRÅK.se">
+                        <xsl:text>Girjji birra</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>Om boka</xsl:text>
@@ -591,6 +640,99 @@
                         <xsl:text> overskriftsnivå</xsl:text>
                         <xsl:if test="$STRUKTUR.har-sidetall">
                             <xsl:text> og på sidetal</xsl:text>
+                        </xsl:if>
+                        <xsl:text>.</xsl:text>
+                    </p>
+                </xsl:when>
+                <xsl:when test="$SPRÅK.se">
+                    <xsl:if
+                        test="
+                        fnk:metadata-finnes('dc:publisher.original') and
+                        fnk:metadata-finnes('dc:publisher.location.original') and
+                        fnk:metadata-finnes('dc:date.issued.original')">
+                        <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                            <xsl:text>Girjji lea almmuhan </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:publisher.original', true(), false())"/>
+                            <xsl:text>, </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:publisher.location.original', true(), false())"/>
+                            <xsl:text>, </xsl:text>
+                            <xsl:value-of
+                                select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
+                            <xsl:text>:s</xsl:text>
+                            <xsl:text>.</xsl:text>
+                        </p>
+                    </xsl:if>
+                    
+                    <xsl:if test="count($STRUKTUR.level1.typer) eq 1">
+                        <!-- Vi forutsetter at det bare er én type på nivå 1
+                            20171018-psps: Sjekke om det er greit
+                            Bør vi gjøre noe hvis det ikke er tilfelle.
+                        -->
+                        <p>
+                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                            <xsl:choose>
+                                <xsl:when
+                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
+                                    <!-- Tre nivåer, første nivå er deler -->
+                                    <xsl:text>Girjjis leat </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> oasit ja </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
+                                    <xsl:text> kapihtal mas lea oassekapihtal.</xsl:text>
+                                    
+                                </xsl:when>
+                                <xsl:when
+                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2">
+                                    <!-- To nivåer, første nivå er deler -->
+                                    <xsl:text>Girjjis leat </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> oasit ja </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
+                                    <xsl:text> oassekapihtal.</xsl:text>
+                                    
+                                </xsl:when>
+                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part')">
+                                    <!-- Bare ett nivå, første nivå er deler -->
+                                    <xsl:text>Girjjis leat </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> oasit.</xsl:text>
+                                </xsl:when>
+                                <xsl:when
+                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter') and $STRUKTUR.level2">
+                                    <!-- To (eller flere) nivåer, første nivå er kapitler -->
+                                    <xsl:text>Girjjis leat </xsl:text>
+                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                    <xsl:text> kapihtal mas lea oassekapihtal.</xsl:text>
+                                </xsl:when>
+                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
+                                    <!-- Bare ett nivå, første nivå er kapitler -->
+                                    <xsl:text>Girjjis leat </xsl:text>
+                                    <xsl:choose>
+                                        <xsl:when test="count($STRUKTUR.level1) eq 1">
+                                            <xsl:text>okta kapihtal.</xsl:text>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
+                                            <xsl:text> kapihttalat.</xsl:text>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:when>
+                            </xsl:choose>
+                        </p>
+                    </xsl:if>
+                    
+                    <p>
+                        <xsl:text>Dát lea jietnagirji mas lea teaksta. </xsl:text>
+                        <xsl:text>Lea vejolaš ohcat sániid bokte teavsttas. </xsl:text>
+                        <xsl:text>Lea vejolaš navigeret jietnagirjjis okta </xsl:text>
+                        <xsl:value-of
+                            select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
+                        <xsl:text> bajilčáladási siskkobealde</xsl:text>
+                        <xsl:if test="$STRUKTUR.har-sidetall">
+                            <xsl:text>, ja vel siidologuid mielde</xsl:text>
                         </xsl:if>
                         <xsl:text>.</xsl:text>
                     </p>
