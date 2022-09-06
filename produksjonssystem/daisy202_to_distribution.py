@@ -364,7 +364,7 @@ class Daisy202ToDistribution(Pipeline):
                     file_size = os.path.getsize(audio_file)
                     if file_size >= 102400 and file_size <= 8388608:
                         small_file = True
-                    if file_size >= 104857600:
+                    if file_size >= 209715200:
                         self.utils.report.error(f"Boka {edition_identifier} har en lydfil ({file_book}) som er større enn 100MB")
                         return False
 
