@@ -5,7 +5,8 @@ Some of these systems are developed by NLB. They are meant for our production en
 
 Others are developed by other organizations.
 
-Projects in this list should run in Docker, and have a RESTful API.
+Projects in this list should run in Docker, and have a RESTful API. Or at least have a plan to do so.
+
 
 ## Validation of nordic EPUBs
 
@@ -19,7 +20,7 @@ See also:
 - [nlbdev/incoming-nordic](https://github.com/nlbdev/incoming-nordic) - NLBs wrapper around the validator for NLBs production system
 
 
-## Accessibility Checker for Epub by Daisy
+## Ace: Accessibility Checker for Epub by Daisy
 
 Project: [daisy/ace](https://github.com/daisy/ace) - Official repository
 
@@ -27,6 +28,15 @@ See also:
 
 - [daisy/ace#373](https://github.com/daisy/ace/pull/373) - PR to be able to run the official version of Ace as a microservice
 - [nlbdev/daisy-ace](https://github.com/nlbdev/daisy-ace) - NLBs wrapper for running Ace as a microservice
+
+
+## Epubcheck: EPUB validator
+
+Project: [https://github.com/w3c/epubcheck](https://github.com/w3c/epubcheck)
+
+See also:
+
+- [w3c/epubcheck#1127](https://github.com/w3c/epubcheck/pull/1127) - PR to be able to build a Docker image, but still missing a REST API
 
 
 ## Talking book checker
