@@ -29,6 +29,11 @@ See also:
 - [nlbdev/daisy-ace](https://github.com/nlbdev/daisy-ace) - NLBs wrapper for running Ace as a microservice
 
 
+## Talking book checker
+
+Project: [mtmse/talking-book-checker](https://github.com/mtmse/talking-book-checker) - MTMs project for finding non-technical errors in narrated books
+
+
 ## Running XSLTs
 
 Project: [service-saxon](https://github.com/nlbdev/service-saxon) - A microservice to run XSLTs
