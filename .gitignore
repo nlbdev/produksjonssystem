@@ -20,3 +20,7 @@ xslt/**/*-result.xml
 
 
 .vscode/settings.json
+
+.vs/
+
+env/
