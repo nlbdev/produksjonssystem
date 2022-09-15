@@ -108,15 +108,16 @@ def getDirectoryEdition(directory_id, edition_id, force_update, method):
     if not path:
         return "", 404
 
-    book_path = None
-    if path in Directory.dirs:
-        names = list(Directory.dirs[path]._md5.keys())
-        for name in names:
-            if Path(name).stem == edition_id:
-                book_path = os.path.join(path, name)
-                break
+    book_path = os.path.join(path, edition_id)
+    if not os.path.exists(book_path):
+        if path in Directory.dirs:
+            names = list(Directory.dirs[path]._md5.keys())
+            for name in names:
+                if Path(name).stem == edition_id:
+                    book_path = os.path.join(path, name)
+                    break
 
-    if not book_path:
+    if not book_path or not os.path.exists(book_path):
         return "", 404
 
     if method == "HEAD":
