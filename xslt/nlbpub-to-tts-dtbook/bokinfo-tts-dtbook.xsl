@@ -34,7 +34,7 @@
         <xsl:variable name="narrators" select="ancestor::html/head/meta[@name='dc:contributor.narrator']/string(@content)" as="xs:string*"/>
         <xsl:variable name="narrators" as="xs:string*">
             <xsl:for-each select="$narrators">
-                <xsl:if test="boolean($narrators) and $narrators != 'Talesyntese'">
+                <xsl:if test="boolean(.) and $narrators != 'Talesyntese'">
                     <xsl:sequence select="tokenize(., '\s+')[1]"></xsl:sequence>
                 </xsl:if>
             </xsl:for-each>
