@@ -238,7 +238,12 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["docx"] = os.path.join(book_archive_dirs["master"], "utgave-ut/DOCX")
         self.dirs_ranked[-1]["dirs"]["daisy202"] = os.path.join(book_archive_dirs["share"], "daisy202")
         self.dirs_ranked[-1]["dirs"]["abstracts"] = os.path.join(book_archive_dirs["distribution"], "www/abstracts")
-        self.dirs_ranked[-1]["dirs"]["daisy202-ready"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering")  # deprecated
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready-narrated"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering-innlest")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready-tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering-TTS")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready-external"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering-eksterne")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready-kabb"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering-Kabb")
+        self.dirs_ranked[-1]["dirs"]["daisy202-ready-statped"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/lydbok-til-validering-Statped")
         self.dirs_ranked[-1]["dirs"]["daisy202-dist"] = os.path.join(book_archive_dirs["share"], "daisy202")
 
         # Make a key/value version of dirs_ranked for convenience
@@ -354,10 +359,30 @@ class Produksjonssystem():
                             during_working_hours=True,
                             during_night_and_weekend=True),     "daisy202",            "abstracts"],
 
-            # lydbok distribusjon
+            # lydbok-distribusjon
             [Daisy202ToDistribution(retry_all=True,
                                     during_working_hours=True,
                                     during_night_and_weekend=True),       "daisy202-ready",            "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-narrated",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-narrated",   "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-tts",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-tts",        "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-external",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-external",   "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-kabb",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-kabb",       "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-statped",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-statped",    "daisy202-dist"],
             [MagazinesToValidation(retry_missing=False),       "pub-ready-magazine",            "daisy202-ready"],
         ]
 
@@ -371,12 +396,17 @@ class Produksjonssystem():
         {
             "id": "narration",
             "name": "Innlesing",
-            "steps": ["insert-metadata-daisy202", "nlbpub-to-narration-epub", "dummy_innlesingmedhindenburg", "create-abstracts", "daisy202-to-distribution"],
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-narration-epub", "dummy_innlesingmedhindenburg", "create-abstracts", "daisy202-to-distribution-narrated"],
+        },
+        {
+            "id": "narration-external",
+            "name": "Ekstern innlesing",
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-narration-epub", "dummy_innlesingmedhindenburg", "create-abstracts", "daisy202-to-distribution-external"],
         },
         {
             "id": "tts",
             "name": "Talesyntese",
-            "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts", "daisy202-to-distribution"],
+            "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts", "daisy202-to-distribution-tts"],
             "filters": {
                 "libraries": ["NLB"],
             },

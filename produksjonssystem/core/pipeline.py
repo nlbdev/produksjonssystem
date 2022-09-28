@@ -118,14 +118,14 @@ class Pipeline():
                  during_working_hours=None,
                  during_night_and_weekend=None,
                  only_when_idle=None,
-                 _uid=None,
+                 uid=None,
                  _gid=None,
                  _title=None,
                  _group_title=None):
 
         # Parameters starting with underscore are only meant to be used in tests.
-        if _uid:
-            self.uid = _uid
+        if uid:
+            self.uid = uid
         if _gid:
             self.gid = _gid
         if _title:
