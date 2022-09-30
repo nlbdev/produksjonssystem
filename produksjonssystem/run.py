@@ -169,7 +169,8 @@ class Produksjonssystem():
         })
         # self.dirs_ranked[-1]["dirs"]["incoming_NLBPUB"] = os.path.join(book_archive_dirs["master"], "innkommende/NLBPUB")
         # self.dirs_ranked[-1]["dirs"]["nlbpub_manuell"] = os.path.join(book_archive_dirs["master"], "mottakskontroll/NLBPUB")
-        self.dirs_ranked[-1]["dirs"]["incoming"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
+        self.dirs_ranked[-1]["dirs"]["incoming-nlb"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk-NLB")
+        self.dirs_ranked[-1]["dirs"]["incoming-statped"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk")
         # self.dirs_ranked[-1]["dirs"]["incoming-for-approval"] = os.path.join(book_archive_dirs["master"], "innkommende/nordisk-manuell-mottakskontroll")
         self.dirs_ranked[-1]["dirs"]["old_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/DTBook")
         self.dirs_ranked[-1]["dirs"]["incoming-statped-nlbpub"] = os.path.join(book_archive_dirs["master"], "innkommende/statped-nlbpub")
@@ -280,9 +281,14 @@ class Produksjonssystem():
             #                labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
             #  [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
 
-            [IncomingNordic(retry_all=True,
+            [IncomingNordic(uid="incoming-nordic-nlb",
+                            retry_all=True,
                             during_working_hours=True,
-                            during_night_and_weekend=True),       "incoming",            "master"],
+                            during_night_and_weekend=True),       "incoming-nlb",     "master"],
+            [IncomingNordic(uid="incoming-nordic-statped",
+                            retry_all=True,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),       "incoming-statped", "master"],
             [NordicToNlbpub(retry_missing=True,
                             overwrite=False,
                             during_working_hours=True,
@@ -390,7 +396,12 @@ class Produksjonssystem():
     production_lines = [
         {
             "id": "epub",
-            "name": "Bestilling og mottak av EPUB",
+            "name": "Bestilling og mottak av EPUB for NLB",
+            "steps": ["incoming-nordic-NLB", "dummy_manuellmottakskontroll", "nordic-epub-to-nlbpub"],
+        },
+        {
+            "id": "epub",
+            "name": "Bestilling og mottak av EPUB for Statped",
             "steps": ["incoming-nordic", "dummy_manuellmottakskontroll", "nordic-epub-to-nlbpub"],
         },
         {

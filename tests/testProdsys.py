@@ -124,18 +124,29 @@ audio_identifier = "210022"
 news_identifier = "611823190315"
 identifiers = ["558237", "115437", "221437", "370001", "406837", audio_identifier, news_identifier]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
-copyfile(file_path, os.path.join(prodsys.dirs["incoming"], os.path.basename(file_path)))
+copyfile(file_path, os.path.join(prodsys.dirs["incoming-nlb"], os.path.basename(file_path)))
 
 audio_path = os.path.join(os.path.dirname(__file__), audio_identifier)
-copytree(audio_path, os.path.join(book_archive_dirs["share"], "daisy202", audio_identifier))
+copytree(audio_path, os.path.join(prodsys.dirs["daisy202-ready-narrated"], audio_identifier))
 
 news_path = os.path.join(project_root, "xslt", "newspaper-schibsted", "test-resources", "join")
 copytree(news_path, os.path.join(prodsys.dirs["news"], "2019-03-15"))
+
+# TODO: currently no good way of testing where there are multiple pipelines targeting
+#       the same directory. Skip for now
+for pipeline in prodsys.pipelines:
+    if pipeline[0].uid in ["incoming-statped", "daisy202-ready", "daisy202-ready-tts", "daisy202-ready-external", "daisy202-ready-kabb", "daisy202-ready-statped"]:
+        pipeline[0].stop()
 
 # TODO: Make testing of incoming NLBPUB production line work
 #       For now, they are disabled during testing.
 for pipeline in prodsys.pipelines:
     if pipeline[0].uid in ["incoming-NLBPUB", "NLBPUB-incoming-validator", "NLBPUB-incoming-warning", "NLBPUB-validator-final"]:
+        pipeline[0].stop()
+
+# TODO: testing of master NLBPUBs received over FTP from Statped is not implemented, so we disable it for now
+for pipeline in prodsys.pipelines:
+    if pipeline[0].uid in ["incoming-statped-nlbpub"]:
         pipeline[0].stop()
 
 # TODO: disable testing of PEF production until braille script is improved
