@@ -417,7 +417,7 @@ class DaisyPipelineJob():
                 return None
 
     def script_available(self, engine, pipeline_version, script_version, alive=None, scripts=None):
-        if not alive:
+        if alive is None:
             try:
                 self.pipeline.utils.report.debug(DaisyPipelineJob.encode_url(engine, "/alive", {}))
                 alive = requests.get(DaisyPipelineJob.encode_url(engine, "/alive", {}))
