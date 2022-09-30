@@ -119,8 +119,8 @@ class Pipeline():
                  during_night_and_weekend=None,
                  only_when_idle=None,
                  uid=None,
+                 title=None,
                  _gid=None,
-                 _title=None,
                  _group_title=None):
 
         # Parameters starting with underscore are only meant to be used in tests.
@@ -128,8 +128,8 @@ class Pipeline():
             self.uid = uid
         if _gid:
             self.gid = _gid
-        if _title:
-            self.title = _title
+        if title:
+            self.title = title
         if _group_title:
             self.group_title = _group_title
 
