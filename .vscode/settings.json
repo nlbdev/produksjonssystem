@@ -1,4 +1,4 @@
 {
-    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.defaultInterpreterPath": "/usr/bin/python3.7",
     "python.linting.pylamaEnabled": true
 }

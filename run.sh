@@ -10,4 +10,4 @@ if [ ! -d "prodsys-virtualenv" ]; then
 fi
 source prodsys-virtualenv/bin/activate
 
-python -m unittest tests.testProdsys.py "$@"
+python produksjonssystem/run.py "$@"

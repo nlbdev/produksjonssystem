@@ -86,11 +86,16 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
-    - `sudo apt install python3.8 python3-pip python3-dev python3-apt`
+    - `sudo apt install software-properties-common -y`
+    - `sudo add-apt-repository ppa:deadsnakes/ppa -y`
+    - `sudo apt update`
+    - `sudo apt install python3.7 python3.7-distutils python3.7-dev python3-pip python3-apt`
     - `sudo apt install graphviz`  # for plotting
     - `sudo apt install ffmpeg libavcodec-extra`  # for lydutdrag
     - `sudo apt install libxml2-dev libxslt1-dev`  # for lxml i Python
-    - `pip3 install -r requirements.txt`
+    - `pip install virtualenv`  # for å kjøre produksjonssystemet med Python 3.7 på nyere PCer
+    - `source prodsys-virtualenv/bin/activate`  # for å bytte til Python 3.7
+    - `pip install -r requirements.txt`
 
 - konfigurer Slack
     - I `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh), sett miljøvariabelen `SLACK_BOT_TOKEN`. Se "Slack bot" i LastPass.
@@ -112,7 +117,7 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
   - sett miljøvariabler i terminalen for testing: `source set-test-env.sh` (hvis du vil så kan du legge til dette i `.bashrc`, så slipper du å skrive det hver gang)
     - `set-test-env.sh` definerer blant annet at bokarkivet skal ligge i en midlertidig mappe kalt `/tmp/book-archive`.
       En liste med lenke til dashboard'et samt bokarkiv-mappene som brukes, vises i terminalvinduet når man starter produksjonssystemet.
-  - start systemet: `./produksjonssystem/run.py`
+  - start systemet: `./run.sh`
   - stopp systemet: CTRL+C eller `touch /tmp/trigger-produksjonssystem/stop`
 
 ## Endre innstillinger for e-postvarsling
