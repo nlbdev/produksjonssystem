@@ -5,6 +5,7 @@ Flask
 graphviz
 lxml
 Markdown
+mutagen
 psutil
 pybrake
 pydub
@@ -14,5 +15,4 @@ PyYAML
 requests
 requests_toolbelt
 slackclient
-mutagen
 Werkzeug
