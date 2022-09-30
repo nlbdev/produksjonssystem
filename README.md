@@ -56,6 +56,10 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
     - Ekstern(e) instans(er) (kjørende på annen PC/server):
         - Sett opp `REMOTE_PIPELINE2_WS_*`-miljøvariablene. Se `set-test-env.sh.example` for eksempel.
 
+- installer DAISY Pipeline 1
+    - Last ned "Pipeline 1 Command Line Tool" via https://daisy.org/activities/software/pipeline-1/download-and-installation-2/
+    - Unzip som /opt/pipeline1 (eller sett `PIPELINE1_HOME` om du vil ha den et annet sted)
+
 - installer ACE:
     - `sudo apt-get install -y build-essential`
     - `curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -`
