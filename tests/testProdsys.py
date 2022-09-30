@@ -76,7 +76,7 @@ environment = {
         "news={}/prodsys-news".format(target_path)
     ]),  # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
-    "REPORTS_DIR": "/tmp/prodsys-rapporter",  # always the same, so that it's easier to view the dashboard(s)
+    "REPORTS_DIR": "{}/prodsys-rapporter".format(target_path),
     "DEBUG": "true",
     "CONFIG_FILE": os.path.join(os.path.dirname(__file__), "produksjonssystem.yaml"),
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
