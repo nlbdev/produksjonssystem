@@ -57,54 +57,39 @@
         </xsl:choose>
     </xsl:template>
 
-
-
-<xsl:template match="//meta[@name='dc:language']/@content">
-    <xsl:choose>
-        <xsl:when test=". = ('nb', 'nn', 'en', 'de', 'fr', 'es')">
-            <xsl:attribute name="{name()}" select="'no'" exclude-result-prefixes="#all"/>
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:copy-of select="." exclude-result-prefixes="#all"/>
-        </xsl:otherwise>
-    </xsl:choose>
-</xsl:template>
+    <xsl:template match="//meta[@name='dc:language']/@content">
+        <xsl:choose>
+            <xsl:when test=". = ('nb', 'nn', 'en', 'de', 'fr', 'es')">
+                <xsl:attribute name="{name()}" select="'no'" exclude-result-prefixes="#all"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy-of select="." exclude-result-prefixes="#all"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
     
-  <xsl:template match="ol[@start]">
-      <!-- <xsl:template match="li[descendant::ol[@start]]" >-->
-     <xsl:variable name="startFrom1" as="xs:integer" select="@start" />
-      <xsl:variable name="startFrom" as="xs:integer" select="$startFrom1 - 1" />
-  <!--  <xsl:element name="ol">
-     <xsl:attribute name="start" select="@start"/>
-     <xsl:attribute name="style" select="concat('counter-reset:list-item ', $startFrom)"/>
-     </xsl:element>-->
+    <xsl:template match="ol[@start]">
+        <!-- <xsl:template match="li[descendant::ol[@start]]" >-->
+        <xsl:variable name="startFrom1" as="xs:integer" select="@start" />
+        <xsl:variable name="startFrom" as="xs:integer" select="$startFrom1 - 1" />
+        <!--<xsl:element name="ol">
+            <xsl:attribute name="start" select="@start"/>
+            <xsl:attribute name="style" select="concat('counter-reset:list-item ', $startFrom)"/>
+        </xsl:element>-->
         <xsl:copy>
-        <xsl:attribute name="start" select="@start"/>
-        <xsl:attribute name="style" select="concat('counter-reset:list-item ', $startFrom)"/>
-      
-        
-          <xsl:apply-templates select="node()"/>
-        </xsl:copy>
- </xsl:template>
-    
-    
-    <!-- <xsl:template match="figure[f:classes(.) = 'image']/aside">
-        
-                <xsl:text>⠰⠄</xsl:text>
+            <xsl:attribute name="start" select="@start"/>
+            <xsl:attribute name="style" select="concat('counter-reset:list-item ', $startFrom)"/>
             <xsl:apply-templates select="node()"/>
-                <xsl:text>⠠⠆</xsl:text>
-        
-    </xsl:template> -->
+        </xsl:copy>
+    </xsl:template>
     
-    <xsl:function name="f:types">
-        <xsl:param name="element" as="element()"/>
-        <xsl:sequence select="tokenize($element/@epub:type, '\s+')"/>
-    </xsl:function>
-    <xsl:function name="f:classes">
-        <xsl:param name="element" as="element()"/>
-        <xsl:sequence select="tokenize($element/@class, '\s+')"/>
-    </xsl:function>
-  <!--  <xsl:template match="li" >
+    <!--<xsl:template match="figure[f:classes(.) = 'image']/aside">
+        <xsl:text>⠰⠄</xsl:text>
+        <xsl:apply-templates select="node()"/>
+        <xsl:text>⠠⠆</xsl:text>
+    </xsl:template>--> 
+    
+    <!--<xsl:template match="li" >
         <li>
             <xsl:for-each-group select="node()" group-adjacent="boolean(self::ol)">
                 <xsl:choose>
@@ -112,13 +97,21 @@
                         <xsl:apply-templates select="current-group() "/>
                     </xsl:when>
                     <xsl:otherwise>
-                        
-                            <xsl:apply-templates select="current-group() "/>
-                        
+                        <xsl:apply-templates select="current-group() "/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each-group>
         </li>
     </xsl:template>-->
+    
+    <xsl:function name="f:types">
+        <xsl:param name="element" as="element()"/>
+        <xsl:sequence select="tokenize($element/@epub:type, '\s+')"/>
+    </xsl:function>
+    
+    <xsl:function name="f:classes">
+        <xsl:param name="element" as="element()"/>
+        <xsl:sequence select="tokenize($element/@class, '\s+')"/>
+    </xsl:function>
     
 </xsl:stylesheet>
