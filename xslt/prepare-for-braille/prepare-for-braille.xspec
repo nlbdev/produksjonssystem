@@ -205,7 +205,34 @@
           </x:expect>
     </x:scenario>-->
     
-    
+    <x:scenario label="replace MathML with alttext, which should contain AsciiMath">
+        <x:context>
+            <div>
+                <p>Eksempel: Oppgave nr. 2 s. 2, første kolonne.</p>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" altimg="images/math-001.jpg" alttext="6+1 =" display="block" id="a">
+                    <m:semantics><m:mrow><m:mrow><m:mn>6</m:mn><m:mo>+</m:mo><m:mn>1</m:mn><m:mo>=</m:mo></m:mrow></m:mrow></m:semantics>
+                </m:math>
+                <ol class="list-style-type-none" style="list-style-type: none;">
+                    <li><strong>1</strong> <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" altimg="images/math-002.jpg" alttext="10+1 = ..." display="inline" class="test">
+                        <m:semantics><m:mrow><m:mrow><m:mn>10</m:mn><m:mo>+</m:mo><m:mn>1</m:mn><m:mo>=</m:mo><m:mo>…</m:mo></m:mrow></m:mrow></m:semantics>
+                    </m:math></li>
+                    <li><strong>2</strong> <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" altimg="images/math-003.jpg" alttext="6+1 = ..." display="inline" id="c">
+                        <m:semantics><m:mrow><m:mn>6</m:mn><m:mo>+</m:mo><m:mn>1</m:mn><m:mo>=</m:mo><m:mo>…</m:mo></m:mrow></m:semantics>
+                    </m:math></li>
+                </ol>
+            </div>
+        </x:context>
+        <x:expect label="the result should be as expected">
+            <div>
+                <p>Eksempel: Oppgave nr. 2 s. 2, første kolonne.</p>
+                <p id="a" class="asciimath">6+1 =</p>
+                <ol class="list-style-type-none" style="list-style-type: none;">
+                    <li><strong>1</strong> <span class="test asciimath">10+1 = ...</span></li>
+                    <li><strong>2</strong> <span id="c" class="asciimath">6+1 = ...</span></li>
+                </ol>
+            </div>
+        </x:expect>
+    </x:scenario>
    
    
 </x:description>

@@ -104,6 +104,15 @@
         </li>
     </xsl:template>-->
     
+    <!-- Replace MathML with its alttext, which contains Asciimath -->
+    <xsl:template match="*[local-name()='math']">
+        <xsl:element name="{if (@display='block') then 'p' else 'span'}">
+            <xsl:apply-templates select="@id"/>
+            <xsl:attribute name="class" select="string-join((f:classes(.), 'asciimath'), ' ')"/>
+            <xsl:value-of select="@alttext"/>
+        </xsl:element>
+    </xsl:template>
+    
     <xsl:function name="f:types">
         <xsl:param name="element" as="element()"/>
         <xsl:sequence select="tokenize($element/@epub:type, '\s+')"/>
