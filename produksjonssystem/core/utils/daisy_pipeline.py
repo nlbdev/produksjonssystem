@@ -316,6 +316,10 @@ class DaisyPipelineJob():
                     pass  # Nothing we can do
 
                 else:
+                    # get job messages
+                    self.pipeline.utils.report.debug("Getting job messages")
+                    self.pipeline.utils.report.info(self.get_messages())
+                    
                     # get job log (the run method will log stdout/stderr as debug output)
                     self.pipeline.utils.report.debug("Getting job log")
                     self.pipeline.utils.report.debug(self.get_log())
@@ -656,10 +660,19 @@ class DaisyPipelineJob():
                 self.pipeline.utils.report.debug("[delete_job] could not aquire DP2 engine lock")
                 return False
 
+    def get_messages(self):
+        url = DaisyPipelineJob.encode_url(self.engine, "/jobs/{}".format(self.job_id), {})
+        response = requests.get(url)
+        messages = response.text.split("<message ")[1:]
+        if messages:
+            messages[-1] = messages[-1].split("</")[0]
+        messages = [re.sub(r".*content=\"(.*?)\".*", r"\1", message) for message in messages]
+        return "\n".join(messages)
+    
     def get_log(self):
         url = DaisyPipelineJob.encode_url(self.engine, "/jobs/{}/log".format(self.job_id), {})
         response = requests.get(url)
-        return str(response.content, 'utf-8')
+        return response.text
 
     def get_results(self):
         result_obj = tempfile.NamedTemporaryFile(prefix="daisy-pipeline-results-", suffix=".zip")
