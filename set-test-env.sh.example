@@ -19,8 +19,9 @@ export MAIL_FILESIZE=
 export MAIL_ABKLAR=
 export ALLOWED_EMAIL_ADDRESSES_IN_TEST=  # comma separated list of e-mails
 
-export BOOK_ARCHIVE_DIRS="master=/tmp/book-archive share=/tmp/book-archive-share distribution=/tmp/book-archive-distribution news=/tmp/book-archive-news"
-export TRIGGER_DIR="/tmp/trigger-produksjonssystem"
+export BOOK_ARCHIVE_DIRS="master=$DIR/target/system/prodsys-archive share=$DIR/target/system/prodsys-daisy202 distribution=$DIR/target/system/prodsys-distribution news=$DIR/target/system/prodsys-news"
+export TRIGGER_DIR="$DIR/target/system/prodsys-trigger"
+export REPORTS_DIR="$DIR/target/system/prodsys-rapporter"
 
 if [ -f "$HOME/Desktop/produksjonssystem.yaml" ]; then
     export CONFIG_FILE="$HOME/Desktop/produksjonssystem.yaml"
