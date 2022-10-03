@@ -339,7 +339,7 @@ class Produksjonssystem():
             [NlbpubToPef(retry_missing=True,
                          check_identifiers=True,
                          during_working_hours=True),            "pub-ready-braille",   "pef"],
-            [NlbpubToPefDaisyPip(retry_missing=True,
+            [NlbpubToPefDaisyPip(retry_missing=False,
                                  check_identifiers=True,
                                  during_working_hours=True,
                                  during_night_and_weekend=True), "pub-ready-braille",  "pef-daisy-pip"],
