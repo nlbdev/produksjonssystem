@@ -318,7 +318,7 @@ class NlbpubToPefDaisyPip(NlbpubToPef):
 
         # 3. NLB: Add table classes based on the dimensions of the table, for better handling of tables
         # NLB: "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/add-table-classes.xsl",
-        self.utils.report.info("Preprosessering: bedre hefteinndeling, fjerner tittelside, og lignende")
+        self.utils.report.info("Preprosessering: bedre håndtering av tabeller")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToPef.uid, "add-table-classes.xsl"),
                     source=html_file,
@@ -332,7 +332,7 @@ class NlbpubToPefDaisyPip(NlbpubToPef):
         # NOTE: if we really need different title pages for Statped and NLB, we can check metadata["library"] to pick the right one
         # NLB: "https://raw.githubusercontent.com/nlbdev/pipeline/nlb/nlb/book-to-pef/src/main/resources/xml/insert-boilerplate.xsl",
         # Statped: "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/src/xslt/insert-boilerplate.xsl",
-        self.utils.report.info("Preprosessering: bedre hefteinndeling, fjerner tittelside, og lignende")
+        self.utils.report.info("Preprosessering: lag ny tittelside og om boka-side")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, NlbpubToPef.uid, "insert-boilerplate.xsl"),
                     source=html_file,
