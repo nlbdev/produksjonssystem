@@ -50,7 +50,7 @@ from nlbpub_to_docx import NLBpubToDocx  # noqa
 from nlbpub_to_epub import NlbpubToEpub  # noqa
 from nlbpub_to_html import NlbpubToHtml  # noqa
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub  # noqa
-from nlbpub_to_pef import NlbpubToPef, NlbpubToPefDaisyPip  # noqa
+from nlbpub_to_pef import NlbpubToPef  # noqa
 from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook  # noqa
 # from nordic_dtbook_to_epub import NordicDTBookToEpub  # noqa
 from nordic_to_nlbpub import NordicToNlbpub  # noqa
@@ -233,7 +233,6 @@ class Produksjonssystem():
             "dirs": OrderedDict()
         })
         self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
-        self.dirs_ranked[-1]["dirs"]["pef-daisy-pip"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-DAISY-PIP")
         self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
         self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
         self.dirs_ranked[-1]["dirs"]["epub-ebook"] = os.path.join(book_archive_dirs["share"], "daisy202/EPUB")
@@ -339,10 +338,6 @@ class Produksjonssystem():
             [NlbpubToPef(retry_missing=True,
                          check_identifiers=True,
                          during_working_hours=True),            "pub-ready-braille",   "pef"],
-            [NlbpubToPefDaisyPip(retry_missing=True,
-                                 check_identifiers=True,
-                                 during_working_hours=True,
-                                 during_night_and_weekend=True), "pub-ready-braille",  "pef-daisy-pip"],
             # [CheckPef(),                                        "pef",                 "pef-checked"],
 
             # innlest lydbok
