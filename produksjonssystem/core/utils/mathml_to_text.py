@@ -227,7 +227,7 @@ class Mathml_validator():
 
     def inline_or_block(self, element, parent, check_siblings=True):
         flow_tags = ["figcaption", "dd", "li", "caption", "th", "td", "p"]
-        inline_elements = ["a", "abbr", "bdo", "br", "code", "dfn", "em", "img", "kbd", "q", "samp", "span", "strong", "sub", "sup"]
+        inline_elements = ["a", "dt",  "abbr", "bdo", "br", "code", "dfn", "em", "img", "kbd", "q", "samp", "span", "strong", "sub", "sup"]
 
         parent_text = parent.text
         sibling_text_not_empty = False
