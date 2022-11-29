@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import os
-import subprocess
 import traceback
 import requests
 from lxml import etree
 
 from core.config import Config
-from core.utils.daisy_pipeline import DaisyPipelineJob
-from core.utils.filesystem import Filesystem
 
 
 class Mathml_to_text():
@@ -66,6 +62,10 @@ class Mathml_to_text():
                     if "{http://www.w3.org/XML/1998/namespace}lang" not in element.attrib:
                         element.set("{http://www.w3.org/XML/1998/namespace}lang", find_xml_lang(element))
 
+                    if etree.QName(parent).localname == "dt" and element.get("display") == "block":
+                        self.report.warning(f"Found math element with display=block inside a dt element. Replacing with display=inline.")
+                        element.set("display", "inline")
+
                     html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     self.report.debug("Inserting transformation: " + html_representation)
 
@@ -85,24 +85,25 @@ class Mathml_to_text():
             self.report.warning(traceback.format_exc(), preformatted=True)
             self.report.error("An error occured during the MathML transformation")
 
+
     def mathML_transformation(self, mathml):
         try:
             url = Config.get("nlb_api_url") + "/stem/math"
-            payload = mathml
+            
             headers = {
                 'Accept': "application/json",
                 'Content-Type': 'text/html;charset=utf-8',
-                }
+            }
 
-            response = requests.request("POST", url, data=payload.encode('utf-8'), headers=headers)
+            response = requests.request("POST", url, data=mathml.encode('utf-8'), headers=headers)
 
             data = response.json()
-
             html = data["generated"]["html"]
+            
             return html
+        
         except Exception:
             self.report.warning("Error returning MathML transformation. Check STEM result")
-        #    self.report.warning(traceback.format_exc(), preformatted=True)
             element = etree.fromstring(mathml)
             display_attrib = element.attrib["display"]
             lang_attrib = element.attrib["{http://www.w3.org/XML/1998/namespace}lang"]
@@ -206,10 +207,13 @@ class Mathml_validator():
                     display_attrib = element.attrib["display"]
                     suggested_display_attribute = self.inline_or_block(element, parent)
                     if display_attrib != suggested_display_attribute:
-                        element_success = False
                         debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
                         info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                        error(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}")
+                        if etree.QName(parent).localname == "dt" and display_attrib == "block":
+                            warning(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}. However, we ignore this case since it is a common problem that we fix automatically.")
+                        else:
+                            element_success = False
+                            error(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}")
 
                 if not element_success:
                     self.error_count += 1
