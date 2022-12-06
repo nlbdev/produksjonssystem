@@ -66,6 +66,10 @@ class Mathml_to_text():
                         self.report.warning(f"Found math element with display=block inside a dt element. Replacing with display=inline.")
                         element.set("display", "inline")
 
+                    if etree.QName(parent).localname == "code" and element.get("display") == "block":
+                        self.report.warning(f"Found math element with display=block inside a code element. Replacing with display=inline.")
+                        element.set("display", "inline")
+
                     html_representation = self.mathML_transformation(etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
                     self.report.debug("Inserting transformation: " + html_representation)
 
@@ -209,7 +213,7 @@ class Mathml_validator():
                     if display_attrib != suggested_display_attribute:
                         debug("Parent element: \n" + etree.tostring(parent, encoding='unicode', method='xml', with_tail=False))
                         info("MathML element: \n" + etree.tostring(element, encoding='unicode', method='xml', with_tail=False))
-                        if etree.QName(parent).localname == "dt" and display_attrib == "block":
+                        if etree.QName(parent).localname in ["dt", "code"] and display_attrib == "block":
                             warning(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}. However, we ignore this case since it is a common problem that we fix automatically.")
                         else:
                             element_success = False
