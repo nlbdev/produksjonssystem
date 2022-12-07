@@ -207,7 +207,7 @@ class Daisy202ToDistribution(Pipeline):
         first_head_class = nccdoc.xpath("string(//*[local-name()='h1'][1]/@class)")
         second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])").lower()
 
-        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "the audiobook agreement", "tigar announcement", "nlb"]
+        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "the audiobook agreement", "tigar announcement", "nlb", "jietnagirjesoahpamuš"]
 
         if first_head_class != "title":
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
