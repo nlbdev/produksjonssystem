@@ -301,7 +301,7 @@ class Daisy202ToDistribution(Pipeline):
 
         try:
             self.utils.report.info("Kjører Daisy 2.02 validator i Pipeline1...")
-            process = self.utils.filesystem.run([self.dp1_home, self.validator_script, input, report_command], stdout_level='ERROR')
+            process = self.utils.filesystem.run([self.dp1_home, self.validator_script, input, report_command], stdout_level='DEBUG')
             if process.returncode != 0:
                 self.utils.report.debug(traceback.format_stack())
 
@@ -310,10 +310,10 @@ class Daisy202ToDistribution(Pipeline):
             for line in self.utils.report._messages["message"]:
                 if "[ERROR" in line["text"]:
                     status = "ERROR"
-#                    error_message.append(line["text"])
-#            if status == "ERROR":
-#                for line_error in error_message:
-#                    self.utils.report.error(line_error)
+                    error_message.append(line["text"])
+            if status == "ERROR":
+                for line_error in error_message:
+                    self.utils.report.error(line_error)
             self.utils.report.attachment(None, os.path.join(self.utils.report.reportDir(), "report.xml"), status)
             self.utils.report.info("Daisy 2.02 validator ble ferdig.")
             return status
