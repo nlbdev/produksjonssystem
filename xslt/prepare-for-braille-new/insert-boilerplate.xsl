@@ -12,8 +12,8 @@
     
     <xsl:param name="braille-standard" select="'(dots:6)(grade:0)'"/>
     <xsl:param name="notes-placement" select="''"/>
-    <xsl:param name="page-width" select="'32'"/>
-    <xsl:param name="page-height" select="'28'"/>
+    <xsl:param name="page-width" select="'38'"/>
+    <xsl:param name="page-height" select="'29'"/>
     <xsl:param name="datetime" select="current-dateTime()"/>
     
     <xsl:variable name="contraction-grade" select="replace($braille-standard, '.*\(grade:(.*)\).*', '$1')"/>
@@ -91,8 +91,10 @@
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:choose>
-                        <xsl:when test="count(//html:body//html:*[tokenize(@epub:type,'\s+')='z3998:author'])">
-                            <xsl:sequence select="//html:body//html:*[tokenize(@epub:type,'\s+')='z3998:author']/nlb:element-text(.)"/>
+                        <xsl:when test="count(//html:body//html:*[tokenize(@epub:type,'\s+')='z3998:author'])"> 
+                         <xsl:sequence select="//html:head/html:meta[@name='dc:creator']/string(@content)"/>
+                         <!-- We don't use z3998:author-->
+                         <!--  <xsl:sequence select="//html:body//html:*[tokenize(@epub:type,'\s+')='z3998:author']/nlb:element-text(.)"/>-->
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:sequence select="//html:head/html:meta[@name='dc:creator']/string(@content)"/>
@@ -141,7 +143,7 @@
                     <xsl:sequence select="(//dtbook:frontmatter/dtbook:doctitle//*[@class='subtitle'])[1]/nlb:element-text(.)"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:sequence select="(//html:body//html:*[tokenize(@epub:type,'\s+')='subtitle'])[1]/nlb:element-text(.)"/>
+                         <xsl:sequence select="//html:head/html:meta[@name = 'dc:title.subTitle']/string(@content)"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -155,6 +157,116 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+  <xsl:variable name="pef-id" as="xs:string*">
+            <xsl:choose>
+                <xsl:when test="$namespace-uri = $dtbook-namespace">
+                     <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'nlbprod:identifier.braille']/string(@content)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="//html:head/html:meta[@name = 'nlbprod:identifier.braille']/string(@content)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+         
+
+        <xsl:variable name="language-id" as="xs:string*">
+        <xsl:choose>
+            <xsl:when test="$namespace-uri = $dtbook-namespace">
+                <xsl:choose>
+                    <xsl:when test="//dtbook:head/dtbook:meta[@name = 'dc:language']/string(@content)= 'nn'">
+                         <xsl:sequence select="'Nynorsk'"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:sequence select="'Bokmål'"/>
+                     </xsl:otherwise>
+               </xsl:choose>
+                 <!--  <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'dc:language']/string(@content)"/> -->
+            </xsl:when>
+            
+            <xsl:otherwise>
+                <xsl:choose>
+                     <xsl:when test="//html:head/html:meta[@name='dc:language']/string(@content)= 'nn'">
+                        <xsl:sequence select="'Nynorsk'"/>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <xsl:sequence select="'Bokmål'"/>
+                    </xsl:otherwise>
+                 </xsl:choose>
+                 <!--  <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'dc:language']/string(@content)"/> -->
+                
+                 <!--  <xsl:sequence select="//html:head/html:meta[@name='dc:language']/string(@content)"/> -->
+                   
+            </xsl:otherwise>
+        </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="utgave-nummer" as="xs:string*">
+
+            <xsl:choose>
+                <xsl:when test="$namespace-uri = $dtbook-namespace">
+                     <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'schema:bookEdition.original']/string(@content)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="//html:head/html:meta[@name = 'schema:bookEdition.original']/string(@content)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+          <xsl:variable name="forlag" as="xs:string*">
+            <xsl:choose>
+                <xsl:when test="$namespace-uri = $dtbook-namespace">
+                     <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'dc:publisher.original']/string(@content)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="//html:head/html:meta[@name = 'dc:publisher.original']/string(@content)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+   <xsl:variable name="sted" as="xs:string*">
+            <xsl:choose>
+                <xsl:when test="$namespace-uri = $dtbook-namespace">
+                     <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'dc:publisher.location.original']/string(@content)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="//html:head/html:meta[@name = 'dc:publisher.location.original']/string(@content)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+         <xsl:variable name="årstall" as="xs:string*">
+            <xsl:choose>
+                <xsl:when test="$namespace-uri = $dtbook-namespace">
+                     <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'dc:date.issued.original']/string(@content)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="//html:head/html:meta[@name = 'dc:date.issued.original']/string(@content)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="forlag-sted-årstall" as="xs:string*">
+
+              <xsl:sequence select="concat($forlag, ', ', $sted , ', ', $årstall)"/>       
+
+        </xsl:variable>
+         <xsl:variable name="utgave" as="xs:string*">
+          <xsl:choose>
+                <xsl:when test="$language-id = 'Bokmål'">
+                    <xsl:sequence select="concat('Utgave  ', $utgave-nummer)"/>    
+                </xsl:when>
+                <xsl:when test="$language-id = 'Nynorsk'">
+                <xsl:sequence select="concat('Utgåve  ', $utgave-nummer)"/>    
+                 </xsl:when>
+                 <xsl:otherwise>
+                 <xsl:sequence select="concat('Utgave  ', $utgave-nummer)"/>    
+                 </xsl:otherwise>
+           </xsl:choose>
+                   
+        </xsl:variable>
+
+
         <xsl:variable name="original-publisher" as="xs:string?">
             <xsl:choose>
                 <xsl:when test="$namespace-uri = $dtbook-namespace">
@@ -175,20 +287,23 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+
+          <xsl:variable name="isbn" as="xs:string?">
+           <xsl:choose>
+                <xsl:when test="$namespace-uri = $dtbook-namespace">
+                     <xsl:sequence select="//dtbook:head/dtbook:meta[@name = 'schema:isbn.original']/string(@content)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:sequence select="//html:head/html:meta[@name = 'schema:isbn.original']/string(@content)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
         
         <xsl:variable name="author-lines" select="nlb:author-lines($author, $line-width, 'mfl.')" as="xs:string*"/>
         <xsl:variable name="authors-fit" select="$author-lines[1] = 'true'" as="xs:boolean"/>
-        <xsl:variable name="author-lines" select="$author-lines[position() gt 1]" as="xs:string*"/>
+       <xsl:variable name="author-lines" select="$author-lines[position() gt 1]" as="xs:string*"/>
         <xsl:variable name="author-lines" select="if (count($author) gt 1 and not(count($author-lines))) then 'Flere forfattere' else $author-lines"/>
         
-        <xsl:variable name="title-lines" select="nlb:title-lines($fulltitle, 5, $line-width)" as="xs:string*"/>
-        <xsl:variable name="title-fits" select="$title-lines[1] = 'true'" as="xs:boolean"/>
-        <xsl:variable name="title-lines" select="if (not($title-fits) and count($title)) then nlb:title-lines($title, 5, $line-width) else $title-lines"/>
-        <xsl:variable name="title-lines" select="$title-lines[position() gt 1]" as="xs:string*"/>
-        
-        <xsl:variable name="translator-lines" select="nlb:translator-lines($translator, $line-width, 'mfl.')" as="xs:string*"/>
-        <xsl:variable name="translators-fit" select="$translator-lines[1] = 'true'" as="xs:boolean"/>
-        <xsl:variable name="translator-lines" select="$translator-lines[position() gt 1]" as="xs:string*"/>
         
         <xsl:variable name="grade-text" as="xs:string">
             <xsl:choose>
@@ -213,85 +328,158 @@
         <xsl:element name="{nlb:level-element-name($namespace-uri, /*)}" namespace="{$namespace-uri}">
             <xsl:attribute name="class" select="'pef-titlepage'"/>
             
-            <!-- 3 empty rows before author -->
+            <!-- 3 empty rows before author --> 
             <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
             <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
             <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
             <xsl:variable name="lines-used" select="3"/>
-            
-            <xsl:for-each select="$author-lines">
-                <xsl:call-template name="row">
-                    <xsl:with-param name="content" select="."/>
-                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                </xsl:call-template>
-            </xsl:for-each>
-            
-            <!-- 2 empty rows before title -->
-            <xsl:if test="count($author-lines)">
-                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-            </xsl:if>
-            <xsl:variable name="lines-used" select="if (count($author-lines)) then $lines-used + count($author-lines) + 2 else $lines-used"/>
-            
-            <xsl:for-each select="$title-lines">
-                <xsl:call-template name="row">
-                    <xsl:with-param name="content" select="."/>
-                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                </xsl:call-template>
-            </xsl:for-each>
-            
-            <!-- 2 empty rows before translator -->
-            <xsl:if test="count($title-lines)">
-                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-            </xsl:if>
-            <xsl:variable name="lines-used" select="if (count($title-lines)) then $lines-used + count($title-lines) + 2 else $lines-used"/>
-            
-            <xsl:if test="count($translator-lines)">
-                <xsl:call-template name="row">
-                    <xsl:with-param name="content" select="'Oversatt av:'"/>
-                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                </xsl:call-template>
-                
-                <xsl:for-each select="$translator-lines">
-                    <xsl:call-template name="row">
-                        <xsl:with-param name="content" select="."/>
-                        <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                
-                <!-- 2 empty rows after translators -->
-                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-            </xsl:if>
-            <xsl:variable name="lines-used" select="if (count($translator-lines)) then $lines-used + 1 + count($translator-lines) + 2 else $lines-used"/>
-            
-            <!-- fill empty lines up to and including page height minus 6 (i.e. row 22) -->
-            <xsl:for-each select="($lines-used + 1) to xs:integer($page-height) - 6">
-                <xsl:call-template name="empty-row">
-                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                </xsl:call-template>
-            </xsl:for-each>
 
+      
+    
+      
+       <xsl:choose>
+       <xsl:when test="count($author)=1">  <!-- delimiter found use old style input from bibliofil -->            
+         <xsl:if test="contains($author,';')"> 
+          
+        <xsl:variable name="v2" select="substring-before($author, ';')"/>
+        <xsl:call-template name="row">
+                    <xsl:with-param name="content" select="concat($v2,' mfl.')"/>
+                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                       <xsl:with-param name="inline" select="true()"/>
+                </xsl:call-template>
+                </xsl:if>
+                  <xsl:if test="not(contains($author,';'))">
+                   <xsl:call-template name="row">
+                    <xsl:with-param name="content" select="$author"/>
+                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                       <xsl:with-param name="inline" select="true()"/>
+                </xsl:call-template>
+
+             </xsl:if>
+       </xsl:when>
+       <xsl:otherwise>       
+        <xsl:for-each select="$author-lines">
+        <xsl:variable name="parent-position" select="position()" />
+        <xsl:choose>
+            <xsl:when test="$parent-position = 1 and count($author-lines) = 1">
+             <xsl:call-template name="row">
+                    <xsl:with-param name="content" select="."/>
+                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                </xsl:call-template>
+            </xsl:when>
+             <xsl:when test="$parent-position = 1 and count($author-lines) &gt; 1">
+         
+             <xsl:call-template name="row">
+                    <xsl:with-param name="content" select="concat(.,' mfl.')"/>
+                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                       <xsl:with-param name="inline" select="true()"/>
+                </xsl:call-template>
+            </xsl:when>
+          </xsl:choose>
+         </xsl:for-each>
+        </xsl:otherwise>
+      </xsl:choose>  
+
+         <!---   <xsl:choose>
+            <xsl:when test="count($author-lines) &gt 1">
+                <xsl:sequence select="('true')"/>
+            </xsl:when>
+          </xsl:choose>-->
+                  
+
+            <!-- 2 empty rows before title -->
+          
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+
+              <!-- TITLE ON LINE 6-->  
+
+              <xsl:call-template name="row">
+                <xsl:with-param name="content" select="$fulltitle"/>
+              
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+        
+              </xsl:call-template>
+     
+         <xsl:choose>
+            <xsl:when test="count($subtitle) = 0">
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+            </xsl:when>
+               <xsl:when test="count($subtitle) &gt; 0">
+                 <xsl:call-template name="row">
+                <xsl:with-param name="content" select="$subtitle"/>
+               
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+        
+              </xsl:call-template>
+            </xsl:when>
+        </xsl:choose>
+
+       
+          
+              <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+          
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+                 <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+  <!-- LANGUAGE ON LINE 14-->  
+               <xsl:call-template name="row">
+                <xsl:with-param name="content" select="$language-id"/>
+                   <xsl:with-param name="classes" select="'Innrykk-5'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+  <!-- EDITION ON LINE 16-->         
+              <xsl:call-template name="row">
+                <xsl:with-param name="content" select="$utgave"/>
+                   <xsl:with-param name="classes" select="'Innrykk-5'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+                <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+
+     <!-- PUBLISHER  ON LINE 20-->             
+              <xsl:call-template name="row">
+                <xsl:with-param name="content" select="$forlag-sted-årstall"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+         
+              <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+              <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
+  <!-- CCCCCC  ON LINE 23-->  
+        <!--    <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'cccccccccccccccccccccccccccccc'"/> 
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+            </xsl:call-template>-->
+cccccccccccccccccccccccccccccccc
             <xsl:call-template name="row">
-                <xsl:with-param name="content" select="concat('NLB - ',format-dateTime($datetime, '[Y]'))"/>
+                <xsl:with-param name="content" select="concat('Statped, ',format-dateTime($datetime, '[Y]'))"/>
                 <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
             </xsl:call-template>
             
-            <xsl:call-template name="row">
-                <xsl:with-param name="content" select="$grade-text"/>
-                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-            </xsl:call-template>
-            
-            <!-- 2 empty rows before volume number -->
+    
             <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
             <xsl:call-template name="empty-row"><xsl:with-param name="namespace-uri" select="$namespace-uri"/></xsl:call-template>
-            
+       <!-- VOLUME NO  ON LINE 27-->        
             <xsl:call-template name="row">
                 <xsl:with-param name="content" select="' av '"/>
                 <xsl:with-param name="classes" select="'pef-volume'"/>
                 <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
                 <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+ <!-- PROD NO  ON LINE 28--> 
+              <xsl:call-template name="row">
+                <xsl:with-param name="content" select="$pef-id"/>
+                 <xsl:with-param name="classes" select="'Høyre-justert'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+              
             </xsl:call-template>
         </xsl:element>
         
@@ -313,64 +501,159 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name="final-rows" as="element()*">
-            <xsl:call-template name="row">
-                <xsl:with-param name="content" select="'Antall sider: '"/>
-                <xsl:with-param name="classes" select="'pef-pages'"/>
+      <!--   <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Denne boka er skrevet av:'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+   
+       <xsl:call-template name="SimpleStringLoop">
+              <xsl:with-param name="input" select="$author"/>
+              <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+        </xsl:call-template>--> 
+     
+            <xsl:choose>
+                <xsl:when test="$language-id = 'Bokmål'">
+                    <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Punktsidetallet er midtstilt nederst på siden.  '"/>
                 <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
                 <xsl:with-param name="inline" select="true()"/>
             </xsl:call-template>
             <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Full celle i margen og foran sidetallet nederst til høyre markerer sideskift i originalboka. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+            <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Tekst og bilder kan være flyttet til en annen side for å unngå å bryte opp løpende tekst.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+               <xsl:call-template name="row">
+               <xsl:with-param name="content" select="'Ordforklaringer og stikkord finner du som regel etter teksten de tilhører, etter eventuelle bilder. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+            
+             <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Bildebeskrivelser står mellom punktene (56-3) og (6-23).'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+           <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Utheving markeres med punktene (23) foran og (56) bak teksten.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+                
+            <xsl:call-template name="row">
                 <xsl:with-param name="content" select="'Boka skal ikke returneres.'"/>
                 <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
             </xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$language-id = 'Nynorsk'">
+                    <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Punktsidetalet står i midten nedst på sida. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+                   <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Full celle i margen og framfor sidetalet nedst til høgre markerer sideskift i originalboka. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
             <xsl:call-template name="row">
-                <xsl:with-param name="content" select="'Feil eller mangler kan meldes til punkt@nlb.no.'"/>
+                <xsl:with-param name="content" select="'Tekst og bilete kan vere flytta til ei ny side, for ikkje å bryte opp den løpande teksten.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+             <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Ordforklaringar og stikkord finn du som regel etter den teksten dei høyrer til, etter eventuelle bilete. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+            
+             <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Biletskildringar står mellom punkta (56-3) og (6-23).'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+           <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Utheving er markert med punkta (23) framfor og (56) bak teksten.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+                
+            <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Du treng ikkje returnere boka.'"/>
                 <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
             </xsl:call-template>
+                </xsl:when>
+                 <xsl:otherwise>
+                  <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Punktsidetallet er midtstilt nederst på siden.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+                 <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Full celle i margen og foran sidetallet nederst til høyre markerer sideskift i originalboka. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+            <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Tekst og bilder kan være flyttet til en annen side for å unngå å bryte opp løpende tekst. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+              <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Ordforklaringer og stikkord finner du som regel etter teksten de tilhører, etter eventuelle bilder. '"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+             <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Bildebeskrivelser står mellom punktene (56-3) og (6-23).'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+
+           <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Utheving markeres med punktene (23) foran og (56) bak teksten.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                <xsl:with-param name="inline" select="true()"/>
+            </xsl:call-template>
+                
+            <xsl:call-template name="row">
+                <xsl:with-param name="content" select="'Boka skal ikke returneres.'"/>
+                <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+            </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
+
+         
+           
         </xsl:variable>
         <xsl:element name="{nlb:level-element-name($namespace-uri, /*)}" namespace="{$namespace-uri}">
             <xsl:attribute name="class" select="'pef-about'"/>
             <xsl:element name="h1" namespace="{$namespace-uri}">
-                <xsl:text>Om boka</xsl:text>
+             <xsl:choose>
+                <xsl:when test="$language-id = 'Bokmål'">
+                    <xsl:text>Merknad til punktskriftutgaven</xsl:text>
+                </xsl:when>
+                <xsl:when test="$language-id = 'Nynorsk'">
+                 <xsl:text>Merknad til punktskriftutgåva</xsl:text>
+                 </xsl:when>
+                 <xsl:otherwise>
+                  <xsl:text>Merknad til punktskriftutgaven</xsl:text>
+                 </xsl:otherwise>
+           </xsl:choose>
             </xsl:element>
-            <xsl:if test="not($authors-fit)">
-                <xsl:choose>
-                    <xsl:when test="count($author) = 1">
-                        <xsl:call-template name="row">
-                            <xsl:with-param name="content" select="concat('Forfatter: ',normalize-space($author))"/>
-                            <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test="count($author) gt 1">
-                        <xsl:call-template name="row">
-                            <xsl:with-param name="content" select="concat('Forfattere: ',string-join(for $a in $author[not(position()=last())] return normalize-space($a), ', '), ' og ', normalize-space($author[last()]))"/>
-                            <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:if>
-            <xsl:if test="not($title-fits)">
-                <xsl:call-template name="row">
-                    <xsl:with-param name="content" select="concat('Full tittel: ',normalize-space($fulltitle))"/>
-                    <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                </xsl:call-template>
-            </xsl:if>
-            <xsl:if test="not($translators-fit)">
-                <xsl:choose>
-                    <xsl:when test="count($translator) = 1">
-                        <xsl:call-template name="row">
-                            <xsl:with-param name="content" select="concat('Oversatt av: ',normalize-space($translator))"/>
-                            <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test="count($translator) gt 1">
-                        <xsl:call-template name="row">
-                            <xsl:with-param name="content" select="concat('Oversatt av: ',string-join(for $t in $translator[not(position()=last())] return normalize-space($t), ', '), ' og ', normalize-space($translator[last()]))"/>
-                            <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:if>
+           
+        
             <xsl:if test="not($notes-present and $notes-placement = 'bottom-of-page')">
                 <xsl:if test="$notes-present">
                     <xsl:call-template name="row">
@@ -404,6 +687,9 @@
             </xsl:element>
         </xsl:if>
     </xsl:template>
+
+      
+
     
     <xsl:template name="empty-row" as="element()">
         <xsl:param name="namespace-uri" as="xs:string"/>
@@ -423,7 +709,7 @@
                 <xsl:element name="p" namespace="{$namespace-uri}">
                     <xsl:element name="span" namespace="{$namespace-uri}">
                         <xsl:if test="exists($classes)">
-                            <xsl:attribute name="class" select="string-join($classes,' ')"/>
+                            <xsl:attribute name="class" select="$classes"/>
                         </xsl:if>
                         <xsl:value-of select="$content"/>
                     </xsl:element>
@@ -432,14 +718,55 @@
             <xsl:otherwise>
                 <xsl:element name="p" namespace="{$namespace-uri}">
                     <xsl:if test="exists($classes)">
-                        <xsl:attribute name="class" select="string-join($classes,' ')"/>
+                      <!--  <xsl:attribute name="class" select="string-join($classes,' ')"/> -->
+                      <xsl:attribute name="class" select="$classes"/>
                     </xsl:if>
                     <xsl:value-of select="$content"/>
                 </xsl:element>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    
+
+
+     <xsl:template name="SimpleStringLoop">
+        <xsl:param name="input" as="xs:string"/>
+         <xsl:param name="classes" as="xs:string*"/>
+         <xsl:param name="namespace-uri"/>
+        <xsl:variable name="nb_char" select="string-length($input)-string-length(translate($input,';',''))"/>
+      
+       <xsl:choose>
+       <xsl:when test="$nb_char !=0">  <!-- delimiter found-->
+         
+        <xsl:if test="string-length($input) &gt; 0">
+            <xsl:variable name="v2" select="substring-before($input, ';')"/>
+             <xsl:variable name="class2" select="$classes"/>
+            <xsl:call-template name="row">
+                    <xsl:with-param name="content" select="$v2" />
+                     <xsl:with-param name="classes" select="$class2"/>
+                      <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                        <xsl:with-param name="inline" select="true()"/>
+                      </xsl:call-template>
+            <xsl:call-template name="SimpleStringLoop">
+                <xsl:with-param name="input" select="substring-after($input, ';')"/> 
+                <xsl:with-param name="classes" select="$class2"/>  
+                  <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+            </xsl:call-template>
+               
+        </xsl:if> 
+      </xsl:when> 
+      <xsl:otherwise>
+        <xsl:call-template name="row">
+                    <xsl:with-param name="content" select="$input" />
+                     <xsl:with-param name="classes" select="'Innrykk-5'"/>
+                      <xsl:with-param name="namespace-uri" select="$namespace-uri"/>
+                        <xsl:with-param name="inline" select="true()"/>
+                      </xsl:call-template>
+      </xsl:otherwise>
+</xsl:choose>
+   
+    </xsl:template>
+   
+
     <xsl:function name="nlb:level-element-name" as="xs:string">
         <xsl:param name="namespace-uri" as="xs:string"/>
         <xsl:param name="document" as="element()"/>
@@ -456,7 +783,48 @@
         </xsl:choose>
     </xsl:function>
     
-    <xsl:function name="nlb:strings-to-lines-always-break" as="xs:string*">
+  <xsl:function name="nlb:element-text" as="xs:string?">
+        <xsl:param name="element" as="element()"/>
+        
+        <xsl:variable name="result" as="xs:string*">
+            <xsl:for-each select="$element/node()">
+                <xsl:if test="(tokenize(@class,'\s+'), tokenize(@epub:type,'\s+')) = ('title', 'subtitle')">
+                    <xsl:sequence select="'&#10;'"/>
+                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="self::text()">
+                        <xsl:sequence select="replace(.,'\s+',' ')"/>
+                    </xsl:when>
+                    <xsl:when test="(self::html:br | self::dtbook:br)[tokenize(@class,'\s+') = 'display-braille']">
+                        <xsl:sequence select="'&#10;'"/>
+                    </xsl:when>
+                    <xsl:when test="self::*">
+                        <xsl:sequence select="nlb:element-text(.)"/>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
+        </xsl:variable>
+        <xsl:value-of select="if (count($result)) then replace(replace(replace(replace(string-join($result,''),'&#10; ',' &#10;'),' +',' '),'(^ | $)',''),'^&#10;+','') else ()"/>
+    </xsl:function>
+
+       <!-- nlb:braille-length accounts for capital letter braille characters, and number characters -->
+    <xsl:function name="nlb:braille-length">
+        <xsl:param name="string" as="xs:string?"/>
+        <xsl:choose>
+            <xsl:when test="not($string)">
+                <xsl:value-of select="0"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="expanded-string" select="replace($string,'&#10;','')"/>                              <!-- ignore newline characters; they are only used to suggest line breaks -->
+                <xsl:variable name="expanded-string" select="replace($expanded-string,'[A-Z]','aa')"/>                   <!-- braille character before upper case characters -->
+                <xsl:variable name="expanded-string" select="replace($expanded-string,'(^|[^\d])(\d)','$1.$2')"/>        <!-- braille character before numbers -->
+                <xsl:variable name="expanded-string" select="replace($expanded-string,'([^a-zA-Z0-9 ,.;:!-])','$1$1')"/> <!-- special characters might be represented with two braille characters -->
+                <xsl:value-of select="string-length($expanded-string)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+ <xsl:function name="nlb:strings-to-lines-always-break" as="xs:string*">
         <xsl:param name="strings" as="xs:string*"/>
         <xsl:param name="line-length" as="xs:integer"/>
         <xsl:param name="try-length" as="xs:integer"/>
@@ -475,6 +843,7 @@
         <xsl:sequence select="if ($try-length &gt; 1 and count($result[nlb:braille-length(.) &gt; $line-length])) then nlb:strings-to-lines-always-break($strings, $line-length, $try-length - 1) else $result"/>
     </xsl:function>
     
+
     <xsl:function name="nlb:strings-to-lines" as="xs:string*">
         <xsl:param name="strings" as="xs:string*"/>
         <xsl:param name="line-length" as="xs:integer"/>
@@ -518,8 +887,8 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
-    <xsl:function name="nlb:fit-name-to-lines" as="xs:string*">
+
+     <xsl:function name="nlb:fit-name-to-lines" as="xs:string*">
         <xsl:param name="name" as="xs:string"/>
         <xsl:param name="lines-available" as="xs:integer"/>
         <xsl:param name="line-length" as="xs:integer"/>
@@ -551,24 +920,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
-    <!-- nlb:braille-length accounts for capital letter braille characters, and number characters -->
-    <xsl:function name="nlb:braille-length">
-        <xsl:param name="string" as="xs:string?"/>
-        <xsl:choose>
-            <xsl:when test="not($string)">
-                <xsl:value-of select="0"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:variable name="expanded-string" select="replace($string,'&#10;','')"/>                              <!-- ignore newline characters; they are only used to suggest line breaks -->
-                <xsl:variable name="expanded-string" select="replace($expanded-string,'[A-Z]','aa')"/>                   <!-- braille character before upper case characters -->
-                <xsl:variable name="expanded-string" select="replace($expanded-string,'(^|[^\d])(\d)','$1.$2')"/>        <!-- braille character before numbers -->
-                <xsl:variable name="expanded-string" select="replace($expanded-string,'([^a-zA-Z0-9 ,.;:!-])','$1$1')"/> <!-- special characters might be represented with two braille characters -->
-                <xsl:value-of select="string-length($expanded-string)"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-    
+
     <xsl:function name="nlb:author-lines" as="xs:string*">
         <xsl:param name="authors" as="xs:string*"/>
         <xsl:param name="line-length" as="xs:integer"/>
@@ -628,102 +980,5 @@
         </xsl:choose>
     </xsl:function>
     
-    <xsl:function name="nlb:translator-lines" as="xs:string*">
-        <xsl:param name="translators" as="xs:string*"/>
-        <xsl:param name="line-length" as="xs:integer"/>
-        <xsl:param name="last-line-if-cropped" as="xs:string"/>
-        
-        <xsl:choose>
-            <xsl:when test="count($translators) = 1">
-                <xsl:sequence select="nlb:fit-name-to-lines($translators[1], 2, $line-length)"/>
-            </xsl:when>
-            <xsl:when test="count($translators) = 2">
-                <xsl:variable name="translator-1" select="nlb:fit-name-to-lines($translators[1], 1, $line-length)"/>
-                <xsl:variable name="translator-2" select="nlb:fit-name-to-lines($translators[2], 1, $line-length)"/>
-                <xsl:choose>
-                    <xsl:when test="$translator-1[1] = 'true' and $translator-2[1] = 'true'">
-                        <xsl:sequence select="('true', $translator-1[position() gt 1], $translator-2[position() gt 1])"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:sequence select="('false', $translator-1[position() gt 1], $last-line-if-cropped)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-            <xsl:when test="count($translators) &gt; 2">
-                <xsl:sequence select="'false'"/>
-                <xsl:sequence select="nlb:fit-name-to-lines($translators[1], 1, $line-length)[2]"/>
-                <xsl:sequence select="$last-line-if-cropped"/>
-            </xsl:when>
-        </xsl:choose>
-    </xsl:function>
-    
-    <xsl:function name="nlb:title-lines" as="xs:string*">
-        <xsl:param name="title" as="xs:string"/>
-        <xsl:param name="lines-available" as="xs:integer"/>
-        <xsl:param name="line-length" as="xs:integer"/>
-        <!-- returns: ( [true|false], line1?, ..., lineN? ) -->
-        
-        <xsl:variable name="tokenized-title" select="tokenize($title,' +')"/>
-        
-        <xsl:variable name="title-never-break" select="nlb:strings-to-lines($tokenized-title, $line-length, 'never')"/>
-        <xsl:variable name="title-avoid-break" select="nlb:strings-to-lines($tokenized-title, $line-length, 'avoid')"/>
-        <xsl:variable name="title-always-break" select="nlb:strings-to-lines($tokenized-title, $line-length, 'always')"/>
-        <xsl:variable name="title-stripped" select="nlb:strip-last-line($title-avoid-break, $lines-available, $line-length)"/>
-        
-        <xsl:choose>
-            <xsl:when test="$title = ''">
-                <xsl:sequence select="('true')"/>
-            </xsl:when>
-            <xsl:when test="count($title-never-break) &gt; 0 and count($title-never-break) &lt;= $lines-available">
-                <xsl:sequence select="('true', $title-never-break)"/>
-            </xsl:when>
-            <xsl:when test="count($title-avoid-break) &gt; 0 and count($title-avoid-break) &lt;= $lines-available">
-                <xsl:sequence select="('true', $title-avoid-break)"/>
-            </xsl:when>
-            <xsl:when test="count($title-always-break) &gt; 0 and count($title-always-break) &lt;= $lines-available">
-                <xsl:sequence select="('true', $title-always-break)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:sequence select="('false', $title-stripped)"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-    
-    <xsl:function name="nlb:strip-last-line" as="xs:string*">
-        <xsl:param name="lines" as="xs:string*"/>
-        <xsl:param name="lines-available" as="xs:integer"/>
-        <xsl:param name="line-length" as="xs:integer"/>
-        
-        <xsl:variable name="last-line" select="string-join($lines[$lines-available],' ')"/>
-        <xsl:variable name="braille-extras" select="nlb:braille-length($last-line) - string-length($last-line)"/>
-        <xsl:variable name="last-line" select="replace($last-line, concat('^(.{',$line-length - 3 - $braille-extras ,'}).*'), '$1')"/>
-        <xsl:variable name="last-line" select="concat($last-line,'...')"/>
-        
-        <xsl:sequence select="($lines[position() &lt; $lines-available], $last-line)"/>
-    </xsl:function>
-    
-    <xsl:function name="nlb:element-text" as="xs:string?">
-        <xsl:param name="element" as="element()"/>
-        
-        <xsl:variable name="result" as="xs:string*">
-            <xsl:for-each select="$element/node()">
-                <xsl:if test="(tokenize(@class,'\s+'), tokenize(@epub:type,'\s+')) = ('title', 'subtitle')">
-                    <xsl:sequence select="'&#10;'"/>
-                </xsl:if>
-                <xsl:choose>
-                    <xsl:when test="self::text()">
-                        <xsl:sequence select="replace(.,'\s+',' ')"/>
-                    </xsl:when>
-                    <xsl:when test="(self::html:br | self::dtbook:br)[tokenize(@class,'\s+') = 'display-braille']">
-                        <xsl:sequence select="'&#10;'"/>
-                    </xsl:when>
-                    <xsl:when test="self::*">
-                        <xsl:sequence select="nlb:element-text(.)"/>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:for-each>
-        </xsl:variable>
-        <xsl:value-of select="if (count($result)) then replace(replace(replace(replace(string-join($result,''),'&#10; ',' &#10;'),' +',' '),'(^ | $)',''),'^&#10;+','') else ()"/>
-    </xsl:function>
     
 </xsl:stylesheet>
