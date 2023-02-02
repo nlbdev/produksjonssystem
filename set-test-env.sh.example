@@ -38,7 +38,11 @@ export AIRBRAKE_ENVIRONMENT=development
 export LOCAL_PIPELINE2_ENABLED=false
 
 # Pipeline 2 i swarm (erstatt dette med localhost hvis vi fjerner støtte for lokale Pipeline 2-instanser)
-export REMOTE_PIPELINE2_WS_AUTHENTICATION="false false false"
-export REMOTE_PIPELINE2_WS_AUTHENTICATION_KEYS="none none none"
-export REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS="none none none"
+export REMOTE_PIPELINE2_WS_AUTHENTICATION="false false false false"
+export REMOTE_PIPELINE2_WS_AUTHENTICATION_KEYS="none none none none"
+export REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS="none none none none"
 export REMOTE_PIPELINE2_WS_ENDPOINTS="http://nlbdocker-dev.lx.nb.no:18150/ws http://nlbdocker-dev.lx.nb.no:18151/ws http://nlbdocker-dev.lx.nb.no:18161/ws http://nlbdocker-dev.lx.nb.no:18152/ws"
+export REMOTE_PIPELINE2_WS_AUTHENTICATION="false"
+export REMOTE_PIPELINE2_WS_AUTHENTICATION_KEYS="none"
+export REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS="none"
+export REMOTE_PIPELINE2_WS_ENDPOINTS="http://nlbdocker-dev.lx.nb.no:18161/ws"

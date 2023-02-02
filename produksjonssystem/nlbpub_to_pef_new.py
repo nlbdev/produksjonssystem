@@ -186,7 +186,7 @@ class NlbpubToPefNew(Pipeline):
 
         script_id = "html-to-pef"
         pipeline_and_script_version = [
-            ("1.14.10", None),
+            (None, None),
         ]
 
         braille_arguments = {
