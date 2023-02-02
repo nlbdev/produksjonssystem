@@ -35,6 +35,7 @@ export AIRBRAKE_ENVIRONMENT=development
 
 # Lokal instans av Pipeline 2 (defaults to /opt/daisy-pipeline2)
 # export PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
+export LOCAL_PIPELINE2_ENABLED=false
 
 # Pipeline 2 i swarm (erstatt dette med localhost hvis vi fjerner støtte for lokale Pipeline 2-instanser)
 export REMOTE_PIPELINE2_WS_AUTHENTICATION="false false false"
