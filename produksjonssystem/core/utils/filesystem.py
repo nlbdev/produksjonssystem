@@ -370,15 +370,15 @@ class Filesystem():
     @staticmethod
     def insert_css(path, library, format):
 
-        latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ncc.min.css"
+        latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2023-02-06/ncc.min.css"
         if library == "Statped":
             latest_url = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
         elif format == "epub":
-            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/epub.css"
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2023-02-06/epub.css"
         elif format == "daisy202":
-            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/html.min.css"
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2023-02-06/html.min.css"
         elif format == "daisy202-ncc":
-            latest_url = "https://raw.githubusercontent.com/nlbdev/nlb-scss/master/dist/css/ncc.min.css"
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2023-02-06/ncc.min.css"
 
         response = requests.get(latest_url)
         if response.status_code == 200:
