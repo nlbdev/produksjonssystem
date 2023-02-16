@@ -12,8 +12,6 @@ aiosignal==1.2.0
     # via aiohttp
 async-timeout==4.0.2
     # via aiohttp
-asynctest==0.13.0
-    # via aiohttp
 attrs==22.1.0
     # via aiohttp
 authlib==1.1.0
@@ -46,11 +44,6 @@ idna==3.4
     # via
     #   requests
     #   yarl
-importlib-metadata==4.12.0
-    # via
-    #   click
-    #   flask
-    #   markdown
 itsdangerous==2.1.2
     # via flask
 jinja2==3.1.2
@@ -99,19 +92,11 @@ slackclient==2.9.4
     # via -r requirements.in
 tdigest==0.5.2.2
     # via pybrake
-typing-extensions==4.3.0
-    # via
-    #   aiohttp
-    #   async-timeout
-    #   importlib-metadata
-    #   yarl
 urllib3==1.26.12
     # via requests
-werkzeug==2.2.2
+werkzeug==2.2.3
     # via
     #   -r requirements.in
     #   flask
 yarl==1.8.1
     # via aiohttp
-zipp==3.8.1
-    # via importlib-metadata
