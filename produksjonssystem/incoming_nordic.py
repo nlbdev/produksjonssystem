@@ -9,14 +9,14 @@ import sys
 import tempfile
 import traceback
 
-from lxml import etree as ElementTree
-
 from core.pipeline import Pipeline
+from core.utils.antivirus import scan_file
 from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.filesystem import Filesystem
 from core.utils.mathml_to_text import Mathml_validator
 from core.utils.xslt import Xslt
+from lxml import etree as ElementTree
 
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
     print("# This script requires Python version 3.5+")
@@ -58,6 +58,11 @@ class IncomingNordic(Pipeline):
         return self.on_book()
 
     def on_book(self):
+        if not scan_file(self.book["source"]):
+            self.utils.report.error(self.book["name"] + ": Boka passerte ikke virussjekk")
+            self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
+            return
+        
         epub = Epub(self.utils.report, self.book["source"])
         epubTitle = ""
         try:
