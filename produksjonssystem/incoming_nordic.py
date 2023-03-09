@@ -58,7 +58,7 @@ class IncomingNordic(Pipeline):
         return self.on_book()
 
     def on_book(self):
-        if not scan_file(self.book["source"]):
+        if not scan_file(self.book["source"], report=self.utils.report):
             self.utils.report.error(self.book["name"] + ": Boka passerte ikke virussjekk")
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎"
             return
