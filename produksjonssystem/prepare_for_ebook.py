@@ -291,7 +291,7 @@ class PrepareForEbook(Pipeline):
 
             latest_url_statped = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
 
-            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2023-02-06/epub.min.css"
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2023-03-20/epub.min.css"
 
             response = requests.get(latest_url)
             response_statped = requests.get(latest_url_statped)
