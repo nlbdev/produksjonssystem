@@ -39,8 +39,6 @@ class Bibliofil:
                     if not has_epub:
                         continue
                     has_html = has_epub  # generated based on the EPUB on the fly
-                    # has_docx = has_epub  # generated based on the EPUB on the fly
-                    has_mobi = has_epub  # generated based on the EPUB on the fly
 
                     size = 0
                     if has_epub:
@@ -55,7 +53,7 @@ class Bibliofil:
                             catalog_changes_needed_filesize += 1
                             filesize_xml += "<folder><name>{}</name><sizedata>{}</sizedata></folder>\n".format(book["identifier"], size)
 
-                    distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, has_mobi, size)
+                    distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, size)
                     distribution_formats_catalog = book["distribution"]
 
                     if distribution_formats != distribution_formats_catalog:
@@ -109,8 +107,6 @@ class Bibliofil:
             epub_dir = os.path.join(Directory.dirs_flat["epub-ebook"], identifier)
             has_epub = os.path.isdir(epub_dir)
             has_html = has_epub  # generated based on the EPUB on the fly
-            # has_docx = has_epub  # generated based on the EPUB on the fly
-            has_mobi = has_epub  # generated based on the EPUB on the fly
 
             size = 0
             if has_epub:
@@ -129,7 +125,7 @@ class Bibliofil:
                                       filesize_xml,
                                       Config.get("email.filesize.address"))
 
-            distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, has_mobi, size)
+            distribution_formats = Bibliofil.distribution_formats_epub(has_epub, has_html, size)
             for distribution_format in distribution_formats:
                 lines.append("{};{};{};{}".format(identifier,
                              distribution_format["name"],
@@ -193,7 +189,7 @@ class Bibliofil:
             return []
 
     @staticmethod
-    def distribution_formats_epub(has_epub, has_html, has_mobi, size):
+    def distribution_formats_epub(has_epub, has_html, size):
         distribution_formats = []
         if has_epub:
             distribution_formats.append({
@@ -223,17 +219,12 @@ class Bibliofil:
                                         "method": "dl"
                                         })
 
-        if has_mobi and size < 20 * 10**6:  # 20 MB
+        if has_epub and size < 20 * 10**6:  # 20 MB
             distribution_formats.append({
                                         "name": "Til Kindle/PocketBook",
-                                        "format": "mobi",
+                                        "format": "epub",
                                         "method": "ki"
                                         })
 
-        if has_mobi:
-            distribution_formats.append({
-                                        "name": "Last ned MOBI/Kindle-format",
-                                        "format": "mobi",
-                                        "method": "dl"
-                                        })
         return distribution_formats
+
