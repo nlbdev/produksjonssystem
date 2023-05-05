@@ -103,7 +103,7 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
 - konfigurer NLBs API
     - I `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh), sett miljøvariabelen `NLB_API_URL`:
         ```
-        export NLB_API_URL="https://api.nlb.no/v1"
+        export NLB_API_URL="https://api.dev.nlb.no/v1"
         ```
 
 ## Kjør produksjonssystem

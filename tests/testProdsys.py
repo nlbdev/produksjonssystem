@@ -82,7 +82,7 @@ environment = {
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
     "STOP_AFTER_FIRST_JOB": "true",
     "CACHE_DIR": "{}/cache".format(target_path),
-    "NLB_API_URL": "https://api.nlb.no/v1",
+    "NLB_API_URL": "https://api.dev.nlb.no/v1",
     "REMOTE_PIPELINE2_WS_AUTHENTICATION": "false false false",
     "REMOTE_PIPELINE2_WS_AUTHENTICATION_KEYS": "none none none",
     "REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS": "none none none",
