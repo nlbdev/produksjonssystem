@@ -188,6 +188,7 @@ class NlbpubToPef(Pipeline):
             "braille-standard": "(dots:6)(grade:0)",
             "line-spacing": line_spacing,
             "duplex": duplex,
+            "maximum-number-of-sheets": "72",
         }
 
         # for custom Statped options using NLBs PIP (remove `and False` or replace with `or True` to test)
