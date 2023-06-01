@@ -45,7 +45,7 @@ class PrepareForBrailleNew(Pipeline):
 
         epubTitle = ""
         try:
-            epubTitle = " (" + epub.meta("dc:title") + ") "
+            epubTitle = " (" + epub.meta("dc:title") + ") "  # type: ignore
         except Exception:
             pass
 
@@ -74,7 +74,8 @@ class PrepareForBrailleNew(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
         opf_path = os.path.join(temp_epubdir, opf_path)
-        opf_xml = ElementTree.parse(opf_path).getroot()
+        xml_parser = ElementTree.XMLParser(encoding="utf-8")
+        opf_xml = ElementTree.parse(opf_path, parser=xml_parser).getroot()
 
         html_file = opf_xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
         html_file = html_file[0] if html_file else None
@@ -97,7 +98,8 @@ class PrepareForBrailleNew(Pipeline):
                     source=html_file,
                     target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            report_title = self.title + ": " + str(epub.identifier()) + " feilet 😭👎" + str(epubTitle)
+            self.utils.report.title = report_title
             return False
         shutil.copy(temp_html, html_file)
         
@@ -107,7 +109,8 @@ class PrepareForBrailleNew(Pipeline):
                     source=html_file,
                     target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            report_title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + str(epubTitle)
+            self.utils.report.title = report_title
             return False
         shutil.copy(temp_html, html_file)
         
@@ -117,7 +120,7 @@ class PrepareForBrailleNew(Pipeline):
                     source=html_file,
                     target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            self.utils.report.title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
         
@@ -127,13 +130,14 @@ class PrepareForBrailleNew(Pipeline):
                     source=html_file,
                     target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
+            self.utils.report.title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
 
         # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
 
-        html_xml = ElementTree.parse(temp_html).getroot()
+        xml_parser = ElementTree.XMLParser(encoding="utf-8")
+        html_xml = ElementTree.parse(temp_html, parser=xml_parser).getroot()
         result_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
         result_identifier = result_identifier[0].attrib["content"] if result_identifier and "content" in result_identifier[0].attrib else None
         if not result_identifier:
