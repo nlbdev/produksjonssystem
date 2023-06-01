@@ -19,7 +19,7 @@ class Xslt():
     @staticmethod
     def init_environment():
         DaisyPipelineJob.init_environment()
-        for dirPath, subdirList, fileList in os.walk(DaisyPipelineJob.dp2_home):
+        for dirPath, subdirList, fileList in os.walk(DaisyPipelineJob.dp2_home):  # type: ignore
             for file in fileList:
                 if file.endswith(".jar") and "saxon-he" in file:
                     Xslt.saxon_jar = os.path.join(dirPath, file)
@@ -65,7 +65,8 @@ class Xslt():
             if source:
                 command.append("-s:" + source)
             else:
-                command.append("-it:" + template)
+                if template:
+                    command.append("-it:" + template)
             command.append("-xsl:" + stylesheet)
             if target:
                 command.append("-o:" + target)
@@ -74,7 +75,9 @@ class Xslt():
 
             report.debug("Running XSLT")
             process = Filesystem.run_static(command, cwd, report, stdout_level=stdout_level, stderr_level=stderr_level)
-            self.success = process.returncode == 0
+            if process:
+                if isinstance(process, subprocess.CompletedProcess):
+                    self.success = process.returncode == 0
 
         except subprocess.TimeoutExpired:
             report.error("XSLTen {} tok for lang tid og ble derfor stoppet.".format(stylesheet))
