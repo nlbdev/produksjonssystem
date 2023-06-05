@@ -96,39 +96,43 @@ class PrepareForBrailleNew(Pipeline):
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "prepare-for-braille.xsl"),
                     source=html_file,
-                    target=temp_html)
+                    target=temp_html,
+                    report=self.utils.report)
         if not xslt.success:
             report_title = self.title + ": " + str(epub.identifier()) + " feilet 😭👎" + str(epubTitle)
             self.utils.report.title = report_title
             return False
         shutil.copy(temp_html, html_file)
-        
+
         self.utils.report.info("Bedre hefteinndeling, fjern tittelside og innholdsfortegnelse, flytte kolofon og opphavsrettside til slutten av boka…")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "pre-processing.xsl"),
                     source=html_file,
-                    target=temp_html)
+                    target=temp_html,
+                    report=self.utils.report)
         if not xslt.success:
             report_title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + str(epubTitle)
             self.utils.report.title = report_title
             return False
         shutil.copy(temp_html, html_file)
-        
+
         self.utils.report.info("Bedre håndtering av tabeller…")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "add-table-classes.xsl"),
                     source=html_file,
-                    target=temp_html)
+                    target=temp_html,
+                    report=self.utils.report)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
-        
+
         self.utils.report.info("Lag ny tittelside og bokinformasjon…")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "insert-boilerplate.xsl"),
                     source=html_file,
-                    target=temp_html)
+                    target=temp_html,
+                    report=self.utils.report)
         if not xslt.success:
             self.utils.report.title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + epubTitle
             return False
