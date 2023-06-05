@@ -25,15 +25,12 @@ class Xslt():
                     Xslt.saxon_jar = os.path.join(dirPath, file)
                 elif file.endswith(".jar") and "jing" in file:
                     Xslt.jing_jar = os.path.join(dirPath, file)
-        
         # if SAXON_JAR is set, use that instead
         if "SAXON_JAR" in os.environ:
             Xslt.saxon_jar = os.environ["SAXON_JAR"]
-        
         # if JING_JAR is set, use that instead
         if "JING_JAR" in os.environ:
             Xslt.jing_jar = os.environ["JING_JAR"]
-
 
     def __init__(self,
                  pipeline=None,
