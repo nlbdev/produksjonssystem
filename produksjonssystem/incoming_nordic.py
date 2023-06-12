@@ -182,6 +182,7 @@ class IncomingNordic(Pipeline):
                               {"epub": os.path.basename(epub_noimages_file)},
                               priority="high",
                               pipeline_and_script_version=[
+                                (None, "1.5.2-SNAPSHOT"),
                                 ("1.13.6", "1.4.6"),
                                 ("1.13.4", "1.4.5"),
                                 ("1.12.1", "1.4.2"),
