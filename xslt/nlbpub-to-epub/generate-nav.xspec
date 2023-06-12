@@ -20,7 +20,7 @@
                         <dc:format>EPUB3</dc:format>
                         <dc:creator>Lastname, Firstname</dc:creator>
                         <dc:date>2019-11-05</dc:date>
-                        <dc:publisher>NLB</dc:publisher>
+                        <dc:publisher>Nasjonalbiblioteket</dc:publisher>
                         <dc:source>urn:isbn:0</dc:source>
                         <meta property="dcterms:modified">2019-11-05T18:52:25+00:00</meta>
                     </metadata>
@@ -51,7 +51,7 @@
                         <meta name="dc:format" content="EPUB3" />
                         <meta name="dc:creator" content="Lastname, Firstname" />
                         <meta name="dc:date" content="2019-11-05" />
-                        <meta name="dc:publisher" content="NLB" />
+                        <meta name="dc:publisher" content="Nasjonalbiblioteket" />
                         <meta name="dc:source" content="urn:isbn:0" />
                         <meta name="dcterms:modified" content="2019-11-05T18:51:25+00:00" />
                     </head>
@@ -179,7 +179,7 @@
                     <meta name="dc:format" content="EPUB3" />
                     <meta name="dc:creator" content="Lastname, Firstname" />
                     <meta name="dc:date" content="2019-11-05" />
-                    <meta name="dc:publisher" content="NLB" />
+                    <meta name="dc:publisher" content="Nasjonalbiblioteket" />
                     <meta name="dc:source" content="urn:isbn:0" />
                     <meta name="dcterms:modified" content="2019-11-05T18:51:25+00:00" />
                 </head>

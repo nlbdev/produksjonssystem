@@ -136,7 +136,7 @@ class Produksjonssystem():
 
         # Configure email
         Config.set("email.sender.name", "NLBs Produksjonssystem")
-        Config.set("email.sender.address", "produksjonssystem@nlb.no")
+        Config.set("email.sender.address", "TL-administrator@nb.no")
         Config.set("email.smtp.host", os.environ.get("MAIL_SERVER", None))
         Config.set("email.smtp.port", os.environ.get("MAIL_PORT", None))
         Config.set("email.smtp.user", os.environ.get("MAIL_USERNAME", None))

@@ -11,7 +11,7 @@ It is privided for convenience and is not normative.
 Rules may be added or updated in the future.
 
 If you have questions about how to run this script,
-please contact NLBs developers at utviklere@nlb.no.
+please contact NLBs developers at TL-utviklere@nb.no.
 
 Requirements:
 - lxml (pip3 install lxml)

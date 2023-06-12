@@ -140,8 +140,7 @@ class NlbpubToTtsDtbook(Pipeline):
         library = library.upper() if library else library
         logo = os.path.join(Xslt.xslt_dir, NlbpubToTtsDtbook.uid, "{}_logo.png".format(library))
 
-        if os.path.isfile(logo):
-           # epub_dir = os.path.join(temp_resultdir, "EPUB")
+        if os.path.isfile(logo) and library != "NLB":
             image_dir = os.path.join(temp_resultdir, "images")
             if not os.path.isdir(image_dir):
                 os.mkdir(image_dir)

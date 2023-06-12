@@ -26,7 +26,7 @@
             </xsl:if>
             
             <xsl:if test="not(*/@name = 'dc:Publisher')">
-                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Publisher" content="Nasjonalbiblioteket"/>
             </xsl:if>
             
             <xsl:if test="not(*/@name = 'track:Guidelines')">

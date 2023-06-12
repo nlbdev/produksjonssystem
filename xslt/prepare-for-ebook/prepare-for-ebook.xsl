@@ -63,7 +63,7 @@
                   <xsl:when test="$language = ('en', 'eng')">
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                           <h1 id="copyright-headline-{generate-id()}">Copyright</h1>
-                          <p>This edition is produced by NLB in <xsl:value-of select="$year"/> pursuant to article 55
+                          <p>This edition is produced by the National Library of Norway in <xsl:value-of select="$year"/> pursuant to article 55
                               of the Norwegian Copyright Act and can be reproduced for private use only.
                               This copy is not to be redistributed. All digital copies are to be destroyed or returned to the publisher
                               by the end of the borrowing period. The copy will be marked so that it will be possible to trace it
@@ -74,7 +74,7 @@
                   <xsl:when test="$language = ('nb', 'nob')">
                     <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                         <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
-                        <p>Denne utgaven er produsert av NLB i <xsl:value-of select="$year"/> med hjemmel i åndsverklovens § 55,
+                        <p>Denne utgaven er produsert av Nasjonalbiblioteket i <xsl:value-of select="$year"/> med hjemmel i åndsverklovens § 55,
                             og kan kun kopieres til privat bruk. Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp
                             skal alle digitale eksemplar destrueres eller returneres til produsenten. Eksemplaret er merket slik
                             at det kan spores tilbake til deg som låner ved misbruk. Brudd på disse avtalevilkårene kan medføre ansvar
@@ -84,7 +84,7 @@
                   <xsl:otherwise>
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">
                           <h1 id="copyright-headline-{generate-id()}">Opphavsrett</h1>
-                          <p>Denne utgåva er produsert av NLB i <xsl:value-of select="$year"/> med heimel i åndsverklova § 55,
+                          <p>Denne utgåva er produsert av Nasjonalbiblioteket i <xsl:value-of select="$year"/> med heimel i åndsverklova § 55,
                               og kan bare kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
                               skal alle digitale eksemplar destruerast eller returnerast til produsenten. Eksemplaret er merka slik
                               at det kan sporast tilbake til deg som lånar ved misbruk. Brot på desse avtalevilkåra kan medføre ansvar
@@ -113,7 +113,7 @@
                                     ' levels')"/> of headings.</p>
                                 <p>The format of this book is HTML. This file format can be opened in any web browser for reading,
                                     or a text editor for editing purposes (for instance Microsoft Word or LibreOffice Writer).</p>
-                                <figure class="image"><img alt="NLB logo" src="{upper-case($library)}_logo.png"/></figure>
+                                <figure class="image"><img alt="logo" src="{upper-case($library)}_logo.png"/></figure>
                             </section>
                         </xsl:when>
                         <xsl:otherwise>
