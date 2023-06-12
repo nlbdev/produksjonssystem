@@ -446,7 +446,7 @@ class DaisyPipelineJob():
                                                                                                                     engine_pipeline_version))
             return False, alive, scripts
 
-        if not scripts:
+        if scripts is None or len(scripts) == 0:
             try:
                 scripts = requests.get(DaisyPipelineJob.encode_url(engine, "/scripts", {}))
                 if scripts.ok:
