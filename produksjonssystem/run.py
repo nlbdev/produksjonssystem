@@ -44,7 +44,6 @@ from insert_metadata import (InsertMetadataBraille, InsertMetadataDaisy202,
 from magazines_to_validation import MagazinesToValidation
 from make_abstracts import Audio_Abstract  # noqa
 from newsletter import Newsletter  # noqa
-from newspaper_schibsted import DummyTtsNewspaperSchibsted, NewspaperSchibsted  # noqa
 from nlbpub_previous import NlbpubPrevious  # noqa
 from nlbpub_to_docx import NLBpubToDocx  # noqa
 from nlbpub_to_epub import NlbpubToEpub  # noqa
@@ -151,7 +150,6 @@ class Produksjonssystem():
 
         # Special directories
         Config.set("master_dir", os.path.join(book_archive_dirs["master"], "master/EPUB"))
-        Config.set("newsfeed_dir", os.path.join(book_archive_dirs["master"], "innkommende/schibsted-aviser/avisfeeder"))
         Config.set("reports_dir", os.getenv("REPORTS_DIR", os.path.join(book_archive_dirs["master"], "rapporter")))
         Config.set("metadata_dir", os.getenv("METADATA_DIR", os.path.join(book_archive_dirs["master"], "metadata")))
         Config.set("nlbsamba.dir", os.environ.get("NLBSAMBA_DIR"))
@@ -192,7 +190,6 @@ class Produksjonssystem():
         # self.dirs_ranked[-1]["dirs"]["grunnlag"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["nlbpub"] = os.path.join(book_archive_dirs["master"], "master/NLBPUB")
         self.dirs_ranked[-1]["dirs"]["epub_from_dtbook"] = os.path.join(book_archive_dirs["master"], "grunnlagsfil/EPUB-fra-DTBook")
-        self.dirs_ranked[-1]["dirs"]["news"] = Config.get("newsfeed_dir")
         self.dirs_ranked.append({
             "id": "version-control",
             "name": "Versjonskontroll",
@@ -220,7 +217,6 @@ class Produksjonssystem():
         self.dirs_ranked[-1]["dirs"]["pub-ready-magazine"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/tidsskrifter")
         self.dirs_ranked[-1]["dirs"]["epub_narration"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/EPUB-til-innlesing")
         self.dirs_ranked[-1]["dirs"]["dtbook_tts"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-til-talesyntese")
-        self.dirs_ranked[-1]["dirs"]["dtbook_news"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DTBook-aviser-til-talesyntese")
 
         self.dirs_ranked.append({
             "id": "publication-out",
@@ -314,8 +310,7 @@ class Produksjonssystem():
                           during_working_hours=True),           "pub-ready-docx",      "docx"],
             [Newsletter(during_working_hours=True,
                         during_night_and_weekend=True),         None,                  "pub-ready-braille"],
-            [NewspaperSchibsted(during_working_hours=True,
-                                during_night_and_weekend=True), "news",                "dtbook_news"],
+
             # punktskrift
             [InsertMetadataBraille(retry_missing=True,
                                    check_identifiers=True,
@@ -345,8 +340,6 @@ class Produksjonssystem():
                                during_night_and_weekend=True),  "pub-in-audio",        "dtbook_tts"],
             [DummyPipeline("Talesyntese i Pipeline 1",
                            labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
-            [DummyTtsNewspaperSchibsted("Talesyntese i Pipeline 1 for aviser",
-                                        labels=["Lydbok"]),     "dtbook_news",          "daisy202"],
 
             # lydutdrag
             [Audio_Abstract(retry_missing=True,
@@ -401,14 +394,6 @@ class Produksjonssystem():
             "id": "tts",
             "name": "Talesyntese",
             "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts", "daisy202-to-distribution-tts"],
-            "filters": {
-                "libraries": ["NLB"],
-            },
-        },
-        {
-            "id": "schibsted",
-            "name": "Schibsted-aviser",
-            "steps": ["newspaper-schibsted", "dummy_talesynteseipipeline1foraviser", "create-abstracts", "daisy202-to-distribution"],
             "filters": {
                 "libraries": ["NLB"],
             },
