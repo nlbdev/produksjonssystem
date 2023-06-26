@@ -342,9 +342,9 @@ class Produksjonssystem():
                            labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
 
             # lydutdrag
-            #[Audio_Abstract(retry_missing=True,
-            #                during_working_hours=True,
-            #                during_night_and_weekend=True),     "daisy202",            "abstracts"],
+            [Audio_Abstract(retry_missing=True,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),     "daisy202",            "abstracts"],
 
             # lydbok-distribusjon
             [Daisy202ToDistribution(retry_all=True,
