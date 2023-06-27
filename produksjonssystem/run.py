@@ -45,7 +45,6 @@ from magazines_to_validation import MagazinesToValidation
 from make_abstracts import Audio_Abstract  # noqa
 from newsletter import Newsletter  # noqa
 from nlbpub_previous import NlbpubPrevious  # noqa
-from nlbpub_to_docx import NLBpubToDocx  # noqa
 from nlbpub_to_epub import NlbpubToEpub  # noqa
 from nlbpub_to_html import NlbpubToHtml  # noqa
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub  # noqa
@@ -257,10 +256,6 @@ class Produksjonssystem():
 
         # Define pipelines and input/output/report dirs
         self.pipelines = [
-            # Konvertering av gamle DTBøker til EPUB 3
-            # [NordicDTBookToEpub(retry_missing=True,
-            #                     only_when_idle=True),         "old_dtbook",          "epub_from_dtbook"],
-
             # Mottak, nordic guidelines 2015-1
             # [NLBPUB_incoming_validator(retry_all=True,
             #                            during_working_hours=True
@@ -295,9 +290,6 @@ class Produksjonssystem():
                              check_identifiers=True,
                              during_night_and_weekend=True,
                              during_working_hours=True),        "pub-in-ebook",        "pub-ready-ebook"],
-            [PrepareForDocx(retry_missing=True,
-                            check_identifiers=True,
-                            during_working_hours=True),         "pub-in-ebook",        "pub-ready-docx"],
             [NlbpubToEpub(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True,
@@ -305,9 +297,6 @@ class Produksjonssystem():
             [NlbpubToHtml(retry_missing=True,
                           check_identifiers=True,
                           during_working_hours=True),           "pub-ready-ebook",     "html"],
-            [NLBpubToDocx(retry_missing=True,
-                          check_identifiers=True,
-                          during_working_hours=True),           "pub-ready-docx",      "docx"],
             [Newsletter(during_working_hours=True,
                         during_night_and_weekend=True),         None,                  "pub-ready-braille"],
 
@@ -423,14 +412,6 @@ class Produksjonssystem():
             "id": "html",
             "name": "E-bøker som HTML",
             "steps": ["insert-metadata-xhtml", "prepare-for-ebook", "nlbpub-to-html"],
-            "filters": {
-                "libraries": ["Statped"],
-            },
-        },
-        {
-            "id": "docx",
-            "name": "E-bøker som DOCX",
-            "steps": ["insert-metadata-xhtml", "prepare-for-docx", "nlbpub-to-docx"],
             "filters": {
                 "libraries": ["Statped"],
             },
