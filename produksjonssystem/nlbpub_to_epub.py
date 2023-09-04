@@ -5,13 +5,14 @@ import os
 import shutil
 import sys
 import tempfile
-import datetime
 import threading
 import time
 import logging
 
+import requests
 from lxml import etree as ElementTree
 
+from core.config import Config
 from core.pipeline import Pipeline
 from core.utils.bibliofil import Bibliofil
 from core.utils.epub import Epub
@@ -66,7 +67,6 @@ class NlbpubToEpub(Pipeline):
             logging.info("Updating formatklar and filesize for ebooks")
             list_books = Filesystem.list_book_dir(self.dir_out)
             Bibliofil.update_list_of_books("XHTML", list_books)
-
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -200,6 +200,16 @@ class NlbpubToEpub(Pipeline):
         archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, temp_epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         Bibliofil.book_available(NlbpubToEpub.publication_format, temp_epub.identifier())
+
+        # ---------- reserver boken for testlåner ----------
+        test_patronId = "30072"
+        reservation_url = Config.get("nlb_api_url") + "/patrons/" + test_patronId + "/reservations/" + temp_epub.identifier()
+        self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
+        response = requests.post(reservation_url)
+        if response.status_code == 200:
+            self.utils.report.info("Boken er reservert for testlåner")
+        else:
+            self.utils.report.warn("Kunne ikke reservere boken for testlåner")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 
