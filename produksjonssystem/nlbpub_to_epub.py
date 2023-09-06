@@ -209,7 +209,7 @@ class NlbpubToEpub(Pipeline):
             self.utils.report.warn("Testlåner er ikke konfigurert. Kan ikke reservere bok for testlåner.")
         else:
             self.utils.report.info("Henter testlåner-token")
-            test_patron_refrestoken = requests.post(
+            test_patron_refreshtoken = requests.post(
                 nlb_api_url + "/auth/refresh",
                 data={
                     "usertype": "patron",
@@ -219,7 +219,7 @@ class NlbpubToEpub(Pipeline):
                     }
                 }
             ).text
-            test_patron_token = requests.post(nlb_api_url + "/auth", headers={"Authorization": test_patron_refrestoken}).text
+            test_patron_token = requests.post(nlb_api_url + "/auth", headers={"Authorization": test_patron_refreshtoken}).text
 
             reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
             self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
