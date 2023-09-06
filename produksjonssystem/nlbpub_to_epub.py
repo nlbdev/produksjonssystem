@@ -203,8 +203,8 @@ class NlbpubToEpub(Pipeline):
 
         # ---------- reserver boken for testlåner ----------
         nlb_api_url = Config.get("nlb_api_url")
-        test_patron_id = Config.get("test_patron_id")
-        test_patron_pin = Config.get("test_patron_pin")
+        test_patron_id = os.environ["TEST_PATRON_ID"]
+        test_patron_pin = os.environ["TEST_PATRON_PIN"]
         if test_patron_id is None or test_patron_pin is None:
             self.utils.report.warn("Testlåner er ikke konfigurert. Kan ikke reservere bok for testlåner.")
         else:
