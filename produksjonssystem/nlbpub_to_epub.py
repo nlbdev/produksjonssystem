@@ -202,14 +202,18 @@ class NlbpubToEpub(Pipeline):
         Bibliofil.book_available(NlbpubToEpub.publication_format, temp_epub.identifier())
 
         # ---------- reserver boken for testlåner ----------
-        test_patronId = "30072"
-        reservation_url = Config.get("nlb_api_url") + "/patrons/" + test_patronId + "/reservations/" + temp_epub.identifier()
+        nlb_api_url = Config.get("nlb_api_url")
+        test_patron_id = Config.get("test_patron_id")
+        test_patron_refreshtoken = Config.get("test_patron_refreshtoken")
+        test_patron_token = requests.post(nlb_api_url + "/auth", headers={"Authorization": test_patron_refreshtoken}).text
+
+        reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
         self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
-        response = requests.post(reservation_url)
+        response = requests.post(reservation_url, headers={"Authorization": test_patron_token})
         if response.status_code == 200:
-            self.utils.report.info("Boken er reservert for testlåner")
+            self.utils.report.info("Boken ("+ temp_epub.identifier() +") er reservert for testlåner")
         else:
-            self.utils.report.warn("Kunne ikke reservere boken for testlåner")
+            self.utils.report.warn("Kunne ikke reservere boken ("+ temp_epub.identifier() +") for testlåner")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 
