@@ -205,6 +205,7 @@ class NlbpubToEpub(Pipeline):
         nlb_api_url = Config.get("nlb_api_url")
         test_patron_id = Config.get("test_patron_id")
         test_patron_refreshtoken = Config.get("test_patron_refreshtoken")
+        self.utils.report.info("Henter testlåner-token")
         test_patron_token = requests.post(nlb_api_url + "/auth", headers={"Authorization": test_patron_refreshtoken}).text
 
         reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
