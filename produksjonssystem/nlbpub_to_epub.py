@@ -210,7 +210,7 @@ class NlbpubToEpub(Pipeline):
         else:
             self.utils.report.info("Henter testlåner-token")
             test_patron_refreshtoken = requests.post(
-                nlb_api_url + "/auth/refresh",
+                nlb_api_url + "/auth/refreshtoken",
                 data={
                     "usertype": "patron",
                     "data": {
@@ -225,9 +225,9 @@ class NlbpubToEpub(Pipeline):
             self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
             response = requests.post(reservation_url, headers={"Authorization": test_patron_token})
             if response.status_code == 200:
-                self.utils.report.info("Boken (" + temp_epub.identifier() + ") er reservert for testlåner")
+                self.utils.report.info("Boken er reservert for testlåner")
             else:
-                self.utils.report.warn("Kunne ikke reservere boken (" + temp_epub.identifier() + ") for testlåner")
+                self.utils.report.warn("Kunne ikke reservere boken for testlåner")
 
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
