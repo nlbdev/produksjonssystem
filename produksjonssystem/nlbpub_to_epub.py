@@ -219,7 +219,7 @@ class NlbpubToEpub(Pipeline):
                     }
                 }
             ).text
-            test_patron_token = requests.post(nlb_api_url + "/auth/token", headers={"Authorization": test_patron_refrestoken}).text
+            test_patron_token = requests.post(nlb_api_url + "/auth", headers={"Authorization": test_patron_refrestoken}).text
 
             reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
             self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
