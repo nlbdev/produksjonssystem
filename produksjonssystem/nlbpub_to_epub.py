@@ -209,10 +209,10 @@ class NlbpubToEpub(Pipeline):
             self.utils.report.warn("Testlåner er ikke konfigurert. Kan ikke reservere bok for testlåner.")
         else:
             self.utils.report.info("Henter testlåner-token")
-            test_patron_refreshtoken = requests.post(
+            test_patron_refreshtoken_response = requests.post(
                 nlb_api_url + "/auth/refreshtoken",
                 data={
-                    "usertype": "patron",
+                    "authtype": "patron",
                     "data": {
                         "username": test_patron_id,
                         "password": test_patron_pin
@@ -221,25 +221,36 @@ class NlbpubToEpub(Pipeline):
                 headers={
                     "Accept": "application/json, text/plain, */*"
                 }
-            ).text
-            test_patron_token = requests.post(
-                nlb_api_url + "/auth",
-                data={},  # empty data
-                headers={
-                    "Accept": "application/json, text/plain, */*",
-                    "Authorization": test_patron_refreshtoken
-                }
-            ).text
-            reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
-            self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
-            response = requests.post(reservation_url, headers={"Authorization": test_patron_token})
-            if response.status_code == 200:
-                self.utils.report.info("Boken er reservert for testlåner")
+            )
+            if test_patron_refreshtoken_response.status_code != 200:
+                self.utils.report.warn("Kunne ikke hente testlåner-token")
+                self.utils.report.debug(test_patron_refreshtoken_response.text)
             else:
-                self.utils.report.warn("Kunne ikke reservere boken for testlåner")
-                self.utils.report.debug("Testlåner-refreshtoken: " + test_patron_refreshtoken)
-                self.utils.report.debug("Testlåner-token: " + test_patron_token)
-                self.utils.report.debug(response.text)
+                test_patron_token_response = requests.post(
+                    nlb_api_url + "/auth",
+                    data={},  # empty data
+                    headers={
+                        "Accept": "application/json, text/plain, */*",
+                        "Authorization": test_patron_refreshtoken_response.text
+                    }
+                )
+                if test_patron_token_response.status_code != 200:
+                    self.utils.report.warn("Kunne ikke hente testlåner-token")
+                    self.utils.report.debug(test_patron_token_response.text)
+                else:
+                    reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
+                    self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
+                    response = requests.post(
+                        reservation_url,
+                        headers={
+                            "Authorization": test_patron_token_response.text
+                        }
+                    )
+                    if response.status_code == 200:
+                        self.utils.report.info("Boken er reservert for testlåner")
+                    else:
+                        self.utils.report.warn("Kunne ikke reservere boken for testlåner")
+                        self.utils.report.debug(response.text)
 
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
