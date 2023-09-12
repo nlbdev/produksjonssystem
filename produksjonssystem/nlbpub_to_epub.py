@@ -217,10 +217,19 @@ class NlbpubToEpub(Pipeline):
                         "username": test_patron_id,
                         "password": test_patron_pin
                     }
+                },
+                headers={
+                    "Accept": "application/json, text/plain, */*"
                 }
             ).text
-            test_patron_token = requests.post(nlb_api_url + "/auth", headers={"Authorization": test_patron_refreshtoken}).text
-
+            test_patron_token = requests.post(
+                nlb_api_url + "/auth",
+                data={},  # empty data
+                headers={
+                    "Accept": "application/json, text/plain, */*",
+                    "Authorization": test_patron_refreshtoken
+                }
+            ).text
             reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
             self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
             response = requests.post(reservation_url, headers={"Authorization": test_patron_token})
@@ -228,6 +237,9 @@ class NlbpubToEpub(Pipeline):
                 self.utils.report.info("Boken er reservert for testlåner")
             else:
                 self.utils.report.warn("Kunne ikke reservere boken for testlåner")
+                self.utils.report.debug("Testlåner-refreshtoken: " + test_patron_refreshtoken)
+                self.utils.report.debug("Testlåner-token: " + test_patron_token)
+                self.utils.report.debug(response.text)
 
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
