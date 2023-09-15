@@ -331,7 +331,7 @@ class Filesystem():
         Filesystem.touch(target)
 
         if fix_permissions:
-            Filesystem.fix_permissions(self, target)
+            Filesystem.fix_permissions(target)
 
         self.pipeline.utils.report.info("{} ble lagt til i {}.".format(book_id, dir_nicename))
 
@@ -355,7 +355,7 @@ class Filesystem():
         elif os.path.isfile(self.pipeline.book["source"]):
             os.remove(self.pipeline.book["source"])
 
-    def fix_permissions(self, target):
+    def fix_permissions(target):
         # ensure that permissions are correct
         if os.path.isfile(target):
             os.chmod(target, 0o664)
