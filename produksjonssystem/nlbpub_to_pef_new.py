@@ -224,7 +224,7 @@ class NlbpubToPefNew(Pipeline):
             "toc-depth": '2',
             "maximum-number-of-sheets": '50',
             "include-production-notes": 'true',
-            "hyphenation": 'false',
+            "hyphenation": 'none',
             "allow-volume-break-inside-leaf-section-factor": '10',
             "prefer-volume-break-before-higher-level-factor": '1',
             "stylesheet-parameters": "(skip-margin-top-of-page:true)",
@@ -293,7 +293,8 @@ class NlbpubToPefNew(Pipeline):
                     values = values if isinstance(values, list) else [values]
                     for value in values:
                         additional_metadata.append(("daisy-pipeline-argument", "nlbprod", "http://www.nlb.no/production", argument, value))
-
+                self.utils.report.info("Legger til metadata om konverteringen")
+                
                 transfer_metadata_from_html_to_pef(html_file, pef_file, additional_metadata)
 
         except Exception:
