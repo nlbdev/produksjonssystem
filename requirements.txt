@@ -32,7 +32,7 @@ cryptography==39.0.1
     # via authlib
 dotmap==1.3.30
     # via -r requirements.in
-flask==2.2.2
+flask==2.2.5
     # via -r requirements.in
 frozenlist==1.3.1
     # via
