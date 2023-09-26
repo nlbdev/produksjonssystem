@@ -65,7 +65,7 @@
             <head>
                 <meta name="dtb:uid" content="123456"/>
                 <meta name="dc:Identifier" content="123456"/>
-                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Publisher" content="Nasjonalbiblioteket"/>
                 <meta name="track:Guidelines" content="2015-1"/>
             </head>
         </x:expect>
@@ -85,7 +85,7 @@
         <x:context>
             <head>
                 <meta name="dtb:uid" content="123456"/>
-                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Publisher" content="Nasjonalbiblioteket"/>
                 <meta name="track:Guidelines" content="2015-1"/>
             </head>
         </x:context>
@@ -94,7 +94,7 @@
             <head>
                 <meta name="dtb:uid" content="123456"/>
                 <meta name="dc:Identifier" content="123456"/>
-                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Publisher" content="Nasjonalbiblioteket"/>
                 <meta name="track:Guidelines" content="2015-1"/>
             </head>
         </x:expect>
@@ -103,14 +103,14 @@
     <x:scenario label="neither dtb:uid nor dc:Identifier">
         <x:context>
             <head xml:base="file:/tmp/123456.xml">
-                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Publisher" content="Nasjonalbiblioteket"/>
                 <meta name="track:Guidelines" content="2015-1"/>
             </head>
         </x:context>
         
         <x:expect label="result">
             <head xml:base="file:/tmp/123456.xml">
-                <meta name="dc:Publisher" content="NLB"/>
+                <meta name="dc:Publisher" content="Nasjonalbiblioteket"/>
                 <meta name="track:Guidelines" content="2015-1"/>
                 <meta name="dtb:uid" content="123456"/>
                 <meta name="dc:Identifier" content="123456"/>

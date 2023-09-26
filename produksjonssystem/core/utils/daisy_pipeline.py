@@ -270,8 +270,8 @@ class DaisyPipelineJob():
                 self.status = "IDLE"
                 idle_start = time.time()
                 running_start = time.time()
-                idle_timeout = 3600 * 2.5
-                running_timeout = 3600 * 2
+                idle_timeout = 3600 * 6.5
+                running_timeout = 3600 * 6
                 timed_out = False
                 engine_died = False
                 while not timed_out and self.status in ["IDLE", "RUNNING"]:
@@ -446,7 +446,7 @@ class DaisyPipelineJob():
                                                                                                                     engine_pipeline_version))
             return False, alive, scripts
 
-        if not scripts:
+        if scripts is None or len(scripts) == 0:
             try:
                 scripts = requests.get(DaisyPipelineJob.encode_url(engine, "/scripts", {}))
                 if scripts.ok:
@@ -742,7 +742,7 @@ class DaisyPipelineJob():
         # delete old jobs
         for job_id in DaisyPipelineJob.engine_jobs[engine["endpoint"]]:
             age = time.time() - DaisyPipelineJob.engine_jobs[engine["endpoint"]][job_id]
-            if age > 3600*3:
+            if age > 3600*12:
                 self.delete_job(engine, job_id)
 
     @staticmethod

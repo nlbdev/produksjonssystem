@@ -72,8 +72,7 @@ environment = {
     "BOOK_ARCHIVE_DIRS": " ".join([
         "master={}/prodsys-archive".format(target_path),
         "share={}/prodsys-daisy202".format(target_path),
-        "distribution={}/prodsys-distribution".format(target_path),
-        "news={}/prodsys-news".format(target_path)
+        "distribution={}/prodsys-distribution".format(target_path)
     ]),  # space separated => spaces not allowed in paths
     "TRIGGER_DIR": "{}/prodsys-trigger".format(target_path),
     "REPORTS_DIR": "{}/prodsys-rapporter".format(target_path),
@@ -82,7 +81,7 @@ environment = {
     "PIPELINE2_HOME": os.getenv("PIPELINE2_HOME", os.path.join(os.path.expanduser("~"), "Desktop/daisy-pipeline")),
     "STOP_AFTER_FIRST_JOB": "true",
     "CACHE_DIR": "{}/cache".format(target_path),
-    "NLB_API_URL": "https://api.nlb.no/v1",
+    "NLB_API_URL": "https://api.dev.nlb.no/v1",
     "REMOTE_PIPELINE2_WS_AUTHENTICATION": "false false false",
     "REMOTE_PIPELINE2_WS_AUTHENTICATION_KEYS": "none none none",
     "REMOTE_PIPELINE2_WS_AUTHENTICATION_SECRETS": "none none none",
@@ -121,16 +120,12 @@ else:
     sys.exit(1)
 
 audio_identifier = "210022"
-news_identifier = "611823190315"
-identifiers = ["558237", "115437", "221437", "370001", "406837", audio_identifier, news_identifier]
+identifiers = ["558237", "115437", "221437", "370001", "406837", audio_identifier]
 file_path = os.path.join(os.path.dirname(__file__), identifiers[0] + ".epub")
 copyfile(file_path, os.path.join(prodsys.dirs["incoming-nlb"], os.path.basename(file_path)))
 
 audio_path = os.path.join(os.path.dirname(__file__), audio_identifier)
 copytree(audio_path, os.path.join(prodsys.dirs["daisy202-ready-narrated"], audio_identifier))
-
-news_path = os.path.join(project_root, "xslt", "newspaper-schibsted", "test-resources", "join")
-copytree(news_path, os.path.join(prodsys.dirs["news"], "2019-03-15"))
 
 # TODO: currently no good way of testing where there are multiple pipelines targeting
 #       the same directory. Skip for now

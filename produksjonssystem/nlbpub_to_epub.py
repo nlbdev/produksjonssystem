@@ -5,13 +5,14 @@ import os
 import shutil
 import sys
 import tempfile
-import datetime
 import threading
 import time
 import logging
 
+import requests
 from lxml import etree as ElementTree
 
+from core.config import Config
 from core.pipeline import Pipeline
 from core.utils.bibliofil import Bibliofil
 from core.utils.epub import Epub
@@ -66,7 +67,6 @@ class NlbpubToEpub(Pipeline):
             logging.info("Updating formatklar and filesize for ebooks")
             list_books = Filesystem.list_book_dir(self.dir_out)
             Bibliofil.update_list_of_books("XHTML", list_books)
-
 
     def on_book_deleted(self):
         self.utils.report.info("Slettet bok i mappa: " + self.book['name'])
@@ -200,6 +200,62 @@ class NlbpubToEpub(Pipeline):
         archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, temp_epub.identifier())
         self.utils.report.attachment(None, archived_path, "DEBUG")
         Bibliofil.book_available(NlbpubToEpub.publication_format, temp_epub.identifier())
+
+        # ---------- reserver boken for testlåner ----------
+        nlb_api_url = Config.get("nlb_api_url")
+        test_patron_id: str = str(os.environ["TEST_PATRON_ID"])
+        test_patron_pin: str = str(os.environ["TEST_PATRON_PIN"])
+        refreshtoken_url = nlb_api_url + "/auth/refreshtoken"
+        token_url = nlb_api_url + "/auth"
+
+        if test_patron_id is None or test_patron_pin is None:
+            self.utils.report.warn("Testlåner er ikke konfigurert. Kan ikke reservere bok for testlåner.")
+        else:
+            self.utils.report.info("getting testlåner-refreshtoken from: " + refreshtoken_url)
+            test_patron_refreshtoken_response = requests.post(
+                refreshtoken_url,
+                json={
+                    "authtype": "patron",
+                    "data": {
+                        "username": test_patron_id,
+                        "password": test_patron_pin
+                    }
+                },
+                headers={
+                    "Accept": "*/*"
+                }
+            )
+            if test_patron_refreshtoken_response.status_code != requests.codes.ok:
+                self.utils.report.warn("Kunne ikke hente testlåner-refreshtoken")
+                self.utils.report.debug(test_patron_refreshtoken_response.text)
+            else:
+                self.utils.report.info("getting testlåner-token from: " + token_url + " with JWT authorization")
+                test_patron_token_response = requests.get(
+                    token_url,
+                    headers={
+                        "Accept": "text/plain, application/json, */*",
+                        "Authorization": test_patron_refreshtoken_response.text
+                    }
+                )
+                if test_patron_token_response.status_code != requests.codes.ok:
+                    self.utils.report.warn("Kunne ikke hente testlåner-token")
+                    self.utils.report.debug(test_patron_token_response.text)
+                else:
+                    reservation_url = nlb_api_url + "/patrons/" + test_patron_id + "/reservations/" + temp_epub.identifier()
+                    self.utils.report.info("Reserverer bok for testlåner: " + reservation_url)
+                    response = requests.post(
+                        reservation_url,
+                        headers={
+                            "Content-Type": "application/json",
+                            "Authorization": test_patron_token_response.text
+                        }
+                    )
+                    if response.status_code == requests.codes.ok:
+                        self.utils.report.info("Boken er reservert for testlåner")
+                    else:
+                        self.utils.report.warn("Kunne ikke reservere boken for testlåner")
+                        self.utils.report.debug(response.text)
+
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
 

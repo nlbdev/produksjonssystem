@@ -24,3 +24,5 @@ xslt/**/*-result.xml
 .vs/
 
 env/
+_tmp/
+jar/
