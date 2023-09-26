@@ -6,7 +6,7 @@
 #
 accumulation-tree==0.6.2
     # via tdigest
-aiohttp==3.8.3
+aiohttp==3.8.5
     # via slackclient
 aiosignal==1.2.0
     # via aiohttp
