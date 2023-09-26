@@ -80,7 +80,7 @@ pyudorandom==1.0.0
     # via tdigest
 pyyaml==6.0
     # via -r requirements.in
-requests==2.28.1
+requests==2.31.0
     # via
     #   -r requirements.in
     #   requests-toolbelt
