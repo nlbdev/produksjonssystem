@@ -45,7 +45,7 @@ class PrepareForBrailleNew(Pipeline):
 
         epubTitle = ""
         try:
-            epubTitle = " (" + epub.meta("dc:title") + ") "  # type: ignore
+            epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
 
@@ -74,8 +74,7 @@ class PrepareForBrailleNew(Pipeline):
             self.utils.report.title = self.title + ": " + self.book["name"] + " feilet 😭👎" + epubTitle
             return False
         opf_path = os.path.join(temp_epubdir, opf_path)
-        xml_parser = ElementTree.XMLParser(encoding="utf-8")
-        opf_xml = ElementTree.parse(opf_path, parser=xml_parser).getroot()
+        opf_xml = ElementTree.parse(opf_path).getroot()
 
         html_file = opf_xml.xpath("/*/*[local-name()='manifest']/*[@id = /*/*[local-name()='spine']/*[1]/@idref]/@href")
         html_file = html_file[0] if html_file else None
@@ -96,52 +95,45 @@ class PrepareForBrailleNew(Pipeline):
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "prepare-for-braille.xsl"),
                     source=html_file,
-                    target=temp_html,
-                    report=self.utils.report)
+                    target=temp_html)
         if not xslt.success:
-            report_title = self.title + ": " + str(epub.identifier()) + " feilet 😭👎" + str(epubTitle)
-            self.utils.report.title = report_title
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
-
+        
         self.utils.report.info("Bedre hefteinndeling, fjern tittelside og innholdsfortegnelse, flytte kolofon og opphavsrettside til slutten av boka…")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "pre-processing.xsl"),
                     source=html_file,
-                    target=temp_html,
-                    report=self.utils.report)
+                    target=temp_html)
         if not xslt.success:
-            report_title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + str(epubTitle)
-            self.utils.report.title = report_title
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
-
+        
         self.utils.report.info("Bedre håndtering av tabeller…")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "add-table-classes.xsl"),
                     source=html_file,
-                    target=temp_html,
-                    report=self.utils.report)
+                    target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + epubTitle
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
-
+        
         self.utils.report.info("Lag ny tittelside og bokinformasjon…")
         xslt = Xslt(self,
                     stylesheet=os.path.join(Xslt.xslt_dir, PrepareForBrailleNew.uid, "insert-boilerplate.xsl"),
                     source=html_file,
-                    target=temp_html,
-                    report=self.utils.report)
+                    target=temp_html)
         if not xslt.success:
-            self.utils.report.title = self.title + ": " + str(epub.identifier() or "") + " feilet 😭👎" + epubTitle
+            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
             return False
         shutil.copy(temp_html, html_file)
 
         # ---------- hent nytt boknummer fra /html/head/meta[@name='dc:identifier'] og bruk som filnavn ----------
 
-        xml_parser = ElementTree.XMLParser(encoding="utf-8")
-        html_xml = ElementTree.parse(temp_html, parser=xml_parser).getroot()
+        html_xml = ElementTree.parse(temp_html).getroot()
         result_identifier = html_xml.xpath("/*/*[local-name()='head']/*[@name='dc:identifier']")
         result_identifier = result_identifier[0].attrib["content"] if result_identifier and "content" in result_identifier[0].attrib else None
         if not result_identifier:

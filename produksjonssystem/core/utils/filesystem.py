@@ -367,12 +367,6 @@ class Filesystem():
                 for f in files:
                     os.chmod(os.path.join(root, f), 0o664)
 
-    def isfile(self, path):
-        return os.path.isfile(str(path))
-
-    def chmod(self, path, mode):
-        os.chmod(str(path), mode)
-
     @staticmethod
     def insert_css(path, library, format):
 
@@ -399,7 +393,7 @@ class Filesystem():
             )
             cwd = self.pipeline.dir_in
 
-        return Filesystem.run_static(args, cwd, report=self.pipeline.utils.report, **kwargs)
+        return Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)
 
     @staticmethod
     def run_static(args,
@@ -412,28 +406,9 @@ class Filesystem():
                    check=True,
                    stdout_level="DEBUG",
                    stderr_level="DEBUG"):
-        """
-        Convenience method for subprocess.run, with our own defaults
+        """Convenience method for subprocess.run, with our own defaults"""
 
-        Args:
-            args (list or str): The command to run, as a list of arguments or a string.
-            cwd (str): The current working directory.
-            report (Report): The report object to use for logging.
-            stdout (int): The stdout file descriptor. Default is subprocess.PIPE.
-            stderr (int): The stderr file descriptor. Default is subprocess.PIPE.
-            shell (bool): Whether to run the command in a shell. Default is False.
-            timeout (int): The maximum time to wait for the command to complete, in seconds. Default is 600.
-            check (bool): Whether to raise an exception if the command returns a non-zero exit code. Default is True.
-            stdout_level (str): The logging level to use for stdout. Default is "DEBUG".
-            stderr_level (str): The logging level to use for stderr. Default is "DEBUG".
-
-        Returns:
-            The completed subprocess.CompletedProcess object.
-        """
-        if args is None:
-            return "No command given"
-
-        (report if report else logging).debug("Kjører: " + (" ".join(args) if isinstance(args, list) else args))
+        (report if report else logging).debug("Kjører: "+(" ".join(args) if isinstance(args, list) else args))
 
         completedProcess = None
         try:
@@ -463,21 +438,10 @@ class Filesystem():
 
     @staticmethod
     def zip(report, directory, file):
-        """
-        Zip the contents of `directory`.
-
-        Args:
-            report (Report): The report object to use for logging.
-            directory (str): The directory to zip.
-            file (str): The name of the zip file to create.
-
-        Raises:
-            AssertionError: If `directory` is not specified or does not exist, or if `file` is not specified.
-            AssertionError: If `directory` is not a directory.
-        """
-        assert directory, "zip: directory must be specified: " + str(directory)
-        assert os.path.isdir(directory), "zip: directory must exist and be a directory: " + directory
-        assert file, "zip: file must be specified: " + str(file)
+        """Zip the contents of `dir`"""
+        assert directory, "zip: directory must be specified: "+str(directory)
+        assert os.path.isdir(directory), "zip: directory must exist and be a directory: "+directory
+        assert file, "zip: file must be specified: "+str(file)
         dirpath = Path(directory)
         with zipfile.ZipFile(file, 'w') as archive:
             for f in dirpath.rglob('*'):
@@ -488,10 +452,10 @@ class Filesystem():
     @staticmethod
     def unzip(report, archive, target):
         """Unzip the contents of `archive`, as `dir`"""
-        assert archive, "unzip: archive must be specified: " + str(archive)
-        assert os.path.exists(archive), "unzip: archive must exist: " + archive
-        assert target, "unzip: target must be specified: " + str(target)
-        assert os.path.isdir(target) or not os.path.exists(target), "unzip: if target exists, it must be a directory: " + target
+        assert archive, "unzip: archive must be specified: "+str(archive)
+        assert os.path.exists(archive), "unzip: archive must exist: "+archive
+        assert target, "unzip: target must be specified: "+str(target)
+        assert os.path.isdir(target) or not os.path.exists(target), "unzip: if target exists, it must be a directory: "+target
 
         if not os.path.exists(target):
             os.makedirs(target)
@@ -508,7 +472,7 @@ class Filesystem():
                     report.debug(traceback.format_exc(), preformatted=True)
                     raise e
 
-            Filesystem.fix_permissions(target)  # type: ignore
+            Filesystem.fix_permissions(target)
 
     @staticmethod
     def ismount(path):
@@ -548,7 +512,7 @@ class Filesystem():
             path = ""
 
         levels = path.split(os.path.sep)
-        possible_mount_points = ["/".join(levels[:i + 1]) for i in range(len(levels))][1:]
+        possible_mount_points = ["/".join(levels[:i+1]) for i in range(len(levels))][1:]
         possible_mount_points.reverse()
 
         smb = None
