@@ -33,9 +33,6 @@ export AIRBRAKE_PROJECT_ID=
 export AIRBRAKE_PROJECT_KEY=
 export AIRBRAKE_ENVIRONMENT=development
 
-export SAXON_JAR="$DIR/jar/saxon9he.jar"
-export JING_JAR="$DIR/jar/jing.jar"
-
 # Lokal instans av Pipeline 2 (defaults to /opt/daisy-pipeline2)
 # export PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
 export LOCAL_PIPELINE2_ENABLED=false

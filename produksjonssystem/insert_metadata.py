@@ -41,9 +41,7 @@ class InsertMetadata(Pipeline):
 
         epubTitle = ""
         try:
-            epubTitle = ""
-            if epub.meta("dc:title"):
-                epubTitle = " (" + str(epub.meta("dc:title")) + ") "
+            epubTitle = " (" + epub.meta("dc:title") + ") "
         except Exception:
             pass
 
@@ -75,7 +73,7 @@ class InsertMetadata(Pipeline):
         Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir)
         temp_epub = Epub(self.utils.report, temp_epubdir)
 
-        is_valid = Metadata.insert_metadata(self.utils.report, temp_epub, publication_format=self.publication_format or "", report_metadata_errors=False)
+        is_valid = Metadata.insert_metadata(self.utils.report, temp_epub, publication_format=self.publication_format, report_metadata_errors=False)
         if not is_valid:
             self.utils.report.error("Bibliofil-metadata var ikke valide. Avbryter.")
             return False

@@ -19,18 +19,21 @@ class Xslt():
     @staticmethod
     def init_environment():
         DaisyPipelineJob.init_environment()
-        for dirPath, subdirList, fileList in os.walk(DaisyPipelineJob.dp2_home):  # type: ignore
+        for dirPath, subdirList, fileList in os.walk(DaisyPipelineJob.dp2_home):
             for file in fileList:
                 if file.endswith(".jar") and "saxon-he" in file:
                     Xslt.saxon_jar = os.path.join(dirPath, file)
                 elif file.endswith(".jar") and "jing" in file:
                     Xslt.jing_jar = os.path.join(dirPath, file)
+        
         # if SAXON_JAR is set, use that instead
         if "SAXON_JAR" in os.environ:
             Xslt.saxon_jar = os.environ["SAXON_JAR"]
+        
         # if JING_JAR is set, use that instead
         if "JING_JAR" in os.environ:
             Xslt.jing_jar = os.environ["JING_JAR"]
+
 
     def __init__(self,
                  pipeline=None,
@@ -62,8 +65,7 @@ class Xslt():
             if source:
                 command.append("-s:" + source)
             else:
-                if template:
-                    command.append("-it:" + template)
+                command.append("-it:" + template)
             command.append("-xsl:" + stylesheet)
             if target:
                 command.append("-o:" + target)
@@ -72,9 +74,7 @@ class Xslt():
 
             report.debug("Running XSLT")
             process = Filesystem.run_static(command, cwd, report, stdout_level=stdout_level, stderr_level=stderr_level)
-            if process:
-                if isinstance(process, subprocess.CompletedProcess):
-                    self.success = process.returncode == 0
+            self.success = process.returncode == 0
 
         except subprocess.TimeoutExpired:
             report.error("XSLTen {} tok for lang tid og ble derfor stoppet.".format(stylesheet))

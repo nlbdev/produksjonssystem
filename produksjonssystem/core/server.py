@@ -456,10 +456,6 @@ def join():
 
     global thread, base_url, kill_endpoint
 
-    if thread is None:
-        logging.debug("The API thread is not running.")
-        return
-
     requests.post(base_url + kill_endpoint)
 
     logging.debug("joining {}".format(thread.name))
