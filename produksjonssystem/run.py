@@ -49,11 +49,9 @@ from nlbpub_to_epub import NlbpubToEpub  # noqa
 from nlbpub_to_html import NlbpubToHtml  # noqa
 from nlbpub_to_narration_epub import NlbpubToNarrationEpub  # noqa
 from nlbpub_to_pef import NlbpubToPef  # noqa
-from nlbpub_to_pef_new import NlbpubToPefNew  # noqa
 from nlbpub_to_tts_dtbook import NlbpubToTtsDtbook  # noqa
 from nordic_to_nlbpub import NordicToNlbpub  # noqa
 from prepare_for_braille import PrepareForBraille  # noqa
-from prepare_for_braille_new import PrepareForBrailleNew  # noqa
 from prepare_for_docx import PrepareForDocx  # noqa
 from prepare_for_ebook import PrepareForEbook
 
@@ -213,7 +211,6 @@ class Produksjonssystem():
             "dirs": OrderedDict()
         })
         self.dirs_ranked[-1]["dirs"]["pub-ready-braille"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift")
-        self.dirs_ranked[-1]["dirs"]["pub-ready-braille-new"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/punktskrift-new")
         self.dirs_ranked[-1]["dirs"]["pub-ready-ebook"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/e-bok")
         self.dirs_ranked[-1]["dirs"]["pub-ready-docx"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/DOCX")
         self.dirs_ranked[-1]["dirs"]["pub-ready-magazine"] = os.path.join(book_archive_dirs["master"], "utgave-klargjort/tidsskrifter")
@@ -226,7 +223,6 @@ class Produksjonssystem():
             "dirs": OrderedDict()
         })
         self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
-        self.dirs_ranked[-1]["dirs"]["pef-new"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-new")
         self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
         self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
         self.dirs_ranked[-1]["dirs"]["epub-ebook"] = os.path.join(book_archive_dirs["share"], "daisy202/EPUB")
@@ -271,17 +267,17 @@ class Produksjonssystem():
             #                labels=["EPUB"]),                  "nlbpub_manuell",      "grunnlag"],
             #  [NLBPUB_validator(overwrite=False),                              "grunnlag",            "nlbpub"],
 
-#            [IncomingNordic(uid="incoming-nordic-nlb",
-#                            retry_all=True,
-#                            during_working_hours=True,
-#                            during_night_and_weekend=True),       "incoming-nlb",     "master"],
-#            [NordicToNlbpub(retry_missing=True,
-#                            overwrite=False,
-#                            during_working_hours=True,
-#                            during_night_and_weekend=True),   "master",              "nlbpub"],
+            [IncomingNordic(uid="incoming-nordic-nlb",
+                            retry_all=True,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),       "incoming-nlb",     "master"],
+            [NordicToNlbpub(retry_missing=True,
+                            overwrite=False,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),   "master",              "nlbpub"],
 
             # Grunnlagsfiler
-#            [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
+            [NlbpubPrevious(retry_missing=True),               "nlbpub",              "nlbpub-previous"],
 
             # e-bok
             [InsertMetadataXhtml(retry_missing=True,
@@ -308,70 +304,62 @@ class Produksjonssystem():
             [InsertMetadataBraille(retry_missing=True,
                                    check_identifiers=True,
                                    during_working_hours=True),  "nlbpub",              "pub-in-braille"],
-#            [PrepareForBraille(retry_missing=True,
-#                               check_identifiers=True,
-#                               during_working_hours=True),      "pub-in-braille",      "pub-ready-braille"],
-#            [NlbpubToPef(retry_missing=True,
-#                         check_identifiers=True,
-#                         during_working_hours=True),            "pub-ready-braille",   "pef"],
-            [PrepareForBrailleNew(retry_missing=True,
-                                  check_identifiers=True,
-                                  during_working_hours=True),      "pub-in-braille",      "pub-ready-braille-new"],
-            [NlbpubToPefNew(retry_missing=True,
-                            check_identifiers=True,
-                            during_working_hours=True),            "pub-ready-braille-new",   "pef-new"],
+            [PrepareForBraille(retry_missing=True,
+                               check_identifiers=True,
+                               during_working_hours=True),      "pub-in-braille",      "pub-ready-braille"],
+            [NlbpubToPef(retry_missing=True,
+                         check_identifiers=True,
+                         during_working_hours=True),            "pub-ready-braille",   "pef"],
             # [CheckPef(),                                        "pef",                 "pef-checked"],
 
             # innlest lydbok
-#            [InsertMetadataDaisy202(retry_missing=True,
-#                                    check_identifiers=True,
-#                                    during_working_hours=True), "nlbpub",              "pub-in-audio"],
-#            [NlbpubToNarrationEpub(retry_missing=True,
-#                                   check_identifiers=True,
-#                                   during_working_hours=True),  "pub-in-audio",        "epub_narration"],
-#            [DummyPipeline("Innlesing med Hindenburg",
-#                           labels=["Lydbok", "Statped"]),       "epub_narration",      "daisy202"],
+            [InsertMetadataDaisy202(retry_missing=True,
+                                    check_identifiers=True,
+                                    during_working_hours=True), "nlbpub",              "pub-in-audio"],
+            [NlbpubToNarrationEpub(retry_missing=True,
+                                   check_identifiers=True,
+                                   during_working_hours=True),  "pub-in-audio",        "epub_narration"],
+            [DummyPipeline("Innlesing med Hindenburg",
+                           labels=["Lydbok", "Statped"]),       "epub_narration",      "daisy202"],
 
             # TTS-lydbok
-#            [NlbpubToTtsDtbook(retry_missing=True,
-#                               check_identifiers=True,
-#                               during_working_hours=True,
-#                               during_night_and_weekend=True),  "pub-in-audio",        "dtbook_tts"],
-#            [DummyPipeline("Talesyntese i Pipeline 1",
-#                           labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
-#            [DummyTtsNewspaperSchibsted("Talesyntese i Pipeline 1 for aviser",
-#                                        labels=["Lydbok"]),     "dtbook_news",          "daisy202"],
+            [NlbpubToTtsDtbook(retry_missing=True,
+                               check_identifiers=True,
+                               during_working_hours=True,
+                               during_night_and_weekend=True),  "pub-in-audio",        "dtbook_tts"],
+            [DummyPipeline("Talesyntese i Pipeline 1",
+                           labels=["Lydbok"]),                  "dtbook_tts",          "daisy202"],
 
             # lydutdrag
-#            [Audio_Abstract(retry_missing=True,
-#                            during_working_hours=True,
-#                            during_night_and_weekend=True),     "daisy202",            "abstracts"],
+            [Audio_Abstract(retry_missing=True,
+                            during_working_hours=True,
+                            during_night_and_weekend=True),     "daisy202",            "abstracts"],
 
             # lydbok-distribusjon
-#            [Daisy202ToDistribution(retry_all=True,
-#                                    during_working_hours=True,
-#                                    during_night_and_weekend=True),       "daisy202-ready",            "daisy202-dist"],
-#            [Daisy202ToDistribution(uid="daisy202-to-distribution-narrated",
-#                                    retry_all=True,
-#                                    during_working_hours=True,
-#                                    during_night_and_weekend=True),       "daisy202-ready-narrated",   "daisy202-dist"],
-#            [Daisy202ToDistribution(uid="daisy202-to-distribution-tts",
-#                                    retry_all=True,
-#                                    during_working_hours=True,
-#                                    during_night_and_weekend=True),       "daisy202-ready-tts",        "daisy202-dist"],
-#            [Daisy202ToDistribution(uid="daisy202-to-distribution-external",
-#                                    retry_all=True,
-#                                    during_working_hours=True,
-#                                    during_night_and_weekend=True),       "daisy202-ready-external",   "daisy202-dist"],
-#            [Daisy202ToDistribution(uid="daisy202-to-distribution-kabb",
-#                                    retry_all=True,
-#                                    during_working_hours=True,
-#                                    during_night_and_weekend=True),       "daisy202-ready-kabb",       "daisy202-dist"],
-#            [Daisy202ToDistribution(uid="daisy202-to-distribution-statped",
-#                                    retry_all=True,
-#                                    during_working_hours=True,
-#                                    during_night_and_weekend=True),       "daisy202-ready-statped",    "daisy202-dist"],
-#            [MagazinesToValidation(retry_missing=False),       "pub-ready-magazine",            "daisy202-ready"],
+            [Daisy202ToDistribution(retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready",            "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-narrated",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-narrated",   "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-tts",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-tts",        "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-external",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-external",   "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-kabb",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-kabb",       "daisy202-dist"],
+            [Daisy202ToDistribution(uid="daisy202-to-distribution-statped",
+                                    retry_all=True,
+                                    during_working_hours=True,
+                                    during_night_and_weekend=True),       "daisy202-ready-statped",    "daisy202-dist"],
+            [MagazinesToValidation(retry_missing=False),       "pub-ready-magazine",            "daisy202-ready"],
         ]
 
     # Could possibly be moved to a configuration file
