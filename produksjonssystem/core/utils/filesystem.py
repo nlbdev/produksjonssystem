@@ -399,7 +399,7 @@ class Filesystem():
             )
             cwd = self.pipeline.dir_in
 
-        return Filesystem.run_static(args, cwd, report=self.pipeline.utils.report, **kwargs)
+        return Filesystem.run_static(*args, cwd, self.pipeline.utils.report, **kwargs)
 
     @staticmethod
     def run_static(args,
@@ -508,7 +508,7 @@ class Filesystem():
                     report.debug(traceback.format_exc(), preformatted=True)
                     raise e
 
-            Filesystem.fix_permissions(target)  # type: ignore
+            Filesystem.fix_permissions(target)
 
     @staticmethod
     def ismount(path):
