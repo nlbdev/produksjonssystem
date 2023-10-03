@@ -16,6 +16,30 @@ $force-norwegian: true !default;
 $duplex: true !default;
 $include-strong: true !default;
 $include-em: true !default;
+/* Ref- req-49 */
+h1, h2, h3, h4, h5, h6 {
+    /*
+     * The '\A\A0' will produce an empty line after a resumed title, only when
+     * the resumed title is not empty.
+     *
+     * TODO: It would be nice if this could be solved with a flexible
+     * margin-bottom at the @any-resumed below - the margin-bottom should be 1,
+     * except when the content is empty, then it should be 0.
+     */
+    string-set: resumed-title content() " (Forts.)\A\A0";
+}
+level1, level2, level3, level4, level5, level6 {
+    string-set: resumed-title '';
+}
+@-obfl-volume-transition {
+    @any-resumed {
+        white-space: pre-line;
+        content: string(resumed-title, start-except-first);
+    }
+}
+
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                page                                                        */
@@ -27,7 +51,7 @@ $include-em: true !default;
     // be implicitly set to "pre-page" or "post-page" when in a
     // volume area context.
     counter-increment: page;
-    margin-right: 1;
+    margin-right: 2;
     @if $show-print-page-numbers {
         margin-left: 2;
     } @else {
@@ -60,8 +84,10 @@ pagenum, *[epub|type~='pagebreak'] {
     pagenum {
             string-set: print-page content();
     }*/
+   /* frontmatter pagenum,
     bodymatter pagenum,
-    rearmatter pagenum {
+    rearmatter pagenum {*/
+        pagenum {
             string-set: print-page content()
                         print-page-break-indicator "⠿";
             &::after {
@@ -81,14 +107,14 @@ pagenum, *[epub|type~='pagebreak'] {
                     string-set: print-page-break-indicator "";
             }
     }
-    [epub|type~='frontmatter'] [epub|type~='pagebreak'] {
+    /*[epub|type~='frontmatter'] [epub|type~='pagebreak'] {
             &[title] {
                     string-set: print-page attr(title);
             }
             &:not([title]) {
                     string-set: print-page content();
             }
-    }
+    }*/
     
     /* clear print page number after frontmatter (so that 'last' page does not point from bodymatter to frontmatter) */
     bodymatter {
@@ -102,6 +128,7 @@ pagenum, *[epub|type~='pagebreak'] {
 }
 
 @page body {
+    
     @if $show-print-page-numbers or $show-braille-page-numbers {
             margin-bottom: 1;
     }
@@ -112,6 +139,7 @@ pagenum, *[epub|type~='pagebreak'] {
             }
             @left {
                     content: -obfl-marker-indicator(pagenum, '⠿');
+                    text-transform: none;
             }
     }
 
@@ -120,7 +148,7 @@ pagenum, *[epub|type~='pagebreak'] {
                     content: counter(page);
             }
     }
-}
+ }
 /* -------------------------------------------------------------------------- */
 /*               line spacing                                                 */
 /* -------------------------------------------------------------------------- */
@@ -197,32 +225,32 @@ html:not(:has(body ~ body)) > body > section {
  * section is wrapped in a <div class="leaf-section"> element by pre-processing.xsl.
  */
 
-section:not(:has(> section, > div.leaf-section)),
+/*section:not(:has(> section, > div.leaf-section)),
 level1:not(:has(> level2, div.leaf-section)),
-level2:not(:has(> level3, div.leaf-section)),
+level2:not(:has(> level3, div.leaf-section)),nynorsk
 level3:not(:has(> level4, div.leaf-section)),
 level4:not(:has(> level5, div.leaf-section)),
 level5:not(:has(> level6, div.leaf-section)),
 level6:not(:has(div.leaf-section)),
 div.leaf-section {
     volume-break-inside: -obfl-keep(5);
-    
+      
     &:has(~ *) {
     
-        /* Keep the first child element of a leaf section together with the next sheet.
-           This should prevent orphaned content if the leaf section is very small. */
+        ** Keep the first child element of a leaf section together with the next sheet.
+           This should prevent orphaned content if the leaf section is very small. **
         :first-child {
             -obfl-keep-with-next-sheets: 1;
         }
         
         h1, h2, h3, h4, h5, h6 {
-            /* Keep headlines together with the next sheet.
-               This should prevent orphaned headlines when the headline is near the end of the leaf section. */
+           
+
             -obfl-keep-with-next-sheets: 1;
         }
     }
 }
-
+*/
 /* Avoid page breaks after a headline (orphaned headline) */
 h1, h2, h3, h4, h5, h6 {
     page-break-after: avoid;
@@ -232,7 +260,14 @@ h1, h2, h3, h4, h5, h6 {
 *.braille-volume-break-before {
     volume-break-before: always;
 }
+br.volume-break {
+    volume-break-before: always;
+}
 
+/* Class that can be used to insert manual page breaks */
+*.braille-page-break-before {
+    page-break-before: always;
+}
 /* -------------------------------------------------------------------------- */
 /* Book structure, including headlines, toc, titlepage, etc.                  */
 /* -------------------------------------------------------------------------- */
@@ -248,12 +283,17 @@ section {
 /* Insert generated content at start of volume */
 @volume {
     @begin {
-            content: flow(front) flow(volume-toc);
+           content: flow(front, document) flow(volume-toc, document);   
+           /* print both doc-toc and volume toc in each volume with different toc-levels */
+         /*  content: flow(front) flow(front-first) flow(document-toc) flow(volume-toc);   */
+            
     }
 }
 @volume :first {
     @begin {
-            content: flow(front) flow(front-first) flow(document-toc);
+           content: flow(front, document) flow(front-first, document) flow(document-toc, document) flow(volume-toc, document);
+         /*    content: flow(front) flow(front-first) flow(volume-toc);*/
+    
     }
 }
 
@@ -262,20 +302,27 @@ section {
 .pef-titlepage {
     flow: front;
     display: block;
-    volume-break-after: avoid;
+   /* volume-break-after: avoid;*/
     text-transform: uncontracted;
     margin-top: 0;
     margin-left: 1;
     margin-right: 1;
     hyphens: none;
     
-    & > p {
+    & > p{
         margin-top: 0;
         margin-bottom: 0;
-        text-indent: 0;
-        text-align: center;
+        /*text-indent: 0;*/
+      
+        text-align: left;
     }
-}
+    & > .Innrykk-5{
+        text: indent 18em;
+    }
+     & > .Høyre-justert{
+        text-align: right;
+    }
+ }
 
 .pef-volume {
     &::before {
@@ -289,45 +336,162 @@ section {
 
 /* #generated-*-toc is a <list> in DTBook and <ol> in HTML
 * these elements are generated by px:dtbook-to-pef.convert */
-#generated-volume-toc, #generated-document-toc {
+
+html:has(> head > meta[name="dc:language"][content|="nn"]) #generated-document-toc::-obfl-on-toc-start {
+    content: 'Innhald for heile boka:';
+}
+html:has(> head > meta[name="dc:language"][content|="no"]) #generated-document-toc::-obfl-on-toc-start {
+    content: 'Innhold for hele boka:';
+}   
+html:has(> head > meta[name="dc:language"][content|="nb"]) #generated-document-toc::-obfl-on-toc-start {
+    content: 'Innhold for hele boka:';
+}   
+#generated-document-toc
+{
     // flow: volume-toc; // default for #generated-volume-toc
     // flow: document-toc; // default for #generated-document-toc
-    volume-break-after: avoid;
-    page-break-before: always;
+    /* volume-break-after: avoid;*/
+   // "page-break-before: always" <- line was removed here and added below
     margin-left: 0; // no left margin on toc lists
+    margin-top: 0; // <- this line was added
+    margin-bottom: 0; // <- this line was added
+
     
-    &::-obfl-on-toc-start {
-        content: 'Innhold';
+    &::-obfl-on-toc-start
+    {
+        page-break-before: always; // <- this line was added
         display: block;
-        border-bottom: ⠉;
+        border-bottom: none;
         border-left: none;
         border-right: none;
-        border-top: ⠉;
+        border-top: none;
         margin-bottom: 1;
-        margin-left: 0;
-        margin-right: 0;
+        margin-left: 5;
+        margin-right: 4;
         margin-top: 2;
-        text-align: center;
+        text-align: left;
+        text-indent: 0;
+        hyphens: none;
     }
+
     
-    li {
-            display: block;
-            margin-left: 2;
-            margin-right: 3;
-            margin-top: 0;
-            text-indent: -2;
+    
+    li 
+    {
+          
             
-            & a::after {
-                    content: " " leader("⠄", $page-width - if($show-print-page-numbers, 2, 1) - 1, right) " " target-counter(attr(href), page);
-                    margin-left: 2;
-                    margin-top: 0;
-                    text-indent: -2;
-                    // otherwise the spaces to the left and right of the leader are collapsed into one
-                    // because Dotify passes the leader to the translator as an empty string
-                    white-space: pre-wrap;
+            & a 
+            {
+                display: block;
+                margin-left: 2;
+              /* -obfl-left-text-indent: 2;*/
+                -obfl-right-text-indent: 3;
+              /*  margin-right: 3; */
+                margin-top: 0;
+                text-indent: -2;
+                &::after 
+                {
+                    /* The print page numbers are placed in rounded brackets after each heading in the TOC.*/
+                    content: " (" target-string(attr(href), print-page) ")"
+                             " " leader("⠄", $page-width - if($show-print-page-numbers, 2, 1) - 2, right)
+                             " " target-counter(attr(href), page);
+                }
+                /* ref- requirement 55 */
+              /*  &::-obfl-on-resumed {
+                    content: target-text(attr(href))
+                             " (Forts.)"*/
+                           /*  " " leader("⠄", $page-width - if($show-print-page-numbers, 2, 1) - 2, right)
+                             " " -obfl-evaluate('$started-volume-first-content-page');
+                }*/
             }
+    
     }
 }
+
+
+    
+html:has(> head > meta[name="dc:language"][content|="nn"]) #generated-volume-toc::-obfl-on-toc-start {
+    content: 'Innhald for heftet:';
+}
+html:has(> head > meta[name="dc:language"][content|="no"]) #generated-volume-toc::-obfl-on-toc-start {
+    content: 'Innhold for heftet:';
+}
+html:has(> head > meta[name="dc:language"][content|="nb"]) #generated-volume-toc::-obfl-on-toc-start {
+    content: 'Innhold for heftet:';
+}
+#generated-volume-toc
+{
+    // flow: volume-toc; // default for #generated-volume-toc
+    // flow: document-toc; // default for #generated-document-toc
+    /* volume-break-after: avoid;*/
+   // "page-break-before: always" <- line was removed here and added below
+    margin-left: 0; // no left margin on toc lists
+    margin-top: 0; // <- this line was added
+    margin-bottom: 0; // <- this line was added
+
+    
+    &::-obfl-on-toc-start
+    {
+        page-break-before: always; // <- this line was added
+        display: block;
+        border-bottom: none;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        margin-bottom: 1;
+        margin-left: 5;
+        margin-right: 4;
+        margin-top: 2;
+        text-align: left;
+        text-indent: 0;
+        hyphens: none;
+    }
+
+    
+    
+    li 
+    {
+          
+            
+            & a 
+            {
+                display: block;
+                margin-left: 2;
+              /* -obfl-left-text-indent: 2;*/
+                -obfl-right-text-indent: 3;
+              /*  margin-right: 3; */
+                margin-top: 0;
+                text-indent: -2;
+                &::after 
+                {
+                    /* The print page numbers are placed in rounded brackets after each heading in the TOC.*/
+                    content: " (" target-string(attr(href), print-page) ")"
+                             " " leader("⠄", $page-width - if($show-print-page-numbers, 2, 1) - 2, right)
+                             " " target-counter(attr(href), page);
+                }
+                /* ref- requirement 55 */
+              /*  &::-obfl-on-resumed {
+                    content: target-text(attr(href))
+                             " (Forts.)"*/
+                           /*  " " leader("⠄", $page-width - if($show-print-page-numbers, 2, 1) - 2, right)
+                             " " -obfl-evaluate('$started-volume-first-content-page');
+                }*/
+            }
+    
+    }
+}
+
+/*It all depends on how you style the TOC. You are currently specifying in CSS that you want continued chapters in both the full TOC and the volume TOCs.
+ To include them only in the volume TOCs but not in the full TOC, you should have the following CSS: */
+#generated-volume-toc li a::-obfl-on-resumed {
+    content: target-text(attr(href)) " (Forts.)"
+}
+/* To limit the number of levels of headings in a TOC, there is the global "toc-depth" parameter, but in addition you can also limit the number of levels using CSS:*/
+#generated-document-toc > li > ol {
+    display: none;
+}
+
+
 
 /* these elements are generated by insert-boilerplate.xsl
 * they are inserted after .pef-titlepage
@@ -337,8 +501,11 @@ section {
     
     // can not be put in the normal flow because of how the .notes-placement and .notes-placement-fallback
     // fields are currently implemented
+
     flow: front-first;
-    volume-break-after: avoid;
+    hyphens: none;
+   
+    /* volume-break-after: avoid;*/
 }
 
 
@@ -346,6 +513,9 @@ section {
 .pef-pages {
     display: inline;
 }
+
+
+
 .pef-pages::after {
     display: inline;
     @if $duplex {
@@ -398,11 +568,13 @@ doctitle, h1[epub|type~='fulltitle'], h1[epub|type~='z3998:covertitle'], docauth
 /*                Text formatting                                             */
 /* -------------------------------------------------------------------------- */
 
-@text-transform strong {
+/*@text-transform strong {
     system: -nlb-indicators;
-    open: "⠠⠄";
-    close: "⠠⠄";
+  
+    open: "⠆";
+    close: "⠰";
 }
+
 
 @text-transform em {
     system: -nlb-indicators;
@@ -420,24 +592,28 @@ doctitle, h1[epub|type~='fulltitle'], h1[epub|type~='z3998:covertitle'], docauth
     system: -nlb-indicators;
     open: "⠐⠂";
     close: "⠐⠂";
-}
+} */
 
 @if ($include-strong) {
     strong, b {
         @if ($include-em) {
-            text-transform: strong;
+          /*  text-transform: strong;*/
+          /* NB! strong and em shall both have 23...56 */
+          text-transform: -louis-italic;
             :root:not(:has(em, i)) & {
-                text-transform: em;
+                text-transform: -louis-italic;
             }
         } @else {
-            text-transform: em;
+           /* text-transform: em; */
+            text-transform: -louis-italic;
         }
     }
 }
 
 @if ($include-em) {
     em, i {
-        text-transform: em;
+       /* text-transform: em;*/
+       text-transform: -louis-italic;
     }
 }
 
@@ -529,7 +705,7 @@ hr.emptyline::before {
 
 /* depth 6 */
 h6 {
-    border-bottom: ⠉;
+    /*border-bottom: ⠉;*/
     border-left: none;
     border-right: none;
     border-top: none;
@@ -539,6 +715,7 @@ h6 {
     margin-top: 1;
     text-align: left;
     text-indent: 0;
+    hyphens: none;
 }
 
 /* depth 5 */
@@ -553,6 +730,7 @@ h5, level1.part h6, *[epub|type~='part'] h6 {
     margin-top: 1;
     text-align: left;
     text-indent: 0;
+    hyphens: none;
 }
 
 /* depth 4 */
@@ -567,6 +745,7 @@ h4, level1.part h5, *[epub|type~='part'] h5 {
     margin-top: 1;
     text-align: left;
     text-indent: 0;
+    hyphens: none;
 }
 
 /* depth 3 */
@@ -576,11 +755,12 @@ h3, level1.part h4, *[epub|type~='part'] h4 {
     border-right: none;
     border-top: none;
     margin-bottom: 0;
-    margin-left: 2;
-    margin-right: 2;
+    margin-left: 5;
+    margin-right: 4;
     margin-top: 1;
-    text-align: center;
+    text-align: left;
     text-indent: 0;
+    hyphens: none;
 }
 
 /* depth 2 */
@@ -590,25 +770,32 @@ h2, level1.part h3, *[epub|type~='part'] h3 {
     border-right: none;
     border-top: none;
     margin-bottom: 1;
-    margin-left: 2;
-    margin-right: 2;
+    margin-left: 5;
+    margin-right: 4;
     margin-top: 2;
-    text-align: center;
+    text-align: left;
     text-indent: 0;
+    hyphens: none;
 }
 
 /* depth 1 */
 h1, level1.part h2, *[epub|type~='part'] h2 {
-    border-bottom: ⠉;
-    border-left: none;
+     /* border-bottom: ⠤;*/
+     border-bottom: none;
     border-right: none;
-    border-top: ⠉;
+    /*border-top: ⠉;*/
+    border-top: none;
     margin-bottom: 1;
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: 5;
+    margin-right: 4;
     margin-top: 2;
-    text-align: center;
-    text-indent: 0;
+    text-align: left;
+    text-indent: 0; 
+    hyphens: none;
+  /*  &::after{
+        content: "\A ccccccccccccccccccccccccc";
+        white-space:pre;
+    }*/
 }
 
 /* part */
@@ -617,21 +804,30 @@ level1.part h1, *[epub|type~='part'] h1 {
     border-left: ⠇;
     border-right: ⠸;
     border-top: ⠉;
-    margin-bottom: 1;
-    margin-left: 1;
-    margin-right: 5;
+    margin-bottom: 2;
+    margin-left: 2;
+    margin-right: 2;
     margin-top: 2;
+    padding-left: 1;
+    padding-right: 1;
     text-align: center;
     text-indent: 0;
+    hyphens: none;
 }
 
+h1 {
+    -obfl-underline: ⠉;
+ }
+
 /* level1 without headline */
-level1:not(.part, .pef-titlepage, .pef-about):not(:has(> h1, > hx, > .leaf-section > h1, > .leaf-section > hx)),
+/*level1:not(.part, .pef-titlepage, .pef-about):not(:has(> h1, > hx, > .leaf-section > h1, > .leaf-section > hx)),
 level1.part > level2:not(:has(> h2, > hx, > .leaf-section > h2, > .leaf-section > hx)),
 body > section:not([epub|type~='part'], .pef-titlepage, .pef-about, [epub|type~='z3998:poem']):not(:has(> h1, > .leaf-section > h1)),
 [epub|type~='part']:not([epub|type~='z3998:poem']) > section:not(:has(> h2, > .leaf-section > h2)) {
     padding-top: 5;
 }
+*/
+
 
 /* -------------------------------------------------------------------------- */
 /*                Other elements                                              */
@@ -642,6 +838,34 @@ p {
     text-align: left;
     widows: 2;
     orphans: 2;
+}
+
+figure.image + p {
+    margin-top: 1;
+  }
+
+  figure.image + div[epub|type~='pagebreak'] + p{
+    margin-top: 1;
+}
+
+figure.image + ul {
+	margin-top: 1;
+	  }
+	
+	figure.image + ol {
+	    margin-top: 1;
+	  }
+
+p.braille-no-indent {
+    text-indent: 0;
+    text-align: left;
+    widows: 2;
+    orphans: 2;
+}
+
+.image{
+color:aliceblue;
+/*dummy class*/
 }
 
 blockquote {
@@ -663,30 +887,152 @@ aside {
 sidebar, aside[epub|type~='sidebar'] {
     text-indent: 2;
     text-align: left;
+    orphans: 3;
 }
 
+.braille-aside-no-indent{
+    margin-left: 0;
+    text-indent: 0;
+    text-align: left;
+    orphans: 3;
+    widows: 3;
+   }
+
 sidebar::before, aside[epub|type~='sidebar'] {
+  /*  border-top: ⠤;
+    border-bottom: ⠉;*/
+}
+sidebar, aside[epub|type~='sidebar'] p:first-child {
+    text-indent: 0;
+    text-align: left;
+}
+
+/*li p:first-child {
+    text-indent: 0;
+    text-align: left;
+}*/
+
+.braille-aside-strek{
+    margin-left: 0;
+    text-indent: 0;
+    text-align: left;
     border-top: ⠤;
     border-bottom: ⠉;
-}
+    orphans: 3;
+    widows: 3;
+   }
 
 epigraph, aside[epub|type~='epigraph'] {
     text-indent: 2;
     text-align: left;
 }
 
-prodnote, aside[epub|type~='z3998:production'] {
-   display: block;
+prodnote, aside[epub|type~='z3998:production']  p:first-child {
+    display: inline;
+    text-indent: 0;
+    text-align: left;
+}
+/*prodnote, aside[epub|type~='z3998:production'] {
+  display: block;
    margin-top: 0;
    margin-bottom: 0;
-   margin-left: 0;
+   margin-left: 2;
+   position: relative;
+
    &::before {
+           display: inline;
            content: "⠰⠄";
    }
    &::after {
+           margin-top: 0;
+           position: absolute;
+           display: inline;
            content: "⠠⠆";
    }
+  
+}*/
+
+
+prodnote, aside[epub|type~='z3998:production'] {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 2;
+
+    > :first-child:not(ul, ol)::before,
+    > ul:first-child > :first-child::before,
+    > ol:first-child > :first-child::before,
+    &:not(:has(*))::before {
+        content: "⠰⠄";
+    }
+
+    > :last-child:not(ul, ol)::after,
+    > ul:last-child > :last-child::after,
+    > ol:last-child > :last-child::after,
+    &:not(:has(*))::after {
+        content: "⠠⠆";
+    }
 }
+
+/*aside[epub|type~='z3998:production'] {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 2;
+
+    > :first-child:not(ol)::before,
+    > ol:first-child > :first-child::before,
+    &:not(:has(*))::before {
+        content: "⠰⠄";
+    }
+
+    > :last-child:not(ol)::after,
+    > ol:last-child > :last-child::after,
+    &:not(:has(*))::after {
+        content: "⠠⠆";
+    }
+}*/
+
+
+div{
+    margin-top: 1;
+    margin-bottom: 1; 
+ /*   display: block; */
+}
+
+/* bruker epub:type for å skille mellom text-indent 0 og 2*/
+div[epub|type~='sidebar']
+{
+    margin-left: 2;
+    text-indent: 2; 
+  /*  &::before {
+        content: "⠰⠄test2 div sidebar"; */ 
+}
+div[epub|type~='sidebar'] p:first-child {
+    text-indent: 0;
+    text-align: left;
+}
+/*div > p {
+    margin-left: 2;
+    text-indent: 2;
+  }
+*/
+
+
+.braille-div-strek{
+    border-top: ⠤;
+    border-bottom: ⠉;   
+}
+
+
+/*.braille-div-block{
+    margin-left: 0;
+    text-indent: 0;
+    text-align: left;
+    &::before {
+        content: "⠰⠄test div-block m:0 i:0";
+}
+}*/
 
 /* -------------------------------------------------------------------------- */
 /*                Images                                                      */
@@ -696,11 +1042,10 @@ prodnote, aside[epub|type~='z3998:production'] {
 @if $include-captions {
     imggroup, figure:has(img) {
             display: block;
-            
-            caption, figcaption {
+                    caption, figcaption {
                     display: block;
-                    margin-top: 1;
-                    margin-bottom: 1;
+                    margin-top: 0;
+                    margin-bottom: 0;
                     margin-left: 2;
                     text-indent: 2;
                     text-align: left;
@@ -722,11 +1067,12 @@ prodnote, aside[epub|type~='z3998:production'] {
 @if $include-images {
     img[alt]:not([alt='']):not([alt='image'])::after {
             display: block;
-            content: "Bilde. " attr(alt);
+            content: "Bilde: " attr(alt);
+            orphans: 2; /* todo check */
             margin-top: 1;
-            margin-bottom: 1;
+            margin-bottom: 0;
             margin-left: 2;
-            text-indent: 2;
+            text-indent: 0;
             text-align: left;
     }
     
@@ -770,15 +1116,27 @@ line, p.line {
 /* -------------------------------------------------------------------------- */
 
 list, ul, ol, dl {
-    margin-top: 1;
+    margin-top: 0;
     margin-left: 2;
     margin-bottom: 1;
 }
 
+
+li p:first-child {
+    display: inline;
+    text-indent: 0;
+    text-align: left;
+}
+/*prodnote, aside[epub|type~='z3998:production'] li:last-child {
+    display: inline;
+    text-indent: 0;
+    text-align: left;
+}*/
 li {
     text-indent: -2;
     text-align: left;
     display: list-item;
+    orphans: 2;
     
     list, ul, ol {
         margin-top: 0;
@@ -804,7 +1162,91 @@ dl, list[type=pl], .list-style-type-none {
 
 dt, dd {
 display: inline;
+/*orphans: 2;*/
 } 
+/* added list-style-type classes */
+
+.list-style-type-decimal {
+    list-style-type: decimal;
+}
+
+.list-style-type-decimal::after {
+    content: ".";
+} 
+   
+.list-style-type-lower-roman {
+    list-style-type: lower-roman;
+}
+
+.list-style-type-lower-roman::after {
+    content: ".";
+} 
+.list-style-type-upper-roman {
+    list-style-type:upper-roman;
+}
+
+.list-style-type-upper-roman::after {
+    content: ".";
+} 
+
+.list-style-type-lower-alpha {
+    list-style-type: lower-alpha;
+}
+
+.list-style-type-lower-alpha::after {
+    content: ".";
+} 
+.list-style-type-upper-alpha {
+    list-style-type:upper-alpha;
+}
+
+.list-style-type-upper-alpha::after {
+    content: ".";
+} 
+
+
+
+
+
+.list-unstyled{
+    list-style-type: none;
+}
+
+ol[type="i"] {
+    list-style-type: lower-roman;
+    }
+
+ /* ol[type="i"] > li::after {
+    content: ".";
+} */
+  
+ol[type="I"] {
+    list-style-type: upper-roman;
+    }
+
+/*  ol[type="I"] > li::after {
+    content: ".";
+} */
+
+
+
+ol[type="a"] {
+    list-style-type: lower-alpha;
+    }
+
+/*  ol[type="a"] > li::after {
+    content: ")";
+} 
+  */
+ol[type="A"] {
+    list-style-type: upper-alpha;
+    }
+
+ /* ol[type="A"] > li::after {
+    content: ")";
+} */
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                Tables                                                      */
@@ -1057,7 +1499,7 @@ rearmatter:not(:has(> level1:not(.notes):not(.footnotes):not(.endnotes))) {
         @if ($notes-placement == 'bottom-of-page') {
                 @page {
                         @footnotes {
-                                content: flow(footnotes);
+                                content: flow(footnotes, page);
                                 max-height: 15;
                                 border-top: ⠤;
                                 margin-left: 0;
@@ -1079,8 +1521,8 @@ rearmatter:not(:has(> level1:not(.notes):not(.footnotes):not(.endnotes))) {
                                         @include endnotes-title;
                                         page-break-before: right;
                                 }
-                                content: flow(endnotes);
-                                page: notes;
+                                content: flow(endnotes, document);
+                               /* page: notes;*/
                         }
                 }
         }
@@ -1093,7 +1535,7 @@ rearmatter:not(:has(> level1:not(.notes):not(.footnotes):not(.endnotes))) {
                 }
                 @volume {
                         @end {
-                                content: flow(endnotes-title) flow(endnotes, volume);
+                                content: flow(endnotes-title, page) flow(endnotes, volume);
                                 page: notes;
                         }
                 }
