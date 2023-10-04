@@ -302,10 +302,15 @@ class Daisy202ToDistribution(Pipeline):
         try:
             self.utils.report.info("Kjører Daisy 2.02 validator i Pipeline1...")
             process = self.utils.filesystem.run([self.dp1_home, self.validator_script, input, report_command], stdout_level='DEBUG')
-            if process.returncode != 0:
-                self.utils.report.debug(traceback.format_stack())
 
             status = "DEBUG"
+
+            if process.returncode != 0:
+                status = "ERROR"
+                self.utils.report.debug(traceback.format_stack())
+                self.utils.report.error(process.stdout.decode("utf-8"))
+                self.utils.report.error(process.stderr.decode("utf-8"))
+
             error_message = []
             for line in self.utils.report._messages["message"]:
                 if "[ERROR" in line["text"]:
@@ -320,6 +325,10 @@ class Daisy202ToDistribution(Pipeline):
         except subprocess.TimeoutExpired:
             self.utils.report.error("Det tok for lang tid å kjøre Daisy 2.02 validator og den ble derfor stoppet.")
             self.utils.report.title = self.title
+            return False
+        except Exception:
+            self.utils.report.error("Noe gikk galt under kjøring av Daisy 2.02 validator.")
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
             return False
 
     def check_files(self, edition_identifier, files_book, library, temp_dir, multi_volume):
