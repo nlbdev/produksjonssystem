@@ -113,8 +113,12 @@ class Daisy202ToDistribution(Pipeline):
         while creative_work_metadata is None and timeout < 5:
 
             timeout = timeout + 1
-            creative_work_metadata = Metadata.get_creative_work_from_api(edition_identifier, editions_metadata="all", use_cache_if_possible=True, creative_work_metadata="all")
-            edition_metadata = Metadata.get_edition_from_api(edition_identifier)
+            creative_work_metadata = Metadata.get_creative_work_from_api(edition_identifier, editions_metadata="all", use_cache_if_possible=True, creative_work_metadata="all", report=self.utils.report)
+            edition_metadata = None
+            for edition in creative_work_metadata.get("editions", []):
+                if edition["identifier"] in [edition_identifier, edition_identifier[:6]]:
+                    edition_metadata = edition
+                    break
             if creative_work_metadata is not None:
                 break
 
