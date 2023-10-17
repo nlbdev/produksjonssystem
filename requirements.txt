@@ -92,7 +92,7 @@ slackclient==2.9.4
     # via -r requirements.in
 tdigest==0.5.2.2
     # via pybrake
-urllib3==1.26.12
+urllib3==1.26.18
     # via requests
 werkzeug==2.2.3
     # via
