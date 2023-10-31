@@ -49,6 +49,9 @@
     <xsl:template match="a[tokenize(@epub:type, '\s+') = 'noteref']">
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:apply-templates select="@*"/>
+            <xsl:if test="not(@id)">
+                <xsl:attribute name="id" select="generate-id()"/>
+            </xsl:if>
 
             <!-- Hvordan notereferansen håndteres er avhengig av om noten skal flyttes eller ikke og av om det er samsvar mellom referansetekst og start på noten -->
 

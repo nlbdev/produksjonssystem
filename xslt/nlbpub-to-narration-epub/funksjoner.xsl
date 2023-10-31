@@ -48,6 +48,9 @@
         <xsl:param name="anta-én-forekomst" as="xs:boolean"/>
         <xsl:param name="normaliser-navn" as="xs:boolean"/>
         <xsl:choose>
+            <xsl:when test="count($metadata) = 0">
+                <xsl:value-of select="concat('[MANGLER FORVENTET METADATA: ', $navn, ']')"/>
+            </xsl:when>
             <xsl:when test="$anta-én-forekomst">
                 <xsl:choose>
                     <xsl:when test="$normaliser-navn">

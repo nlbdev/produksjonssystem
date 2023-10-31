@@ -40,7 +40,7 @@
     <x:scenario label="Regression test for https://github.com/nlbdev/produksjonssystem/issues/115">
         <x:context>
             <div>
-                <p><a epub:type="noteref" class="noteref" href="#fnt3-1">**</a></p>
+                <p><a epub:type="noteref" class="noteref" href="#fnt3-1" id="foo">**</a></p>
                 <aside epub:type="note" class="notebody" id="fnt3-1">
                     <p>** Bdonfzhexnr qå 1-vlzaonztvmwå.</p>
                 </aside>
@@ -52,11 +52,11 @@
     <x:scenario label="Regression test for issue with aside elements getting wrapped in a elements">
         <x:context>
             <section id="ch1-19">
-                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1">Fotnote 1</a> …</p>
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1" id="foo">Fotnote 1</a> …</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-1">
                     <p>Fotnote 1: Bla bla bla.</p>
                 </aside>
-                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2">ref</a> …</p>
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2" id="foo2">ref</a> …</p>
                 <p>…</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-2">
                     <p>Notetekst</p>
@@ -66,12 +66,12 @@
         
         <x:expect label="the result should be as expected">
             <section id="ch1-19">
-                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1">Fotnote 1</a> …</p>
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1" id="foo">Fotnote 1</a> …</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-1">
                     <p>Fotnote 1: Bla bla bla.</p>
                     <p class="nlb-ekstra-informasjon">Note slutt</p>
                 </aside>
-                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2"><span class="nlb-ekstra-informasjon">Note </span>ref</a> …</p>
+                <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2" id="foo2"><span class="nlb-ekstra-informasjon">Note </span>ref</a> …</p>
                 <p>…</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-2">
                     <p>Notetekst</p>
@@ -106,7 +106,6 @@
                     <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">...</section>
                     <section epub:type="frontmatter" id="nlb-level1-om-boka">
                         <h1 class="nlb-ekstra-informasjon">Om boka</h1>
-                        <p class="nlb-ekstra-informasjon">Boka er utgitt av [MANGLER FORVENTET METADATA: dc:publisher.original], [MANGLER FORVENTET METADATA: dc:publisher.location.original], i [MANGLER FORVENTET METADATA: dc:date.issued.original].</p>
                         <p>Dette er en lydbok med tekst. Det er mulig å søke på ord i teksten. Det er mulig å navigere i lydboka på ett overskriftsnivå.</p>
                     </section>
                     <section id="ch1-19">...</section>
@@ -141,7 +140,6 @@
                     <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">...</section>
                     <section epub:type="frontmatter" id="nlb-level1-om-boka">
                         <h1 class="nlb-ekstra-informasjon">Om boka</h1>
-                        <p class="nlb-ekstra-informasjon">Boka er utgitt av [MANGLER FORVENTET METADATA: dc:publisher.original], [MANGLER FORVENTET METADATA: dc:publisher.location.original], i [MANGLER FORVENTET METADATA: dc:date.issued.original], og er på 2 sider.</p>
                         <p>Dette er en lydbok med tekst. Det er mulig å søke på ord i teksten. Det er mulig å navigere i lydboka på ett overskriftsnivå og på sidetall.</p>
                     </section>
                     <section id="ch1-19">...</section>
@@ -195,6 +193,21 @@
                     </figcaption>
                 </figure>
             </section>
+        </x:expect>
+    </x:scenario>
+    
+    <x:scenario label="Lag id-attributter for noteref som mangler id">
+        <x:context>
+            <p xmlns="http://www.w3.org/1999/xhtml">
+                <a href="#foo" class="noteref" epub:type="noteref" id="i-have-one-already">Has ID</a>
+                <a href="#foo" class="noteref" epub:type="noteref">Does not have ID</a>
+            </p>
+        </x:context>
+        <x:expect label="skal gi samme liste, men med ekstra informasjon">
+            <p xmlns="http://www.w3.org/1999/xhtml">
+                <a href="#foo" class="noteref" epub:type="noteref" id="i-have-one-already"><span class="nlb-ekstra-informasjon">Note </span>Has ID</a>
+                <a href="#foo" class="noteref" epub:type="noteref" id="..."><span class="nlb-ekstra-informasjon">Note </span>Does not have ID</a>
+            </p>
         </x:expect>
     </x:scenario>
     
