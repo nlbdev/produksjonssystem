@@ -15,12 +15,7 @@
     
     <!-- For kjøring i produksjonssystemet -->
     <xsl:variable name="metadata" as="element()*">
-        <xsl:try>
-            <xsl:sequence select="//meta"/>
-            <xsl:catch>
-                <xsl:sequence select="()"/>
-            </xsl:catch>
-        </xsl:try>
+        <xsl:sequence select="//meta"/>
     </xsl:variable>
     <!-- For kjøring på lokal PC -->
 <!--    <xsl:variable name="metadata" as="element()*" select="doc($metadata.url)//meta"/>-->
