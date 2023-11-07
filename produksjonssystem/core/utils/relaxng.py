@@ -31,7 +31,7 @@ class Relaxng():
 
         self.success = False
         if not(Xslt.jing_jar is None):
-            process = pipeline.utils.filesystem.run(["java", "-jar", Xslt.jing_jar, "-t", relaxng, source])
+            process = pipeline.utils.filesystem.run(["java", "-Xss4096k", "-jar", Xslt.jing_jar, "-t", relaxng, source])
 
             if process.returncode == 0:
                 self.success = True

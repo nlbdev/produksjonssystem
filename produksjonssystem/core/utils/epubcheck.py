@@ -66,7 +66,7 @@ class Epubcheck():
             source = epub.asFile()
 
         try:
-            command = ["java", "-jar", Epubcheck.epubcheck_jar]
+            command = ["java", "-Xss4096k", "-jar", Epubcheck.epubcheck_jar]
             command.append(source)
 
             pipeline.utils.report.debug("Running Epubcheck")

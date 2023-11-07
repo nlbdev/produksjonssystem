@@ -58,7 +58,7 @@ class Xslt():
         Xslt.init_environment()
 
         try:
-            command = ["java", "-jar", Xslt.saxon_jar]
+            command = ["java", "-Xss4096k", "-jar", Xslt.saxon_jar]
             if source:
                 command.append("-s:" + source)
             else:
