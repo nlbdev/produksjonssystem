@@ -29,11 +29,6 @@ class Bibliofil:
                 library = book["library"]
 
                 if identifier in identifiers:
-
-                    if library is None or library.upper() != "NLB":
-                        logging.info("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
-                        continue
-
                     epub_dir = os.path.join(Directory.dirs_flat["epub-ebook"], book["identifier"])
                     has_epub = os.path.isdir(epub_dir)
                     if not has_epub:
