@@ -127,8 +127,8 @@ class Bibliofil:
                              distribution_format["format"],
                              distribution_format["method"]))
 
-            if library is None or library.upper() != "NLB":
-                report.debug("book_available: only NLB books should have distribution methods: {} / {}".format(identifier, library))
+            if library is None or library.upper() not in ["NLB", "KABB"]:
+                report.debug("book_available: only NLB and KABB books should have distribution methods: {} / {}".format(identifier, library))
                 lines = []
 
             logging.info("Sending formatklar-e-mail to {} with content:".format(Config.get("email.formatklar.address")))
@@ -166,7 +166,6 @@ class Bibliofil:
                 'start': '0',
                 'order': 'any',
                 'include-deleted': 'false',
-                'library': 'NLB',
                 'creative-work-metadata': 'none',
                 'editions-metadata': 'all',
             }
