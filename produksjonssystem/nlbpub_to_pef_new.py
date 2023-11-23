@@ -222,7 +222,7 @@ class NlbpubToPefNew(Pipeline):
             "line-spacing": line_spacing,
             "duplex": duplex,
             "toc-depth": '2',
-            "maximum-number-of-sheets": '50',
+            "maximum-number-of-pages": '70',
             "include-production-notes": 'true',
             "hyphenation": 'none',
             "allow-volume-break-inside-leaf-section-factor": '10',

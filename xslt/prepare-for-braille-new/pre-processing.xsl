@@ -8,7 +8,7 @@
                 exclude-result-prefixes="#all"
                 version="2.0">
     
-    <xsl:param name="maximum-number-of-pages" as="xs:integer" select="86"/>
+    <xsl:param name="maximum-number-of-pages" as="xs:integer" select="70"/>
     
    <!-- <xsl:template match="/*">
         <xsl:variable name="clean" as="element()">
