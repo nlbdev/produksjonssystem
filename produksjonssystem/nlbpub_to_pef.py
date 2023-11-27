@@ -189,6 +189,7 @@ class NlbpubToPef(Pipeline):
             "line-spacing": line_spacing,
             "duplex": duplex,
             "maximum-number-of-pages": "70",
+            "include-images": "false",
         }
 
         # for custom Statped options using NLBs PIP (remove `and False` or replace with `or True` to test)

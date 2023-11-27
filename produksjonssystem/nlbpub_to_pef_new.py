@@ -223,6 +223,7 @@ class NlbpubToPefNew(Pipeline):
             "duplex": duplex,
             "toc-depth": '2',
             "maximum-number-of-pages": '70',
+            "include-images": "false",
             "include-production-notes": 'true',
             "hyphenation": 'none',
             "allow-volume-break-inside-leaf-section-factor": '10',
