@@ -118,7 +118,7 @@ def validate(path, oneline=False):
                               "the required attribute \"alttext\".")
 
             alttext = element.attrib["alttext"]
-            if len(alttext) <= 1 and len(etree.tostring(element, encoding='unicode', method='xml', with_tail=False)) >= 275 or len(alttext) == 0:
+            if len(alttext) <= 1 and len(etree.tostring(element, encoding='unicode', method='xml', with_tail=False)) >= 500 or len(alttext) == 0:
                 element_success = False
                 logging.error(f"{filename}:{element.sourceline} - " +
                               "The <math> element does not contain " +
@@ -134,15 +134,12 @@ def validate(path, oneline=False):
                 display_attrib = element.attrib["display"]
                 suggested_display_attribute = inline_or_block(element, parent)
                 if display_attrib != suggested_display_attribute:
-                    element_success = False
-                    logging.error(
-                        f"{filename}:{element.sourceline} - " +
-                        "The <math> element has " +
-                        "the wrong display attribute. " +
-                        f"display=\"{display_attrib}\" should be " +
-                        f"display=\"{suggested_display_attribute}\"."
-                    )
-                    include_parent_in_log = True
+                    if etree.QName(parent).localname == "dt" and display_attrib == "block":
+                        logging.warning(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}. However, we ignore this case since it is a common problem that we fix automatically.")
+                    else:
+                        element_success = False
+                        logging.error(f"MathML element has the wrong display attribute. Display = {display_attrib}, should be {suggested_display_attribute}")
+                        include_parent_in_log = True
 
             if not element_success:
                 error_count += 1
