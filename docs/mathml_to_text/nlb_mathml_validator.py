@@ -116,13 +116,13 @@ def validate(path, oneline=False):
                 logging.error(f"{filename}:{element.sourceline} - " +
                               "The <math> element does not contain " +
                               "the required attribute \"alttext\".")
-
-            alttext = element.attrib["alttext"]
-            if len(alttext) <= 1 and len(etree.tostring(element, encoding='unicode', method='xml', with_tail=False)) >= 500 or len(alttext) == 0:
-                element_success = False
-                logging.error(f"{filename}:{element.sourceline} - " +
-                              "The <math> element does not contain " +
-                              "a correct \"alttext\".")
+            if "alttext" in element.attrib:
+                alttext = element.attrib["alttext"]
+                if len(alttext) <= 1 and len(etree.tostring(element, encoding='unicode', method='xml', with_tail=False)) >= 500 or len(alttext) == 0:
+                    element_success = False
+                    logging.error(f"{filename}:{element.sourceline} - " +
+                                "The <math> element does not contain " +
+                                "a correct \"alttext\".")
 
             if "display" not in element.attrib:
                 element_success = False
