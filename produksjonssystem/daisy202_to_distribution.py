@@ -405,9 +405,9 @@ class Daisy202ToDistribution(Pipeline):
                         os.rename(file_book_path, os.path.join(temp_dir, edition_identifier + "." + ext))
             files_checked = files_checked + 1
 
-        if contains_playlist is False and library != "Statped" and library != "KABB" and multi_volume is False:
-            self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
-            return False
+     #   if contains_playlist is False and library != "Statped" and library != "KABB" and multi_volume is False:
+     #       self.utils.report.error(f"Boka {edition_identifier} inneholder ingen playlist filer")
+     #       return False
         if small_file is False and library != "Statped":
             self.utils.report.error(f"Boka {edition_identifier} inneholder ingen lydfil mellom 0.1-8 MB")
             return False
