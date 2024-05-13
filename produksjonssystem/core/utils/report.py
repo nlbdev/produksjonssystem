@@ -235,8 +235,11 @@ class Report():
         if isinstance(recipients, str):
             recipients = [recipients]
 
+        email_to = Report.emailStringsToAddresses(recipients)
         if not should_email:
             logging.info("[e-mail] Not sending plain text email")
+        elif not email_to:
+            logging.warning("[e-mail] Email with subject \"{}\" has no recipients".format(subject))
         else:
             if Config.get("test"):
                 subject = "[test] " + subject
@@ -250,7 +253,7 @@ class Report():
             msg = EmailMessage()
             msg['Subject'] = subject
             msg['From'] = sender
-            msg['To'] = Report.emailStringsToAddresses(recipients)
+            msg['To'] = email_to
             msg.set_content(message)
 
             # 2. send e-mail
@@ -424,14 +427,17 @@ class Report():
 </html>
 '''
 
+            email_to = Report.emailStringsToAddresses(recipients)
             if not should_email:
                 logging.info("[e-mail] Not sending email")
+            elif not email_to:
+                logging.warning("[e-mail] E-mail with subject \"{}\" has no recipients".format(subject))
             else:
                 # 3. build e-mail
                 msg = EmailMessage()
                 msg['Subject'] = re.sub(r"\s", " ", subject).strip()
                 msg['From'] = sender
-                msg['To'] = Report.emailStringsToAddresses(recipients)
+                msg['To'] = email_to
                 msg.set_content(markdown_text)
                 msg.add_alternative(markdown_html, subtype="html")
                 logging.info("[e-mail] E-mail with subject '{}' will be sent to: {}".format(msg['Subject'], ", ".join(recipients)))
