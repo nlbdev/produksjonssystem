@@ -86,6 +86,7 @@ class Plotter():
             group_pipeline = pipeline[0].get_current_group_pipeline()
 
             title = group_pipeline.get_group_title()
+            title = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             pipeline_id = group_pipeline.get_group_id()  # re.sub(r"[^a-z\d]", "", title.lower())
 
             queue = group_pipeline.get_queue()
