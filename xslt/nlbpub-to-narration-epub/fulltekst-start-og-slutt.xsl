@@ -324,10 +324,10 @@
 
     <xsl:template name="info-om-boka">
         <!-- Analyserer struktur -->
-        <xsl:variable name="STRUKTUR.level1" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]"/>
+        <xsl:variable name="STRUKTUR.level1" as="element()*" select="//body/section[tokenize(@epub:type, '\s+') = 'bodymatter' and not(tokenize(@epub:type, '\s+') = 'part')] | //body/section[tokenize(@epub:type, '\s+') = 'bodymatter' and tokenize(@epub:type, '\s+') = 'part']/section"/>
         <xsl:variable name="STRUKTUR.level1.typer" as="xs:string*" select="distinct-values(for $e in $STRUKTUR.level1 return normalize-space(substring-after($e/@epub:type, 'bodymatter')))"/>
-        <xsl:variable name="STRUKTUR.level2" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]/section"/>
-        <xsl:variable name="STRUKTUR.level3" as="element()*" select="//body/section[contains(@epub:type, 'bodymatter')]/section/section"/>
+        <xsl:variable name="STRUKTUR.level2" as="element()*" select="$STRUKTUR.level1/section"/>
+        <xsl:variable name="STRUKTUR.level3" as="element()*" select="$STRUKTUR.level2/section"/>
         <xsl:variable name="STRUKTUR.har-sidetall" as="xs:boolean" select="count(//*[@epub:type eq 'pagebreak']) gt 1"/>
         <xsl:variable name="STRUKTUR.dybde" as="xs:integer" select="max(for $e in //section return count($e/ancestor-or-self::section))"/>
         
