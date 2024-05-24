@@ -15,10 +15,8 @@
         
         <xsl:call-template name="generer-tittel"/>
         <!-- PSPS: Alltid før cover,sier Roald -->
-        <xsl:call-template name="lydbokavtalen"/>
-        <xsl:if test="not(upper-case($library) = 'STATPED')">
-            <xsl:call-template name="info-om-boka"/>
-        </xsl:if>
+        <xsl:call-template name="copyright-page"/>
+        <xsl:call-template name="info-om-boka"/>
     </xsl:template>
 
     <xsl:template name="generer-tittel">
