@@ -54,11 +54,11 @@
         <xsl:variable name="year" select="format-dateTime(adjust-dateTime-to-timezone(current-dateTime(),xs:dayTimeDuration('PT0H')),'[Y0000]')"/>
         <xsl:variable name="depth" select="max(//*[matches(local-name(),'^h\d$')]/xs:integer(replace(local-name(),'^h','')))"/>
         <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
-        <xsl:if test="not(upper-case($library) = ('NLB','STATPED','KABB'))">
+        <xsl:if test="not(upper-case($library) = ('NLB','TIBI','STATPED','KABB'))">
             <xsl:message select="concat('Ukjent bibliotek i schema:library (`*850$a`): ', ($library,'(mangler)')[1])"/>
         </xsl:if>
         <xsl:choose>
-            <xsl:when test="upper-case($library) = 'NLB'">
+            <xsl:when test="upper-case($library) = ('NLB','TIBI')">
               <xsl:choose>
                   <xsl:when test="$language = ('en', 'eng')">
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">

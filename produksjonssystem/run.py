@@ -394,7 +394,7 @@ class Produksjonssystem():
             "name": "Talesyntese",
             "steps": ["insert-metadata-daisy202", "nlbpub-to-tts-dtbook", "dummy_talesynteseipipeline1", "create-abstracts", "daisy202-to-distribution-tts"],
             "filters": {
-                "libraries": ["NLB"],
+                "libraries": ["NLB", "Tibi"],
             },
         },
         {
@@ -407,7 +407,7 @@ class Produksjonssystem():
             "name": "Nyhetsbrev i punktskrift",
             "steps": ["newsletter-to-braille", "nlbpub-to-pef"],
             "filters": {
-                "libraries": ["NLB"],
+                "libraries": ["NLB", "Tibi"],
             },
         },
         {
@@ -415,7 +415,7 @@ class Produksjonssystem():
             "name": "E-bøker",
             "steps": ["insert-metadata-xhtml", "prepare-for-ebook", "nlbpub-to-epub"],
             "filters": {
-                "libraries": ["NLB"],
+                "libraries": ["NLB", "Tibi"],
             },
         },
         {

@@ -144,7 +144,7 @@ class PrepareForEbook(Pipeline):
         library = library.upper() if library else library
         logo = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "{}_logo.png".format(library))
 
-        if os.path.isfile(logo) and library != "NLB":
+        if os.path.isfile(logo) and library not in ["NLB", "Tibi"]:
             shutil.copy(logo, os.path.join(html_dir, os.path.basename(logo)))
 
         PrepareForEbook.update_css()
@@ -154,7 +154,7 @@ class PrepareForEbook(Pipeline):
             stylesheet = PrepareForEbook.css_tempfile_statped_obj.name
         shutil.copy(stylesheet, os.path.join(html_dir, "ebok.css"))
 
-        if os.path.isfile(logo) and library != "NLB":
+        if os.path.isfile(logo) and library not in ["NLB", "Tibi"]:
             self.utils.report.info("Legger til logoen i OPF-manifestet")
             xslt = Xslt(self,
                         stylesheet=os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "add-to-opf-manifest.xsl"),

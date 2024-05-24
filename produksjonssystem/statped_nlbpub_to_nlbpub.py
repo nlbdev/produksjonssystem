@@ -76,7 +76,7 @@ class StatpedNlbpubToNlbpub(Pipeline):
         library = edition_metadata["library"].lower()
 
         # in case of wrong upper lower cases
-        if library == "nlb":
+        if library in ["nlb", "tibi"]:
             library = "NLB"
         elif library == "statped":
             library = "Statped"

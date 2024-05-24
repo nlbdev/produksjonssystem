@@ -129,7 +129,7 @@ class Daisy202ToDistribution(Pipeline):
         library = edition_metadata["library"].lower()
 
         # in case of wrong upper lower cases
-        if library == "nlb":
+        if library in ["nlb", "tibi"]:
             library = "NLB"
         elif library == "statped":
             library = "Statped"
@@ -211,7 +211,7 @@ class Daisy202ToDistribution(Pipeline):
         first_head_class = nccdoc.xpath("string(//*[local-name()='h1'][1]/@class)")
         second_head = nccdoc.xpath("string(//*[local-name()='h1'][2])").lower()
 
-        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "the audiobook agreement", "tigar announcement", "nlb", "jietnagirjesoahpamuš"]
+        accepted_second_head = ["lydbokavtalen", "audiobook agreement", "the audiobook agreement", "tigar announcement", "nlb", "tibi", "jietnagirjesoahpamuš"]
 
         if first_head_class != "title":
             self.utils.report.error(f"{edition_identifier} første heading {first_head_class} er ikke title")
@@ -221,7 +221,7 @@ class Daisy202ToDistribution(Pipeline):
         if edition_metadata["watermark"] is False:
             # only editions that should be watermarked are required to have Lydbokavtalen
             requires_lydbokavtalen = False
-        elif library != "NLB":
+        elif library not in ["NLB", "Tibi"]:
             # only editions produced by NLB are required to have Lydbokavtalen
             requires_lydbokavtalen = False
         elif creative_work_metadata["newspaper"]:

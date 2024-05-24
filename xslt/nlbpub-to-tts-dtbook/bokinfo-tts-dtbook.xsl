@@ -45,11 +45,11 @@
                                                if ($language = ('nn', 'nno')) then ('Hulda') else
                                                if ($language = ('se', 'sme')) then ('Biera') else
                                                ('Clara')" as="xs:string*"/>
-        <xsl:if test="not(upper-case($library) = ('NLB','STATPED','KABB'))">
+        <xsl:if test="not(upper-case($library) = ('TIBI','NLB','STATPED','KABB'))">
             <xsl:message select="concat('Ukjent bibliotek i schema:library (`*850$a`): ', ($library,'(mangler)')[1])"/>
         </xsl:if>
         <xsl:choose>
-            <xsl:when test="upper-case($library) = 'NLB'">
+            <xsl:when test="upper-case($library) = ('TIBI','NLB')">
               <xsl:choose>
                   <xsl:when test="$language = ('en', 'eng')">
                       <section epub:type="frontmatter copyright-page" id="copyright-section-{generate-id()}">

@@ -127,7 +127,7 @@ class Bibliofil:
                              distribution_format["format"],
                              distribution_format["method"]))
 
-            if library is None or library.upper() not in ["NLB", "KABB"]:
+            if library is None or library.upper() not in ["NLB", "TIBI", "KABB"]:
                 report.debug("book_available: only NLB and KABB books should have distribution methods: {} / {}".format(identifier, library))
                 lines = []
 
