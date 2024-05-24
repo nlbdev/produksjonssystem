@@ -127,7 +127,14 @@
                             </xsl:choose>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="fnk:tall-til-tallord(count(li), true(), false())"/>
+                            <xsl:variable name="list-item-count" as="xs:integer" select="count(li)"/>
+                            <xsl:value-of select="if ($list-item-count gt 15)
+                                                  then string($list-item-count)
+                                                  else (
+                                                    'en,ein,ei eller eitt', 'to', 'tre', 'fire', 'fem',
+                                                    'seks', 'sju', 'åtte', 'ni', 'ti',
+                                                    'elleve', 'tolv', 'tretten', 'fjorten', 'femten'
+                                                  )[position() eq $list-item-count]"/>
                             <xsl:choose>
                                 <xsl:when test="$er-rotliste">
                                     <xsl:text> punkter.</xsl:text>
@@ -140,8 +147,16 @@
                     </xsl:choose>
                     <xsl:if test="$antall-punkter-med-underpunkt gt 0">
                         <xsl:text> </xsl:text>
+                        <xsl:variable name="tallord" select="
+                            if ($antall-punkter-med-underpunkt gt 15)
+                                then string($antall-punkter-med-underpunkt)
+                                else (
+                                    'en,ein,ei eller eitt', 'to', 'tre', 'fire', 'fem',
+                                    'seks', 'sju', 'åtte', 'ni', 'ti',
+                                    'elleve', 'tolv', 'tretten', 'fjorten', 'femten'
+                                )[position() eq $antall-punkter-med-underpunkt]"/>
                         <xsl:value-of
-                            select="fnk:lag-stor-førstebokstav(fnk:tall-til-tallord($antall-punkter-med-underpunkt, true(), false()))"/>
+                            select="fnk:lag-stor-førstebokstav($tallord)"/>
                         <xsl:text> av disse punktene har underpunkter.</xsl:text>
                     </xsl:if>
                 </xsl:otherwise>

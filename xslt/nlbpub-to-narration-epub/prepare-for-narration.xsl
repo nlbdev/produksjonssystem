@@ -28,6 +28,7 @@
     <xsl:include href="metadata.xsl"/>
     <xsl:include href="struktur-etc.xsl"/>
     <xsl:include href="fulltekst-start-og-slutt.xsl"/>
+    <xsl:include href="fulltekst-maler.xsl"/>
     <xsl:include href="cover.xsl"/>
 <!--    <xsl:include href="lister.xsl"/>-->
     <!--<xsl:include href="innleste-tabeller.xsl"/>-->
