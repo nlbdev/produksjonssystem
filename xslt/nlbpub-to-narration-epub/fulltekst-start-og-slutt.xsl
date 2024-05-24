@@ -461,9 +461,9 @@
                 <xsl:when test="$SPRÅK.se">
                     <xsl:if
                         test="
-                        fnk:metadata-finnes('dc:publisher.original') and
-                        fnk:metadata-finnes('dc:publisher.location.original') and
-                        fnk:metadata-finnes('dc:date.issued.original')">
+                            fnk:metadata-finnes('dc:publisher.original') and
+                            fnk:metadata-finnes('dc:publisher.location.original') and
+                            fnk:metadata-finnes('dc:date.issued.original')">
                         <p>
                             <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:text>Girjji lea almmuhan </xsl:text>
@@ -476,79 +476,43 @@
                             <xsl:value-of
                                 select="fnk:hent-metadata-verdi('dc:date.issued.original', true(), false())"/>
                             <xsl:text>:s</xsl:text>
-                            <xsl:text>.</xsl:text>
-                        </p>
-                    </xsl:if>
-                    
-                    <xsl:if test="count($STRUKTUR.level1.typer) eq 1">
-                        <!-- Vi forutsetter at det bare er én type på nivå 1
-                            20171018-psps: Sjekke om det er greit
-                            Bør vi gjøre noe hvis det ikke er tilfelle.
-                        -->
-                        <p>
-                            <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                             <xsl:choose>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2 and $STRUKTUR.level3">
-                                    <!-- Tre nivåer, første nivå er deler -->
-                                    <xsl:text>Girjjis leat </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> oasit ja </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                    <xsl:text> kapihtal mas lea oassekapihtal.</xsl:text>
-                                    
+                                <xsl:when test="$STRUKTUR.har-sidetall">
+                                    <xsl:text> ja lea </xsl:text>
+                                    <xsl:value-of
+                                        select="//*[@epub:type eq 'pagebreak'][not(following::*[@epub:type eq 'pagebreak'])]/@title"/>
+                                    <xsl:text> siiddut.</xsl:text>
                                 </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part') and $STRUKTUR.level2">
-                                    <!-- To nivåer, første nivå er deler -->
-                                    <xsl:text>Girjjis leat </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> oasit ja </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level2)"/>
-                                    <xsl:text> oassekapihtal.</xsl:text>
-                                    
-                                </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'part')">
-                                    <!-- Bare ett nivå, første nivå er deler -->
-                                    <xsl:text>Girjjis leat </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> oasit.</xsl:text>
-                                </xsl:when>
-                                <xsl:when
-                                    test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter') and $STRUKTUR.level2">
-                                    <!-- To (eller flere) nivåer, første nivå er kapitler -->
-                                    <xsl:text>Girjjis leat </xsl:text>
-                                    <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                    <xsl:text> kapihtal mas lea oassekapihtal.</xsl:text>
-                                </xsl:when>
-                                <xsl:when test="$STRUKTUR.level1 and ($STRUKTUR.level1.typer eq 'chapter')">
-                                    <!-- Bare ett nivå, første nivå er kapitler -->
-                                    <xsl:text>Girjjis leat </xsl:text>
-                                    <xsl:choose>
-                                        <xsl:when test="count($STRUKTUR.level1) eq 1">
-                                            <xsl:text>okta kapihtal.</xsl:text>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:value-of select="count($STRUKTUR.level1)"/>
-                                            <xsl:text> kapihttalat.</xsl:text>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text>.</xsl:text>
+                                </xsl:otherwise>
                             </xsl:choose>
                         </p>
                     </xsl:if>
-                    
                     <p>
-                        <xsl:text>Dát lea jietnagirji mas lea teaksta. </xsl:text>
-                        <xsl:text>Lea vejolaš ohcat sániid bokte teavsttas. </xsl:text>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                        <xsl:text>Girjjis leat </xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="count($STRUKTUR.level1) eq 1">
+                                <xsl:text>okta kapihtal.</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="fnk:tall-til-tallord(count($STRUKTUR.level1), true(), false())"/>
+                                <xsl:text> kapihttalat.</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </p>
+                    <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
                         <xsl:text>Lea vejolaš navigeret jietnagirjjis okta </xsl:text>
                         <xsl:value-of
                             select="fnk:tall-til-tallord($STRUKTUR.dybde, true(), false())"/>
-                        <xsl:text> bajilčáladási siskkobealde</xsl:text>
-                        <xsl:if test="$STRUKTUR.har-sidetall">
-                            <xsl:text>, ja vel siidologuid mielde</xsl:text>
-                        </xsl:if>
-                        <xsl:text>.</xsl:text>
+                        <xsl:text> bajilčáladási siskkobealde. </xsl:text>
+                        <xsl:text>Lea vejolaš ohcat sániid bokte teavsttas.</xsl:text>
+                    </p>
+                    <p>
+                        <xsl:call-template name="legg-på-attributt-for-ekstra-informasjon"/>
+                        <xsl:text>Mii muitalit ahte oahppat váikkuha oahppat.</xsl:text>
                     </p>
                 </xsl:when>
                 <xsl:otherwise>
