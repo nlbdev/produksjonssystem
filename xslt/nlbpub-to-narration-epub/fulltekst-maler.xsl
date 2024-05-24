@@ -32,13 +32,13 @@
                         <h1 class="nlb-ekstra-informasjon">
                             <xsl:choose>
                                 <xsl:when test="$language = 'en'">
-                                    <xsl:text>The audiobook agreement</xsl:text>
+                                    <xsl:text>Copyright</xsl:text>
                                 </xsl:when>
                                 <xsl:when test="$language = 'se'">
                                     <xsl:text>Jietnagirjesoahpamuš</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:text>Lydbokavtalen</xsl:text>
+                                    <xsl:text>Opphavsrett</xsl:text>
                                 </xsl:otherwise>
                             </xsl:choose>
                         </h1>
@@ -48,33 +48,23 @@
                         <xsl:when test="$language = 'en'">
                             <p class="nlb-ekstra-informasjon">
                                 <xsl:text>This edition is produced by </xsl:text>
-                                <xsl:value-of select="$library"/>
-                                <xsl:text> in </xsl:text>
-                                <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
-                                <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                                <xsl:text>
-                                    pursuant to article 55
-                                    of the Norwegian Copyright Act and can be reproduced for private use only.
-                                    This copy is not to be redistributed. All digital copies are to be destroyed or returned to the publisher
-                                    by the end of the borrowing period. The copy will be marked so that it will be possible to trace it
-                                    to the borrower if misused. Violation of these terms of agreement may lead to liability according to
-                                    the Copyright Act. Such actions may also result in loss of the right to borrow accessible literature.
-                                </xsl:text>
+                                <xsl:value-of select="if ($library = ('NLB', 'Tibi')) then 'Tibi, a service from the National Library of Norway' else $library"/>
+                                <xsl:text>.</xsl:text>
+                                <xsl:text> It can be reproduced for private use only during the borrowing period.</xsl:text>
+                                <xsl:text> The copy will be marked so that it will be possible to trace it to the borrower if misused.</xsl:text>
+                                <xsl:text> Violation of these terms may result in loss of the right to borrow accessible literature.</xsl:text>
+                                <xsl:text> Such actions may also lead to liability according to the Copyright Act.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:when test="$language = 'nn'">
                             <p class="nlb-ekstra-informasjon">
                                 <xsl:text>Denne utgåva er produsert av </xsl:text>
-                                <xsl:value-of select="$library"/>
-                                <xsl:text> i </xsl:text>
-                                <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
-                                <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                                <xsl:text>
-                                    med heimel i åndsverklova § 55,
-                                    og kan berre kopierast til privat bruk. Eksemplaret kan ikkje distribuerast vidare. Når låneperioden er over,
-                                    skal alle digitale eksemplar destruerast eller returnerast til produsenten. Eksemplaret er merka slik
-                                    at det kan sporast tilbake til deg som lånar ved misbruk. Brot på desse avtalevilkåra kan medføre ansvar
-                                    etter åndsverklova. Slike handlingar kan også medføre tap av retten til å låne tilrettelagde bøker.</xsl:text>
+                                <xsl:value-of select="if ($library = ('NLB', 'Tibi')) then 'Tibi, ei teneste frå Nasjonalbiblioteket' else $library"/>
+                                <xsl:text>.</xsl:text>
+                                <xsl:text> Ho er berre til eige bruk i låneperioden.</xsl:text>
+                                <xsl:text> Boka er merka og kan sporast tilbake til deg ved misbruk.</xsl:text>
+                                <xsl:text> Brot på lånevilkåra kan føre til at du mistar retten til å låne tilrettelagde bøker.</xsl:text>
+                                <xsl:text> Brot på lånevilkåra kan også vere ulovleg og medføre ansvar etter åndsverklova.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:when test="$language = 'se'">
@@ -96,15 +86,12 @@
                         <xsl:otherwise>
                             <p class="nlb-ekstra-informasjon">
                                 <xsl:text>Denne utgaven er produsert av </xsl:text>
-                                <xsl:value-of select="$library"/>
-                                <xsl:text> i </xsl:text>
-                                <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
-                                <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                                <xsl:text>
-                                    med hjemmel i åndsverklovens §55, og kan kun kopieres til privat bruk.
-                                    Eksemplaret kan ikke videredistribueres. Ved låneperiodens utløp skal alle digitale eksemplar destrueres eller returneres til produsenten.
-                                    Eksemplaret er merket slik at det kan spores tilbake til deg som låntaker ved misbruk. Brudd på disse avtalevilkårene, som ulovlig kopiering eller medvirkning til slik ulovlig kopiering, kan medføre ansvar etter åndsverkloven.
-                                    Slike handlinger kan også medføre tap av retten til å låne tilrettelagte lydbøker.</xsl:text>
+                                <xsl:value-of select="if ($library = ('NLB', 'Tibi')) then 'Tibi, en tjeneste fra Nasjonalbiblioteket' else $library"/>
+                                <xsl:text>.</xsl:text>
+                                <xsl:text> Den er kun til eget bruk i låneperioden.</xsl:text>
+                                <xsl:text> Boka er merket og kan spores tilbake til deg ved misbruk.</xsl:text>
+                                <xsl:text> Brudd på lånevilkårene kan føre til at du mister retten til å låne tilrettelagte bøker.</xsl:text>
+                                <xsl:text> Brudd på lånevilkårene kan også være ulovlig og medføre ansvar etter åndsverkloven.</xsl:text>
                             </p>
                         </xsl:otherwise>
                     </xsl:choose>
