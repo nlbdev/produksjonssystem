@@ -35,7 +35,7 @@
                                     <xsl:text>Copyright</xsl:text>
                                 </xsl:when>
                                 <xsl:when test="$language = 'se'">
-                                    <xsl:text>Jietnagirjesoahpamuš</xsl:text>
+                                    <xsl:text>Dahkkivuoigatvuohta</xsl:text>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:text>Opphavsrett</xsl:text>
@@ -70,17 +70,12 @@
                         <xsl:when test="$language = 'se'">
                             <p class="nlb-ekstra-informasjon">
                                 <xsl:text>Dán veršuvdna lea </xsl:text>
-                                <xsl:value-of select="$library"/>
-                                <xsl:text> buvttadan jagi </xsl:text>
-                                <!-- psps-20171017: Kanskje raffinere årstallet under litt mer... -->
-                                <xsl:value-of select="format-date(current-date(), '[Y]')"/>
-                                <xsl:text>
-                                        vuoigŋaduodjelága § 55 mielde, ja dan oažžu dušše fal priváhta
-                                        atnui máŋget. Ii leat lohpi dán gahppala juohkit viiddaseabbot. Luoikkahanáigodaga loahpas galget buot
-                                        digitála gáhppálagat duššaduvvot dahje máhcahuvvot buvttadeaddjái. Gahppal lea merkejuvvon nu, ahte dan
-                                        sáhttá guorrat dutnje luoikkaheaddjái jus vearrut adnojuvvo. Dáid sohpamušeavttuid rihkkun sáhttá
-                                        mielddisbuktit ovddasvástádusa vuoigŋaduodjelága mielde. Dakkár dagut sáhttet maid mielddisbuktit ahte
-                                        vuoigatvuohta luoikkahit heivehuvvon jietnagirjjiid manahuvvo.</xsl:text>
+                                <xsl:value-of select="if ($library = ('NLB', 'Tibi')) then 'Tibi, Nationála girjerádjosa bálvalus' else $library"/>
+                                <xsl:text> buvttadan.</xsl:text>
+                                <xsl:text> Girjji leat luoikkahan duššefal iežat atnui luoikkahanáigodagas.</xsl:text>
+                                <xsl:text> Gahppal lea merkejuvvon nu ahte dan sáhttá guorrat dutnje jus vearrut adnojuvvo.</xsl:text>
+                                <xsl:text> Luoikkahannjuolggadusaid rihkkun sáhttá mielddisbuktit ahte manahat vuoigatvuođa heivehuvvon girjjiid luoikkahit.</xsl:text>
+                                <xsl:text> Luoikkahannjuolggadusaid rihkkun sáhttá maiddái leat lobiheapmin, ja sáhttá mielddisbuktit ovddasvástádusa vuoigŋaduodjelága mielde.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:otherwise>
@@ -225,7 +220,6 @@
                                     <xsl:value-of select="$publisher-location-original"/>
                                     <xsl:text>, </xsl:text>
                                     <xsl:value-of select="$date-issued-original"/>
-                                    <xsl:text>:s</xsl:text>
                                     <xsl:choose>
                                         <xsl:when test="exists($page-count)">
                                             <xsl:text> ja lea </xsl:text>
@@ -239,26 +233,24 @@
                                 </p>
                             </xsl:if>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Girjjis leat </xsl:text>
+                                <xsl:text>Das leat </xsl:text>
                                 <xsl:choose>
                                     <xsl:when test="$top-level-section-count eq 1">
                                         <xsl:text>okta kapihtal.</xsl:text>
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <xsl:value-of select="fnk:tall-til-tallord($top-level-section-count)"/>
-                                        <xsl:text> kapihttalat.</xsl:text>
+                                        <xsl:text> kapihttala.</xsl:text>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </p>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Lea vejolaš navigeret jietnagirjjis okta </xsl:text>
-                                <xsl:value-of
-                                    select="fnk:tall-til-tallord($section-depth)"/>
-                                <xsl:text> bajilčáladási siskkobealde. </xsl:text>
-                                <xsl:text>Lea vejolaš ohcat sániid bokte teavsttas.</xsl:text>
+                                <xsl:text>Girjjis leat bajilčállagat </xsl:text>
+                                <xsl:value-of select="fnk:tall-til-tallord($section-depth)"/>
+                                <xsl:text> dásis, ja don sáhtát navigeret teavsttas ja ohcat sániid bokte.</xsl:text>
                             </p>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Mii muitalit ahte oahppat váikkuha oahppat.</xsl:text>
+                                <xsl:text>Mii fuomášahttit ahte heivehuvvon girji sáhttá leat veaháš earálágan go originála girji.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:otherwise>
