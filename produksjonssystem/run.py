@@ -226,7 +226,7 @@ class Produksjonssystem():
             "dirs": OrderedDict()
         })
         self.dirs_ranked[-1]["dirs"]["pef"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF")
-        self.dirs_ranked[-1]["dirs"]["pef-new"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-new")
+        #self.dirs_ranked[-1]["dirs"]["pef-new"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-new")
         self.dirs_ranked[-1]["dirs"]["pef-checked"] = os.path.join(book_archive_dirs["master"], "utgave-ut/PEF-kontrollert")
         self.dirs_ranked[-1]["dirs"]["html"] = os.path.join(book_archive_dirs["master"], "utgave-ut/HTML")
         self.dirs_ranked[-1]["dirs"]["epub-ebook"] = os.path.join(book_archive_dirs["share"], "daisy202/EPUB")
@@ -317,9 +317,9 @@ class Produksjonssystem():
             [PrepareForBrailleNew(retry_missing=True,
                                   check_identifiers=True,
                                   during_working_hours=True),      "pub-in-braille",      "pub-ready-braille-new"],
-            [NlbpubToPefNew(retry_missing=True,
-                            check_identifiers=True,
-                            during_working_hours=True),            "pub-ready-braille-new",   "pef-new"],
+            #[NlbpubToPefNew(retry_missing=True,
+            #                check_identifiers=True,
+            #                during_working_hours=True),            "pub-ready-braille-new",   "pef-new"],
             # [CheckPef(),                                        "pef",                 "pef-checked"],
 
             # innlest lydbok
