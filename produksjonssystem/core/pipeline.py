@@ -415,7 +415,7 @@ class Pipeline():
                         # found thread that is not running
                         logging.debug("not alive: {}".format(thread))
                         return False
-                    if thread in self.watchdogs and time.time() - self.watchdogs[thread] > 21600:
+                    if thread in self.watchdogs and time.time() - self.watchdogs[thread] > 3600 * 12:
                         # found thread that is frozen
                         logging.debug("frozen: {}".format(thread))
                         return False
