@@ -2933,13 +2933,10 @@
   <!-- datatypes used by pagenum. -->
   <define name="dtb.datatype.romannumeral">
     <!-- jpritchett (2007-10-25): Added leading/trailing whitespace to the pattern -->
+    <!-- josteinaj (2024-08-08): Simplified regex to \s*[MmDdCcLlXxVvIi]+\s* -->
     <data type="string">
-      <param name="pattern"
-        >\s*[Mm]*([Dd]?[Cc]{0,3}|[Cc][DdMm])([Ll]?[Xx]{0,3}|[Xx][LlCc])([Vv]?[Ii]{0,3}|[Ii][VvXx])\s*</param>
+      <param name="pattern">\s*[MmDdCcLlXxVvIi]+\s*</param>
     </data>
-    <!--
-^(?i:(?=[MDCLXVI])((M{0,3})((C[DM])|(D?C{0,3}))?((X[LC])|(L?XX{0,2}))?((I[VX])|(V?(II{0,2}))|V)?))$
--->
   </define>
 
   <define name="dtb.datatype.positiveInteger">
