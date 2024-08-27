@@ -84,6 +84,12 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
     - `chmod +x /opt/quickbase/get-latest.sh`
     - Valgfritt: kjør `/opt/quickbase/get-latest.sh` i en terminal
 
+- installer Python-versjonen av epub-to-html fra nordic-epub3-dtbook-migrator:
+    - `cd /tmp`
+    - `git clone https://github.com/nlbdev/nordic-epub3-dtbook-migrator.git`
+    - `sudo mv nordic-epub3-dtbook-migrator/ /opt/`
+    - miljøvariabelen `EPUB_TO_HTML_HOME` kan brukes for å peke på `nordic-epub3-dtbook-migrator`-mappen hvis den ligger et annet sted
+
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
     - `sudo apt install software-properties-common -y`
