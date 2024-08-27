@@ -3,13 +3,14 @@
 
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 
 from pathlib import Path
+import traceback
 
 from core.pipeline import Pipeline
-from core.utils.daisy_pipeline import DaisyPipelineJob
 from core.utils.epub import Epub
 from core.utils.xslt import Xslt
 from core.utils.metadata import Metadata
@@ -62,146 +63,46 @@ class NordicToNlbpub(Pipeline):
             self.utils.report.error(self.book["name"] + ": Filnavn stemmer ikke overens med dc:identifier: {}".format(epub.identifier()))
             return False
 
-        temp_xml_file_obj = tempfile.NamedTemporaryFile()
-        temp_xml_file = temp_xml_file_obj.name
-
-        self.utils.report.info("Lager en kopi av EPUBen")
-        temp_epubdir_withimages_obj = tempfile.TemporaryDirectory()
-        temp_epubdir_withimages = temp_epubdir_withimages_obj.name
-        Filesystem.copy(self.utils.report, self.book["source"], temp_epubdir_withimages)
-
-        self.utils.report.info("Lager en kopi av EPUBen med tomme bildefiler")
-        temp_epubdir_obj = tempfile.TemporaryDirectory()
-        temp_epubdir = temp_epubdir_obj.name
-        Filesystem.copy(self.utils.report, temp_epubdir_withimages, temp_epubdir)
-        for root, dirs, files in os.walk(os.path.join(temp_epubdir, "EPUB", "images")):
-            for file in files:
-                fullpath = os.path.join(root, file)
-                os.remove(fullpath)
-                Path(fullpath).touch()
-        temp_epub = Epub(self.utils.report, temp_epubdir)
-
-        self.utils.report.info("Rydder opp i nordisk EPUB nav.xhtml")
-        nav_path = os.path.join(temp_epubdir, temp_epub.nav_path())
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-nav.xsl"),
-                    source=nav_path,
-                    target=temp_xml_file,
-                    parameters={
-                        "cover": " ".join([item["href"] for item in temp_epub.spine()]),
-                        "base": os.path.dirname(os.path.join(temp_epubdir, temp_epub.opf_path())) + "/"
-                    })
-        if not xslt.success:
-            return False
-        shutil.copy(temp_xml_file, nav_path)
-
-        self.utils.report.info("Rydder opp i nordisk EPUB package.opf")
-        opf_path = os.path.join(temp_epubdir, temp_epub.opf_path())
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup-opf.xsl"),
-                    source=opf_path,
-                    target=temp_xml_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_xml_file, opf_path)
+        # temp_xml_file_obj = tempfile.NamedTemporaryFile()
+        # temp_xml_file = temp_xml_file_obj.name
 
         html_dir_obj = tempfile.TemporaryDirectory()
         html_dir = html_dir_obj.name
-        html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
+        # html_file = os.path.join(html_dir, epub.identifier() + ".xhtml")
 
-        self.utils.report.info("Finner ut hvilket bibliotek boka tilhører…")
-        edition_metadata = Metadata.get_edition_from_api(epub.identifier(), report=self.utils.report)
-        library = None
-        if edition_metadata is not None and edition_metadata["library"] is not None:
-            library = edition_metadata["library"]
-        else:
-            library = Metadata.get_library_from_identifier(epub.identifier(), self.utils.report)
-        self.utils.report.info(f"Boka tilhører '{library}'")
+        self.utils.report.info("Konverterer fra Nordisk EPUB 3 til NLBPUB...")
+        success = False
+        try:
+            command = ["src/run.py", self.book["source"], html_dir, "--add-header-element=false"]
 
-        self.utils.report.info("Zipper oppdatert versjon av EPUBen...")
-        temp_epub.asFile(rebuild=True)
+            epub_to_html_home = os.getenv("EPUB_TO_HTML_HOME")
+            if not epub_to_html_home:
+                self.utils.report.warning("EPUB_TO_HTML_HOME is not set. Using default value: /opt/nordic-epub3-dtbook-migrator")
+                epub_to_html_home = "/opt/nordic-epub3-dtbook-migrator"
 
-        self.utils.report.info("Konverterer fra Nordisk EPUB 3 til Nordisk HTML 5...")
-        epub_file = temp_epub.asFile()
-        with DaisyPipelineJob(self,
-                              "nordic-epub3-to-html",
-                              {"epub": os.path.basename(epub_file), "fail-on-error": "false"},
-                              pipeline_and_script_version=[
-                                (None, "1.5.2-SNAPSHOT"),
-                                ("1.14.3", None),
-                                ("1.13.6", "1.4.6"),
-                                ("1.13.4", "1.4.5"),
-                                ("1.12.1", "1.4.2"),
-                                ("1.11.1-SNAPSHOT", "1.3.0"),
-                              ],
-                              context={
-                                os.path.basename(epub_file): epub_file
-                              }) as dp2_job_convert:
-            convert_status = "SUCCESS" if dp2_job_convert.status == "SUCCESS" else "ERROR"
+            process = Filesystem.run_static(command, epub_to_html_home, self.utils.report)
+            success = process.returncode == 0
 
-            if convert_status != "SUCCESS":
-                self.utils.report.error("Klarte ikke å konvertere boken")
-                return False
+        except subprocess.TimeoutExpired:
+            self.utils.report.error("Epubcheck for {} took too long and were therefore stopped.".format(os.path.basename(self.book["source"])))
 
-            dp2_html_dir = os.path.join(dp2_job_convert.dir_output, "output-dir", epub.identifier())
-            dp2_html_file = os.path.join(dp2_job_convert.dir_output, "output-dir", epub.identifier(), epub.identifier() + ".xhtml")
+        except Exception:
+            self.utils.report.debug(traceback.format_exc(), preformatted=True)
+            self.utils.report.error("An error occured while running EPUB to HTML (for " + str(self.book["source"]) + ")")
 
-            if not os.path.isdir(dp2_html_dir):
-                self.utils.report.error("Finner ikke den konverterte boken: {}".format(dp2_html_dir))
-                return False
-
-            if not os.path.isfile(dp2_html_file):
-                self.utils.report.error("Finner ikke den konverterte boken: {}".format(dp2_html_file))
-                self.utils.report.info("Kanskje filnavnet er forskjellig fra IDen?")
-                return False
-
-            Filesystem.copy(self.utils.report, dp2_html_dir, html_dir)
-
-        self.utils.report.info("Rydder opp i nordisk HTML")
-        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "nordic-cleanup.xsl"),
-                    source=html_file,
-                    target=temp_xml_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_xml_file, html_file)
-
-        self.utils.report.info("Rydder opp i ns0 i page-normal")
-        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "ns0-cleanup.xsl"),
-                    source=html_file,
-                    target=temp_xml_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_xml_file, html_file)
-
-        self.utils.report.info("Rydder opp i innholdsfortegnelsen")
-        xslt = Xslt(self, stylesheet=os.path.join(Xslt.xslt_dir, NordicToNlbpub.uid, "fix-toc-span.xsl"),
-                    source=html_file,
-                    target=temp_xml_file)
-        if not xslt.success:
-            return False
-        shutil.copy(temp_xml_file, html_file)
-
-        self.utils.report.info("Legger til EPUB-filer (OPF, NAV, container.xml, mediatype)...")
-        nlbpub_tempdir_obj = tempfile.TemporaryDirectory()
-        nlbpub_tempdir = nlbpub_tempdir_obj.name
-
-        nlbpub = Epub.from_html(self, html_dir, nlbpub_tempdir)
-        if nlbpub is None:
+        if not success:
+            self.utils.report.error("Klarte ikke å konvertere boken")
             return False
 
-        self.utils.report.info("Erstatter tomme bildefiler med faktiske bildefiler")
-        for root, dirs, files in os.walk(os.path.join(nlbpub_tempdir, "EPUB", "images")):
-            for file in files:
-                fullpath = os.path.join(root, file)
-                relpath = os.path.relpath(fullpath, nlbpub_tempdir)
-                os.remove(fullpath)
-                Filesystem.copy(self.utils.report, os.path.join(temp_epubdir_withimages, relpath), fullpath)
-        temp_epub = Epub(self.utils.report, temp_epubdir)
+        self.utils.report.debug("Output directory contains: " + str(os.listdir(html_dir)))
+        html_dir = os.path.join(html_dir, epub.identifier())
 
-        nlbpub.update_prefixes()
+        if not os.path.isdir(html_dir):
+            self.utils.report.error("Finner ikke den konverterte boken: {}".format(html_dir))
+            return False
 
         self.utils.report.info("Boken ble konvertert. Kopierer til NLBPUB-arkiv.")
-        archived_path, stored = self.utils.filesystem.storeBook(nlbpub.asDir(), temp_epub.identifier(), overwrite=self.overwrite)
+        archived_path, _ = self.utils.filesystem.storeBook(html_dir, epub.identifier(), overwrite=self.overwrite)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
