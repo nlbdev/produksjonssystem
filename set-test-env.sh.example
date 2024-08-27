@@ -52,3 +52,4 @@ export REMOTE_PIPELINE2_WS_ENDPOINTS="http://nlbdocker-dev.lx.nb.no:18161/ws"
 
 # epub-to-html (defaults to /opt/nordic-epub3-dtbook-migrator)
 export EPUB_TO_HTML_HOME="/opt/nordic-epub3-dtbook-migrator"
+export EPUBCHECK_HOME="/opt/epubcheck"

@@ -88,7 +88,10 @@ gjerne feilmeldingskodene "D203,D212,D213,D404".
     - `cd /tmp`
     - `git clone https://github.com/nlbdev/nordic-epub3-dtbook-migrator.git`
     - `sudo mv nordic-epub3-dtbook-migrator/ /opt/`
+    - `cd /opt/nordic-epub3-dtbook-migrator`
+    - `git checkout epub-to-html`
     - miljøvariabelen `EPUB_TO_HTML_HOME` kan brukes for å peke på `nordic-epub3-dtbook-migrator`-mappen hvis den ligger et annet sted
+    - `EPUBCHECK_HOME` må også være satt. Sett gjerne både denne og `EPUB_TO_HTML_HOME` i `~/.bashrc` (evt. `.zshrc` hvis du bruker zsh): f.eks. `export EPUBCHECK_HOME="/opt/epubcheck"` og `export EPUB_TO_HTML_HOME="/opt/nordic-epub3-dtbook-migrator"`
 
 - installer produksjonssystem:
     - klon git repository, enten via GitKraken, eller via kommandolinja (`https://github.com/nlbdev/produksjonssystem`)
