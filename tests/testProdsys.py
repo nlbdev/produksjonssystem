@@ -63,10 +63,10 @@ assert os.path.exists(os.getenv("PIPELINE2_HOME")), "PIPELINE2_HOME: {} does not
     os.getenv("PIPELINE2_HOME")
 )
 
-assert os.getenv("JAVA_HOME"), "the JAVA_HOME environment variable is not set (remember to use Java 8!)"
-assert os.path.exists(os.getenv("JAVA_HOME")), "JAVA_HOME: {} does not exist (remember to use Java 8!)".format(
-    os.getenv("JAVA_HOME")
-)
+if not os.getenv("JAVA_HOME"):
+    logging.warning("the JAVA_HOME environment variable is not set (remember to use Java 8!)")
+elif not os.path.exists(os.getenv("JAVA_HOME")):
+    logging.warning("JAVA_HOME: {} does not exist (remember to use Java 8!)".format(os.getenv("JAVA_HOME")))
 
 environment = {
     "BOOK_ARCHIVE_DIRS": " ".join([
