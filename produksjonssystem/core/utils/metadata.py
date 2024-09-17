@@ -507,6 +507,10 @@ class Metadata:
             return False
 
         opf_element = epub.get_opf_package_element()
+        unique_identifier_id = opf_element.attrib.get("unique-identifier")
+        
+        # in <dc:identifier id="package-identifier">, replace the contents of the id attribute with the value of unique_identifier_id
+        opf_metadata = re.sub(r'(<dc:identifier[^>]+)id="[^"]+"', rf'\1id="{unique_identifier_id}"', opf_metadata)
 
         ns = {"opf": "http://www.idpf.org/2007/opf"}
 
