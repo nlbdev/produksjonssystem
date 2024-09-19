@@ -162,6 +162,7 @@ class Mathml_validator():
                 return
 
             for element in mathML_elements:
+                self.report.debug("\n---\n")
 
                 element_success = True
                 # prevent sending too many errors to the main report
@@ -246,17 +247,21 @@ class Mathml_validator():
 
             for elem in list(parent):
                 if elem.tail is not None and elem.tail.isspace() is not True:
+                    self.report.debug(f"Sibling is inline because the tail of {etree.QName(element).localname} is text")
                     sibling_is_inline = True
 
             if parent_text is not None and parent_text.isspace() is not True:
+                self.report.debug(f"Sibling text is not empty because {etree.QName(parent).localname} has text")
                 sibling_text_not_empty = True
 
             elif element.tail is not None and element.tail.isspace() is not True:
+                self.report.debug(f"Sibling text is not empty because the tail of {etree.QName(element).localname} is text")
                 sibling_text_not_empty = True
 
             for inline_element in inline_elements:
                 inline_elements_in_element = parent.findall(inline_element, self.map)
                 if len(inline_elements_in_element) > 0:
+                    self.report.debug(f"Sibling is inline because {etree.QName(parent).localname} contains {inline_element}")
                     sibling_is_inline = True
 
         if parent.getparent() is not None:
@@ -265,14 +270,18 @@ class Mathml_validator():
                 parent_is_inline = True
 
         if sibling_is_inline or sibling_text_not_empty or parent_is_inline:
+            self.report.debug(f"{etree.QName(parent).localname} is inline because {'sibling is inline' if sibling_is_inline else '…'} / {'sibling text is not empty' if sibling_text_not_empty else '…'} / {'parent is inline' if parent_is_inline else '…'}")
             return "inline"
 
         if etree.QName(parent).localname in flow_tags:
             if element.getprevious() is not None or element.getnext() is not None:
+                self.report.debug(f"{etree.QName(element).localname} is block because it has siblings that are not inline and {etree.QName(parent).localname} is a flow tag")
                 return "block"
             else:
+                self.report.debug(f"{etree.QName(element).localname} is block because it does not have siblings and {etree.QName(parent).localname} is a flow tag")
                 return "inline"
 
+        self.report.debug(f"{etree.QName(element).localname} is block because {etree.QName(parent).localname} is not a flow tag")
         return "block"
 
 
