@@ -263,6 +263,16 @@ class Mathml_validator():
                 if len(inline_elements_in_element) > 0:
                     self.report.debug(f"Sibling is inline because {etree.QName(parent).localname} contains {inline_element}")
                     sibling_is_inline = True
+            
+            # check for inline math siblings
+            math_siblings = parent.findall("math", self.map) + parent.findall("m:math", self.map)
+            if not math_siblings:
+                self.report.debug("No math siblings")
+            for math_element in math_siblings:
+                self.report.debug(f"Found math element: {etree.QName(math_element).localname}")
+                if math_element.get("display") == "inline":
+                    self.report.debug(f"Sibling is inline because {etree.QName(parent).localname} contains inline math")
+                    sibling_is_inline = True
 
         if parent.getparent() is not None:
             parent_display = self.inline_or_block(parent, parent.getparent(), check_siblings=False)
