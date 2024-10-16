@@ -29,7 +29,7 @@
                 <!-- Alle andre bøker skal ha "Opphavsrett" -->
                 <section epub:type="frontmatter" id="nlb-level1-opphavsrett">
                     <xsl:if test="not(upper-case($library) = 'STATPED')">
-                        <h1 class="nlb-ekstra-informasjon">
+                        <h1 class="nlb-ekstra-informasjon" id="copyright-{generate-id()}">
                             <xsl:choose>
                                 <xsl:when test="$language = 'en'">
                                     <xsl:text>Copyright</xsl:text>
@@ -106,7 +106,7 @@
                 <xsl:variable name="section-depth" as="xs:integer" select="max(for $e in //section return count($e/ancestor-or-self::section))"/>
 
                 <section epub:type="frontmatter" id="nlb-level1-om-boka">
-                    <h1 class="nlb-ekstra-informasjon">
+                    <h1 class="nlb-ekstra-informasjon" id="about-the-book-{generate-id()}">
                         <xsl:choose>
                             <xsl:when test="$language = 'en'">
                                 <xsl:text>About the book</xsl:text>
