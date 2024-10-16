@@ -69,7 +69,11 @@
         
         <xsl:variable name="headings" select="$spine//(h1 | h2 | h3 | h4 | h5 | h6)" as="element()+"/>
         
+        <xsl:text>
+</xsl:text>
         <nav epub:type="landmarks" hidden="">
+            <xsl:text>
+</xsl:text>
             <ol>
                 <xsl:variable name="start-of-book" select="($headings[f:matter(.) = 'bodymatter'])[1]" as="element()"/>
                 <xsl:variable name="language" select="($start-of-book/ancestor-or-self::*/@xml:lang)[last()]" as="xs:string"/>
@@ -87,22 +91,36 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
-                
+
+                <xsl:text>
+</xsl:text>
                 <li><a href="{substring(base-uri($start-of-book), $base-uri-strip-length)}#{$start-of-book/@id}" epub:type="bodymatter"><xsl:value-of select="$text"/></a></li>
+                <xsl:text>
+</xsl:text>
             </ol>
+            <xsl:text>
+</xsl:text>
         </nav>
     </xsl:template>
     
     <xsl:template name="generate-toc">
         <xsl:param name="spine" as="element()*"/>
         
+        <xsl:text>
+</xsl:text>
         <nav epub:type="toc">
+            <xsl:text>
+</xsl:text>
             <ol>
                 <xsl:call-template name="generate-toc-level">
                     <xsl:with-param name="level" select="1"/>
                     <xsl:with-param name="headings" select="$spine//(h1 | h2 | h3 | h4 | h5 | h6)"/>
                 </xsl:call-template>
+                <xsl:text>
+</xsl:text>
             </ol>
+            <xsl:text>
+</xsl:text>
         </nav>
         
         <!--text(), @title, @alt-->
@@ -116,6 +134,8 @@
         <xsl:param name="base-uri-strip-length" as="xs:integer" tunnel="yes"/>
         
         <xsl:for-each-group select="$headings" group-starting-with="*[f:heading-level(.) = $level]">
+            <xsl:text>
+</xsl:text>
             <li>
                 <xsl:variable name="heading" select="current-group()[1]"/>
 
@@ -133,11 +153,15 @@
                 <xsl:variable name="href" select="substring(base-uri($heading), $base-uri-strip-length)"/>
                 <a href="{$href}#{$heading-id}"><xsl:value-of select="normalize-space(string-join($heading//text(),''))"/></a>
                 <xsl:if test="current-group()[position() gt 1]">
+                    <xsl:text>
+</xsl:text>
                     <ol>
                         <xsl:call-template name="generate-toc-level">
                             <xsl:with-param name="level" select="$level + 1"/>
                             <xsl:with-param name="headings" select="current-group()[position() gt 1]"/>
                         </xsl:call-template>
+                        <xsl:text>
+</xsl:text>
                     </ol>
                 </xsl:if>
             </li>
@@ -173,16 +197,26 @@
         <xsl:variable name="pagebreaks" select="$spine//*[tokenize(@epub:type, '\s+') = 'pagebreak' and exists(@id)]"/>
         
         <xsl:if test="count($pagebreaks) gt 0">
+            <xsl:text>
+</xsl:text>
             <nav epub:type="page-list" hidden="">
+                <xsl:text>
+</xsl:text>
                 <ol>
                     <xsl:for-each select="$pagebreaks">
                         <xsl:variable name="page" select="string-join(.//text()[normalize-space()], '')" as="xs:string"/>
                         <xsl:variable name="page" select="if ($page = '') then @title else $page" as="xs:string"/>
                         <xsl:variable name="page" select="if ($page = '') then '?' else $page" as="xs:string"/>
                         
+                        <xsl:text>
+</xsl:text>
                         <li><a href="{substring(base-uri(.), $base-uri-strip-length)}#{@id}"><xsl:value-of select="$page"/></a></li>
                     </xsl:for-each>
+                    <xsl:text>
+</xsl:text>
                 </ol>
+                <xsl:text>
+</xsl:text>
             </nav>
         </xsl:if>
     </xsl:template>
