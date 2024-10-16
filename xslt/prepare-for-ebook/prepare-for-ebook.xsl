@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:f="#"
                 xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 exclude-result-prefixes="#all"
@@ -18,6 +19,11 @@
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
+    
+    <xsl:function name="f:classes" as="xs:string*">
+        <xsl:param name="element" as="element()"/>
+        <xsl:sequence select="tokenize($element/@class,'\s+')"/>
+    </xsl:function>
 
     <!-- update modification time and insert CSS stylesheet -->
     <xsl:template match="head">
@@ -88,26 +94,34 @@
         
         <xsl:choose>
             <xsl:when test="(preceding-sibling::div[1] intersect preceding-sibling::*[1])[tokenize(@class, '\s+') = 'hidden-headline-anchor']">
-                <!-- hidden-headline-anchor already present: do nothing -->
+                <!-- hidden-headline-anchor already present: copy the headline as it is -->
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:apply-templates select="node()"/>
+                </xsl:copy>
             </xsl:when>
             
-            <xsl:when test="not(@id)">
-                <!-- if there's no id for some reason: generate one -->
-                <div id="generated-headline-{generate-id()}" class="hidden-headline-anchor"></div>
+            <xsl:when test="f:classes(.)='hidden-headline' and not(@id)">
+                <!-- if this is a hidden headline, create a hidden-headline anchor -->
+                <xsl:variable name="id" select="if (@id) then @id else concat('generated-headline-', generate-id())"/>
+                <div id="{$id}" class="hidden-headline-anchor"></div>
                 <xsl:value-of select="$whitespace"/>
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@* except @id"/>
+                    <xsl:apply-templates select="node()"/>
+                </xsl:copy>
             </xsl:when>
             
             <xsl:otherwise>
-                <div id="{@id}" class="hidden-headline-anchor"></div>
-                <xsl:value-of select="$whitespace"/>
+                <!-- copy as it is, but make sure that the headline has an id attribute -->
+                <xsl:variable name="id" select="if (@id) then @id else concat('generated-headline-', generate-id())"/>
+                <xsl:copy exclude-result-prefixes="#all">
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:attribute name="id" select="$id"/>
+                    <xsl:apply-templates select="node()"/>
+                </xsl:copy>
             </xsl:otherwise>
         </xsl:choose>
-        
-        <!-- copy the headline itself, excluding the id attribute -->
-        <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@* except @id"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
     </xsl:template>
 
 </xsl:stylesheet>
