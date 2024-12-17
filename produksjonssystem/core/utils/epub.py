@@ -279,6 +279,7 @@ class Epub():
         types = {}
 
         for item in manifest:
+            self.report.debug(f"Checking {item.attrib.get('href', '')} for properties...")
             properties = set()
 
             if item.attrib.get("href", "").split("/")[-1] in ["cover.jpg", "cover.jpeg", "cover.png"]:
@@ -297,27 +298,39 @@ class Epub():
                 with open(content_path) as f:
                     for line in f:
                         if "<math" in line or "<m:math" in line or "<math:math" in line:
+                            if "mathml" not in properties:
+                                self.report.debug(f"{item.attrib.get('href', '')} contains MathML because of this line:\n{line}")
                             properties.add("mathml")
 
                         if ("<script" in line or "<form" in line or "<button" in line or "<fieldset" in line or "<input" in line or
                                 "<object" in line or "<output" in line or "<select" in line or "<textarea" in line):
+                            if "scripted" not in properties:
+                                self.report.debug(f"{item.attrib.get('href', '')} is scripted because of this line:\n{line}")
                             properties.add("scripted")
                             # could also check for onclick attributes and similar, and should ideally ignore
                             # input elements if they have the type attribute is "image"
 
                         if "<svg" in line:
+                            if "svg" not in properties:
+                                self.report.debug(f"{item.attrib.get('href', '')} contains SVG because of this line:\n{line}")
                             properties.add("svg")
                             # we could also check img/@src and iframe/@src for .svg files but it would require XML parsing or a regex.
                             # object elements could also contain SVG but are even more complex and probably very uncommon in the wild.
 
                         if "<epub:switch" in line:
+                            if "switch" not in properties:
+                                self.report.debug(f"{item.attrib.get('href', '')} contains a switch statement on this line:\n{line}")
                             properties.add("switch")
                             # this is deprecated in EPUB 3.2 but can be useful during production if we want to include for instance MusicXML
 
             if properties:
-                properties = item.attrib.get("properties", "").split() + list(properties)  # add any preexisting properties
-                properties = list(set(properties))  # only include unique properties
+                if item.attrib.get("properties", ""):
+                    self.report.debug(f"{item.attrib.get('href', '')} have the following properties already present: '{item.attrib.get('properties', '')}' … which will be replaced with '{' '.join(properties)}'")
+                self.report.debug(f"{item.attrib.get('href', '')} calculated properties=\"{' '.join(properties)}\"")
                 item.attrib["properties"] = " ".join(properties)
+            
+            else:
+                self.report.debug(f"{item.attrib.get('href', '')} has no new properties. Keeping as: properties=\"{item.attrib.get('properties', '')}\"")
 
         # reference the cover image from the metadata if it isn't already
         for meta in metadata:
