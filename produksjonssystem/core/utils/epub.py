@@ -336,6 +336,9 @@ class Epub():
             else:
                 self.report.debug(f"{item.attrib.get('href', '')} has no new properties. Keeping as: properties=\"{item.attrib.get('properties', '')}\"")
 
+            if item.attrib["properties"] == "":
+                del item.attrib["properties"]
+
         # reference the cover image from the metadata if it isn't already
         for meta in metadata:
             if meta.tag == "{http://www.idpf.org/2007/opf}meta" and meta.attrib.get("name", None) == "cover":
