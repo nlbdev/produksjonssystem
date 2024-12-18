@@ -281,13 +281,17 @@ class Epub():
         for item in manifest:
             self.report.debug(f"Checking {item.attrib.get('href', '')} for properties...")
             properties = set()
+            
+            is_content_file = (
+                item.attrib.get("media-type", "") == "application/xhtml+xml" and
+                "nav" not in item.attrib.get("properties", "").split()
+            )
 
             if item.attrib.get("href", "").split("/")[-1] in ["cover.jpg", "cover.jpeg", "cover.png"]:
                 properties.add("cover-image")
                 cover_id = item.attrib.get("id", cover_id)
 
-            elif (item.attrib.get("media-type", "") == "application/xhtml+xml" and
-                    "nav" not in item.attrib.get("properties", "").split()):
+            elif is_content_file:
 
                 content_path = os.path.join(os.path.dirname(opf_path), item.attrib.get("href", ""))
 
@@ -323,7 +327,7 @@ class Epub():
                             properties.add("switch")
                             # this is deprecated in EPUB 3.2 but can be useful during production if we want to include for instance MusicXML
 
-            if properties:
+            if properties or is_content_file:
                 if item.attrib.get("properties", ""):
                     self.report.debug(f"{item.attrib.get('href', '')} have the following properties already present: '{item.attrib.get('properties', '')}' … which will be replaced with '{' '.join(properties)}'")
                 self.report.debug(f"{item.attrib.get('href', '')} calculated properties=\"{' '.join(properties)}\"")
