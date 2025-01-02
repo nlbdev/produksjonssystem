@@ -79,7 +79,7 @@ class Produksjonssystem():
         if os.environ.get("LOCATION_LOG_FILE") is not None:
             logfile = os.environ.get("LOCATION_LOG_FILE")
         else:
-            logfile = "/tmp/produksjonssystem.log"
+            logfile = f"/tmp/produksjonssystem-{datetime.date.today()}.log"
         handler = TimedRotatingFileHandler(logfile,
                                            when="D",
                                            interval=7,
