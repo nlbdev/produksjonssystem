@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/*! Ebok CSS */
+/*! Epub CSS */
 /*! NLB Stylesheets */
 /* Begin Core.SCSS */
 /* Imports
@@ -1942,19 +1942,7 @@ body .page-special {
 }
 
 .mt-0,
-.my-0,
-body .preface p,
-body .preface #content blockquote,
-#content body .preface blockquote,
-body .preface blockquote,
-body .colophon p,
-body .colophon #content blockquote,
-#content body .colophon blockquote,
-body .colophon blockquote,
-body [*|type=colophon] p,
-body [*|type=colophon] #content blockquote,
-#content body [*|type=colophon] blockquote,
-body [*|type=colophon] blockquote {
+.my-0 {
   margin-top: 0 !important;
 }
 
@@ -1964,19 +1952,7 @@ body [*|type=colophon] blockquote {
 }
 
 .mb-0,
-.my-0,
-body .preface p,
-body .preface #content blockquote,
-#content body .preface blockquote,
-body .preface blockquote,
-body .colophon p,
-body .colophon #content blockquote,
-#content body .colophon blockquote,
-body .colophon blockquote,
-body [*|type=colophon] p,
-body [*|type=colophon] #content blockquote,
-#content body [*|type=colophon] blockquote,
-body [*|type=colophon] blockquote {
+.my-0 {
   margin-bottom: 0 !important;
 }
 
@@ -4122,12 +4098,12 @@ h6, #content table thead tr th, body table thead tr th, #content table tbody tr 
   }
 }
 
-.lead, body .part p strong, body .part #content blockquote strong, #content body .part blockquote strong, body .part blockquote strong {
+.lead {
   font-size: 2.5rem;
   font-weight: 300;
 }
 @media (max-width: 1200px) {
-  .lead, body .part p strong, body .part #content blockquote strong, #content body .part blockquote strong, body .part blockquote strong {
+  .lead {
     font-size: calc(1.375rem + 1.5vw);
   }
 }
@@ -5548,7 +5524,7 @@ body .page-special {
   font-size: 1.125rem;
   font-family: "Arial black", sans-serif;
 }
-#content h1 .lead, #content h1 body .part p strong, body .part p #content h1 strong, body .part #content h1 blockquote strong, body .part #content blockquote h1 strong, #content h1 body .part blockquote strong, #content body .part blockquote h1 strong, body .part blockquote #content h1 strong, body h1 .lead, body h1 .part p strong, body .part p h1 strong, body h1 .part #content blockquote strong, #content body h1 .part blockquote strong, body h1 .part blockquote strong, body .part blockquote h1 strong, #content h1.title .lead {
+#content h1 .lead, body h1 .lead, #content h1.title .lead {
   font-size: 1.25rem;
 }
 @media (max-width: 639.98px) {
@@ -5563,7 +5539,7 @@ body .page-special {
     font-size: 1.6875rem;
     font-family: "Arial black", sans-serif;
   }
-  #content h1 .lead, #content h1 body .part p strong, body .part p #content h1 strong, body .part #content h1 blockquote strong, body .part #content blockquote h1 strong, #content h1 body .part blockquote strong, #content body .part blockquote h1 strong, body .part blockquote #content h1 strong, body h1 .lead, body h1 .part p strong, body .part p h1 strong, body h1 .part #content blockquote strong, #content body h1 .part blockquote strong, body h1 .part blockquote strong, body .part blockquote h1 strong, #content h1.title .lead {
+  #content h1 .lead, body h1 .lead, #content h1.title .lead {
     font-size: 1.875rem;
   }
 }
@@ -5579,7 +5555,7 @@ body .page-special {
     font-size: 2.025rem;
     font-family: "Arial black", sans-serif;
   }
-  #content h1 .lead, #content h1 body .part p strong, body .part p #content h1 strong, body .part #content h1 blockquote strong, body .part #content blockquote h1 strong, #content h1 body .part blockquote strong, #content body .part blockquote h1 strong, body .part blockquote #content h1 strong, body h1 .lead, body h1 .part p strong, body .part p h1 strong, body h1 .part #content blockquote strong, #content body h1 .part blockquote strong, body h1 .part blockquote strong, body .part blockquote h1 strong, #content h1.title .lead {
+  #content h1 .lead, body h1 .lead, #content h1.title .lead {
     font-size: 2.25rem;
   }
 }
@@ -5594,7 +5570,7 @@ body .page-special {
   font-size: 1rem;
   font-family: "Arial bold", sans-serif;
 }
-#content h2 .lead, #content h2 body .part p strong, body .part p #content h2 strong, body .part #content h2 blockquote strong, body .part #content blockquote h2 strong, #content h2 body .part blockquote strong, #content body .part blockquote h2 strong, body .part blockquote #content h2 strong, body h2 .lead, body h2 .part p strong, body .part p h2 strong, body h2 .part #content blockquote strong, #content body h2 .part blockquote strong, body h2 .part blockquote strong, body .part blockquote h2 strong {
+#content h2 .lead, body h2 .lead {
   font-size: 1.125rem;
 }
 @media (max-width: 639.98px) {
@@ -5609,7 +5585,7 @@ body .page-special {
     font-size: 1.5rem;
     font-family: "Arial bold", sans-serif;
   }
-  #content h2 .lead, #content h2 body .part p strong, body .part p #content h2 strong, body .part #content h2 blockquote strong, body .part #content blockquote h2 strong, #content h2 body .part blockquote strong, #content body .part blockquote h2 strong, body .part blockquote #content h2 strong, body h2 .lead, body h2 .part p strong, body .part p h2 strong, body h2 .part #content blockquote strong, #content body h2 .part blockquote strong, body h2 .part blockquote strong, body .part blockquote h2 strong {
+  #content h2 .lead, body h2 .lead {
     font-size: 1.6875rem;
   }
 }
@@ -5625,7 +5601,7 @@ body .page-special {
     font-size: 1.8rem;
     font-family: "Arial bold", sans-serif;
   }
-  #content h2 .lead, #content h2 body .part p strong, body .part p #content h2 strong, body .part #content h2 blockquote strong, body .part #content blockquote h2 strong, #content h2 body .part blockquote strong, #content body .part blockquote h2 strong, body .part blockquote #content h2 strong, body h2 .lead, body h2 .part p strong, body .part p h2 strong, body h2 .part #content blockquote strong, #content body h2 .part blockquote strong, body h2 .part blockquote strong, body .part blockquote h2 strong {
+  #content h2 .lead, body h2 .lead {
     font-size: 2.025rem;
   }
 }
@@ -5640,7 +5616,7 @@ body .page-special {
   font-size: 1rem;
   font-family: "Arial bold", sans-serif;
 }
-#content h3 .lead, #content h3 body .part p strong, body .part p #content h3 strong, body .part #content h3 blockquote strong, body .part #content blockquote h3 strong, #content h3 body .part blockquote strong, #content body .part blockquote h3 strong, body .part blockquote #content h3 strong, body h3 .lead, body h3 .part p strong, body .part p h3 strong, body h3 .part #content blockquote strong, #content body h3 .part blockquote strong, body h3 .part blockquote strong, body .part blockquote h3 strong {
+#content h3 .lead, body h3 .lead {
   font-size: 1rem;
 }
 @media (max-width: 639.98px) {
@@ -5655,7 +5631,7 @@ body .page-special {
     font-size: 1.5rem;
     font-family: "Arial bold", sans-serif;
   }
-  #content h3 .lead, #content h3 body .part p strong, body .part p #content h3 strong, body .part #content h3 blockquote strong, body .part #content blockquote h3 strong, #content h3 body .part blockquote strong, #content body .part blockquote h3 strong, body .part blockquote #content h3 strong, body h3 .lead, body h3 .part p strong, body .part p h3 strong, body h3 .part #content blockquote strong, #content body h3 .part blockquote strong, body h3 .part blockquote strong, body .part blockquote h3 strong {
+  #content h3 .lead, body h3 .lead {
     font-size: 1.5rem;
   }
 }
@@ -5671,7 +5647,7 @@ body .page-special {
     font-size: 1.8rem;
     font-family: "Arial bold", sans-serif;
   }
-  #content h3 .lead, #content h3 body .part p strong, body .part p #content h3 strong, body .part #content h3 blockquote strong, body .part #content blockquote h3 strong, #content h3 body .part blockquote strong, #content body .part blockquote h3 strong, body .part blockquote #content h3 strong, body h3 .lead, body h3 .part p strong, body .part p h3 strong, body h3 .part #content blockquote strong, #content body h3 .part blockquote strong, body h3 .part blockquote strong, body .part blockquote h3 strong {
+  #content h3 .lead, body h3 .lead {
     font-size: 1.8rem;
   }
 }
@@ -5686,7 +5662,7 @@ body .page-special {
   font-size: 1rem;
   font-family: "Arial black", sans-serif;
 }
-#content h4 .lead, #content h4 body .part p strong, body .part p #content h4 strong, body .part #content h4 blockquote strong, body .part #content blockquote h4 strong, #content h4 body .part blockquote strong, #content body .part blockquote h4 strong, body .part blockquote #content h4 strong, body h4 .lead, body h4 .part p strong, body .part p h4 strong, body h4 .part #content blockquote strong, #content body h4 .part blockquote strong, body h4 .part blockquote strong, body .part blockquote h4 strong {
+#content h4 .lead, body h4 .lead {
   font-size: 1rem;
 }
 @media (max-width: 639.98px) {
@@ -5701,7 +5677,7 @@ body .page-special {
     font-size: 1.5rem;
     font-family: "Arial black", sans-serif;
   }
-  #content h4 .lead, #content h4 body .part p strong, body .part p #content h4 strong, body .part #content h4 blockquote strong, body .part #content blockquote h4 strong, #content h4 body .part blockquote strong, #content body .part blockquote h4 strong, body .part blockquote #content h4 strong, body h4 .lead, body h4 .part p strong, body .part p h4 strong, body h4 .part #content blockquote strong, #content body h4 .part blockquote strong, body h4 .part blockquote strong, body .part blockquote h4 strong {
+  #content h4 .lead, body h4 .lead {
     font-size: 1.5rem;
   }
 }
@@ -5717,7 +5693,7 @@ body .page-special {
     font-size: 1.8rem;
     font-family: "Arial black", sans-serif;
   }
-  #content h4 .lead, #content h4 body .part p strong, body .part p #content h4 strong, body .part #content h4 blockquote strong, body .part #content blockquote h4 strong, #content h4 body .part blockquote strong, #content body .part blockquote h4 strong, body .part blockquote #content h4 strong, body h4 .lead, body h4 .part p strong, body .part p h4 strong, body h4 .part #content blockquote strong, #content body h4 .part blockquote strong, body h4 .part blockquote strong, body .part blockquote h4 strong {
+  #content h4 .lead, body h4 .lead {
     font-size: 1.8rem;
   }
 }
@@ -5732,7 +5708,7 @@ body .page-special {
   font-size: 1rem;
   font-family: "Arial bold", sans-serif;
 }
-#content h5 .lead, #content h5 body .part p strong, body .part p #content h5 strong, body .part #content h5 blockquote strong, body .part #content blockquote h5 strong, #content h5 body .part blockquote strong, #content body .part blockquote h5 strong, body .part blockquote #content h5 strong, body h5 .lead, body h5 .part p strong, body .part p h5 strong, body h5 .part #content blockquote strong, #content body h5 .part blockquote strong, body h5 .part blockquote strong, body .part blockquote h5 strong {
+#content h5 .lead, body h5 .lead {
   font-size: 1rem;
 }
 @media (max-width: 639.98px) {
@@ -5747,7 +5723,7 @@ body .page-special {
     font-size: 1.5rem;
     font-family: "Arial bold", sans-serif;
   }
-  #content h5 .lead, #content h5 body .part p strong, body .part p #content h5 strong, body .part #content h5 blockquote strong, body .part #content blockquote h5 strong, #content h5 body .part blockquote strong, #content body .part blockquote h5 strong, body .part blockquote #content h5 strong, body h5 .lead, body h5 .part p strong, body .part p h5 strong, body h5 .part #content blockquote strong, #content body h5 .part blockquote strong, body h5 .part blockquote strong, body .part blockquote h5 strong {
+  #content h5 .lead, body h5 .lead {
     font-size: 1.5rem;
   }
 }
@@ -5763,7 +5739,7 @@ body .page-special {
     font-size: 1.8rem;
     font-family: "Arial bold", sans-serif;
   }
-  #content h5 .lead, #content h5 body .part p strong, body .part p #content h5 strong, body .part #content h5 blockquote strong, body .part #content blockquote h5 strong, #content h5 body .part blockquote strong, #content body .part blockquote h5 strong, body .part blockquote #content h5 strong, body h5 .lead, body h5 .part p strong, body .part p h5 strong, body h5 .part #content blockquote strong, #content body h5 .part blockquote strong, body h5 .part blockquote strong, body .part blockquote h5 strong {
+  #content h5 .lead, body h5 .lead {
     font-size: 1.8rem;
   }
 }
@@ -5778,7 +5754,7 @@ body .page-special {
   font-size: 1rem;
   font-family: "Arial black", sans-serif;
 }
-#content h6 .lead, #content h6 body .part p strong, body .part p #content h6 strong, body .part #content h6 blockquote strong, body .part #content blockquote h6 strong, #content h6 body .part blockquote strong, #content body .part blockquote h6 strong, body .part blockquote #content h6 strong, body h6 .lead, body h6 .part p strong, body .part p h6 strong, body h6 .part #content blockquote strong, #content body h6 .part blockquote strong, body h6 .part blockquote strong, body .part blockquote h6 strong, #content table thead tr th .lead, #content table thead tr th body .part p strong, body .part p #content table thead tr th strong, body .part #content table thead tr th blockquote strong, body .part #content blockquote table thead tr th strong, #content table thead tr th body .part blockquote strong, #content body .part blockquote table thead tr th strong, body .part blockquote #content table thead tr th strong, body table thead tr th .lead, body table thead tr th .part p strong, body .part p table thead tr th strong, body table thead tr th .part #content blockquote strong, #content body table thead tr th .part blockquote strong, body table thead tr th .part blockquote strong, body .part blockquote table thead tr th strong, #content table tbody tr th .lead, #content table tbody tr th body .part p strong, body .part p #content table tbody tr th strong, body .part #content table tbody tr th blockquote strong, body .part #content blockquote table tbody tr th strong, #content table tbody tr th body .part blockquote strong, #content body .part blockquote table tbody tr th strong, body .part blockquote #content table tbody tr th strong, body table tbody tr th .lead, body table tbody tr th .part p strong, body .part p table tbody tr th strong, body table tbody tr th .part #content blockquote strong, #content body table tbody tr th .part blockquote strong, body table tbody tr th .part blockquote strong, body .part blockquote table tbody tr th strong, #content table tfoot tr th .lead, #content table tfoot tr th body .part p strong, body .part p #content table tfoot tr th strong, body .part #content table tfoot tr th blockquote strong, body .part #content blockquote table tfoot tr th strong, #content table tfoot tr th body .part blockquote strong, #content body .part blockquote table tfoot tr th strong, body .part blockquote #content table tfoot tr th strong, body table tfoot tr th .lead, body table tfoot tr th .part p strong, body .part p table tfoot tr th strong, body table tfoot tr th .part #content blockquote strong, #content body table tfoot tr th .part blockquote strong, body table tfoot tr th .part blockquote strong, body .part blockquote table tfoot tr th strong {
+#content h6 .lead, body h6 .lead, #content table thead tr th .lead, body table thead tr th .lead, #content table tbody tr th .lead, body table tbody tr th .lead, #content table tfoot tr th .lead, body table tfoot tr th .lead {
   font-size: 1rem;
 }
 @media (max-width: 639.98px) {
@@ -5793,7 +5769,7 @@ body .page-special {
     font-size: 1.5rem;
     font-family: "Arial black", sans-serif;
   }
-  #content h6 .lead, #content h6 body .part p strong, body .part p #content h6 strong, body .part #content h6 blockquote strong, body .part #content blockquote h6 strong, #content h6 body .part blockquote strong, #content body .part blockquote h6 strong, body .part blockquote #content h6 strong, body h6 .lead, body h6 .part p strong, body .part p h6 strong, body h6 .part #content blockquote strong, #content body h6 .part blockquote strong, body h6 .part blockquote strong, body .part blockquote h6 strong, #content table thead tr th .lead, #content table thead tr th body .part p strong, body .part p #content table thead tr th strong, body .part #content table thead tr th blockquote strong, body .part #content blockquote table thead tr th strong, #content table thead tr th body .part blockquote strong, #content body .part blockquote table thead tr th strong, body .part blockquote #content table thead tr th strong, body table thead tr th .lead, body table thead tr th .part p strong, body .part p table thead tr th strong, body table thead tr th .part #content blockquote strong, #content body table thead tr th .part blockquote strong, body table thead tr th .part blockquote strong, body .part blockquote table thead tr th strong, #content table tbody tr th .lead, #content table tbody tr th body .part p strong, body .part p #content table tbody tr th strong, body .part #content table tbody tr th blockquote strong, body .part #content blockquote table tbody tr th strong, #content table tbody tr th body .part blockquote strong, #content body .part blockquote table tbody tr th strong, body .part blockquote #content table tbody tr th strong, body table tbody tr th .lead, body table tbody tr th .part p strong, body .part p table tbody tr th strong, body table tbody tr th .part #content blockquote strong, #content body table tbody tr th .part blockquote strong, body table tbody tr th .part blockquote strong, body .part blockquote table tbody tr th strong, #content table tfoot tr th .lead, #content table tfoot tr th body .part p strong, body .part p #content table tfoot tr th strong, body .part #content table tfoot tr th blockquote strong, body .part #content blockquote table tfoot tr th strong, #content table tfoot tr th body .part blockquote strong, #content body .part blockquote table tfoot tr th strong, body .part blockquote #content table tfoot tr th strong, body table tfoot tr th .lead, body table tfoot tr th .part p strong, body .part p table tfoot tr th strong, body table tfoot tr th .part #content blockquote strong, #content body table tfoot tr th .part blockquote strong, body table tfoot tr th .part blockquote strong, body .part blockquote table tfoot tr th strong {
+  #content h6 .lead, body h6 .lead, #content table thead tr th .lead, body table thead tr th .lead, #content table tbody tr th .lead, body table tbody tr th .lead, #content table tfoot tr th .lead, body table tfoot tr th .lead {
     font-size: 1.5rem;
   }
 }
@@ -5809,7 +5785,7 @@ body .page-special {
     font-size: 1.8rem;
     font-family: "Arial black", sans-serif;
   }
-  #content h6 .lead, #content h6 body .part p strong, body .part p #content h6 strong, body .part #content h6 blockquote strong, body .part #content blockquote h6 strong, #content h6 body .part blockquote strong, #content body .part blockquote h6 strong, body .part blockquote #content h6 strong, body h6 .lead, body h6 .part p strong, body .part p h6 strong, body h6 .part #content blockquote strong, #content body h6 .part blockquote strong, body h6 .part blockquote strong, body .part blockquote h6 strong, #content table thead tr th .lead, #content table thead tr th body .part p strong, body .part p #content table thead tr th strong, body .part #content table thead tr th blockquote strong, body .part #content blockquote table thead tr th strong, #content table thead tr th body .part blockquote strong, #content body .part blockquote table thead tr th strong, body .part blockquote #content table thead tr th strong, body table thead tr th .lead, body table thead tr th .part p strong, body .part p table thead tr th strong, body table thead tr th .part #content blockquote strong, #content body table thead tr th .part blockquote strong, body table thead tr th .part blockquote strong, body .part blockquote table thead tr th strong, #content table tbody tr th .lead, #content table tbody tr th body .part p strong, body .part p #content table tbody tr th strong, body .part #content table tbody tr th blockquote strong, body .part #content blockquote table tbody tr th strong, #content table tbody tr th body .part blockquote strong, #content body .part blockquote table tbody tr th strong, body .part blockquote #content table tbody tr th strong, body table tbody tr th .lead, body table tbody tr th .part p strong, body .part p table tbody tr th strong, body table tbody tr th .part #content blockquote strong, #content body table tbody tr th .part blockquote strong, body table tbody tr th .part blockquote strong, body .part blockquote table tbody tr th strong, #content table tfoot tr th .lead, #content table tfoot tr th body .part p strong, body .part p #content table tfoot tr th strong, body .part #content table tfoot tr th blockquote strong, body .part #content blockquote table tfoot tr th strong, #content table tfoot tr th body .part blockquote strong, #content body .part blockquote table tfoot tr th strong, body .part blockquote #content table tfoot tr th strong, body table tfoot tr th .lead, body table tfoot tr th .part p strong, body .part p table tfoot tr th strong, body table tfoot tr th .part #content blockquote strong, #content body table tfoot tr th .part blockquote strong, body table tfoot tr th .part blockquote strong, body .part blockquote table tfoot tr th strong {
+  #content h6 .lead, body h6 .lead, #content table thead tr th .lead, body table thead tr th .lead, #content table tbody tr th .lead, body table tbody tr th .lead, #content table tfoot tr th .lead, body table tfoot tr th .lead {
     font-size: 1.8rem;
   }
 }
@@ -6075,7 +6051,7 @@ body .page-special {
     overflow-wrap: break-word;
   }
 }
-#content .generisk-ramme.lead, #content body .part p strong.generisk-ramme, body .part p #content strong.generisk-ramme, body .part #content blockquote strong.generisk-ramme, #content body .part blockquote strong.generisk-ramme, body .part blockquote #content strong.generisk-ramme, body .generisk-ramme.lead, body .part p strong.generisk-ramme, body .part blockquote strong.generisk-ramme {
+#content .generisk-ramme.lead, body .generisk-ramme.lead {
   font-size: 1.2rem;
 }
 @media (max-width: 639.98px) {
@@ -6090,7 +6066,7 @@ body .page-special {
     font-family: Arial, sans-serif;
     zoom: 1;
   }
-  #content .generisk-ramme.lead, #content body .part p strong.generisk-ramme, body .part p #content strong.generisk-ramme, body .part #content blockquote strong.generisk-ramme, #content body .part blockquote strong.generisk-ramme, body .part blockquote #content strong.generisk-ramme, body .generisk-ramme.lead, body .part p strong.generisk-ramme, body .part blockquote strong.generisk-ramme {
+  #content .generisk-ramme.lead, body .generisk-ramme.lead {
     font-size: 1.8rem;
   }
 }
@@ -6106,7 +6082,7 @@ body .page-special {
     font-family: Arial, sans-serif;
     zoom: 1;
   }
-  #content .generisk-ramme.lead, #content body .part p strong.generisk-ramme, body .part p #content strong.generisk-ramme, body .part #content blockquote strong.generisk-ramme, #content body .part blockquote strong.generisk-ramme, body .part blockquote #content strong.generisk-ramme, body .generisk-ramme.lead, body .part p strong.generisk-ramme, body .part blockquote strong.generisk-ramme {
+  #content .generisk-ramme.lead, body .generisk-ramme.lead {
     font-size: 2.16rem;
   }
 }
@@ -6279,7 +6255,7 @@ body .page-special {
 }
 
 /* End Core.SCSS */
-/* Begin Ebok.SCSS */
+/* Begin Epub.SCSS */
 body {
   width: 100%;
   padding-right: 15px;
@@ -6287,19 +6263,7 @@ body {
   margin-right: auto;
   margin-left: auto;
 }
-body #toc-html a {
-  color: #000;
-}
-body .preface .precedingemptyline, body .colophon .precedingemptyline, body [*|type=colophon] .precedingemptyline {
-  margin-top: 1.5rem !important;
-}
-body .notebody p, body .notebody #content blockquote, #content body .notebody blockquote, body .notebody blockquote {
-  display: block;
-  padding: 15px 20px;
-  border-top: 1px solid #B1C900;
-  margin-bottom: 0;
-}
 
-/* End Ebok.SCSS */
+/* End Epub.SCSS */
 
-/*# sourceMappingURL=ebok.css.map */
+/*# sourceMappingURL=epub.css.map */

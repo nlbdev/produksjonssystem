@@ -287,7 +287,7 @@ class PrepareForEbook(Pipeline):
 
         if st_size == 0 or time.time() - st_mtime > 3600 * 3:
             if st_size == 0:
-                default_path = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "ebok.css")
+                default_path = os.path.join(Xslt.xslt_dir, PrepareForEbook.uid, "epub.css")
                 shutil.copy(default_path, css_tempfile)
 
             latest_url_statped = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
