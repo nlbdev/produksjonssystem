@@ -197,7 +197,7 @@ class NlbpubToEpub(Pipeline):
 
         self.utils.report.info("Boken ble konvertert. Kopierer til e-bok-arkiv.")
 
-        archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, temp_epub.identifier())
+        archived_path, stored = self.utils.filesystem.storeBook(temp_epubdir, temp_epub.identifier(), overwrite=False)
         self.utils.report.attachment(None, archived_path, "DEBUG")
         Bibliofil.book_available(NlbpubToEpub.publication_format, temp_epub.identifier())
 
