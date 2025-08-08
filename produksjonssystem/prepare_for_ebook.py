@@ -183,6 +183,10 @@ class PrepareForEbook(Pipeline):
             return False
         shutil.copy(temp_xml, opf_path)
 
+        # NEW: Restore original content images that were replaced with dummy.jpg
+        self.utils.report.info("Gjenoppretter originale innholdsbilder...")
+        self._restore_content_images(temp_epub, opf_path, html_file)
+
         # add cover if missing
 
         opf_xml = ElementTree.parse(opf_path).getroot()
@@ -270,6 +274,81 @@ class PrepareForEbook(Pipeline):
         self.utils.report.attachment(None, archived_path, "DEBUG")
         self.utils.report.title = self.title + ": " + epub.identifier() + " ble konvertert 👍😄" + epubTitle
         return True
+
+    def _restore_content_images(self, epub, opf_path, html_file):
+        """Restore original content images that were replaced with dummy.jpg during DAISY pipeline processing"""
+        
+        # Get the original EPUB to find what images were originally referenced
+        original_epub = Epub(self.utils.report, self.book["source"])
+        original_opf_path = original_epub.opf_path()
+        if not original_opf_path:
+            return
+        
+        original_opf_path = os.path.join(self.book["source"], original_opf_path)
+        original_opf_xml = ElementTree.parse(original_opf_path).getroot()
+        
+        # Find all image items in the original OPF
+        original_image_items = original_opf_xml.xpath("//*[local-name()='item' and starts-with(@media-type, 'image/')]")
+        
+        # Get current OPF
+        opf_xml = ElementTree.parse(opf_path).getroot()
+        manifest = opf_xml.find(".//{http://www.idpf.org/2007/opf}manifest")
+        
+        # Check which images are currently missing (replaced with dummy.jpg)
+        current_image_items = opf_xml.xpath("//*[local-name()='item' and starts-with(@media-type, 'image/')]")
+        current_image_hrefs = [item.get("href") for item in current_image_items]
+        
+        # Find images that need to be restored
+        for original_item in original_image_items:
+            original_href = original_item.get("href")
+            
+            # Skip cover.jpg (handled separately) and dummy.jpg
+            if original_href in ["images/cover.jpg", "images/dummy.jpg"]:
+                continue
+                
+            # Check if this image is referenced in the HTML content
+            if self._is_image_referenced_in_html(html_file, original_href):
+                # Check if the image file still exists
+                image_path = os.path.join(os.path.dirname(opf_path), original_href)
+                if os.path.exists(image_path) and original_href not in current_image_hrefs:
+                    # Add the image back to the manifest
+                    self.utils.report.info(f"Gjenoppretter bilde: {original_href}")
+                    
+                    # Generate unique ID
+                    existing_ids = [item.get("id") for item in manifest.findall(".//{http://www.idpf.org/2007/opf}item")]
+                    item_id = f"restored_img_{len(existing_ids) + 1}"
+                    while item_id in existing_ids:
+                        item_id = f"restored_img_{len(existing_ids) + 1}"
+                    
+                    # Create new item element
+                    new_item = ElementTree.SubElement(manifest, "{http://www.idpf.org/2007/opf}item")
+                    new_item.set("id", item_id)
+                    new_item.set("href", original_href)
+                    new_item.set("media-type", original_item.get("media-type"))
+        
+        # Write updated OPF
+        opf_xml.write(opf_path, encoding="utf-8", xml_declaration=True, pretty_print=True)
+
+    def _is_image_referenced_in_html(self, html_file, image_href):
+        """Check if an image is referenced in the HTML content"""
+        try:
+            html_xml = ElementTree.parse(html_file).getroot()
+            
+            # Check for img src attributes
+            img_srcs = html_xml.xpath("//@src")
+            for src in img_srcs:
+                if src == image_href or src == image_href.replace("images/", ""):
+                    return True
+            
+            # Check for other image references
+            hrefs = html_xml.xpath("//@href")
+            for href in hrefs:
+                if href == image_href:
+                    return True
+                    
+            return False
+        except Exception:
+            return False
 
     @staticmethod
     def update_css():
