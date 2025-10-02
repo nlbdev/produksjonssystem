@@ -380,7 +380,7 @@ class Filesystem():
         if library == "Statped":
             latest_url = "https://raw.githubusercontent.com/StatpedEPUB/nlb-scss/master/dist/css/statped.min.css"
         elif format == "epub":
-            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2025-01-29/epub.min.css"
+            latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2025-10-02/epub.min.css"
         elif format == "daisy202":
             latest_url = "https://github.com/nlbdev/nlb-scss/releases/download/2025-01-29/html.min.css"
         elif format == "daisy202-ncc":
