@@ -27,8 +27,8 @@
                     <xsl:when test="$preferred-id != '' and not($preferred-id = //*/@id)">
                         <xsl:value-of select="$preferred-id"/>
                     </xsl:when>
-                    <xsl:when test="not(concat('item_', count(/package/manifest/item)) = //*/@id)">
-                        <xsl:value-of select="concat('item_', count(*) + 1)"/>
+                    <xsl:when test="not('css-file' = //*/@id)">
+                        <xsl:value-of select="'css-file'"/>
                     </xsl:when>
                     <xsl:when test="not(generate-id(*[last()]) = //*/@id)">
                         <xsl:value-of select="generate-id(*[last()])"/>
