@@ -168,7 +168,7 @@
                                 <xsl:text> and it is possible to navigate the text and search for words.</xsl:text>
                             </p>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Please note that the adapted version may differ from the original. For assignments and exams, you must refer to the adapted version.</xsl:text>
+                                <xsl:text>Please note that the adapted edition may differ from the original. For assignments and exams, you must refer to the adapted edition.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:when test="$language = 'nn'">
