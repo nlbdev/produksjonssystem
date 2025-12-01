@@ -168,7 +168,7 @@
                                 <xsl:text> and it is possible to navigate the text and search for words.</xsl:text>
                             </p>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Please note that the adapted version may differ from the original.</xsl:text>
+                                <xsl:text>Please note that the adapted edition may differ from the original. For assignments and exams, you must refer to the adapted edition.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:when test="$language = 'nn'">
@@ -206,7 +206,7 @@
                                 <xsl:text>, og du kan navigere i teksten og søke på ord.</xsl:text>
                             </p>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Vi gjer merksam på at den tilrettelagde utgåva kan avvika frå originalen.</xsl:text>
+                                <xsl:text>Vi gjer merksam på at den tilrettelagde utgåva kan avvike frå originalen. Ved oppgåver og eksamenar må du referere til den tilrettelagde utgåva.</xsl:text>
                             </p>
                         </xsl:when>
                         <xsl:when test="$language = 'se'">
@@ -302,7 +302,7 @@
                                 <xsl:text>, og du kan navigere i teksten og søke på ord.</xsl:text>
                             </p>
                             <p class="nlb-ekstra-informasjon">
-                                <xsl:text>Vi gjør oppmerksom på at den tilrettelagte utgaven kan avvike fra originalen.</xsl:text>
+                                <xsl:text>Vi gjør oppmerksom på at den tilrettelagte utgaven kan avvike fra originalen. Ved oppgaver og eksamener må du referere til den tilrettelagte utgaven.</xsl:text>
                             </p>
                         </xsl:otherwise>
                     </xsl:choose>
