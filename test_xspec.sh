@@ -33,6 +33,14 @@ xspecFiles=($(find . -name '*.xspec'))
 
 success=0
 
+print_help() {
+  echo "Usage: $0 <subcommand> [args]"
+  echo ""
+  echo "Subcommands:"
+  echo "  help                Show this help message"
+  echo "  run-all             Run all xspec tests"
+}
+
 run_xspec_test() {
   local xspecFile="$1"
 
@@ -93,7 +101,21 @@ run_all_xspec_tests() {
   return $success
 }
 
-if run_all_xspec_tests; then
+command="$1"
+
+if [ "$command" = "" ] || [ "$command" = "help" ]; then
+  print_help
   exit 0
+elif [ "$command" = "run-all" ]; then
+  prepare_xspec_environment
+  if run_all_xspec_tests; then
+    exit 0
+  fi
+  exit 1
+else
+  echo "Unknown subcommand: $command" >&2
+  echo "" >&2
+  print_help
+  exit 1
 fi
-exit 1
+
