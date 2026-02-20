@@ -86,6 +86,7 @@ find_xspec_file() {
 
 run_xspec_test() {
   local xspecFile="$1"
+  local printToConsole="${2:-false}"
 
   # Declare local variables to avoid conflicts
   local fName
@@ -99,8 +100,12 @@ run_xspec_test() {
   fName=$(basename "$xspecFile")
   name=$(echo "$fName" | cut -f 1 -d '.')
 
-  #Runs xSpec tests. Log info to TARGET_DIR/stdXSpecTestName.log.
-  $XSPEC -t "$xspecFile" >"$TARGET_DIR/$name.log" 2>&1
+  # Runs xSpec tests. Log info to TARGET_DIR/stdXSpecTestName.log.
+  if [ "$printToConsole" = "true" ]; then
+    $XSPEC -t "$xspecFile" | tee "$TARGET_DIR/$name.log"
+  else
+    $XSPEC -t "$xspecFile" >"$TARGET_DIR/$name.log" 2>&1
+  fi
 
   #Third line from the bottom is the one containing test status
   numLines=`wc -l < "$TARGET_DIR/$name.log"`
@@ -176,7 +181,7 @@ elif [ "$command" = "run" ]; then
 
   selected_file=$(find_xspec_file "$2")
   prepare_xspec_environment
-  if run_xspec_test "$selected_file"; then
+  if run_xspec_test "$selected_file" "true"; then
     exit 0
   fi
   exit 1
