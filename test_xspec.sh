@@ -38,7 +38,14 @@ print_help() {
   echo ""
   echo "Subcommands:"
   echo "  help                Show this help message"
+  echo "  list                List all available xspec test files"
   echo "  run-all             Run all xspec tests"
+}
+
+list_xspec_tests() {
+  for (( i=0; i<${#xspecFiles[@]}; i++ ));do
+    echo "${xspecFiles[i]}"
+  done
 }
 
 run_xspec_test() {
@@ -105,6 +112,9 @@ command="$1"
 
 if [ "$command" = "" ] || [ "$command" = "help" ]; then
   print_help
+  exit 0
+elif [ "$command" = "list" ]; then
+  list_xspec_tests
   exit 0
 elif [ "$command" = "run-all" ]; then
   prepare_xspec_environment
