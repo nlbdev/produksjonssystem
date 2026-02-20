@@ -29,13 +29,22 @@ xspecFiles=($(find . -name '*.xspec'))
 
 success=0
 
-#Testing all XSpec files in produksjonssystem
-for (( i=0; i<${#xspecFiles[@]}; i++ ));do
-  fName=$(basename ${xspecFiles[i]})
+run_xspec_test() {
+  local xspecFile="$1"
+
+  # Declare local variables to avoid conflicts
+  local fName
+  local name
+  local numLines
+  local testStatus
+  local nums
+  local arr
+
+  fName=$(basename "$xspecFile")
   name=$(echo "$fName" | cut -f 1 -d '.')
 
   #Runs xSpec tests. Log info to TARGET_DIR/stdXSpecTestName.log.
-  $XSPEC -t ${xspecFiles[i]} >"$TARGET_DIR/$name.log" 2>&1
+  $XSPEC -t "$xspecFile" >"$TARGET_DIR/$name.log" 2>&1
 
   #Third line from the bottom is the one containing test status
   numLines=`wc -l < "$TARGET_DIR/$name.log"`
@@ -46,22 +55,32 @@ for (( i=0; i<${#xspecFiles[@]}; i++ ));do
   nums=$(echo "${testStatus}" | tr -dc ' 0-9')
   arr=($nums)
 
-#If number of fails equals zero
+  #If number of fails equals zero
   echo "Testing $fName"
   echo $testStatus
   if [ ${arr[2]} != 0 ]
   then
     echo -e "XSpec test failed. See html file for details."
-    success=1
+    echo -e " \n "
+    return 1
   elif [ ${arr[2]} == 0 ]
-    then
+  then
     echo -e "XSpec test successful."
+    echo -e " \n "
+    return 0
   else
-    success=1
     echo -e "XSpec error"
+    echo -e " \n "
+    return 1
   fi
-echo -e " \n "
+}
 
+#Testing all XSpec files in produksjonssystem
+for (( i=0; i<${#xspecFiles[@]}; i++ ));do
+  if ! run_xspec_test "${xspecFiles[i]}"
+  then
+    success=1
+  fi
 done
 
 #Returns 0 if all tests were successful, 1 otherwise
