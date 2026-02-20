@@ -18,9 +18,7 @@
         * Genererer sluttinformasjon (på bokmål, nynorsk eller engelsk): tittel, lydbokavtalen, info om den trykte boken og info om den tilrettelagte utgaven
         
         * Transformasjonen generer også noen meldinger knyttet til om metadata finnes eller ikke, men hvis det blir en generell metadata test tidliger i produksjonssystemet, så kan dette fjernes.
-        
-        Denne transformasjonen etterfølges av en transformasjon med filen lag-synkrinseringspunkter.xsl.
-        
+
         Per Sennels, 14.02.2018
     -->
 

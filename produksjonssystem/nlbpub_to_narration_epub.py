@@ -160,19 +160,6 @@ class NlbpubToNarrationEpub(Pipeline):
             return False
         shutil.copy(temp_html, html_file)
 
-        self.utils.report.info("Lager synkroniseringspunkter...")
-        self.utils.report.debug("lag-synkroniseringspunkter.xsl")
-        self.utils.report.debug("    source = " + html_file)
-        self.utils.report.debug("    target = " + temp_html)
-        xslt = Xslt(self,
-                    stylesheet=os.path.join(NlbpubToNarrationEpub.xslt_dir, NlbpubToNarrationEpub.uid, "lag-synkroniseringspunkter.xsl"),
-                    source=html_file,
-                    target=temp_html)
-        if not xslt.success:
-            self.utils.report.title = self.title + ": " + epub.identifier() + " feilet 😭👎" + epubTitle
-            return False
-        shutil.copy(temp_html, html_file)
-
         self.utils.report.info("Gjør HTMLen litt penere...")
         self.utils.report.debug("pretty-print.xsl")
         self.utils.report.debug("    source = " + html_file)
