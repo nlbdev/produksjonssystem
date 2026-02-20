@@ -70,10 +70,30 @@
     <!-- add "end of note" text -->
     <xsl:template match="*[tokenize(@epub:type, '\s+') = ('note', 'footnote', 'endnote', 'rearnote')]">
         <xsl:copy exclude-result-prefixes="#all">
-            <xsl:apply-templates select="@* | node()" mode="note-etter-referanse"/>
-            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
-                <xsl:with-param name="informasjon" as="xs:string" select="if ($SPRÅK.en) then 'End of note' else 'Note slutt'"/>
-            </xsl:call-template>
+            <xsl:variable name="last-element" as="element()?" select="*[last()]"/>
+            <xsl:choose>
+                <xsl:when test="exists($last-element) and fnk:is-block($last-element)">
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:apply-templates select="$last-element/preceding-sibling::node()"/>
+                    <xsl:for-each select="$last-element">
+                        <xsl:copy exclude-result-prefixes="#all">
+                            <xsl:apply-templates select="@*"/>
+                            <xsl:apply-templates select="node()"/>
+                            <xsl:text> </xsl:text>
+                            <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
+                                <xsl:with-param name="informasjon" as="xs:string" select="if ($SPRÅK.en) then 'End of note' else 'Note slutt'"/>
+                            </xsl:call-template>
+                        </xsl:copy>
+                    </xsl:for-each>
+                    <xsl:apply-templates select="$last-element/following-sibling::node()"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="@* | node()"/>
+                    <xsl:call-template name="lag-span-eller-p-med-ekstra-informasjon">
+                        <xsl:with-param name="informasjon" as="xs:string" select="if ($SPRÅK.en) then 'End of note' else 'Note slutt'"/>
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:copy>
     </xsl:template>
     
