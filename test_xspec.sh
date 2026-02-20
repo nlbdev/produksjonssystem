@@ -37,6 +37,7 @@ print_help() {
   echo "Subcommands:"
   echo "  help                Show this help message"
   echo "  list                List all available xspec test files"
+  echo "  run <xspec-file>    Run the specified xspec test file"
   echo "  run-all             Run all xspec tests"
 }
 
@@ -44,6 +45,43 @@ list_xspec_tests() {
   for (( i=0; i<${#xspecFiles[@]}; i++ ));do
     echo "${xspecFiles[i]}"
   done
+}
+
+find_xspec_file() {
+  local query="$1"
+  local normalizedQuery="$query"
+  local candidate
+  local matches=()
+
+  if [[ "$normalizedQuery" != ./* ]]; then
+    normalizedQuery="./$normalizedQuery"
+  fi
+
+  if [[ "$normalizedQuery" != *.xspec ]]; then
+    normalizedQuery="$normalizedQuery.xspec"
+  fi
+
+  for (( i=0; i<${#xspecFiles[@]}; i++ ));do
+    candidate="${xspecFiles[i]}"
+    if [ "$candidate" = "$query" ] || [ "$candidate" = "$normalizedQuery" ] || [ "$(basename "$candidate")" = "$query" ] || [ "$(basename "$candidate")" = "$(basename "$normalizedQuery")" ]; then
+      matches+=("$candidate")
+    fi
+  done
+
+  if [ ${#matches[@]} -eq 1 ]; then
+    echo "${matches[0]}"
+    return 0
+  elif [ ${#matches[@]} -gt 1 ]; then
+    echo "Ambiguous xspec file: $query" >&2
+    echo "Multiple matches found:" >&2
+    for (( i=0; i<${#matches[@]}; i++ ));do
+      echo "  ${matches[i]}" >&2
+    done
+    return 1
+  fi
+
+  echo "XSpec file not found: $query" >&2
+  return 1
 }
 
 run_xspec_test() {
@@ -114,6 +152,20 @@ if [ "$command" = "" ] || [ "$command" = "help" ]; then
 elif [ "$command" = "list" ]; then
   list_xspec_tests
   exit 0
+elif [ "$command" = "run" ]; then
+  if [ "$2" = "" ]; then
+    echo "Missing xspec file argument for 'run'" >&2
+    echo "" >&2
+    print_help
+    exit 1
+  fi
+
+  selected_file=$(find_xspec_file "$2")
+  prepare_xspec_environment
+  if run_xspec_test "$selected_file"; then
+    exit 0
+  fi
+  exit 1
 elif [ "$command" = "run-all" ]; then
   prepare_xspec_environment
   if run_all_xspec_tests; then
@@ -126,4 +178,3 @@ else
   print_help
   exit 1
 fi
-
