@@ -83,13 +83,13 @@
         <x:context>
             <html xml:lang="nb" lang="nb">
                 <head>
-                    <meta name="dc:language" value="nb"/>
-                    <meta name="dc:publisher.original" value="NLB"/>
-                    <meta name="dc:publisher.location.original" value="Oslo"/>
-                    <meta name="dc:date.issued.original" value="2019"/>
+                    <meta name="dc:language" content="nb"/>
+                    <meta name="dc:publisher.original" content="NLB"/>
+                    <meta name="dc:publisher.location.original" content="Oslo"/>
+                    <meta name="dc:date.issued.original" content="2019"/>
                 </head>
                 <body>
-                    <section id="ch1-19">
+                    <section id="ch1-19" epub:type="bodymatter">
                         <p>…<span epub:type="pagebreak" class="page-normal" title="1" id="pagebreak1"></span>…</p>
                     </section>
                 </body>
@@ -101,12 +101,15 @@
                 <head>...</head>
                 <body>
                     <section epub:type="frontmatter titlepage" id="nlb-level1-tittel">...</section>
-                    <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-opphavsrett">...</section>
                     <section epub:type="frontmatter" id="nlb-level1-om-boka">
-                        <h1 class="nlb-ekstra-informasjon">Om boka</h1>
-                        <p>Dette er en lydbok med tekst. Det er mulig å søke på ord i teksten. Det er mulig å navigere i lydboka på ett overskriftsnivå.</p>
+                        <h1 class="nlb-ekstra-informasjon" id="...">Om boka</h1>
+                        <p class="nlb-ekstra-informasjon">Boka er utgitt av NLB, Oslo, i 2019 og er på 1 sider.</p>
+                        <p class="nlb-ekstra-informasjon">Den består av ett kapittel.</p>
+                        <p class="nlb-ekstra-informasjon">Boka har overskrifter på ett nivå, og du kan navigere i teksten og søke på ord.</p>
+                        <p class="nlb-ekstra-informasjon">Vi gjør oppmerksom på at den tilrettelagte utgaven kan avvike fra originalen. Ved oppgaver og eksamener må du referere til den tilrettelagte utgaven.</p>
                     </section>
-                    <section id="ch1-19">...</section>
+                    <section id="ch1-19" epub:type="bodymatter">...</section>
                 </body>
             </html>
         </x:expect>
@@ -116,13 +119,13 @@
         <x:context>
             <html xml:lang="nb" lang="nb">
                 <head>
-                    <meta name="dc:language" value="nb"/>
-                    <meta name="dc:publisher.original" value="NLB"/>
-                    <meta name="dc:publisher.location.original" value="Oslo"/>
-                    <meta name="dc:date.issued.original" value="2019"/>
+                    <meta name="dc:language" content="nb"/>
+                    <meta name="dc:publisher.original" content="NLB"/>
+                    <meta name="dc:publisher.location.original" content="Oslo"/>
+                    <meta name="dc:date.issued.original" content="2019"/>
                 </head>
                 <body>
-                    <section id="ch1-19">
+                    <section id="ch1-19" epub:type="bodymatter">
                         <p>…<span epub:type="pagebreak" class="page-normal" title="1" id="pagebreak2"></span>…</p>
                         <p>…<span epub:type="pagebreak" class="page-normal" title="2" id="pagebreak3"></span>…</p>
                     </section>
@@ -135,12 +138,15 @@
                 <head>...</head>
                 <body>
                     <section epub:type="frontmatter titlepage" id="nlb-level1-tittel">...</section>
-                    <section epub:type="frontmatter" id="nlb-level1-lydbokavtalen">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-opphavsrett">...</section>
                     <section epub:type="frontmatter" id="nlb-level1-om-boka">
-                        <h1 class="nlb-ekstra-informasjon">Om boka</h1>
-                        <p>Dette er en lydbok med tekst. Det er mulig å søke på ord i teksten. Det er mulig å navigere i lydboka på ett overskriftsnivå og på sidetall.</p>
+                        <h1 class="nlb-ekstra-informasjon" id="...">Om boka</h1>
+                        <p class="nlb-ekstra-informasjon">Boka er utgitt av NLB, Oslo, i 2019 og er på 2 sider.</p>
+                        <p class="nlb-ekstra-informasjon">Den består av ett kapittel.</p>
+                        <p class="nlb-ekstra-informasjon">Boka har overskrifter på ett nivå, og du kan navigere i teksten og søke på ord.</p>
+                        <p class="nlb-ekstra-informasjon">Vi gjør oppmerksom på at den tilrettelagte utgaven kan avvike fra originalen. Ved oppgaver og eksamener må du referere til den tilrettelagte utgaven.</p>
                     </section>
-                    <section id="ch1-19">...</section>
+                    <section id="ch1-19" epub:type="bodymatter">...</section>
                 </body>
             </html>
         </x:expect>

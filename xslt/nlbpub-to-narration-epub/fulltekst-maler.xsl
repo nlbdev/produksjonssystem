@@ -5,19 +5,36 @@
     xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="#all" version="2.0">
     
     <!-- language code is one of se, nn, en or nb (default: nb)-->
-    <xsl:variable name="language" select="/*:html/*:head/*:meta[@name eq 'dc:language'][1]/(
-                                            if (lower-case(@content) = ('sme', 'se')) then 'se'
-                                            else if (lower-case(@content) = ('nn-no', 'nn')) then 'nn'
-                                            else if (lower-case(@content) = 'en') then 'en'
-                                            else 'nb')"/>
-    
+    <xsl:function name="fnk:normaliser-language" as="xs:string">
+        <xsl:param name="language" as="xs:string?"/>
+        <xsl:choose>
+            <xsl:when test="lower-case($language) = ('sme', 'se')">
+                <xsl:value-of select="'se'"/>
+            </xsl:when>
+            <xsl:when test="lower-case($language) = ('nn-no', 'nn')">
+                <xsl:value-of select="'nn'"/>
+            </xsl:when>
+            <xsl:when test="lower-case($language) = 'en'">
+                <xsl:value-of select="'en'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'nb'"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
+    <!--
+        Global variables does not work well with XSpec testing.
+        Local variables have been added to the templates that need this information.
+        These global variables should not be needed, but they are left here for now,
+        just in case.
+    -->
+    <xsl:variable name="language" select="fnk:normaliser-language(/*:html/*:head/*:meta[@name eq 'dc:language'][1]/@content)"/>
     <xsl:variable name="publisher-original" select="/*:html/*:head/*:meta[@name eq 'dc:publisher.original'][1]/@content" as="xs:string?"/>
     <xsl:variable name="publisher-location-original" select="/*:html/*:head/*:meta[@name eq 'dc:publisher.location.original'][1]/@content" as="xs:string?"/>
     <xsl:variable name="date-issued-original" select="/*:html/*:head/*:meta[@name eq 'dc:date.issued.original'][1]/@content" as="xs:string?"/>
     <xsl:variable name="has-publisher-metadata" select="exists($publisher-original) and exists($publisher-location-original) and exists($date-issued-original)" as="xs:boolean"/>
-
     <xsl:variable name="page-count" select="(/*:html/*:body/*:section[tokenize(@epub:type,'\s+')='bodymatter']//*[tokenize(@epub:type,'\s+') = 'pagebreak'])[last()]/(@title, text())[1]" as="xs:string?"/>
-
     <xsl:variable name="library" select="/*:html/*:head/*:meta[@name eq 'schema:library'][1]/@content" as="xs:string?"/>
 
     <xsl:template name="copyright-page">
@@ -96,6 +113,12 @@
     </xsl:template>
 
     <xsl:template name="info-om-boka">
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="publisher-original" select="ancestor::html/head/meta[@name='dc:publisher.original']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="publisher-location-original" select="ancestor::html/head/meta[@name='dc:publisher.location.original']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="date-issued-original" select="ancestor::html/head/meta[@name='dc:date.issued.original']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="has-publisher-metadata" select="exists($publisher-original) and exists($publisher-location-original) and exists($date-issued-original)" as="xs:boolean"/>
+        <xsl:variable name="page-count" select="(ancestor::html/body/section[tokenize(@epub:type,'\s+')='bodymatter']//*[tokenize(@epub:type,'\s+') = 'pagebreak'])[last()]/(@title, text())[1]" as="xs:string?"/>
         <xsl:choose>
             <xsl:when test="upper-case($library) = 'STATPED'">
                 <!-- Statped vil ikke ha "Om boka" -->
