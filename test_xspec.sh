@@ -79,13 +79,21 @@ run_xspec_test() {
   fi
 }
 
-#Testing all XSpec files in produksjonssystem
-for (( i=0; i<${#xspecFiles[@]}; i++ ));do
-  if ! run_xspec_test "${xspecFiles[i]}"
-  then
-    success=1
-  fi
-done
+run_all_xspec_tests() {
+  local success=0
 
-#Returns 0 if all tests were successful, 1 otherwise
-exit $success
+  #Testing all XSpec files in produksjonssystem
+  for (( i=0; i<${#xspecFiles[@]}; i++ ));do
+    if ! run_xspec_test "${xspecFiles[i]}"
+    then
+      success=1
+    fi
+  done
+
+  return $success
+}
+
+if run_all_xspec_tests; then
+  exit 0
+fi
+exit 1
