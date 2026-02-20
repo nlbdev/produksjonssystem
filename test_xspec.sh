@@ -102,20 +102,14 @@ run_xspec_test() {
 
   # Runs xSpec tests. Log info to TARGET_DIR/stdXSpecTestName.log.
   if [ "$printToConsole" = "true" ]; then
-    $XSPEC -t "$xspecFile" | tee "$TARGET_DIR/$name.log"
+    $XSPEC -t "$xspecFile" |& tee "$TARGET_DIR/$name.log"
   else
     $XSPEC -t "$xspecFile" >"$TARGET_DIR/$name.log" 2>&1
   fi
 
-  #Third line from the bottom is the one containing test status
-  numLines=`wc -l < "$TARGET_DIR/$name.log"`
-  numLines=$((numLines-2))
-  testStatus=`sed "${numLines}q;d" "$TARGET_DIR/$name.log"`
-
-  #only numbers of testStatus as array
-  nums=$(echo "${testStatus}" | tr -dc ' 0-9')
-  arr=($nums)
-  failedCount="${arr[2]}"
+  # Find status line robustly instead of relying on fixed line position.
+  testStatus=$(grep -E "passed:[[:space:]]*[0-9]+[[:space:]]*/[[:space:]]*pending:[[:space:]]*[0-9]+[[:space:]]*/[[:space:]]*failed:[[:space:]]*[0-9]+" "$TARGET_DIR/$name.log" | tail -n 1)
+  failedCount=$(echo "$testStatus" | sed -n 's/.*failed:[[:space:]]*\([0-9][0-9]*\).*/\1/p')
 
   #If number of fails equals zero
   echo "Testing $fName"
