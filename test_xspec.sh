@@ -25,8 +25,6 @@ prepare_xspec_environment() {
   XSPEC="$DIR/tests/tools/xspec/bin/xspec.sh"
 }
 
-prepare_xspec_environment
-
 cd "$DIR/xslt"
 
 xspecFiles=($(find . -name '*.xspec'))
