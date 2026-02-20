@@ -68,14 +68,12 @@
             <section id="ch1-19">
                 <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-1" id="foo">Fotnote 1</a> …</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-1">
-                    <p>Fotnote 1: Bla bla bla.</p>
-                    <p class="nlb-ekstra-informasjon">Note slutt</p>
+                    <p>Fotnote 1: Bla bla bla. <span class="nlb-ekstra-informasjon">Note slutt</span></p>
                 </aside>
                 <p>…<a epub:type="noteref" class="noteref" href="#fnt1a-2" id="foo2"><span class="nlb-ekstra-informasjon">Note </span>ref</a> …</p>
                 <p>…</p>
                 <aside epub:type="note" class="notebody" id="fnt1a-2">
-                    <p>Notetekst</p>
-                    <p class="nlb-ekstra-informasjon">Note slutt</p>
+                    <p>Notetekst <span class="nlb-ekstra-informasjon">Note slutt</span></p>
                 </aside>
             </section>
         </x:expect>
