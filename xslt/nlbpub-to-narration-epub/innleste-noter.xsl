@@ -85,6 +85,7 @@
                             </xsl:call-template>
                         </xsl:copy>
                     </xsl:for-each>
+                    <xsl:apply-templates select="$last-element/following-sibling::node()"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates select="@* | node()"/>
