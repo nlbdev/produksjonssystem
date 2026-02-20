@@ -94,6 +94,7 @@ run_xspec_test() {
   local testStatus
   local nums
   local arr
+  local failedCount
 
   fName=$(basename "$xspecFile")
   name=$(echo "$fName" | cut -f 1 -d '.')
@@ -109,16 +110,29 @@ run_xspec_test() {
   #only numbers of testStatus as array
   nums=$(echo "${testStatus}" | tr -dc ' 0-9')
   arr=($nums)
+  failedCount="${arr[2]}"
 
   #If number of fails equals zero
   echo "Testing $fName"
-  echo $testStatus
-  if [ ${arr[2]} != 0 ]
+  if [ -n "$testStatus" ]; then
+    echo "$testStatus"
+  else
+    echo "Could not determine test status from log output."
+  fi
+
+  if [ -z "$failedCount" ]; then
+    echo -e "XSpec error"
+    echo -e "See log for details: $TARGET_DIR/$name.log"
+    echo -e " \n "
+    return 1
+  fi
+
+  if [ "$failedCount" != 0 ]
   then
     echo -e "XSpec test failed. See html file for details."
     echo -e " \n "
     return 1
-  elif [ ${arr[2]} == 0 ]
+  elif [ "$failedCount" = 0 ]
   then
     echo -e "XSpec test successful."
     echo -e " \n "
