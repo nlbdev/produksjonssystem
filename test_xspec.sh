@@ -145,6 +145,18 @@ run_xspec_test() {
 
 run_all_xspec_tests() {
   local success=0
+  local total_passed=0
+  local total_pending=0
+  local total_failed=0
+  local total_total=0
+  local testStatus
+  local passedCount
+  local pendingCount
+  local failedCount
+  local totalCount
+  local fName
+  local name
+  local logFile
 
   #Testing all XSpec files in produksjonssystem
   for (( i=0; i<${#xspecFiles[@]}; i++ ));do
@@ -152,7 +164,44 @@ run_all_xspec_tests() {
     then
       success=1
     fi
+
+    fName=$(basename "${xspecFiles[i]}")
+    name=$(echo "$fName" | cut -f 1 -d '.')
+    logFile="$TARGET_DIR/$name.log"
+
+    if [ ! -f "$logFile" ]; then
+      continue
+    fi
+
+    testStatus=$(grep -E "passed:[[:space:]]*[0-9]+[[:space:]]*/[[:space:]]*pending:[[:space:]]*[0-9]+[[:space:]]*/[[:space:]]*failed:[[:space:]]*[0-9]+" "$logFile" | tail -n 1)
+    passedCount=$(echo "$testStatus" | sed -n 's/.*passed:[[:space:]]*\([0-9][0-9]*\).*/\1/p')
+    pendingCount=$(echo "$testStatus" | sed -n 's/.*pending:[[:space:]]*\([0-9][0-9]*\).*/\1/p')
+    failedCount=$(echo "$testStatus" | sed -n 's/.*failed:[[:space:]]*\([0-9][0-9]*\).*/\1/p')
+    totalCount=$(echo "$testStatus" | sed -n 's/.*total:[[:space:]]*\([0-9][0-9]*\).*/\1/p')
+
+    if [ -n "$passedCount" ]; then
+      total_passed=$((total_passed + passedCount))
+    fi
+    if [ -n "$pendingCount" ]; then
+      total_pending=$((total_pending + pendingCount))
+    fi
+    if [ -n "$failedCount" ]; then
+      total_failed=$((total_failed + failedCount))
+    fi
+    if [ -n "$totalCount" ]; then
+      total_total=$((total_total + totalCount))
+    else
+      total_total=$((total_total + passedCount + pendingCount + failedCount))
+    fi
   done
+
+  echo "Testet ${#xspecFiles[@]} XSpec-filer"
+  echo "passed: $total_passed / pending: $total_pending / failed: $total_failed / total: $total_total"
+  if [ "$total_failed" -eq 0 ]; then
+    echo "XSpec tests successful."
+  else
+    echo "XSpec tests failed."
+  fi
 
   return $success
 }
