@@ -2,26 +2,30 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Find Saxon so that XSpec can find it
-if [ "$PIPELINE2_HOME" = "" ]; then
-  PIPELINE2_HOME="/opt/daisy-pipeline2"
-  if [ ! -d "$PIPELINE2_HOME" ]; then
-    PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
+prepare_xspec_environment() {
+  # Find Saxon so that XSpec can find it
+  if [ "$PIPELINE2_HOME" = "" ]; then
+    PIPELINE2_HOME="/opt/daisy-pipeline2"
     if [ ! -d "$PIPELINE2_HOME" ]; then
-      print "Could not find Pipeline 2 installation; unable to locate Saxon"
-      exit 1
+      PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
+      if [ ! -d "$PIPELINE2_HOME" ]; then
+        print "Could not find Pipeline 2 installation; unable to locate Saxon"
+        exit 1
+      fi
     fi
   fi
-fi
-export SAXON_CP="`find $PIPELINE2_HOME | grep "\.jar$" | grep "saxon-he" | head -n 1`"
+  export SAXON_CP="`find $PIPELINE2_HOME | grep "\.jar$" | grep "saxon-he" | head -n 1`"
 
-TARGET_DIR="$DIR/target/xspec"
-if [ -d "$TARGET_DIR" ]; then
-  rm "$TARGET_DIR" -r
-fi
-mkdir -p "$TARGET_DIR"
+  TARGET_DIR="$DIR/target/xspec"
+  if [ -d "$TARGET_DIR" ]; then
+    rm "$TARGET_DIR" -r
+  fi
+  mkdir -p "$TARGET_DIR"
 
-XSPEC="$DIR/tests/tools/xspec/bin/xspec.sh"
+  XSPEC="$DIR/tests/tools/xspec/bin/xspec.sh"
+}
+
+prepare_xspec_environment
 
 cd "$DIR/xslt"
 
