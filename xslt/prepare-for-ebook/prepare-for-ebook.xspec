@@ -211,7 +211,8 @@
                 <body>
                     <section epub:type="cover">...</section>
                     <section epub:type="frontmatter titlepage">...</section>
-                    <section epub:type="frontmatter copyright-page" id="...">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-opphavsrett">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-om-boka">...</section>
                     <section epub:type="frontmatter colophon">...</section>
                     <section epub:type="frontmatter toc">...</section>
                     <section epub:type="bodymatter chapter">...</section>
@@ -243,7 +244,8 @@
                 <head>...</head>
                 <body>
                     <section epub:type="cover">...</section>
-                    <section epub:type="frontmatter copyright-page" id="...">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-opphavsrett">...</section>
+                    <section epub:type="frontmatter" id="nlb-level1-om-boka">...</section>
                     <section epub:type="frontmatter colophon">...</section>
                     <section epub:type="frontmatter toc">...</section>
                     <section epub:type="bodymatter chapter">...</section>

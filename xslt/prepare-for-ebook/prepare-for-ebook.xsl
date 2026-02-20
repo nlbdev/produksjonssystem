@@ -101,8 +101,8 @@
                 </xsl:copy>
             </xsl:when>
             
-            <xsl:when test="f:classes(.)='hidden-headline' and not(@id)">
-                <!-- if this is a hidden headline, create a hidden-headline anchor -->
+            <xsl:when test="f:classes(.)='hidden-headline'">
+                <!-- if this is a hidden headline, create a hidden-headline anchor and make sure it has an id attribute -->
                 <xsl:variable name="id" select="if (@id) then @id else concat('generated-headline-', generate-id())"/>
                 <div id="{$id}" class="hidden-headline-anchor"></div>
                 <xsl:value-of select="$whitespace"/>
