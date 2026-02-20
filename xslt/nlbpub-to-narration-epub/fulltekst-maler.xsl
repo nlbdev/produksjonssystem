@@ -113,10 +113,10 @@
     </xsl:template>
 
     <xsl:template name="info-om-boka">
-        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library']/string(@content)" as="xs:string?"/>
-        <xsl:variable name="publisher-original" select="ancestor::html/head/meta[@name='dc:publisher.original']/string(@content)" as="xs:string?"/>
-        <xsl:variable name="publisher-location-original" select="ancestor::html/head/meta[@name='dc:publisher.location.original']/string(@content)" as="xs:string?"/>
-        <xsl:variable name="date-issued-original" select="ancestor::html/head/meta[@name='dc:date.issued.original']/string(@content)" as="xs:string?"/>
+        <xsl:variable name="library" select="ancestor::html/head/meta[@name='schema:library'][1]/@content" as="xs:string?"/>
+        <xsl:variable name="publisher-original" select="ancestor::html/head/meta[@name='dc:publisher.original'][1]/@content" as="xs:string?"/>
+        <xsl:variable name="publisher-location-original" select="ancestor::html/head/meta[@name='dc:publisher.location.original'][1]/@content" as="xs:string?"/>
+        <xsl:variable name="date-issued-original" select="ancestor::html/head/meta[@name='dc:date.issued.original'][1]/@content" as="xs:string?"/>
         <xsl:variable name="has-publisher-metadata" select="exists($publisher-original) and exists($publisher-location-original) and exists($date-issued-original)" as="xs:boolean"/>
         <xsl:variable name="page-count" select="(ancestor::html/body/section[tokenize(@epub:type,'\s+')='bodymatter']//*[tokenize(@epub:type,'\s+') = 'pagebreak'])[last()]/(@title, text())[1]" as="xs:string?"/>
         <xsl:choose>

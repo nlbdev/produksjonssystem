@@ -9,7 +9,7 @@ prepare_xspec_environment() {
     if [ ! -d "$PIPELINE2_HOME" ]; then
       PIPELINE2_HOME="$HOME/Desktop/daisy-pipeline"
       if [ ! -d "$PIPELINE2_HOME" ]; then
-        print "Could not find Pipeline 2 installation; unable to locate Saxon"
+        echo "Could not find Pipeline 2 installation; unable to locate Saxon" >&2
         exit 1
       fi
     fi
@@ -91,10 +91,7 @@ run_xspec_test() {
   # Declare local variables to avoid conflicts
   local fName
   local name
-  local numLines
   local testStatus
-  local nums
-  local arr
   local failedCount
 
   fName=$(basename "$xspecFile")

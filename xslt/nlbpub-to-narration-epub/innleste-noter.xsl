@@ -72,7 +72,7 @@
         <xsl:copy exclude-result-prefixes="#all">
             <xsl:variable name="last-element" as="element()?" select="*[last()]"/>
             <xsl:choose>
-                <xsl:when test="fnk:is-block($last-element)">
+                <xsl:when test="exists($last-element) and fnk:is-block($last-element)">
                     <xsl:apply-templates select="@*"/>
                     <xsl:apply-templates select="$last-element/preceding-sibling::node()"/>
                     <xsl:for-each select="$last-element">
