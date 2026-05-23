@@ -12,10 +12,8 @@ antivirus_enabled = True
 def scan_file(file_path, report=logging):
     global antivirus_url, antivirus_enabled
     if antivirus_url is None:
-        response = requests.get(os.getenv("NLB_API_URL") + "/systems/antivirus")
-        body = response.json()
-        antivirus_url = body["url"]
-        antivirus_enabled = body["enabled"]
+        antivirus_url = os.getenv("ANTIVIRUS_URL")
+        antivirus_enabled = os.getenv("ANTIVIRUS_ENABLED", "true").lower() == "true"
     if not antivirus_enabled:
         report.warning("Antivirus is disabled")
         return True
