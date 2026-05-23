@@ -1,0 +1,14 @@
+set-test-env.sh.example
+  h_a4834234958a5d 59-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "292a44f2c564b1628719cd480d0b8ea2b7eacf2f",
+  "prompts": {},
+  "humans": {
+    "h_a4834234958a5d": {
+      "author": "Jostein Austvik Jacobsen <jostein.jacobsen@nb.no>"
+    }
+  }
+}
