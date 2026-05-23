@@ -1,0 +1,14 @@
+produksjonssystem/core/utils/antivirus.py
+  h_a4834234958a5d 15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "74f115365082e70e51fa1ec1f29dc4a668bcb575",
+  "prompts": {},
+  "humans": {
+    "h_a4834234958a5d": {
+      "author": "Jostein Austvik Jacobsen <jostein.jacobsen@nb.no>"
+    }
+  }
+}
