@@ -56,3 +56,6 @@ export EPUBCHECK_HOME="/opt/epubcheck"
 
 # JAVA_HOME (ideally use Java 8 for this system!)
 export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64/bin/java"
+
+export ANTIVIRUS_URL=https://antivirus.nb.no/api/v1/scan
+export ANTIVIRUS_ENABLED=false
