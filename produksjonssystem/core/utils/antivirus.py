@@ -14,6 +14,9 @@ def scan_file(file_path, report=logging):
     if antivirus_url is None:
         antivirus_url = os.getenv("ANTIVIRUS_URL")
         antivirus_enabled = os.getenv("ANTIVIRUS_ENABLED", "true").lower() == "true"
+    if antivirus_enabled and not (antivirus_url or "").strip():
+        report.error("Antivirus is enabled, but ANTIVIRUS_URL is not configured")
+        return False
     if not antivirus_enabled:
         report.warning("Antivirus is disabled")
         return True
